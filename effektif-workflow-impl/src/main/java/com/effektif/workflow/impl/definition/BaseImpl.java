@@ -13,19 +13,27 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.definition;
 
-import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflow.Base;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TimerImpl extends BaseImpl {
+public class BaseImpl {
 
-  public Timer apiTimer;
+  public String id;
+  public WorkflowEngineImpl workflowEngine;
+  public WorkflowImpl workflow;
+  public ScopeImpl parent;
 
-  public TimerImpl(Timer apiTimer) {
-    super(apiTimer);
-    this.apiTimer = apiTimer;
+  public BaseImpl(Base apiBase) {
+    this.id = apiBase.getId();
+  }
+
+  public void validate(WorkflowValidator validator) {
+    this.workflowEngine = validator.workflowEngine;
+    this.workflow = validator.workflow;
   }
 
 }

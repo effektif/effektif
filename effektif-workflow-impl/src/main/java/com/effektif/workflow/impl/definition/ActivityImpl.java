@@ -22,6 +22,7 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.plugin.ActivityType;
+import com.effektif.workflow.impl.plugin.Descriptors;
 import com.effektif.workflow.impl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,31 +31,68 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Walter White
  */
 public class ActivityImpl extends ScopeImpl {
+  
+  public Activity apiActivity;
 
   public ActivityType activityType;
 
   /** the list of transitions for which this activity is the destination.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
-  @JsonIgnore
   public List<TransitionImpl> incomingTransitions;
 
   /** the list of transitions for which this activity is the source.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
-  @JsonIgnore
   public List<TransitionImpl> outgoingDefinitions;
 
-  public String defaultTransitionId;
-  
-  @JsonIgnore
   public TransitionImpl defaultTransition;
-  
   public MultiInstance multiInstance;
 
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
   public ActivityImpl(Activity apiActivity) {
     super(apiActivity);
+    this.apiActivity = apiActivity;
   }
+  
+  @Override
+  public void validate(WorkflowValidator validator) {
+    if (id==null || "".equals(id)) {
+      validator.addError("Activity has no id");
+    } 
+
+    Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
+    ActivityType activityType = descriptors.createActivityType(apiActivity);
+    activityType.validate(this, apiActivity, validator);
+    
+    
+    this.multiInstance = apiActivity.getMultiInstance();
+    
+    this.activityType = null; // TODO
+    if (this.activityType==null) {
+      addError("Activity '%s' has no activityType configured", id);
+    }
+
+    if (multiInstance!=null) {
+      validator.pushContext().base(multiInstance);
+      if (multiInstance.getCollection()==null) {
+        
+      }
+      if (multiInstance.getVariable()==null) {
+        
+      }
+      validator.popContext();
+    }
+    if (apiActivity.getDefaultTransitionId()!=null) {
+      defaultTransition = findTransitionById(outgoingDefinitions, apiActivity.getDefaultTransitionId());
+      if (activity.defaultTransition==null) {
+        addError("Activity '%s' has invalid default transition id %s", activity.id, activity.defaultTransitionId);
+      }
+    }
+    super.validate(validator);
+  }
+
+
+
 
   public ActivityImpl activityType(ActivityType activityType) {
     this.activityType = activityType;
@@ -139,10 +177,6 @@ public class ActivityImpl extends ScopeImpl {
   }
   
   /// other methods ////////////////////////////
-
-  public WorkflowPath getPath() {
-    return parent.getPath().addActivityDefinitionId(id);
-  }
 
   public void visit(WorkflowVisitor visitor, int index) {
     // If some visitor needs to control the order of types vs other content visited, 

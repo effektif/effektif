@@ -13,9 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.definition;
 
-import com.effektif.deprecated.VariableBuilder;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.plugin.Descriptors;
 import com.effektif.workflow.impl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,22 +23,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author Walter White
  */
-public class VariableImpl implements VariableBuilder, Variable {
+public class VariableImpl {
 
+  public Variable apiVariable;
   public String id;
-  
-//  public String dataTypeId;
-//  @JsonIgnore
   public DataType dataType;
-//  @JsonProperty("dataType")
-//  public Map<String,Object> dataTypeJson;
-  
-  @JsonIgnore
   public Object initialValue;
-//  @JsonProperty("initialValue")
-//  public Object initialValueJson;
 
-  @JsonIgnore
   public WorkflowEngineImpl workflowEngine;
   @JsonIgnore
   public WorkflowImpl workflow;  
@@ -49,89 +40,20 @@ public class VariableImpl implements VariableBuilder, Variable {
   public Long column;
 
   public VariableImpl(Variable apiVariable) {
+    this.apiVariable = apiVariable;
+  }
+  
+  public void validate(WorkflowValidator validator) {
+    if (id==null || "".equals(id)) {
+      validator.addError("Variable does not have an id");
+    }
+    validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
+    if (variable.dataType!=null) {
+      variable.dataType.validate(this);
+    } else {
+      addError("No data type configured for variable %s", variable.id);
+    }
+
   }
 
-  public VariableImpl id(String id) {
-    this.id = id;
-    return this;
-  }
-
-  public VariableImpl line(Long line) {
-    this.line = line;
-    return this;
-  }
-
-  public VariableImpl column(Long column) {
-    this.column = column;
-    return this;
-  }
-
-  public VariableImpl dataType(DataType dataType) {
-    this.dataType = dataType;
-    return this;
-  }
-
-  public VariableImpl initialValue(Object initialValue) {
-    this.initialValue = initialValue;
-    return this;
-  }
-  
-  public VariableImpl processEngine(WorkflowEngineImpl workflowEngine) {
-    this.workflowEngine = workflowEngine;
-    return this;
-  }
-  
-  public VariableImpl processDefinition(WorkflowImpl processDefinition) {
-    this.workflow = processDefinition;
-    return this;
-  }
-  
-  public VariableImpl parent(ScopeImpl parent) {
-    this.parent = parent;
-    return this;
-  }
-  
-  public void prepare() {
-  }
-  
-  public ScopeImpl getParent() {
-    return parent;
-  }
-
-  public void setParent(ScopeImpl parent) {
-    this.parent = parent;
-  }
-
-  public String getId() {
-    return id;
-  }
-  
-  public VariableImpl setId(String id) {
-    this.id = id;
-    return this;
-  }
-  
-  public WorkflowImpl getWorkflow() {
-    return workflow;
-  }
-  
-  public void setWorkflow(WorkflowImpl processDefinition) {
-    this.workflow = processDefinition;
-  }
-
-  public WorkflowEngineImpl getWorkflowEngine() {
-    return workflowEngine;
-  }
-  
-  public void setWorkflowEngine(WorkflowEngineImpl processEngine) {
-    this.workflowEngine = processEngine;
-  }
-  
-  public DataType getDataType() {
-    return dataType;
-  }
-  
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-  }
 }

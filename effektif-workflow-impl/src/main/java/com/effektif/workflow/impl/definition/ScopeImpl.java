@@ -14,9 +14,11 @@
 package com.effektif.workflow.impl.definition;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
@@ -24,19 +26,14 @@ import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.plugin.Validator;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
 /**
  * @author Walter White
  */
-public abstract class ScopeImpl {
+public abstract class ScopeImpl extends BaseImpl {
 
-  public String id;
-  public WorkflowEngineImpl workflowEngine;
-  public WorkflowImpl workflow;
-  public ScopeImpl parent;
   public List<ActivityImpl> startActivities;
   public Map<String, ActivityImpl> activities;
   public Map<String, VariableImpl> variables;
@@ -44,7 +41,7 @@ public abstract class ScopeImpl {
   public List<TransitionImpl> transitions;
 
   public ScopeImpl(Scope apiScope) {
-    this.id = apiScope.getId();
+    super(apiScope);
     List<Activity> apiActivities = apiScope.getActivities();
     if (apiActivities!=null) {
       for (Activity apiActivity: apiActivities) {
@@ -87,8 +84,84 @@ public abstract class ScopeImpl {
     }
   }
 
-  public abstract WorkflowPath getPath();
+  public void validate(WorkflowValidator validator) {
+    if (transitions!=null) {
+      int i = 0;
+      for (TransitionImpl transition: transitions) {
+        validator.pushContext(transition, i);
+        transition.parent = this;
+        transition.validate(validator);
+        validator.popContext();
+        i++;
+      }
+    }
+    if (activities!=null) {
+      Set<String> activityIds = new HashSet<>();
+      int i = 0;
+      for (ActivityImpl activity: activities.values()) {
+        validator.pushContext(activity, i);
+        activity.parent = this;
+        activityIds.add(activity.id);
+        if (activityIds.contains(activity.id)) {
+          validator.addError("Duplicate activity id '%s'. Activity ids have to be unique in the scope they are defined.", activity.id);
+        }
+        activity.validate(validator);
+        validator.popContext();
+        i++;
+      }
+      this.startActivities = new ArrayList<>(activities.values());
+      if (transitions!=null) {
+        for (TransitionImpl transition: transitions) {
+          this.startActivities.remove(transition.to);
+        }
+      }
+      if (startActivities.isEmpty()) {
+        validator.addWarning("No start activities in %s", id);
+      }
+    }
+    if (variables!=null) {
+      int i = 0;
+      Set<String> variableIds = new HashSet<>();
+      for (VariableImpl variable: variables.values()) {
+        validator.pushContext(variable, i);
+        variable.parent = this;
+        variableIds.add(variable.id);
+        if (variableIds.contains(variable.id)) {
+          validator.addError("Duplicate variable name %s. Variables have to be unique in the process.", variable.id);
+        }
+        variable.validate(validator);
+        validator.popContext();
+        i++;
+      }
+    }
+    if (timers!=null) {
+      int i = 0;
+      for (TimerImpl timer: timers) {
+        validator.pushContext(timer, i);
+        timer.parent = this;
+        timer.validate(validator);
+        validator.popContext();
+        i++;
+      }
+    }
+  }
   
+  protected TransitionImpl findTransitionById(String transitionId) {
+    if (transitions!=null) {
+      for (TransitionImpl transition: transitions) {
+        if (transitionId.equals(transition.id)) {
+          return transition;
+        }
+      }
+    }
+    return null;
+  }
+
+  public ActivityImpl findActivityById(String activityId) {
+    return activities.get(activityId);
+  }
+
+
   public ActivityImpl getActivity(String activityDefinitionId) {
     return workflow.findActivity(activityDefinitionId);
   }
@@ -222,21 +295,7 @@ public abstract class ScopeImpl {
     }
     return false;
   }
-  
-  public void initializeStartActivities(Validator validator) {
-    if (activityDefinitions!=null && !activityDefinitions.isEmpty()) {
-      this.startActivities = new ArrayList<>(activityDefinitions);
-      if (transitionDefinitions!=null) {
-        for (TransitionImpl transition: transitionDefinitions) {
-          this.startActivities.remove(transition.getTo());
-        }
-      }
-    }
-    if (startActivities==null) {
-      validator.addWarning("No start activities in %s", getId());
-    }
-  }
-  
+
   // getters and setters ////////////////////////////////////////////////////////////
   
   public boolean hasTransitionDefinitions() {
@@ -276,5 +335,4 @@ public abstract class ScopeImpl {
   public void setTimerDefinitions(List<TimerDefinitionImpl> timerDefinitions) {
     this.timerDefinitions = timerDefinitions;
   }
-  
 }

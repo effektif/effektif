@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.DataTypes;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.type.BindingType;
 import com.effektif.workflow.impl.type.DataType;
@@ -37,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author Walter White
  */
-public class Descriptors implements DataTypes {
+public class Descriptors {
   
   public List<Descriptor> activityTypeDescriptors = new ArrayList<>();
   public List<Descriptor> dataTypeDescriptors = new ArrayList<>();
@@ -48,6 +49,10 @@ public class Descriptors implements DataTypes {
   public Map<Type,Descriptor> dataTypeDescriptorsByValueType = new HashMap<>();
   @JsonIgnore
   public Map<Class<?>, Descriptor> activityTypeDescriptorsByClass = new HashMap<>();
+  
+  // maps api activity classes to activity types
+  @JsonIgnore
+  public Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
 
   public Descriptors() {
   }
@@ -66,7 +71,20 @@ public class Descriptors implements DataTypes {
     Descriptor descriptor = createTypeDescriptor(activityType);
     addActivityTypeDescriptor(descriptor);
     activityTypeDescriptorsByClass.put(activityType.getClass(), descriptor);
+    
+    ApiClass apiClassAnnotation = activityType.getClass().getAnnotation(ApiClass.class);
+    if (apiClassAnnotation==null) {
+      throw new RuntimeException("ActivityType "+activityType.getClass().getName()+" doesn't declare annotation "+ApiClass.class.getName());
+    }
+    
+    activityTypeClasses.put(apiClassAnnotation.value(), activityType.getClass());
     return descriptor;
+  }
+  
+  public ActivityType createActivityType(Activity apiActivity) {
+    Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(apiActivity.getClass());
+    ActivityType activityType = activityTypeClass.newInstance();
+    return activityType;
   }
 
   public Descriptor registerJavaBeanType(Class<?> javaBeanClass) {

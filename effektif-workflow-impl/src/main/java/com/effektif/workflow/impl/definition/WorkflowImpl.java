@@ -33,36 +33,16 @@ public class WorkflowImpl extends ScopeImpl {
   
   public Workflow apiWorkflow;
 
-  /** optional time when the process was deployed.
-   * This field just serves as a read/write property and is not used during process execution. */
-  public LocalDateTime deployedTime;
-
-  /** optional reference to the user that deployed the process definition.
-   * This field just serves as a read/write property and is not used during process execution. */
-  public String deployedBy;
-
-  /** optional reference to the organization (aka tenant or workspace) that deployed the process definition.
-   * This field just serves as a read/write property and is not used during process execution. */
-  public String organizationId;
-
-  /** optional reference to the the source process for which this process definition is one version.
-   * This field just serves as a read/write property and is not used during process execution. */
-  public String processId;
-
-  /** optional version number of this process definition, related to @link {@link #processId}.
-   * This combined with the @link {@link ScopeImpl#id} should be unique. */
-  public Long version;
-  
   public WorkflowImpl(Workflow apiWorkflow) {
     super(apiWorkflow);
     this.apiWorkflow = apiWorkflow;
-    
   }
 
-  public void validate(WorkflowImpl workflow) {
-    
+  public void validate(WorkflowValidator validator) {
+    validator.pushContext(this);
+    super.validate(validator);
+    validator.popContext();
   }
-
 
   /// Process Definition Builder methods /////////////////////////////////////////////
 
@@ -161,10 +141,6 @@ public class WorkflowImpl extends ScopeImpl {
     return variableMap.get(variableId); 
   }
   
-  public WorkflowPath getPath() {
-    return new WorkflowPath();
-  }
-
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
   }

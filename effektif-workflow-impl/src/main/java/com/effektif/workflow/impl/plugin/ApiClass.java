@@ -11,21 +11,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.definition;
+package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.api.workflow.Timer;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TimerImpl extends BaseImpl {
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ApiClass {
 
-  public Timer apiTimer;
-
-  public TimerImpl(Timer apiTimer) {
-    super(apiTimer);
-    this.apiTimer = apiTimer;
-  }
-
+  Class<?> value();
 }

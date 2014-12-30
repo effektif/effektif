@@ -13,143 +13,61 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.definition;
 
-import com.effektif.deprecated.TransitionBuilder;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.script.Script;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.effektif.workflow.impl.script.ScriptService;
 
 
 /**
  * @author Walter White
  */
-public class TransitionImpl {
+public class TransitionImpl extends BaseImpl {
 
-  Transition apiTransition;
-  
-  @JsonIgnore
+  public Transition apiTransition;
   public ActivityImpl from;
-  @JsonIgnore
   public ActivityImpl to;
-
-  @JsonIgnore
-  public WorkflowEngineImpl processEngine;
-  @JsonIgnore
-  public WorkflowImpl processDefinition;
-  @JsonIgnore
   public ScopeImpl parent;
-  
-  public String id;
-  public String fromId;
-  public String toId;
-  public Long line;
-  public Long column;
-  public String condition;
-  
-  @JsonIgnore
   public Script conditionScript;
 
   public TransitionImpl(Transition apiTransition) {
-  }
-
-  public TransitionImpl id(String id) {
-    this.id = id;
-    return this;
-  }
-
-  public TransitionImpl line(Long line) {
-    this.line = line;
-    return this;
-  }
-
-  public TransitionImpl column(Long column) {
-    this.column = column;
-    return this;
+    super(apiTransition);
+    this.apiTransition = apiTransition;
   }
   
-  /** Fluent builder to set the source of this transition.
-   * @param fromActivityDefinitionName the name of the activity definition. */
-  public TransitionImpl from(String fromId) {
-    this.fromId = fromId;
-    return this;
-  }
-
-  public TransitionImpl to(String toId) {
-    this.toId = toId;
-    return this;
-  }
-  
-  public TransitionImpl condition(String condition) {
-    this.condition = condition;
-    return this;
-  }
-  
-  public void prepare() {
-  }
-
-  public ActivityImpl getFrom() {
-    return from;
-  }
-  
-  public void setFrom(ActivityImpl from) {
-    this.from = from;
-    if (from!=null) {
-      this.fromId = from.id;
+  public void validate(WorkflowValidator validator) {
+    String fromId = apiTransition.getFrom();
+    if (fromId==null) {
+      validator.addWarning("Transition has no 'from' specified");
+    } else {
+      this.from = parent.activities.get(fromId);
+      if (this.from!=null) {
+        this.from.addOutgoingTransition(this);
+      } else {
+        validator.addError("Transition has an invalid value for 'from' (%s) : %s", fromId, validator.getExistingActivityIdsText(parent));
+      }
     }
-  }
-  
-  public ActivityImpl getTo() {
-    return to;
-  }
-  
-  public void setTo(ActivityImpl to) {
-    this.to = to;
-    if (to!=null) {
-      this.toId = to.id;
+    String toId = apiTransition.getTo();
+    if (toId==null) {
+      validator.addWarning("Transition has no 'to' specified");
+    } else {
+      this.to = parent.activities.get(toId);
+      if (this.to!=null) {
+        this.to.addIncomingTransition(this);
+      } else {
+        validator.addError("Transition has an invalid value for 'to' (%s) : %s", toId, validator.getExistingActivityIdsText(parent));
+      }
     }
-  }
-
-  
-  public WorkflowEngineImpl getProcessEngine() {
-    return processEngine;
-  }
-
-  
-  public void setWorkflowEngine(WorkflowEngineImpl processEngine) {
-    this.processEngine = processEngine;
-  }
-
-  
-  public ScopeImpl getParent() {
-    return parent;
-  }
-
-  
-  public void setParent(ScopeImpl parent) {
-    this.parent = parent;
-  }
-
-  
-  public WorkflowImpl getProcessDefinition() {
-    return processDefinition;
-  }
-
-  
-  public void setWorkflow(WorkflowImpl processDefinition) {
-    this.processDefinition = processDefinition;
-  }
-
-  
-  public Script getConditionScript() {
-    return conditionScript;
-  }
-
-  
-  public void setConditionScript(Script conditionScript) {
-    this.conditionScript = conditionScript;
-  }
-  
-  public String getId() {
-    return id;
+    if (apiTransition.getCondition()!=null) {
+      try {
+          this.conditionScript = workflowEngine
+            .getServiceRegistry()
+            .getService(ScriptService.class)
+            .compile(apiTransition.getCondition());
+      } catch (Exception e) {
+        validator.addError("Transition (%s)--%s>(%s) has an invalid condition expression '%s' : %s", 
+                fromId, (id!=null ? id+"--" : ""),
+                toId, apiTransition.getCondition(), e.getMessage());
+      }
+    }
   }
 }
