@@ -13,15 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.api.activities.DefaultTask;
+import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
 
 
-/**
- * @author Walter White
- */
-public abstract class ServiceTask extends DefaultTask {
+public abstract class ServiceTask extends NoneTask {
 
   @Override
   public void start(ControllableActivityInstance activityInstance) {

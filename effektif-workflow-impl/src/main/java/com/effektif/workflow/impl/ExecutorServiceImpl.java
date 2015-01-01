@@ -26,9 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-/**
- * @author Walter White
- */
 public class ExecutorServiceImpl implements ExecutorService {
   
   public static final Logger log = LoggerFactory.getLogger(ExecutorServiceImpl.class);

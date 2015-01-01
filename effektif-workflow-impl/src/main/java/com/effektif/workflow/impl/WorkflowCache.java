@@ -16,9 +16,6 @@ package com.effektif.workflow.impl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 
 
-/**
- * @author Walter White
- */
 public interface WorkflowCache {
 
   WorkflowImpl get(String workflowId);

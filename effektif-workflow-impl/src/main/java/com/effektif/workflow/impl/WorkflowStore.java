@@ -19,9 +19,6 @@ import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 
 
-/**
- * @author Walter White
- */
 public interface WorkflowStore {
   
   String createWorkflowId(WorkflowImpl workflow);
@@ -32,6 +29,8 @@ public interface WorkflowStore {
   List<WorkflowImpl> loadWorkflows(WorkflowQuery workflowQuery);
 
   void deleteWorkflow(String workflowId);
+
+  String findLatestWorkflowIdByName(String workflowName);
 
 
 }

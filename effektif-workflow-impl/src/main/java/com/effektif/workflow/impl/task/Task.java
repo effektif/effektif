@@ -15,19 +15,11 @@ package com.effektif.workflow.impl.task;
 
 import java.util.List;
 
-import com.effektif.task.Task;
 import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
-public class TaskImpl implements Task {
+public class Task {
   
-  @JsonIgnore
-  protected TaskServiceImpl taskService;
-
   protected String id;
   protected String organizationId;
   protected String name;
@@ -36,52 +28,40 @@ public class TaskImpl implements Task {
   protected Object activityInstanceId;
   protected String workflowInstanceId;
   
-  public TaskImpl() {
+  public Task() {
   }
 
-  public TaskImpl(TaskServiceImpl taskService) {
-    this.taskService = taskService;
-  }
-
-  @Override
   public Task name(String name) {
     this.name = name;
     return this;
   }
   
-  @Override
   public Task assigneeId(String assigneeId) {
     this.assigneeId = assigneeId;
     return this;
   }
 
-  @Override
   public Task candidateIds(List<String> candidateIds) {
     this.candidateIds = candidateIds;
     return this;
   }
 
-  @Override
   public Task activityInstance(ControllableActivityInstance activityInstance) {
     this.activityInstanceId = activityInstance.getId();
     return this;
   }
-
   
   public String getId() {
     return id;
   }
-
   
   public void setId(String id) {
     this.id = id;
   }
-
   
   public String getName() {
     return name;
   }
-
   
   public void setName(String name) {
     this.name = name;
@@ -140,10 +120,5 @@ public class TaskImpl implements Task {
   
   public void setActivityInstanceId(Object activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
-  }
-
-  @Override
-  public void save() {
-    taskService.save(this);
   }
 }

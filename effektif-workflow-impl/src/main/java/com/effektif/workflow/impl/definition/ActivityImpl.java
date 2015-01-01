@@ -27,9 +27,6 @@ import com.effektif.workflow.impl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
 public class ActivityImpl extends ScopeImpl {
   
   public Activity apiActivity;

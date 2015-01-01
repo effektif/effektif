@@ -38,9 +38,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-/**
- * @author Walter White
- */
 @JsonPropertyOrder({"id", "activityId", "start", "end", "duration", "activityInstances", "variableInstances"})
 public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityInstance, ControllableActivityInstance {
   
@@ -65,7 +62,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityI
   public String activityId;
   public String workState;
   public String calledWorkflowInstanceId;
-
+  
   public void onwards() {
     workflowEngine.executeOnwards(this);
   }

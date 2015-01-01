@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.type;
 import com.effektif.workflow.impl.plugin.Validator;
 
 
-/**
- * @author Walter White
- */
 public abstract class AbstractDataType implements DataType {
 
   @Override

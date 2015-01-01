@@ -11,21 +11,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.api.annotations;
 
-import com.effektif.workflow.api.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
-/** super interface for all service provider interfaces.
- * 
- * By using this marker interface, 
- * we only have to do 1 scan to find all pluggable implementations.
- * @see WorkflowEngineImpl#initializeDefaultPluggableImplementations()  
- * 
- * @author Walter White
- */
-public interface PluginFactory {
+/** The display label for the configuration field. */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Label {
 
-  void registerPlugins(WorkflowEngineConfiguration workflowEngineConfiguration);
+  /** the label used in the process builder */
+  String value();
 }

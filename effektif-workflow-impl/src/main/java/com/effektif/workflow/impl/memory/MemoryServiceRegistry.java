@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.memory;
 import com.effektif.workflow.impl.SimpleServiceRegistry;
 
 
-/**
- * @author Walter White
- */
 public class MemoryServiceRegistry extends SimpleServiceRegistry {
 
 }

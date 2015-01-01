@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("scriptTask")
-public class ScriptTask extends DefaultTask {
+public class ScriptTask extends NoneTask {
 
   public String script;
   public Map<String, String> scriptToWorkflowMappings;

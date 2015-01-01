@@ -13,19 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
+import com.effektif.workflow.impl.BindingImpl;
 
 
-/** this task doesn't do anything, it just continues (aka noop, pass-through).
- * 
- * @author Walter White
- */
-public class DefaultTask extends AbstractActivityType {
-
-  @Override
-  public void start(ControllableActivityInstance activityInstance) {
-    activityInstance.onwards();
-  }
+public class CallMappingImpl {
+  
+  protected BindingImpl<Object> source;
+  protected String destinationVariableId;
 
 }

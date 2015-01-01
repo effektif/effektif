@@ -33,14 +33,15 @@ public class ScopeInstance {
   protected List<VariableInstance> variableInstances;
 
   protected List<TimerInstance> timerInstances;
-
-  public String getProperty() {
-    return this.id;
-  }
-  public void setProperty(String id) {
-    this.id = id;
+  
+  public String getId() {
+    return id;
   }
   
+  public void setId(String id) {
+    this.id = id;
+  }
+
   public LocalDateTime getStart() {
     return this.start;
   }

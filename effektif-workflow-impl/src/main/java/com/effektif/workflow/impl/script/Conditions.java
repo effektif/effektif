@@ -14,9 +14,6 @@
 package com.effektif.workflow.impl.script;
 
 
-/**
- * @author Walter White
- */
 public class Conditions {
 
   public boolean contains(String text, String substring) {

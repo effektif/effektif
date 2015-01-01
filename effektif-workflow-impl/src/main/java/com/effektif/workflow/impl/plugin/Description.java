@@ -17,9 +17,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 
-/**
- * @author Walter White
- */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Description {
 

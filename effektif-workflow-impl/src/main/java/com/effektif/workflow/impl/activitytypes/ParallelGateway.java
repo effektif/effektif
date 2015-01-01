@@ -26,9 +26,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
- * @author Walter White
- */
 @JsonTypeName("parallelGateway")
 public class ParallelGateway extends AbstractActivityType {
   

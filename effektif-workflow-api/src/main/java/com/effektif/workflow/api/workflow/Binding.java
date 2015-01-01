@@ -17,7 +17,7 @@ package com.effektif.workflow.api.workflow;
 /**
  * @author Tom Baeyens
  */
-public class Binding {
+public class Binding<T> {
 
   protected Object value;
   protected String variableId;

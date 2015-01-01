@@ -21,16 +21,15 @@ import java.util.List;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.definition.ActivityImpl;
 
 
 
 
-/**
- * @author Walter White
- */
-public abstract class AbstractActivityType implements ActivityType {
+public abstract class AbstractActivityType<T> implements ActivityType<T> {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
@@ -48,7 +47,7 @@ public abstract class AbstractActivityType implements ActivityType {
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void validate(Activity activity, Validator validator) {
+  public void validate(ActivityImpl activity, T apiActivity, Validator validator) {
     Descriptors activityTypeService = validator.getServiceRegistry().getService(Descriptors.class);
     List<DescriptorField> configurationFields = activityTypeService.getConfigurationFields(this);
     if (configurationFields!=null) {

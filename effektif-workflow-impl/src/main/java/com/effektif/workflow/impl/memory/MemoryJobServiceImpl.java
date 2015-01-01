@@ -29,9 +29,6 @@ import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-/**
- * @author Walter White
- */
 public class MemoryJobServiceImpl extends JobServiceImpl {
   
   protected Set<String> workflowInstanceIds;

@@ -18,9 +18,6 @@ import java.io.Writer;
 import java.util.Map;
 
 
-/**
- * @author Walter White
- */
 public interface JsonService {
   
   void registerSubtype(Class<?> subtype);

@@ -16,50 +16,73 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.annotations.Configuration;
+import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("userTask")
-public class UserTask extends DefaultTask {
+public class UserTask extends NoneTask {
   
-  Binding name;
-  List<Binding> candidates;
+  @Configuration
+  @Label("Name")
+  protected Binding<String> name;
+  
+  @Configuration
+  @Label("Candidates")
+  protected List<Binding<String>> candidateIds;
   
   public UserTask name(String nameValue) {
-    this.name = new Binding().value(nameValue);
+    this.name = new Binding<String>().value(nameValue);
     return this;
   }
 
-  public UserTask nameVariable(String nameVariableId) {
-    this.name = new Binding().variableId(nameVariableId);
+  public UserTask nameVariableId(String nameVariableId) {
+    this.name = new Binding<String>().variableId(nameVariableId);
     return this;
   }
 
   public UserTask nameExpression(String nameExpression) {
-    this.name = new Binding().expression(nameExpression);
+    this.name = new Binding<String>().expression(nameExpression);
     return this;
   }
 
   public UserTask candidateId(String candidateId) {
-    addCandidateBinding(new Binding().value(candidateId));
+    addCandidateIdBinding(new Binding().value(candidateId));
     return this;
   }
 
-  public UserTask candidateVariable(String candidateVariableId) {
-    addCandidateBinding(new Binding().variableId(candidateVariableId));
+  public UserTask candidateIdVariableId(String candidateIdVariableId) {
+    addCandidateIdBinding(new Binding().variableId(candidateIdVariableId));
     return this;
   }
 
-  public UserTask candidateExpression(String candidateExpression) {
-    addCandidateBinding(new Binding().expression(candidateExpression));
+  public UserTask candidateIdExpression(String candidateIdExpression) {
+    addCandidateIdBinding(new Binding().expression(candidateIdExpression));
     return this;
   }
 
-  protected void addCandidateBinding(Binding binding) {
-    if (candidates==null) {
-      candidates = new ArrayList<Binding>();
+  protected void addCandidateIdBinding(Binding binding) {
+    if (candidateIds==null) {
+      candidateIds = new ArrayList<Binding<String>>();
     }
-    candidates.add(binding);
+    candidateIds.add(binding);
+  }
+  
+  public Binding<String> getName() {
+    return name;
+  }
+  
+  public List<Binding<String>> getCandidateIds() {
+    return candidateIds;
+  }
+  
+  public void setName(Binding<String> name) {
+    this.name = name;
+  }
+  
+  public void setCandidateIds(List<Binding<String>> candidateIds) {
+    this.candidateIds = candidateIds;
   }
 }

@@ -16,7 +16,7 @@ package com.effektif.workflow.impl.activitytypes;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.activities.DefaultTask;
+import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
@@ -29,11 +29,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
- * @author Walter White
- */
 @JsonTypeName("serviceTask")
-public class ScriptTask extends DefaultTask {
+public class ScriptTask extends NoneTask {
 
   @JsonIgnore
   protected ScriptService scriptService;

@@ -15,13 +15,12 @@ package com.effektif.workflow.impl.plugin;
 
 import java.lang.reflect.Field;
 
+import com.effektif.workflow.api.annotations.Configuration;
+import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.impl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
 public class DescriptorField {
 
   public String name;
@@ -32,12 +31,12 @@ public class DescriptorField {
   @JsonIgnore
   public Field field;
   
-  public DescriptorField(Field field, DataType dataType, ConfigurationField configurationField) {
+  public DescriptorField(Field field, DataType dataType, Configuration configuration) {
     this.name = field.getName();
     this.field = field;
     this.field.setAccessible(true);
     this.dataType = dataType;
-    this.isRequired = configurationField.required() ? true : null;
+    this.isRequired = configuration.required() ? true : null;
     Label label = field.getAnnotation(Label.class);
     if (label!=null) {
       this.label = label.value();

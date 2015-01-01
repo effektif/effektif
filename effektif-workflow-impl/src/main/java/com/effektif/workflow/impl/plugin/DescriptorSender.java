@@ -20,9 +20,6 @@ import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
-/**
- * @author Walter White
- */
 public class DescriptorSender {
   
   public static final Logger log = LoggerFactory.getLogger(DescriptorSender.class);

@@ -20,41 +20,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.effektif.task.Task;
-import com.effektif.task.TaskService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.task.TaskImpl;
-import com.effektif.workflow.impl.task.TaskQueryImpl;
-import com.effektif.workflow.impl.task.TaskServiceImpl;
+import com.effektif.workflow.impl.task.Task;
+import com.effektif.workflow.impl.task.TaskQuery;
+import com.effektif.workflow.impl.task.TaskService;
 
 
-/**
- * @author Walter White
- */
-public class MemoryTaskService extends TaskServiceImpl implements TaskService {
+public class MemoryTaskService implements TaskService {
   
-  protected Map<Object, TaskImpl> tasks = Collections.synchronizedMap(new LinkedHashMap<Object,TaskImpl>());
+  protected Map<Object, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<Object,Task>());
 
   public MemoryTaskService() {
   }
 
   public MemoryTaskService(ServiceRegistry serviceRegistry) {
-    this.tasks = Collections.synchronizedMap(new LinkedHashMap<Object,TaskImpl>());
+    this.tasks = Collections.synchronizedMap(new LinkedHashMap<Object,Task>());
   }
 
   @Override
-  public void save(TaskImpl task) {
-    TaskImpl t = (TaskImpl) task;
-    t.setId(UUID.randomUUID().toString());
-    tasks.put(t.getId(), t);
-  }
-  
-  @Override
-  public void deleteTask(String taskId) {
-  }
-
-  @Override
-  public List<Task> findTasks(TaskQueryImpl taskQuery) {
+  public List<Task> findTasks(TaskQuery taskQuery) {
     return new ArrayList<Task>(tasks.values());
+  }
+
+  @Override
+  public void saveTask(Task task) {
+    String taskId = UUID.randomUUID().toString();
+    task.setId(taskId);
+    tasks.put(taskId, task);
+  }
+
+  @Override
+  public void deleteTask(TaskQuery taskQuery) {
   }
 }

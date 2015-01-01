@@ -14,9 +14,6 @@
 package com.effektif.workflow.impl;
 
 
-/**
- * @author Walter White
- */
 public interface ExecutorService {
 
   void startup();

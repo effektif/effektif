@@ -11,29 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.task;
+package com.effektif.workflow.api.activities;
 
-import java.util.List;
-
-import com.effektif.task.Task;
-import com.effektif.task.TaskQuery;
-import com.effektif.task.TaskService;
+import com.effektif.workflow.api.workflow.Activity;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
+/** this task doesn't do anything, it just continues (aka noop, pass-through).
+ * 
  * @author Walter White
  */
-public abstract class TaskServiceImpl implements TaskService {
+@JsonTypeName("noneTask")
+public class NoneTask extends Activity {
 
-  @Override
-  public Task newTask() {
-    return new TaskImpl(this);
-  }
+  public static final NoneTask INSTANCE = new NoneTask();
 
-  @Override
-  public TaskQuery newTaskQuery() {
-    return new TaskQueryImpl(this);
-  }
-  
-  public abstract List<Task> findTasks(TaskQueryImpl taskQuery);
 }

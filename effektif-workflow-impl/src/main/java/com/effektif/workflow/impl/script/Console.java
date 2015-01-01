@@ -17,9 +17,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 
-/**
- * @author Walter White
- */
 public class Console {
 
   Writer writer;

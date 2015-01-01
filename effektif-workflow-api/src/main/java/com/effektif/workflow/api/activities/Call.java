@@ -16,6 +16,8 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.annotations.Configuration;
+import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -24,43 +26,50 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends Activity {
 
-  Binding subProcessNameBinding;
+  @Configuration
+  @Label("Subprocess name")
+  Binding<String> subProcessName;
 
-  Binding subProcessIdBinding;
+  @Configuration
+  @Label("Subprocess id")
+  Binding<String> subProcessId;
   
   /** specifies which variables of this workflow instance (keys) have to be copied to 
    * variables in the called workflow instance (values). */
+  @Configuration
+  @Label("Input variable mappings")
   List<CallMapping> inputMappings;
   
   /** specifies which variables of the called process (keys) have to be copied to 
    * variables in this process (values). */
+  @Configuration
+  @Label("Output variable mappings")
   List<CallMapping> outputMappings;
 
-
   public Call subProcessId(String subProcessId) {
-    return subProcessId(new Binding().value(subProcessId));
+    return subProcessId(new Binding<String>().value(subProcessId));
   }
 
   public Call subProcessIdExpression(String subProcessIdExpression) {
-    return subProcessId(new Binding().expression(subProcessIdExpression));
+    return subProcessId(new Binding<String>().expression(subProcessIdExpression));
   }
 
-  public Call subProcessIdVariable(String subProcessIdVariableId) {
-    return subProcessId(new Binding().variableId(subProcessIdVariableId));
+  public Call subProcessIdVariableId(String subProcessIdVariableId) {
+    return subProcessId(new Binding<String>().variableId(subProcessIdVariableId));
   }
 
-  public Call subProcessId(Binding subProcessIdBinding) {
-    this.subProcessIdBinding = subProcessIdBinding;
+  protected Call subProcessId(Binding<String> subProcessIdBinding) {
+    this.subProcessId = subProcessIdBinding;
     return this;
   }
   
   public Call inputMapping(String callerVariableId, String calledVariableId) {
-    return inputMapping(new Binding().variableId(callerVariableId), calledVariableId);
+    return inputMapping(new Binding<Object>().variableId(callerVariableId), calledVariableId);
   }
 
-  public Call inputMapping(Binding callerBinding, String calledVariableId) {
+  public Call inputMapping(Binding<Object> callerBinding, String calledVariableId) {
     CallMapping inputMapping = new CallMapping()
-      .sourceBinding(callerBinding)
+      .source(callerBinding)
       .destinationVariableId(calledVariableId);
     if (inputMappings==null) {
       inputMappings = new ArrayList<>();
@@ -70,17 +79,41 @@ public class Call extends Activity {
   }
 
   public Call outputMapping(String calledVariableId, String callerVariableId) {
-    return outputMapping(new Binding().variableId(calledVariableId), callerVariableId);
+    return outputMapping(new Binding<Object>().variableId(calledVariableId), callerVariableId);
   }
 
-  public Call outputMapping(Binding calledBinding, String callerVariableId) {
+  public Call outputMapping(Binding<Object> calledBinding, String callerVariableId) {
     CallMapping inputMapping = new CallMapping()
-      .sourceBinding(calledBinding)
+      .source(calledBinding)
       .destinationVariableId(callerVariableId);
     if (inputMappings==null) {
       inputMappings = new ArrayList<>();
     }
     inputMappings.add(inputMapping);
     return this;
+  }
+  
+  public Binding<String> getSubProcessNameBinding() {
+    return subProcessName;
+  }
+  
+  public void setSubProcessName(Binding<String> subProcessName) {
+    this.subProcessName = subProcessName;
+  }
+
+  public Binding<String> getSubProcessId() {
+    return subProcessId;
+  }
+  
+  public void setSubProcessId(Binding<String> subProcessId) {
+    this.subProcessId = subProcessId;
+  }
+  
+  public List<CallMapping> getInputMappings() {
+    return inputMappings;
+  }
+  
+  public List<CallMapping> getOutputMappings() {
+    return outputMappings;
   }
 }

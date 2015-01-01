@@ -14,9 +14,6 @@
 package com.effektif.workflow.impl.type;
 
 
-/**
- * @author Walter White
- */
 public class InvalidValueException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;

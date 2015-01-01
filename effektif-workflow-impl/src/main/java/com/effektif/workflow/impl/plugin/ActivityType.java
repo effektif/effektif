@@ -15,20 +15,18 @@ package com.effektif.workflow.impl.plugin;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
-/**
- * @author Walter White
- */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public interface ActivityType extends Plugin {
+public interface ActivityType<T> extends Plugin {
   
   /** called when the process is being deployed. 
+   * @param activity 
    * @param activity */
-  void validate(Activity activity, Validator validator);
+  void validate(ActivityImpl activity, T apiActivity, Validator validator);
   
   boolean isAsync(ActivityInstance activityInstance);
 

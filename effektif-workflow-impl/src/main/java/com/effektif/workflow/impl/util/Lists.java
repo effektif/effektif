@@ -17,9 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-/**
- * @author Walter White
- */
 public class Lists {
 
   @SafeVarargs

@@ -19,9 +19,6 @@ import java.util.Map;
 import javax.script.CompiledScript;
 
 
-/**
- * @author Walter White
- */
 public class Script {
 
   public String language;

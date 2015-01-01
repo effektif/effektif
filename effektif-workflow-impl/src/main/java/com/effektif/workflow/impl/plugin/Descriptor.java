@@ -13,25 +13,25 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.impl.type.BindingType;
 import com.effektif.workflow.impl.type.DataType;
 
 
-/**
- * @author Walter White
- */
 public class Descriptor {
 
-  protected ActivityType activityType; 
-  protected DataType dataType; 
-  
+  protected ActivityType activityType;
+  protected DataType dataType;
+
   protected String label;
   protected String description;
 // protected byte[] iconBytes;
 // protected String iconMimeType;
 // datatypes might also need a javascript rendering configuration
   protected List<DescriptorField> configurationFields;
+  protected Class<?> configurationClass;
 
   public Descriptor() {
   }
@@ -40,28 +40,17 @@ public class Descriptor {
     this.dataType = dataType;
   }
 
-  public ActivityType getActivityType() {
-    return activityType;
-  }
-  
-  public void setActivityType(ActivityType activityType) {
-    this.activityType = activityType;
-  }
-  
-  public DataType getDataType() {
-    return dataType;
-  }
-  
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-  }
-  
   public String getLabel() {
     return label;
   }
   
   public void setLabel(String label) {
     this.label = label;
+  }
+  
+  public Descriptor label(String label) {
+    this.label = label;
+    return this;
   }
   
   public String getDescription() {
@@ -72,6 +61,11 @@ public class Descriptor {
     this.description = description;
   }
   
+  public Descriptor description(String description) {
+    this.description = description;
+    return this;
+  }
+  
   public List<DescriptorField> getConfigurationFields() {
     return configurationFields;
   }
@@ -79,4 +73,46 @@ public class Descriptor {
   public void setConfigurationFields(List<DescriptorField> configurationFields) {
     this.configurationFields = configurationFields;
   }
+  
+  public Descriptor configurationField(DescriptorField field) {
+    if (this.configurationFields==null) {
+      this.configurationFields = new ArrayList<>();
+    }
+    this.configurationFields.add(field);
+    return this;
+  }
+
+  public ActivityType getActivityType() {
+    return this.activityType;
+  }
+  public void setActivityType(ActivityType activityType) {
+    this.activityType = activityType;
+  }
+  public Descriptor activityType(ActivityType activityType) {
+    this.activityType = activityType;
+    return this;
+  }
+  
+  public DataType getDataType() {
+    return this.dataType;
+  }
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
+  }
+  public Descriptor dataType(DataType dataType) {
+    this.dataType = dataType;
+    return this;
+  }
+
+  public Class<?> getConfigurationClass() {
+    return this.configurationClass;
+  }
+  public void setConfigurationClass(Class<?> configurationClass) {
+    this.configurationClass = configurationClass;
+  }
+  public Descriptor configurationClass(Class<?> configurationClass) {
+    this.configurationClass = configurationClass;
+    return this;
+  }
+
 }

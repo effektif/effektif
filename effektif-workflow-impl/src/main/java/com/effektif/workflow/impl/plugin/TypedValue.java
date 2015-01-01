@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.plugin;
 import com.effektif.workflow.impl.type.DataType;
 
 
-/**
- * @author Walter White
- */
 public class TypedValue {
 
   DataType dataType;

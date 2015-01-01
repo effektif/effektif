@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+/* Copyright 2014 Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,17 +11,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.impl.task;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 
-/**
- * @author Tom Baeyens
- */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ApiClass {
+public interface TaskService {
 
-  Class<?> value();
+  void saveTask(Task task);
+
+  List<Task> findTasks(TaskQuery taskQuery);
+
+  void deleteTask(TaskQuery taskQuery);
+
 }

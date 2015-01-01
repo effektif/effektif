@@ -19,9 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * @author Walter White
- */
 public class Reflection {
   
   public static List<Field> getNonStaticFieldsRecursive(Class< ? > type) {

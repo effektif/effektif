@@ -17,9 +17,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
 
-/**
- * @author Walter White
- */
 public class Time {
   
   // tests can overwrite this to control the time

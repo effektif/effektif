@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.plugin;
 import java.util.List;
 
 
-/**
- * @author Walter White
- */
 public interface Triggers {
 
   List<Descriptor> getDescriptors();

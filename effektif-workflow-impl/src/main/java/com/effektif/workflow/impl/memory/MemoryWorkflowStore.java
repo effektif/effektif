@@ -25,9 +25,6 @@ import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-/**
- * @author Walter White
- */
 public class MemoryWorkflowStore implements WorkflowStore {
 
   protected Map<String, WorkflowImpl> workflows;

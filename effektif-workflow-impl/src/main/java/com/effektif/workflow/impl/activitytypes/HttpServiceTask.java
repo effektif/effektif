@@ -19,9 +19,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 
-/**
- * @author Walter White
- */
 @JsonTypeName("httpServiceTask")
 public class HttpServiceTask extends ServiceTask {
 

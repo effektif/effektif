@@ -29,9 +29,6 @@ import com.effektif.workflow.impl.script.ScriptService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
 public class ExclusiveGateway extends AbstractActivityType {
 
   @JsonIgnore

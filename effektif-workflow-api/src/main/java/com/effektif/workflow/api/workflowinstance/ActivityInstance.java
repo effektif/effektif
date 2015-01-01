@@ -14,10 +14,6 @@
 package com.effektif.workflow.api.workflowinstance;
 
 
-
-
-
-
 public class ActivityInstance extends ScopeInstance {
   
   protected String activityId;

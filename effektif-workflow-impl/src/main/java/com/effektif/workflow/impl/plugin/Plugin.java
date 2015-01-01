@@ -14,9 +14,6 @@
 package com.effektif.workflow.impl.plugin;
 
 
-/**
- * @author Walter White
- */
 public interface Plugin {
 
 

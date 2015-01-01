@@ -15,6 +15,6 @@ package com.effektif.workflow.api.activities;
 
 
 
-public abstract class ServiceTask extends DefaultTask {
+public abstract class ServiceTask extends NoneTask {
 
 }

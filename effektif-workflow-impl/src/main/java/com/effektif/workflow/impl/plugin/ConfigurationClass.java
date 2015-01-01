@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,28 +11,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.task;
+package com.effektif.workflow.impl.plugin;
 
-import java.util.List;
-
-import com.effektif.task.Task;
-import com.effektif.task.TaskQuery;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 /**
- * @author Walter White
+ * @author Tom Baeyens
  */
-public class TaskQueryImpl implements TaskQuery {
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ConfigurationClass {
 
-  TaskServiceImpl taskService;
-  
-  public TaskQueryImpl(TaskServiceImpl taskService) {
-    this.taskService = taskService;
-  }
-
-  @Override
-  public List<Task> asList() {
-    return taskService.findTasks(this);
-  }
-
+  Class<?> value();
 }

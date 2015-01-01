@@ -33,9 +33,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 
-/**
- * @author Walter White
- */
 public class JacksonJsonService implements JsonService {
   
   public JsonFactory jsonFactory;

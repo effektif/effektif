@@ -13,14 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
+import java.util.List;
+
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.impl.BindingImpl;
+import com.effektif.workflow.impl.definition.ActivityImpl;
 
 
-
-
-
-/**
- * @author Walter White
- */
 public interface Validator {
 
   void addError(String message, Object... messageArgs);
@@ -28,5 +27,9 @@ public interface Validator {
   void addWarning(String message, Object... messageArgs);
 
   ServiceRegistry getServiceRegistry();
+
+  <T> BindingImpl<T> compileBinding(Binding<T> binding, String propertyName);
+  <T> List<BindingImpl<T>> compileBinding(List<Binding<T>> binding, String propertyName);
+  List<ActivityImpl> getStartActivities(ActivityImpl activity);
 
 }

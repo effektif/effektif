@@ -13,14 +13,30 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-
-
-
+@JsonPropertyOrder({"id", "workflowId", "start", "end", "duration", "activityInstances", "variableInstances", "timerInstances"})
 public class WorkflowInstance extends ScopeInstance {
 
   protected String workflowId;
+  protected String callerWorkflowInstanceId;
+  protected String callerActivityInstanceId;
+
+
+  public String getCallerWorkflowInstanceId() {
+    return this.callerWorkflowInstanceId;
+  }
+  public void setCallerWorkflowInstanceId(String callerWorkflowInstanceId) {
+    this.callerWorkflowInstanceId = callerWorkflowInstanceId;
+  }
+  
+  public String getCallerActivityInstanceId() {
+    return this.callerActivityInstanceId;
+  }
+  public void setCallerActivityInstanceId(String callerActivityInstanceId) {
+    this.callerActivityInstanceId = callerActivityInstanceId;
+  }
 
   public String getWorkflowId() {
     return this.workflowId;

@@ -20,9 +20,6 @@ import com.effektif.workflow.impl.plugin.Validator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
- * @author Walter White
- */
 @JsonTypeName("list")
 public class ListType extends AbstractDataType implements DataType {
   

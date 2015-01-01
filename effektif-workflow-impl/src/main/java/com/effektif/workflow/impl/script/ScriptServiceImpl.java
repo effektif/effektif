@@ -20,14 +20,10 @@ import javax.script.CompiledScript;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-/**
- * @author Walter White
- */
 public class ScriptServiceImpl implements ScriptService {
 
   public static final String JAVASCRIPT = "JavaScript";
@@ -65,11 +61,11 @@ public class ScriptServiceImpl implements ScriptService {
   }
 
   @Override
-  public ScriptResult evaluateScript(ScopeInstance scopeInstance, Script script) {
+  public ScriptResult evaluateScript(ScopeInstanceImpl scopeInstance, Script script) {
     ScriptResult scriptOutput = new ScriptResult();
     try {
       StringWriter logWriter = new StringWriter();
-      ScriptContextImpl scriptContext = new ScriptContextImpl((ScopeInstanceImpl) scopeInstance, script, logWriter);
+      ScriptContextImpl scriptContext = new ScriptContextImpl(scopeInstance, script, logWriter);
       Object result = script.compiledScript.eval(scriptContext);
       scriptOutput.setResult(result);
       scriptOutput.setLogs(logWriter.toString());

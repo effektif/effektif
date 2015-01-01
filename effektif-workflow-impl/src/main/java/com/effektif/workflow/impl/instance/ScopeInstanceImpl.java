@@ -26,28 +26,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
+import com.effektif.workflow.api.workflowinstance.TimerInstance;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
+import com.effektif.workflow.impl.BindingImpl;
+import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.WorkflowInstanceEventListener;
 import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.ScopeImpl;
 import com.effektif.workflow.impl.definition.VariableImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
-import com.effektif.workflow.impl.plugin.Binding;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.plugin.TypedValue;
-import com.effektif.workflow.impl.script.ScriptResult;
-import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
-public abstract class ScopeInstanceImpl implements ScopeInstance {
+public abstract class ScopeInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
@@ -57,20 +54,14 @@ public abstract class ScopeInstanceImpl implements ScopeInstance {
   public Long duration;
   public List<ActivityInstanceImpl> activityInstances;
   public List<VariableInstanceImpl> variableInstances;
+  public List<TimerInstanceImpl> timerInstances;
 
-  @JsonIgnore
   public Map<String, VariableInstanceImpl> variableInstancesMap;
-  @JsonIgnore
   public WorkflowEngineImpl workflowEngine;
-  @JsonIgnore
   public WorkflowImpl workflow;
-  @JsonIgnore
   public ScopeImpl scopeDefinition;
-  @JsonIgnore
   public WorkflowInstanceImpl workflowInstance;
-  @JsonIgnore
   public ScopeInstanceImpl parent;
-  @JsonIgnore
   // As long as the workflow instance is not saved, the updates collection is null.
   // That means it's not yet necessary to collect the updates. 
   public ScopeInstanceUpdates updates;
@@ -80,9 +71,34 @@ public abstract class ScopeInstanceImpl implements ScopeInstance {
   public abstract void ended(ActivityInstanceImpl activityInstance);
 
   public abstract boolean isProcessInstance();
+  
+  protected void toScopeInstance(ScopeInstance w) {
+    w.setId(id);
+    w.setStart(start);
+    w.setEnd(end);
+    w.setDuration(duration);
+    if (activityInstances!=null && !activityInstances.isEmpty()) {
+      List<ActivityInstance> activityInstances = new ArrayList<>();
+      for (ActivityInstanceImpl activityInstance: this.activityInstances) {
+        activityInstances.add(activityInstance.toActivityInstance());
+      }
+    }
+    if (variableInstances!=null && !variableInstances.isEmpty()) {
+      List<VariableInstance> variableInstances = new ArrayList<>();
+      for (VariableInstanceImpl variableInstance: this.variableInstances) {
+        variableInstances.add(variableInstance.toVariableInstance());
+      }
+    }
+    if (timerInstances!=null && !timerInstances.isEmpty()) {
+      List<TimerInstance> timerInstances = new ArrayList<>();
+      for (TimerInstanceImpl timerInstance: this.timerInstances) {
+        timerInstances.add(timerInstance.toTimerInstance());
+      }
+    }
+  }
 
-  public void start(Activity activity) {
-    createActivityInstance((ActivityImpl) activity);
+  public void execute(ActivityImpl activity) {
+    createActivityInstance(activity);
   }
 
   public ActivityInstanceImpl createActivityInstance(ActivityImpl activity) {
@@ -159,32 +175,28 @@ public abstract class ScopeInstanceImpl implements ScopeInstance {
   }
   
   @SuppressWarnings("unchecked")
-  public <T> T getValue(Binding<T> binding) {
+  public <T> T getValue(BindingImpl<T> binding) {
     if (binding==null) {
       return null;
-    }
-    if (!binding.isInitialized) {
-      throw new RuntimeException("Binding "+binding+" in "+scopeDefinition+" is not initialized");
     }
     if (binding.value!=null) {
       return (T) binding.value;
     }
-    if (binding.variableDefinitionId!=null) {
-      return (T) getVariable(binding.variableDefinitionId);
+    if (binding.variableId!=null) {
+      return (T) getVariable(binding.variableId);
     }
-    if (binding.expressionScript!=null) {
-      ScriptService scriptService = getServiceRegistry().getService(ScriptService.class);
-      ScriptResult scriptResult = scriptService.evaluateScript(this, binding.expressionScript);
-      Object result = scriptResult.getResult();
-      return (T) binding.dataType.convertScriptValueToInternal(result, binding.expressionScript.language);
+    if (binding.expression!=null) {
+      ExpressionService expressionService = getServiceRegistry().getService(ExpressionService.class);
+      // TODO does the returned value need to be converted by the binding datatype?
+      return (T) expressionService.execute(binding.expression, this);
     }
     return null;
   }
 
-  public <T> List<T> getValue(List<Binding<T>> bindings) {
+  public <T> List<T> getValue(List<BindingImpl<T>> bindings) {
     List<T> list = new ArrayList<>();
     if (bindings!=null) {
-      for (Binding<T> binding: bindings) {
+      for (BindingImpl<T> binding: bindings) {
         list.add(getValue(binding));
       }
     }

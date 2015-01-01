@@ -31,9 +31,6 @@ import com.effektif.workflow.impl.plugin.TypedValue;
 import com.effektif.workflow.impl.type.DataType;
 
 
-/**
- * @author Walter White
- */
 public class ScriptBindings implements Bindings {
   
   public static final Logger log = LoggerFactory.getLogger(ScriptBindings.class);

@@ -15,9 +15,6 @@ package com.effektif.workflow.impl.util;
 
 
 
-/**
- * @author Walter White
- */
 public class Exceptions {
 
   public static void checkNotNull(Object object) {

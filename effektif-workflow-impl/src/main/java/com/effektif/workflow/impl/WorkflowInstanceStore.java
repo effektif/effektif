@@ -20,9 +20,6 @@ import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 
 
-/**
- * @author Walter White
- */
 public interface WorkflowInstanceStore {
 
   String createWorkflowInstanceId(WorkflowImpl workflow);

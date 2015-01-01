@@ -24,9 +24,6 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
 
 
-/**
- * @author Walter White
- */
 public class ScriptContextImpl extends SimpleScriptContext {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);

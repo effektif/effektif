@@ -21,8 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.DataTypes;
+import com.effektif.workflow.api.annotations.Configuration;
+import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.type.BindingType;
 import com.effektif.workflow.impl.type.DataType;
@@ -35,9 +37,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-/**
- * @author Walter White
- */
 public class Descriptors {
   
   public List<Descriptor> activityTypeDescriptors = new ArrayList<>();
@@ -50,7 +49,7 @@ public class Descriptors {
   @JsonIgnore
   public Map<Class<?>, Descriptor> activityTypeDescriptorsByClass = new HashMap<>();
   
-  // maps api activity classes to activity types
+  // maps activity api configuration classes to activity type implementation classes
   @JsonIgnore
   public Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
 
@@ -71,36 +70,23 @@ public class Descriptors {
     Descriptor descriptor = createTypeDescriptor(activityType);
     addActivityTypeDescriptor(descriptor);
     activityTypeDescriptorsByClass.put(activityType.getClass(), descriptor);
-    
-    ApiClass apiClassAnnotation = activityType.getClass().getAnnotation(ApiClass.class);
-    if (apiClassAnnotation==null) {
-      throw new RuntimeException("ActivityType "+activityType.getClass().getName()+" doesn't declare annotation "+ApiClass.class.getName());
-    }
-    
-    activityTypeClasses.put(apiClassAnnotation.value(), activityType.getClass());
+    activityTypeClasses.put(descriptor.configurationClass, activityType.getClass());
     return descriptor;
   }
   
   public ActivityType createActivityType(Activity apiActivity) {
     Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(apiActivity.getClass());
-    ActivityType activityType = activityTypeClass.newInstance();
-    return activityType;
+    try {
+      return activityTypeClass.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException("Couldn't instantiate "+activityTypeClass+": "+e.getMessage(), e);
+    }
   }
 
   public Descriptor registerJavaBeanType(Class<?> javaBeanClass) {
     Exceptions.checkNotNullParameter(javaBeanClass, "javaBeanClass");
     objectMapper.registerSubtypes(javaBeanClass);
     return registerDataType(new JavaBeanType(javaBeanClass)); 
-  }
-  
-  @Override
-  public DataType list(DataType elementDataType) {
-    return new ListType(elementDataType);
-  }
-  
-  @Override
-  public DataType javaBean(Class<?> userDefinedJavaBeanClass) {
-    return new JavaBeanType(userDefinedJavaBeanClass);
   }
   
   protected void addDataTypeDescriptor(Descriptor descriptor) {
@@ -120,20 +106,25 @@ public class Descriptors {
       descriptor.setDataType((DataType) plugin);
     } else if (plugin instanceof ActivityType) {
       descriptor.setActivityType((ActivityType) plugin);
-    } else if (plugin instanceof DataType) {
-      descriptor.setDataType((DataType) plugin);
     }
     
     Class<?> pluginClass = plugin.getClass();
-    List<Field> fields = Reflection.getNonStaticFieldsRecursive(pluginClass);
+    Configuration configurationAnnotation = pluginClass.getAnnotation(Configuration.class);
+    if (configurationAnnotation==null) {
+      throw new RuntimeException(pluginClass.getName()+" doesn't declare annotation "+Configuration.class.getName());
+    }
+    Class< ? > configurationClass = configurationAnnotation.value();
+    descriptor.setConfigurationClass(configurationClass);
+    
+    List<Field> fields = Reflection.getNonStaticFieldsRecursive(configurationClass);
     if (!fields.isEmpty()) {
       List<DescriptorField> configurationFields = new ArrayList<DescriptorField>(fields.size());
       descriptor.setConfigurationFields(configurationFields);
       for (Field field : fields) {
-        ConfigurationField configurationField = field.getAnnotation(ConfigurationField.class);
-        if (field.getAnnotation(ConfigurationField.class) != null) {
+        Configuration configuration = field.getAnnotation(Configuration.class);
+        if (field.getAnnotation(Configuration.class) != null) {
           Descriptor fieldDescriptor = getDataTypeDescriptor(field);
-          DescriptorField descriptorField = new DescriptorField(field, fieldDescriptor.getDataType(), configurationField);
+          DescriptorField descriptorField = new DescriptorField(field, fieldDescriptor.getDataType(), configuration);
           configurationFields.add(descriptorField);
         }
       }
@@ -206,87 +197,4 @@ public class Descriptors {
   public void registerJobType(Class<? extends JobType> jobType) {
     objectMapper.registerSubtypes(jobType);
   }
-
-//  /** creates a descriptor for a configurable dataType */
-//  public TypeDescriptor registerSingletonDataType(DataType dataType) {
-//    return registerSingletonDataType(dataType, getJsonTypeName(dataType), null);
-//  }
-//
-//  /** creates a descriptor for a configurable dataType */
-//  public TypeDescriptor registerSingletonDataType(DataType dataType, String typeId) {
-//    return registerSingletonDataType(dataType, typeId, null);
-//  }
-//
-//  public TypeDescriptor registerSingletonDataType(DataType dataType, Class<?> valueClass) {
-//    return registerSingletonDataType(dataType, getJsonTypeName(dataType), valueClass);
-//  }
-//
-//  /** @param valueClass is used when scanning configurations: this dataType will be used for 
-//   * all configuration fields of this valueClass */
-//  public TypeDescriptor registerSingletonDataType(DataType dataType, String typeId, Class<?> valueClass) {
-//    Exceptions.checkNotNullParameter(dataType, "dataType");
-//    Exceptions.checkNotNull(typeId, "Activity type "+dataType.getClass()+" doesn't have JsonTypeName annotation");
-//
-//    addDataTypeById(typeId, dataType);
-//    if (couldBeConfigured(dataType)) {
-//      // we need to keep track of the singleton object and reference it 
-//      dataType = new DataTypeReference(typeId);
-//    } // else we can just let json use the default constructor 
-//
-//    TypeDescriptor dataTypeDescriptor = createTypeDescriptor(dataType);
-//    addDataTypeDescriptor(dataTypeDescriptor);
-//
-//    if (valueClass!=null) {
-//      dataTypeDescriptorsByType.put(valueClass, dataTypeDescriptor);
-//    }
-//    
-//    return dataTypeDescriptor;
-//  }
-//
-//  protected void addDataTypeById(String typeId, DataType dataType) {
-//    if (dataTypesById.containsKey(typeId)) {
-//      throw new RuntimeException("Duplicate type declaration for id "+typeId);
-//    }
-//    dataTypesById.put(typeId, dataType);
-//  }
-//
-//  public DataType findByTypeId(String typeId) {
-//    return dataTypesById.get(typeId);
-//  }
-//
-//  public DataType createDataTypeReference(String dataTypeId) {
-//    DataType delegate = dataTypesById.get(dataTypeId);
-//    return new DataTypeReference(dataTypeId, delegate);
-//  }
-//
-//  /** this class has to be registered with @link {@link ProcessEngineImpl#registerJavaBeanType(Class)} */
-//  @Override
-//  public DataType javaBean(Class<?> userDefinedJavaBeanClass) {
-//    return new DataTypeReference(userDefinedJavaBeanClass.getName(), new JavaBeanType(userDefinedJavaBeanClass, jsonService));
-//  }
-//  
-//  public TypeDescriptor registerSingletonActivityType(ActivityType activityType) {
-//    return registerSingletonActivityType(activityType, PluginHelper.getJsonTypeName(activityType));
-//  }
-//
-//  /** creates a descriptor for a configurable activityType */
-//  public TypeDescriptor registerSingletonActivityType(ActivityType activityType, String typeId) {
-//    addActivityTypeById(typeId, activityType);
-//    
-//    if (couldBeConfigured(activityType)) {
-//      // we need to keep track of the singleton object and reference it 
-//      activityType = new ActivityTypeReference(typeId);
-//    } // else we can just let json use the default constructor 
-//
-//    TypeDescriptor descriptor = dataTypeService.createTypeDescriptor(activityType);
-//    addactivityTypeDescriptor(descriptor);
-//    return descriptor;
-//  }
-//
-//  protected void addActivityTypeById(String typeId, ActivityType activityType) {
-//    if (activityTypesById.containsKey(typeId)) {
-//      throw new RuntimeException("Duplicate type declaration for id "+typeId);
-//    }
-//    activityTypesById.put(typeId, activityType);
-//  }
 }

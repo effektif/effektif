@@ -14,9 +14,6 @@
 package com.effektif.workflow.impl.instance;
 
 
-/**
- * @author Walter White
- */
 public class WorkflowInstanceUpdates extends ScopeInstanceUpdates {
 
   public boolean isLockChanged;

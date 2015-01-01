@@ -35,9 +35,6 @@ import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
 
 
-/**
- * @author Walter White
- */
 public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
 
   protected String workflowEngineId;

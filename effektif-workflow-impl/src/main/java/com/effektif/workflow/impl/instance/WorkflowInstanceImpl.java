@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.instance;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -23,25 +25,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.api.workflowinstance.ScopeInstance;
+import com.effektif.workflow.api.workflowinstance.TimerInstance;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-
-
-/**
- * @author Walter White
- */
-@JsonPropertyOrder({"id", "workflowId", "start", "end", "duration", "activityInstances", "variableInstances"})
-public class WorkflowInstanceImpl extends ScopeInstanceImpl implements WorkflowInstance {
+public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
-  public String workflowId;
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
@@ -63,13 +61,20 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl implements WorkflowI
     this.workflowEngine = processEngine;
     this.organizationId = workflow.organizationId;
     this.workflow = workflow;
-    this.workflowId = workflow.id;
     this.scopeDefinition = workflow;
     this.workflowInstance = this;
     this.start = Time.now();
     initializeVariableInstances();
-    if (log.isDebugEnabled())
-      log.debug("Created "+workflowInstance);
+    if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
+  }
+  
+  public WorkflowInstance toWorkflowInstance() {
+    WorkflowInstance w = new WorkflowInstance();
+    w.setWorkflowId(workflow.id);
+    w.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
+    w.setCallerActivityInstanceId(callerActivityInstanceId);
+    toScopeInstance(w);
+    return w;
   }
   
   public void addWork(ActivityInstanceImpl activityInstance) {

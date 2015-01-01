@@ -11,18 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.job;
+package com.effektif.workflow.api.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public interface JobServiceListener {
+/** Identifies a member field in an Activity as a configuration field. */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Configuration {
 
-  void notifyJobFailure(JobExecution jobExecution);
-
-  void notifyJobRetry(JobExecution jobExecution);
-
-  void notifyJobRescheduled(JobExecution jobExecution);
-
-  void notifyJobDone(JobExecution jobExecution);
-
-
+  boolean required() default false;
 }

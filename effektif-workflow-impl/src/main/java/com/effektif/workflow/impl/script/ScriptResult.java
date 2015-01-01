@@ -15,9 +15,6 @@ package com.effektif.workflow.impl.script;
 
 
 
-/**
- * @author Walter White
- */
 public class ScriptResult {
 
   protected Object result;

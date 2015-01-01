@@ -18,9 +18,6 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.job.JobType;
 
 
-/**
- * @author Walter White
- */
 public class TimerDefinitionImpl implements TimerBuilder {
 
   public String name;

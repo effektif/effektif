@@ -19,9 +19,6 @@ import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
- * @author Walter White
- */
 @JsonTypeName("endEvent")
 public class EndEvent extends AbstractActivityType {
 

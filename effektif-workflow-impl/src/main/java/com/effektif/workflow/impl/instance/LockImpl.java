@@ -17,9 +17,6 @@ import org.joda.time.LocalDateTime;
 
 
 
-/**
- * @author Walter White
- */
 public class LockImpl {
 
   public LocalDateTime time;

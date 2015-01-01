@@ -19,11 +19,11 @@ import com.effektif.workflow.api.workflow.Binding;
 
 public class CallMapping {
   
-  protected Binding sourceBinding;
+  protected Binding<Object> source;
   protected String destinationVariableId;
 
-  public CallMapping sourceBinding(Binding sourceBinding) {
-    this.sourceBinding = sourceBinding;
+  public CallMapping source(Binding<Object> source) {
+    this.source = source;
     return this;
   }
 
@@ -32,4 +32,23 @@ public class CallMapping {
     return this;
   }
 
+  
+  public Binding<Object> getSource() {
+    return source;
+  }
+
+  
+  public void setSource(Binding<Object> source) {
+    this.source = source;
+  }
+
+  
+  public String getDestinationVariableId() {
+    return destinationVariableId;
+  }
+
+  
+  public void setDestinationVariableId(String destinationVariableId) {
+    this.destinationVariableId = destinationVariableId;
+  }
 }

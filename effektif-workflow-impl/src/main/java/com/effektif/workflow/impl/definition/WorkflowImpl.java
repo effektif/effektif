@@ -26,9 +26,6 @@ import com.effektif.workflow.impl.job.JobType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
 public class WorkflowImpl extends ScopeImpl {
   
   public Workflow apiWorkflow;

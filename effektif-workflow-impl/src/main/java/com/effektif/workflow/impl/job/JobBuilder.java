@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.job;
 import org.joda.time.LocalDateTime;
 
 
-/**
- * @author Walter White
- */
 public interface JobBuilder {
 
   /** setting the key means the job service will ensure there is 

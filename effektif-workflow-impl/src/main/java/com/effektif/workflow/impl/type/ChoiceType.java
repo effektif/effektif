@@ -19,9 +19,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
- * @author Walter White
- */
 @JsonTypeName("choice")
 public class ChoiceType extends AbstractDataType {
   

@@ -13,13 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.script;
 
-import com.effektif.workflow.api.workflowinstance.ScopeInstance;
+import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
 
 
 
-/**
- * @author Walter White
- */
 public interface ScriptService {
   
   /** default language is JavaScript */
@@ -27,6 +24,6 @@ public interface ScriptService {
   
   Script compile(String scriptText, String language);
   
-  ScriptResult evaluateScript(ScopeInstance scopeInstance, Script script);
+  ScriptResult evaluateScript(ScopeInstanceImpl scopeInstance, Script script);
   
 }

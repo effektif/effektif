@@ -19,9 +19,6 @@ import org.joda.time.ReadablePeriod;
 import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 
 
-/**
- * @author Walter White
- */
 public interface JobController {
   
   /** allows process jobs to get the locked process instance */

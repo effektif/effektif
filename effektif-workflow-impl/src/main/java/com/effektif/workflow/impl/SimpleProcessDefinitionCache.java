@@ -20,9 +20,6 @@ import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-/**
- * @author Walter White
- */
 public class SimpleProcessDefinitionCache implements WorkflowCache {
   
   protected Map<String, WorkflowImpl> processDefinitions;

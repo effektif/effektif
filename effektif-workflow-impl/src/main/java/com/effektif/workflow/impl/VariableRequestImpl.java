@@ -26,9 +26,6 @@ import com.effektif.workflow.impl.type.JavaBeanType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-/**
- * @author Walter White
- */
 public abstract class VariableRequestImpl {
 
   @JsonIgnore

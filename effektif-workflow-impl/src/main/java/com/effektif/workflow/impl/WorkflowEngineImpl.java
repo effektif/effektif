@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ import com.effektif.workflow.api.validate.ParseIssues;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.activitytypes.Call;
+import com.effektif.workflow.impl.activitytypes.CallImpl;
 import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.TransitionImpl;
 import com.effektif.workflow.impl.definition.VariableImpl;
@@ -56,9 +55,6 @@ import com.effektif.workflow.impl.type.AnyDataType;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Lists;
 
-/**
- * @author Walter White
- */
 public abstract class WorkflowEngineImpl implements WorkflowEngine {
 
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
@@ -155,7 +151,15 @@ public abstract class WorkflowEngineImpl implements WorkflowEngine {
   public WorkflowQuery newWorkflowQuery() {
     return new WorkflowQuery(this);
   }
-  
+
+  public WorkflowImpl findWorkflow(WorkflowQuery query) {
+    List<Workflow> workflows = findWorkflows(query);
+    if (workflows!=null && !workflows.isEmpty()) {
+      return workflows.get(0);
+    }
+    return null;
+  }
+
   public List<WorkflowImpl> findWorkflows(WorkflowQuery query) {
     if (query.onlyIdSpecified()) {
       WorkflowImpl cachedProcessDefinition = workflowCache.get(query.id);
@@ -210,10 +214,10 @@ public abstract class WorkflowEngineImpl implements WorkflowEngine {
     workflowInstance.setVariableValues(start.variableValues);
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
     workflowInstance.setStart(Time.now());
-    List<Activity> startActivityDefinitions = workflow.getStartActivities();
+    List<ActivityImpl> startActivityDefinitions = workflow.getStartActivities();
     if (startActivityDefinitions!=null) {
-      for (Activity startActivityDefinition: startActivityDefinitions) {
-        workflowInstance.start(startActivityDefinition);
+      for (ActivityImpl startActivityDefinition: startActivityDefinitions) {
+        workflowInstance.execute(startActivityDefinition);
       }
     }
     LockImpl lock = new LockImpl();
@@ -438,7 +442,7 @@ public abstract class WorkflowEngineImpl implements WorkflowEngine {
       if (log.isDebugEnabled())
         log.debug("Notifying caller "+callerActivityInstance);
       ActivityImpl activityDefinition = callerActivityInstance.getActivity();
-      Call callActivity = (Call) activityDefinition.activityType;
+      CallImpl callActivity = (CallImpl) activityDefinition.activityType;
       callActivity.calledProcessInstanceEnded(callerActivityInstance, workflowInstance);
       callerActivityInstance.onwards();
       executeWork(callerProcessInstance);

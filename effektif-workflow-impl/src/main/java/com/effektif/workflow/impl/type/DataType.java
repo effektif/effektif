@@ -20,9 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
-/**
- * @author Walter White
- */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public interface DataType extends Plugin {
   

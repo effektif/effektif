@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.job;
 
 
 
-/**
- * @author Walter White
- */
 public interface JobService {
 
   Job newJob(JobType jobType);

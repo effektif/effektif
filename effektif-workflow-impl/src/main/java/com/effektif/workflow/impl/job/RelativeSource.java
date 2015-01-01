@@ -14,9 +14,6 @@
 package com.effektif.workflow.impl.job;
 
 
-/**
- * @author Walter White
- */
 public enum RelativeSource {
 
   BEFORE,

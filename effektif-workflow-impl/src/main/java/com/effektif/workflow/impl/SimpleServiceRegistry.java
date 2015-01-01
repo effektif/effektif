@@ -20,9 +20,6 @@ import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
-/**
- * @author Walter White
- */
 public class SimpleServiceRegistry implements ServiceRegistry {
 
   Map<String,Object> services = new HashMap<>();

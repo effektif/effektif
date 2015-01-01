@@ -15,9 +15,6 @@ package com.effektif.workflow.impl.definition;
 
 
 
-/**
- * @author Walter White
- */
 public interface WorkflowVisitor {
 
   /** invoked only for process definitions */

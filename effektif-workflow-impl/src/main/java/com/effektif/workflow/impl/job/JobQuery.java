@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.job;
 import java.util.List;
 
 
-/**
- * @author Walter White
- */
 public interface JobQuery {
 
   List<Job> asList();

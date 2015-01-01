@@ -11,28 +11,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.type;
+package com.effektif.workflow.impl.activitytypes;
 
+import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.plugin.ConfigurationClass;
+import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
+import com.effektif.workflow.impl.plugin.Descriptor;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("binding")
-public class BindingType extends AbstractDataType {
-  
-  DataType dataType;
-
-  public BindingType(DataType dataType) {
-    this.dataType = dataType;
-  }
+/** this task doesn't do anything, it just continues (aka noop, pass-through). */
+@ConfigurationClass(NoneTask.class)
+public class NoneTaskImpl extends AbstractActivityType {
 
   @Override
-  public Object convertJsonToInternalValue(Object apiValue) throws InvalidValueException {
-    throw new UnsupportedOperationException("TODO");
+  public void start(ControllableActivityInstance activityInstance) {
+    activityInstance.onwards();
   }
 
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    throw new UnsupportedOperationException("TODO");
-  }
- 
 }

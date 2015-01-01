@@ -14,7 +14,6 @@
 package com.effektif.workflow.impl.definition;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +27,10 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.validate.ParseIssue.IssueType;
 import com.effektif.workflow.api.validate.ParseIssues;
 import com.effektif.workflow.api.workflow.Base;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.impl.BindingImpl;
+import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.plugin.Validator;
@@ -110,6 +112,11 @@ public class WorkflowValidator implements Validator {
             .pathElement(".multiInstance");
   }
 
+  public void pushContext(Binding<?> binding, String propertyName) {
+    pushContext()
+            .pathElement("."+propertyName+".expression");
+  }
+
   ValidationContext pushContext() {
     ValidationContext validationContext = new ValidationContext();
     this.contextStack.push(validationContext);
@@ -158,4 +165,56 @@ public class WorkflowValidator implements Validator {
   public ServiceRegistry getServiceRegistry() {
     return workflowEngine.getServiceRegistry();
   }
+
+  @Override
+  public <T> BindingImpl<T> compileBinding(Binding<T> binding, String propertyName) {
+    if (binding!=null && binding.getExpression()!=null) {
+      ExpressionService expressionService = workflowEngine.getServiceRegistry().getService(ExpressionService.class);
+      pushContext(binding, propertyName);
+      try {
+        return expressionService.compile(binding);
+      } catch (Exception e) {
+        addError("Binding expression '%s' couldn't be compiled: %s", propertyName+".expression", e.getMessage());
+      } finally {
+        popContext();
+      }
+    }
+    return null;
+  }
+  
+  @Override
+  public <T> List<BindingImpl<T>> compileBinding(List<Binding<T>> bindings, String propertyName) {
+    if (bindings!=null) {
+      List<BindingImpl<T>> compiledBindings = new ArrayList<>();
+      int i = 0;
+      for (Binding<T> binding : bindings) {
+        compiledBindings.add(compileBinding(binding, propertyName + "[" + i + "]"));
+        i++;
+      }
+      return compiledBindings;
+    }
+    return null;
+  }
+
+  protected boolean hasValue(Binding<?> binding) {
+    if (binding.getValue()!=null) return true;
+    if (binding.getVariableId()!=null) return true;
+    if (binding.getExpression()!=null) return true;
+    return false;
+  }
+  
+  public List<ActivityImpl> getStartActivities(ActivityImpl activity) {
+    List<ActivityImpl> startActivities = new ArrayList<>(activity.activities.values());
+    if (activity.transitions!=null) {
+      for (TransitionImpl transition: activity.transitions) {
+        startActivities.remove(transition.to);
+      }
+    }
+    if (startActivities.isEmpty()) {
+      this.addWarning("No start activities in %s", activity.id);
+    }
+    return startActivities;
+  }
+
+
 }

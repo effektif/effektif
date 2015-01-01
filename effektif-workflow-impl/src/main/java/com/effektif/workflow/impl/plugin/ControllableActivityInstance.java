@@ -15,21 +15,24 @@ package com.effektif.workflow.impl.plugin;
 
 import java.util.List;
 
-import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.impl.BindingImpl;
+import com.effektif.workflow.impl.definition.ActivityImpl;
 
 
-/**
- * @author Walter White
- */
-public interface ControllableActivityInstance extends ActivityInstance {
+public interface ControllableActivityInstance {
+  
+  String getId();
+  String getActivityId();
+  String getWorkflowInstanceId();
+  String getWorkflowId();
 
   Object getVariable(String variableId);
   void setVariableValue(String variableId, Object value);
 
-  <T> T getValue(Binding<T> binding);
-  <T> List<T> getValue(List<Binding<T>> bindings);
+  <T> T getValue(BindingImpl<T> binding);
+  <T> List<T> getValue(List<BindingImpl<T>> bindings);
   
   Object getTransientContextObject(String key);
 
@@ -42,8 +45,8 @@ public interface ControllableActivityInstance extends ActivityInstance {
   /** ends this activity instance and optionally notifies the parent that this execution path has ended. */
   void end(boolean notifyParent);
 
-  /** starts a nested activity instance for the given activity definition */
-  void start(Activity activity);
+  /** executes a nested activity instance for the given activity definition */
+  void execute(ActivityImpl activity);
 
   void takeTransition(Transition transition);
   

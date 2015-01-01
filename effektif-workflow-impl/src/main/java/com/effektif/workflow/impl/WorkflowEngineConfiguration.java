@@ -18,7 +18,7 @@ import javax.script.ScriptEngineManager;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.CallMapping;
-import com.effektif.workflow.api.activities.DefaultTask;
+import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -31,6 +31,7 @@ import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.impl.ExecutorServiceImpl;
 import com.effektif.workflow.impl.SimpleProcessDefinitionCache;
 import com.effektif.workflow.impl.SimpleServiceRegistry;
+import com.effektif.workflow.impl.activitytypes.UserTaskImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngine;
@@ -92,6 +93,7 @@ public class WorkflowEngineConfiguration {
     registerService(new Descriptors(serviceRegistry));
     registerService(new JacksonJsonService(serviceRegistry));
     registerService(new ScriptServiceImpl(serviceRegistry));
+    registerService(new ExpressionServiceImpl(serviceRegistry));
     registerService(new ExecutorServiceImpl(serviceRegistry));
     registerService(new SimpleProcessDefinitionCache(serviceRegistry));
   }
@@ -123,8 +125,8 @@ public class WorkflowEngineConfiguration {
     this.registerActivityType(new ParallelGateway());
     this.registerActivityType(new Call());
     this.registerActivityType(new ScriptTask());
-    this.registerActivityType(new UserTask());
-    this.registerActivityType(new DefaultTask());
+    this.registerActivityType(new UserTaskImpl());
+    this.registerActivityType(new NoneTask());
     this.registerActivityType(new JavaServiceTask());
     this.registerActivityType(new HttpServiceTask());
   }

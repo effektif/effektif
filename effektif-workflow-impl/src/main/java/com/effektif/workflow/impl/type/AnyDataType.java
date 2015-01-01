@@ -15,9 +15,6 @@ package com.effektif.workflow.impl.type;
 
 
 
-/**
- * @author Walter White
- */
 public class AnyDataType extends AbstractDataType {
 
   @Override

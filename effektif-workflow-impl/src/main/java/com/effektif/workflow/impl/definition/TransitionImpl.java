@@ -18,9 +18,6 @@ import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
 
 
-/**
- * @author Walter White
- */
 public class TransitionImpl extends BaseImpl {
 
   public Transition apiTransition;
