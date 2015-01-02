@@ -64,7 +64,7 @@ public class ScriptBindings implements Bindings {
       return true;
     }
     if (name.length()>0) {
-      return scopeInstance.getScopeDefinition().containsVariable(name);
+      return scopeInstance.scope.hasVariable(name);
     }
     return false;
   }
@@ -131,7 +131,7 @@ public class ScriptBindings implements Bindings {
       Object value = dataType.convertScriptValueToInternal(scriptValue, language);
       scopeInstance.setVariableValue(variableDefinitionId, value);
     } else {
-      scopeInstance.workflowEngine.createVariableInstanceByValue(scopeInstance, scriptValue);
+      scopeInstance.createVariableInstanceByValue(scriptValue);
     }
     return null;
   }

@@ -13,9 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.impl.definition.VariableImpl;
@@ -26,6 +26,7 @@ import com.effektif.workflow.impl.type.JavaBeanType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
+@Deprecated
 public abstract class VariableRequestImpl {
 
   @JsonIgnore
@@ -45,10 +46,10 @@ public abstract class VariableRequestImpl {
     this.jsonService = jsonService;
   }
 
-  public void serialize(WorkflowImpl processDefinition) {
+  public void serialize(WorkflowImpl workflow) {
     if (variableValues!=null && !variableValues.isEmpty()) {
       Map<String,Object> serializedValues = new HashMap<>();
-      List<VariableImpl> variableDefinitions = processDefinition.getVariableDefinitions();
+      Collection<VariableImpl> variableDefinitions = workflow.variables.values();
       if (variableDefinitions!=null) {
         for (VariableImpl variableDefinition: variableDefinitions) {
           String variableId = variableDefinition.id;
@@ -61,10 +62,10 @@ public abstract class VariableRequestImpl {
     }
   }
 
-  public void deserialize(WorkflowImpl processDefinition) {
+  public void deserialize(WorkflowImpl workflow) {
     if (variableValues!=null && !variableValues.isEmpty()) {
       Map<String,Object> internalValues = new HashMap<>();
-      List<VariableImpl> variableDefinitions = processDefinition.getVariableDefinitions();
+      Collection<VariableImpl> variableDefinitions = workflow.variables.values();
       if (variableDefinitions!=null) {
         for (VariableImpl variableDefinition: variableDefinitions) {
           String variableId = variableDefinition.id;
@@ -95,12 +96,12 @@ public abstract class VariableRequestImpl {
     return this;
   }
 
-  public VariableRequestImpl variableValue(String variableDefinitionId, Object value, Class<?> javaBeanClass) {
-    JavaBeanType javaBeanType = new JavaBeanType(javaBeanClass);
-    javaBeanType.setJsonService(jsonService);
-    variableValue(variableDefinitionId, value, javaBeanType);
-    return this;
-  }
+//  public VariableRequestImpl variableValue(String variableDefinitionId, Object value, Class<?> javaBeanClass) {
+//    JavaBeanType javaBeanType = new JavaBeanType(javaBeanClass);
+//    javaBeanType.setJsonService(jsonService);
+//    variableValue(variableDefinitionId, value, javaBeanType);
+//    return this;
+//  }
 
   public VariableRequestImpl transientContext(String key, Object value) {
     if (transientContext==null) {

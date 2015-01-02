@@ -16,7 +16,7 @@ package com.effektif.workflow.impl.plugin;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.impl.type.BindingType;
+import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.impl.type.DataType;
 
 
@@ -33,9 +33,32 @@ public class Descriptor {
   protected List<DescriptorField> configurationFields;
   protected Class<?> configurationClass;
 
-  public Descriptor() {
-  }
 
+  public Descriptor(Class< ? > configurationClass, List<DescriptorField> configurationFields) {
+    this.configurationClass = configurationClass;
+    this.configurationFields = configurationFields;
+    
+    Label labelAnnotation = configurationClass.getAnnotation(Label.class);
+    if (labelAnnotation!=null) {
+      this.label = labelAnnotation.value();
+    }
+
+    Description descriptionAnnotation = configurationClass.getAnnotation(Description.class);
+    if (descriptionAnnotation!=null) {
+      this.description = labelAnnotation.value();
+    }
+  }
+  
+  public Descriptor(Class< ? > configurationClass, List<DescriptorField> configurationFields, ActivityType activityType) {
+    this(configurationClass, configurationFields);
+    this.activityType = activityType;
+  }
+  
+  public Descriptor(Class< ? > configurationClass, List<DescriptorField> configurationFields, DataType dataType) {
+    this(configurationClass, configurationFields);
+    this.dataType = dataType;
+  }
+  
   public Descriptor(DataType dataType) {
     this.dataType = dataType;
   }

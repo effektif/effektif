@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,18 +11,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.activitytypes;
-
-import com.effektif.workflow.api.activities.ServiceTask;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+package com.effektif.workflow.impl.definition;
 
 
 
-@JsonTypeName("httpServiceTask")
-public class HttpServiceTask extends ServiceTask {
+/**
+ * @author Tom Baeyens
+ */
+public class BindingImpl<T> {
 
-  @Override
-  public void invokeService(ControllableActivityInstance activityInstance) {
-  }
+  public Object value;
+  public String variableId;
+  public Object expression;
+  
 }

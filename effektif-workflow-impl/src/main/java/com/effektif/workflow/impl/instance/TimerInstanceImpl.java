@@ -13,10 +13,25 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.instance;
 
+import org.joda.time.LocalDateTime;
 
-/**
- * @author Tom Baeyens
- */
-public class TimerInstanceImpl {
+import com.effektif.workflow.api.workflowinstance.TimerInstance;
 
+
+public class TimerInstanceImpl extends BaseInstanceImpl {
+  
+  protected LocalDateTime duedate;
+
+  public TimerInstance toTimerInstance() {
+    TimerInstance timerInstance = new TimerInstance();
+    timerInstance.setDuedate(duedate);
+    return timerInstance;
+  }
+
+  public LocalDateTime getDuedate() {
+    return this.duedate;
+  }
+  public void setDuedate(LocalDateTime duedate) {
+    this.duedate = duedate;
+  }
 }

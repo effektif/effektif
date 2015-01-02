@@ -14,53 +14,30 @@
 package com.effektif.workflow.impl.instance;
 
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.definition.VariableImpl;
 import com.effektif.workflow.impl.type.DataType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-public class VariableInstanceImpl implements VariableInstance {
+public class VariableInstanceImpl extends BaseInstanceImpl {
 
-  public String id;
   public Object value;
-  public String variableDefinitionId;
-
-  @JsonIgnore
-  public WorkflowEngineImpl processEngine;
-  @JsonIgnore
-  public ScopeInstanceImpl parent;
-  @JsonIgnore
-  public WorkflowInstanceImpl processInstance;
-  @JsonIgnore
-  public VariableImpl variableDefinition;
-  @JsonIgnore
+  public VariableImpl variable;
   public DataType dataType;
-  @JsonIgnore
   public VariableInstanceUpdates updates;
 
-  public WorkflowEngineImpl getProcessEngine() {
-    return processEngine;
+  public VariableInstanceImpl() {
   }
-  
-  public void setProcessEngine(WorkflowEngineImpl processEngine) {
-    this.processEngine = processEngine;
+
+  public VariableInstanceImpl(ScopeInstanceImpl parent, VariableImpl variable, String id) {
+    super(parent, id);
+    this.variable = variable;
   }
-  
-  public ScopeInstanceImpl getParent() {
-    return parent;
-  }
-  
-  public void setParent(ScopeInstanceImpl parent) {
-    this.parent = parent;
-  }
-  
-  public WorkflowInstanceImpl getProcessInstance() {
-    return processInstance;
-  }
-  
-  public void setProcessInstance(WorkflowInstanceImpl processInstance) {
-    this.processInstance = processInstance;
+
+  public VariableInstance toVariableInstance() {
+    VariableInstance variableInstance = new VariableInstance();
+    variableInstance.setValue(value);
+    variableInstance.setVariableId(variable.id);
+    return variableInstance;
   }
 
   public Object getValue() {
@@ -74,42 +51,8 @@ public class VariableInstanceImpl implements VariableInstance {
     }
   }
   
-  public VariableImpl getVariableDefinition() {
-    return variableDefinition;
-  }
-  
-  public void setVariableDefinition(VariableImpl variableDefinition) {
-    this.variableDefinition = variableDefinition;
-  }
-
-  @Override
-  public String getVariableDefinitionId() {
-    return variableDefinitionId;
-  }
-
-  public String getId() {
-    return id;
-  }
-  
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  
-  public DataType getDataType() {
-    return dataType;
-  }
-
-  
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-  }
-
-  public void setVariableDefinitionId(String variableDefinitionId) {
-    this.variableDefinitionId = variableDefinitionId;
-  }
-
   public void trackUpdates(boolean isNew) {
     updates = new VariableInstanceUpdates(isNew);
   }
+
 }

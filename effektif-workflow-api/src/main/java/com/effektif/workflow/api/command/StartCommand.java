@@ -40,5 +40,4 @@ public class StartCommand extends AbstractCommand {
     this.workflowName = workflowName;
     return this;
   }
-
 }

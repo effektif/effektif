@@ -16,25 +16,20 @@ package com.effektif.workflow.impl;
 import javax.script.ScriptEngineManager;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.CallMapping;
-import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.activities.EmbeddedSubprocess;
-import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.HttpServiceTask;
-import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.activities.ScriptTask;
-import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.impl.ExecutorServiceImpl;
-import com.effektif.workflow.impl.SimpleProcessDefinitionCache;
-import com.effektif.workflow.impl.SimpleServiceRegistry;
+import com.effektif.workflow.impl.activitytypes.CallImpl;
+import com.effektif.workflow.impl.activitytypes.EmbeddedSubprocessImpl;
+import com.effektif.workflow.impl.activitytypes.EndEventImpl;
+import com.effektif.workflow.impl.activitytypes.ExclusiveGatewayImpl;
+import com.effektif.workflow.impl.activitytypes.HttpServiceTaskImpl;
+import com.effektif.workflow.impl.activitytypes.JavaServiceTaskImpl;
+import com.effektif.workflow.impl.activitytypes.NoneTaskImpl;
+import com.effektif.workflow.impl.activitytypes.ParallelGatewayImpl;
+import com.effektif.workflow.impl.activitytypes.ScriptTaskImpl;
+import com.effektif.workflow.impl.activitytypes.StartEventImpl;
 import com.effektif.workflow.impl.activitytypes.UserTaskImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngine;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Descriptors;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
@@ -77,62 +72,44 @@ public class WorkflowEngineConfiguration {
   
   public WorkflowEngineConfiguration(ServiceRegistry serviceRegistry) {
     this.serviceRegistry = serviceRegistry;
-    initializeDefaultStorageServices();
-    initializeDefaultInternalServices();
-    initializeDefaultDataTypes();
-    initializeDefaultActivityTypes();
+    initializeBeforeEngineCreation();
   }
 
-  protected void initializeDefaultStorageServices() {
-  }
+  protected void initializeBeforeEngineCreation() {
+    registerService(new ScriptEngineManager());
+    registerService(new JsonFactory());
+    registerService(new ObjectMapper());
 
-  protected void initializeDefaultInternalServices() {
-    initializeObjectMapper();
-    initializeJsonFactory();
-    initializeScriptEngineManager();
     registerService(new Descriptors(serviceRegistry));
     registerService(new JacksonJsonService(serviceRegistry));
     registerService(new ScriptServiceImpl(serviceRegistry));
     registerService(new ExpressionServiceImpl(serviceRegistry));
     registerService(new ExecutorServiceImpl(serviceRegistry));
     registerService(new SimpleProcessDefinitionCache(serviceRegistry));
+
+    registerDataType(new TextType());
+    registerDataType(new NumberType());
+    registerDataType(new ListType());
+    registerJavaBeanType(CallMapping.class);
+
+    registerActivityType(new StartEventImpl());
+    registerActivityType(new EndEventImpl());
+    registerActivityType(new EmbeddedSubprocessImpl());
+    registerActivityType(new ExclusiveGatewayImpl());
+    registerActivityType(new ParallelGatewayImpl());
+    registerActivityType(new CallImpl());
+    registerActivityType(new ScriptTaskImpl());
+    registerActivityType(new UserTaskImpl());
+    registerActivityType(new NoneTaskImpl());
+    registerActivityType(new JavaServiceTaskImpl());
+    registerActivityType(new HttpServiceTaskImpl());
   }
 
-  protected void initializeScriptEngineManager() {
-    registerService(new ScriptEngineManager());
-  }
-
-  protected void initializeJsonFactory() {
-    registerService(new JsonFactory());
-  }
-
-  protected void initializeObjectMapper() {
-    registerService(new ObjectMapper());
-  }
-    
-  protected void initializeDefaultDataTypes() {
-    this.registerDataType(new TextType());
-    this.registerDataType(new NumberType());
-    this.registerDataType(new ListType());
-    this.registerJavaBeanType(CallMapping.class);
-  }
-  
-  protected void initializeDefaultActivityTypes() {
-    this.registerActivityType(new StartEvent());
-    this.registerActivityType(new EndEvent());
-    this.registerActivityType(new EmbeddedSubprocess());
-    this.registerActivityType(new ExclusiveGateway());
-    this.registerActivityType(new ParallelGateway());
-    this.registerActivityType(new Call());
-    this.registerActivityType(new ScriptTask());
-    this.registerActivityType(new UserTaskImpl());
-    this.registerActivityType(new NoneTask());
-    this.registerActivityType(new JavaServiceTask());
-    this.registerActivityType(new HttpServiceTask());
+  protected void initializeAfterEngineCreation() {
   }
 
   public WorkflowEngine buildWorkflowEngine() {
-    return new MemoryWorkflowEngine(this);
+    return new WorkflowEngineImpl(this);
   }
 
   public WorkflowEngineConfiguration registerService(Object service) {

@@ -13,23 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
+import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.plugin.AbstractActivityType;
 
 
-public abstract class ServiceTask extends NoneTask {
+public class StartEventImpl extends AbstractActivityType<StartEvent> {
 
-  @Override
-  public void start(ControllableActivityInstance activityInstance) {
-    invokeService(activityInstance);
-    activityInstance.onwards();
+  public static final StartEventImpl INSTANCE = new StartEventImpl();
+
+  public StartEventImpl() {
+    super(StartEvent.class);
   }
-  
-  public abstract void invokeService(ControllableActivityInstance activityInstance);
-  
+
   @Override
-  public boolean isAsync(ActivityInstance activityInstance) {
-    return true;
+  public void execute(ActivityInstanceImpl activityInstance) {
+    activityInstance.onwards();
   }
 }

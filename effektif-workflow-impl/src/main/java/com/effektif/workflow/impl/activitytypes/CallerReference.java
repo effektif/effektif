@@ -11,35 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
-
-import org.mvel2.integration.VariableResolver;
-import org.mvel2.integration.impl.BaseVariableResolverFactory;
+package com.effektif.workflow.impl.activitytypes;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ExpressionVariableResolver extends BaseVariableResolverFactory {
+public class CallerReference {
 
-  @Override
-  public VariableResolver createVariable(String name, Object value) {
-    return null;
+  public String callerWorkflowInstanceId;
+  public String callerActivityInstanceId;
+
+  public CallerReference(String callerWorkflowInstanceId, String callerActivityInstanceId) {
+    this.callerWorkflowInstanceId = callerWorkflowInstanceId;
+    this.callerActivityInstanceId = callerActivityInstanceId;
   }
-
-  @Override
-  public VariableResolver createVariable(String name, Object value, Class< ? > type) {
-    return null;
-  }
-
-  @Override
-  public boolean isTarget(String name) {
-    return false;
-  }
-
-  @Override
-  public boolean isResolveable(String name) {
-    return false;
-  }
-
 }

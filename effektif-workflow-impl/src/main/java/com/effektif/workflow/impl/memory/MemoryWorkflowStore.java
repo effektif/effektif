@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
@@ -36,6 +37,11 @@ public class MemoryWorkflowStore implements WorkflowStore {
     this.workflows = new ConcurrentHashMap<String, WorkflowImpl>();
   }
 
+  @Override
+  public WorkflowImpl createWorkflow() {
+    return new WorkflowImpl();
+  }
+
   /** ensures that every element in this process definition has an id */
   @Override
   public String createWorkflowId(WorkflowImpl processDefinition) {
@@ -50,20 +56,20 @@ public class MemoryWorkflowStore implements WorkflowStore {
   @Override
   public List<WorkflowImpl> loadWorkflows(WorkflowQuery query) {
     List<WorkflowImpl> result = null;
-    if (query.id!=null) {
+    if (query.getWorkflowId()!=null) {
       result = new ArrayList<WorkflowImpl>();
-      WorkflowImpl processDefinition = workflows.get(query.id);
+      WorkflowImpl processDefinition = workflows.get(query.getWorkflowId());
       if (processDefinition!=null) {
         result.add(processDefinition);
       }
     } else if (result==null) {
       result = new ArrayList<WorkflowImpl>(workflows.values());
     }
-    if (query.name!=null && !result.isEmpty()) {
-      filterByName(result, query.name);
+    if (query.getWorkflowName()!=null && !result.isEmpty()) {
+      filterByName(result, query.getWorkflowName());
     }
-    if (query.limit!=null) {
-      while (result.size()>query.limit) {
+    if (query.getLimit()!=null) {
+      while (result.size()>query.getLimit()) {
         result.remove(result.size()-1);
       }
     }
@@ -79,14 +85,42 @@ public class MemoryWorkflowStore implements WorkflowStore {
   }
 
   protected boolean matchesProcessDefinitionCriteria(WorkflowImpl process, WorkflowQuery query) {
-    if (query.name!=null && !query.name.equals(process.name)) {
+    if (query.getWorkflowName()!=null && !query.getWorkflowName().equals(process.name)) {
       return false;
     }
     return true;
   }
 
   @Override
-  public void deleteWorkflow(String workflowId) {
-    workflows.remove(workflowId);
+  public String findLatestWorkflowIdByName(String workflowName, String organizationId) {
+    if (workflowName==null) {
+      return null;
+    }
+    WorkflowImpl latest = null;
+    for (WorkflowImpl workflow: workflows.values()) {
+      if ( workflowName.equals(workflow.name)
+           && (latest==null || workflow.deployTime.isBefore(latest.deployTime))
+         ) {
+        latest = workflow;
+      }
+    }
+    return latest!=null ? latest.id : null;
+  }
+
+  @Override
+  public List<Workflow> findWorkflows(WorkflowQuery query) {
+    throw new RuntimeException("TODO");
+  }
+
+  @Override
+  public void deleteWorkflows(WorkflowQuery query) {
+    for (Workflow workflow: findWorkflows(query)) {
+      workflows.remove(workflow.getId());
+    }
+  }
+
+  @Override
+  public WorkflowImpl findWorkflowImplById(String workflowId, String organizationId) {
+    return workflows.get(workflowId);
   }
 }

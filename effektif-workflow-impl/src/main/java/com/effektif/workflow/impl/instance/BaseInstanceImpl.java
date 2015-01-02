@@ -11,25 +11,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.definition;
+package com.effektif.workflow.impl.instance;
 
-import com.effektif.workflow.api.workflow.Base;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.definition.WorkflowImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class BaseImpl {
+public class BaseInstanceImpl {
 
   public String id;
-  public WorkflowEngineImpl workflowEngine;
+  public ScopeInstanceImpl parent;
+  public WorkflowInstanceImpl workflowInstance;
   public WorkflowImpl workflow;
-  public ScopeImpl parent;
+  public WorkflowEngineImpl workflowEngine;
 
-  public void validate(Base apiBase, WorkflowValidator validator) {
-    this.id = apiBase.getId();
-    this.workflowEngine = validator.workflowEngine;
-    this.workflow = validator.workflow;
+  public BaseInstanceImpl() {
+  }
+
+  public BaseInstanceImpl(ScopeInstanceImpl parent, String id) {
+    this.id = id;
+    this.parent = parent;
+    this.workflowInstance = parent.workflowInstance;
+    this.workflow = parent.workflowInstance.workflow;
+    this.workflowEngine = parent.workflowEngine;
   }
 }

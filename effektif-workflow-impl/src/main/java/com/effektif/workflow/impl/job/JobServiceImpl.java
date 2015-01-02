@@ -15,7 +15,6 @@ import java.util.TimerTask;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Seconds;
 
-import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -116,13 +115,11 @@ public abstract class JobServiceImpl implements JobService {
     while (isRunning 
            && processInstanceIds!=null 
            && processInstanceIds.hasNext()) {
-      String processInstanceId = processInstanceIds.next();
-      WorkflowInstanceQuery query = processEngine.newWorkflowInstanceQuery()
-        .workflowInstanceId(processInstanceId);
-      WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstance(query);
+      String workflowInstanceId = processInstanceIds.next();
+      WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, null);
       boolean keepGoing = true;
       while (isRunning && keepGoing) {
-        Job job = lockNextWorkflowJob(processInstanceId);
+        Job job = lockNextWorkflowJob(workflowInstanceId);
         if (job != null) {
           executor.execute(new ExecuteJob(job, lockedProcessInstance));
         } else {

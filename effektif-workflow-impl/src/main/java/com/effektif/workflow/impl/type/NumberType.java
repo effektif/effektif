@@ -16,6 +16,10 @@ package com.effektif.workflow.impl.type;
 
 public class NumberType extends AbstractDataType {
 
+  public NumberType() {
+    super(Number.class);
+  }
+
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue instanceof Double) {

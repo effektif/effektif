@@ -21,11 +21,23 @@ public class WorkflowQuery {
   
   public static final String FIELD_DEPLOY_TIME = "deployTime";
   
+  protected String organizationId;
   protected String workflowId;
   protected String workflowName;
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
+  
+  public String getOrganizationId() {
+    return this.organizationId;
+  }
+  public void setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
+  }
+  public WorkflowQuery organizationId(String organizationId) {
+    this.organizationId = organizationId;
+    return this;
+  }
 
   public String getWorkflowId() {
     return this.workflowId;

@@ -11,23 +11,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
+package com.effektif.workflow.api.variables;
 
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.impl.activitytypes.T;
+import java.util.ArrayList;
 
 
 /**
  * @author Tom Baeyens
  */
-public class BindingImpl<T> {
+public class Choice {
 
-  public Object value;
-  public String variableId;
-  public Object expression;
+  protected java.util.List<String> options;
   
-  public static <T> BindingImpl<T> compile(Binding<T> binding, ) {
-    return null;
+  public Choice option(String option) {
+    if (options==null) {
+      options = new ArrayList<>();
+    }
+    options.add(option);
+    return this;
   }
-
+  
 }

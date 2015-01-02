@@ -17,196 +17,71 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Descriptors;
-import com.effektif.workflow.impl.type.DataType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class ActivityImpl extends ScopeImpl {
   
-  public Activity apiActivity;
-
   public ActivityType activityType;
-
   /** the list of transitions for which this activity is the destination.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
   public List<TransitionImpl> incomingTransitions;
-
   /** the list of transitions for which this activity is the source.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
-  public List<TransitionImpl> outgoingDefinitions;
-
+  public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
-  public MultiInstance multiInstance;
+  public MultiInstanceImpl multiInstance;
 
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public ActivityImpl(Activity apiActivity) {
-    super(apiActivity);
-    this.apiActivity = apiActivity;
-  }
-  
-  @Override
-  public void validate(WorkflowValidator validator) {
+  public void validate(Activity apiActivity, WorkflowValidator validator) {
+    super.validate(apiActivity, validator);
     if (id==null || "".equals(id)) {
       validator.addError("Activity has no id");
     } 
 
     Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
-    ActivityType activityType = descriptors.createActivityType(apiActivity);
-    activityType.validate(this, apiActivity, validator);
-    
-    
-    this.multiInstance = apiActivity.getMultiInstance();
-    
-    this.activityType = null; // TODO
+    this.activityType = descriptors.instantiateActivityType(apiActivity);
+    // some activity types need to validate incoming and outgoing transitions, 
+    // that's why they are NOT validated here, but after the transitions.
     if (this.activityType==null) {
-      addError("Activity '%s' has no activityType configured", id);
+      validator.addError("Activity '%s' has no activityType configured", id);
     }
 
-    if (multiInstance!=null) {
-      validator.pushContext().base(multiInstance);
-      if (multiInstance.getCollection()==null) {
-        
-      }
-      if (multiInstance.getVariable()==null) {
-        
-      }
+    if (apiActivity.getMultiInstance()!=null) {
+      this.multiInstance = new MultiInstanceImpl();
+      validator.pushContext(multiInstance);
+      this.multiInstance.validate(apiActivity.getMultiInstance(), validator);
       validator.popContext();
     }
-    if (apiActivity.getDefaultTransitionId()!=null) {
-      defaultTransition = findTransitionById(outgoingDefinitions, apiActivity.getDefaultTransitionId());
-      if (activity.defaultTransition==null) {
-        addError("Activity '%s' has invalid default transition id %s", activity.id, activity.defaultTransitionId);
-      }
-    }
-    super.validate(validator);
   }
 
-
-
-
-  public ActivityImpl activityType(ActivityType activityType) {
-    this.activityType = activityType;
-    return this;
-  }
-  
-  public ActivityImpl defaultOutgoingTransitionId(String defaultOutgoingTransitionId) {
-    this.defaultTransitionId = defaultOutgoingTransitionId;
-    return this;
-  }
-  
-  public ActivityImpl id(String id) {
-    this.id = id;
-    return this;
-  }
-
-  public ActivityImpl line(Long line) {
-    super.line(line);
-    return this;
-  }
-
-  public ActivityImpl column(Long column) {
-    super.column(column);
-    return this;
-  }
-  
-  @Override
-  public ActivityBuilder defaultTransition(String transitionId) {
-    this.defaultTransitionId = transitionId;
-    return this;
-  }
-  
-  @Override
-  public ActivityBuilder forEach(String elementVariableId, DataType elementDataType, String collectionVariableId) {
-    forEach(elementVariableId, elementDataType, new Binding<List<Object>>().variableDefinitionId(collectionVariableId));
-    return this;
-  }
-  
-  @Override
-  public ActivityBuilder forEachExpression(String elementVariableId, DataType elementDataType, String collectionExpression) {
-    forEach(elementVariableId, elementDataType, new Binding<List<Object>>().expression(collectionExpression));
-    return this;
-  }
-
-  protected void forEach(String elementVariableId, DataType elementDataType, Binding<List<Object>> collectionBinding) {
-    this.multiInstanceElement = new VariableImpl()
-      .id(elementVariableId)
-      .dataType(elementDataType)
-      .processEngine(workflowEngine)
-      .processDefinition(workflow)
-      .parent(this);
-    this.multiInstance = collectionBinding;
-  }
-  
   public boolean isMultiInstance() {
     return multiInstance != null; 
   }
 
-  @Override
-  public ActivityImpl newActivity() {
-    return super.newActivity();
-  }
-  
-  @Override
-  public ActivityImpl newActivity(String id, ActivityType activityType) {
-    return super.newActivity(id, activityType);
-  }
-
-  @Override
-  public VariableImpl newVariable() {
-    return super.newVariable();
-  }
-
-  @Override
-  public TransitionImpl newTransition() {
-    return super.newTransition();
-  }
-
-  @Override
-  public TimerDefinitionImpl newTimer(JobType jobType) {
-    return super.newTimer(jobType);
-  }
-  
   /// other methods ////////////////////////////
 
-  public void visit(WorkflowVisitor visitor, int index) {
-    // If some visitor needs to control the order of types vs other content visited, 
-    // then this is the idea you should consider 
-    //   if (visitor instanceof OrderedProcessDefinitionVisitor) {
-    //     ... also delegate the ordering of this visit to the visitor ... 
-    //   } else { ... perform the default as below
-    visitor.startActivityDefinition(this, index);
-    super.visit(visitor);
-    visitor.endActivityDefinition(this, index);
-  }
-
   public void addOutgoingTransition(TransitionImpl transitionDefinition) {
-    if (outgoingDefinitions==null) {
-      outgoingDefinitions = new ArrayList<TransitionImpl>();
+    if (outgoingTransitions==null) {
+      outgoingTransitions = new ArrayList<TransitionImpl>();
     }
-    // TODO: check if this is still needed, protection against duplicate validation phase
-    if (! outgoingDefinitions.contains(transitionDefinition)) {
-      outgoingDefinitions.add(transitionDefinition);
-    }
+    outgoingTransitions.add(transitionDefinition);
   }
 
   public boolean hasOutgoingTransitionDefinitions() {
-    return outgoingDefinitions!=null && !outgoingDefinitions.isEmpty();
+    return outgoingTransitions!=null && !outgoingTransitions.isEmpty();
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public List<Transition> getOutgoingTransitions() {
-    return (List) outgoingDefinitions;
+    return (List) outgoingTransitions;
   }
 
-  public void setOutgoingDefinitions(List<TransitionImpl> outgoingTransitionDefinitions) {
-    this.outgoingDefinitions = outgoingTransitionDefinitions;
+  public void setOutgoingTransitions(List<TransitionImpl> outgoingTransitionDefinitions) {
+    this.outgoingTransitions = outgoingTransitionDefinitions;
   }
 
 
@@ -214,10 +89,7 @@ public class ActivityImpl extends ScopeImpl {
     if (incomingTransitions==null) {
       incomingTransitions = new ArrayList<TransitionImpl>();
     }
-    // TODO: check if this is still needed, protection against duplicate validation phase
-    if (! incomingTransitions.contains(transitionDefinition)) {
-      incomingTransitions.add(transitionDefinition);
-    }
+    incomingTransitions.add(transitionDefinition);
   }
 
   public boolean hasIncomingTransitionDefinitions() {
@@ -240,14 +112,6 @@ public class ActivityImpl extends ScopeImpl {
   
   public void setActivityType(ActivityType activityType) {
     this.activityType = activityType;
-  }
-
-  public String getDefaultTransitionId() {
-    return defaultTransitionId;
-  }
-
-  public void setDefaultTransitionId(String defaultOutgoingTransitionId) {
-    this.defaultTransitionId = defaultOutgoingTransitionId;
   }
 
   public TransitionImpl getDefaultTransition() {

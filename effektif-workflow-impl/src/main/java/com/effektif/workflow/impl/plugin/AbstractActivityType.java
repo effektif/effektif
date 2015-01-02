@@ -13,92 +13,98 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-
 import org.slf4j.Logger;
 
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.definition.ActivityImpl;
-
-
+import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 
 
 public abstract class AbstractActivityType<T> implements ActivityType<T> {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
-  public abstract void start(ControllableActivityInstance activityInstance);
+  protected Class<T> configurationClass;
 
-  public void message(ControllableActivityInstance activityInstance) {
+  public AbstractActivityType(Class<T> configurationClass) {
+    this.configurationClass = configurationClass;
+  }
+
+  public Class<T> getConfigurationClass() {
+    return this.configurationClass;
+  }
+  
+  public abstract void execute(ActivityInstanceImpl activityInstance);
+
+  public void message(ActivityInstanceImpl activityInstance) {
     activityInstance.onwards();
   }
   
-  public void ended(ControllableActivityInstance activityInstance, ActivityInstance nestedEndedActivityInstance) {
+  public void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance) {
     if (!activityInstance.hasOpenActivityInstances()) {
       activityInstance.end();
     }
   }
-
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  @Override
-  public void validate(ActivityImpl activity, T apiActivity, Validator validator) {
-    Descriptors activityTypeService = validator.getServiceRegistry().getService(Descriptors.class);
-    List<DescriptorField> configurationFields = activityTypeService.getConfigurationFields(this);
-    if (configurationFields!=null) {
-      for (DescriptorField descriptorField : configurationFields) {
-        Field field = descriptorField.field;
-        try {
-          Object value = field.get(this);
-          if (value==null) {
-            if (Boolean.TRUE.equals(descriptorField.isRequired)) {
-              validator.addError("Configuration field %s is required", descriptorField.label);
-            }
-          }
-          if (value instanceof Binding) {
-            validateBinding(activity, validator, descriptorField, (Binding< ? >) value);
-          } else if (isListOfBindings(field)) {
-            List<Binding> bindings = (List<Binding>) value;
-            if (bindings!=null) {
-              for (Binding binding: bindings) {
-                validateBinding(activity, validator, descriptorField, binding);
-              }
-            }
-          }
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
-  }
-
-  private boolean isListOfBindings(Field field) {
-    Type genericType = field.getGenericType();
-    if (! (genericType instanceof ParameterizedType)) {
-      return false;
-    }
-    ParameterizedType parameterizedType = (ParameterizedType) genericType;
-    if ( List.class.isAssignableFrom((Class<?>)parameterizedType.getRawType())
-         && parameterizedType.getActualTypeArguments().length==1 ) {
-      Type listParameter = parameterizedType.getActualTypeArguments()[0];
-      Class<?> rawListParameter = (Class<?>) (listParameter instanceof ParameterizedType ? ((ParameterizedType)listParameter).getRawType() : listParameter);
-      return Binding.class.equals(rawListParameter);
-    }
-    return false;
-  }
-
-  private void validateBinding(Activity activity, Validator validator, DescriptorField descriptorField, Binding< ? > binding) {
-    binding.dataType = descriptorField.dataType;
-    binding.validate(activity, validator, this.getClass().getName()+"."+descriptorField.name);
-  }
   
   @Override
-  public boolean isAsync(ActivityInstance activityInstance) {
+  public void validate(ActivityImpl activity, T apiActivity, WorkflowValidator validator) {
+  }
+
+//  @SuppressWarnings({ "rawtypes", "unchecked" })
+//  @Override
+//  public void validate(ActivityImpl activity, T apiActivity, Validator validator) {
+//    Descriptors activityTypeService = validator.getServiceRegistry().getService(Descriptors.class);
+//    List<DescriptorField> configurationFields = activityTypeService.getConfigurationFields(this);
+//    if (configurationFields!=null) {
+//      for (DescriptorField descriptorField : configurationFields) {
+//        Field field = descriptorField.field;
+//        try {
+//          Object value = field.get(this);
+//          if (value==null) {
+//            if (Boolean.TRUE.equals(descriptorField.isRequired)) {
+//              validator.addError("Configuration field %s is required", descriptorField.label);
+//            }
+//          }
+//          if (value instanceof Binding) {
+//            validateBinding(activity, validator, descriptorField, (Binding< ? >) value);
+//          } else if (isListOfBindings(field)) {
+//            List<Binding> bindings = (List<Binding>) value;
+//            if (bindings!=null) {
+//              for (Binding binding: bindings) {
+//                validateBinding(activity, validator, descriptorField, binding);
+//              }
+//            }
+//          }
+//        } catch (Exception e) {
+//          throw new RuntimeException(e);
+//        }
+//      }
+//    }
+//  }
+//
+//  private boolean isListOfBindings(Field field) {
+//    Type genericType = field.getGenericType();
+//    if (! (genericType instanceof ParameterizedType)) {
+//      return false;
+//    }
+//    ParameterizedType parameterizedType = (ParameterizedType) genericType;
+//    if ( List.class.isAssignableFrom((Class<?>)parameterizedType.getRawType())
+//         && parameterizedType.getActualTypeArguments().length==1 ) {
+//      Type listParameter = parameterizedType.getActualTypeArguments()[0];
+//      Class<?> rawListParameter = (Class<?>) (listParameter instanceof ParameterizedType ? ((ParameterizedType)listParameter).getRawType() : listParameter);
+//      return Binding.class.equals(rawListParameter);
+//    }
+//    return false;
+//  }
+//
+//  private void validateBinding(Activity activity, Validator validator, DescriptorField descriptorField, Binding< ? > binding) {
+//    binding.dataType = descriptorField.dataType;
+//    binding.validate(activity, validator, this.getClass().getName()+"."+descriptorField.name);
+//  }
+  
+  @Override
+  public boolean isAsync(ActivityInstanceImpl activityInstance) {
     return false;
   }
 }

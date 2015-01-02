@@ -13,20 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.api.activities.ServiceTask;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.plugin.AbstractActivityType;
 
 
+public class HttpServiceTaskImpl extends AbstractActivityType<HttpServiceTask> {
 
-/** Invokes a java method.
- * 
- * @author Walter White
- */
-@JsonTypeName("javaServiceTask")
-public class JavaServiceTask extends ServiceTask {
+  public HttpServiceTaskImpl() {
+    super(HttpServiceTask.class);
+  }
 
   @Override
-  public void invokeService(ControllableActivityInstance activityInstance) {
+  public void execute(ActivityInstanceImpl activityInstance) {
   }
 }

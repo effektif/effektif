@@ -13,8 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
+@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public class Variable extends Base {
 
 }

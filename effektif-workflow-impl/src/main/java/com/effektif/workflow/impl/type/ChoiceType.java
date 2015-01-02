@@ -16,16 +16,20 @@ package com.effektif.workflow.impl.type;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.variables.Choice;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("choice")
 public class ChoiceType extends AbstractDataType {
   
   public String label;
 
   /** maps option ids to option labels */
   protected Map<String, String> options;
+  
+  public ChoiceType() {
+    super(Choice.class);
+  }
   
   public ChoiceType option(String id, String label) {
     if (options==null) {

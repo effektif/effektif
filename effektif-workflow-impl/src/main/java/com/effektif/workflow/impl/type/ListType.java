@@ -14,23 +14,37 @@
 package com.effektif.workflow.impl.type;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import com.effektif.workflow.impl.plugin.Validator;
+import com.effektif.workflow.api.variables.List;
+import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.impl.definition.VariableImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.plugin.Descriptors;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("list")
-public class ListType extends AbstractDataType implements DataType {
+public class ListType extends AbstractDataType<List> {
   
-  DataType elementDataType;
+  protected DataType elementDataType;
   
   /** constructor for json & persistence, dataType is a required field. */
   public ListType() {
+    super(List.class);
   }
 
   public ListType(DataType elementDataType) {
+    this();
     this.elementDataType = elementDataType;
+  }
+
+  @Override
+  public void validate(VariableImpl variable, List list, WorkflowValidator validator) {
+    Descriptors descriptors = validator.getServiceRegistry().getService(Descriptors.class);
+    Variable elementVariable = list.getElementType();
+    VariableImpl elementVariableImpl = new VariableImpl();
+    this.elementDataType = descriptors.instantiateDataType(elementVariable);
+    this.elementDataType.validate(elementVariableImpl, elementVariable, validator);
   }
 
   @Override
@@ -42,7 +56,7 @@ public class ListType extends AbstractDataType implements DataType {
       throw new InvalidValueException("Value for must be a list, but was "+internalValue+" ("+internalValue.getClass().getName()+")");
     }
     @SuppressWarnings("unchecked")
-    List<Object> list = (List<Object>) internalValue;
+    java.util.List<Object> list = (java.util.List<Object>) internalValue;
     for (Object element: list) {
       elementDataType.validateInternalValue(element);
     }
@@ -57,7 +71,7 @@ public class ListType extends AbstractDataType implements DataType {
       throw new InvalidValueException("Json value must be a list, but was "+jsonValue+" ("+jsonValue.getClass().getName()+")");
     }
     @SuppressWarnings("unchecked")
-    List<Object> list = (List<Object>) jsonValue;
+    java.util.List<Object> list = (java.util.List<Object>) jsonValue;
     for (int i=0; i<list.size(); i++) {
       Object elementJsonValue = list.get(i);
       Object elementInternalValue = elementDataType.convertJsonToInternalValue(elementJsonValue);
@@ -72,17 +86,12 @@ public class ListType extends AbstractDataType implements DataType {
     if (internalValue==null) {
       return null;
     }
-    List<Object> internalValues = (List<Object>) internalValue;
-    List<Object> jsonValues = new ArrayList<>(internalValues.size());
+    java.util.List<Object> internalValues = (java.util.List<Object>) internalValue;
+    java.util.List<Object> jsonValues = new ArrayList<>(internalValues.size());
     for (Object elementInternalValue: internalValues) {
       Object elementJsonValue = elementDataType.convertInternalToJsonValue(elementInternalValue);
       jsonValues.add(elementJsonValue);
     }
     return jsonValues;
-  }
-
-  @Override
-  public void validate(Validator validator) {
-    elementDataType.validate(validator);
   }
 }

@@ -13,15 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("binding")
 public class BindingType extends AbstractDataType {
   
   DataType dataType;
 
   public BindingType(DataType dataType) {
+    super(null);
     this.dataType = dataType;
   }
 

@@ -13,13 +13,25 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
-import com.effektif.workflow.impl.plugin.Validator;
+import com.effektif.workflow.impl.definition.VariableImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
 
 
-public abstract class AbstractDataType implements DataType {
+public abstract class AbstractDataType<T> implements DataType<T> {
+  
+  protected Class<T> configurationClass;
+  
+  public AbstractDataType(Class<T> configurationClass) {
+    this.configurationClass = configurationClass;
+  }
+  
+  @Override
+  public Class<T> getConfigurationClass() {
+    return configurationClass;
+  }
 
   @Override
-  public void validate(Validator validator) {
+  public void validate(VariableImpl variable, T apiVariable, WorkflowValidator validator) {
   }
 
   @Override

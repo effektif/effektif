@@ -16,19 +16,18 @@ package com.effektif.workflow.impl;
 import java.util.List;
 
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.impl.definition.ActivityImpl;
+import com.effektif.workflow.impl.definition.VariableImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.instance.VariableInstanceImpl;
 import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 
 
 public interface WorkflowInstanceStore {
 
-  String createWorkflowInstanceId(WorkflowImpl workflow);
-
-  String createActivityInstanceId();
-
-  String createVariableInstanceId();
-  
-  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceQuery workflowInstance);
+  WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId);
 
   void insertWorkflowInstance(WorkflowInstanceImpl worklflowInstance);
 
@@ -41,4 +40,22 @@ public interface WorkflowInstanceStore {
   long countWorkflowInstances(WorkflowInstanceQuery workflowInstanceQueryImpl);
 
   void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQueryImpl);
+
+  /** instantiates and assigns an id.
+   * This method can choose to instantiate a subclass, but has to 
+   * ensure that the constructor {@link WorkflowInstanceImpl#WorkflowInstanceImpl(WorkflowEngineImpl, WorkflowImpl, String)} 
+   * is called for proper initialization.  */
+  WorkflowInstanceImpl createWorkflowInstance(WorkflowImpl workflow);
+
+  /** instantiates and assigns an id.
+   * This method can choose to instantiate a subclass, but has to 
+   * ensure that the constructor {@link ActivityInstanceImpl#ActivityInstanceImpl(ScopeInstanceImpl, ActivityImpl, String)} 
+   * is called for proper initialization.  */
+  ActivityInstanceImpl createActivityInstance(ScopeInstanceImpl parent, ActivityImpl activityDefinition);
+
+  /** instantiates and assigns an id.
+   * This method can choose to instantiate a subclass, but has to 
+   * ensure that the constructor {@link VariableInstanceImpl#VariableInstanceImpl(ScopeInstanceImpl, VariableImpl, String)} 
+   * is called for proper initialization.  */
+  VariableInstanceImpl createVariableInstance(ScopeInstanceImpl parent, VariableImpl variable);
 }

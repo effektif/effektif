@@ -16,6 +16,7 @@ package com.effektif.workflow.impl;
 import java.util.List;
 
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 
 
@@ -23,14 +24,17 @@ public interface WorkflowStore {
   
   String createWorkflowId(WorkflowImpl workflow);
 
-  /** @param processDefinition is a validated process definition that has no errors.  It might have warnings. */
   void insertWorkflow(WorkflowImpl workflow);
 
   List<WorkflowImpl> loadWorkflows(WorkflowQuery workflowQuery);
 
-  void deleteWorkflow(String workflowId);
+  List<Workflow> findWorkflows(WorkflowQuery query);
 
-  String findLatestWorkflowIdByName(String workflowName);
+  void deleteWorkflows(WorkflowQuery workflowQuery);
 
+  String findLatestWorkflowIdByName(String workflowName, String organizationId);
 
+  WorkflowImpl findWorkflowImplById(String workflowId, String organizationId);
+
+  WorkflowImpl createWorkflow();
 }

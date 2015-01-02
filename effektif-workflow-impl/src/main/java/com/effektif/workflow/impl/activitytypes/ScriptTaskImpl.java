@@ -13,55 +13,32 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ScriptTask;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.effektif.workflow.impl.plugin.Validator;
+import com.effektif.workflow.impl.definition.ActivityImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("serviceTask")
-public class ScriptTask extends NoneTask {
+public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
-  @JsonIgnore
   protected ScriptService scriptService;
-  
   public String script;
   public Map<String, String> scriptToWorkflowMappings;
   public String resultVariableId;
-  
-  @JsonIgnore
   public Script compiledScript;
   
-  public ScriptTask script(String script) {
-    this.script = script;
-    return this;
+  public ScriptTaskImpl() {
+    super(ScriptTask.class);
   }
-  
-  public ScriptTask variableMapping(String scriptVariableName, String workflowVariableId) {
-    if (scriptToWorkflowMappings==null) {
-      scriptToWorkflowMappings = new HashMap<>();
-    }
-    scriptToWorkflowMappings.put(scriptVariableName, workflowVariableId);
-    return this;
-  }
-  
-  public ScriptTask resultVariableId(String resultVariableId) {
-    this.resultVariableId = resultVariableId;
-    return this;
-  } 
-  
+
   @Override
-  public void validate(Activity activity, Validator validator) {
+  public void validate(ActivityImpl activity, ScriptTask scriptTask, WorkflowValidator validator) {
     if (script!=null) {
       this.scriptService = validator.getServiceRegistry().getService(ScriptService.class);
       this.compiledScript = scriptService.compile(script);
@@ -71,7 +48,7 @@ public class ScriptTask extends NoneTask {
   }
 
   @Override
-  public void start(ControllableActivityInstance activityInstance) {
+  public void execute(ActivityInstanceImpl activityInstance) {
     if (script!=null) {
       ScriptResult scriptResult = scriptService.evaluateScript(activityInstance, compiledScript);
       scriptResult.getResult();
@@ -84,7 +61,7 @@ public class ScriptTask extends NoneTask {
   }
   
   @Override
-  public boolean isAsync(ActivityInstance activityInstance) {
+  public boolean isAsync(ActivityInstanceImpl activityInstance) {
     return true;
   }
 }

@@ -13,29 +13,26 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 
 
 public interface ActivityType<T> extends Plugin {
   
-  /** called when the process is being deployed. 
-   * @param activity 
-   * @param activity */
-  void validate(ActivityImpl activity, T apiActivity, Validator validator);
+  Class<T> getConfigurationClass();
   
-  boolean isAsync(ActivityInstance activityInstance);
+  /** called when the process is being validated or deployed. */
+  void validate(ActivityImpl activity, T configuration, WorkflowValidator validator);
+  
+  boolean isAsync(ActivityInstanceImpl activityInstance);
 
-  /** called when the activity instance is started */
-  void start(ControllableActivityInstance activityInstance);
+  /** called when the execution flow arrives in this activity */
+  void execute(ActivityInstanceImpl activityInstance);
 
   /** called when an external signal is invoked on this activity instance through the process engine api */
-  void message(ControllableActivityInstance activityInstance);
+  void message(ActivityInstanceImpl activityInstance);
 
   /** called when a nested activity instance is ended */
-  void ended(ControllableActivityInstance activityInstance, ActivityInstance nestedEndedActivityInstance);
+  void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance);
 }

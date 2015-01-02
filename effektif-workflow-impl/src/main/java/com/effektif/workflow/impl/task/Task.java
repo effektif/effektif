@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.task;
 
 import java.util.List;
 
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 
 
 public class Task {
@@ -25,8 +25,11 @@ public class Task {
   protected String name;
   protected String assigneeId;
   protected List<String> candidateIds;
-  protected Object activityInstanceId;
+  
+  protected String activityInstanceId;
   protected String workflowInstanceId;
+  protected String workflowId;
+  protected String workflowName;
   
   public Task() {
   }
@@ -46,8 +49,11 @@ public class Task {
     return this;
   }
 
-  public Task activityInstance(ControllableActivityInstance activityInstance) {
-    this.activityInstanceId = activityInstance.getId();
+  public Task activityInstance(ActivityInstanceImpl activityInstance) {
+    this.activityInstanceId = activityInstance.id;
+    this.workflowInstanceId = activityInstance.workflowInstance.id;
+    this.workflowId = activityInstance.workflow.id;
+    this.workflowName = activityInstance.workflow.name;
     return this;
   }
   
@@ -93,11 +99,6 @@ public class Task {
   }
 
   
-  public void setActivityInstanceId(String activityInstanceId) {
-    this.activityInstanceId = activityInstanceId;
-  }
-
-  
   public Object getWorkflowInstanceId() {
     return workflowInstanceId;
   }
@@ -118,7 +119,7 @@ public class Task {
   }
 
   
-  public void setActivityInstanceId(Object activityInstanceId) {
+  public void setActivityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
   }
 }

@@ -13,18 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.variables.Text;
 
 
-
-
-
-@JsonTypeName("text")
 public class TextType extends AbstractDataType {
 
-  public static final String TYPE = "text";
-  
-  public static final TextType INSTANCE = new TextType();
+  public TextType() {
+    super(Text.class);
+  }
 
   @Override
   public Object convertJsonToInternalValue(Object apiValue) throws InvalidValueException {

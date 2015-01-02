@@ -22,24 +22,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.StartCommand;
-import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
-import com.effektif.workflow.impl.StartImpl;
 import com.effektif.workflow.impl.Time;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceEventListener;
 import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.TransitionImpl;
-import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @JsonPropertyOrder({"id", "activityId", "start", "end", "duration", "activityInstances", "variableInstances"})
-public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityInstance, ControllableActivityInstance {
+public class ActivityInstanceImpl extends ScopeInstanceImpl {
   
   public static final String STATE_STARTING = "starting"; 
   public static final String STATE_STARTING_MULTI_CONTAINER = "startingMultiParent"; 
@@ -56,23 +51,75 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityI
 
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
-  @JsonIgnore
-  public ActivityImpl activityDefinition;
-  
-  public String activityId;
+  public ActivityImpl activity;
   public String workState;
   public String calledWorkflowInstanceId;
   
+  public ActivityInstanceImpl() {
+  }
+
+  public ActivityInstanceImpl(ScopeInstanceImpl parent, ActivityImpl activity, String id) {
+    super(parent, activity, id);
+    this.activity = activity;
+  }
+
+  public ActivityInstance toActivityInstance() {
+    ActivityInstance activityInstance = new ActivityInstance();
+    activityInstance.setActivityId(activity.id);
+    activityInstance.setCalledWorkflowInstanceId(calledWorkflowInstanceId);
+    toScopeInstance(activityInstance);
+    return null;
+  }
+  
+  public void execute() {
+    for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
+      listener.started(this);
+    }
+    activity.activityType.execute(this);
+    if (START_WORKSTATES.contains(workState)) {
+      setWorkState(ActivityInstanceImpl.STATE_WAITING);
+    }
+  }
+
   public void onwards() {
-    workflowEngine.executeOnwards(this);
+    if (log.isDebugEnabled())
+      log.debug("Onwards "+this);
+    // Default BPMN logic when an activity ends
+    // If there are outgoing transitions (in bpmn they are called sequence flows)
+    if (activity.hasOutgoingTransitionDefinitions()) {
+      // Ensure that each transition is taken
+      // Note that process concurrency does not require java concurrency
+      end(false);
+      for (TransitionImpl transitionDefinition: activity.outgoingTransitions) {
+        takeTransition(transitionDefinition);
+      }
+    } else {
+      // Propagate completion upwards
+      end(true);
+    }
   }
 
   public void end() {
-    workflowEngine.executeEnd(this, true);
+    end(true);
   }
 
   public void end(boolean notifyParent) {
-    workflowEngine.executeEnd(this, notifyParent);
+    if (end==null) {
+      if (hasOpenActivityInstances()) {
+        throw new RuntimeException("Can't end this activity instance. There are open activity instances: " +this);
+      }
+      setEnd(Time.now());
+      for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
+        listener.ended(this);
+      }
+      if (notifyParent) {
+        setWorkState(STATE_NOTIFYING);
+        workflowInstance.addWork(this);
+
+      } else {
+        setWorkState(null); // means please archive me.
+      }
+    }
   }
 
   public void setWorkState(String workState) {
@@ -83,30 +130,25 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityI
     }
   }
 
-  @Override
   public void setJoining() {
     setWorkState(STATE_JOINING);
   }
   
-  @Override
-  public boolean isJoining(ActivityInstance activityInstance) {
-    ActivityInstanceImpl activityInstanceImpl = (ActivityInstanceImpl) activityInstance;
-    return STATE_JOINING.equals(activityInstanceImpl.workState);
+  public boolean isJoining(ActivityInstanceImpl activityInstance) {
+    return STATE_JOINING.equals(activityInstance.workState);
   }
   
-  @Override
-  public void removeJoining(ActivityInstance activityInstance) {
-    ActivityInstanceImpl activityInstanceImpl = (ActivityInstanceImpl) activityInstance;
-    activityInstanceImpl.setWorkState(null);
+  public void removeJoining(ActivityInstanceImpl activityInstance) {
+    activityInstance.setWorkState(null);
   }
 
   /** Starts the to (destination) activity in the current (parent) scope.
    * This methods will also end the current activity instance.
    * This method can be called multiple times in one start() */
-  public void takeTransition(Transition transition) {
-    ActivityImpl to = (ActivityImpl) transition.getTo();
+  public void takeTransition(TransitionImpl transition) {
+    ActivityImpl to = transition.to;
     end(to==null);
-    for (WorkflowInstanceEventListener listener : getWorkflowEngine().getListeners()) {
+    for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
       listener.transition(this, transition);
     }
     if (to!=null) {
@@ -118,7 +160,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityI
   
   @Override
   public void ended(ActivityInstanceImpl nestedEndedActivityInstance) {
-    activityDefinition.activityType.ended(this, nestedEndedActivityInstance);
+    activity.activityType.ended(this, nestedEndedActivityInstance);
   }
   
   @Override
@@ -130,16 +172,16 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityI
   }
 
   public ActivityImpl getActivity() {
-    return activityDefinition;
+    return activity;
   }
   
-  public void setActivityDefinition(ActivityImpl activityDefinition) {
-    this.activityDefinition = activityDefinition;
+  public void setActivity(ActivityImpl activityDefinition) {
+    this.activity = activityDefinition;
   }
   
   public String toString() {
-    String activityDefinitionType = activityDefinition.activityType.getClass().getSimpleName();
-    return "("+activityDefinition.id+"|"+activityDefinitionType+"|"+id+"|ai)";
+    String activityDefinitionType = activity.activityType.getClass().getSimpleName();
+    return "("+activity.id+"|"+activityDefinitionType+"|"+id+"|ai)";
   }
   
   public void setEnd(LocalDateTime end) {
@@ -153,42 +195,20 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl implements ActivityI
     }
   }
 
-  public void setActivityId(String activityDefinitionId) {
-    this.activityId = activityDefinitionId;
-  }
-
-  @Override
-  public String getActivityId() {
-    return activityId;
-  }
-  
   @Override
   public ActivityInstanceImpl findActivityInstanceByActivityId(String activityDefinitionId) {
     if (activityDefinitionId==null) {
       return null;
     }
-    if (activityDefinitionId.equals(this.activityId)) {
+    if (activityDefinitionId.equals(activity.id)) {
       return this;
     }
     return super.findActivityInstanceByActivityId(activityDefinitionId);
   }
   
-  public Object getTransientContextObject(String key) {
-    return workflowInstance.getTransientContextObject(key);
-  }
-
   @Override
   public boolean isProcessInstance() {
     return false;
-  }
-
-  public StartCommand newSubWorkflowStart(String subSubWorkflowId) {
-    JsonService jsonService = workflowEngine.getServiceRegistry().getService(JsonService.class);
-    StartImpl start = new StartImpl(workflowEngine, jsonService);
-    start.processDefinitionId = subSubWorkflowId;
-    start.callerWorkflowInstanceId = workflowInstance.id;
-    start.callerActivityInstanceId = id;
-    return start;
   }
 
   public void setCalledWorkflowInstanceId(String calledWorkflowInstanceId) {

@@ -19,6 +19,16 @@ package com.effektif.workflow.api.variables;
  */
 public class JavaBean {
   
-  Class<?> javaBeanType;
-  
+  protected Class<?> javaClass;
+
+  public Class<?> getJavaClass() {
+    return this.javaClass;
+  }
+  public void setJavaClass(Class<?> javaClass) {
+    this.javaClass = javaClass;
+  }
+  public JavaBean javaClass(Class<?> javaClass) {
+    this.javaClass = javaClass;
+    return this;
+  }
 }

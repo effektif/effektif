@@ -14,19 +14,19 @@
 package com.effektif.workflow.impl.activitytypes;
 
 import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.plugin.ConfigurationClass;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.effektif.workflow.impl.plugin.Descriptor;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** this task doesn't do anything, it just continues (aka noop, pass-through). */
-@ConfigurationClass(NoneTask.class)
-public class NoneTaskImpl extends AbstractActivityType {
+public class NoneTaskImpl extends AbstractActivityType<NoneTask> {
+
+  public NoneTaskImpl() {
+    super(NoneTask.class);
+  }
 
   @Override
-  public void start(ControllableActivityInstance activityInstance) {
+  public void execute(ActivityInstanceImpl activityInstance) {
     activityInstance.onwards();
   }
 

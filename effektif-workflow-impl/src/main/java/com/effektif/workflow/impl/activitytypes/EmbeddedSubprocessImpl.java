@@ -17,26 +17,28 @@ import java.util.List;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.impl.definition.ActivityImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.plugin.ConfigurationClass;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.effektif.workflow.impl.plugin.Validator;
 
 
-@ConfigurationClass(EmbeddedSubprocess.class)
 public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubprocess> {
 
   public static final EmbeddedSubprocessImpl INSTANCE = new EmbeddedSubprocessImpl();
   
-  List<ActivityImpl> startActivities;
+  protected List<ActivityImpl> startActivities;
   
+  public EmbeddedSubprocessImpl() {
+    super(EmbeddedSubprocess.class);
+  }
+
   @Override
-  public void validate(ActivityImpl activity, EmbeddedSubprocess embeddedSubprocess, Validator validator) {
+  public void validate(ActivityImpl activity, EmbeddedSubprocess embeddedSubprocess, WorkflowValidator validator) {
     this.startActivities = validator.getStartActivities(activity);
   }
 
   @Override
-  public void start(ControllableActivityInstance activityInstance) {
+  public void execute(ActivityInstanceImpl activityInstance) {
     if (startActivities!=null && !startActivities.isEmpty()) {
       for (ActivityImpl startActivity: startActivities) {
         activityInstance.execute(startActivity);

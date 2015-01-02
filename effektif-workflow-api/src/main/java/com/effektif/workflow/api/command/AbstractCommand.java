@@ -22,6 +22,7 @@ import java.util.Map;
  */
 public abstract class AbstractCommand {
 
+  protected String organizationId;
   protected Map<String,Object> variableValues;
 
   public Map<String,Object> getVariableValues() {
@@ -37,6 +38,17 @@ public abstract class AbstractCommand {
       variableValues = new HashMap<>();
     }
     variableValues.put(variableId, variableValue);
+    return this;
+  }
+
+  public String getOrganizationId() {
+    return this.organizationId;
+  }
+  public void setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
+  }
+  public AbstractCommand organizationId(String organizationId) {
+    this.organizationId = organizationId;
     return this;
   }
 }

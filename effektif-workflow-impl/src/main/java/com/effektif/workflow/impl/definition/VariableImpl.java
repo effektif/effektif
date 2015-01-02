@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.definition;
 
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Descriptors;
 import com.effektif.workflow.impl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,35 +23,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class VariableImpl {
 
-  public Variable apiVariable;
   public String id;
   public DataType dataType;
   public Object initialValue;
 
   public WorkflowEngineImpl workflowEngine;
-  @JsonIgnore
   public WorkflowImpl workflow;  
-  @JsonIgnore
   public ScopeImpl parent;
 
-  public Long line;
-  public Long column;
-
-  public VariableImpl(Variable apiVariable) {
-    this.apiVariable = apiVariable;
-  }
-  
-  public void validate(WorkflowValidator validator) {
+  public void validate(Variable apiVariable, WorkflowValidator validator) {
     if (id==null || "".equals(id)) {
       validator.addError("Variable does not have an id");
     }
-    validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
-    if (variable.dataType!=null) {
-      variable.dataType.validate(this);
-    } else {
-      addError("No data type configured for variable %s", variable.id);
-    }
-
+    Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
+    DataType dataType = descriptors.instantiateDataType(apiVariable);
+    dataType.validate(this, apiVariable, validator);
   }
-
 }

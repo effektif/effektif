@@ -13,35 +13,45 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MultiInstance {
 
-  protected Variable variable;
-  protected Binding collection;
+  protected Variable elementVariable;
+  protected List<Binding<Object>> collection;
 
-  public Variable getVariable() {
-    return this.variable;
+  public Variable getElementVariable() {
+    return this.elementVariable;
   }
-  public void setVariable(Variable variable) {
-    this.variable = variable;
+  public void setElementVariable(Variable variable) {
+    this.elementVariable = variable;
   }
-  public MultiInstance variable(Variable variable) {
-    this.variable = variable;
+  public MultiInstance elementVariable(Variable elementVariable) {
+    this.elementVariable = elementVariable;
     return this;
   }
   
-  public Binding getCollection() {
+  public List<Binding<Object>> getCollection() {
     return this.collection;
   }
-  public void setCollection(Binding collection) {
+  public void setCollection(List<Binding<Object>> collection) {
     this.collection = collection;
   }
   public MultiInstance collectionVariableId(String collectionVariableId) {
-    this.collection = new Binding().variableId(collectionVariableId);
+    addCollectionBinding(new Binding<Object>().variableId(collectionVariableId));
     return this;
   }
   public MultiInstance collectionExpression(String collectionExpression) {
-    this.collection = new Binding().expression(collectionExpression);
+    addCollectionBinding(new Binding<Object>().expression(collectionExpression));
     return this;
+  }
+  
+  void addCollectionBinding(Binding<Object> binding) {
+    if (collection==null) {
+      collection = new ArrayList<>();
+    }
+    collection.add(binding);
   }
 }

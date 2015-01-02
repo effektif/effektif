@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl;
 
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.impl.definition.BindingImpl;
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
 
 

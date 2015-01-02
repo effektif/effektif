@@ -17,6 +17,7 @@ import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STA
 import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,42 +31,47 @@ import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.BindingImpl;
 import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.Time;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.definition.ActivityImpl;
+import com.effektif.workflow.impl.definition.BindingImpl;
 import com.effektif.workflow.impl.definition.ScopeImpl;
 import com.effektif.workflow.impl.definition.VariableImpl;
-import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.plugin.TypedValue;
+import com.effektif.workflow.impl.type.AnyDataType;
 import com.effektif.workflow.impl.type.DataType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.effektif.workflow.impl.type.NumberType;
+import com.effektif.workflow.impl.type.TextType;
 
 
-public abstract class ScopeInstanceImpl {
+public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
-  public String id;
+  public ScopeImpl scope;
   public LocalDateTime start;
   public LocalDateTime end;
   public Long duration;
   public List<ActivityInstanceImpl> activityInstances;
   public List<VariableInstanceImpl> variableInstances;
+  public Map<String, VariableInstanceImpl> variableInstancesMap;
   public List<TimerInstanceImpl> timerInstances;
 
-  public Map<String, VariableInstanceImpl> variableInstancesMap;
-  public WorkflowEngineImpl workflowEngine;
-  public WorkflowImpl workflow;
-  public ScopeImpl scopeDefinition;
-  public WorkflowInstanceImpl workflowInstance;
-  public ScopeInstanceImpl parent;
   // As long as the workflow instance is not saved, the updates collection is null.
   // That means it's not yet necessary to collect the updates. 
   public ScopeInstanceUpdates updates;
   
+  public ScopeInstanceImpl() {
+  }
+
+  public ScopeInstanceImpl(ScopeInstanceImpl parent, ScopeImpl scope, String id) {
+    super(parent, id);
+    this.scope = scope;
+    this.start = Time.now();
+  }
+
   public abstract void setEnd(LocalDateTime end); 
   
   public abstract void ended(ActivityInstanceImpl activityInstance);
@@ -102,20 +108,15 @@ public abstract class ScopeInstanceImpl {
   }
 
   public ActivityInstanceImpl createActivityInstance(ActivityImpl activity) {
-    ActivityInstanceImpl activityInstance = workflowEngine.createActivityInstance(this, activity);
-    activityInstance.workflowEngine = workflowEngine;
-    activityInstance.scopeDefinition = activity;
-    activityInstance.workflow = workflow;
-    activityInstance.workflowInstance = workflowInstance;
-    activityInstance.activityDefinition = activity;
-    activityInstance.activityId = activity.id;
+    WorkflowInstanceStore workflowInstanceStore = workflowEngine.getServiceRegistry().getService(WorkflowInstanceStore.class);
+    ActivityInstanceImpl activityInstance = workflowInstanceStore.createActivityInstance(this, activity);
     if (activity.isMultiInstance()) {
       activityInstance.setWorkState(STATE_STARTING_MULTI_CONTAINER);
     } else {
       activityInstance.setWorkState(STATE_STARTING);
     }
     workflowInstance.addWork(activityInstance);
-    activityInstance.setStart(Time.now());
+    activityInstance.start = Time.now();
     if (updates!=null) {
       activityInstance.updates = new ActivityInstanceUpdates(true);
       propagateActivityInstanceChange(this);
@@ -141,22 +142,21 @@ public abstract class ScopeInstanceImpl {
   }
   
   public void initializeVariableInstances() {
-    List<VariableImpl> variableDefinitions = scopeDefinition.getVariableDefinitions();
-    if (variableDefinitions!=null) {
-      for (VariableImpl variableDefinition: variableDefinitions) {
+    Collection<VariableImpl> variables = scope.variables.values();
+    if (variables!=null) {
+      for (VariableImpl variableDefinition: variables) {
         createVariableInstance(variableDefinition);
       }
     }
   }
 
   public VariableInstanceImpl createVariableInstance(VariableImpl variable) {
-    VariableInstanceImpl variableInstance = workflowEngine.createVariableInstance(this, variable);
-    variableInstance.processEngine = workflowEngine;
-    variableInstance.processInstance = workflowInstance;
+    VariableInstanceImpl variableInstance = createVariableInstance(variable);
+    variableInstance.workflowEngine = workflowEngine;
+    variableInstance.workflowInstance = workflowInstance;
     variableInstance.dataType = variable.dataType;
     variableInstance.value = variable.initialValue;
-    variableInstance.variableDefinition = variable;
-    variableInstance.variableDefinitionId = variable.id;
+    variableInstance.variable = variable;
     if (updates!=null) {
       variableInstance.updates = new VariableInstanceUpdates(true);
       updates.isVariableInstancesChanged = true;
@@ -232,14 +232,27 @@ public abstract class ScopeInstanceImpl {
     if (parent!=null) {
       parent.setVariableValue(variableDefinitionId, value);
     }
-    workflowEngine.createVariableInstanceByValue(this, value);
+    createVariableInstanceByValue(value);
   }
   
+  public void createVariableInstanceByValue(Object value) {
+    VariableImpl variable = new VariableImpl();
+    if (value instanceof String) {
+      variable.dataType = new TextType();
+    } else if (value instanceof Number) {
+      variable.dataType = new NumberType();
+    } else {
+      variable.dataType = new AnyDataType();
+    }
+    VariableInstanceImpl variableInstance = createVariableInstance(variable);
+    variableInstance.setValue(value);
+  }
+
   public TypedValue getVariableTypedValue(String variableId) {
     if (variableInstances!=null) {
       VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableId);
       if (variableInstance!=null) {
-        DataType dataType = variableInstance.variableDefinition.dataType;
+        DataType dataType = variableInstance.variable.dataType;
         Object value = variableInstance.getValue();
         return new TypedValue(dataType, value);
       }
@@ -259,10 +272,12 @@ public abstract class ScopeInstanceImpl {
     if (variableInstancesMap==null && variableInstances!=null) {
       variableInstancesMap = new HashMap<>();
       for (VariableInstanceImpl variableInstance: variableInstances) {
-        variableInstancesMap.put(variableInstance.variableDefinition.id, variableInstance);
+        variableInstancesMap.put(variableInstance.variable.id, variableInstance);
       }
     }
   }
+  
+  
   
   public abstract void end();
 
@@ -296,7 +311,6 @@ public abstract class ScopeInstanceImpl {
     return null;
   }
   
-  @Override
   public ActivityInstanceImpl findActivityInstanceByActivityId(String activityDefinitionId) {
     if (activityDefinitionId==null) {
       return null;
@@ -348,98 +362,10 @@ public abstract class ScopeInstanceImpl {
     }
   }
 
-  // getters and setters ////////////////////////////////////////////////////////////
-
-  public WorkflowEngineImpl getWorkflowEngine() {
-    return workflowEngine;
-  }
-
-  public void setWorkflowEngine(WorkflowEngineImpl processEngine) {
-    this.workflowEngine = processEngine;
-  }
-
-  public WorkflowImpl getWorkflow() {
-    return workflow;
-  }
-
-  public void setWorkflow(WorkflowImpl processDefinition) {
-    this.workflow = processDefinition;
-  }
-  
-  public ScopeImpl getScopeDefinition() {
-    return scopeDefinition;
-  }
-
-  public void setScopeDefinition(ScopeImpl scopeDefinition) {
-    this.scopeDefinition = scopeDefinition;
-  }
-  
-  public WorkflowInstanceImpl getWorkflowInstance() {
-    return workflowInstance;
-  }
-  
-  public void setWorkflowInstance(WorkflowInstanceImpl processInstance) {
-    this.workflowInstance = processInstance;
-  }
-  
-  public List<ActivityInstanceImpl> getActivityInstances() {
-    return activityInstances;
-  }
-  
-  public void setActivityInstances(List<ActivityInstanceImpl> activityInstances) {
-    this.activityInstances = activityInstances;
-  }
-
   public boolean hasActivityInstances() {
     return activityInstances!=null && !activityInstances.isEmpty();
   }
-  
-  public ScopeInstanceImpl getParent() {
-    return parent;
-  }
-  
-  public void setParent(ScopeInstanceImpl parent) {
-    this.parent = parent;
-  }
-
-  public LocalDateTime getStart() {
-    return start;
-  }
-  
-  public void setStart(LocalDateTime start) {
-    this.start = start;
-  }
-  
-  public LocalDateTime getEnd() {
-    return end;
-  }
-  
   public boolean isEnded() {
     return end!=null;
   }
-  
-  public Long getDuration() {
-    return duration;
-  }
-  
-  public void setDuration(Long duration) {
-    this.duration = duration;
-  }
-  
-  public List<VariableInstanceImpl> getVariableInstances() {
-    return variableInstances;
-  }
-  
-  public void setVariableInstances(List<VariableInstanceImpl> variableInstances) {
-    this.variableInstances = variableInstances;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
 }

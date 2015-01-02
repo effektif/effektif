@@ -14,18 +14,14 @@
 package com.effektif.workflow.impl.definition;
 
 import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.impl.job.JobType;
 
 
-/**
- * @author Tom Baeyens
- */
 public class TimerImpl extends BaseImpl {
+  
+  public JobType jobType;
 
-  public Timer apiTimer;
-
-  public TimerImpl(Timer apiTimer) {
-    super(apiTimer);
-    this.apiTimer = apiTimer;
+  public void validate(Timer apiTimer, WorkflowValidator validator) {
+    super.validate(apiTimer, validator);
   }
-
 }

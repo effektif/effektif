@@ -16,36 +16,31 @@ package com.effektif.workflow.impl.activitytypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.impl.definition.ActivityImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.effektif.workflow.impl.plugin.Validator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("parallelGateway")
-public class ParallelGateway extends AbstractActivityType {
+public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
   
-  @JsonIgnore
   int nbrOfIncomingTransitions = -1;
-  @JsonIgnore
   boolean hasOutgoingTransitions = false;
   
+  public ParallelGatewayImpl() {
+    super(ParallelGateway.class);
+  }
   
   @Override
-  public void validate(Activity activity, Validator validator) {
-    if (log.isDebugEnabled())
-      log.debug("Validating "+activity.getId());
-    
+  public void validate(ActivityImpl activity, ParallelGateway parallelGateway, WorkflowValidator validator) {
     // at least one in, at least one out
     List<Transition> incomingTransitions = activity.getIncomingTransitions();
     if (log.isDebugEnabled())
       log.debug("  incoming "+incomingTransitions.size());
     if (incomingTransitions==null || incomingTransitions.isEmpty()) {
-      validator.addWarning("Parallel gateway '%s' does not have incoming transitions", activity.getId());
+      validator.addWarning("Parallel gateway '%s' does not have incoming transitions", activity.id);
     } else {
       nbrOfIncomingTransitions = incomingTransitions.size();
     }
@@ -53,19 +48,19 @@ public class ParallelGateway extends AbstractActivityType {
     if (log.isDebugEnabled())
       log.debug("  outgoing "+outgoingTransitions.size());
     if (outgoingTransitions==null || outgoingTransitions.isEmpty()) {
-      validator.addWarning("Parallel gateway '%s' does not have outgoing transitions", activity.getId());
+      validator.addWarning("Parallel gateway '%s' does not have outgoing transitions", activity.id);
     } else {
       hasOutgoingTransitions = true;
     }
   }
 
   @Override
-  public void start(ControllableActivityInstance activityInstance) {
+  public void execute(ActivityInstanceImpl activityInstance) {
     activityInstance.end();
     boolean hasOtherUnfinishedActivities = false;
 
-    List<ActivityInstance> otherJoiningActivityInstances = new ArrayList<>();
-    for (ActivityInstance siblingActivityInstance: activityInstance.getParent().getActivityInstances()) {
+    List<ActivityInstanceImpl> otherJoiningActivityInstances = new ArrayList<>();
+    for (ActivityInstanceImpl siblingActivityInstance: activityInstance.parent.activityInstances) {
       if (!siblingActivityInstance.isEnded()) {
         hasOtherUnfinishedActivities = true;
       }
@@ -84,7 +79,7 @@ public class ParallelGateway extends AbstractActivityType {
        ) {
       if (log.isDebugEnabled())
         log.debug("Firing parallel gateway");
-      for (ActivityInstance otherJoiningActivityInstance: otherJoiningActivityInstances) {
+      for (ActivityInstanceImpl otherJoiningActivityInstance: otherJoiningActivityInstances) {
         activityInstance.removeJoining(otherJoiningActivityInstance);
       }
       activityInstance.onwards();
@@ -94,10 +89,10 @@ public class ParallelGateway extends AbstractActivityType {
   }
 
   @Override
-  public void message(ControllableActivityInstance activityInstance) {
+  public void message(ActivityInstanceImpl activityInstance) {
   }
 
   @Override
-  public void ended(ControllableActivityInstance activityInstance, ActivityInstance nestedEndedActivityInstance) {
+  public void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance) {
   }
 }

@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl.definition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +26,6 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 
 
 public abstract class ScopeImpl extends BaseImpl {
@@ -35,104 +35,128 @@ public abstract class ScopeImpl extends BaseImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
 
-  public ScopeImpl(Scope apiScope) {
-    super(apiScope);
-    List<Activity> apiActivities = apiScope.getActivities();
-    if (apiActivities!=null) {
-      for (Activity apiActivity: apiActivities) {
-        ActivityImpl activity = new ActivityImpl(apiActivity);
-        if (activities==null) {
-          activities = new LinkedHashMap<>();
-        }
-        activities.put(activity.id, activity);
-      }
-    }
-    List<Transition> apiTransitions = apiScope.getTransitions();
-    if (apiTransitions!=null) {
-      for (Transition apiTransition: apiTransitions) {
-        TransitionImpl transition = new TransitionImpl(apiTransition);
-        if (transitions==null) {
-          transitions = new ArrayList<>(apiTransitions.size());
-        }
-        transitions.add(transition);
-      }
-    }
+  public void validate(Scope apiScope, WorkflowValidator validator) {
+    super.validate(apiScope, validator);
+    
     List<Variable> apiVariables = apiScope.getVariables();
     if (apiVariables!=null) {
-      for (Variable apiVariable: apiVariables) {
-        VariableImpl variable = new VariableImpl(apiVariable);
-        if (variables==null) {
-          variables = new LinkedHashMap<>();
-        }
-        variables.put(variable.id, variable);
-      }
-    }
-    List<Timer> apiTimers = apiScope.getTimers();
-    if (apiTimers!=null) {
-      for (Timer apiTimer: apiTimers) {
-        TimerImpl timer = new TimerImpl(apiTimer);
-        if (timers==null) {
-          timers = new ArrayList<>(apiTimers.size());
-        }
-        timers.add(timer);
-      }
-    }
-  }
-
-  public void validate(WorkflowValidator validator) {
-    if (transitions!=null) {
-      int i = 0;
-      for (TransitionImpl transition: transitions) {
-        validator.pushContext(transition, i);
-        transition.parent = this;
-        transition.validate(validator);
-        validator.popContext();
-        i++;
-      }
-    }
-    if (activities!=null) {
-      Set<String> activityIds = new HashSet<>();
-      int i = 0;
-      for (ActivityImpl activity: activities.values()) {
-        validator.pushContext(activity, i);
-        activity.parent = this;
-        activityIds.add(activity.id);
-        if (activityIds.contains(activity.id)) {
-          validator.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activity.id);
-        }
-        activity.validate(validator);
-        validator.popContext();
-        i++;
-      }
-    }
-    if (variables!=null) {
-      int i = 0;
       Set<String> variableIds = new HashSet<>();
-      for (VariableImpl variable: variables.values()) {
-        validator.pushContext(variable, i);
-        variable.parent = this;
+      int i = 0;
+      for (Variable apiVariable: apiVariables) {
+        VariableImpl variable = new VariableImpl();
+        addVariable(variable);
+        validator.pushContext("variables", apiVariable, i);
         variableIds.add(variable.id);
         if (variableIds.contains(variable.id)) {
           validator.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variable.id);
         }
-        variable.validate(validator);
+        variable.validate(apiVariable, validator);
         validator.popContext();
         i++;
       }
     }
-    if (timers!=null) {
+    
+    List<Timer> apiTimers = apiScope.getTimers();
+    if (apiTimers!=null) {
       int i = 0;
-      for (TimerImpl timer: timers) {
-        validator.pushContext(timer, i);
-        timer.parent = this;
-        timer.validate(validator);
+      for (Timer apiTimer: apiTimers) {
+        TimerImpl timer = new TimerImpl();
+        addTimer(timer);
+        validator.pushContext("timers", apiTimer, i);
+        timer.validate(apiTimer, validator);
         validator.popContext();
         i++;
+      }
+    }
+
+    Map<String, ActivityImpl> activitiesByDefaultTransitionId = new HashMap<>();
+    List<Activity> apiActivities = apiScope.getActivities();
+    if (apiActivities!=null) {
+      Set<String> activityIds = new HashSet<>();
+      int i = 0;
+      for (Activity apiActivity: apiActivities) {
+        ActivityImpl activity = new ActivityImpl();
+        addActivity(activity);
+        validator.pushContext("activities", apiActivity, i);
+        activity.validate(apiActivity, validator);
+        if (activityIds.contains(activity.id)) {
+          validator.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activity.id);
+        }
+        if (apiActivity.getDefaultTransitionId()!=null) {
+          activitiesByDefaultTransitionId.put(apiActivity.getDefaultTransitionId(), activity);
+        }
+        validator.popContext();
+        i++;
+      }
+    }
+
+    List<Transition> apiTransitions = apiScope.getTransitions();
+    if (apiTransitions!=null) {
+      int i = 0;
+      for (Transition apiTransition: apiTransitions) {
+        TransitionImpl transition = new TransitionImpl();
+        addTransition(transition);
+        validator.pushContext("transitions", apiTransition, i);
+        transition.validate(apiTransition, validator, activitiesByDefaultTransitionId);
+        validator.popContext();
+        i++;
+      }
+    }
+
+    // some activity types need to validate incoming and outgoing transitions, 
+    // that's why they are validated after the transitions.
+    int i=0;
+    for (ActivityImpl activity: activities.values()) {
+      Activity apiActivity = apiActivities.get(i);
+      if (activity.activityType!=null) {
+        validator.pushContext("activities", apiActivity, i);
+        activity.activityType.validate(activity, apiActivity, validator);
+        validator.popContext();
+      }
+      i++;
+    }
+    
+    if (!activitiesByDefaultTransitionId.isEmpty()) {
+      for (String nonExistingDefaultTransitionId: activitiesByDefaultTransitionId.keySet()) {
+        ActivityImpl activity = activitiesByDefaultTransitionId.get(nonExistingDefaultTransitionId);
+        validator.addError("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
       }
     }
   }
+
+  public void addTimer(TimerImpl timer) {
+    if (timers==null) {
+      timers = new ArrayList<>();
+    }
+    timers.add(timer);
+    timer.parent = this;
+  }
+
+  protected void addVariable(VariableImpl variable) {
+    if (variables==null) {
+      variables = new LinkedHashMap<>();
+    }
+    variables.put(variable.id, variable);
+    variable.parent = this;
+  }
+
+  protected void addTransition(TransitionImpl transition) {
+    if (transitions==null) {
+      transitions = new ArrayList<>();
+    }
+    transitions.add(transition);
+    transition.parent = this;
+  }
   
-  protected TransitionImpl findTransitionById(String transitionId) {
+  protected void addActivity(ActivityImpl activity) {
+    if (activities==null) {
+      activities = new LinkedHashMap<>();
+    }
+    activities.put(activity.id, activity);
+    activity.parent = this;
+  }
+
+  protected TransitionImpl findTransitionByIdLocal(String transitionId) {
     if (transitions!=null) {
       for (TransitionImpl transition: transitions) {
         if (transitionId.equals(transition.id)) {
@@ -143,39 +167,11 @@ public abstract class ScopeImpl extends BaseImpl {
     return null;
   }
 
-  public ActivityImpl findActivityById(String activityId) {
+  public ActivityImpl findActivityByIdLocal(String activityId) {
     return activities.get(activityId);
   }
 
 
-  public ActivityImpl getActivity(String activityDefinitionId) {
-    return workflow.findActivity(activityDefinitionId);
-  }
-
-  public WorkflowImpl getProcessDefinition() {
-    return workflow;
-  }
-
-  public void setWorkflow(WorkflowImpl processDefinition) {
-    this.workflow = processDefinition;
-  }
-  
-  public WorkflowEngineImpl getProcessEngine() {
-    return workflowEngine;
-  }
-  
-  public void setWorkflowEngine(WorkflowEngineImpl processEngine) {
-    this.workflowEngine = processEngine;
-  }
-
-  public ScopeImpl getParent() {
-    return parent;
-  }
-
-  public void setParent(ScopeImpl parent) {
-    this.parent = parent;
-  }
-  
   public boolean isProcessDefinition() {
     return parent!=null;
   }
@@ -190,93 +186,9 @@ public abstract class ScopeImpl extends BaseImpl {
 
   public boolean hasTransitions() {
     return transitions!=null && !transitions.isEmpty();
+  }
+  
+  public boolean hasVariable(String variableId) {
+    return variables!=null && variables.containsKey(variableId);
   } 
-  
-
-
-//  public <T extends ActivityImpl> T addActivityDefinition(T activityDefinition) {
-//    Exceptions.checkNotNull(activityDefinition, "activityDefinition");
-//    if (activityDefinitions==null)  {
-//      activityDefinitions = new ArrayList<>();
-//    }
-//    activityDefinitions.add(activityDefinition);
-//    return activityDefinition;
-//  }
-  
-//  public  ScopeImpl addVariableDefinition(VariableImpl variableDefinition) {
-//    Exceptions.checkNotNull(variableDefinition, "variableDefinition");
-//    if (variableDefinitions==null)  {
-//      variableDefinitions = new ArrayList<>();
-//    }
-//    variableDefinitions.add(variableDefinition);
-//    return this;
-//  }
-  
-
-//  public ScopeImpl addTransitionDefinition(TransitionImpl transitionDefinition) {
-//    Exceptions.checkNotNull(transitionDefinition, "transitionDefinition");
-//    if (transitionDefinitions==null)  {
-//      transitionDefinitions = new ArrayList<>();
-//    }
-//    transitionDefinitions.add(transitionDefinition);
-//    return this;
-//  }
-  
-  /// visistor ////////////////////////////////////////////////////////////
-
-//  public void visit(WorkflowVisitor visitor) {
-//    // If some visitor needs to control the order of types vs other content visited, 
-//    // then this is the idea you should consider 
-//    //   if (visitor instanceof OrderedProcessDefinitionVisitor) {
-//    //     ... also delegate the ordering of this visit to the visitor ... 
-//    //   } else { ... perform the default as below
-//    visitCompositeActivityDefinitions(visitor);
-//    visitCompositeTransitionDefinitions(visitor);
-//    visitCompositeVariableDefinitions(visitor);
-//  }
-//
-//  protected void visitCompositeActivityDefinitions(WorkflowVisitor visitor) {
-//    if (activityDefinitions!=null) {
-//      for (int i=0; i<activityDefinitions.size(); i++) {
-//        ActivityImpl activityDefinition = activityDefinitions.get(i);
-//        activityDefinition.visit(visitor, i);
-//      }
-//    }
-//  }
-//
-//  protected void visitCompositeVariableDefinitions(WorkflowVisitor visitor) {
-//    if (variableDefinitions!=null) {
-//      for (int i=0; i<variableDefinitions.size(); i++) {
-//        VariableImpl variableDefinition = variableDefinitions.get(i);
-//        visitor.variableDefinition(variableDefinition, i);
-//      }
-//    }
-//  }
-//
-//  protected void visitCompositeTransitionDefinitions(WorkflowVisitor visitor) {
-//    if (transitionDefinitions!=null) {
-//      for (int i=0; i<transitionDefinitions.size(); i++) {
-//        TransitionImpl transitionDefinition = transitionDefinitions.get(i);
-//        visitor.transitionDefinition(transitionDefinition, i);
-//      }
-//    }
-//  }
-//
-//  public boolean containsVariable(Object variableDefinitionId) {
-//    if (variableDefinitionId==null) {
-//      return false;
-//    }
-//    if (variableDefinitions!=null) {
-//      for (VariableImpl variableDefinition: variableDefinitions) {
-//        if (variableDefinitionId.equals(variableDefinition.id)) {
-//          return true;
-//        }
-//      }
-//    }
-//    ScopeImpl parent = getParent();
-//    if (parent!=null) {
-//      return parent.containsVariable(variableDefinitionId);
-//    }
-//    return false;
-//  }
 }

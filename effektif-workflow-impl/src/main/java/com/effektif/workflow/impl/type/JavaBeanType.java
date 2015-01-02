@@ -15,36 +15,29 @@ package com.effektif.workflow.impl.type;
 
 import java.util.Map;
 
+import com.effektif.workflow.api.variables.JavaBean;
+import com.effektif.workflow.impl.definition.VariableImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.Validator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("javaBean")
-public class JavaBeanType extends AbstractDataType {
+public class JavaBeanType extends AbstractDataType<JavaBean> {
   
   public Class<?> javaClass;
-  @JsonIgnore
   public JsonService jsonService;
 
   public JavaBeanType() {
-  }
-
-  public JavaBeanType(Class< ? > javaClass) {
-    this.javaClass = javaClass;
-  }
-
-  public JavaBeanType(Class< ? > javaClass, JsonService jsonService) {
-    this.javaClass = javaClass;
-    this.jsonService = jsonService;
+    super(JavaBean.class);
   }
 
   @Override
-  public void validate(Validator validator) {
+  public void validate(VariableImpl variable, JavaBean javaBean, WorkflowValidator validator) {
     this.jsonService = validator.getServiceRegistry().getService(JsonService.class);
+    this.javaClass = javaBean.getJavaClass();
   }
-  
+
   @Override
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
     if (internalValue==null) {

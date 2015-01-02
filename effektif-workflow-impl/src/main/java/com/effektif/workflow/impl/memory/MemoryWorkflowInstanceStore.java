@@ -26,10 +26,13 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
+import com.effektif.workflow.impl.definition.ActivityImpl;
+import com.effektif.workflow.impl.definition.VariableImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.instance.LockImpl;
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.instance.VariableInstanceImpl;
 import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
@@ -51,23 +54,8 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
   }
 
   @Override
-  public String createWorkflowInstanceId(WorkflowImpl processDefinition) {
-    return UUID.randomUUID().toString();
-  }
-  
-  @Override
-  public String createActivityInstanceId() {
-    return UUID.randomUUID().toString();
-  }
-
-  @Override
-  public String createVariableInstanceId() {
-    return UUID.randomUUID().toString();
-  }
-
-  @Override
   public void insertWorkflowInstance(WorkflowInstanceImpl processInstance) {
-    workflowInstances.put(processInstance.getId(), processInstance);
+    workflowInstances.put(processInstance.id, processInstance);
   }
 
   @Override
@@ -76,7 +64,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
 
   @Override
   public void flushAndUnlock(WorkflowInstanceImpl processInstance) {
-    lockedWorkflowInstances.remove(processInstance.getId());
+    lockedWorkflowInstances.remove(processInstance.id);
     processInstance.removeLock();
   }
   
@@ -107,14 +95,17 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceQuery processInstanceQuery) {
-    processInstanceQuery.setLimit(1);
-    List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(processInstanceQuery);
+  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId) {
+    WorkflowInstanceQuery query = new WorkflowInstanceQuery()
+    .workflowInstanceId(workflowInstanceId)
+    .activityInstanceId(activityInstanceId);
+    query.setLimit(1);
+    List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(query);
     if (workflowInstances==null || workflowInstances.isEmpty()) { 
       throw new RuntimeException("Process instance doesn't exist");
     }
-    WorkflowInstanceImpl processInstance = workflowInstances.get(0);
-    String processInstanceId = processInstance.getId();
+    WorkflowInstanceImpl workflowInstance = workflowInstances.get(0);
+    String processInstanceId = workflowInstance.id;
     if (lockedWorkflowInstances.contains(processInstanceId)) {
       throw new RuntimeException("Process instance "+processInstanceId+" is already locked");
     }
@@ -122,10 +113,10 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
     LockImpl lock = new LockImpl();
     lock.setTime(Time.now());
     lock.setOwner(workflowEngineId);
-    processInstance.setLock(lock);
+    workflowInstance.setLock(lock);
     //if (log.isDebugEnabled())
     //  log.debug("Locked process instance: "+jsonService.objectToJsonStringPretty(processInstance));
-    return processInstance;
+    return workflowInstance;
   }
   
   public boolean meetsConditions(WorkflowInstanceImpl processInstance, WorkflowInstanceQuery processInstanceQuery) {
@@ -137,7 +128,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
 
   boolean containsCompositeInstance(ScopeInstanceImpl scopeInstance, Object activityInstanceId) {
     if (scopeInstance.hasActivityInstances()) {
-      for (ActivityInstanceImpl activityInstance : scopeInstance.getActivityInstances()) {
+      for (ActivityInstanceImpl activityInstance : scopeInstance.activityInstances) {
         if (containsActivityInstance(activityInstance, activityInstanceId)) {
           return true;
         }
@@ -147,9 +138,29 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
   }
 
   boolean containsActivityInstance(ActivityInstanceImpl activityInstance, Object activityInstanceId) {
-    if (activityInstanceId.equals(activityInstance.getId())) {
+    if (activityInstanceId.equals(activityInstance.id)) {
       return true;
     }
     return containsCompositeInstance(activityInstance, activityInstanceId);
+  }
+  
+  public WorkflowInstanceImpl createWorkflowInstance(WorkflowImpl workflow) {
+    return new WorkflowInstanceImpl(workflow.workflowEngine, workflow, createId());
+  }
+
+  /** instantiates and assign an id.
+   * parent and activityDefinition are only passed for reference.  
+   * Apart from choosing the activity instance class to instantiate and assigning the id,
+   * this method does not need to link the parent or the activityDefinition. */
+  public ActivityInstanceImpl createActivityInstance(ScopeInstanceImpl parent, ActivityImpl activity) {
+    return new ActivityInstanceImpl(parent, activity, createId());
+  }
+
+  public VariableInstanceImpl createVariableInstance(ScopeInstanceImpl parent, VariableImpl variable) {
+    return new VariableInstanceImpl(parent, variable, createId());
+  }
+
+  protected String createId() {
+    return UUID.randomUUID().toString();
   }
 }

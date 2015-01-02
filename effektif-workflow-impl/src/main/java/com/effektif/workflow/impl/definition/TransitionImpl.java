@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.definition;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
@@ -20,18 +22,19 @@ import com.effektif.workflow.impl.script.ScriptService;
 
 public class TransitionImpl extends BaseImpl {
 
-  public Transition apiTransition;
   public ActivityImpl from;
   public ActivityImpl to;
   public ScopeImpl parent;
   public Script conditionScript;
 
-  public TransitionImpl(Transition apiTransition) {
-    super(apiTransition);
-    this.apiTransition = apiTransition;
-  }
-  
-  public void validate(WorkflowValidator validator) {
+  public void validate(Transition apiTransition, WorkflowValidator validator, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
+    super.validate(apiTransition, validator);
+
+    ActivityImpl activityHavingThisAsDefault = activitiesByDefaultTransitionId.remove(id);
+    if (activityHavingThisAsDefault!=null) {
+      activityHavingThisAsDefault.defaultTransition = this;
+    }
+
     String fromId = apiTransition.getFrom();
     if (fromId==null) {
       validator.addWarning("Transition has no 'from' specified");
@@ -39,6 +42,9 @@ public class TransitionImpl extends BaseImpl {
       this.from = parent.activities.get(fromId);
       if (this.from!=null) {
         this.from.addOutgoingTransition(this);
+        if (activityHavingThisAsDefault!=null && activityHavingThisAsDefault!=from) {
+          validator.addWarning("Default transition '%s' does not leave from activity '%s'", id, activityHavingThisAsDefault.id);
+        }
       } else {
         validator.addError("Transition has an invalid value for 'from' (%s) : %s", fromId, validator.getExistingActivityIdsText(parent));
       }

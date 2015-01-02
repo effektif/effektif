@@ -13,10 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.instance;
 
-import java.util.ArrayList;
+import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_NOTIFYING;
+import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING;
+import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
+import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING_MULTI_INSTANCE;
+
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 import org.joda.time.Duration;
@@ -25,15 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
-import com.effektif.workflow.api.workflowinstance.ScopeInstance;
-import com.effektif.workflow.api.workflowinstance.TimerInstance;
-import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowInstanceStore;
+import com.effektif.workflow.impl.activitytypes.CallImpl;
+import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class WorkflowInstanceImpl extends ScopeInstanceImpl {
@@ -46,12 +48,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public String organizationId;
   public String callerWorkflowInstanceId;
   public String callerActivityInstanceId;
-  
-  @JsonIgnore
   public Boolean isAsync;
-  
-  @JsonIgnore
-  public Map<String, Object> transientContext;
 
   public WorkflowInstanceImpl() {
   }
@@ -61,7 +58,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.workflowEngine = processEngine;
     this.organizationId = workflow.organizationId;
     this.workflow = workflow;
-    this.scopeDefinition = workflow;
+    this.scope = workflow;
     this.workflowInstance = this;
     this.start = Time.now();
     initializeVariableInstances();
@@ -77,6 +74,98 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return w;
   }
   
+  public void executeWork() {
+    WorkflowInstanceStore workflowInstanceStore = workflowEngine.getWorkflowInstanceStore();
+    boolean isFirst = true;
+    while (hasWork()) {
+      // in the first iteration, the updates will be empty and hence no updates will be flushed
+      if (isFirst) {
+        isFirst = false;
+      } else {
+        workflowInstanceStore.flush(this); 
+      }
+      ActivityInstanceImpl activityInstance = getNextWork();
+      ActivityImpl activity = activityInstance.getActivity();
+      
+      if (STATE_STARTING.equals(activityInstance.workState)) {
+        if (log.isDebugEnabled())
+          log.debug("Starting "+activityInstance);
+        activityInstance.execute();
+        
+      } else if (STATE_STARTING_MULTI_INSTANCE.equals(activityInstance.workState)) {
+        if (log.isDebugEnabled())
+          log.debug("Starting multi instance "+activityInstance);
+        activityInstance.execute();
+        
+      } else if (STATE_STARTING_MULTI_CONTAINER.equals(activityInstance.workState)) {
+        List<Object> values = null;
+        if (activity.multiInstance!=null) {
+          values = activityInstance.getValue(activity.multiInstance.collection);
+        }
+        if (values!=null && !values.isEmpty()) {
+          if (log.isDebugEnabled())
+            log.debug("Starting multi container "+activityInstance);
+          for (Object value: values) {
+            ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
+            elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE); 
+            elementActivityInstance.initializeForEachElement(activity.multiInstance.elementVariable, value);
+          }
+        } else {
+          if (log.isDebugEnabled())
+            log.debug("Skipping empty multi container "+activityInstance);
+          activityInstance.onwards();
+        }
+  
+      } else if (STATE_NOTIFYING.equals(activityInstance.workState)) {
+        if (log.isDebugEnabled())
+          log.debug("Notifying parent of "+activityInstance);
+        activityInstance.parent.ended(activityInstance);
+        activityInstance.workState = null;
+      }
+    }
+    if (hasAsyncWork()) {
+      if (log.isDebugEnabled())
+        log.debug("Going asynchronous "+workflowInstance);
+      workflowInstanceStore.flush(workflowInstance);
+      ExecutorService executor = workflowEngine.getExecutorService();
+      executor.execute(new Runnable(){
+        public void run() {
+          try {
+            workflowInstance.work = workflowInstance.workAsync;
+            workflowInstance.workAsync = null;
+            workflowInstance.workflowInstance.isAsync = true;
+            if (workflowInstance.updates!=null) {
+              workflowInstance.getUpdates().isWorkChanged = true;
+              workflowInstance.getUpdates().isAsyncWorkChanged = true;
+            }
+            workflowInstance.executeWork();
+          } catch (Throwable e) {
+            e.printStackTrace();
+          }
+        }});
+    } else {
+      workflowInstanceStore.flushAndUnlock(workflowInstance.workflowInstance);
+    }
+  }
+  
+  public void workflowInstanceEnded() {
+    if (callerWorkflowInstanceId!=null) {
+      WorkflowInstanceImpl callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
+              workflowInstance.callerWorkflowInstanceId,
+              workflowInstance.callerActivityInstanceId);
+      ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
+      if (callerActivityInstance.isEnded()) {
+        throw new RuntimeException("Call activity instance "+callerActivityInstance+" is already ended");
+      }
+      if (log.isDebugEnabled()) log.debug("Notifying caller "+callerActivityInstance);
+      ActivityImpl activityDefinition = callerActivityInstance.getActivity();
+      CallImpl callActivity = (CallImpl) activityDefinition.activityType;
+      callActivity.calledProcessInstanceEnded(callerActivityInstance, workflowInstance);
+      callerActivityInstance.onwards();
+      callerProcessInstance.executeWork();
+    }
+  }
+
   public void addWork(ActivityInstanceImpl activityInstance) {
     if (isWorkAsync(activityInstance)) {
       addAsyncWork(activityInstance);
@@ -148,7 +237,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       setEnd(Time.now());
       if (log.isDebugEnabled())
         log.debug("Ends "+this);
-      workflowEngine.executeWorkflowInstanceEnded(this);
+      workflowInstanceEnded();
     }
   }
 
@@ -163,10 +252,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
 
-  public LockImpl getLock() {
-    return lock;
-  }
-
   public void setLock(LockImpl lock) {
     this.lock = lock;
     if (updates!=null) {
@@ -174,10 +259,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
   
-  public void setWorkflowId(String processDefinitionId) {
-    this.workflowId = processDefinitionId;
-  }
-
   public void setEnd(LocalDateTime end) {
     this.end = end;
     if (start!=null && end!=null) {
@@ -188,33 +269,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
   
-  public Object getTransientContextObject(String key) {
-    return transientContext!=null ? transientContext.get(key) : null;
-  }
-  
   /** getter for casting convenience */ 
   @Override
   public WorkflowInstanceUpdates getUpdates() {
     return (WorkflowInstanceUpdates) updates;
   }
 
-
-  @Override
-  public String getWorkflowId() {
-    return workflowId;
-  }
-
   @Override
   public boolean isProcessInstance() {
     return true;
-  }
-
-  public String getOrganizationId() {
-    return organizationId;
-  }
-  
-  public void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
   }
 
   public void trackUpdates(boolean isNew) {
@@ -224,10 +287,5 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       updates.reset(isNew);
     }
     super.trackUpdates(isNew);
-  }
-
-  @Override
-  public Map<String, Object> getTransientContext() {
-    return transientContext;
   }
 }

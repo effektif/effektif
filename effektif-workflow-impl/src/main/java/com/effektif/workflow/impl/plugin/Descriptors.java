@@ -25,6 +25,7 @@ import com.effektif.workflow.api.annotations.Configuration;
 import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.type.BindingType;
 import com.effektif.workflow.impl.type.DataType;
@@ -52,7 +53,9 @@ public class Descriptors {
   // maps activity api configuration classes to activity type implementation classes
   @JsonIgnore
   public Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
-
+  @JsonIgnore
+  public Map<Class<?>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
+  
   public Descriptors() {
   }
 
@@ -61,32 +64,54 @@ public class Descriptors {
   }
 
   public Descriptor registerDataType(DataType dataType) {
-    Descriptor descriptor = createTypeDescriptor(dataType);
+    Class configurationClass = dataType.getConfigurationClass();
+    List<DescriptorField> descriptorFields = findDescriptorFields(configurationClass);
+    Descriptor descriptor = new Descriptor(configurationClass, descriptorFields, dataType);
     addDataTypeDescriptor(descriptor);
+    dataTypeClasses.put(descriptor.configurationClass, dataType.getClass());
     return descriptor;
   }
 
   public Descriptor registerActivityType(ActivityType activityType) {
-    Descriptor descriptor = createTypeDescriptor(activityType);
+    Class configurationClass = activityType.getConfigurationClass();
+    List<DescriptorField> descriptorFields = findDescriptorFields(configurationClass);
+    Descriptor descriptor = new Descriptor(configurationClass, descriptorFields, activityType);
     addActivityTypeDescriptor(descriptor);
     activityTypeDescriptorsByClass.put(activityType.getClass(), descriptor);
     activityTypeClasses.put(descriptor.configurationClass, activityType.getClass());
     return descriptor;
   }
   
-  public ActivityType createActivityType(Activity apiActivity) {
+  public ActivityType instantiateActivityType(Activity apiActivity) {
+    Exceptions.checkNotNullParameter(apiActivity, "apiActivity");
     Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(apiActivity.getClass());
+    if (activityTypeClass==null) {
+      throw new RuntimeException("No ActivityType defined for "+apiActivity.getClass().getName());
+    }
     try {
       return activityTypeClass.newInstance();
     } catch (Exception e) {
       throw new RuntimeException("Couldn't instantiate "+activityTypeClass+": "+e.getMessage(), e);
     }
   }
-
+  
+  public DataType instantiateDataType(Variable apiVariable) {
+    Exceptions.checkNotNullParameter(apiVariable, "apiVariable");
+    Class<? extends DataType> dataTypeClass = dataTypeClasses.get(apiVariable.getClass());
+    if (dataTypeClass==null) {
+      throw new RuntimeException("No ActivityType defined for "+apiVariable.getClass().getName());
+    }
+    try {
+      return dataTypeClass.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException("Couldn't instantiate "+dataTypeClass+": "+e.getMessage(), e);
+    }
+  }
+  
   public Descriptor registerJavaBeanType(Class<?> javaBeanClass) {
     Exceptions.checkNotNullParameter(javaBeanClass, "javaBeanClass");
     objectMapper.registerSubtypes(javaBeanClass);
-    return registerDataType(new JavaBeanType(javaBeanClass)); 
+    return registerDataType(new JavaBeanType(/*javaBeanClass*/)); 
   }
   
   protected void addDataTypeDescriptor(Descriptor descriptor) {
@@ -100,26 +125,11 @@ public class Descriptors {
     }
   }
 
-  public Descriptor createTypeDescriptor(Plugin plugin) {
-    Descriptor descriptor = new Descriptor();
-    if (plugin instanceof DataType) {
-      descriptor.setDataType((DataType) plugin);
-    } else if (plugin instanceof ActivityType) {
-      descriptor.setActivityType((ActivityType) plugin);
-    }
-    
-    Class<?> pluginClass = plugin.getClass();
-    Configuration configurationAnnotation = pluginClass.getAnnotation(Configuration.class);
-    if (configurationAnnotation==null) {
-      throw new RuntimeException(pluginClass.getName()+" doesn't declare annotation "+Configuration.class.getName());
-    }
-    Class< ? > configurationClass = configurationAnnotation.value();
-    descriptor.setConfigurationClass(configurationClass);
-    
+  protected List<DescriptorField> findDescriptorFields(Class< ? > configurationClass) {
+    List<DescriptorField> configurationFields = null;
     List<Field> fields = Reflection.getNonStaticFieldsRecursive(configurationClass);
     if (!fields.isEmpty()) {
-      List<DescriptorField> configurationFields = new ArrayList<DescriptorField>(fields.size());
-      descriptor.setConfigurationFields(configurationFields);
+      configurationFields = new ArrayList<DescriptorField>(fields.size());
       for (Field field : fields) {
         Configuration configuration = field.getAnnotation(Configuration.class);
         if (field.getAnnotation(Configuration.class) != null) {
@@ -129,13 +139,10 @@ public class Descriptors {
         }
       }
     }
-    Label label = pluginClass.getAnnotation(Label.class);
-    if (label!=null) {
-      descriptor.setLabel(label.value());
-    }
-    return descriptor;
+    return configurationFields;
   }
   
+
   public Descriptor getDataTypeDescriptor(Field field) {
     return getDataTypeDescriptor(field.getGenericType(), field);
   }
@@ -197,4 +204,5 @@ public class Descriptors {
   public void registerJobType(Class<? extends JobType> jobType) {
     objectMapper.registerSubtypes(jobType);
   }
+
 }

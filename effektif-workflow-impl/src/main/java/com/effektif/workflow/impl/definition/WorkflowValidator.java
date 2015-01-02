@@ -28,19 +28,14 @@ import com.effektif.workflow.api.validate.ParseIssue.IssueType;
 import com.effektif.workflow.api.validate.ParseIssues;
 import com.effektif.workflow.api.workflow.Base;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.MultiInstance;
-import com.effektif.workflow.impl.BindingImpl;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.plugin.Validator;
 
 
-/** Validates and wires process definition after it's been built by either the builder api or json deserialization.
- * 
- * @author Walter White
- */
-public class WorkflowValidator implements Validator {
+/** Validates and wires process definition after it's been built by either the builder api or json deserialization. */
+public class WorkflowValidator {
   
   public static final String PROPERTY_LINE = "line";
   public static final String PROPERTY_COLUMN = "column";
@@ -73,41 +68,31 @@ public class WorkflowValidator implements Validator {
     Long column;
   }
 
-  public WorkflowValidator(WorkflowEngineImpl processEngine) {
+  public WorkflowValidator(WorkflowEngineImpl processEngine, WorkflowImpl workflow) {
     this.workflowEngine = processEngine;
+    this.workflow = workflow;
   }
   
-  public void pushContext(WorkflowImpl workflow) {
+  public void pushContext(Workflow workflow) {
     pushContext()
             .pathElement("workflow")
-            .position(workflow.apiWorkflow);
+            .position(workflow);
   }
 
-  public void pushContext(ActivityImpl activity, int index) {
+  public void pushContext(String propertyName, Base base) {
     pushContext()
-            .pathElement(".activities["+(activity.id!=null ? activity.id : "")+"|"+index+"]")
-            .position(activity.apiActivity);
+            .pathElement("."+propertyName)
+            .position(base);
   }
 
-  public void pushContext(TransitionImpl transition, int index) {
+  public void pushContext(String propertyName, Base base, int index) {
+    String id = base.getId();
     pushContext()
-            .pathElement(".transitions["+(transition.id!=null ? transition.id : "")+"|"+index+"]")
-            .position(transition.apiTransition);
+            .pathElement("."+propertyName+"["+(id!=null ? id : "")+"|"+index+"]")
+            .position(base);
   }
 
-  public void pushContext(VariableImpl variable, int index) {
-    pushContext()
-            .pathElement(".variables["+(variable.id!=null ? variable.id : "")+"|"+index+"]")
-            .position(variable.apiVariable);
-  }
-
-  public void pushContext(TimerImpl timer, int index) {
-    pushContext()
-            .pathElement(".timers["+(timer.id!=null ? timer.id : "")+"|"+index+"]")
-            .position(timer.apiTimer);
-  }
-
-  public void pushContext(MultiInstance multiInstance) {
+  public void pushContext(MultiInstanceImpl multiInstance) {
     pushContext()
             .pathElement(".multiInstance");
   }
@@ -161,12 +146,10 @@ public class WorkflowValidator implements Validator {
     return parseIssues;
   }
 
-  @Override
   public ServiceRegistry getServiceRegistry() {
     return workflowEngine.getServiceRegistry();
   }
 
-  @Override
   public <T> BindingImpl<T> compileBinding(Binding<T> binding, String propertyName) {
     if (binding!=null && binding.getExpression()!=null) {
       ExpressionService expressionService = workflowEngine.getServiceRegistry().getService(ExpressionService.class);
@@ -182,7 +165,6 @@ public class WorkflowValidator implements Validator {
     return null;
   }
   
-  @Override
   public <T> List<BindingImpl<T>> compileBinding(List<Binding<T>> bindings, String propertyName) {
     if (bindings!=null) {
       List<BindingImpl<T>> compiledBindings = new ArrayList<>();
@@ -203,15 +185,15 @@ public class WorkflowValidator implements Validator {
     return false;
   }
   
-  public List<ActivityImpl> getStartActivities(ActivityImpl activity) {
-    List<ActivityImpl> startActivities = new ArrayList<>(activity.activities.values());
-    if (activity.transitions!=null) {
-      for (TransitionImpl transition: activity.transitions) {
+  public List<ActivityImpl> getStartActivities(ScopeImpl scope) {
+    List<ActivityImpl> startActivities = new ArrayList<>(scope.activities.values());
+    if (scope.transitions!=null) {
+      for (TransitionImpl transition: scope.transitions) {
         startActivities.remove(transition.to);
       }
     }
     if (startActivities.isEmpty()) {
-      this.addWarning("No start activities in %s", activity.id);
+      this.addWarning("No start activities in %s", scope.id);
     }
     return startActivities;
   }

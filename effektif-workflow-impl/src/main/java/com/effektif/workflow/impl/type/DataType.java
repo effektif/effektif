@@ -13,16 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
+import com.effektif.workflow.impl.definition.VariableImpl;
+import com.effektif.workflow.impl.definition.WorkflowValidator;
 import com.effektif.workflow.impl.plugin.Plugin;
-import com.effektif.workflow.impl.plugin.Validator;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public interface DataType extends Plugin {
-  
+public interface DataType<T> extends Plugin {
+
+  Class<?> getConfigurationClass();
+
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;
 
@@ -35,7 +34,8 @@ public interface DataType extends Plugin {
 
   Object convertScriptValueToInternal(Object scriptValue, String language);
 
-  void validate(Validator validator);
+  void validate(VariableImpl variableImpl, T apiVariable, WorkflowValidator validator);
 
   Class< ? > getValueType();
+
 }

@@ -17,6 +17,10 @@ package com.effektif.workflow.impl.type;
 
 public class AnyDataType extends AbstractDataType {
 
+  public AnyDataType() {
+    super(null);
+  }
+
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     return jsonValue;

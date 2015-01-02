@@ -54,7 +54,7 @@ public interface WorkflowEngine {
   WorkflowInstance startWorkflowInstance(StartCommand startCommand);
 
   /** Use a {@link MessageCommand message} to end a waiting activity instance in a process instance. */
-  WorkflowInstance applyMessage(MessageCommand messageCommand);
+  WorkflowInstance sendMessage(MessageCommand messageCommand);
 
   List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query);
   

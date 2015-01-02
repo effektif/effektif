@@ -13,19 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("startEvent")
-public class StartEvent extends AbstractActivityType {
+public class EndEventImpl extends AbstractActivityType<EndEvent> {
 
-  public static final StartEvent INSTANCE = new StartEvent();
+  public static final EndEventImpl INSTANCE = new EndEventImpl();
+
+  public EndEventImpl() {
+    super(EndEvent.class);
+  }
 
   @Override
-  public void start(ControllableActivityInstance activityInstance) {
-    activityInstance.onwards();
+  public void execute(ActivityInstanceImpl activityInstance) {
+    activityInstance.end();
   }
 }

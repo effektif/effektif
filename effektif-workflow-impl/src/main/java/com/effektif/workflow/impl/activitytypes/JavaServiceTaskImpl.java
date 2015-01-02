@@ -13,19 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.plugin.ControllableActivityInstance;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("endEvent")
-public class EndEvent extends AbstractActivityType {
+public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
 
-  public static final EndEvent INSTANCE = new EndEvent();
+  public JavaServiceTaskImpl() {
+    super(JavaServiceTask.class);
+  }
 
   @Override
-  public void start(ControllableActivityInstance activityInstance) {
-    activityInstance.end();
+  public void execute(ActivityInstanceImpl activityInstance) {
   }
 }
