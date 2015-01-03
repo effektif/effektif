@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.Time;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceEventListener;
 import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.TransitionImpl;

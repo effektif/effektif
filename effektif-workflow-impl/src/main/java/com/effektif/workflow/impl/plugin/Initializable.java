@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 
+public interface Initializable {
 
-public interface ServiceRegistry {
+  void initialize(ServiceRegistry serviceRegistry);
 
-  <T> T getService(Class<T> serviceClass);
-  
-  ServiceRegistry registerService(Object service);
-
-  void prepare(WorkflowEngineConfiguration configuration);
 }

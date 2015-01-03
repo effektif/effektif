@@ -34,11 +34,12 @@ import com.effektif.workflow.impl.instance.LockImpl;
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.instance.VariableInstanceImpl;
 import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
 
 
-public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
+public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initializable {
 
   protected String workflowEngineId;
   protected Map<String, WorkflowInstanceImpl> workflowInstances;
@@ -46,8 +47,9 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore {
   
   public MemoryWorkflowInstanceStore() {
   }
-  
-  public MemoryWorkflowInstanceStore(ServiceRegistry serviceRegistry) {
+
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.workflowInstances = new ConcurrentHashMap<>();
     this.lockedWorkflowInstances = Collections.synchronizedSet(new HashSet<String>());
     this.workflowEngineId = serviceRegistry.getService(WorkflowEngineImpl.class).getId();

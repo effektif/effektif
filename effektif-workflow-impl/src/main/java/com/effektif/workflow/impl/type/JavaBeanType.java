@@ -28,8 +28,9 @@ public class JavaBeanType extends AbstractDataType<JavaBean> {
   public Class<?> javaClass;
   public JsonService jsonService;
 
-  public JavaBeanType() {
+  public JavaBeanType(Class<?> javaClass) {
     super(JavaBean.class);
+    this.javaClass = javaClass;
   }
 
   @Override

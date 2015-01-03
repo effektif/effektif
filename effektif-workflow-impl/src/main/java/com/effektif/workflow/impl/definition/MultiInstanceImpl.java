@@ -27,7 +27,7 @@ public class MultiInstanceImpl {
   public VariableImpl elementVariable;
   public List<BindingImpl<Object>> collection;
 
-  public void validate(MultiInstance apiMultiInstance, WorkflowValidator validator) {
+  public void validate(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowValidator validator) {
     if (apiMultiInstance.getCollection()!=null) {
       collection = validator.compileBinding(apiMultiInstance.getCollection(), "collection");
     } else {
@@ -37,7 +37,7 @@ public class MultiInstanceImpl {
     if (apiElementVariable!=null) {
       elementVariable = new VariableImpl();
       validator.pushContext("elementVariable", apiElementVariable);
-      elementVariable.validate(apiElementVariable, validator);
+      elementVariable.validate(apiElementVariable, parent, validator);
       validator.popContext();
     } else {
       validator.addError("Multi instance has no element variable");

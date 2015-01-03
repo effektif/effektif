@@ -21,10 +21,11 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-public class ScriptServiceImpl implements ScriptService {
+public class ScriptServiceImpl implements ScriptService, Initializable {
 
   public static final String JAVASCRIPT = "JavaScript";
 
@@ -33,7 +34,8 @@ public class ScriptServiceImpl implements ScriptService {
   public ScriptServiceImpl() {
   }
 
-  public ScriptServiceImpl(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.scriptEngineManager = serviceRegistry.getService(ScriptEngineManager.class);
   }
 

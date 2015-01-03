@@ -23,12 +23,13 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 public class BaseImpl {
 
   public String id;
+  public ScopeImpl parent;
   public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;
-  public ScopeImpl parent;
 
-  public void validate(Base apiBase, WorkflowValidator validator) {
+  public void validate(Base apiBase, ScopeImpl parent, WorkflowValidator validator) {
     this.id = apiBase.getId();
+    this.parent = parent;
     this.workflowEngine = validator.workflowEngine;
     this.workflow = validator.workflow;
   }

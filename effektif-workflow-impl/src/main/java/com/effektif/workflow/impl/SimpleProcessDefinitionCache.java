@@ -17,17 +17,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.impl.definition.WorkflowImpl;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-public class SimpleProcessDefinitionCache implements WorkflowCache {
+public class SimpleProcessDefinitionCache implements WorkflowCache, Initializable {
   
   protected Map<String, WorkflowImpl> processDefinitions;
 
   public SimpleProcessDefinitionCache() {
   }
 
-  public SimpleProcessDefinitionCache(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     processDefinitions = new ConcurrentHashMap<String, WorkflowImpl>();
   }
 

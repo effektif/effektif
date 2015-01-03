@@ -16,6 +16,7 @@ package com.effektif.workflow.impl;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.definition.BindingImpl;
 import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
@@ -24,11 +25,12 @@ import com.effektif.workflow.impl.script.ScriptService;
 /**
  * @author Tom Baeyens
  */
-public class ExpressionServiceImpl implements ExpressionService {
+public class ExpressionServiceImpl implements ExpressionService, Initializable {
   
   protected ScriptService scriptService;
 
-  public ExpressionServiceImpl(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.scriptService = serviceRegistry.getService(ScriptService.class);
   }
 
@@ -43,5 +45,4 @@ public class ExpressionServiceImpl implements ExpressionService {
   public Object execute(Object compiledscript, ScopeInstanceImpl scopeInstance) {
     return scriptService.evaluateScript(scopeInstance, (Script)compiledscript);
   }
-
 }

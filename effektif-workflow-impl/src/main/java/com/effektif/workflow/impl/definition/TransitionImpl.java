@@ -24,11 +24,10 @@ public class TransitionImpl extends BaseImpl {
 
   public ActivityImpl from;
   public ActivityImpl to;
-  public ScopeImpl parent;
   public Script conditionScript;
 
-  public void validate(Transition apiTransition, WorkflowValidator validator, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
-    super.validate(apiTransition, validator);
+  public void validate(Transition apiTransition, ScopeImpl parent, WorkflowValidator validator, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
+    super.validate(apiTransition, parent, validator);
 
     ActivityImpl activityHavingThisAsDefault = activitiesByDefaultTransitionId.remove(id);
     if (activityHavingThisAsDefault!=null) {
@@ -39,7 +38,7 @@ public class TransitionImpl extends BaseImpl {
     if (fromId==null) {
       validator.addWarning("Transition has no 'from' specified");
     } else {
-      this.from = parent.activities.get(fromId);
+      this.from = parent.getActivityByIdLocal(fromId);
       if (this.from!=null) {
         this.from.addOutgoingTransition(this);
         if (activityHavingThisAsDefault!=null && activityHavingThisAsDefault!=from) {
@@ -53,7 +52,7 @@ public class TransitionImpl extends BaseImpl {
     if (toId==null) {
       validator.addWarning("Transition has no 'to' specified");
     } else {
-      this.to = parent.activities.get(toId);
+      this.to = parent.getActivityByIdLocal(toId);
       if (this.to!=null) {
         this.to.addIncomingTransition(this);
       } else {

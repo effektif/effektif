@@ -21,7 +21,7 @@ public class TimerImpl extends BaseImpl {
   
   public JobType jobType;
 
-  public void validate(Timer apiTimer, WorkflowValidator validator) {
-    super.validate(apiTimer, validator);
+  public void validate(Timer apiTimer, ScopeImpl parent, WorkflowValidator validator) {
+    super.validate(apiTimer, parent, validator);
   }
 }

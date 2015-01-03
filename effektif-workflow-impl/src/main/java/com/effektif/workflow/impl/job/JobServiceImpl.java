@@ -19,13 +19,14 @@ import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 /**
  * @author Tom Baeyens
  */
-public abstract class JobServiceImpl implements JobService {
+public abstract class JobServiceImpl implements JobService, Initializable {
   
   // private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
@@ -45,8 +46,8 @@ public abstract class JobServiceImpl implements JobService {
   public JobServiceImpl() {
   }
 
-  
-  public JobServiceImpl(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.processEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
     this.executor = serviceRegistry.getService(ExecutorService.class);
   }

@@ -33,19 +33,26 @@ public class Descriptor {
   protected List<DescriptorField> configurationFields;
   protected Class<?> configurationClass;
 
+  
+  public Descriptor(DataType dataType, String label, String description) {
+    this.dataType = dataType;
+    this.label = label;
+    this.description = description;
+  }
 
   public Descriptor(Class< ? > configurationClass, List<DescriptorField> configurationFields) {
     this.configurationClass = configurationClass;
     this.configurationFields = configurationFields;
     
-    Label labelAnnotation = configurationClass.getAnnotation(Label.class);
-    if (labelAnnotation!=null) {
-      this.label = labelAnnotation.value();
-    }
-
-    Description descriptionAnnotation = configurationClass.getAnnotation(Description.class);
-    if (descriptionAnnotation!=null) {
-      this.description = labelAnnotation.value();
+    if (configurationClass!=null) {
+      Label labelAnnotation = configurationClass.getAnnotation(Label.class);
+      if (labelAnnotation != null) {
+        this.label = labelAnnotation.value();
+      }
+      Description descriptionAnnotation = configurationClass.getAnnotation(Description.class);
+      if (descriptionAnnotation != null) {
+        this.description = labelAnnotation.value();
+      }
     }
   }
   

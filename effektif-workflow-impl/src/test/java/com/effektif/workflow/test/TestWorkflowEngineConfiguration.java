@@ -11,20 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.memory;
+package com.effektif.workflow.test;
 
+import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MemoryWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
+public class TestWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
 
-  protected void initializeStorageServices(WorkflowEngineConfiguration configuration) {
-    configuration.registerService(new MemoryWorkflowStore(serviceRegistry));
-    configuration.registerService(new MemoryWorkflowInstanceStore(serviceRegistry));
-    configuration.registerService(new MemoryTaskService(serviceRegistry));
-    configuration.registerService(new MemoryJobServiceImpl(serviceRegistry));
+  @Override
+  protected void initializeExecutorService() {
+    registerService(new SynchronousExecutorService());
   }
 }

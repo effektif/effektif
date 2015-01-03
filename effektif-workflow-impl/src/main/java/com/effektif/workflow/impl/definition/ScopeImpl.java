@@ -35,8 +35,8 @@ public abstract class ScopeImpl extends BaseImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
 
-  public void validate(Scope apiScope, WorkflowValidator validator) {
-    super.validate(apiScope, validator);
+  public void validate(Scope apiScope, ScopeImpl parent, WorkflowValidator validator) {
+    super.validate(apiScope, parent, validator);
     
     List<Variable> apiVariables = apiScope.getVariables();
     if (apiVariables!=null) {
@@ -44,13 +44,13 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Variable apiVariable: apiVariables) {
         VariableImpl variable = new VariableImpl();
-        addVariable(variable);
         validator.pushContext("variables", apiVariable, i);
         variableIds.add(variable.id);
         if (variableIds.contains(variable.id)) {
           validator.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variable.id);
         }
-        variable.validate(apiVariable, validator);
+        variable.validate(apiVariable, this, validator);
+        addVariable(variable);
         validator.popContext();
         i++;
       }
@@ -61,9 +61,9 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Timer apiTimer: apiTimers) {
         TimerImpl timer = new TimerImpl();
-        addTimer(timer);
         validator.pushContext("timers", apiTimer, i);
-        timer.validate(apiTimer, validator);
+        timer.validate(apiTimer, this, validator);
+        addTimer(timer);
         validator.popContext();
         i++;
       }
@@ -76,9 +76,9 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Activity apiActivity: apiActivities) {
         ActivityImpl activity = new ActivityImpl();
-        addActivity(activity);
         validator.pushContext("activities", apiActivity, i);
-        activity.validate(apiActivity, validator);
+        activity.validate(apiActivity, apiScope, this, validator);
+        addActivity(activity);
         if (activityIds.contains(activity.id)) {
           validator.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activity.id);
         }
@@ -95,25 +95,27 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Transition apiTransition: apiTransitions) {
         TransitionImpl transition = new TransitionImpl();
-        addTransition(transition);
         validator.pushContext("transitions", apiTransition, i);
-        transition.validate(apiTransition, validator, activitiesByDefaultTransitionId);
+        transition.validate(apiTransition, this, validator, activitiesByDefaultTransitionId);
+        addTransition(transition);
         validator.popContext();
         i++;
       }
     }
 
-    // some activity types need to validate incoming and outgoing transitions, 
-    // that's why they are validated after the transitions.
-    int i=0;
-    for (ActivityImpl activity: activities.values()) {
-      Activity apiActivity = apiActivities.get(i);
-      if (activity.activityType!=null) {
-        validator.pushContext("activities", apiActivity, i);
-        activity.activityType.validate(activity, apiActivity, validator);
-        validator.popContext();
+    if (activities!=null) {
+      // some activity types need to validate incoming and outgoing transitions, 
+      // that's why they are validated after the transitions.
+      int i = 0;
+      for (ActivityImpl activity : activities.values()) {
+        Activity apiActivity = apiActivities.get(i);
+        if (activity.activityType != null) {
+          validator.pushContext("activities", apiActivity, i);
+          activity.activityType.validate(activity, apiActivity, validator);
+          validator.popContext();
+        }
+        i++;
       }
-      i++;
     }
     
     if (!activitiesByDefaultTransitionId.isEmpty()) {
@@ -190,5 +192,9 @@ public abstract class ScopeImpl extends BaseImpl {
   
   public boolean hasVariable(String variableId) {
     return variables!=null && variables.containsKey(variableId);
+  }
+
+  public ActivityImpl getActivityByIdLocal(String activityId) {
+    return activities!=null ? activities.get(activityId) : null;
   } 
 }

@@ -21,14 +21,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-public class ExecutorServiceImpl implements ExecutorService {
+public class AsynchronousExecutorService implements ExecutorService, Initializable {
   
-  public static final Logger log = LoggerFactory.getLogger(ExecutorServiceImpl.class);
+  private static final Logger log = WorkflowEngineImpl.log;
   
   // TODO apply these tips: http://java.dzone.com/articles/executorservice-10-tips-and
 
@@ -37,10 +37,11 @@ public class ExecutorServiceImpl implements ExecutorService {
   public long shutdownTimeout = 30;                    // TODO make configurable
   public TimeUnit shutdownTimeUnit = TimeUnit.SECONDS; // TODO make configurable
 
-  public ExecutorServiceImpl() {
+  public AsynchronousExecutorService() {
   }
 
-  public ExecutorServiceImpl(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4, new ThreadPoolExecutor.CallerRunsPolicy());
     this.queue = scheduledThreadPoolExecutor.getQueue();
     this.executor = scheduledThreadPoolExecutor;
@@ -48,6 +49,7 @@ public class ExecutorServiceImpl implements ExecutorService {
 
   @Override
   public void execute(Runnable command) {
+    if (log.isDebugEnabled()) log.debug("Command executes asynchronous: "+command);
     executor.execute(command);
   }
 

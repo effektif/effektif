@@ -11,16 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.impl;
 
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import org.slf4j.Logger;
 
 
-public interface ServiceRegistry {
-
-  <T> T getService(Class<T> serviceClass);
+public class SynchronousExecutorService implements ExecutorService {
   
-  ServiceRegistry registerService(Object service);
+  private static final Logger log = WorkflowEngineImpl.log;
 
-  void prepare(WorkflowEngineConfiguration configuration);
+  @Override
+  public void startup() {}
+
+  @Override
+  public void shutdown() {}
+  
+  @Override
+  public int getQueueDepth() {return 0;}
+  
+  @Override
+  public void execute(Runnable command) {
+    if (log.isDebugEnabled()) log.debug("Command executes synchronous");
+    command.run();
+  }
 }

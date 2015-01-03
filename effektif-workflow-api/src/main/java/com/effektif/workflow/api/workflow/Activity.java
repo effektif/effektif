@@ -13,6 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -23,6 +26,7 @@ public class Activity extends Scope {
   
   protected String defaultTransitionId;
   protected MultiInstance multiInstance;
+  protected List<Transition> outgoingTransitions;
 
   public String getDefaultTransitionId() {
     return this.defaultTransitionId;
@@ -44,6 +48,27 @@ public class Activity extends Scope {
   public Activity multiInstance(MultiInstance multiInstance) {
     this.multiInstance = multiInstance;
     return this;
+  }
+
+  public Activity transitionTo(String toActivityId) {
+    transitionTo(new Transition().to(toActivityId));
+    return this;
+  }
+
+  public Activity transitionTo(Transition transition) {
+    if (this.outgoingTransitions==null) {
+      this.outgoingTransitions = new ArrayList<>();
+    }
+    this.outgoingTransitions.add(transition);
+    return this;
+  }
+  
+  public List<Transition> getOutgoingTransitions() {
+    return outgoingTransitions;
+  }
+  
+  public void setOutgoingTransitions(List<Transition> outgoingTransitions) {
+    this.outgoingTransitions = outgoingTransitions;
   }
   
   @Override

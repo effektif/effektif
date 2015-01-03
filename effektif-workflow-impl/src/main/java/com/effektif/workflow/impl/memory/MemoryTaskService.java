@@ -20,20 +20,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.task.Task;
 import com.effektif.workflow.impl.task.TaskQuery;
 import com.effektif.workflow.impl.task.TaskService;
 
 
-public class MemoryTaskService implements TaskService {
+public class MemoryTaskService implements TaskService, Initializable {
   
   protected Map<Object, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<Object,Task>());
 
   public MemoryTaskService() {
   }
 
-  public MemoryTaskService(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.tasks = Collections.synchronizedMap(new LinkedHashMap<Object,Task>());
   }
 

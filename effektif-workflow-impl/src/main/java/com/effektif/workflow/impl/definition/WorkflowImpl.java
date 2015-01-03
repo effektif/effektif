@@ -31,7 +31,7 @@ public class WorkflowImpl extends ScopeImpl {
   public Long version;
 
   public void validate(Workflow apiWorkflow, WorkflowValidator validator) {
-    super.validate(apiWorkflow, validator);
+    super.validate(apiWorkflow, null, validator);
     this.startActivities = validator.getStartActivities(this);
   }
 

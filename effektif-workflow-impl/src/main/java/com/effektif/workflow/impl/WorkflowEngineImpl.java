@@ -64,7 +64,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     this.serviceRegistry = configuration.getServiceRegistry();
     this.serviceRegistry.registerService(this);
     initializeId(configuration);
-    configuration.initializeAfterEngineCreation();
+    this.serviceRegistry.prepare(configuration);
     this.jsonService = serviceRegistry.getService(JsonService.class);
     this.executorService = serviceRegistry.getService(ExecutorService.class);
     this.workflowCache = serviceRegistry.getService(WorkflowCache.class);

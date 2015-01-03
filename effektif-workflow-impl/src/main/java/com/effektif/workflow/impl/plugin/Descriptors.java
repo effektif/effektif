@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.annotations.Configuration;
-import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Variable;
@@ -38,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class Descriptors {
+public class Descriptors implements Initializable {
   
   public List<Descriptor> activityTypeDescriptors = new ArrayList<>();
   public List<Descriptor> dataTypeDescriptors = new ArrayList<>();
@@ -59,7 +58,8 @@ public class Descriptors {
   public Descriptors() {
   }
 
-  public Descriptors(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
   }
 
@@ -111,7 +111,7 @@ public class Descriptors {
   public Descriptor registerJavaBeanType(Class<?> javaBeanClass) {
     Exceptions.checkNotNullParameter(javaBeanClass, "javaBeanClass");
     objectMapper.registerSubtypes(javaBeanClass);
-    return registerDataType(new JavaBeanType(/*javaBeanClass*/)); 
+    return registerDataType(new JavaBeanType(javaBeanClass)); 
   }
   
   protected void addDataTypeDescriptor(Descriptor descriptor) {
@@ -146,6 +146,8 @@ public class Descriptors {
   public Descriptor getDataTypeDescriptor(Field field) {
     return getDataTypeDescriptor(field.getGenericType(), field);
   }
+  
+  protected static final Descriptor TEXT_DESCRIPTOR = new Descriptor(new TextType(), "Text", "Any text");
 
   protected Descriptor getDataTypeDescriptor(Type type, Field field /* passed for error message only */) {
     Descriptor descriptor = dataTypeDescriptorsByValueType.get(type);
@@ -153,8 +155,8 @@ public class Descriptors {
       return descriptor;
     }
     if (String.class.equals(type)) {
-      return getDataTypeDescriptor(TextType.class, null);
-    } else  if (type instanceof ParameterizedType) {
+      return TEXT_DESCRIPTOR;
+    } else if (type instanceof ParameterizedType) {
       ParameterizedType parametrizedType = (ParameterizedType) type;
       Type rawType = parametrizedType.getRawType();
       Type[] typeArgs = parametrizedType.getActualTypeArguments();
@@ -204,5 +206,4 @@ public class Descriptors {
   public void registerJobType(Class<? extends JobType> jobType) {
     objectMapper.registerSubtypes(jobType);
   }
-
 }

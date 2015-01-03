@@ -23,17 +23,19 @@ import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-public class MemoryWorkflowStore implements WorkflowStore {
+public class MemoryWorkflowStore implements WorkflowStore, Initializable {
 
   protected Map<String, WorkflowImpl> workflows;
 
   public MemoryWorkflowStore() {
   }
 
-  public MemoryWorkflowStore(ServiceRegistry serviceRegistry) {
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
     this.workflows = new ConcurrentHashMap<String, WorkflowImpl>();
   }
 

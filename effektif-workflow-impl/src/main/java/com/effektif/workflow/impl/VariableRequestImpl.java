@@ -22,7 +22,6 @@ import com.effektif.workflow.impl.definition.VariableImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.type.DataType;
-import com.effektif.workflow.impl.type.JavaBeanType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 

@@ -17,7 +17,6 @@ import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STA
 import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,9 +141,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
   
   public void initializeVariableInstances() {
-    Collection<VariableImpl> variables = scope.variables.values();
-    if (variables!=null) {
-      for (VariableImpl variableDefinition: variables) {
+    if (scope.variables!=null && !scope.variables.isEmpty()) {
+      for (VariableImpl variableDefinition: scope.variables.values()) {
         createVariableInstance(variableDefinition);
       }
     }

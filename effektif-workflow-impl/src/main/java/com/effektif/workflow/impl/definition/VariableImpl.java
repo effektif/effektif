@@ -15,10 +15,8 @@ package com.effektif.workflow.impl.definition;
 
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Descriptors;
 import com.effektif.workflow.impl.type.DataType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class VariableImpl {
@@ -31,12 +29,16 @@ public class VariableImpl {
   public WorkflowImpl workflow;  
   public ScopeImpl parent;
 
-  public void validate(Variable apiVariable, WorkflowValidator validator) {
-    if (id==null || "".equals(id)) {
-      validator.addError("Variable does not have an id");
+  public void validate(Variable apiVariable, ScopeImpl parent, WorkflowValidator validator) {
+    String id = apiVariable.getId();
+    if (id!=null && !"".equals(id)) {
+      this.id = id;
+    } else {
+      validator.addError("Variable has no id");
     }
+    this.parent = parent;
     Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
-    DataType dataType = descriptors.instantiateDataType(apiVariable);
-    dataType.validate(this, apiVariable, validator);
+    this.dataType = descriptors.instantiateDataType(apiVariable);
+    this.dataType.validate(this, apiVariable, validator);
   }
 }

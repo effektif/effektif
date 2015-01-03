@@ -38,9 +38,10 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
 
   public MemoryJobServiceImpl() {
   }
-
-  public MemoryJobServiceImpl(ServiceRegistry serviceRegistry) {
-    super(serviceRegistry);
+  
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry) {
+    super.initialize(serviceRegistry);
     this.workflowInstanceIds = new HashSet<>();
     this.jobs = new LinkedList<>();
     this.jobsDone = new ArrayList<>();

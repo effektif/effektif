@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.variables.Choice;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 public class ChoiceType extends AbstractDataType {

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Descriptors;
@@ -36,11 +37,14 @@ public class ActivityImpl extends ScopeImpl {
 
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void validate(Activity apiActivity, WorkflowValidator validator) {
-    super.validate(apiActivity, validator);
-    if (id==null || "".equals(id)) {
+  public void validate(Activity apiActivity, Scope apiScope, ScopeImpl parent, WorkflowValidator validator) {
+    super.validate(apiActivity, parent, validator);
+    String id = apiActivity.getId();
+    if (id!=null && !"".equals(id)) {
+      this.id = id;
+    } else {
       validator.addError("Activity has no id");
-    } 
+    }
 
     Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
     this.activityType = descriptors.instantiateActivityType(apiActivity);
@@ -53,8 +57,15 @@ public class ActivityImpl extends ScopeImpl {
     if (apiActivity.getMultiInstance()!=null) {
       this.multiInstance = new MultiInstanceImpl();
       validator.pushContext(multiInstance);
-      this.multiInstance.validate(apiActivity.getMultiInstance(), validator);
+      this.multiInstance.validate(apiActivity.getMultiInstance(), this, validator);
       validator.popContext();
+    }
+    
+    if (apiActivity.getOutgoingTransitions()!=null) {
+      for (Transition transition: apiActivity.getOutgoingTransitions()) {
+        transition.from(apiActivity.getId());
+        apiScope.transition(transition);
+      }
     }
   }
 
