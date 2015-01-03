@@ -20,6 +20,10 @@ import com.effektif.workflow.api.annotations.Configuration;
 import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -93,7 +97,7 @@ public class Call extends Activity {
     return this;
   }
   
-  public Binding<String> getSubProcessNameBinding() {
+  public Binding<String> getSubProcessName() {
     return subProcessName;
   }
   
@@ -115,5 +119,59 @@ public class Call extends Activity {
   
   public List<CallMapping> getOutputMappings() {
     return outputMappings;
+  }
+
+  @Override
+  public Call multiInstance(MultiInstance multiInstance) {
+    super.multiInstance(multiInstance);
+    return this;
+  }
+
+  @Override
+  public Call transitionTo(String toActivityId) {
+    super.transitionTo(toActivityId);
+    return this;
+  }
+
+  @Override
+  public Call transitionTo(Transition transition) {
+    super.transitionTo(transition);
+    return this;
+  }
+
+  @Override
+  public Call activity(Activity activity) {
+    super.activity(activity);
+    return this;
+  }
+
+  @Override
+  public Call transition(Transition transition) {
+    super.transition(transition);
+    return this;
+  }
+
+  @Override
+  public Call variable(Variable variable) {
+    super.variable(variable);
+    return this;
+  }
+
+  @Override
+  public Call timer(Timer timer) {
+    super.timer(timer);
+    return this;
+  }
+
+  @Override
+  public Call id(String id) {
+    super.id(id);
+    return this;
+  }
+
+  @Override
+  public Call property(String key, Object value) {
+    super.property(key, value);
+    return this;
   }
 }

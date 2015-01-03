@@ -14,6 +14,8 @@
 package com.effektif.workflow.impl.memory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,17 +27,20 @@ import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.util.Lists;
 
 
 public class MemoryWorkflowStore implements WorkflowStore, Initializable {
 
   protected Map<String, WorkflowImpl> workflows;
+  protected Map<String, Workflow> apiWorkflows;
 
   public MemoryWorkflowStore() {
   }
 
   @Override
   public void initialize(ServiceRegistry serviceRegistry) {
+    this.apiWorkflows = new ConcurrentHashMap<String, Workflow>();
     this.workflows = new ConcurrentHashMap<String, WorkflowImpl>();
   }
 
@@ -46,13 +51,14 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable {
 
   /** ensures that every element in this process definition has an id */
   @Override
-  public String createWorkflowId(WorkflowImpl processDefinition) {
+  public String createWorkflowId(WorkflowImpl workflow) {
     return UUID.randomUUID().toString();
   }
 
   @Override
-  public void insertWorkflow(WorkflowImpl processDefinition) {
-    workflows.put(processDefinition.id, processDefinition);
+  public void insertWorkflow(WorkflowImpl workflow, Workflow apiWorkflow) {
+    workflows.put(workflow.id, workflow);
+    apiWorkflows.put(workflow.id, apiWorkflow);
   }
 
   @Override
@@ -111,13 +117,39 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
-    throw new RuntimeException("TODO");
+    List<WorkflowImpl> workflows = findWorkflowImpls(query);
+    List<Workflow> apiWorkflows = new ArrayList<>();
+    for (WorkflowImpl workflow: workflows) {
+      apiWorkflows.add(this.apiWorkflows.get(workflow.id));
+    }
+    return apiWorkflows;
+  }
+  
+  public List<WorkflowImpl> findWorkflowImpls(WorkflowQuery query) {
+    if (query.getWorkflowId()!=null) {
+      WorkflowImpl workflow = workflows.get(query.getWorkflowId());
+      if (workflow.isIncluded(query)) {
+        return Lists.of(workflow);
+      } else {
+        return Collections.EMPTY_LIST;
+      }
+    }
+    List<WorkflowImpl> workflows = new ArrayList<>();
+    Iterator<WorkflowImpl> iterator = this.workflows.values().iterator();
+    int limit = query.getLimit()!=null ? query.getLimit() : Integer.MAX_VALUE;
+    while (iterator.hasNext() && workflows.size()<limit) {
+      WorkflowImpl workflow = iterator.next();
+      if (workflow.isIncluded(query)) {
+        workflows.add(workflow);
+      }
+    }
+    return workflows;
   }
 
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
-    for (Workflow workflow: findWorkflows(query)) {
-      workflows.remove(workflow.getId());
+    for (WorkflowImpl workflow: findWorkflowImpls(query)) {
+      workflows.remove(workflow.id);
     }
   }
 

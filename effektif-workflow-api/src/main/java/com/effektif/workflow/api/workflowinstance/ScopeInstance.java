@@ -91,4 +91,16 @@ public class ScopeInstance {
   public void setTimerInstances(List<TimerInstance> timerInstances) {
     this.timerInstances = timerInstances;
   }
+  
+  public ActivityInstance findOpenActivityInstance(String activityId) {
+    if (activityId!=null && activityInstances!=null) {
+      for (ActivityInstance activityInstance: activityInstances) {
+        ActivityInstance theOne = activityInstance.findOpenActivityInstance(activityId);
+        if (theOne!=null) {
+          return theOne;
+        }
+      }
+    }
+    return null;
+  }
 }

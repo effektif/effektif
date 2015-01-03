@@ -17,13 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class WorkflowInstanceQuery {
 
   public static final String FIELD_START = "start";
 
-  public String workflowInstanceId;
-  public String activityInstanceId;
+  protected String workflowInstanceId;
+  protected String activityInstanceId;
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
@@ -38,7 +37,7 @@ public class WorkflowInstanceQuery {
     return this;
   }
   
-  public Object getActivityInstanceId() {
+  public String getActivityInstanceId() {
     return activityInstanceId;
   }
   
@@ -46,7 +45,7 @@ public class WorkflowInstanceQuery {
     this.activityInstanceId = activityInstanceId;
   }
   
-  public Object String() {
+  public String getWorkflowInstanceId() {
     return workflowInstanceId;
   }
   

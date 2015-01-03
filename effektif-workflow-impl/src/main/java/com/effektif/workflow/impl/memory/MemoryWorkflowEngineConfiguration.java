@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.memory;
 
-import com.effektif.workflow.impl.SimpleServiceRegistry;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 
 
-public class MemoryServiceRegistry extends SimpleServiceRegistry {
+public class MemoryWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
 
+  public MemoryWorkflowEngineConfiguration() {
+    registerService(new MemoryWorkflowStore());
+    registerService(new MemoryWorkflowInstanceStore());
+    registerService(new MemoryTaskService());
+    registerService(new MemoryJobServiceImpl());
+  }
 }

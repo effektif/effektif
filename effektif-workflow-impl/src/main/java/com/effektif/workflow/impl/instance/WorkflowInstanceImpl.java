@@ -18,6 +18,7 @@ import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STA
 import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 import static com.effektif.workflow.impl.instance.ActivityInstanceImpl.STATE_STARTING_MULTI_INSTANCE;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.Time;
@@ -71,6 +73,17 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     w.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
     w.setCallerActivityInstanceId(callerActivityInstanceId);
     toScopeInstance(w);
+    return w;
+  }
+  
+  public static List<WorkflowInstance> toWorkflowInstances(List<WorkflowInstanceImpl> workflowInstances) {
+    if (workflowInstances==null) {
+      return null;
+    }
+    List<WorkflowInstance> w = new ArrayList<>();
+    for (WorkflowInstanceImpl workflowInstance: workflowInstances) {
+      w.add(workflowInstance.toWorkflowInstance());
+    }
     return w;
   }
   
@@ -287,5 +300,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       updates.reset(isNew);
     }
     super.trackUpdates(isNew);
+  }
+
+  public boolean isIncluded(WorkflowInstanceQuery query) {
+    if ( query.getWorkflowInstanceId()!=null && !query.getWorkflowInstanceId().equals(id)) {
+      return false;
+    }
+    if (query.getActivityInstanceId()!=null && !hasActivityInstance(query.getActivityInstanceId())) {
+      return false;
+    }
+    return true;
   }
 }

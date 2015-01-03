@@ -117,7 +117,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       workflowImpl.id = workflowStore.createWorkflowId(validator.workflow);
       deployResult.setWorkflowId(workflowImpl.id);
 
-      workflowStore.insertWorkflow(workflowImpl);
+      workflowStore.insertWorkflow(workflowImpl, workflow);
       workflowCache.put(workflowImpl);
     }
     
@@ -160,8 +160,13 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
   public WorkflowInstance startWorkflowInstance(StartCommand startCommand, CallerReference callerReference) {
     String workflowId = startCommand.getWorkflowId();
-    if (workflowId==null && startCommand.getWorkflowName()!=null) {
-      workflowId = workflowStore.findLatestWorkflowIdByName(startCommand.getWorkflowName(), startCommand.getOrganizationId());
+    if (workflowId==null) {
+      if (startCommand.getWorkflowName()!=null) {
+        workflowId = workflowStore.findLatestWorkflowIdByName(startCommand.getWorkflowName(), startCommand.getOrganizationId());
+        if (workflowId==null) throw new RuntimeException("No workflow found for name '"+startCommand.getWorkflowName()+"'");
+      } else {
+        throw new RuntimeException("No workflow specified");
+      }
     }
     WorkflowImpl workflow = workflowStore.findWorkflowImplById(workflowId, startCommand.getOrganizationId());
     
@@ -209,7 +214,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
-    return null;
+    return workflowInstanceStore.findWorkflowInstances(query);
   }
 
   public WorkflowInstanceImpl lockProcessInstanceWithRetry(String workflowInstanceId, String activityInstanceId) {

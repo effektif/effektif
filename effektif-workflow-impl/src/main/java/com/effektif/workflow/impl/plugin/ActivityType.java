@@ -21,7 +21,7 @@ import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 public interface ActivityType<T> extends Plugin {
   
   Class<T> getConfigurationClass();
-  
+
   /** called when the process is being validated or deployed. */
   void validate(ActivityImpl activity, T configuration, WorkflowValidator validator);
   

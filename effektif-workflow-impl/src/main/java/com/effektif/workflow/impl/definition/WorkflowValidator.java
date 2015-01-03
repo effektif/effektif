@@ -151,16 +151,22 @@ public class WorkflowValidator {
   }
 
   public <T> BindingImpl<T> compileBinding(Binding<T> binding, String propertyName) {
-    if (binding!=null && binding.getExpression()!=null) {
-      ExpressionService expressionService = workflowEngine.getServiceRegistry().getService(ExpressionService.class);
-      pushContext(binding, propertyName);
-      try {
-        return expressionService.compile(binding);
-      } catch (Exception e) {
-        addError("Binding expression '%s' couldn't be compiled: %s", propertyName+".expression", e.getMessage());
-      } finally {
-        popContext();
+    if (binding!=null) {
+      BindingImpl bindingImpl = new BindingImpl();
+      bindingImpl.value = binding.getValue();
+      bindingImpl.variableId = binding.getVariableId();
+      if (binding.getExpression()!=null) {
+        ExpressionService expressionService = workflowEngine.getServiceRegistry().getService(ExpressionService.class);
+        pushContext(binding, propertyName);
+        try {
+          bindingImpl.expression = expressionService.compile(binding);
+        } catch (Exception e) {
+          addError("Binding expression '%s' couldn't be compiled: %s", propertyName+".expression", e.getMessage());
+        } finally {
+          popContext();
+        }
       }
+      return bindingImpl;
     }
     return null;
   }

@@ -4,8 +4,8 @@ Effektif
 ## Example API usage
 
 ```java
-// Create the default memory workflow engine
-WorkflowEngine workflowEngine = new WorkflowEngineConfiguration()
+// Create the default (in-memory) workflow engine
+WorkflowEngine workflowEngine = new MemoryWorkflowEngineConfiguration()
    // for test purposes it's best to avoid concurrency so 
    // the synchronous executor service is configured here
    .registerService(new SynchronousExecutorService())

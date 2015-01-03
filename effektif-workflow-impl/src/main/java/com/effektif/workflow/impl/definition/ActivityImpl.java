@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.plugin.Descriptors;
 
 public class ActivityImpl extends ScopeImpl {
   
-  public ActivityType activityType;
+  public ActivityType<?> activityType;
   /** the list of transitions for which this activity is the destination.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
   public List<TransitionImpl> incomingTransitions;
@@ -34,7 +34,7 @@ public class ActivityImpl extends ScopeImpl {
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
   public MultiInstanceImpl multiInstance;
-
+  
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
   public void validate(Activity apiActivity, Scope apiScope, ScopeImpl parent, WorkflowValidator validator) {

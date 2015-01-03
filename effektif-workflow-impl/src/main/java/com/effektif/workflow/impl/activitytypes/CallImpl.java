@@ -43,7 +43,7 @@ public class CallImpl extends AbstractActivityType<Call> {
   @Override
   public void validate(ActivityImpl activity, Call call, WorkflowValidator validator) {
     subProcessId = validator.compileBinding(call.getSubProcessId(), "subProcessId");
-    subProcessName = validator.compileBinding(call.getSubProcessId(), "subProcessName");
+    subProcessName = validator.compileBinding(call.getSubProcessName(), "subProcessName");
     inputMappings = validateCallMappings(call.getInputMappings(), validator, "inputMappings");
     outputMappings = validateCallMappings(call.getOutputMappings(), validator, "outputMappings");
   }

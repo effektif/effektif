@@ -24,7 +24,7 @@ public interface WorkflowStore {
   
   String createWorkflowId(WorkflowImpl workflow);
 
-  void insertWorkflow(WorkflowImpl workflow);
+  void insertWorkflow(WorkflowImpl workflow, Workflow apiWorkflow);
 
   List<WorkflowImpl> loadWorkflows(WorkflowQuery workflowQuery);
 

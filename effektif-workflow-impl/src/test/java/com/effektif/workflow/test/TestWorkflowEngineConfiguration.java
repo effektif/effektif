@@ -14,13 +14,13 @@
 package com.effektif.workflow.test;
 
 import com.effektif.workflow.impl.SynchronousExecutorService;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TestWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
+public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
 
   @Override
   protected void initializeExecutorService() {

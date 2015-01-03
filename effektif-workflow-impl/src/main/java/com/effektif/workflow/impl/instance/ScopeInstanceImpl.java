@@ -87,18 +87,21 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       for (ActivityInstanceImpl activityInstance: this.activityInstances) {
         activityInstances.add(activityInstance.toActivityInstance());
       }
+      w.setActivityInstances(activityInstances);
     }
     if (variableInstances!=null && !variableInstances.isEmpty()) {
       List<VariableInstance> variableInstances = new ArrayList<>();
       for (VariableInstanceImpl variableInstance: this.variableInstances) {
         variableInstances.add(variableInstance.toVariableInstance());
       }
+      w.setVariableInstances(variableInstances);
     }
     if (timerInstances!=null && !timerInstances.isEmpty()) {
       List<TimerInstance> timerInstances = new ArrayList<>();
       for (TimerInstanceImpl timerInstance: this.timerInstances) {
         timerInstances.add(timerInstance.toTimerInstance());
       }
+      w.setTimerInstances(timerInstances);
     }
   }
 
@@ -365,5 +368,16 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
   public boolean isEnded() {
     return end!=null;
+  }
+  
+  public boolean hasActivityInstance(String activityInstanceId) {
+    if (hasActivityInstances()) {
+      for (ActivityInstanceImpl activityInstance : activityInstances) {
+        if (activityInstance.hasActivityInstance(activityInstanceId)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

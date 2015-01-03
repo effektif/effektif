@@ -26,6 +26,7 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.impl.plugin.ActivityType;
 
 
 public abstract class ScopeImpl extends BaseImpl {
@@ -34,7 +35,7 @@ public abstract class ScopeImpl extends BaseImpl {
   public Map<String, VariableImpl> variables;
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
-
+  
   public void validate(Scope apiScope, ScopeImpl parent, WorkflowValidator validator) {
     super.validate(apiScope, parent, validator);
     
@@ -111,7 +112,8 @@ public abstract class ScopeImpl extends BaseImpl {
         Activity apiActivity = apiActivities.get(i);
         if (activity.activityType != null) {
           validator.pushContext("activities", apiActivity, i);
-          activity.activityType.validate(activity, apiActivity, validator);
+          ActivityType<Activity> activityType = (ActivityType<Activity>) activity.activityType;
+          activityType.validate(activity, apiActivity, validator);
           validator.popContext();
         }
         i++;

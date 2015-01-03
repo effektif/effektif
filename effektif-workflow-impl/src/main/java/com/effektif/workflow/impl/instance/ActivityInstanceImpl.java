@@ -29,10 +29,8 @@ import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.TransitionImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-@JsonPropertyOrder({"id", "activityId", "start", "end", "duration", "activityInstances", "variableInstances"})
 public class ActivityInstanceImpl extends ScopeInstanceImpl {
   
   public static final String STATE_STARTING = "starting"; 
@@ -67,7 +65,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     activityInstance.setActivityId(activity.id);
     activityInstance.setCalledWorkflowInstanceId(calledWorkflowInstanceId);
     toScopeInstance(activityInstance);
-    return null;
+    return activityInstance;
   }
   
   public void execute() {
@@ -235,5 +233,12 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       updates.reset(isNew);
     }
     super.trackUpdates(isNew);
+  }
+
+  public boolean hasActivityInstance(String activityInstanceId) {
+    if (id!=null && id.equals(activityInstanceId)) {
+      return true;
+    }
+    return super.hasActivityInstance(activityInstanceId);
   }
 }

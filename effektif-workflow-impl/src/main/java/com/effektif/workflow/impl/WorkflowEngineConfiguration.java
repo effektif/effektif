@@ -33,10 +33,6 @@ import com.effektif.workflow.impl.activitytypes.StartEventImpl;
 import com.effektif.workflow.impl.activitytypes.UserTaskImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
-import com.effektif.workflow.impl.memory.MemoryJobServiceImpl;
-import com.effektif.workflow.impl.memory.MemoryTaskService;
-import com.effektif.workflow.impl.memory.MemoryWorkflowInstanceStore;
-import com.effektif.workflow.impl.memory.MemoryWorkflowStore;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Descriptors;
 import com.effektif.workflow.impl.plugin.Initializable;
@@ -69,7 +65,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Walter White
  */
-public class WorkflowEngineConfiguration {
+public abstract class WorkflowEngineConfiguration {
   
   protected String id;
   protected ServiceRegistry serviceRegistry;
@@ -81,16 +77,10 @@ public class WorkflowEngineConfiguration {
   
   public WorkflowEngineConfiguration() {
     this(new SimpleServiceRegistry());
-    
     initializeObjectMapper();
-
-    // the descriptors object must be registered before the plugins are registered 
-    // like activity types and data types 
     initializeDescriptors();
-    
     initializeDefaultActivityTypes();
     initializeDefaultDataTypes();
-    initializePersistenceServices();
     initializeScriptManager();
     initializeJsonFactory();
     initializeJsonService();
@@ -102,13 +92,6 @@ public class WorkflowEngineConfiguration {
   
   public WorkflowEngineConfiguration(ServiceRegistry serviceRegistry) {
     this.serviceRegistry = serviceRegistry;
-  }
-
-  protected void initializePersistenceServices() {
-    registerService(new MemoryWorkflowStore());
-    registerService(new MemoryWorkflowInstanceStore());
-    registerService(new MemoryTaskService());
-    registerService(new MemoryJobServiceImpl());
   }
 
   protected void initializeProcessDefinitionCache() {

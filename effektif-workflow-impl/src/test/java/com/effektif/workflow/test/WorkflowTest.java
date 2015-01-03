@@ -1,5 +1,5 @@
-/*
- * Copyright 2014 Heisenberg Enterprises Ltd.
+/* Copyright (c) 2014, Effektif GmbH.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,8 +10,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 package com.effektif.workflow.test;
 
 import java.util.List;
@@ -26,7 +25,6 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
 
@@ -43,7 +41,7 @@ public class WorkflowTest {
   
   @Before
   public void before() {
-    workflowEngine = new WorkflowEngineConfiguration()
+    workflowEngine = new TestWorkflowEngineConfiguration()
       .buildWorkflowEngine();
   }
   

@@ -16,6 +16,7 @@ package com.effektif.workflow.impl;
 import java.util.List;
 
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.definition.ActivityImpl;
 import com.effektif.workflow.impl.definition.VariableImpl;
 import com.effektif.workflow.impl.definition.WorkflowImpl;
@@ -35,11 +36,9 @@ public interface WorkflowInstanceStore {
 
   void flushAndUnlock(WorkflowInstanceImpl workflowInstance);
 
-  List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
+  List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
-  long countWorkflowInstances(WorkflowInstanceQuery workflowInstanceQueryImpl);
-
-  void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQueryImpl);
+  void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
   /** instantiates and assigns an id.
    * This method can choose to instantiate a subclass, but has to 

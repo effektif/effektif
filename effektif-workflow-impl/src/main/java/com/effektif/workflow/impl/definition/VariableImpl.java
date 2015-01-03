@@ -20,6 +20,8 @@ import com.effektif.workflow.impl.type.DataType;
 
 
 public class VariableImpl {
+  
+  public Variable apiVariable;
 
   public String id;
   public DataType dataType;
@@ -30,6 +32,7 @@ public class VariableImpl {
   public ScopeImpl parent;
 
   public void validate(Variable apiVariable, ScopeImpl parent, WorkflowValidator validator) {
+    this.apiVariable = apiVariable;
     String id = apiVariable.getId();
     if (id!=null && !"".equals(id)) {
       this.id = id;
@@ -40,5 +43,9 @@ public class VariableImpl {
     Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
     this.dataType = descriptors.instantiateDataType(apiVariable);
     this.dataType.validate(this, apiVariable, validator);
+  }
+
+  public Variable toVariable() {
+    return apiVariable;
   }
 }

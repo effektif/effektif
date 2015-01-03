@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -37,5 +38,9 @@ public class WorkflowImpl extends ScopeImpl {
 
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
+  }
+
+  public boolean isIncluded(WorkflowQuery query) {
+    return false;
   }
 }
