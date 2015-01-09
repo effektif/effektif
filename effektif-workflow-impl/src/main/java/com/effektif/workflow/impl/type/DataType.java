@@ -13,9 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
-import com.effektif.workflow.impl.definition.VariableImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
 import com.effektif.workflow.impl.plugin.Plugin;
+import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
 
 
 public interface DataType<T> extends Plugin {
@@ -34,7 +34,7 @@ public interface DataType<T> extends Plugin {
 
   Object convertScriptValueToInternal(Object scriptValue, String language);
 
-  void validate(VariableImpl variableImpl, T apiVariable, WorkflowValidator validator);
+  void validate(VariableImpl variableImpl, T apiVariable, WorkflowParse validator);
 
   Class< ? > getValueType();
 

@@ -95,7 +95,7 @@ public abstract class WorkflowEngineConfiguration {
   }
 
   protected void initializeProcessDefinitionCache() {
-    registerService(new SimpleProcessDefinitionCache());
+    registerService(new SimpleWorkflowCache());
   }
 
   protected void initializeExecutorService() {

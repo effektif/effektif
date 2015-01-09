@@ -13,12 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activitytypes;
 
-import com.effektif.workflow.impl.definition.BindingImpl;
+import com.effektif.workflow.impl.workflow.InputBindingImpl;
 
 
 public class CallMappingImpl {
   
-  protected BindingImpl<Object> source;
+  protected InputBindingImpl<Object> source;
   protected String destinationVariableId;
 
 }

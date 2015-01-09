@@ -65,7 +65,7 @@ public class SimpleServiceRegistry implements ServiceRegistry {
   public void prepare(WorkflowEngineConfiguration configuration) {
     Descriptors descriptors = getService(Descriptors.class);
     for (Initializable initializable: configuration.initializables) {
-      initializable.initialize(this);
+      initializable.initialize(this, configuration);
     }
     for (Class<?> javaBeanType: configuration.javaBeanTypes) {
       descriptors.registerJavaBeanType(javaBeanType);

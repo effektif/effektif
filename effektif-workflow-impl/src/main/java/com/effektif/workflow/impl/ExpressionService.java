@@ -13,9 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.impl.definition.BindingImpl;
-import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 /**
@@ -23,7 +21,7 @@ import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
  */
 public interface ExpressionService {
 
-  <T> BindingImpl<T> compile(Binding<T> binding);
+  Object compile(String expression);
   
-  Object execute(Object compiledScript, ScopeInstanceImpl scopeInstance);
+  Object execute(Object compiledExpression, ScopeInstanceImpl scopeInstance);
 }

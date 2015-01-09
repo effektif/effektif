@@ -23,6 +23,8 @@ public class Scope extends Base {
   protected List<Transition> transitions;
   protected List<Variable> variables;
   protected List<Timer> timers;
+  protected List<InputBinding> inputs;
+  protected List<OutputBinding> outputs; 
 
   public List<Activity> getActivities() {
     return this.activities;
@@ -78,6 +80,77 @@ public class Scope extends Base {
       this.timers = new ArrayList<>();
     }
     this.timers.add(timer);
+    return this;
+  }
+  
+  public List<InputBinding> getInputs() {
+    return inputs;
+  }
+  
+  public void setInputs(List<InputBinding> inputs) {
+    this.inputs = inputs;
+  }
+
+  protected Scope inputValue(String key, Object value) {
+    input(new InputBindingValue(key, value));
+    return this;
+  }
+
+  protected Scope inputVariableId(String key, String variableId) {
+    input(new InputBindingVariable(key, variableId));
+    return this;
+  }
+
+  protected Scope inputExpression(String key, String expression) {
+    input(new InputBindingExpression(key, expression));
+    return this;
+  }
+
+  protected Scope input(InputBinding input) {
+    if (this.inputs==null) {
+      this.inputs = new ArrayList<>();
+    }
+    this.inputs.add(input);
+    return this;
+  }
+  
+  protected Object getInputBindingValue(String key) {
+    if (inputs!=null) {
+      for (InputBinding input : inputs) {
+        if (key.equals(input.key)
+            && input instanceof InputBindingValue) {
+          return ((InputBindingValue)input).value;
+        }
+      }
+    }
+    return null;
+  }
+  
+  public List<InputBinding> getInputs(String key) {
+    List<InputBinding> keyInputs = new ArrayList<>();
+    if (inputs!=null) {
+      for (InputBinding input : inputs) {
+        if (key.equals(input.key)) {
+          keyInputs.add(input);
+        }
+      }
+    }
+    return keyInputs;
+  }
+
+  public List<OutputBinding> getOutputs() {
+    return outputs;
+  }
+  
+  public void setOutputs(List<OutputBinding> outputs) {
+    this.outputs = outputs;
+  }
+  
+  protected Scope output(OutputBinding output) {
+    if (this.outputs==null) {
+      this.outputs = new ArrayList<>();
+    }
+    this.outputs.add(output);
     return this;
   }
 }

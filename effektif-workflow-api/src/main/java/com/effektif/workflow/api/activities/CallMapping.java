@@ -13,16 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.InputBinding;
 
 
 
 public class CallMapping {
   
-  protected Binding<Object> source;
+  protected InputBinding source;
   protected String destinationVariableId;
 
-  public CallMapping source(Binding<Object> source) {
+  public CallMapping source(InputBinding source) {
     this.source = source;
     return this;
   }
@@ -33,12 +33,12 @@ public class CallMapping {
   }
 
   
-  public Binding<Object> getSource() {
+  public InputBinding getSource() {
     return source;
   }
 
   
-  public void setSource(Binding<Object> source) {
+  public void setSource(InputBinding source) {
     this.source = source;
   }
 

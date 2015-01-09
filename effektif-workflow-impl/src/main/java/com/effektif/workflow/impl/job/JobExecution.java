@@ -7,7 +7,7 @@ package com.effektif.workflow.impl.job;
 import org.joda.time.LocalDateTime;
 import org.joda.time.ReadablePeriod;
 
-import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 

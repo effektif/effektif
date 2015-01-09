@@ -13,114 +13,71 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.effektif.workflow.api.annotations.Configuration;
-import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.InputBinding;
+import com.effektif.workflow.api.workflow.InputBindingValue;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-
+/* invokes another workflow and ends when the other workflow instance completes */ 
 @JsonTypeName("call")
 public class Call extends Activity {
 
-  @Configuration
-  @Label("Subprocess name")
-  Binding<String> subProcessName;
-
-  @Configuration
-  @Label("Subprocess id")
-  Binding<String> subProcessId;
-  
-  /** specifies which variables of this workflow instance (keys) have to be copied to 
-   * variables in the called workflow instance (values). */
-  @Configuration
-  @Label("Input variable mappings")
-  List<CallMapping> inputMappings;
-  
-  /** specifies which variables of the called process (keys) have to be copied to 
-   * variables in this process (values). */
-  @Configuration
-  @Label("Output variable mappings")
-  List<CallMapping> outputMappings;
+  public static final String SUB_PROCESS_ID = "subProcessId";
+  public static final String SUB_PROCESS_NAME = "subProcessName";
+  public static final String INPUT_MAPPINGS = "inputMappings";
+  public static final String OUTPUT_MAPPINGS = "outputMappings";
 
   public Call subProcessId(String subProcessId) {
-    return subProcessId(new Binding<String>().value(subProcessId));
+    inputValue(SUB_PROCESS_ID, subProcessId);
+    return this;
   }
 
   public Call subProcessIdExpression(String subProcessIdExpression) {
-    return subProcessId(new Binding<String>().expression(subProcessIdExpression));
+    inputExpression(SUB_PROCESS_ID,subProcessIdExpression);
+    return this;
   }
 
   public Call subProcessIdVariableId(String subProcessIdVariableId) {
-    return subProcessId(new Binding<String>().variableId(subProcessIdVariableId));
-  }
-
-  protected Call subProcessId(Binding<String> subProcessIdBinding) {
-    this.subProcessId = subProcessIdBinding;
+    inputVariableId(SUB_PROCESS_ID, subProcessIdVariableId);
     return this;
   }
-  
-  public Call inputMapping(String callerVariableId, String calledVariableId) {
-    return inputMapping(new Binding<Object>().variableId(callerVariableId), calledVariableId);
+
+  public Call inputMappingValue(Object value, String subWorkflowVariableId) {
+    return inputMapping(new InputBindingValue(subWorkflowVariableId, value));
   }
 
-  public Call inputMapping(Binding<Object> callerBinding, String calledVariableId) {
+  public Call inputMappingVariable(String callerVariableId, String calledVariableId) {
+    return inputMapping(new InputBindingVariable().variableId(callerVariableId), calledVariableId);
+  }
+
+  public Call inputMappingExpression(String callerVariableId, String calledVariableId) {
+    return inputMapping(new InputBindingVariable().variableId(callerVariableId), calledVariableId);
+  }
+
+  public Call inputMapping(InputBinding callerBinding, String calledVariableId) {
     CallMapping inputMapping = new CallMapping()
       .source(callerBinding)
       .destinationVariableId(calledVariableId);
-    if (inputMappings==null) {
-      inputMappings = new ArrayList<>();
-    }
-    inputMappings.add(inputMapping);
+    inputValue(INPUT_MAPPINGS, inputMapping);
     return this;
   }
 
   public Call outputMapping(String calledVariableId, String callerVariableId) {
-    return outputMapping(new Binding<Object>().variableId(calledVariableId), callerVariableId);
+    return outputMapping(new InputBinding().variableId(calledVariableId), callerVariableId);
   }
 
-  public Call outputMapping(Binding<Object> calledBinding, String callerVariableId) {
-    CallMapping inputMapping = new CallMapping()
+  public Call outputMapping(InputBinding calledBinding, String callerVariableId) {
+    CallMapping outputMapping = new CallMapping()
       .source(calledBinding)
       .destinationVariableId(callerVariableId);
-    if (inputMappings==null) {
-      inputMappings = new ArrayList<>();
-    }
-    inputMappings.add(inputMapping);
+    inputValue(OUTPUT_MAPPINGS, outputMapping);
     return this;
   }
   
-  public Binding<String> getSubProcessName() {
-    return subProcessName;
-  }
-  
-  public void setSubProcessName(Binding<String> subProcessName) {
-    this.subProcessName = subProcessName;
-  }
-
-  public Binding<String> getSubProcessId() {
-    return subProcessId;
-  }
-  
-  public void setSubProcessId(Binding<String> subProcessId) {
-    this.subProcessId = subProcessId;
-  }
-  
-  public List<CallMapping> getInputMappings() {
-    return inputMappings;
-  }
-  
-  public List<CallMapping> getOutputMappings() {
-    return outputMappings;
-  }
-
   @Override
   public Call multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);

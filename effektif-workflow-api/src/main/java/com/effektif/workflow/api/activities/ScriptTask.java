@@ -22,49 +22,27 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("scriptTask")
 public class ScriptTask extends NoneTask {
 
-  public String script;
-  public Map<String, String> scriptToWorkflowMappings;
-  public String resultVariableId;
+  public static final String KEY_SCRIPT = "script";
+  public static final String KEY_MAPPINGS = "mapping";
+  public static final String KEY_RESULT_VARIABLE_ID = "resultVariableId";
   
   public ScriptTask script(String script) {
-    this.script = script;
+    inputValue(KEY_SCRIPT, script);
     return this;
   }
   
-  public String getScript() {
-    return script;
-  }
-  
-  public void setScript(String script) {
-    this.script = script;
-  }
-  
-  public Map<String, String> getScriptToWorkflowMappings() {
-    return scriptToWorkflowMappings;
-  }
-
-  public void setScriptToWorkflowMappings(Map<String, String> scriptToWorkflowMappings) {
-    this.scriptToWorkflowMappings = scriptToWorkflowMappings;
-  }
-  
-  public String getResultVariableId() {
-    return resultVariableId;
-  }
-
-  public void setResultVariableId(String resultVariableId) {
-    this.resultVariableId = resultVariableId;
-  }
-
   public ScriptTask variableMapping(String scriptVariableName, String workflowVariableId) {
-    if (scriptToWorkflowMappings==null) {
-      scriptToWorkflowMappings = new HashMap<>();
+    Map<String,String> mappings = (Map<String, String>) getInputBindingValue(KEY_MAPPINGS);
+    if (mappings==null) {
+      mappings = new HashMap<>();
+      inputValue(KEY_MAPPINGS, mappings);
     }
-    scriptToWorkflowMappings.put(scriptVariableName, workflowVariableId);
+    mappings.put(scriptVariableName, workflowVariableId);
     return this;
   }
   
   public ScriptTask resultVariableId(String resultVariableId) {
-    this.resultVariableId = resultVariableId;
+    inputValue(KEY_RESULT_VARIABLE_ID, resultVariableId);
     return this;
   } 
 }

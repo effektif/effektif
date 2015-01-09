@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.task;
 
 import java.util.List;
 
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class Task {

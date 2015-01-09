@@ -16,17 +16,18 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Seconds;
 
 import com.effektif.workflow.impl.ExecutorService;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public abstract class JobServiceImpl implements JobService, Initializable {
+public abstract class JobServiceImpl implements JobService, Initializable<WorkflowEngineConfiguration> {
   
   // private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
@@ -47,7 +48,7 @@ public abstract class JobServiceImpl implements JobService, Initializable {
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.processEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
     this.executor = serviceRegistry.getService(ExecutorService.class);
   }

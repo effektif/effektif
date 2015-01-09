@@ -13,17 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public interface ActivityType<T> extends Plugin {
+public interface ActivityType extends Plugin {
   
-  Class<T> getConfigurationClass();
+  Descriptor getDescriptor();
 
   /** called when the process is being validated or deployed. */
-  void validate(ActivityImpl activity, T configuration, WorkflowValidator validator);
+  void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator);
   
   boolean isAsync(ActivityInstanceImpl activityInstance);
 

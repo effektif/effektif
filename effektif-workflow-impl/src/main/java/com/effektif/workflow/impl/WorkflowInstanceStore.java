@@ -17,13 +17,13 @@ import java.util.List;
 
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.VariableImpl;
-import com.effektif.workflow.impl.definition.WorkflowImpl;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.instance.VariableInstanceImpl;
-import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 public interface WorkflowInstanceStore {

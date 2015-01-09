@@ -14,8 +14,8 @@
 package com.effektif.workflow.impl.activitytypes;
 
 import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 /** this task doesn't do anything, it just continues (aka noop, pass-through). */

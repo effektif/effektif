@@ -18,10 +18,10 @@ import java.util.List;
 
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
@@ -34,7 +34,7 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
   }
   
   @Override
-  public void validate(ActivityImpl activity, ParallelGateway parallelGateway, WorkflowValidator validator) {
+  public void parse(ActivityImpl activity, ParallelGateway parallelGateway, WorkflowParse validator) {
     // at least one in, at least one out
     List<Transition> incomingTransitions = activity.getIncomingTransitions();
     if (log.isDebugEnabled())

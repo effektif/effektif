@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -34,13 +35,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 
-public class JacksonJsonService implements JsonService, Initializable {
+public class JacksonJsonService implements JsonService, Initializable<WorkflowEngineConfiguration> {
   
   public JsonFactory jsonFactory;
   public ObjectMapper objectMapper;
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
     this.jsonFactory = serviceRegistry.getService(JsonFactory.class);
     

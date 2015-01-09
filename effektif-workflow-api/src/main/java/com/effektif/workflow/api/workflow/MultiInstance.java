@@ -19,39 +19,39 @@ import java.util.List;
 
 public class MultiInstance {
 
-  protected Variable elementVariable;
-  protected List<Binding<Object>> collection;
+  protected Variable variable;
+  protected List<InputBinding> values;
 
-  public Variable getElementVariable() {
-    return this.elementVariable;
+  public Variable getVariable() {
+    return this.variable;
   }
-  public void setElementVariable(Variable variable) {
-    this.elementVariable = variable;
+  public void setVariable(Variable variable) {
+    this.variable = variable;
   }
-  public MultiInstance elementVariable(Variable elementVariable) {
-    this.elementVariable = elementVariable;
+  public MultiInstance variable(Variable variable) {
+    this.variable = variable;
     return this;
   }
   
-  public List<Binding<Object>> getCollection() {
-    return this.collection;
+  public List<InputBinding> getValues() {
+    return this.values;
   }
-  public void setCollection(List<Binding<Object>> collection) {
-    this.collection = collection;
+  public void setValues(List<InputBinding> values) {
+    this.values = values;
   }
-  public MultiInstance collectionVariableId(String collectionVariableId) {
-    addCollectionBinding(new Binding<Object>().variableId(collectionVariableId));
+  public MultiInstance valuesVariableId(String valuesVariableId) {
+    addValues(new InputBinding().variableId(valuesVariableId));
     return this;
   }
-  public MultiInstance collectionExpression(String collectionExpression) {
-    addCollectionBinding(new Binding<Object>().expression(collectionExpression));
+  public MultiInstance valuesExpression(String valuesExpression) {
+    addValues(new InputBinding().expression(valuesExpression));
     return this;
   }
   
-  void addCollectionBinding(Binding<Object> binding) {
-    if (collection==null) {
-      collection = new ArrayList<>();
+  void addValues(InputBinding valuesBinding) {
+    if (values==null) {
+      values = new ArrayList<>();
     }
-    collection.add(binding);
+    values.add(valuesBinding);
   }
 }

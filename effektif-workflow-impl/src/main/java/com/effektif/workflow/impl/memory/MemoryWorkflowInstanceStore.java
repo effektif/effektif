@@ -28,22 +28,23 @@ import org.slf4j.Logger;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.Time;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.VariableImpl;
-import com.effektif.workflow.impl.definition.WorkflowImpl;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.instance.LockImpl;
-import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.instance.VariableInstanceImpl;
-import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
-public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initializable {
+public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initializable<WorkflowEngineConfiguration> {
   
   private static final Logger log = WorkflowEngineImpl.log;
 
@@ -55,7 +56,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.workflowInstances = new ConcurrentHashMap<>();
     this.lockedWorkflowInstances = Collections.synchronizedSet(new HashSet<String>());
     this.workflowEngineId = serviceRegistry.getService(WorkflowEngineImpl.class).getId();

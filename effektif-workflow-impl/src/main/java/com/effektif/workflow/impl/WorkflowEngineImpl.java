@@ -30,19 +30,19 @@ import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.validate.DeployResult;
-import com.effektif.workflow.api.validate.ParseIssues;
+import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activitytypes.CallerReference;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.WorkflowImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.instance.LockImpl;
-import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Exceptions;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 public class WorkflowEngineImpl implements WorkflowEngine {
 
@@ -103,45 +103,28 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   /// Workflow methods ////////////////////////////////////////////////////////////
   
   @Override
-  public DeployResult deployWorkflow(Workflow workflow) {
-    WorkflowValidator validator = validateWorkflowInternal(workflow);
+  public Workflow deployWorkflow(Workflow workflow) {
+    WorkflowImpl workflowImpl = parseWorkflow(workflow);
     if (log.isDebugEnabled()) {
       log.debug("Deploying workflow");
     }
     DeployResult deployResult = new DeployResult();
     ParseIssues issues = validator.getIssues();
     deployResult.setIssues(issues);
-    
     if (!issues.hasErrors()) {
       WorkflowImpl workflowImpl = validator.workflow;
-      workflowImpl.id = workflowStore.createWorkflowId(validator.workflow);
-      deployResult.setWorkflowId(workflowImpl.id);
-
-      workflowStore.insertWorkflow(workflowImpl, workflow);
+      workflowStore.insertWorkflow(workflow);
+      workflowImpl.id = workflow.getId();
+      workflowImpl.version = workflow.getVersion();
+      deployResult.setWorkflowId(workflow.getId());
       workflowCache.put(workflowImpl);
     }
-    
     return deployResult;
   }
 
   @Override
   public ParseIssues validateWorkflow(Workflow workflow) {
-    return validateWorkflowInternal(workflow).parseIssues;
-  }
-
-  protected WorkflowValidator validateWorkflowInternal(Workflow workflow) {
-    Exceptions.checkNotNull(workflow, "workflow");
-    if (log.isDebugEnabled()) {
-      log.debug("Validating workflow");
-    }
-
-    WorkflowImpl workflowImpl = workflowStore.createWorkflow();
-    WorkflowValidator validator = new WorkflowValidator(this, workflowImpl);
-    validator.pushContext(workflow);
-    workflowImpl.validate(workflow, validator);
-    validator.popContext();
-
-    return validator;
+    return parseWorkflow(workflow).parseIssues;
   }
 
   public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
@@ -168,7 +151,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         throw new RuntimeException("No workflow specified");
       }
     }
-    WorkflowImpl workflow = workflowStore.findWorkflowImplById(workflowId, startCommand.getOrganizationId());
+
+    WorkflowImpl workflow = getExecutableWorkflow(workflowId, startCommand.getOrganizationId());
     
     WorkflowInstanceImpl workflowInstance = workflowInstanceStore.createWorkflowInstance(workflow);
     if (callerReference!=null) {
@@ -215,6 +199,24 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
     return workflowInstanceStore.findWorkflowInstances(query);
+  }
+  
+  /** retrieves the executable form of the workflow */
+  protected WorkflowImpl getExecutableWorkflow(String workflowId, String organizationId) {
+    WorkflowImpl executableWorkflow = workflowCache.get(workflowId, organizationId);
+    if (executableWorkflow==null) {
+      Workflow workflow = workflowStore.loadWorkflowById(workflowId, organizationId);
+      WorkflowParse parse = parseWorkflow(workflow);
+      parse.getIssues().checkNoErrors();
+      executableWorkflow = parse.workflow;
+      workflowCache.put(executableWorkflow);
+    }
+    return executableWorkflow;
+  }
+  
+  public WorkflowParse parseWorkflow(Workflow workflow) {
+    Exceptions.checkNotNull(workflow, "workflow");
+    return WorkflowParse.parse(this, workflow);
   }
 
   public WorkflowInstanceImpl lockProcessInstanceWithRetry(String workflowInstanceId, String activityInstanceId) {

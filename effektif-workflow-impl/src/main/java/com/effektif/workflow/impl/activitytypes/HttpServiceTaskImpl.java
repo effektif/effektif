@@ -14,8 +14,8 @@
 package com.effektif.workflow.impl.activitytypes;
 
 import com.effektif.workflow.api.activities.HttpServiceTask;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class HttpServiceTaskImpl extends AbstractActivityType<HttpServiceTask> {

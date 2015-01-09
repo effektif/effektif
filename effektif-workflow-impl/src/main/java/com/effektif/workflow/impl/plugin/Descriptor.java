@@ -13,10 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
+import java.awt.Label;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.annotations.Label;
 import com.effektif.workflow.impl.type.DataType;
 
 
@@ -30,9 +30,11 @@ public class Descriptor {
 // protected byte[] iconBytes;
 // protected String iconMimeType;
 // datatypes might also need a javascript rendering configuration
-  protected List<DescriptorField> configurationFields;
+  protected List<DescriptorField> fields;
   protected Class<?> configurationClass;
-
+  
+  public Descriptor() {
+  }
   
   public Descriptor(DataType dataType, String label, String description) {
     this.dataType = dataType;
@@ -42,7 +44,7 @@ public class Descriptor {
 
   public Descriptor(Class< ? > configurationClass, List<DescriptorField> configurationFields) {
     this.configurationClass = configurationClass;
-    this.configurationFields = configurationFields;
+    this.fields = configurationFields;
     
     if (configurationClass!=null) {
       Label labelAnnotation = configurationClass.getAnnotation(Label.class);
@@ -97,18 +99,18 @@ public class Descriptor {
   }
   
   public List<DescriptorField> getConfigurationFields() {
-    return configurationFields;
+    return fields;
   }
   
-  public void setConfigurationFields(List<DescriptorField> configurationFields) {
-    this.configurationFields = configurationFields;
+  public void setFields(List<DescriptorField> configurationFields) {
+    this.fields = configurationFields;
   }
   
   public Descriptor configurationField(DescriptorField field) {
-    if (this.configurationFields==null) {
-      this.configurationFields = new ArrayList<>();
+    if (this.fields==null) {
+      this.fields = new ArrayList<>();
     }
-    this.configurationFields.add(field);
+    this.fields.add(field);
     return this;
   }
 

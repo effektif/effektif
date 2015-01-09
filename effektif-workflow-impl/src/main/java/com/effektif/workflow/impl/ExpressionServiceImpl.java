@@ -13,33 +13,30 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.impl.definition.BindingImpl;
-import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ExpressionServiceImpl implements ExpressionService, Initializable {
+public class ExpressionServiceImpl implements ExpressionService, Initializable<WorkflowEngineConfiguration> {
   
   protected ScriptService scriptService;
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.scriptService = serviceRegistry.getService(ScriptService.class);
   }
 
-  public <T> BindingImpl<T> compile(Binding<T> binding) {
-    BindingImpl bindingImpl = new BindingImpl<T>();
-    bindingImpl.value = binding.getValue();
-    bindingImpl.variableId = binding.getVariableId();
-    bindingImpl.expression = scriptService.compile(binding.getExpression());
-    return bindingImpl;
+  public Object compile(String expression) {
+    if (expression==null) {
+      return null;
+    }
+    return scriptService.compile(expression);
   }
 
   public Object execute(Object compiledscript, ScopeInstanceImpl scopeInstance) {

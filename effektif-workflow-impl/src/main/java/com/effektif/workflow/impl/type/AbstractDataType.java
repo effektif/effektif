@@ -13,8 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
-import com.effektif.workflow.impl.definition.VariableImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
+import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
 
 
 public abstract class AbstractDataType<T> implements DataType<T> {
@@ -31,7 +31,7 @@ public abstract class AbstractDataType<T> implements DataType<T> {
   }
 
   @Override
-  public void validate(VariableImpl variable, T apiVariable, WorkflowValidator validator) {
+  public void validate(VariableImpl variable, T apiVariable, WorkflowParse validator) {
   }
 
   @Override

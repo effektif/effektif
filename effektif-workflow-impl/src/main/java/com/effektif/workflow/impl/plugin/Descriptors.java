@@ -23,8 +23,9 @@ import java.util.Map;
 
 import com.effektif.workflow.api.annotations.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.InputBinding;
 import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.type.BindingType;
 import com.effektif.workflow.impl.type.DataType;
@@ -37,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class Descriptors implements Initializable {
+public class Descriptors implements Initializable<WorkflowEngineConfiguration> {
   
   public List<Descriptor> activityTypeDescriptors = new ArrayList<>();
   public List<Descriptor> dataTypeDescriptors = new ArrayList<>();
@@ -59,7 +60,7 @@ public class Descriptors implements Initializable {
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
   }
 
@@ -169,7 +170,7 @@ public class Descriptors implements Initializable {
   }
   
   protected Descriptor createDataTypeDescriptor(Type rawType, Type[] typeArgs, Field field /* passed for error message only */) {
-    if (Binding.class==rawType) {
+    if (InputBinding.class==rawType) {
       Descriptor argDescriptor = getDataTypeDescriptor(typeArgs[0], field);
       BindingType bindingType = new BindingType(argDescriptor.getDataType());
       return new Descriptor(bindingType);

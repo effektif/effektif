@@ -15,24 +15,19 @@ package com.effektif.workflow.impl.plugin;
 
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public abstract class AbstractActivityType<T> implements ActivityType<T> {
+public abstract class AbstractActivityType<T> implements ActivityType {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
-  protected Class<T> configurationClass;
-
-  public AbstractActivityType(Class<T> configurationClass) {
-    this.configurationClass = configurationClass;
-  }
-
-  public Class<T> getConfigurationClass() {
-    return this.configurationClass;
+  @Override
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
   }
   
   public abstract void execute(ActivityInstanceImpl activityInstance);
@@ -48,7 +43,8 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
   }
   
   @Override
-  public void validate(ActivityImpl activity, T apiActivity, WorkflowValidator validator) {
+  public boolean isAsync(ActivityInstanceImpl activityInstance) {
+    return false;
   }
 
 //  @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -102,9 +98,4 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
 //    binding.dataType = descriptorField.dataType;
 //    binding.validate(activity, validator, this.getClass().getName()+"."+descriptorField.name);
 //  }
-  
-  @Override
-  public boolean isAsync(ActivityInstanceImpl activityInstance) {
-    return false;
-  }
 }

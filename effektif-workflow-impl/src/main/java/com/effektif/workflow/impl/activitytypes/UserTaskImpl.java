@@ -14,32 +14,46 @@
 package com.effektif.workflow.impl.activitytypes;
 
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.BindingImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.plugin.Descriptor;
 import com.effektif.workflow.impl.task.Task;
 import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.InputBindingImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class UserTaskImpl extends AbstractActivityType<UserTask> {
   
   protected TaskService taskService;
-  protected BindingImpl<String> name;
-  protected List<BindingImpl<String>> candidateIds;
+  protected InputBindingImpl<String> name;
+  protected List<InputBindingImpl<String>> candidateIds;
   
-  public UserTaskImpl() {
-    super(UserTask.class);
-  }
-
   @Override
-  public void validate(ActivityImpl activity, UserTask userTask, WorkflowValidator validator) {
-    this.taskService = validator.getServiceRegistry().getService(TaskService.class);
-    this.name = validator.compileBinding(userTask.getName(), "name");
-    this.candidateIds = validator.compileBinding(userTask.getCandidateIds(), "candidateIds");
+  public Descriptor getDescriptor() {
+    return new Descriptor();
+  }
+  
+  @Override
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse parser) {
+    this.taskService = parser.getServiceRegistry().getService(TaskService.class);
+    this.name = parser.parseBinding(activityApi, UserTask.KEY_NAME, String.class, false);
+    this.candidateIds = parser.parseBindings(activityApi, UserTask.KEY_CANDIDATE_IDS, String.class);
+  }
+  
+  public UserTask serialize(ActivityImpl activity) {
+    UserTask userTask = new UserTask();
+    userTask.setName(serializeBinding(this.name));
+    userTask.setCandidateIds(serializeBinding);
+    return userTask;
+  }
+  
+  public Map<String,Object> toJson() {
   }
 
   @Override

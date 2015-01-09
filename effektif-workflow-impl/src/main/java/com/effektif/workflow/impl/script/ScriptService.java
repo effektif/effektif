@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.script;
 
-import com.effektif.workflow.impl.instance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 

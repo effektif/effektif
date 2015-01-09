@@ -13,9 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 
-public interface Initializable {
 
-  void initialize(ServiceRegistry serviceRegistry);
+public interface Initializable<T extends WorkflowEngineConfiguration> {
+
+  void initialize(ServiceRegistry serviceRegistry, T configuration);
 
 }

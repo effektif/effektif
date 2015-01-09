@@ -13,17 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.joda.time.LocalDateTime;
 
 
 public class Workflow extends Scope {
 
   protected String name;
-  protected LocalDateTime deployTime;
-  protected String deployerId;
+  protected LocalDateTime deployedTime;
+  protected String deployedBy;
   protected String organizationId;
   protected String processId;
   protected Long version;
+  protected ParseIssues issues;
 
   public String getName() {
     return this.name;
@@ -36,22 +40,21 @@ public class Workflow extends Scope {
     return this;
   }
 
-  public LocalDateTime getDeployTime() {
-    return this.deployTime;
+  public LocalDateTime getDeployedTime() {
+    return this.deployedTime;
   }
-  
-  public void setDeployTime(LocalDateTime deployTime) {
-    this.deployTime = deployTime;
+  public void setDeployedTime(LocalDateTime deployedTime) {
+    this.deployedTime = deployedTime;
   }
 
-  public String getDeployerId() {
-    return this.deployerId;
+  public String getDeployedBy() {
+    return this.deployedBy;
   }
-  public void setDeployerId(String deployerId) {
-    this.deployerId = deployerId;
+  public void setDeployedBy(String deployedBy) {
+    this.deployedBy = deployedBy;
   }
-  public Workflow deployerId(String deployerId) {
-    this.deployerId = deployerId;
+  public Workflow deployedBy(String deployedBy) {
+    this.deployedBy = deployedBy;
     return this;
   }
 
@@ -117,5 +120,13 @@ public class Workflow extends Scope {
   public Workflow property(String key, Object value) {
     super.property(key, value);
     return this;
+  }
+  
+  public ParseIssues getIssues() {
+    return issues;
+  }
+  
+  public void setIssues(ParseIssues issues) {
+    this.issues = issues;
   }
 }

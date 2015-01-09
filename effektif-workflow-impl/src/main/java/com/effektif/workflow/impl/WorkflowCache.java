@@ -13,11 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.impl.definition.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
 public interface WorkflowCache {
 
-  WorkflowImpl get(String workflowId);
+  WorkflowImpl get(String workflowId, String organizationId);
   void put(WorkflowImpl workflow);
 }

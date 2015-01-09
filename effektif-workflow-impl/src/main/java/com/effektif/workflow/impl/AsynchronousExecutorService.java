@@ -26,7 +26,7 @@ import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
-public class AsynchronousExecutorService implements ExecutorService, Initializable {
+public class AsynchronousExecutorService implements ExecutorService, Initializable<WorkflowEngineConfiguration> {
   
   private static final Logger log = WorkflowEngineImpl.log;
   
@@ -41,7 +41,7 @@ public class AsynchronousExecutorService implements ExecutorService, Initializab
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4, new ThreadPoolExecutor.CallerRunsPolicy());
     this.queue = scheduledThreadPoolExecutor.getQueue();
     this.executor = scheduledThreadPoolExecutor;

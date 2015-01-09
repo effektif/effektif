@@ -22,17 +22,17 @@ import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.BindingImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.instance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.InputBindingImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 public class CallImpl extends AbstractActivityType<Call> {
 
-  BindingImpl<String> subProcessName;
-  BindingImpl<String> subProcessId;
+  InputBindingImpl<String> subProcessName;
+  InputBindingImpl<String> subProcessId;
   List<CallMappingImpl> inputMappings;
   List<CallMappingImpl> outputMappings;
   
@@ -41,20 +41,20 @@ public class CallImpl extends AbstractActivityType<Call> {
   }
 
   @Override
-  public void validate(ActivityImpl activity, Call call, WorkflowValidator validator) {
-    subProcessId = validator.compileBinding(call.getSubProcessId(), "subProcessId");
-    subProcessName = validator.compileBinding(call.getSubProcessName(), "subProcessName");
+  public void parse(ActivityImpl activity, Call call, WorkflowParse validator) {
+    subProcessId = validator.parseBinding(call.getSubProcessId(), "subProcessId");
+    subProcessName = validator.parseBinding(call.getSubProcessName(), "subProcessName");
     inputMappings = validateCallMappings(call.getInputMappings(), validator, "inputMappings");
     outputMappings = validateCallMappings(call.getOutputMappings(), validator, "outputMappings");
   }
 
-  private List<CallMappingImpl> validateCallMappings(List<CallMapping> callMappings, WorkflowValidator validator, String propertyName) {
+  private List<CallMappingImpl> validateCallMappings(List<CallMapping> callMappings, WorkflowParse validator, String propertyName) {
     if (callMappings!=null) {
       List<CallMappingImpl> callMappingImpls = new ArrayList<>(callMappings.size());
       int i=0;
       for (CallMapping callMapping: callMappings) {
         CallMappingImpl callMappingImpl = new CallMappingImpl();
-        callMappingImpl.source = validator.compileBinding(callMapping.getSource(), propertyName+"["+i+"]");
+        callMappingImpl.source = validator.parseBinding(callMapping.getSource(), propertyName+"["+i+"]");
         callMappingImpl.destinationVariableId = callMapping.getDestinationVariableId();
         i++;
       }

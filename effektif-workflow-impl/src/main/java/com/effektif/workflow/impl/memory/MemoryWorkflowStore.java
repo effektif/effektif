@@ -14,8 +14,6 @@
 package com.effektif.workflow.impl.memory;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,55 +21,59 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.definition.WorkflowImpl;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.util.Lists;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
-public class MemoryWorkflowStore implements WorkflowStore, Initializable {
+public class MemoryWorkflowStore implements WorkflowStore, Initializable<WorkflowEngineConfiguration> {
 
-  protected Map<String, WorkflowImpl> workflows;
-  protected Map<String, Workflow> apiWorkflows;
+  protected Map<String, Long> nextVersionByName;
+  protected Map<String, Workflow> workflows;
 
   public MemoryWorkflowStore() {
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry) {
-    this.apiWorkflows = new ConcurrentHashMap<String, Workflow>();
-    this.workflows = new ConcurrentHashMap<String, WorkflowImpl>();
-  }
-
-  @Override
-  public WorkflowImpl createWorkflow() {
-    return new WorkflowImpl();
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
+    this.workflows = new ConcurrentHashMap<String, Workflow>();
+    this.nextVersionByName = new ConcurrentHashMap<String, Long>();
   }
 
   /** ensures that every element in this process definition has an id */
   @Override
-  public String createWorkflowId(WorkflowImpl workflow) {
-    return UUID.randomUUID().toString();
+  public synchronized void assignIdAndVersion(Workflow workflow) {
+    workflow.setId(UUID.randomUUID().toString());
+    String workflowName = workflow.getName();
+    if (workflowName!=null) {
+      Long nextVersion = nextVersionByName.get(workflowName);
+      if (nextVersion==null) {
+        nextVersion = 1l;
+      }
+      workflow.setVersion(nextVersion);
+      nextVersion++;
+      nextVersionByName.put(workflowName, nextVersion);
+    }
   }
 
   @Override
-  public void insertWorkflow(WorkflowImpl workflow, Workflow apiWorkflow) {
-    workflows.put(workflow.id, workflow);
-    apiWorkflows.put(workflow.id, apiWorkflow);
+  public void insertWorkflow(Workflow workflow) {
+    workflows.put(workflow.getId(), workflow);
   }
 
   @Override
-  public List<WorkflowImpl> loadWorkflows(WorkflowQuery query) {
-    List<WorkflowImpl> result = null;
+  public List<Workflow> findWorkflows(WorkflowQuery query) {
+    List<Workflow> result = null;
     if (query.getWorkflowId()!=null) {
-      result = new ArrayList<WorkflowImpl>();
-      WorkflowImpl processDefinition = workflows.get(query.getWorkflowId());
-      if (processDefinition!=null) {
-        result.add(processDefinition);
+      result = new ArrayList<Workflow>();
+      Workflow workflow = workflows.get(query.getWorkflowId());
+      if (workflow!=null) {
+        result.add(workflow);
       }
     } else if (result==null) {
-      result = new ArrayList<WorkflowImpl>(workflows.values());
+      result = new ArrayList<Workflow>(workflows.values());
     }
     if (query.getWorkflowName()!=null && !result.isEmpty()) {
       filterByName(result, query.getWorkflowName());
@@ -84,9 +86,9 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable {
     return result;
   }
   
-  protected void filterByName(List<WorkflowImpl> result, String name) {
+  protected void filterByName(List<Workflow> result, String name) {
     for (int i=result.size()-1; i>=0; i--) {
-      if (!name.equals(result.get(i).name)) {
+      if (!name.equals(result.get(i).getName())) {
         result.remove(i);
       }
     }
@@ -104,57 +106,26 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable {
     if (workflowName==null) {
       return null;
     }
-    WorkflowImpl latest = null;
-    for (WorkflowImpl workflow: workflows.values()) {
-      if ( workflowName.equals(workflow.name)
-           && (latest==null || workflow.deployTime.isBefore(latest.deployTime))
+    Workflow latest = null;
+    for (Workflow workflow: workflows.values()) {
+      if ( workflowName.equals(workflow.getName())
+           && (latest==null || workflow.getDeployedTime().isBefore(latest.getDeployedTime()))
          ) {
         latest = workflow;
       }
     }
-    return latest!=null ? latest.id : null;
-  }
-
-  @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
-    List<WorkflowImpl> workflows = findWorkflowImpls(query);
-    List<Workflow> apiWorkflows = new ArrayList<>();
-    for (WorkflowImpl workflow: workflows) {
-      apiWorkflows.add(this.apiWorkflows.get(workflow.id));
-    }
-    return apiWorkflows;
-  }
-  
-  public List<WorkflowImpl> findWorkflowImpls(WorkflowQuery query) {
-    if (query.getWorkflowId()!=null) {
-      WorkflowImpl workflow = workflows.get(query.getWorkflowId());
-      if (workflow.isIncluded(query)) {
-        return Lists.of(workflow);
-      } else {
-        return Collections.EMPTY_LIST;
-      }
-    }
-    List<WorkflowImpl> workflows = new ArrayList<>();
-    Iterator<WorkflowImpl> iterator = this.workflows.values().iterator();
-    int limit = query.getLimit()!=null ? query.getLimit() : Integer.MAX_VALUE;
-    while (iterator.hasNext() && workflows.size()<limit) {
-      WorkflowImpl workflow = iterator.next();
-      if (workflow.isIncluded(query)) {
-        workflows.add(workflow);
-      }
-    }
-    return workflows;
+    return latest!=null ? latest.getId() : null;
   }
 
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
-    for (WorkflowImpl workflow: findWorkflowImpls(query)) {
-      workflows.remove(workflow.id);
+    for (Workflow workflow: findWorkflows(query)) {
+      workflows.remove(workflow.getId());
     }
   }
 
   @Override
-  public WorkflowImpl findWorkflowImplById(String workflowId, String organizationId) {
+  public Workflow loadWorkflowById(String workflowId, String organizationId) {
     return workflows.get(workflowId);
   }
 }

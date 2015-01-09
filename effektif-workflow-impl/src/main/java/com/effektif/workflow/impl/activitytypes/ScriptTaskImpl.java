@@ -16,13 +16,13 @@ package com.effektif.workflow.impl.activitytypes;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.ScriptTask;
-import com.effektif.workflow.impl.definition.ActivityImpl;
-import com.effektif.workflow.impl.definition.WorkflowValidator;
-import com.effektif.workflow.impl.instance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
@@ -38,7 +38,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   }
 
   @Override
-  public void validate(ActivityImpl activity, ScriptTask scriptTask, WorkflowValidator validator) {
+  public void parse(ActivityImpl activity, ScriptTask scriptTask, WorkflowParse validator) {
     if (script!=null) {
       this.scriptService = validator.getServiceRegistry().getService(ScriptService.class);
       this.compiledScript = scriptService.compile(script);

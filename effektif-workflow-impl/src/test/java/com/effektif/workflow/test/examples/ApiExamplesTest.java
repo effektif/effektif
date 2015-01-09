@@ -47,6 +47,16 @@ public class ApiExamplesTest {
         .transitionTo("b"))
       .activity(new NoneTask()
         .id("b"));
+
+    Workflow workflow = new Workflow()
+      .activity()
+        .id("a")
+        .activityType(new NoneTask()
+          .noneTaskSpecificConfig(""))
+        .transitionTo("b"))
+      .activity(new NoneTask()
+        .id("b"));
+
     
     // Deploy the workflow to the engine
     String workflowId = workflowEngine.deployWorkflow(workflow)

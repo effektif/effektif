@@ -19,8 +19,6 @@ import com.effektif.workflow.api.command.MessageCommand;
 import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.validate.DeployResult;
-import com.effektif.workflow.api.validate.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
@@ -41,10 +39,10 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 public interface WorkflowEngine {
 
   /** Validates and deploys if there are no errors. */
-  DeployResult deployWorkflow(Workflow workflow);
+  Workflow deployWorkflow(Workflow workflow);
 
   /** Only validates the given workflow and reports any issues. */
-  ParseIssues validateWorkflow(Workflow workflow);
+  Workflow validateWorkflow(Workflow workflow);
 
   List<Workflow> findWorkflows(WorkflowQuery workflowQuery);
   
