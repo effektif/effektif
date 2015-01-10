@@ -13,21 +13,32 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("variable")
-public class InputBindingVariable extends InputBinding {
+/** Describes how the value is obtained 
+ * for an activity input parameter. */
+public class Binding {
 
+  /** the fixed input value.  
+   * This is mutually exclusive with variableId and expression */
+  protected Object value;
+  
   /** reference to the variable that will contain the input value.  
    * This is mutually exclusive with value and expression */
   protected String variableId;
-  
-  public InputBindingVariable() {
-  }
 
-  public InputBindingVariable(String key, String variableId) {
-    super(key);
-    this.variableId = variableId;
+  /** expression that will produce the input value.  
+   * This is mutually exclusive with variableId and value */
+  protected String expression;
+
+  public Object getValue() {
+    return this.value;
+  }
+  public void setValue(Object value) {
+    this.value = value;
+  }
+  public Binding value(Object value) {
+    this.value = value;
+    return this;
   }
 
   public String getVariableId() {
@@ -36,8 +47,19 @@ public class InputBindingVariable extends InputBinding {
   public void setVariableId(String variableId) {
     this.variableId = variableId;
   }
-  public InputBinding variableId(String variableId) {
+  public Binding variableId(String variableId) {
     this.variableId = variableId;
+    return this;
+  }
+
+  public String getExpression() {
+    return this.expression;
+  }
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
+  public Binding expression(String expression) {
+    this.expression = expression;
     return this;
   }
 }

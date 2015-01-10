@@ -13,8 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ObjectType extends AbstractDataType {
+  
+  protected String label;
+  protected String description;
+  protected Class<?> apiClass;
+  protected List<ObjectField> fields;
 
   public ObjectType() {
     super(null);
@@ -25,4 +33,28 @@ public class ObjectType extends AbstractDataType {
     return null;
   }
 
+  public List<ObjectField> getFields() {
+    return this.fields;
+  }
+  public void setFields(List<ObjectField> fields) {
+    this.fields = fields;
+  }
+  public ObjectType field(ObjectField field) {
+    if (this.fields==null) {
+      this.fields = new ArrayList<>();
+    }
+    this.fields.add(field);
+    return this;
+  }
+
+  public Class<?> getApiClass() {
+    return this.apiClass;
+  }
+  public void setApiClass(Class<?> apiClass) {
+    this.apiClass = apiClass;
+  }
+  public ObjectType apiClass(Class<?> apiClass) {
+    this.apiClass = apiClass;
+    return this;
+  }
 }

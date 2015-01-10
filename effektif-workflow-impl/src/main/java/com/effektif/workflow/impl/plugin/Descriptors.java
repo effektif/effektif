@@ -21,9 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.annotations.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.InputBinding;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.JobType;
@@ -31,6 +30,7 @@ import com.effektif.workflow.impl.type.BindingType;
 import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.type.JavaBeanType;
 import com.effektif.workflow.impl.type.ListType;
+import com.effektif.workflow.impl.type.ObjectType;
 import com.effektif.workflow.impl.type.TextType;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Reflection;
@@ -40,15 +40,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Descriptors implements Initializable<WorkflowEngineConfiguration> {
   
-  public List<Descriptor> activityTypeDescriptors = new ArrayList<>();
-  public List<Descriptor> dataTypeDescriptors = new ArrayList<>();
+  public List<ObjectType> activityTypeDescriptors = new ArrayList<>();
+  public List<ObjectType> dataTypeDescriptors = new ArrayList<>();
 
   @JsonIgnore
   public ObjectMapper objectMapper;
   @JsonIgnore
-  public Map<Type,Descriptor> dataTypeDescriptorsByValueType = new HashMap<>();
+  public Map<Type,ObjectType> dataTypeDescriptorsByValueType = new HashMap<>();
   @JsonIgnore
-  public Map<Class<?>, Descriptor> activityTypeDescriptorsByClass = new HashMap<>();
+  public Map<Class<?>, ObjectType> activityTypeDescriptorsByClass = new HashMap<>();
   
   // maps activity api configuration classes to activity type implementation classes
   @JsonIgnore
@@ -170,7 +170,7 @@ public class Descriptors implements Initializable<WorkflowEngineConfiguration> {
   }
   
   protected Descriptor createDataTypeDescriptor(Type rawType, Type[] typeArgs, Field field /* passed for error message only */) {
-    if (InputBinding.class==rawType) {
+    if (Binding.class==rawType) {
       Descriptor argDescriptor = getDataTypeDescriptor(typeArgs[0], field);
       BindingType bindingType = new BindingType(argDescriptor.getDataType());
       return new Descriptor(bindingType);
@@ -201,7 +201,7 @@ public class Descriptors implements Initializable<WorkflowEngineConfiguration> {
     if (descriptor==null) {
       return null;
     }
-    return descriptor.getConfigurationFields();
+    return descriptor.getFields();
   }
 
   public void registerJobType(Class<? extends JobType> jobType) {

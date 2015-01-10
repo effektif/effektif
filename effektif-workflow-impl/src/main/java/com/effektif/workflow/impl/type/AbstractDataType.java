@@ -19,17 +19,6 @@ import com.effektif.workflow.impl.workflow.WorkflowParse;
 
 public abstract class AbstractDataType<T> implements DataType<T> {
   
-  protected Class<T> configurationClass;
-  
-  public AbstractDataType(Class<T> configurationClass) {
-    this.configurationClass = configurationClass;
-  }
-  
-  @Override
-  public Class<T> getConfigurationClass() {
-    return configurationClass;
-  }
-
   @Override
   public void validate(VariableImpl variable, T apiVariable, WorkflowParse validator) {
   }

@@ -19,8 +19,9 @@ import com.effektif.workflow.impl.workflow.WorkflowParse;
 
 
 public interface DataType<T> extends Plugin {
-
-  Class<?> getConfigurationClass();
+  
+  // TODO byte[] getIconBytes();
+  // TODO String getIconMimeType();
 
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;

@@ -11,21 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.workflow;
+package com.effektif.workflow.impl.workflow;
+
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public class OutputBinding {
 
-  protected String variableId;
+/**
+ * @author Tom Baeyens
+ */
+public class BindingImpl<T> {
 
-  public String getVariableId() {
-    return this.variableId;
+  public Class<?> expectedValueType;
+  public Object value;
+  public String variableId;
+  public Object expression;
+  
+  public BindingImpl(Class< ? > expectedValueType) {
+    this.expectedValueType = expectedValueType;
   }
-  public void setVariableId(String variableId) {
-    this.variableId = variableId;
-  }
-  public OutputBinding variableId(String variableId) {
-    this.variableId = variableId;
-    return this;
+
+  public String getValue(ActivityInstanceImpl activityInstance) {
+    return null;
   }
 }

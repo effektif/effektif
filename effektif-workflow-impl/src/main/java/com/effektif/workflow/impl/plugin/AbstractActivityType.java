@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.tooling.ConfigurationPanel;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowParse;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -26,6 +27,11 @@ public abstract class AbstractActivityType<T> implements ActivityType {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
+  @Override
+  public ConfigurationPanel getConfigurationPanel() {
+    return null;
+  }
+
   @Override
   public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
   }

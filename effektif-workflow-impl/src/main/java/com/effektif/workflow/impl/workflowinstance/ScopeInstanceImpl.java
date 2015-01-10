@@ -40,7 +40,7 @@ import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.type.NumberType;
 import com.effektif.workflow.impl.type.TextType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.InputBindingImpl;
+import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
@@ -176,7 +176,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
   
   @SuppressWarnings("unchecked")
-  public <T> T getValue(InputBindingImpl<T> binding) {
+  public <T> T getValue(BindingImpl<T> binding) {
     if (binding==null) {
       return null;
     }
@@ -188,16 +188,15 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     if (binding.expression!=null) {
       ExpressionService expressionService = getServiceRegistry().getService(ExpressionService.class);
-      // TODO does the returned value need to be converted by the binding datatype?
       return (T) expressionService.execute(binding.expression, this);
     }
     return null;
   }
 
-  public <T> List<T> getValue(List<InputBindingImpl<T>> bindings) {
+  public <T> List<T> getValue(List<BindingImpl<T>> bindings) {
     List<T> list = new ArrayList<>();
     if (bindings!=null) {
-      for (InputBindingImpl<T> binding: bindings) {
+      for (BindingImpl<T> binding: bindings) {
         list.add(getValue(binding));
       }
     }

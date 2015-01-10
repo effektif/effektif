@@ -25,7 +25,7 @@ import com.effektif.workflow.api.workflow.Variable;
 public class MultiInstanceImpl {
 
   public VariableImpl elementVariable;
-  public List<InputBindingImpl<Object>> collection;
+  public List<BindingImpl<Object>> collection;
 
   public void validate(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowParse validator) {
     if (apiMultiInstance.getValues()!=null) {

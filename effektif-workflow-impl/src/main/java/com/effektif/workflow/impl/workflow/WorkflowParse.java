@@ -24,12 +24,13 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Base;
-import com.effektif.workflow.api.workflow.InputBinding;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
@@ -138,65 +139,78 @@ public class WorkflowParse {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public <T> T parseValue(Activity activityApi, String key, Class<T> valueType) {
-    
-  }
-
-  public <T> InputBindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> valueType) {
+  public <T> BindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> valueType) {
     return parseBinding(activityApi, key, valueType, false);
   }
 
-  public <T> InputBindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> valueType, boolean required) {
-    List<InputBindingImpl<T>> inputImpls = parseBindings(activityApi, key, valueType, required, true);
-    return inputImpls!=null ? inputImpls.get(0) : null;
+  public <T> BindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> valueType, boolean required) {
+    String activityId = activityApi.getId();
+    Object configuration = activityApi.getConfiguration(key);
+    return parseBinding(configuration, key, valueType, required, activityId);
   }
 
-  public <T> List<InputBindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> valueType) {
-    return parseBindings(activityApi, key, valueType, false, false);
-  }
-  
-  public <T> List<InputBindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> valueType, boolean required, boolean maxOne) {
-    String activityId = activityApi.getId();
-    List<InputBinding> inputApis = activityApi.getInputs(key);
-    if (required && inputApis.isEmpty()) {
-      addError("No input bindings for '%s' in activity '%s'", key, activityId);
+  protected <T> BindingImpl<T> parseBinding(Object configuration, String key, Class<T> valueType, boolean required, String activityId) {
+    if (configuration==null) {
+      if (required) {
+        addWarning("Configuration '%s' in activity '%s' not specified, but is a required binding", key, activityId);
+      }
       return null;
     }
-    if (maxOne && inputApis.size()>1) {
-      addError("Multiple input bindings for '%s' in activity '%s', while only one is expected: %s", key, activityId, inputApis.toString());
+    Binding binding = null;
+    if (configuration instanceof Map) {
+      JsonService jsonService = workflowEngine.getServiceRegistry().getService(JsonService.class);
+      binding = jsonService.jsonMapToObject((Map<String,Object>)configuration, Binding.class);
+    } else if (!(configuration instanceof Binding)) {
+      addWarning("Configuration '%s' in activity '%s' must be a binding, but was '%s'", key, activityId, configuration.getClass());
+      return null;
+    } else {
+      binding = (Binding) configuration;
     }
-    List<InputBindingImpl<T>> inputImpls = new ArrayList<>(inputApis.size());
-    for (InputBinding inputApi: inputApis) {
-      inputImpls.add(parseBinding(inputApi, key, valueType, activityId));
-    }
-    return inputImpls;
+    return parseBinding(binding, key, valueType, activityId);
   }
 
+  public <T> List<BindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> valueType) {
+    return parseBindings(activityApi, key, valueType, false);
+  }
+  
+  public <T> List<BindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> valueType, boolean required) {
+    String activityId = activityApi.getId();
+    List<Object> configurations = (List<Object>) activityApi.getConfiguration(key);
+    if (required && (configurations==null || configurations.isEmpty())) {
+      addWarning("Configuration '%s' in activity '%s' not specified, but is a required list of bindings", key, activityId);
+      return null;
+    }
+    List<BindingImpl<T>> bindingImpls = new ArrayList<>(configurations.size());
+    for (Object configuration: (List<Object>)configurations) {
+      bindingImpls.add(parseBinding(configuration, key, valueType, false, activityId));
+    }
+    return bindingImpls;
+  }
 
-  protected InputBindingImpl parseBinding(InputBinding inputApi, String inputKey, Class<?> valueType, String activityId) {
-    InputBindingImpl bindingImpl = new InputBindingImpl(valueType);
+  public BindingImpl parseBinding(Binding binding, String key, Class<?> valueType, String activityId) {
+    BindingImpl bindingImpl = new BindingImpl(valueType);
     int values = 0;
-    if (inputApi.getValue()!=null) {
-      bindingImpl.value = inputApi.getValue();
+    if (binding.getValue()!=null) {
+      bindingImpl.value = binding.getValue();
       values++;
     }
-    if (inputApi.getVariableId()!=null) {
-      bindingImpl.variableId = inputApi.getVariableId();
+    if (binding.getVariableId()!=null) {
+      bindingImpl.variableId = binding.getVariableId();
       values++;
     }
-    if (inputApi.getExpression()!=null) {
+    if (binding.getExpression()!=null) {
       ExpressionService expressionService = workflowEngine.getServiceRegistry().getService(ExpressionService.class);
       try {
-        bindingImpl.expression = expressionService.compile(inputApi.getExpression());
+        bindingImpl.expression = expressionService.compile(binding.getExpression());
       } catch (Exception e) {
-        addError("Expression for input '%s' couldn't be compiled: %s", inputKey+".expression", e.getMessage());
+        addError("Expression for input '%s' couldn't be compiled: %s", key+".expression", e.getMessage());
       }
       values++;
     }
     if (values==0) {
-      addError("No value specified in binding '%s' for activity '%s'", inputKey, activityId);
+      addError("No value specified in binding '%s' for activity '%s'", key, activityId);
     } else if (values>1) {
-      addError("Multiple values specified for '%s' for activity '%s'", inputKey, activityId);
+      addError("Multiple values specified for '%s' for activity '%s'", key, activityId);
     }
     return bindingImpl;
   }

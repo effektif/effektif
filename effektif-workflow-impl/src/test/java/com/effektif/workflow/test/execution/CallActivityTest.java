@@ -43,7 +43,7 @@ public class CallActivityTest extends WorkflowTest {
     Workflow superWorkflow = new Workflow()
       .activity(new Call()
         .id("call")
-        .subProcessId(subWorkflowId));
+        .subWorkflowId(subWorkflowId));
     
     String superWorkflowId = workflowEngine.deployWorkflow(superWorkflow)
       .checkNoErrorsAndNoWarnings()

@@ -14,8 +14,7 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.InputBinding;
-import com.effektif.workflow.api.workflow.InputBindingValue;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -26,55 +25,61 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends Activity {
 
-  public static final String SUB_PROCESS_ID = "subProcessId";
-  public static final String SUB_PROCESS_NAME = "subProcessName";
+  public static final String SUB_WORKFLOW_ID = "subWorkflowId";
+  public static final String SUB_WORKFLOW_NAME = "subWorkflowName";
   public static final String INPUT_MAPPINGS = "inputMappings";
   public static final String OUTPUT_MAPPINGS = "outputMappings";
-
-  public Call subProcessId(String subProcessId) {
-    inputValue(SUB_PROCESS_ID, subProcessId);
+  
+  public Call subWorkflowId(String subWorkflowId) {
+    setConfigurationBindingValue(SUB_WORKFLOW_ID, subWorkflowId);
     return this;
   }
 
-  public Call subProcessIdExpression(String subProcessIdExpression) {
-    inputExpression(SUB_PROCESS_ID,subProcessIdExpression);
+  public Call subWorkflowIdExpression(String subWorkflowIdExpression) {
+    setConfigurationBindingExpression(SUB_WORKFLOW_ID,subWorkflowIdExpression);
     return this;
   }
 
-  public Call subProcessIdVariableId(String subProcessIdVariableId) {
-    inputVariableId(SUB_PROCESS_ID, subProcessIdVariableId);
+  public Call subWorkflowIdVariableId(String subWorkflowIdVariableId) {
+    setConfigurationBindingVariableId(SUB_WORKFLOW_ID, subWorkflowIdVariableId);
     return this;
   }
+  
+  // TODO sub workflow name property methods
 
   public Call inputMappingValue(Object value, String subWorkflowVariableId) {
-    return inputMapping(new InputBindingValue(subWorkflowVariableId, value));
+    addInputMapping(new Binding().value(value), subWorkflowVariableId);
+    return this;
   }
 
-  public Call inputMappingVariable(String callerVariableId, String calledVariableId) {
-    return inputMapping(new InputBindingVariable().variableId(callerVariableId), calledVariableId);
+  public Call inputMappingVariable(String variableId, String subWorkflowVariableId) {
+    addInputMapping(new Binding().variableId(variableId), subWorkflowVariableId);
+    return this;
   }
 
-  public Call inputMappingExpression(String callerVariableId, String calledVariableId) {
-    return inputMapping(new InputBindingVariable().variableId(callerVariableId), calledVariableId);
+  public Call inputMappingExpression(String expression, String subWorkflowVariableId) {
+    addInputMapping(new Binding().expression(expression), subWorkflowVariableId);
+    return this;
   }
 
-  public Call inputMapping(InputBinding callerBinding, String calledVariableId) {
-    CallMapping inputMapping = new CallMapping()
-      .source(callerBinding)
-      .destinationVariableId(calledVariableId);
-    inputValue(INPUT_MAPPINGS, inputMapping);
+  public Call addInputMapping(Binding sourceBinding, String destinationVariableId) {
+    CallMapping inputCallMapping = new CallMapping()
+      .sourceBinding(sourceBinding)
+      .destinationVariableId(destinationVariableId);
+    addConfiguration(INPUT_MAPPINGS, inputCallMapping);
     return this;
   }
 
   public Call outputMapping(String calledVariableId, String callerVariableId) {
-    return outputMapping(new InputBinding().variableId(calledVariableId), callerVariableId);
+    outputMapping(new Binding().variableId(calledVariableId), callerVariableId);
+    return this;
   }
 
-  public Call outputMapping(InputBinding calledBinding, String callerVariableId) {
+  public Call outputMapping(Binding calledBinding, String callerVariableId) {
     CallMapping outputMapping = new CallMapping()
-      .source(calledBinding)
+      .sourceBinding(calledBinding)
       .destinationVariableId(callerVariableId);
-    inputValue(OUTPUT_MAPPINGS, outputMapping);
+    addConfiguration(OUTPUT_MAPPINGS, outputMapping);
     return this;
   }
   

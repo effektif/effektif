@@ -23,32 +23,32 @@ public class UserTask extends NoneTask {
   public static final String KEY_CANDIDATE_IDS = "candidateIds";
   
   public UserTask name(String name) {
-    inputValue(KEY_NAME, name);
+    setConfigurationBindingValue(KEY_NAME, name);
     return this;
   }
 
   public UserTask nameVariableId(String nameVariableId) {
-    inputVariableId(KEY_NAME, nameVariableId);
+    setConfigurationBindingVariableId(KEY_NAME, nameVariableId);
     return this;
   }
 
   public UserTask nameExpression(String nameExpression) {
-    inputExpression(KEY_NAME, nameExpression);
+    setConfigurationBindingExpression(KEY_NAME, nameExpression);
     return this;
   }
 
   public UserTask candidateId(String candidateId) {
-    inputValue(KEY_CANDIDATE_IDS, candidateId);
+    addConfigurationBindingValue(KEY_CANDIDATE_IDS, candidateId);
     return this;
   }
 
   public UserTask candidateIdVariableId(String candidateIdVariableId) {
-    inputVariableId(KEY_CANDIDATE_IDS, candidateIdVariableId);
+    addConfigurationBindingVariableId(KEY_CANDIDATE_IDS, candidateIdVariableId);
     return this;
   }
 
   public UserTask candidateIdExpression(String candidateIdExpression) {
-    inputVariableId(KEY_CANDIDATE_IDS, candidateIdExpression);
+    addConfigurationBindingExpression(KEY_CANDIDATE_IDS, candidateIdExpression);
     return this;
   }
 }

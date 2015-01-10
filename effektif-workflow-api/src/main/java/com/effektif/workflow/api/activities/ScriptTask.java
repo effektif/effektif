@@ -27,22 +27,22 @@ public class ScriptTask extends NoneTask {
   public static final String KEY_RESULT_VARIABLE_ID = "resultVariableId";
   
   public ScriptTask script(String script) {
-    inputValue(KEY_SCRIPT, script);
+    setConfiguration(KEY_SCRIPT, script);
     return this;
   }
   
   public ScriptTask variableMapping(String scriptVariableName, String workflowVariableId) {
-    Map<String,String> mappings = (Map<String, String>) getInputBindingValue(KEY_MAPPINGS);
+    Map<String,String> mappings = (Map<String, String>) getConfiguration(KEY_MAPPINGS);
     if (mappings==null) {
       mappings = new HashMap<>();
-      inputValue(KEY_MAPPINGS, mappings);
+      setConfiguration(KEY_MAPPINGS, mappings);
     }
     mappings.put(scriptVariableName, workflowVariableId);
     return this;
   }
   
   public ScriptTask resultVariableId(String resultVariableId) {
-    inputValue(KEY_RESULT_VARIABLE_ID, resultVariableId);
+    setConfiguration(KEY_RESULT_VARIABLE_ID, resultVariableId);
     return this;
   } 
 }

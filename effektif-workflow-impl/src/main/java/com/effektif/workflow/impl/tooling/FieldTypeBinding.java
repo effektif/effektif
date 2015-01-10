@@ -11,34 +11,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.workflow;
+package com.effektif.workflow.impl.tooling;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("expression")
-public class InputBindingExpression extends InputBinding {
 
-  /** expression that will produce the input value.  
-   * This is mutually exclusive with variableId and value */
-  protected String expression;
+@JsonTypeName("binding")
+public class FieldTypeBinding extends FieldType {
 
-  public InputBindingExpression() {
+  protected FieldType targetType;
+
+  public FieldTypeBinding() {
+  }
+  public FieldTypeBinding(FieldType type) {
+    this.targetType = type;
   }
 
-  public InputBindingExpression(String key, String expression) {
-    super(key);
-    this.expression = expression;
+  public FieldType getTargetType() {
+    return this.targetType;
   }
-
-  
-  public String getExpression() {
-    return this.expression;
+  public void setTargetType(FieldType targetType) {
+    this.targetType = targetType;
   }
-  public void setExpression(String expression) {
-    this.expression = expression;
-  }
-  public InputBinding expression(String expression) {
-    this.expression = expression;
+  public FieldTypeBinding targetType(FieldType targetType) {
+    this.targetType = targetType;
     return this;
   }
 }

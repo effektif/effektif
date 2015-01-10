@@ -11,37 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.workflow;
+package com.effektif.workflow.impl.tooling;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
-/** Describes how the value is obtained 
- * for an activity input parameter. */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public class InputBinding {
+public class FieldType {
 
-  /** the reference used by the activity implementation to retrieve the value */
-  protected String key;
-  
-  public InputBinding() {
-  }
-
-  public InputBinding(String key) {
-    this.key = key;
-  }
-  
-  public String getKey() {
-    return this.key;
-  }
-  public void setKey(String key) {
-    this.key = key;
-  }
-  /** the reference used by the activity implementation to retrieve the value */
-  public InputBinding key(String key) {
-    this.key = key;
-    return this;
-  }
 }

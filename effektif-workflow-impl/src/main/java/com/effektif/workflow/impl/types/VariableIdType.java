@@ -11,21 +11,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.workflow;
+package com.effektif.workflow.impl.types;
+
+import com.effektif.workflow.impl.type.TextType;
 
 
+public class VariableIdType extends TextType {
 
-/**
- * @author Tom Baeyens
- */
-public class InputBindingImpl<T> {
-
-  public Class<?> expectedValueType;
-  public Object value;
-  public String variableId;
-  public Object expression;
-  
-  public InputBindingImpl(Class< ? > expectedValueType) {
-    this.expectedValueType = expectedValueType;
-  }
 }

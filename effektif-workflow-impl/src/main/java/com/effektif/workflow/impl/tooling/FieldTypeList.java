@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,25 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.type;
+package com.effektif.workflow.impl.tooling;
 
 
-public class BindingType extends AbstractDataType {
-  
-  DataType dataType;
+public class FieldTypeList extends FieldType {
 
-  public BindingType(DataType dataType) {
-    super(null);
-    this.dataType = dataType;
+  protected FieldType elementType;
+
+  public FieldTypeList() {
+  }
+  public FieldTypeList(FieldType elementType) {
+    this.elementType = elementType;
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object apiValue) throws InvalidValueException {
-    throw new UnsupportedOperationException("TODO");
+  public FieldType getElementType() {
+    return this.elementType;
   }
-
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    throw new UnsupportedOperationException("TODO");
+  public void setElementType(FieldType elementType) {
+    this.elementType = elementType;
+  }
+  public FieldTypeList elementType(FieldType elementType) {
+    this.elementType = elementType;
+    return this;
   }
 }
