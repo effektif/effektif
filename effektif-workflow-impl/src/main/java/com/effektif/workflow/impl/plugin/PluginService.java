@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
@@ -29,6 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class PluginService implements Initializable<WorkflowEngineConfiguration> {
+  
+  private static final Logger log = LoggerFactory.getLogger(PluginService.class);
   
   public List<ConfigurationPanel> activityTypeConfigurationPanels = new ArrayList<>();
   public List<ConfigurationPanel> dataTypeConfigurationPanels = new ArrayList<>();
@@ -54,11 +59,13 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
     dataTypeClasses.put(apiClass, dataType.getClass());
+    objectMapper.registerSubtypes(apiClass);
   }
 
   public void registerActivityType(ActivityType activityType) {
     Class apiClass = activityType.getApiClass();
     activityTypeClasses.put(apiClass, activityType.getClass());
+    objectMapper.registerSubtypes(apiClass);
   }
   
   public void registerJavaBeanType(Class<?> javaBeanClass) {

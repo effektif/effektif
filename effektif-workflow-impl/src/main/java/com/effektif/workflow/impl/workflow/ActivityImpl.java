@@ -58,7 +58,7 @@ public class ActivityImpl extends ScopeImpl {
     if (apiActivity.getMultiInstance()!=null) {
       this.multiInstance = new MultiInstanceImpl();
       workflowParser.pushContext(multiInstance);
-      this.multiInstance.validate(apiActivity.getMultiInstance(), this, workflowParser);
+      this.multiInstance.parse(apiActivity.getMultiInstance(), this, workflowParser);
       workflowParser.popContext();
     }
     

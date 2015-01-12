@@ -140,56 +140,50 @@ public class WorkflowParse {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public <T> BindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> valueType) {
-    return parseBinding(activityApi, key, valueType, false);
+  public <T> BindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> bindingValueType) {
+    return parseBinding(activityApi, key, bindingValueType, false);
   }
 
-  public <T> BindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> valueType, boolean required) {
+  public <T> BindingImpl<T> parseBinding(Activity activityApi, String key, Class<T> bindingValueType, boolean required) {
     String activityId = activityApi.getId();
     Object configuration = activityApi.getConfiguration(key);
-    return parseBinding(configuration, key, valueType, required, activityId);
+    return parseBinding(configuration, bindingValueType, required, activityId, key);
   }
 
-  protected <T> BindingImpl<T> parseBinding(Object configuration, String key, Class<T> valueType, boolean required, String activityId) {
-    if (configuration==null) {
+  public <T> List<BindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> bindingValueType) {
+    return parseBindings(activityApi, key, bindingValueType, false);
+  }
+  
+  public <T> List<BindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> bindingValueType, boolean required) {
+    String activityId = activityApi.getId();
+    Object bindingsObject = activityApi.getConfiguration(key);
+    if (bindingsObject!=null && !(bindingsObject instanceof List)) {
+      addError("Configuration '%s' in activity '%s' should be a list, but was ", key, activityId, bindingsObject.getClass().getSimpleName());
+    }
+    List<Object> bindingObjectList = (List<Object>) bindingsObject;
+    if (bindingObjectList==null || bindingObjectList.isEmpty()) {
       if (required) {
-        addWarning("Configuration '%s' in activity '%s' not specified, but is a required binding", key, activityId);
+        addWarning("Configuration '%s' in activity '%s' not specified, but is a required list of bindings", key, activityId);
       }
       return null;
     }
-    Binding binding = null;
-    if (configuration instanceof Map) {
-      JsonService jsonService = workflowEngine.getServiceRegistry().getService(JsonService.class);
-      binding = jsonService.jsonMapToObject((Map<String,Object>)configuration, Binding.class);
-    } else if (!(configuration instanceof Binding)) {
-      addWarning("Configuration '%s' in activity '%s' must be a binding, but was '%s'", key, activityId, configuration.getClass());
-      return null;
-    } else {
-      binding = (Binding) configuration;
-    }
-    return parseBinding(binding, key, valueType, activityId);
-  }
-
-  public <T> List<BindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> valueType) {
-    return parseBindings(activityApi, key, valueType, false);
-  }
-  
-  public <T> List<BindingImpl<T>> parseBindings(Activity activityApi, String key, Class<T> valueType, boolean required) {
-    String activityId = activityApi.getId();
-    List<Object> configurations = (List<Object>) activityApi.getConfiguration(key);
-    if (required && (configurations==null || configurations.isEmpty())) {
-      addWarning("Configuration '%s' in activity '%s' not specified, but is a required list of bindings", key, activityId);
-      return null;
-    }
-    List<BindingImpl<T>> bindingImpls = new ArrayList<>(configurations.size());
-    for (Object configuration: (List<Object>)configurations) {
-      bindingImpls.add(parseBinding(configuration, key, valueType, false, activityId));
+    List<BindingImpl<T>> bindingImpls = new ArrayList<>(bindingObjectList.size());
+    for (Object configurationElement: (List<Object>)bindingObjectList) {
+      bindingImpls.add(parseBinding(configurationElement, bindingValueType, false, activityId, key));
     }
     return bindingImpls;
   }
 
-  public BindingImpl parseBinding(Binding binding, String key, Class<?> valueType, String activityId) {
-    BindingImpl bindingImpl = new BindingImpl(valueType);
+  protected <T> BindingImpl<T> parseBinding(Object o, Class<T> bindingValueType, boolean required, String activityId, String key) {
+    Binding binding = parseObject(o, Binding.class, required, activityId, key);
+    return parseBinding(binding, bindingValueType, activityId, key);
+  }
+  
+  public BindingImpl parseBinding(Binding binding, Class<?> bindingValueType, String activityId, String key) {
+    if (binding==null) {
+      return null;
+    }
+    BindingImpl bindingImpl = new BindingImpl(bindingValueType);
     int values = 0;
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
@@ -215,7 +209,28 @@ public class WorkflowParse {
     }
     return bindingImpl;
   }
-  
+
+  public <T> T parseObject(Object object, Class<T> objectType, boolean required, String activityId, String key) {
+    if (object==null) {
+      if (required) {
+        addWarning("Configuration '%s' in activity '%s' not specified, but is required", key, activityId);
+      }
+      return null;
+    }
+    if (objectType.isAssignableFrom(object.getClass())) {
+      return (T) object;
+    }
+    if (object instanceof Map) {
+      return getJsonService().jsonMapToObject((Map<String,Object>)object, objectType);
+    }
+    addWarning("Configuration '%s' in activity '%s' must be a binding, but was '%s'", key, activityId, object.getClass().getName());
+    return null;
+  }
+
+  protected JsonService getJsonService() {
+    return workflowEngine.getServiceRegistry().getService(JsonService.class);
+  }
+
   public void addError(String message, Object... messageArgs) {
     ValidationContext currentContext = contextStack.peek();
     issues.addIssue(IssueType.error, getPathText(), currentContext.line, currentContext.column, message, messageArgs);

@@ -113,7 +113,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       } else if (STATE_STARTING_MULTI_CONTAINER.equals(activityInstance.workState)) {
         List<Object> values = null;
         if (activity.multiInstance!=null) {
-          values = activityInstance.getValue(activity.multiInstance.collection);
+          values = activityInstance.getValue(activity.multiInstance.valueBindings);
         }
         if (values!=null && !values.isEmpty()) {
           if (log.isDebugEnabled())

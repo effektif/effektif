@@ -13,8 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Variable;
 
@@ -25,22 +27,25 @@ import com.effektif.workflow.api.workflow.Variable;
 public class MultiInstanceImpl {
 
   public VariableImpl elementVariable;
-  public List<BindingImpl<Object>> collection;
+  public List<BindingImpl<Object>> valueBindings;
 
-  public void validate(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowParse validator) {
-    if (apiMultiInstance.getValues()!=null) {
-      collection = validator.compileBinding(apiMultiInstance.getValues(), "collection");
+  public void parse(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowParse parser) {
+    if (apiMultiInstance.getValueBindings()!=null) {
+      valueBindings = new ArrayList<>();
+      for (Binding valueBinding: apiMultiInstance.getValueBindings()) {
+        valueBindings.add(parser.parseBinding(valueBinding, Object.class, parent.id, "valueBindings"));
+      }
     } else {
-      validator.addError("Multi instance has no collection");
+      parser.addError("Multi instance has no valueBindings");
     }
     Variable apiElementVariable = apiMultiInstance.getVariable();
     if (apiElementVariable!=null) {
       elementVariable = new VariableImpl();
-      validator.pushContext("elementVariable", apiElementVariable);
-      elementVariable.parse(apiElementVariable, parent, validator);
-      validator.popContext();
+      parser.pushContext("elementVariable", apiElementVariable);
+      elementVariable.parse(apiElementVariable, parent, parser);
+      parser.popContext();
     } else {
-      validator.addError("Multi instance has no element variable");
+      parser.addError("Multi instance has no elementVariable");
     }
   }
 }

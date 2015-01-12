@@ -81,22 +81,23 @@ public class CallImpl extends AbstractActivityType<Call> {
   }
   
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
-    subProcessId = validator.parseBinding(activityApi, Call.SUB_WORKFLOW_ID, String.class);
-    subProcessName = validator.parseBinding(activityApi, Call.SUB_WORKFLOW_NAME, String.class);
-    inputMappings = validateCallMappings(activityApi, Call.INPUT_MAPPINGS, validator);
-    outputMappings = validateCallMappings(activityApi, Call.OUTPUT_MAPPINGS, validator);
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse workflowParser) {
+    subProcessId = workflowParser.parseBinding(activityApi, Call.SUB_WORKFLOW_ID, String.class);
+    subProcessName = workflowParser.parseBinding(activityApi, Call.SUB_WORKFLOW_NAME, String.class);
+    inputMappings = validateCallMappings(activityApi, Call.INPUT_MAPPINGS, workflowParser);
+    outputMappings = validateCallMappings(activityApi, Call.OUTPUT_MAPPINGS, workflowParser);
   }
 
-  private List<CallMappingImpl> validateCallMappings(Activity activityApi, String key, WorkflowParse validator) {
-    List<CallMapping> callMappings = (List<CallMapping>) (List) activityApi.getConfiguration(key); 
+  private List<CallMappingImpl> validateCallMappings(Activity activityApi, String key, WorkflowParse workflowParser) {
+    List<Object> callMappings = (List<Object>) activityApi.getConfiguration(key); 
     if (callMappings!=null) {
       String activityId = activityApi.getId();
       List<CallMappingImpl> callMappingImpls = new ArrayList<>(callMappings.size());
       int i=0;
-      for (CallMapping callMapping: callMappings) {
+      for (Object callMappingObject: callMappings) {
+        CallMapping callMapping = workflowParser.parseObject(callMappingObject, CallMapping.class, false, activityId, key);
         CallMappingImpl callMappingImpl = new CallMappingImpl();
-        callMappingImpl.sourceBinding = validator.parseBinding(callMapping.getSourceBinding(), key+"["+i+"]", Object.class, activityId);
+        callMappingImpl.sourceBinding = workflowParser.parseBinding(callMapping.getSourceBinding(), Object.class, activityId, key+"["+i+"]");
         callMappingImpl.destinationVariableId = callMapping.getDestinationVariableId();
         i++;
       }

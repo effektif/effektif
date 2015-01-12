@@ -20,7 +20,7 @@ import java.util.List;
 public class MultiInstance {
 
   protected Variable variable;
-  protected List<Binding> values;
+  protected List<Binding> valueBindings;
 
   public Variable getVariable() {
     return this.variable;
@@ -33,25 +33,26 @@ public class MultiInstance {
     return this;
   }
   
-  public List<Binding> getValues() {
-    return this.values;
+  public List<Binding> getValueBindings() {
+    return this.valueBindings;
   }
-  public void setValues(List<Binding> values) {
-    this.values = values;
+  public void setValueBindings(List<Binding> values) {
+    this.valueBindings = values;
   }
   public MultiInstance valuesVariableId(String valuesVariableId) {
-    addValues(new Binding().variableId(valuesVariableId));
+    valueBinding(new Binding().variableId(valuesVariableId));
     return this;
   }
   public MultiInstance valuesExpression(String valuesExpression) {
-    addValues(new Binding().expression(valuesExpression));
+    valueBinding(new Binding().expression(valuesExpression));
     return this;
   }
   
-  void addValues(Binding valuesBinding) {
-    if (values==null) {
-      values = new ArrayList<>();
+  public MultiInstance valueBinding(Binding valueBinding) {
+    if (valueBindings==null) {
+      valueBindings = new ArrayList<>();
     }
-    values.add(valuesBinding);
+    valueBindings.add(valueBinding);
+    return this;
   }
 }
