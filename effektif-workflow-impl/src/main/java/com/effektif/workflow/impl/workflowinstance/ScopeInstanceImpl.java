@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -49,6 +50,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
+  public RequestContext requestContext;
+  
   public ScopeImpl scope;
   public LocalDateTime start;
   public LocalDateTime end;
@@ -67,6 +70,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public ScopeInstanceImpl(ScopeInstanceImpl parent, ScopeImpl scope, String id) {
     super(parent, id);
+    this.requestContext = parent.requestContext;
     this.scope = scope;
     this.start = Time.now();
   }

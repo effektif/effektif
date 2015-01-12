@@ -24,33 +24,35 @@ import java.util.Queue;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
-import com.effektif.impl.Time;
-import com.effektif.impl.WorkflowEngineImpl;
-import com.effektif.impl.WorkflowInstanceStore;
-import com.effektif.impl.definition.WorkflowImpl;
-import com.effektif.impl.instance.ActivityInstanceImpl;
-import com.effektif.impl.instance.LockImpl;
-import com.effektif.impl.instance.ScopeInstanceImpl;
-import com.effektif.impl.instance.VariableInstanceImpl;
-import com.effektif.impl.instance.WorkflowInstanceImpl;
-import com.effektif.impl.instance.WorkflowInstanceUpdates;
-import com.effektif.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.query.WorkflowQuery.Representation;
+import com.effektif.workflow.impl.Time;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowInstanceStore;
+import com.effektif.workflow.impl.plugin.Initializable;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 
 
-public class MongoWorkflowInstanceStore extends MongoCollection implements WorkflowInstanceStore {
+public class MongoWorkflowInstanceStore extends MongoCollection implements WorkflowInstanceStore, Initializable<MongoWorkflowEngineConfiguration> {
   
   public static final Logger log = MongoWorkflowEngine.log;
 
-  protected WorkflowEngineImpl processEngine;
+  protected WorkflowEngineImpl workflowEngine;
   protected MongoWorkflowEngineConfiguration.WorkflowInstanceFields fields;
-  protected WriteConcern writeConcernStoreProcessInstance;
+  protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
   
   public MongoWorkflowInstanceStore() {
@@ -58,6 +60,18 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
 
   public MongoWorkflowInstanceStore(ServiceRegistry serviceRegistry) {
   }
+  
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry, MongoWorkflowEngineConfiguration configuration) {
+    DB db = serviceRegistry.getService(DB.class);
+    this.dbCollection = db.getCollection(configuration.workflowInstancesCollectionName);
+    this.isPretty = configuration.isPretty;
+    this.workflowEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
+    this.fields = configuration.getWorkflowInstanceFields();
+    this.writeConcernInsertWorkflowInstance = configuration.getWriteConcernInsertWorkflowInstance(this.dbCollection);
+    this.writeConcernFlushUpdates = configuration.getWriteConcernFlushUpdates(this.dbCollection);
+  }
+
 
   @Override
   public String createWorkflowInstanceId(WorkflowImpl processDefinition) {
@@ -77,7 +91,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   @Override
   public void insertWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbProcessInstance = writeProcessInstance(workflowInstance);
-    insert(dbProcessInstance, writeConcernStoreProcessInstance);
+    insert(dbProcessInstance, writeConcernInsertWorkflowInstance);
     workflowInstance.trackUpdates(false);
   }
 
@@ -193,13 +207,13 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
 
   @Override
-  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
+  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext) {
     BasicDBObject query = buildQuery(workflowInstanceQuery);
     DBCursor workflowInstanceCursor = find(query);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
     while (workflowInstanceCursor.hasNext()) {
       BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
-      WorkflowInstanceImpl workflowInstance = readProcessInstance(dbWorkflowInstance);
+      WorkflowInstanceImpl workflowInstance = readWorkflowInstance(dbWorkflowInstance, requestContext);
       workflowInstances.add(workflowInstance);
     }
     return workflowInstances;
@@ -229,7 +243,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
   
   public void saveProcessInstance(BasicDBObject dbProcessInstance) {
-    save(dbProcessInstance, writeConcernStoreProcessInstance);
+    save(dbProcessInstance, writeConcernInsertWorkflowInstance);
   }
   
   public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceQuery processInstanceQuery) {
@@ -250,7 +264,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
             .push("$set")
             .push(fields.lock)
               .add(fields.time, Time.now().toDate())
-              .add(fields.owner, processEngine.getId())
+              .add(fields.owner, workflowEngine.getId())
             .pop()
           .pop()
           .get();
@@ -262,7 +276,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       return null;
     }
 
-    WorkflowInstanceImpl workflowInstance = readProcessInstance(dbProcessInstance);
+    WorkflowInstanceImpl workflowInstance = readWorkflowInstance(dbProcessInstance);
     workflowInstance.trackUpdates(false);
     return workflowInstance;
   }
@@ -301,9 +315,10 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     return workActivityInstanceIds;
   }
 
-  public WorkflowInstanceImpl readProcessInstance(BasicDBObject dbWorkflowInstance) {
+  public WorkflowInstanceImpl readWorkflowInstance(BasicDBObject dbWorkflowInstance, RequestContext requestContext) {
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
-    workflowInstance.workflowEngine = processEngine;
+    workflowInstance.workflowEngine = workflowEngine;
+    workflowInstance.requestContext = requestContext;
     workflowInstance.workflowInstance = workflowInstance;
     workflowInstance.id = readId(dbWorkflowInstance, fields._id);
     workflowInstance.organizationId = readString(dbWorkflowInstance, fields.organizationId);
@@ -313,11 +328,10 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     workflowInstance.end = readTime(dbWorkflowInstance, fields.end);
     workflowInstance.duration = readLong(dbWorkflowInstance, fields.duration);
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(fields.lock));
-    workflowInstance.workflowId = readId(dbWorkflowInstance, fields.workflowId);
-    WorkflowImpl workflow = processEngine.newWorkflowQuery()
+    WorkflowImpl workflow = workflowEngine.newWorkflowQuery()
             .representation(Representation.EXECUTABLE)
             .id(workflowInstance.workflowId)
-            .get();
+            .current();
     if (workflow!=null) {
       workflowInstance.workflow = workflow;
       workflowInstance.workflowId = workflow!=null ? workflow.id : null;
@@ -331,7 +345,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     List<BasicDBObject> dbActivityInstances = readList(dbWorkflowInstance, fields.activityInstances);
     if (dbActivityInstances!=null) {
       for (BasicDBObject dbActivityInstance: dbActivityInstances) {
-        ActivityInstanceImpl activityInstance = readActivityInstance(workflowInstance, dbActivityInstance);
+        ActivityInstanceImpl activityInstance = readActivityInstance(workflowInstance, dbActivityInstance, requestContext);
         allActivityInstances.put(activityInstance.id, activityInstance);
         parentIds.put(activityInstance.id, dbActivityInstance.get(fields.parent));
       }
@@ -369,7 +383,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     if (dbVariableInstances!=null) {
       for (BasicDBObject dbVariableInstance: dbVariableInstances) {
         VariableInstanceImpl variableInstance = new VariableInstanceImpl();
-        variableInstance.processEngine = processEngine;
+        variableInstance.processEngine = workflowEngine;
         variableInstance.processInstance = parent.workflowInstance;
         variableInstance.id = readId(dbVariableInstance, fields._id);
         variableInstance.variableDefinitionId = readString(dbVariableInstance, fields.variableId);
@@ -438,7 +452,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     return dbActivity;
   }
   
-  protected ActivityInstanceImpl readActivityInstance(WorkflowInstanceImpl processInstance, BasicDBObject dbActivityInstance) {
+  protected ActivityInstanceImpl readActivityInstance(WorkflowInstanceImpl processInstance, BasicDBObject dbActivityInstance, RequestContext requestContext) {
     ActivityInstanceImpl activityInstance = new ActivityInstanceImpl();
     activityInstance.id = readId(dbActivityInstance, fields._id);
     activityInstance.start = readTime(dbActivityInstance, fields.start);
@@ -447,7 +461,8 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     activityInstance.duration = readLong(dbActivityInstance, fields.duration);
     activityInstance.workState = readString(dbActivityInstance, fields.workState);
     activityInstance.activityId = readString(dbActivityInstance, fields.activityId);
-    activityInstance.workflowEngine = processEngine;
+    activityInstance.workflowEngine = workflowEngine;
+    activityInstance.requestContext = requestContext;
     WorkflowImpl workflow = processInstance.workflow;
     if (workflow!=null) {
       activityInstance.workflow = workflow;
@@ -477,7 +492,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
   
   public WorkflowEngineImpl getProcessEngine() {
-    return processEngine;
+    return workflowEngine;
   }
   
   public MongoWorkflowEngineConfiguration.WorkflowInstanceFields getFields() {
@@ -485,7 +500,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
 
   public WriteConcern getWriteConcernStoreProcessInstance() {
-    return writeConcernStoreProcessInstance;
+    return writeConcernInsertWorkflowInstance;
   }
   
   public WriteConcern getWriteConcernFlushUpdates() {

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Exceptions;
@@ -38,7 +39,8 @@ public class SimpleWorkflowCache implements WorkflowCache, Initializable<Workflo
   }
 
   @Override
-  public WorkflowImpl get(String workflowId, String organizationId) {
+  public WorkflowImpl get(String workflowId, RequestContext requestContext) {
+    String organizationId = requestContext!=null ? requestContext.getOrganizationId() : null;
     return workflows.get(getKey(workflowId, organizationId));
   }
 

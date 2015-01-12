@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
@@ -55,9 +56,10 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstanceImpl() {
   }
   
-  public WorkflowInstanceImpl(WorkflowEngineImpl processEngine, WorkflowImpl workflow, String processInstanceId) {
-    this.id = processInstanceId;
-    this.workflowEngine = processEngine;
+  public WorkflowInstanceImpl(RequestContext requestContext, WorkflowEngineImpl workflowEngine, WorkflowImpl workflow, String workflowInstanceId) {
+    this.id = workflowInstanceId;
+    this.workflowEngine = workflowEngine;
+    this.requestContext = requestContext;
     this.organizationId = workflow.organizationId;
     this.workflow = workflow;
     this.scope = workflow;
@@ -165,7 +167,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     if (callerWorkflowInstanceId!=null) {
       WorkflowInstanceImpl callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
               workflowInstance.callerWorkflowInstanceId,
-              workflowInstance.callerActivityInstanceId);
+              workflowInstance.callerActivityInstanceId,
+              requestContext);
       ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
       if (callerActivityInstance.isEnded()) {
         throw new RuntimeException("Call activity instance "+callerActivityInstance+" is already ended");

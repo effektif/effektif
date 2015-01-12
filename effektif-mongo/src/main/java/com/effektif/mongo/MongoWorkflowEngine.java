@@ -13,13 +13,10 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.effektif.impl.WorkflowEngineImpl;
-import com.effektif.impl.json.JsonService;
-import com.effektif.impl.memory.MemoryTaskService;
-import com.effektif.workflow.api.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
@@ -62,10 +59,10 @@ public class MongoWorkflowEngine extends WorkflowEngineImpl {
 
     MongoWorkflowInstanceStore workflowInstances = new MongoWorkflowInstanceStore(serviceRegistry);
     workflowInstances.dbCollection = db.getCollection(configuration.workflowInstancesCollectionName);
-    workflowInstances.processEngine = this;
+    workflowInstances.workflowEngine = this;
     workflowInstances.isPretty = isPretty;
-    workflowInstances.fields = configuration.getProcessInstanceFields();
-    workflowInstances.writeConcernStoreProcessInstance = workflowInstances.getWriteConcern(configuration.getWriteConcernInsertWorkflowInstance());
+    workflowInstances.fields = configuration.getWorkflowInstanceFields();
+    workflowInstances.writeConcernInsertWorkflowInstance = workflowInstances.getWriteConcern(configuration.getWriteConcernInsertWorkflowInstance());
     workflowInstances.writeConcernFlushUpdates = workflowInstances.getWriteConcern(configuration.getWriteConcernFlushUpdates());
     configuration.registerService(workflowInstances);
 

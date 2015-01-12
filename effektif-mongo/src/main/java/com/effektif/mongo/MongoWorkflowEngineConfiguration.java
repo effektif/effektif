@@ -17,12 +17,15 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.util.Lists;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -32,25 +35,37 @@ import com.mongodb.WriteConcern;
 public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
 
   public static List<ServerAddress> DEFAULT_SERVER_ADDRESSES = Lists.of(createServerAddress("localhost", null));
-
+  
+  public static class FieldNames {
+    public WorkflowFields workflow = new WorkflowFields(); 
+    public WorkflowVersionsFields workflowVersions = new WorkflowVersionsFields(); 
+    public WorkflowVersionsLockFields workflowVersionsLock = new WorkflowVersionsLockFields(); 
+    public WorkflowInstanceFields workflowInstance = new WorkflowInstanceFields(); 
+    public JobFields job = new JobFields(); 
+    public JobExecutionFields jobExecution = new JobExecutionFields(); 
+  }
+  
   public static class WorkflowFields {
     public String _id = "_id";
     public String name = "name";
     public String deployedTime = "deployedTime";
     public String deployedBy = "deployedBy";
-    public String organizationId = "oorganizationId";
+    public String organizationId = "organizationId";
     public String workflowId = "workflowId";
     public String version = "version";
-    public String activitys = "activities";
-    public String variables = "variables";
-    public String transitions = "transitions";
-    public String activityType = "activityType";
-    public String dataType = "dataType";
-    public String initialValue = "initialValue";
-    public String from = "from";
-    public String to = "to";
   }
 
+  public static class WorkflowVersionsFields {
+    public String _id = "_id";
+    public String workflowName = "workflowName";
+    public String versionIds = "versionIds";
+    public String lock = "lock";
+  }
+
+  public static class WorkflowVersionsLockFields {
+    public String owner = "owner";
+    public String time = "time";
+  }
 
   public static class WorkflowInstanceFields {
     public String _id = "_id";
@@ -103,6 +118,11 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
     public String jobType = "jobType";
   }
   
+  public static class JobExecutionFields {
+    
+  }
+
+  
   protected List<ServerAddress> serverAddresses;
   protected String databaseName = "effektif";
   protected List<MongoCredential> credentials;
@@ -111,9 +131,7 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   protected String jobsCollectionName = "jobs";
   protected boolean isPretty = true;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
-  protected WorkflowFields workflowFields;
-  protected WorkflowInstanceFields workflowInstanceFields;
-  protected JobFields jobFields;
+  protected FieldNames fieldNames = new FieldNames();
   protected WriteConcern writeConcernInsertWorkflow;
   protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
@@ -126,6 +144,22 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
     registerService(new MongoJobs());
   }
   
+  @Override
+  public WorkflowEngine buildWorkflowEngine() {
+    MongoClient mongoClient = new MongoClient(
+            getServerAddresses(), 
+            getCredentials(), 
+            getOptionBuilder().build());
+    registerService(mongoClient);
+    
+    DB db = mongoClient.getDB(getDatabaseName());
+    registerService(db);
+    
+    return super.buildWorkflowEngine();
+  }
+
+
+
   public MongoWorkflowEngineConfiguration server(String host) {
     if (serverAddresses==null) {
       serverAddresses = new ArrayList<>();
@@ -165,26 +199,12 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
     return this;
   }
   
-  public WorkflowFields getProcessDefinitionFields() {
-    return workflowFields!=null ? workflowFields : new WorkflowFields();
+  public FieldNames getFieldNames() {
+    return fieldNames;
   }
   
-  public WorkflowInstanceFields getProcessInstanceFields() {
-    return workflowInstanceFields!=null ? workflowInstanceFields : new WorkflowInstanceFields();
-  }
-
-  public JobFields getJobFields() {
-    return jobFields!=null ? jobFields : new JobFields();
-  }
-
-  /** optional, if not set, {@ MongoProcessDefinitionMapper.Fields defaults} will be used */
-  public void setProcessDefinitionFields(MongoWorkflowEngineConfiguration.WorkflowFields workflowFields) {
-    this.workflowFields = workflowFields;
-  }
-  
-  /** optional, if not set, {@ MongoProcessInstanceMapper.Fields defaults} will be used */
-  public void setProcessInstanceFields(MongoWorkflowEngineConfiguration.WorkflowInstanceFields workflowInstanceFields) {
-    this.workflowInstanceFields = workflowInstanceFields;
+  public void setFieldNames(FieldNames fieldNames) {
+    this.fieldNames = fieldNames;
   }
 
   public MongoWorkflowEngineConfiguration writeConcernInsertProcessDefinition(WriteConcern writeConcernInsertProcessDefinition) {

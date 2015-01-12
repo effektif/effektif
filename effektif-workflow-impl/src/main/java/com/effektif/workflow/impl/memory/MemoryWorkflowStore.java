@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
@@ -42,24 +43,8 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
     this.nextVersionByName = new ConcurrentHashMap<String, Long>();
   }
 
-//  /** ensures that every element in this process definition has an id */
-//  @Override
-//  public synchronized void assignIdAndVersion(Workflow workflow) {
-//    workflow.setId(UUID.randomUUID().toString());
-//    String workflowName = workflow.getName();
-//    if (workflowName!=null) {
-//      Long nextVersion = nextVersionByName.get(workflowName);
-//      if (nextVersion==null) {
-//        nextVersion = 1l;
-//      }
-//      workflow.setVersion(nextVersion);
-//      nextVersion++;
-//      nextVersionByName.put(workflowName, nextVersion);
-//    }
-//  }
-
   @Override
-  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl) {
+  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
     workflowImpl.id = UUID.randomUUID().toString();
     workflowApi.setId(workflowImpl.id);
     workflows.put(workflowApi.getId(), workflowApi);
@@ -78,7 +63,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
+  public List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext) {
     List<Workflow> result = null;
     if (query.getWorkflowId()!=null) {
       result = new ArrayList<Workflow>();
@@ -116,7 +101,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public String findLatestWorkflowIdByName(String workflowName, String organizationId) {
+  public String findLatestWorkflowIdByName(String workflowName, RequestContext requestContext) {
     if (workflowName==null) {
       return null;
     }
@@ -132,14 +117,14 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public void deleteWorkflows(WorkflowQuery query) {
-    for (Workflow workflow: findWorkflows(query)) {
+  public void deleteWorkflows(WorkflowQuery query, RequestContext requestContext) {
+    for (Workflow workflow: findWorkflows(query, requestContext)) {
       workflows.remove(workflow.getId());
     }
   }
 
   @Override
-  public Workflow loadWorkflowById(String workflowId, String organizationId) {
+  public Workflow loadWorkflowById(String workflowId, RequestContext requestContext) {
     return workflows.get(workflowId);
   }
 }

@@ -89,7 +89,7 @@ public class MongoJobs extends MongoCollection {
     DBObject dbLock = BasicDBObjectBuilder.start()
       .append(fields.time, Time.now().toDate())
       .append(fields.owner, lockOwner)
-      .get();
+      .current();
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set").append(fields.lock, dbLock).pop()
       .get();

@@ -15,6 +15,7 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -28,7 +29,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 public interface WorkflowInstanceStore {
 
-  WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId);
+  WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId, RequestContext requestContext);
 
   void insertWorkflowInstance(WorkflowInstanceImpl worklflowInstance);
 
@@ -36,15 +37,16 @@ public interface WorkflowInstanceStore {
 
   void flushAndUnlock(WorkflowInstanceImpl workflowInstance);
 
-  List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
+  List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext);
 
-  void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
+  void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext);
 
   /** instantiates and assigns an id.
    * This method can choose to instantiate a subclass, but has to 
-   * ensure that the constructor {@link WorkflowInstanceImpl#WorkflowInstanceImpl(WorkflowEngineImpl, WorkflowImpl, String)} 
-   * is called for proper initialization.  */
-  WorkflowInstanceImpl createWorkflowInstance(WorkflowImpl workflow);
+   * ensure that the constructor {@link WorkflowInstanceImpl#WorkflowInstanceImpl(RequestContext, WorkflowEngineImpl, WorkflowImpl, String)} 
+   * is called for proper initialization.  
+   * @param requestContext */
+  WorkflowInstanceImpl createWorkflowInstance(WorkflowImpl workflow, RequestContext requestContext);
 
   /** instantiates and assigns an id.
    * This method can choose to instantiate a subclass, but has to 

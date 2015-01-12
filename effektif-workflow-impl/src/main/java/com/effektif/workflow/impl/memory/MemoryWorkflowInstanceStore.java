@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.Time;
@@ -78,7 +79,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
   }
   
   @Override
-  public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
+  public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
     List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstanceImpls(query);
     return WorkflowInstanceImpl.toWorkflowInstances(workflowInstances);
   }
@@ -105,14 +106,14 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
   }
 
   @Override
-  public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
+  public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext) {
     for (WorkflowInstanceImpl workflowInstance: findWorkflowInstanceImpls(workflowInstanceQuery)) {
       workflowInstances.remove(workflowInstance.id);
     }
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId) {
+  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId, RequestContext requestContext) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
       .workflowInstanceId(workflowInstanceId)
       .activityInstanceId(activityInstanceId);
@@ -137,8 +138,9 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
     return workflowInstance;
   }
   
-  public WorkflowInstanceImpl createWorkflowInstance(WorkflowImpl workflow) {
-    return new WorkflowInstanceImpl(workflow.workflowEngine, workflow, createId());
+  @Override
+  public WorkflowInstanceImpl createWorkflowInstance(WorkflowImpl workflow, RequestContext requestContext) {
+    return new WorkflowInstanceImpl(requestContext, workflow.workflowEngine, workflow, createId());
   }
 
   /** instantiates and assign an id.
