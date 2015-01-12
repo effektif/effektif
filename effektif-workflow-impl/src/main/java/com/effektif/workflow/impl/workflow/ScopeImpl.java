@@ -26,7 +26,6 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.impl.plugin.ActivityType;
 
 
 public abstract class ScopeImpl extends BaseImpl {
@@ -36,8 +35,8 @@ public abstract class ScopeImpl extends BaseImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
   
-  public void parse(Scope apiScope, ScopeImpl parent, WorkflowParse parse) {
-    super.parse(apiScope, parent, parse);
+  public void parse(Scope apiScope, WorkflowParse workflowParser, ScopeImpl parent) {
+    super.parse(apiScope, workflowParser, parent);
     
     List<Variable> apiVariables = apiScope.getVariables();
     if (apiVariables!=null) {
@@ -45,14 +44,14 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Variable apiVariable: apiVariables) {
         VariableImpl variable = new VariableImpl();
-        parse.pushContext("variables", apiVariable, i);
+        workflowParser.pushContext("variables", apiVariable, i);
         variableIds.add(variable.id);
         if (variableIds.contains(variable.id)) {
-          parse.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variable.id);
+          workflowParser.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variable.id);
         }
-        variable.parse(apiVariable, this, parse);
+        variable.parse(apiVariable, this, workflowParser);
         addVariable(variable);
-        parse.popContext();
+        workflowParser.popContext();
         i++;
       }
     }
@@ -62,10 +61,10 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Timer apiTimer: apiTimers) {
         TimerImpl timer = new TimerImpl();
-        parse.pushContext("timers", apiTimer, i);
-        timer.parse(apiTimer, this, parse);
+        workflowParser.pushContext("timers", apiTimer, i);
+        timer.parse(apiTimer, this, workflowParser);
         addTimer(timer);
-        parse.popContext();
+        workflowParser.popContext();
         i++;
       }
     }
@@ -77,16 +76,16 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Activity apiActivity: apiActivities) {
         ActivityImpl activity = new ActivityImpl();
-        parse.pushContext("activities", apiActivity, i);
-        activity.parse(apiActivity, apiScope, this, parse);
+        workflowParser.pushContext("activities", apiActivity, i);
+        activity.parse(apiActivity, apiScope, workflowParser, this);
         addActivity(activity);
         if (activityIds.contains(activity.id)) {
-          parse.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activity.id);
+          workflowParser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activity.id);
         }
         if (apiActivity.getDefaultTransitionId()!=null) {
           activitiesByDefaultTransitionId.put(apiActivity.getDefaultTransitionId(), activity);
         }
-        parse.popContext();
+        workflowParser.popContext();
         i++;
       }
     }
@@ -96,10 +95,10 @@ public abstract class ScopeImpl extends BaseImpl {
       int i = 0;
       for (Transition apiTransition: apiTransitions) {
         TransitionImpl transition = new TransitionImpl();
-        parse.pushContext("transitions", apiTransition, i);
-        transition.parse(apiTransition, this, parse, activitiesByDefaultTransitionId);
+        workflowParser.pushContext("transitions", apiTransition, i);
+        transition.parse(apiTransition, this, workflowParser, activitiesByDefaultTransitionId);
         addTransition(transition);
-        parse.popContext();
+        workflowParser.popContext();
         i++;
       }
     }
@@ -111,10 +110,9 @@ public abstract class ScopeImpl extends BaseImpl {
       for (ActivityImpl activity : activities.values()) {
         Activity apiActivity = apiActivities.get(i);
         if (activity.activityType != null) {
-          parse.pushContext("activities", apiActivity, i);
-          ActivityType<Activity> activityType = (ActivityType<Activity>) activity.activityType;
-          activityType.parse(activity, apiActivity, parse);
-          parse.popContext();
+          workflowParser.pushContext("activities", apiActivity, i);
+          activity.activityType.parse(activity, apiActivity, workflowParser);
+          workflowParser.popContext();
         }
         i++;
       }
@@ -123,7 +121,7 @@ public abstract class ScopeImpl extends BaseImpl {
     if (!activitiesByDefaultTransitionId.isEmpty()) {
       for (String nonExistingDefaultTransitionId: activitiesByDefaultTransitionId.keySet()) {
         ActivityImpl activity = activitiesByDefaultTransitionId.get(nonExistingDefaultTransitionId);
-        parse.addError("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
+        workflowParser.addError("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
       }
     }
   }

@@ -19,6 +19,16 @@ import com.effektif.workflow.impl.workflow.WorkflowParse;
 
 public abstract class AbstractDataType<T> implements DataType<T> {
   
+  protected Class<?> apiClass;
+  
+  public AbstractDataType(Class< ? > apiClass) {
+    this.apiClass = apiClass;
+  }
+  
+  public Class< ? > getApiClass() {
+    return apiClass;
+  }
+
   @Override
   public void validate(VariableImpl variable, T apiVariable, WorkflowParse validator) {
   }
@@ -43,7 +53,7 @@ public abstract class AbstractDataType<T> implements DataType<T> {
   }
   
   @Override
-  public Class< ? > getValueType() {
+  public Class< ? > getValueClass() {
     return null;
   }
 }

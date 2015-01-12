@@ -22,6 +22,6 @@ public class TimerImpl extends BaseImpl {
   public JobType jobType;
 
   public void parse(Timer apiTimer, ScopeImpl parent, WorkflowParse validator) {
-    super.parse(apiTimer, parent, validator);
+    super.parse(apiTimer, validator, parent);
   }
 }

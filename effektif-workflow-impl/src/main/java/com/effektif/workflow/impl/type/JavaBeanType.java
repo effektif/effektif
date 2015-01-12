@@ -66,7 +66,7 @@ public class JavaBeanType extends AbstractDataType<JavaBean> {
   }
   
   @Override
-  public Class< ? > getValueType() {
+  public Class< ? > getValueClass() {
     return javaClass;
   }
   

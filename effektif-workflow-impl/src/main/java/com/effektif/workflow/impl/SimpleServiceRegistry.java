@@ -18,7 +18,7 @@ import java.util.Map;
 
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.Descriptors;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.type.DataType;
@@ -63,21 +63,21 @@ public class SimpleServiceRegistry implements ServiceRegistry {
 
   @Override
   public void prepare(WorkflowEngineConfiguration configuration) {
-    Descriptors descriptors = getService(Descriptors.class);
+    PluginService pluginService = getService(PluginService.class);
     for (Initializable initializable: configuration.initializables) {
       initializable.initialize(this, configuration);
     }
     for (Class<?> javaBeanType: configuration.javaBeanTypes) {
-      descriptors.registerJavaBeanType(javaBeanType);
+      pluginService.registerJavaBeanType(javaBeanType);
     }
     for (DataType dataType: configuration.dataTypes) {
-      descriptors.registerDataType(dataType);
+      pluginService.registerDataType(dataType);
     }
     for (ActivityType activityType: configuration.activityTypes) {
-      descriptors.registerActivityType(activityType);
+      pluginService.registerActivityType(activityType);
     }
     for (Class<? extends JobType> jobTypeClass: configuration.jobTypeClasses) {
-      descriptors.registerJobType(jobTypeClass);
+      pluginService.registerJobType(jobTypeClass);
     }
   }
 }

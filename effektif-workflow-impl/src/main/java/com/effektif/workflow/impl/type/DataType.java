@@ -22,6 +22,8 @@ public interface DataType<T> extends Plugin {
   
   // TODO byte[] getIconBytes();
   // TODO String getIconMimeType();
+  
+  Class< ? > getApiClass();
 
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;
@@ -37,6 +39,6 @@ public interface DataType<T> extends Plugin {
 
   void validate(VariableImpl variableImpl, T apiVariable, WorkflowParse validator);
 
-  Class< ? > getValueType();
+  Class< ? > getValueClass();
 
 }

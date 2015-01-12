@@ -30,7 +30,8 @@ public class WorkflowImpl extends ScopeImpl {
   public Long version;
 
   public void parse(Workflow apiWorkflow, WorkflowParse parse) {
-    super.parse(apiWorkflow, null, parse);
+    this.workflow = this;
+    super.parse(apiWorkflow, parse, null);
     this.startActivities = parse.getStartActivities(this);
   }
 

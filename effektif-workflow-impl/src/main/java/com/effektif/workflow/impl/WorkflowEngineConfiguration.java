@@ -34,7 +34,7 @@ import com.effektif.workflow.impl.activitytypes.UserTaskImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.Descriptors;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.script.ScriptServiceImpl;
@@ -115,7 +115,7 @@ public abstract class WorkflowEngineConfiguration {
   }
 
   protected void initializeDescriptors() {
-    registerService(new Descriptors());
+    registerService(new PluginService());
   }
 
   protected void initializeObjectMapper() {
@@ -148,7 +148,7 @@ public abstract class WorkflowEngineConfiguration {
     registerDataType(new TextType());
     registerDataType(new NumberType());
     registerDataType(new ListType());
-    registerJavaBeanType(CallMapping.class);
+    // registerJavaBeanType(CallMapping.class);
   }
 
   public WorkflowEngine buildWorkflowEngine() {

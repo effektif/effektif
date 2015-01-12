@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.workflow;
 
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.plugin.Descriptors;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.type.DataType;
 
 
@@ -40,8 +40,8 @@ public class VariableImpl {
       validator.addError("Variable has no id");
     }
     this.parent = parent;
-    Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
-    this.dataType = descriptors.instantiateDataType(apiVariable);
+    PluginService pluginService = validator.workflowEngine.getServiceRegistry().getService(PluginService.class);
+    this.dataType = pluginService.instantiateDataType(apiVariable);
     this.dataType.validate(this, apiVariable, validator);
   }
 

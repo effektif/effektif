@@ -27,6 +27,16 @@ public abstract class AbstractActivityType<T> implements ActivityType {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
+  protected Class<?> apiClass;
+  
+  public AbstractActivityType(Class< ? > apiClass) {
+    this.apiClass = apiClass;
+  }
+  
+  public Class< ? > getApiClass() {
+    return apiClass;
+  }
+
   @Override
   public ConfigurationPanel getConfigurationPanel() {
     return null;

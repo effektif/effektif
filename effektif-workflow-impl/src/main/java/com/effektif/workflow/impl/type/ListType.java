@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import com.effektif.workflow.api.variables.List;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.impl.plugin.Descriptors;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowParse;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -40,10 +40,10 @@ public class ListType extends AbstractDataType<List> {
 
   @Override
   public void validate(VariableImpl variable, List list, WorkflowParse validator) {
-    Descriptors descriptors = validator.getServiceRegistry().getService(Descriptors.class);
+    PluginService pluginService = validator.getServiceRegistry().getService(PluginService.class);
     Variable elementVariable = list.getElementType();
     VariableImpl elementVariableImpl = new VariableImpl();
-    this.elementDataType = descriptors.instantiateDataType(elementVariable);
+    this.elementDataType = pluginService.instantiateDataType(elementVariable);
     this.elementDataType.validate(elementVariableImpl, elementVariable, validator);
   }
 

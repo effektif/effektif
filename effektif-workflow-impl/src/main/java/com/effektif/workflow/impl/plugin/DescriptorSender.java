@@ -24,7 +24,7 @@ public class DescriptorSender {
   
   public static final Logger log = LoggerFactory.getLogger(DescriptorSender.class);
 
-  protected Descriptors descriptors;
+  protected PluginService pluginService;
   protected JsonService jsonService;
   protected String authenticationToken;
   protected String authenticationUsername;
@@ -37,8 +37,8 @@ public class DescriptorSender {
   public DescriptorSender() {
   }
 
-  public DescriptorSender(Descriptors descriptors, JsonService jsonService) {
-    this.descriptors = descriptors;
+  public DescriptorSender(PluginService pluginService, JsonService jsonService) {
+    this.pluginService = pluginService;
     this.jsonService = jsonService;
   }
 
@@ -50,7 +50,7 @@ public class DescriptorSender {
       log.debug(">>> PUT "+getUrl());
     // TODO send over HTTP to the server
     if (log.isDebugEnabled())
-      log.debug(">>> "+jsonService.objectToJsonStringPretty(descriptors));
+      log.debug(">>> "+jsonService.objectToJsonStringPretty(pluginService));
     return "the http response, which is hopefully 200 OK";
   }
   

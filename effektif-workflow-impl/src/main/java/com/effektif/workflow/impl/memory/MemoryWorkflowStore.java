@@ -42,25 +42,39 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
     this.nextVersionByName = new ConcurrentHashMap<String, Long>();
   }
 
-  /** ensures that every element in this process definition has an id */
+//  /** ensures that every element in this process definition has an id */
+//  @Override
+//  public synchronized void assignIdAndVersion(Workflow workflow) {
+//    workflow.setId(UUID.randomUUID().toString());
+//    String workflowName = workflow.getName();
+//    if (workflowName!=null) {
+//      Long nextVersion = nextVersionByName.get(workflowName);
+//      if (nextVersion==null) {
+//        nextVersion = 1l;
+//      }
+//      workflow.setVersion(nextVersion);
+//      nextVersion++;
+//      nextVersionByName.put(workflowName, nextVersion);
+//    }
+//  }
+
   @Override
-  public synchronized void assignIdAndVersion(Workflow workflow) {
-    workflow.setId(UUID.randomUUID().toString());
-    String workflowName = workflow.getName();
+  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl) {
+    workflowImpl.id = UUID.randomUUID().toString();
+    workflowApi.setId(workflowImpl.id);
+    workflows.put(workflowApi.getId(), workflowApi);
+
+    String workflowName = workflowApi.getName();
     if (workflowName!=null) {
       Long nextVersion = nextVersionByName.get(workflowName);
       if (nextVersion==null) {
         nextVersion = 1l;
       }
-      workflow.setVersion(nextVersion);
+      workflowImpl.version = nextVersion;
+      workflowApi.setVersion(workflowImpl.version);
       nextVersion++;
       nextVersionByName.put(workflowName, nextVersion);
     }
-  }
-
-  @Override
-  public void insertWorkflow(Workflow workflow) {
-    workflows.put(workflow.getId(), workflow);
   }
 
   @Override

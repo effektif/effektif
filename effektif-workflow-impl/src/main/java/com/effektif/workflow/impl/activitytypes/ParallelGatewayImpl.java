@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -34,21 +35,21 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
   }
   
   @Override
-  public void parse(ActivityImpl activity, ParallelGateway parallelGateway, WorkflowParse validator) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
     // at least one in, at least one out
-    List<Transition> incomingTransitions = activity.getIncomingTransitions();
+    List<Transition> incomingTransitions = activityImpl.getIncomingTransitions();
     if (log.isDebugEnabled())
       log.debug("  incoming "+incomingTransitions.size());
     if (incomingTransitions==null || incomingTransitions.isEmpty()) {
-      validator.addWarning("Parallel gateway '%s' does not have incoming transitions", activity.id);
+      validator.addWarning("Parallel gateway '%s' does not have incoming transitions", activityImpl.id);
     } else {
       nbrOfIncomingTransitions = incomingTransitions.size();
     }
-    List<Transition> outgoingTransitions = activity.getOutgoingTransitions();
+    List<Transition> outgoingTransitions = activityImpl.getOutgoingTransitions();
     if (log.isDebugEnabled())
       log.debug("  outgoing "+outgoingTransitions.size());
     if (outgoingTransitions==null || outgoingTransitions.isEmpty()) {
-      validator.addWarning("Parallel gateway '%s' does not have outgoing transitions", activity.id);
+      validator.addWarning("Parallel gateway '%s' does not have outgoing transitions", activityImpl.id);
     } else {
       hasOutgoingTransitions = true;
     }

@@ -20,12 +20,12 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.Descriptors;
+import com.effektif.workflow.impl.plugin.PluginService;
 
 
 public class ActivityImpl extends ScopeImpl {
   
-  public ActivityType<?> activityType;
+  public ActivityType activityType;
   /** the list of transitions for which this activity is the destination.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
   public List<TransitionImpl> incomingTransitions;
@@ -37,28 +37,29 @@ public class ActivityImpl extends ScopeImpl {
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void parse(Activity apiActivity, Scope apiScope, ScopeImpl parent, WorkflowParse validator) {
-    super.parse(apiActivity, parent, validator);
+  public void parse(Activity apiActivity, Scope apiScope, WorkflowParse workflowParser, ScopeImpl parent) {
+    super.parse(apiActivity, workflowParser, parent);
     String id = apiActivity.getId();
     if (id!=null && !"".equals(id)) {
       this.id = id;
     } else {
-      validator.addError("Activity has no id");
+      workflowParser.addError("Activity has no id");
     }
 
-    Descriptors descriptors = validator.workflowEngine.getServiceRegistry().getService(Descriptors.class);
-    this.activityType = descriptors.instantiateActivityType(apiActivity);
+    PluginService pluginService = workflowParser.workflowEngine.getServiceRegistry().getService(PluginService.class);
+    this.activityType = pluginService.instantiateActivityType(apiActivity);
+    this.activityType.parse(this, apiActivity, workflowParser);
     // some activity types need to validate incoming and outgoing transitions, 
     // that's why they are NOT validated here, but after the transitions.
     if (this.activityType==null) {
-      validator.addError("Activity '%s' has no activityType configured", id);
+      workflowParser.addError("Activity '%s' has no activityType configured", id);
     }
 
     if (apiActivity.getMultiInstance()!=null) {
       this.multiInstance = new MultiInstanceImpl();
-      validator.pushContext(multiInstance);
-      this.multiInstance.validate(apiActivity.getMultiInstance(), this, validator);
-      validator.popContext();
+      workflowParser.pushContext(multiInstance);
+      this.multiInstance.validate(apiActivity.getMultiInstance(), this, workflowParser);
+      workflowParser.popContext();
     }
     
     if (apiActivity.getOutgoingTransitions()!=null) {

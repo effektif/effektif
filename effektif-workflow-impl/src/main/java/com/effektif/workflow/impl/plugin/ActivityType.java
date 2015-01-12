@@ -24,6 +24,8 @@ public interface ActivityType extends Plugin {
   
   /** provides the data structure to the UI how this activity can be configured so that the UI can show a dialog */
   ConfigurationPanel getConfigurationPanel();
+  
+  Class<?> getApiClass();
 
   /** called when the process is being validated or deployed.
    * Note that configuration values in the activityApi object could be the target java beans classes, 

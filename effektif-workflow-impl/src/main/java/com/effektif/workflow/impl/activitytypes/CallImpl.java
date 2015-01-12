@@ -46,6 +46,10 @@ public class CallImpl extends AbstractActivityType<Call> {
   List<CallMappingImpl> inputMappings;
   List<CallMappingImpl> outputMappings;
 
+  public CallImpl() {
+    super(Call.class);
+  }
+
   @Override
   public ConfigurationPanel getConfigurationPanel() {
     return new ConfigurationPanel("Call")

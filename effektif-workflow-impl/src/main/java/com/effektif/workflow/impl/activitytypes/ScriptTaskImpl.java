@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.activitytypes;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptResult;
@@ -38,7 +39,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   }
 
   @Override
-  public void parse(ActivityImpl activity, ScriptTask scriptTask, WorkflowParse validator) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
     if (script!=null) {
       this.scriptService = validator.getServiceRegistry().getService(ScriptService.class);
       this.compiledScript = scriptService.compile(script);

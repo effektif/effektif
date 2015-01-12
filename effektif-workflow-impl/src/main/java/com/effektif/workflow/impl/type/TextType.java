@@ -31,7 +31,7 @@ public class TextType extends AbstractDataType {
   }
 
   @Override
-  public Class< ? > getValueType() {
+  public Class< ? > getValueClass() {
     return String.class;
   }
 }

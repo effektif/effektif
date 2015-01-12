@@ -27,7 +27,7 @@ import com.effektif.workflow.impl.workflow.WorkflowImpl;
  * is done by the {@link WorkflowEngineImpl workflow engine} */
 public interface WorkflowStore {
 
-  void insertWorkflow(WorkflowImpl workflow);
+  void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl);
 
   /** loads the api workflow representation from the store */
   List<Workflow> findWorkflows(WorkflowQuery query);

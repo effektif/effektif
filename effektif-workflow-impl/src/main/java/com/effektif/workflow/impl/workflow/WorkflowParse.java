@@ -45,7 +45,7 @@ public class WorkflowParse {
   public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;
   public LinkedList<String> path = new LinkedList<>();
-  public ParseIssues parseIssues = new ParseIssues();
+  public ParseIssues issues = new ParseIssues();
   public Stack<ValidationContext> contextStack = new Stack<>();
   
   private class ValidationContext {
@@ -66,16 +66,17 @@ public class WorkflowParse {
     Long column;
   }
 
-  public static WorkflowParse parse(WorkflowEngineImpl workflowEngine, Workflow apiWorkflow) {
+  public static WorkflowParse parse(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
     if (log.isDebugEnabled()) {
       log.debug("Parsing workflow");
     }
     WorkflowParse parse = new WorkflowParse(workflowEngine);
-    parse.pushContext(apiWorkflow);
-    parse.workflow = new WorkflowImpl();
-    parse.workflow.parse(apiWorkflow, parse);
+    parse.pushContext(workflowApi);
+    WorkflowImpl workflowImpl = new WorkflowImpl();
+    workflowImpl.parse(workflowApi, parse);
+    parse.workflow = workflowImpl;
     parse.popContext();
-    return null;
+    return parse;
   }
 
   public WorkflowParse(WorkflowEngineImpl workflowEngine) {
@@ -217,16 +218,34 @@ public class WorkflowParse {
   
   public void addError(String message, Object... messageArgs) {
     ValidationContext currentContext = contextStack.peek();
-    parseIssues.addIssue(IssueType.error, getPathText(), currentContext.line, currentContext.column, message, messageArgs);
+    issues.addIssue(IssueType.error, getPathText(), currentContext.line, currentContext.column, message, messageArgs);
   }
 
   public void addWarning(String message, Object... messageArgs) {
     ValidationContext currentContext = contextStack.peek();
-    parseIssues.addIssue(IssueType.warning, getPathText(), currentContext.line, currentContext.column, message, messageArgs);
+    issues.addIssue(IssueType.warning, getPathText(), currentContext.line, currentContext.column, message, messageArgs);
   }
   
   public ParseIssues getIssues() {
-    return parseIssues;
+    return issues;
+  }
+
+  public WorkflowParse checkNoErrors() {
+    issues.checkNoErrors();
+    return this;
+  }
+
+  public WorkflowParse checkNoErrorsAndNoWarnings() {
+    issues.checkNoErrorsAndNoWarnings();
+    return this;
+  }
+
+  public boolean hasErrors() {
+    return issues.hasErrors();
+  }
+
+  public WorkflowImpl getWorkflow() {
+    return workflow;
   }
 
   public ServiceRegistry getServiceRegistry() {

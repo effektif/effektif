@@ -27,7 +27,7 @@ public class TransitionImpl extends BaseImpl {
   public Script conditionScript;
 
   public void parse(Transition apiTransition, ScopeImpl parent, WorkflowParse validator, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
-    super.parse(apiTransition, parent, validator);
+    super.parse(apiTransition, validator, parent);
 
     ActivityImpl activityHavingThisAsDefault = activitiesByDefaultTransitionId.remove(id);
     if (activityHavingThisAsDefault!=null) {
