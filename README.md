@@ -33,3 +33,5 @@ assertTrue(workflowInstance.isEnded());
 ```
 
 ## [Creating workflows](tree/master/docs/01-creating-workflows.md)
+## [Creating workflows](./tree/master/docs/01-creating-workflows.md)
+## [Creating workflows](https://github.com/effektif/effektif-oss/tree/master/docs/01-creating-workflows.md)
