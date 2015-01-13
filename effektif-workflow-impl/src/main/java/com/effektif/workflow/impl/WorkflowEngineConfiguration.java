@@ -19,7 +19,6 @@ import java.util.List;
 import javax.script.ScriptEngineManager;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.activities.CallMapping;
 import com.effektif.workflow.impl.activitytypes.CallImpl;
 import com.effektif.workflow.impl.activitytypes.EmbeddedSubprocessImpl;
 import com.effektif.workflow.impl.activitytypes.EndEventImpl;
@@ -34,8 +33,8 @@ import com.effektif.workflow.impl.activitytypes.UserTaskImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.Initializable;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.script.ScriptServiceImpl;
 import com.effektif.workflow.impl.type.DataType;

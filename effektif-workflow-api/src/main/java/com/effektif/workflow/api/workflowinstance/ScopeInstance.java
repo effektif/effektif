@@ -15,16 +15,14 @@ package com.effektif.workflow.api.workflowinstance;
 
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
-
 
 public class ScopeInstance {
   
   protected String id;
 
-  protected LocalDateTime start;
+  protected Long start;
 
-  protected LocalDateTime end;
+  protected Long end;
 
   protected Long duration;
 
@@ -42,17 +40,17 @@ public class ScopeInstance {
     this.id = id;
   }
 
-  public LocalDateTime getStart() {
+  public Long getStart() {
     return this.start;
   }
-  public void setStart(LocalDateTime start) {
+  public void setStart(Long start) {
     this.start = start;
   }
 
-  public LocalDateTime getEnd() {
+  public Long getEnd() {
     return this.end;
   }
-  public void setEnd(LocalDateTime end) {
+  public void setEnd(Long end) {
     this.end = end;
   }
   

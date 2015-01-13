@@ -14,12 +14,10 @@
 package com.effektif.mongo;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -78,9 +76,9 @@ public class MongoCollection {
     }
   }
   
-  public void writeTimeOpt(BasicDBObject o, String fieldName, LocalDateTime value) {
+  public void writeTimeOpt(BasicDBObject o, String fieldName, Long value) {
     if (value!=null) {
-      o.put(fieldName, value.toDate());
+      o.put(fieldName, value);
     }
   }
 
@@ -138,9 +136,8 @@ public class MongoCollection {
     return (Boolean) dbObject.get(fieldName);
   }
 
-  protected LocalDateTime readTime(BasicDBObject dbObject, String fieldName) {
-    Date date = (Date) dbObject.get(fieldName);
-    return (date!=null ? new LocalDateTime(date) : null);
+  protected Long readTime(BasicDBObject dbObject, String fieldName) {
+    return readLong(dbObject, fieldName);
   }
 
   protected WriteResult insert(BasicDBObject dbObject, WriteConcern writeConcern) {

@@ -6,14 +6,13 @@ package com.effektif.workflow.impl.job;
 
 import java.util.LinkedList;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.ReadablePeriod;
+import com.effektif.workflow.impl.Time;
 
 
 /**
  * @author Tom Baeyens
  */
-public class Job implements JobBuilder {
+public class Job {
   
   // private static final Logger log = LoggerFactory.getLogger(Job.class);
 
@@ -22,13 +21,13 @@ public class Job implements JobBuilder {
   
   public String id;
   public String key;
-  public LocalDateTime duedate;
+  public Long duedate;
   public Lock lock;
   public LinkedList<JobExecution> executions;
   /** retries left.  null when no retries have been performed. 0 when this job has permanently failed. */
   public Long retries;
   public Long retryDelay;
-  public LocalDateTime done;
+  public Long done;
   public Boolean dead;
 
   public String organizationId;
@@ -62,12 +61,12 @@ public class Job implements JobBuilder {
     return this;
   }
   
-  public Job done(LocalDateTime done) {
+  public Job done(Long done) {
     this.done = done;
     return this;
   }
   
-  public Job duedate(LocalDateTime duedate) {
+  public Job duedate(Long duedate) {
     this.duedate = duedate;
     return this;
   }
@@ -115,11 +114,11 @@ public class Job implements JobBuilder {
     this.dead = dead;
   }
 
-  public void rescheduleFromNow(ReadablePeriod period) {
-    rescheduleFor(new LocalDateTime().plus(period));
+  public void rescheduleFromNow(Long delayInMillis) {
+    rescheduleFor(Time.now()+delayInMillis);
   }
 
-  public void rescheduleFor(LocalDateTime duedate) {
+  public void rescheduleFor(Long duedate) {
     this.duedate = duedate;
   }
 
@@ -144,7 +143,7 @@ public class Job implements JobBuilder {
   }
 
   
-  public LocalDateTime getDuedate() {
+  public Long getDuedate() {
     return duedate;
   }
 
@@ -169,7 +168,7 @@ public class Job implements JobBuilder {
   }
 
   
-  public LocalDateTime getDone() {
+  public Long getDone() {
     return done;
   }
 

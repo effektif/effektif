@@ -16,8 +16,6 @@ package com.effektif.workflow.impl.workflowinstance;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,10 +179,10 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     return "("+(activity.id!=null?activity.id+"|":"")+id+"|"+activityDefinitionType+")";
   }
   
-  public void setEnd(LocalDateTime end) {
+  public void setEnd(Long end) {
     this.end = end;
     if (start!=null && end!=null) {
-      this.duration = new Duration(start.toDateTime(), end.toDateTime()).getMillis();
+      this.duration = end-start;
     }
     if (updates!=null) {
       updates.isEndChanged = true;

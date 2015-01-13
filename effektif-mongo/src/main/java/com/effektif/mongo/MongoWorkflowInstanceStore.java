@@ -315,7 +315,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set")
         .push(WorkflowInstanceFields.LOCK)
-          .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
+          .add(WorkflowInstanceLockFields.TIME, Time.now())
           .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
         .pop()
       .pop()

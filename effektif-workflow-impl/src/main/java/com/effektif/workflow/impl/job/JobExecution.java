@@ -4,9 +4,6 @@
 
 package com.effektif.workflow.impl.job;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.ReadablePeriod;
-
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,7 +19,7 @@ public class JobExecution implements JobController {
   public WorkflowInstanceImpl processInstance;
   public Boolean error;
   public String logs;
-  public LocalDateTime time;
+  public Long time;
   public Long duration;
 
   public JobExecution() {
@@ -31,14 +28,14 @@ public class JobExecution implements JobController {
   public JobExecution(Job job, WorkflowInstanceImpl processInstance) {
     this.job = job;
     this.processInstance = processInstance;
-    this.time = new LocalDateTime();
+    this.time = System.currentTimeMillis();
   }
 
-  public void rescheduleFromNow(ReadablePeriod period) {
-    job.rescheduleFromNow(period);
+  public void rescheduleFromNow(Long delayInMillis) {
+    job.rescheduleFromNow(delayInMillis);
   }
   
-  public void rescheduleFor(LocalDateTime duedate) {
+  public void rescheduleFor(Long duedate) {
     job.rescheduleFor(duedate);
   }
   

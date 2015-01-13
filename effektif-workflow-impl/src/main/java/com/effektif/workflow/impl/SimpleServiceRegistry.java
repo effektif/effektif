@@ -18,8 +18,8 @@ import java.util.Map;
 
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.Initializable;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.util.Exceptions;

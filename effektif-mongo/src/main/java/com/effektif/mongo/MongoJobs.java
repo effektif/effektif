@@ -14,7 +14,6 @@
 package com.effektif.mongo;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +71,7 @@ public class MongoJobs extends MongoCollection {
   }
 
   protected BasicDBObjectBuilder buildJobQuery(boolean mustHaveProcessInstance) {
-    Date now = Time.now().toDate();
+    Long now = Time.now();
     return BasicDBObjectBuilder.start()
       .append("$or", new DBObject[]{
         new BasicDBObject(fields.duedate, new BasicDBObject("$exists", false)),
@@ -87,7 +86,7 @@ public class MongoJobs extends MongoCollection {
       .push(fields.lock).append("$exists", false).pop()
       .get();
     DBObject dbLock = BasicDBObjectBuilder.start()
-      .append(fields.time, Time.now().toDate())
+      .append(fields.time, Time.now())
       .append(fields.owner, lockOwner)
       .get();
     DBObject update = BasicDBObjectBuilder.start()

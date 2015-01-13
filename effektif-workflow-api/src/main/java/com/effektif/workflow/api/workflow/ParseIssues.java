@@ -88,4 +88,8 @@ public class ParseIssues {
     }
     issues.add(new ParseIssue(issueType, path, line, column, message, messageArgs));
   }
+
+  public boolean isEmpty() {
+    return issues==null || issues.isEmpty();
+  }
 }

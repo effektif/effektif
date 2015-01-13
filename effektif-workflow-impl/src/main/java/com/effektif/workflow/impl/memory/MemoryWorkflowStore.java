@@ -111,7 +111,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
     Workflow latest = null;
     for (Workflow workflow: workflows.values()) {
       if ( workflowName.equals(workflow.getName())
-           && (latest==null || workflow.getDeployedTime().isBefore(latest.getDeployedTime()))
+           && (latest==null || workflow.getDeployedTime() < latest.getDeployedTime())
          ) {
         latest = workflow;
       }

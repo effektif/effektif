@@ -164,7 +164,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     DBCursor cursor = createWorkflowDbCursor(query, requestContext);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
-      dbWorkflow.put("id", dbWorkflow.get(FieldsWorkflow._ID).toString());
+      dbWorkflow.put("id", dbWorkflow.remove(FieldsWorkflow._ID).toString());
       Workflow workflow = jsonService.jsonMapToObject(dbWorkflow, Workflow.class);
       workflows.add(workflow);
     }

@@ -23,8 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,10 +277,10 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
   
-  public void setEnd(LocalDateTime end) {
+  public void setEnd(Long end) {
     this.end = end;
     if (start!=null && end!=null) {
-      this.duration = new Duration(start.toDateTime(), end.toDateTime()).getMillis();
+      this.duration = end-start;
     }
     if (updates!=null) {
       getUpdates().isEndChanged = true;

@@ -4,7 +4,7 @@
 
 package com.effektif.workflow.impl.job;
 
-import org.joda.time.LocalDateTime;
+import com.effektif.workflow.impl.Time;
 
 
 /**
@@ -12,14 +12,14 @@ import org.joda.time.LocalDateTime;
  */
 public class Lock {
 
-  public LocalDateTime time;
+  public Long time;
   public String owner;
 
   public Lock() {
   }
 
   public Lock(String owner) {
-    this.time = new LocalDateTime();
+    this.time = Time.now();
     this.owner = owner;
   }
 }

@@ -74,7 +74,7 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
   protected String jobsCollectionName = "jobs";
-  protected boolean isPretty = true;
+  protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected WriteConcern writeConcernInsertWorkflow;
   protected WriteConcern writeConcernInsertWorkflowInstance;
@@ -163,18 +163,26 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
     return this;
   }
   
-  public void workflowInstancesCollectionName(String processInstancesCollectionName) {
+  public MongoWorkflowEngineConfiguration workflowInstancesCollectionName(String processInstancesCollectionName) {
     this.workflowInstancesCollectionName = processInstancesCollectionName;
+    return this;
   }
 
-  public void workflowsCollectionName(String workflowsCollectionName) {
+  public MongoWorkflowEngineConfiguration workflowsCollectionName(String workflowsCollectionName) {
     this.workflowsCollectionName = workflowsCollectionName;
+    return this;
   }
 
-  public void jobsCollectionName(String jobsCollectionName) {
+  public MongoWorkflowEngineConfiguration jobsCollectionName(String jobsCollectionName) {
     this.jobsCollectionName = jobsCollectionName;
+    return this;
   }
-
+  
+  public MongoWorkflowEngineConfiguration prettyPrint() {
+    this.isPretty = true;
+    return this;
+  }
+  
   @Override
   public MongoWorkflowEngineConfiguration id(String id) {
     super.id(id);

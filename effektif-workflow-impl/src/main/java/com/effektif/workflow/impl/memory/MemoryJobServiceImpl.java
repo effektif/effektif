@@ -80,8 +80,8 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
   }
 
   public boolean duedateHasPast(Job job) {
-    long nowMillis = Time.now().toDate().getTime();
-    long duedateMillis = job.duedate.toDate().getTime();
+    long nowMillis = Time.now();
+    long duedateMillis = job.duedate;
     return (duedateMillis - nowMillis)<=0;
   }
 

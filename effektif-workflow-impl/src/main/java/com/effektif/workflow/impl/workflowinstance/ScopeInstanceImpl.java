@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +51,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public RequestContext requestContext;
   
   public ScopeImpl scope;
-  public LocalDateTime start;
-  public LocalDateTime end;
+  public Long start;
+  public Long end;
   public Long duration;
   public List<ActivityInstanceImpl> activityInstances;
   public List<VariableInstanceImpl> variableInstances;
@@ -74,7 +73,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     this.start = Time.now();
   }
 
-  public abstract void setEnd(LocalDateTime end); 
+  public abstract void setEnd(Long end); 
   
   public abstract void ended(ActivityInstanceImpl activityInstance);
 

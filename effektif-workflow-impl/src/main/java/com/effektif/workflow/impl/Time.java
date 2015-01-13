@@ -13,19 +13,17 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 
 
 public class Time {
   
   // tests can overwrite this to control the time
-  public static LocalDateTime now = null;
+  public static Long now = null;
   
-  public static LocalDateTime now() {
+  public static Long now() {
     if (now!=null) {
       return now;
     }
-    return new LocalDateTime(DateTimeZone.UTC);
+    return System.currentTimeMillis();
   }
 }

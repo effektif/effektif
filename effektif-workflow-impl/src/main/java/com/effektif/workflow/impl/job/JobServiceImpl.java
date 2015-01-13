@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.Seconds;
-
 import com.effektif.workflow.impl.ExecutorService;
+import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -170,7 +168,7 @@ public abstract class JobServiceImpl implements JobService, Initializable<Workfl
       try {
         jobType.execute(jobExecution);
         if (job.duedate==null) { // if reschedule() was not called...
-          job.done = new LocalDateTime();
+          job.done = Time.now();
           if (listener!=null) {
             listener.notifyJobDone(jobExecution);
           }
@@ -192,13 +190,13 @@ public abstract class JobServiceImpl implements JobService, Initializable<Workfl
           job.retries--;
           long retry = jobType.getMaxRetries()-job.retries;
           int delayInSeconds = jobType.getRetryDelayInSeconds(retry);
-          jobExecution.rescheduleFromNow(Seconds.seconds((int)delayInSeconds));
+          jobExecution.rescheduleFromNow((long)delayInSeconds*1000);
           if (listener!=null) {
             listener.notifyJobRetry(jobExecution);
           }
         } else {
           // ALARM !  Manual intervention required
-          job.done = new LocalDateTime();
+          job.done = Time.now();
           job.dead = true;
           if (listener!=null) {
             listener.notifyJobFailure(jobExecution);

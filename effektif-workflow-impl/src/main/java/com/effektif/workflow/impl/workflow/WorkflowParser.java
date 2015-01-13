@@ -79,6 +79,11 @@ public class WorkflowParser {
     parse.workflow = new WorkflowImpl();
     parse.workflow.parse(workflowApi, parse);
     parse.popContext();
+    
+    if (!parse.issues.isEmpty()) {
+      workflowApi.setIssues(parse.issues);
+    }
+    
     return parse;
   }
 
@@ -87,10 +92,6 @@ public class WorkflowParser {
     this.path = new LinkedList<>();
     this.contextStack = new Stack<>();
     this.issues = new ParseIssues();
-    // the issues object is also set in the workflowApi 
-    // to ensure that all issues reported to this parser 
-    // are also in the workflow api object that will be sent to the client
-    workflowApi.setIssues(this.issues);
   }
   
   public void pushContext(Workflow workflow) {
