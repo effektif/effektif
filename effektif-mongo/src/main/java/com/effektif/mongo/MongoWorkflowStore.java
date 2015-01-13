@@ -50,10 +50,28 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   protected WriteConcern writeConcernInsertWorkflow;
   protected MongoCollection workflowVersions;
 
-  protected MongoWorkflowEngineConfiguration.WorkflowFields F_WF;
-  protected MongoWorkflowEngineConfiguration.WorkflowVersionsFields F_WFV;
-  protected MongoWorkflowEngineConfiguration.WorkflowVersionsLockFields F_WFVL;
+  interface FieldsWorkflow {
+    String _ID = "_id";
+    String NAME = "name";
+    String DEPLOYED_TIME = "deployedTime";
+    String DEPLOYED_BY = "deployedBy";
+    String ORGANIZATION_ID = "organizationId";
+    String WORKFLOW_ID = "workflowId";
+    String VERSION = "version";
+  }
   
+  interface FieldsWorkflowVersions {
+    String _ID = "_id";
+    String WORKFLOW_NAME = "workflowName";
+    String VERSION_IDS = "versionIds";
+    String LOCK = "lock";
+  }
+
+  interface FieldsWorkflowVersionsLock {
+    String OWNER = "owner";
+    String TIME = "time";
+  }
+
   @Override
   public void initialize(ServiceRegistry serviceRegistry, MongoWorkflowEngineConfiguration configuration) {
     DB db = serviceRegistry.getService(DB.class);
@@ -65,14 +83,11 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     this.workflowVersions = new MongoCollection();
     this.workflowVersions.dbCollection = db.getCollection(configuration.getWorkflowsCollectionName());
     this.workflowVersions.isPretty =configuration.isPretty; 
-    this.F_WF = configuration.getFieldNames().workflow;
-    this.F_WFV = configuration.getFieldNames().workflowVersions;
-    this.F_WFVL = configuration.getFieldNames().workflowVersionsLock;
   }
 
   @Override
-  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl) {
-    workflowImpl.id = new ObjectId().toString();
+  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
+    workflowImpl.id = createId();
     workflowApi.setId(workflowImpl.id);
 
     String workflowName = workflowApi.getName();
@@ -88,7 +103,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
         ensureWorkflowVersions(workflowName);
         workflowVersions = lockWorkflowVersionsWithRetry(workflowName);
       }
-      List<String> versionIds = (List<String>) workflowVersions.get(F_WFV.versionIds);
+      List<String> versionIds = (List<String>) workflowVersions.get(FieldsWorkflowVersions.VERSION_IDS);
       workflowImpl.version = ((long)versionIds.size())+1;
       workflowApi.setVersion(workflowImpl.version);
       versionIds.add(workflowImpl.id);
@@ -102,15 +117,15 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   protected void updateAndUnlockWorkflowVersions(BasicDBObject workflowVersionsDocument) {
-    workflowVersionsDocument.remove(F_WFV.lock);
+    workflowVersionsDocument.remove(FieldsWorkflowVersions.LOCK);
     workflowVersions.save(workflowVersionsDocument, writeConcernInsertWorkflow);
   }
 
   protected void ensureWorkflowVersions(String workflowName) {
-    DBObject query = new BasicDBObject(F_WFV.workflowName, workflowName);
+    DBObject query = new BasicDBObject(FieldsWorkflowVersions.WORKFLOW_NAME, workflowName);
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set")
-        .add(F_WFV.workflowName, workflowName)
+        .add(FieldsWorkflowVersions.WORKFLOW_NAME, workflowName)
       .pop()
       .get();
     workflowVersions.update(query, update, true, false, writeConcernInsertWorkflow);
@@ -128,26 +143,26 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
 
   protected BasicDBObject lockWorkflowVersions(final String workflowName) {
     DBObject query = BasicDBObjectBuilder.start()
-      .add(F_WFV.workflowName, workflowName)
+      .add(FieldsWorkflowVersions.WORKFLOW_NAME, workflowName)
       .push("$exists")
-        .add(F_WFV.lock, false)
+        .add(FieldsWorkflowVersions.LOCK, false)
       .pop()
       .get();
     BasicDBObject lock = new BasicDBObject()
-      .append(F_WFVL.owner, workflowEngine.getId())
-      .append(F_WFVL.time, System.currentTimeMillis());
+      .append(FieldsWorkflowVersionsLock.OWNER, workflowEngine.getId())
+      .append(FieldsWorkflowVersionsLock.TIME, System.currentTimeMillis());
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set")
-        .add(F_WFV.lock, lock)
+        .add(FieldsWorkflowVersions.LOCK, lock)
       .pop()
       .get();
     return workflowVersions.findAndModify(query, update);
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
+  public List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext) {
     List<Workflow> workflows = new ArrayList<Workflow>();
-    DBCursor cursor = createWorkflowDbCursor(query);
+    DBCursor cursor = createWorkflowDbCursor(query, requestContext);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
       Workflow workflow = jsonService.jsonMapToObject(dbWorkflow, Workflow.class);
@@ -157,34 +172,33 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
   
   @Override
-  public Workflow loadWorkflowById(String workflowId, String organizationId) {
+  public Workflow loadWorkflowById(String workflowId, RequestContext requestContext) {
     List<Workflow> workflows = findWorkflows(new WorkflowQuery()
-      .workflowId(workflowId)
-      .organizationId(organizationId));
+      .workflowId(workflowId), requestContext);
     return !workflows.isEmpty() ? workflows.get(0) : null;
   }
 
   @Override
   public void deleteWorkflows(WorkflowQuery query, RequestContext requestContext) {
-    BasicDBObject dbQuery = createWorkflowDbQuery(query);
+    BasicDBObject dbQuery = createWorkflowDbQuery(query, requestContext);
     remove(dbQuery);
   }
 
   @Override
-  public String findLatestWorkflowIdByName(String workflowName, String organizationId) {
+  public String findLatestWorkflowIdByName(String workflowName, RequestContext requestContext) {
     Exceptions.checkNotNullParameter(workflowName, "workflowName");
     BasicDBObject dbQuery = new BasicDBObject();
-    dbQuery.append(F_WF.name, new ObjectId(workflowName));
-    if (organizationId!=null) {
-      dbQuery.append(F_WF.organizationId, new ObjectId(organizationId));
+    dbQuery.append(FieldsWorkflow.NAME, workflowName);
+    if (RequestContext.hasOrganizationId(requestContext)) {
+      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
     }
-    BasicDBObject dbFields = new BasicDBObject(F_WF._id, 1);
+    BasicDBObject dbFields = new BasicDBObject(FieldsWorkflow._ID, 1);
     BasicDBObject dbWorkflow = findOne(dbQuery, dbFields);
     return dbWorkflow!=null ? dbWorkflow.get("_id").toString() : null;
   }
 
-  public DBCursor createWorkflowDbCursor(WorkflowQuery query) {
-    BasicDBObject dbQuery = createWorkflowDbQuery(query);
+  public DBCursor createWorkflowDbCursor(WorkflowQuery query, RequestContext requestContext) {
+    BasicDBObject dbQuery = createWorkflowDbQuery(query, requestContext);
     DBCursor dbCursor = find(dbQuery);
     if (query.getLimit()!=null) {
       dbCursor.limit(query.getLimit());
@@ -195,13 +209,16 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     return dbCursor;
   }
 
-  protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query) {
+  protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query, RequestContext requestContext) {
     BasicDBObject dbQuery = new BasicDBObject();
+    if (RequestContext.hasOrganizationId(requestContext)) {
+      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, query.getWorkflowId());
+    }
     if (query.getWorkflowId()!=null) {
-      dbQuery.append(F_WF._id, new ObjectId(query.getWorkflowId()));
+      dbQuery.append(FieldsWorkflow._ID, query.getWorkflowId());
     }
     if (query.getWorkflowName()!=null) {
-      dbQuery.append(F_WF.name, query.getWorkflowName());
+      dbQuery.append(FieldsWorkflow.NAME, query.getWorkflowName());
     }
     return dbQuery;
   }
@@ -218,7 +235,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
 
   private String getDbField(String field) {
     if (WorkflowQuery.FIELD_DEPLOY_TIME.equals(field)) {
-      return F_WF.deployedTime;
+      return FieldsWorkflow.DEPLOYED_TIME;
     }
     throw new RuntimeException("Unknown field "+field);
   }

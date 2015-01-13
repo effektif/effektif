@@ -20,6 +20,7 @@ import java.util.List;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.util.Lists;
@@ -36,62 +37,6 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
 
   public static List<ServerAddress> DEFAULT_SERVER_ADDRESSES = Lists.of(createServerAddress("localhost", null));
   
-  public static class FieldNames {
-    public WorkflowFields workflow = new WorkflowFields(); 
-    public WorkflowVersionsFields workflowVersions = new WorkflowVersionsFields(); 
-    public WorkflowVersionsLockFields workflowVersionsLock = new WorkflowVersionsLockFields(); 
-    public WorkflowInstanceFields workflowInstance = new WorkflowInstanceFields(); 
-    public JobFields job = new JobFields(); 
-    public JobExecutionFields jobExecution = new JobExecutionFields(); 
-  }
-  
-  public static class WorkflowFields {
-    public String _id = "_id";
-    public String name = "name";
-    public String deployedTime = "deployedTime";
-    public String deployedBy = "deployedBy";
-    public String organizationId = "organizationId";
-    public String workflowId = "workflowId";
-    public String version = "version";
-  }
-
-  public static class WorkflowVersionsFields {
-    public String _id = "_id";
-    public String workflowName = "workflowName";
-    public String versionIds = "versionIds";
-    public String lock = "lock";
-  }
-
-  public static class WorkflowVersionsLockFields {
-    public String owner = "owner";
-    public String time = "time";
-  }
-
-  public static class WorkflowInstanceFields {
-    public String _id = "_id";
-    public String organizationId = "organizationId";
-    public String workflowId = "workflowId";
-    public String start = "start";
-    public String end = "end";
-    public String duration = "duration";
-    public String activityInstances = "activities";
-    public String archivedActivityInstances = "archivedActivities";
-    public String variableInstances = "variables";
-    public String parent = "parent";
-    public String variableId = "variableId";
-    public String value = "value";
-    public String activityId = "activityId";
-    public String lock = "lock";
-    public String time = "time";
-    public String owner= "owner";
-    public String updates = "updates";
-    public String workState = "workState";
-    public String work = "work";
-    public String workAsync = "workAsync";
-    public String callerWorkflowInstanceId = "callerWorkflowInstanceId";
-    public String callerActivityInstanceId = "callerActivityInstanceId";
-    public String calledWorkflowInstanceId = "calledWorkflowInstanceId";
-  }
 
   public static class JobFields {
     public String _id = "_id";
@@ -131,7 +76,6 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   protected String jobsCollectionName = "jobs";
   protected boolean isPretty = true;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
-  protected FieldNames fieldNames = new FieldNames();
   protected WriteConcern writeConcernInsertWorkflow;
   protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
@@ -140,7 +84,7 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   public MongoWorkflowEngineConfiguration() {
     registerService(new MongoWorkflowStore());
     registerService(new MongoWorkflowInstanceStore());
-    registerService(new MongoTaskService());
+    registerService(new MemoryTaskService());
     registerService(new MongoJobs());
   }
   
@@ -199,14 +143,6 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
     return this;
   }
   
-  public FieldNames getFieldNames() {
-    return fieldNames;
-  }
-  
-  public void setFieldNames(FieldNames fieldNames) {
-    this.fieldNames = fieldNames;
-  }
-
   public MongoWorkflowEngineConfiguration writeConcernInsertProcessDefinition(WriteConcern writeConcernInsertProcessDefinition) {
     this.writeConcernInsertWorkflow = writeConcernInsertProcessDefinition;
     return this;

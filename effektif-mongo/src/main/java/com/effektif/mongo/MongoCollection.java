@@ -37,6 +37,10 @@ public class MongoCollection {
   
   protected DBCollection dbCollection;
   protected boolean isPretty; 
+  
+  public String createId() {
+    return new ObjectId().toString();
+  }
 
   public void writeId(BasicDBObject o, String fieldName, String value) {
     o.put(fieldName, new ObjectId(value));

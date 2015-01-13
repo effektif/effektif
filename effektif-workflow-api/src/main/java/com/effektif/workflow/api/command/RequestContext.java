@@ -93,4 +93,8 @@ public class RequestContext {
   public <T> T get(Class<T> type) {
     return userDefinedContext!=null ? (T) userDefinedContext.get(type) : null;
   }
+
+  public static boolean hasOrganizationId(RequestContext requestContext) {
+    return requestContext!=null ? requestContext.organizationId!=null : false;
+  }
 }
