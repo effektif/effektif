@@ -37,7 +37,7 @@ import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
@@ -114,11 +114,12 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
       workflowApi.organizationId(requestContext.getOrganizationId());
     }
-    WorkflowParse parser = WorkflowParse.parse(this, workflowApi);
+    WorkflowImpl workflowImpl = new WorkflowImpl();
+    WorkflowParser parser = WorkflowParser.parse(this, workflowApi);
     if (!parser.hasErrors()) {
-      WorkflowImpl workflowImpl = parser.workflow;
-      workflowImpl.id = workflowApi.getId();
-      workflowImpl.version = workflowApi.getVersion();
+      String workflowId = workflowStore.generateWorkflowId(); 
+      workflowApi.setId(workflowId);
+      workflowImpl.id = workflowId;
       workflowStore.insertWorkflow(workflowApi, workflowImpl, requestContext);
       workflowCache.put(workflowImpl);
     }
@@ -139,7 +140,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
       workflowApi.organizationId(requestContext.getOrganizationId());
     }
-    WorkflowParse.parse(this, workflowApi);
+    WorkflowParser.parse(this, workflowApi);
     return workflowApi;
   }
 
@@ -184,9 +185,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       }
     }
 
-    WorkflowImpl workflow = getExecutableWorkflow(workflowId, requestContext);
-    
-    WorkflowInstanceImpl workflowInstance = workflowInstanceStore.createWorkflowInstance(workflow, requestContext);
+    WorkflowImpl workflow = getWorkflowImpl(workflowId, requestContext);
+    String workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
+    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(requestContext, workflow.workflowEngine, workflow, workflowInstanceId);
     if (callerReference!=null) {
       workflowInstance.callerWorkflowInstanceId = callerReference.callerWorkflowInstanceId;
       workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
@@ -247,16 +248,17 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
-    return workflowInstanceStore.findWorkflowInstances(query, requestContext);
+    List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(query, requestContext);
+    return WorkflowInstanceImpl.toWorkflowInstances(workflowInstances);
   }
   
-  /** retrieves the executable form of the workflow */
-  protected WorkflowImpl getExecutableWorkflow(String workflowId, RequestContext requestContext) {
+  /** retrieves the executable form of the workflow using the workflow cache */
+  protected WorkflowImpl getWorkflowImpl(String workflowId, RequestContext requestContext) {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId, requestContext);
     if (workflowImpl==null) {
       Workflow workflow = workflowStore.loadWorkflowById(workflowId, requestContext);
-      workflowImpl = WorkflowParse.parse(this, workflow)
-        .checkNoErrors()
+      workflowImpl = WorkflowParser.parse(this, workflow)
+        .checkNoErrors() // throws runtime exception if there are errors
         .getWorkflow();
       workflowCache.put(workflowImpl);
     }

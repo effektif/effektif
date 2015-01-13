@@ -28,6 +28,9 @@ import com.effektif.workflow.impl.workflow.WorkflowImpl;
  * is done by the {@link WorkflowEngineImpl workflow engine} */
 public interface WorkflowStore {
 
+  /** creates a (globally) unique id to be used for a new workflow being deployed */
+  String generateWorkflowId();
+
   void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext);
 
   /** loads the api workflow representation from the store 
@@ -40,4 +43,5 @@ public interface WorkflowStore {
 
   /** loads the executable workflow */
   Workflow loadWorkflowById(String workflowId, RequestContext requestContext);
+
 }

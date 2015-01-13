@@ -14,7 +14,7 @@
 package com.effektif.workflow.impl.type;
 
 import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 
 
 public abstract class AbstractDataType<T> implements DataType<T> {
@@ -30,7 +30,7 @@ public abstract class AbstractDataType<T> implements DataType<T> {
   }
 
   @Override
-  public void validate(VariableImpl variable, T apiVariable, WorkflowParse validator) {
+  public void validate(VariableImpl variable, T apiVariable, WorkflowParser validator) {
   }
 
   @Override

@@ -19,7 +19,7 @@ import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -34,7 +34,7 @@ public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubproc
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser validator) {
     this.startActivities = validator.getStartActivities(activityImpl);
   }
 

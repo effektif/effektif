@@ -19,7 +19,7 @@ import com.effektif.workflow.api.variables.List;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -39,7 +39,7 @@ public class ListType extends AbstractDataType<List> {
   }
 
   @Override
-  public void validate(VariableImpl variable, List list, WorkflowParse validator) {
+  public void validate(VariableImpl variable, List list, WorkflowParser validator) {
     PluginService pluginService = validator.getServiceRegistry().getService(PluginService.class);
     Variable elementVariable = list.getElementType();
     VariableImpl elementVariableImpl = new VariableImpl();

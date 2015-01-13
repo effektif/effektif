@@ -19,6 +19,8 @@ public class WorkflowInstanceUpdates extends ScopeInstanceUpdates {
   public boolean isLockChanged;
   public boolean isWorkChanged;
   public boolean isAsyncWorkChanged;
+  public boolean isNextActivityInstanceIdChanged;
+  public boolean isNextVariableInstanceIdChanged;
 
   public WorkflowInstanceUpdates(boolean isNew) {
     this.isNew = isNew;

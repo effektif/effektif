@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.command.RequestContext;
@@ -87,7 +86,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
 
   @Override
   public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
-    workflowImpl.id = createId();
+    workflowImpl.id = generateWorkflowId();
     workflowApi.setId(workflowImpl.id);
 
     String workflowName = workflowApi.getName();

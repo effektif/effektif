@@ -81,7 +81,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     String CALLED_WORKFLOW_INSTANCE_ID = "calledWorkflowInstanceId";
   }
 
-  
   public MongoWorkflowInstanceStore() {
   }
 
@@ -96,6 +95,11 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     this.workflowEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
     this.writeConcernInsertWorkflowInstance = configuration.getWriteConcernInsertWorkflowInstance(this.dbCollection);
     this.writeConcernFlushUpdates = configuration.getWriteConcernFlushUpdates(this.dbCollection);
+  }
+  
+  @Override
+  public String generateWorkflowInstanceId() {
+    return new ObjectId().toString();
   }
 
   @Override
@@ -217,7 +221,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
 
   @Override
-  public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext) {
+  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext) {
     BasicDBObject query = buildQuery(workflowInstanceQuery, requestContext);
     DBCursor workflowInstanceCursor = find(query);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
@@ -229,12 +233,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     return workflowInstances;
   }
   
-
-  @Override
-  public long countWorkflowInstances(WorkflowInstanceQuery workflowInstanceQueryImpl) {
-    return 0;
-  }
-
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
     BasicDBObject query = buildQuery(workflowInstanceQuery);

@@ -35,7 +35,7 @@ public abstract class ScopeImpl extends BaseImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
   
-  public void parse(Scope apiScope, WorkflowParse workflowParser, ScopeImpl parent) {
+  public void parse(Scope apiScope, WorkflowParser workflowParser, ScopeImpl parent) {
     super.parse(apiScope, workflowParser, parent);
     
     List<Variable> apiVariables = apiScope.getVariables();

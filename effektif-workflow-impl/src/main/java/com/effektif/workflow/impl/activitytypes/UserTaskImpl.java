@@ -22,7 +22,7 @@ import com.effektif.workflow.impl.task.Task;
 import com.effektif.workflow.impl.task.TaskService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -37,7 +37,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse parser) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser parser) {
     this.taskService = parser.getServiceRegistry().getService(TaskService.class);
     this.nameBinding = parser.parseBinding(activityApi, UserTask.KEY_NAME, String.class, false);
     this.candidateIdBindings = parser.parseBindings(activityApi, UserTask.KEY_CANDIDATE_IDS, String.class);

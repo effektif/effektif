@@ -38,7 +38,7 @@ public class MongoCollection {
   protected DBCollection dbCollection;
   protected boolean isPretty; 
   
-  public String createId() {
+  public String generateWorkflowId() {
     return new ObjectId().toString();
   }
 

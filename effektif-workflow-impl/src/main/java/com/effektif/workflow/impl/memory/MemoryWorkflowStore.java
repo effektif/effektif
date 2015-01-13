@@ -42,11 +42,14 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
     this.workflows = new ConcurrentHashMap<String, Workflow>();
     this.nextVersionByName = new ConcurrentHashMap<String, Long>();
   }
+  
+  @Override
+  public String generateWorkflowId() {
+    return UUID.randomUUID().toString();
+  }
 
   @Override
   public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
-    workflowImpl.id = UUID.randomUUID().toString();
-    workflowApi.setId(workflowImpl.id);
     workflows.put(workflowApi.getId(), workflowApi);
 
     String workflowName = workflowApi.getName();

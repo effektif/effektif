@@ -33,7 +33,6 @@ import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.Time;
-import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.plugin.TypedValue;
 import com.effektif.workflow.impl.type.AnyDataType;
@@ -114,8 +113,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   public ActivityInstanceImpl createActivityInstance(ActivityImpl activity) {
-    WorkflowInstanceStore workflowInstanceStore = workflowEngine.getServiceRegistry().getService(WorkflowInstanceStore.class);
-    ActivityInstanceImpl activityInstance = workflowInstanceStore.createActivityInstance(this, activity);
+    String activityInstanceId = workflowInstance.generateNextActivityInstanceId();
+    ActivityInstanceImpl activityInstance = new ActivityInstanceImpl(parent, activity, activityInstanceId);
     if (activity.isMultiInstance()) {
       activityInstance.setWorkState(STATE_STARTING_MULTI_CONTAINER);
     } else {
@@ -156,7 +155,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   public VariableInstanceImpl createVariableInstance(VariableImpl variable) {
-    VariableInstanceImpl variableInstance = createVariableInstance(variable);
+    String variableInstanceId = workflowInstance.generateNextVariableInstanceId();
+    VariableInstanceImpl variableInstance = new VariableInstanceImpl(parent, variable, variableInstanceId);
     variableInstance.workflowEngine = workflowEngine;
     variableInstance.workflowInstance = workflowInstance;
     variableInstance.dataType = variable.dataType;

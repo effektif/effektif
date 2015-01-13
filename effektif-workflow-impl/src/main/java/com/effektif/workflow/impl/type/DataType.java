@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.type;
 
 import com.effektif.workflow.impl.plugin.Plugin;
 import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 
 
 public interface DataType<T> extends Plugin {
@@ -37,7 +37,7 @@ public interface DataType<T> extends Plugin {
 
   Object convertScriptValueToInternal(Object scriptValue, String language);
 
-  void validate(VariableImpl variableImpl, T apiVariable, WorkflowParse validator);
+  void validate(VariableImpl variableImpl, T apiVariable, WorkflowParser validator);
 
   Class< ? > getValueClass();
 

@@ -27,9 +27,9 @@ public class BaseImpl {
   public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;
 
-  public void parse(Base apiBase, WorkflowParse parse, ScopeImpl parent) {
+  public void parse(Base apiBase, WorkflowParser parser, ScopeImpl parent) {
     this.id = apiBase.getId();
-    this.workflowEngine = parse.workflowEngine;
+    this.workflowEngine = parser.workflowEngine;
     if (parent!=null) {
       this.parent = parent;
       this.workflow = parent.workflow;

@@ -29,10 +29,15 @@ public class WorkflowImpl extends ScopeImpl {
   public String deployedBy;
   public Long version;
 
-  public void parse(Workflow apiWorkflow, WorkflowParse parse) {
+  public void parse(Workflow apiWorkflow, WorkflowParser parse) {
     this.workflow = this;
     super.parse(apiWorkflow, parse, null);
     this.startActivities = parse.getStartActivities(this);
+    this.organizationId = apiWorkflow.getOrganizationId();
+    this.name = apiWorkflow.getName();
+    this.deployedTime = apiWorkflow.getDeployedTime();
+    this.deployedBy = apiWorkflow.getDeployedBy();
+    this.version = apiWorkflow.getVersion();
   }
 
   public String toString() {

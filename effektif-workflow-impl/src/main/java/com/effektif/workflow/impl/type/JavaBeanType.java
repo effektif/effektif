@@ -18,7 +18,7 @@ import java.util.Map;
 import com.effektif.workflow.api.variables.JavaBean;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -34,7 +34,7 @@ public class JavaBeanType extends AbstractDataType<JavaBean> {
   }
 
   @Override
-  public void validate(VariableImpl variable, JavaBean javaBean, WorkflowParse validator) {
+  public void validate(VariableImpl variable, JavaBean javaBean, WorkflowParser validator) {
     this.jsonService = validator.getServiceRegistry().getService(JsonService.class);
     this.javaClass = javaBean.getJavaClass();
   }

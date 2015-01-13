@@ -52,6 +52,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public String callerWorkflowInstanceId;
   public String callerActivityInstanceId;
   public Boolean isAsync;
+  public Long nextActivityInstanceId;
+  public Long nextVariableInstanceId;
 
   public WorkflowInstanceImpl() {
   }
@@ -65,6 +67,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.scope = workflow;
     this.workflowInstance = this;
     this.start = Time.now();
+    this.nextActivityInstanceId = 1l;
+    this.nextVariableInstanceId = 1l;
     initializeVariableInstances();
     if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
   }
@@ -313,5 +317,19 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       return false;
     }
     return true;
+  }
+
+  public String generateNextActivityInstanceId() {
+    if (updates!=null) {
+      getUpdates().isNextActivityInstanceIdChanged = true;
+    }
+    return Long.toString(nextActivityInstanceId++);
+  }
+
+  public String generateNextVariableInstanceId() {
+    if (updates!=null) {
+      getUpdates().isNextVariableInstanceIdChanged = true;
+    }
+    return Long.toString(nextVariableInstanceId++);
   }
 }

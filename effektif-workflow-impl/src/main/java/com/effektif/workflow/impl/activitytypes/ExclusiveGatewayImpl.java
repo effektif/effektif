@@ -26,7 +26,7 @@ import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -41,7 +41,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser validator) {
     scriptService = validator.getServiceRegistry().getService(ScriptService.class);
   }
 

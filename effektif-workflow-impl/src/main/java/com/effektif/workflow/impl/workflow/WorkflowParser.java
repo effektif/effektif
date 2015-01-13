@@ -35,18 +35,18 @@ import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 /** Validates and wires process definition after it's been built by either the builder api or json deserialization. */
-public class WorkflowParse {
+public class WorkflowParser {
   
   public static final String PROPERTY_LINE = "line";
   public static final String PROPERTY_COLUMN = "column";
   
-  public static final Logger log = LoggerFactory.getLogger(WorkflowParse.class);
+  public static final Logger log = LoggerFactory.getLogger(WorkflowParser.class);
   
   public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;
-  public LinkedList<String> path = new LinkedList<>();
-  public ParseIssues issues = new ParseIssues();
-  public Stack<ValidationContext> contextStack = new Stack<>();
+  public LinkedList<String> path;
+  public ParseIssues issues;
+  public Stack<ValidationContext> contextStack;
   
   private class ValidationContext {
     ValidationContext pathElement(String pathElement) {
@@ -66,21 +66,31 @@ public class WorkflowParse {
     Long column;
   }
 
-  public static WorkflowParse parse(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
+  /** parses the content of workflowApi into workflowImpl and 
+   * adds any parse issues to workflowApi.
+   * Use one parser for each parse.
+   * By returning the parser itself you can access the  */
+  public static WorkflowParser parse(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
     if (log.isDebugEnabled()) {
       log.debug("Parsing workflow");
     }
-    WorkflowParse parse = new WorkflowParse(workflowEngine);
+    WorkflowParser parse = new WorkflowParser(workflowEngine, workflowApi);
     parse.pushContext(workflowApi);
-    WorkflowImpl workflowImpl = new WorkflowImpl();
-    workflowImpl.parse(workflowApi, parse);
-    parse.workflow = workflowImpl;
+    parse.workflow = new WorkflowImpl();
+    parse.workflow.parse(workflowApi, parse);
     parse.popContext();
     return parse;
   }
 
-  public WorkflowParse(WorkflowEngineImpl workflowEngine) {
+  public WorkflowParser(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
     this.workflowEngine = workflowEngine;
+    this.path = new LinkedList<>();
+    this.contextStack = new Stack<>();
+    this.issues = new ParseIssues();
+    // the issues object is also set in the workflowApi 
+    // to ensure that all issues reported to this parser 
+    // are also in the workflow api object that will be sent to the client
+    workflowApi.setIssues(this.issues);
   }
   
   public void pushContext(Workflow workflow) {
@@ -245,12 +255,12 @@ public class WorkflowParse {
     return issues;
   }
 
-  public WorkflowParse checkNoErrors() {
+  public WorkflowParser checkNoErrors() {
     issues.checkNoErrors();
     return this;
   }
 
-  public WorkflowParse checkNoErrorsAndNoWarnings() {
+  public WorkflowParser checkNoErrorsAndNoWarnings() {
     issues.checkNoErrorsAndNoWarnings();
     return this;
   }

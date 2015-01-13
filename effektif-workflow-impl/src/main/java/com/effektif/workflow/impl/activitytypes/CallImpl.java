@@ -34,13 +34,13 @@ import com.effektif.workflow.impl.tooling.FieldTypeWorkflowId;
 import com.effektif.workflow.impl.tooling.FieldTypeWorkflowName;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 public class CallImpl extends AbstractActivityType<Call> {
 
-  // TODO Boolean waitTillSubWorkflowEnds;
+  // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   BindingImpl<String> subProcessName;
   BindingImpl<String> subProcessId;
   List<CallMappingImpl> inputMappings;
@@ -81,14 +81,14 @@ public class CallImpl extends AbstractActivityType<Call> {
   }
   
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse workflowParser) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser workflowParser) {
     subProcessId = workflowParser.parseBinding(activityApi, Call.SUB_WORKFLOW_ID, String.class);
     subProcessName = workflowParser.parseBinding(activityApi, Call.SUB_WORKFLOW_NAME, String.class);
     inputMappings = validateCallMappings(activityApi, Call.INPUT_MAPPINGS, workflowParser);
     outputMappings = validateCallMappings(activityApi, Call.OUTPUT_MAPPINGS, workflowParser);
   }
 
-  private List<CallMappingImpl> validateCallMappings(Activity activityApi, String key, WorkflowParse workflowParser) {
+  private List<CallMappingImpl> validateCallMappings(Activity activityApi, String key, WorkflowParser workflowParser) {
     List<Object> callMappings = (List<Object>) activityApi.getConfiguration(key); 
     if (callMappings!=null) {
       String activityId = activityApi.getId();
@@ -117,8 +117,7 @@ public class CallImpl extends AbstractActivityType<Call> {
     } else if (subProcessName!=null) {
       String subProcessNameValue = activityInstance.getValue(subProcessName);
       WorkflowStore workflowStore = workflowEngine.getWorkflowStore();
-      String organizationId = activityInstanceImpl.workflow.organizationId;
-      subProcessIdValue = workflowStore.findLatestWorkflowIdByName(subProcessNameValue, organizationId);
+      subProcessIdValue = workflowStore.findLatestWorkflowIdByName(subProcessNameValue, activityInstance.requestContext);
       if (subProcessIdValue==null) {
         throw new RuntimeException("Couldn't find subprocess by name: "+subProcessNameValue);
       }
@@ -135,8 +134,8 @@ public class CallImpl extends AbstractActivityType<Call> {
     }
     
     CallerReference callerReference = new CallerReference(activityInstance.workflowInstance.id, activityInstance.id);
-    
-    WorkflowInstance calledProcessInstance = workflowEngine.startWorkflowInstance(start, callerReference);
+
+    WorkflowInstance calledProcessInstance = workflowEngine.startWorkflowInstance(start, callerReference, activityInstance.requestContext);
     activityInstanceImpl.setCalledWorkflowInstanceId(calledProcessInstance.getId()); 
   }
   

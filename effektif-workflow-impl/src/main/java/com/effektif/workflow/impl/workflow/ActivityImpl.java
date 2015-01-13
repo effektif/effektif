@@ -37,7 +37,7 @@ public class ActivityImpl extends ScopeImpl {
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void parse(Activity apiActivity, Scope apiScope, WorkflowParse workflowParser, ScopeImpl parent) {
+  public void parse(Activity apiActivity, Scope apiScope, WorkflowParser workflowParser, ScopeImpl parent) {
     super.parse(apiActivity, workflowParser, parent);
     String id = apiActivity.getId();
     if (id!=null && !"".equals(id)) {

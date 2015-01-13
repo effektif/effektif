@@ -19,7 +19,7 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.tooling.ConfigurationPanel;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParse;
+import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -43,7 +43,7 @@ public abstract class AbstractActivityType<T> implements ActivityType {
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParse validator) {
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser validator) {
   }
   
   public abstract void execute(ActivityInstanceImpl activityInstance);

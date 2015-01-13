@@ -29,7 +29,7 @@ public class MultiInstanceImpl {
   public VariableImpl elementVariable;
   public List<BindingImpl<Object>> valueBindings;
 
-  public void parse(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowParse parser) {
+  public void parse(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowParser parser) {
     if (apiMultiInstance.getValueBindings()!=null) {
       valueBindings = new ArrayList<>();
       for (Binding valueBinding: apiMultiInstance.getValueBindings()) {
