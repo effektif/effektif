@@ -32,4 +32,4 @@ WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
 assertTrue(workflowInstance.isEnded());
 ```
 
-## [Creating workflows](blob/master/01-creating-workflows.md)
+## [Creating workflows](tree/master/docs/01-creating-workflows.md)
