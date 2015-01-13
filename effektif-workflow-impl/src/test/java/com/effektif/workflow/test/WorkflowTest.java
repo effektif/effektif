@@ -13,41 +13,100 @@
  * limitations under the License. */
 package com.effektif.workflow.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.command.MessageCommand;
+import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
 
 
-/** Base class that allows to reuse tests and run them on different process engines.
- *  
- * @author Walter White
- */
+/** Base class that allows to reuse tests and run them on different process engines. */
 public class WorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
+  protected static WorkflowEngine cachedDefaultWorkflowEngine = null;
+  
   protected WorkflowEngine workflowEngine = null;
   
   @Before
-  public void before() {
-    workflowEngine = new TestWorkflowEngineConfiguration()
-      .buildWorkflowEngine();
+  public void initializeWorkflowEngine() {
+    if (cachedDefaultWorkflowEngine==null) {
+      cachedDefaultWorkflowEngine = new TestWorkflowEngineConfiguration()
+        .buildWorkflowEngine(); 
+    }
+    workflowEngine = cachedDefaultWorkflowEngine;
   }
   
   @After
   public void after() {
     logWorkflowEngineContents();
+  }
+
+  public Workflow deploy(Workflow workflow) {
+    return workflowEngine.deployWorkflow(workflow);
+  }
+
+  public WorkflowInstance start(Workflow workflow) {
+    return workflowEngine.startWorkflowInstance(new StartCommand()
+      .workflowId(workflow.getId()));
+  }
+  
+  public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {
+    return workflowEngine.sendMessage(new MessageCommand()
+      .workflowInstanceId(workflowInstance.getId())
+      .activityInstanceId(activityInstanceId));
+  }
+  
+  public static void assertOpen(WorkflowInstance workflowInstance, String... expectedActivityNames) {
+    Map<String,Integer> expectedActivityCounts = new HashMap<String, Integer>();
+    if (expectedActivityNames!=null) {
+      for (String expectedActivityName: expectedActivityNames) {
+        Integer count = expectedActivityCounts.get(expectedActivityName);
+        expectedActivityCounts.put(expectedActivityName, count!=null ? count+1 : 1);
+      }
+    }
+    Map<String,Integer> activityCounts = new HashMap<String, Integer>();
+    scanActivityCounts(workflowInstance, activityCounts);
+    assertEquals(expectedActivityCounts, activityCounts);
+  }
+  
+  static void scanActivityCounts(ScopeInstance scopeInstance, Map<String, Integer> activityCounts) {
+    List< ? extends ActivityInstance> activityInstances = scopeInstance.getActivityInstances();
+    if (activityInstances!=null) {
+      for (ActivityInstance activityInstance : activityInstances) {
+        if (!activityInstance.isEnded()) {
+          Object activityId = activityInstance.getActivityId();
+          Integer count = activityCounts.get(activityId);
+          activityCounts.put(activityId.toString(), count != null ? count + 1 : 1);
+          scanActivityCounts(activityInstance, activityCounts);
+        }
+      }
+    }
+  }
+  
+  public static String getActivityInstanceId(WorkflowInstance workflowInstance, String activityId) {
+    ActivityInstance activityInstance = workflowInstance.findOpenActivityInstance(activityId);
+    Assert.assertNotNull("No open activity instance found "+activityId+" not found", activityInstance);
+    return activityInstance.getId();
   }
 
   protected void logWorkflowEngineContents() {

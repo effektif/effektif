@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.command.RequestContext;
@@ -86,9 +87,6 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
 
   @Override
   public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
-    workflowImpl.id = generateWorkflowId();
-    workflowApi.setId(workflowImpl.id);
-
     String workflowName = workflowApi.getName();
     if (workflowName!=null) {
       // try if we can acquire the lock right away (without retry)
@@ -111,6 +109,8 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
 
     Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflowApi);
     BasicDBObject dbWorkflow = new BasicDBObject();
+    String workflowId = (String)jsonWorkflow.remove("id");
+    dbWorkflow.put(FieldsWorkflow._ID, new ObjectId(workflowId));
     dbWorkflow.putAll(jsonWorkflow);
     insert(dbWorkflow, writeConcernInsertWorkflow);
   }
@@ -164,6 +164,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     DBCursor cursor = createWorkflowDbCursor(query, requestContext);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
+      dbWorkflow.put("id", dbWorkflow.get(FieldsWorkflow._ID).toString());
       Workflow workflow = jsonService.jsonMapToObject(dbWorkflow, Workflow.class);
       workflows.add(workflow);
     }
@@ -214,7 +215,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
       dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, query.getWorkflowId());
     }
     if (query.getWorkflowId()!=null) {
-      dbQuery.append(FieldsWorkflow._ID, query.getWorkflowId());
+      dbQuery.append(FieldsWorkflow._ID, new ObjectId(query.getWorkflowId()));
     }
     if (query.getWorkflowName()!=null) {
       dbQuery.append(FieldsWorkflow.NAME, query.getWorkflowName());

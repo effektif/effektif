@@ -114,7 +114,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public ActivityInstanceImpl createActivityInstance(ActivityImpl activity) {
     String activityInstanceId = workflowInstance.generateNextActivityInstanceId();
-    ActivityInstanceImpl activityInstance = new ActivityInstanceImpl(parent, activity, activityInstanceId);
+    ActivityInstanceImpl activityInstance = new ActivityInstanceImpl(this, activity, activityInstanceId);
     if (activity.isMultiInstance()) {
       activityInstance.setWorkState(STATE_STARTING_MULTI_CONTAINER);
     } else {

@@ -177,8 +177,8 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public String toString() {
-    String activityDefinitionType = activity.activityType.getClass().getSimpleName();
-    return "("+activity.id+"|"+activityDefinitionType+"|"+id+"|ai)";
+    String activityDefinitionType = activity.activityType.getApiClass().getSimpleName();
+    return "("+(activity.id!=null?activity.id+"|":"")+id+"|"+activityDefinitionType+")";
   }
   
   public void setEnd(LocalDateTime end) {

@@ -26,12 +26,15 @@ import org.slf4j.Logger;
 
 import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.util.Exceptions;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.ScopeImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -55,30 +58,50 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
   
-  interface WorkflowInstanceFields {
+  interface ScopeInstanceFields {
     String _ID = "_id";
-    String ORGANIZATION_ID = "organizationId";
-    String WORKFLOW_ID = "workflowId";
     String START = "start";
     String END = "end";
     String DURATION = "duration";
+  }
+  
+  interface WorkflowInstanceFields extends ScopeInstanceFields {
+    String ORGANIZATION_ID = "organizationId";
+    String WORKFLOW_ID = "workflowId";
     String ACTIVITY_INSTANCES = "activities";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
     String VARIABLE_INSTANCES = "variables";
-    String PARENT = "parent";
-    String VARIABLE_ID = "variableId";
-    String VALUE = "value";
-    String ACTIVITY_ID = "activityId";
     String LOCK = "lock";
-    String TIME = "time";
-    String OWNER = "owner";
     String UPDATES = "updates";
-    String WORK_STATE = "workState";
     String WORK = "work";
     String WORK_ASYNC = "workAsync";
     String CALLER_WORKFLOW_INSTANCE_ID = "callerWorkflowInstanceId";
     String CALLER_ACTIVITY_INSTANCE_ID = "callerActivityInstanceId";
+    String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
+    String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
+  }
+  
+  public Long nextActivityInstanceId;
+  public Long nextVariableInstanceId;
+
+  
+  interface ActivityInstanceFields extends ScopeInstanceFields {
+    String PARENT = "parent";
     String CALLED_WORKFLOW_INSTANCE_ID = "calledWorkflowInstanceId";
+    String ACTIVITY_ID = "activityId";
+    String WORK_STATE = "workState";
+  }
+
+  interface WorkflowInstanceLockFields {
+    String TIME = "time";
+    String OWNER = "owner";
+  }
+
+  interface VariableInstanceFields {
+    String _ID = "_id";
+    String PARENT = "parent";
+    String VARIABLE_ID = "variableId";
+    String VALUE = "value";
   }
 
   public MongoWorkflowInstanceStore() {
@@ -118,7 +141,8 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     
     DBObject query = BasicDBObjectBuilder.start()
             .add(WorkflowInstanceFields._ID,  new ObjectId(workflowInstance.id))
-            .add(WorkflowInstanceFields.LOCK,  writeLock(workflowInstance.lock))
+            // I don't recall what this line was for... if you re-add it, please add a comment to explain
+            // .add(WorkflowInstanceFields.LOCK,  writeLock(workflowInstance.lock))
             .get();
     
     BasicDBObject sets = new BasicDBObject();
@@ -163,7 +187,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     if (updates.isWorkChanged) {
       if (log.isDebugEnabled())
         log.debug("  Work changed");
-      List<ObjectId> work = writeWork(workflowInstance.work);
+      List<String> work = writeWork(workflowInstance.work);
       if (work!=null) {
         sets.put(WorkflowInstanceFields.WORK, work);
       } else {
@@ -177,7 +201,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     if (updates.isAsyncWorkChanged) {
       if (log.isDebugEnabled())
         log.debug("  Aync work changed");
-      List<ObjectId> workAsync = writeWork(workflowInstance.workAsync);
+      List<String> workAsync = writeWork(workflowInstance.workAsync);
       if (workAsync!=null) {
         sets.put(WorkflowInstanceFields.WORK_ASYNC, workAsync);
       } else {
@@ -186,6 +210,25 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     } else {
       if (log.isDebugEnabled())
         log.debug("  No async work changed");
+    }
+
+    if (updates.isNextActivityInstanceIdChanged) {
+      if (log.isDebugEnabled())
+        log.debug("  Next activity instance changed");
+      sets.put(WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
+    }
+
+    if (updates.isNextVariableInstanceIdChanged) {
+      if (log.isDebugEnabled())
+        log.debug("  Next variable instance changed");
+      sets.put(WorkflowInstanceFields.NEXT_VARIABLE_INSTANCE_ID, workflowInstance.nextVariableInstanceId);
+    }
+
+    if (updates.isLockChanged) {
+      if (log.isDebugEnabled())
+        log.debug("  Lock changed");
+      // a lock is only removed 
+      unsets.put(WorkflowInstanceFields.LOCK, 1);
     }
 
     if (!sets.isEmpty()) {
@@ -213,11 +256,9 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
 
   @Override
-  public void flushAndUnlock(WorkflowInstanceImpl processInstance) {
-    processInstance.lock = null;
-    BasicDBObject dbProcessInstance = writeProcessInstance(processInstance);
-    saveProcessInstance(dbProcessInstance);
-    processInstance.trackUpdates(false);
+  public void flushAndUnlock(WorkflowInstanceImpl workflowInstance) {
+    workflowInstance.removeLock();
+    flush(workflowInstance);
   }
 
   @Override
@@ -234,8 +275,8 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
   
   @Override
-  public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
-    BasicDBObject query = buildQuery(workflowInstanceQuery);
+  public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext) {
+    BasicDBObject query = buildQuery(workflowInstanceQuery, requestContext);
     remove(query);
   }
 
@@ -245,7 +286,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       query.append(WorkflowInstanceFields.ORGANIZATION_ID, requestContext.getOrganizationId());
     }
     if (workflowInstanceQuery.getWorkflowInstanceId()!=null) {
-      query.append(WorkflowInstanceFields._ID, workflowInstanceQuery.getWorkflowInstanceId());
+      query.append(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceQuery.getWorkflowInstanceId()));
     }
     if (workflowInstanceQuery.getActivityInstanceId()!=null) {
       query.append(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, workflowInstanceQuery.getActivityInstanceId());
@@ -257,28 +298,29 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     save(dbProcessInstance, writeConcernInsertWorkflowInstance);
   }
   
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceQuery processInstanceQuery) {
-    BasicDBObjectBuilder builder = BasicDBObjectBuilder.start();
-    if (processInstanceQuery.getWorkflowInstanceId()!=null) {
-      builder.add(WorkflowInstanceFields._ID, processInstanceQuery.getWorkflowInstanceId());
-    }
-    if (processInstanceQuery.getActivityInstanceId()!=null) {
-      builder.add(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, processInstanceQuery.getActivityInstanceId());
-    }
+  @Override
+  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId, RequestContext requestContext) {
+    Exceptions.checkNotNullParameter(workflowInstanceId, "workflowInstanceId");
 
-    DBObject query = builder 
-            .push(WorkflowInstanceFields.LOCK)
-              .add("$exists", false)
-            .pop()
-            .get(); 
+    DBObject query = BasicDBObjectBuilder.start()
+      .add(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId))
+      .push(WorkflowInstanceFields.LOCK)
+        .add("$exists", false)
+      .pop()
+      .get();
+    if (activityInstanceId!=null) {
+      query.put(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, activityInstanceId);
+    }
+    
     DBObject update = BasicDBObjectBuilder.start()
-            .push("$set")
-            .push(WorkflowInstanceFields.LOCK)
-              .add(WorkflowInstanceFields.TIME, Time.now().toDate())
-              .add(WorkflowInstanceFields.OWNER, workflowEngine.getId())
-            .pop()
-          .pop()
-          .get();
+      .push("$set")
+        .push(WorkflowInstanceFields.LOCK)
+          .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
+          .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
+        .pop()
+      .pop()
+      .get();
+    
     DBObject retrieveFields = new BasicDBObject()
           .append(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, false);
     
@@ -287,7 +329,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       return null;
     }
 
-    WorkflowInstanceImpl workflowInstance = readWorkflowInstance(dbProcessInstance);
+    WorkflowInstanceImpl workflowInstance = readWorkflowInstance(dbProcessInstance, requestContext);
     workflowInstance.trackUpdates(false);
     return workflowInstance;
   }
@@ -297,8 +339,10 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     writeId(dbProcess, WorkflowInstanceFields._ID, workflowInstance.id);
     writeStringOpt(dbProcess, WorkflowInstanceFields.ORGANIZATION_ID, workflowInstance.organizationId);
     writeId(dbProcess, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
-    writeIdOpt(dbProcess, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID, workflowInstance.callerWorkflowInstanceId);
-    writeIdOpt(dbProcess, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID, workflowInstance.callerActivityInstanceId);
+    writeStringOpt(dbProcess, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID, workflowInstance.callerWorkflowInstanceId);
+    writeStringOpt(dbProcess, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID, workflowInstance.callerActivityInstanceId);
+    writeLongOpt(dbProcess, WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
+    writeLongOpt(dbProcess, WorkflowInstanceFields.NEXT_VARIABLE_INSTANCE_ID, workflowInstance.nextVariableInstanceId);
     writeTimeOpt(dbProcess, WorkflowInstanceFields.START, workflowInstance.start);
     writeTimeOpt(dbProcess, WorkflowInstanceFields.END, workflowInstance.end);
     writeLongOpt(dbProcess, WorkflowInstanceFields.DURATION, workflowInstance.duration);
@@ -315,12 +359,12 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     return dbProcess;
   }
   
-  protected List<ObjectId> writeWork(Queue<ActivityInstanceImpl> workQueue) {
-    List<ObjectId> workActivityInstanceIds = null;
+  protected List<String> writeWork(Queue<ActivityInstanceImpl> workQueue) {
+    List<String> workActivityInstanceIds = null;
     if (workQueue!=null && !workQueue.isEmpty()) {
-      workActivityInstanceIds = new ArrayList<ObjectId>();
+      workActivityInstanceIds = new ArrayList<String>();
       for (ActivityInstanceImpl workActivityInstance: workQueue) {
-        workActivityInstanceIds.add(new ObjectId(workActivityInstance.id));
+        workActivityInstanceIds.add(workActivityInstance.id);
       }
     }
     return workActivityInstanceIds;
@@ -333,32 +377,26 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     workflowInstance.workflowInstance = workflowInstance;
     workflowInstance.id = readId(dbWorkflowInstance, WorkflowInstanceFields._ID);
     workflowInstance.organizationId = readString(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
-    workflowInstance.callerWorkflowInstanceId = readId(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID);
-    workflowInstance.callerActivityInstanceId = readId(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID);
+    workflowInstance.callerWorkflowInstanceId = readString(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID);
+    workflowInstance.callerActivityInstanceId = readString(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID);
+    workflowInstance.nextActivityInstanceId = readLong(dbWorkflowInstance, WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID);
+    workflowInstance.nextVariableInstanceId = readLong(dbWorkflowInstance, WorkflowInstanceFields.NEXT_VARIABLE_INSTANCE_ID);
     workflowInstance.start = readTime(dbWorkflowInstance, WorkflowInstanceFields.START);
     workflowInstance.end = readTime(dbWorkflowInstance, WorkflowInstanceFields.END);
     workflowInstance.duration = readLong(dbWorkflowInstance, WorkflowInstanceFields.DURATION);
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(WorkflowInstanceFields.LOCK));
-    WorkflowImpl workflow = workflowEngine.newWorkflowQuery()
-            .representation(Representation.EXECUTABLE)
-            .id(workflowInstance.workflowId)
-            .current();
-    if (workflow!=null) {
-      workflowInstance.workflow = workflow;
-      workflowInstance.workflowId = workflow!=null ? workflow.id : null;
-      workflowInstance.scopeDefinition = workflowInstance.workflow;
-    } else {
-      throw new RuntimeException("No workflow for instance "+workflowInstance.id);
-    }
-    
+
     Map<Object, ActivityInstanceImpl> allActivityInstances = new LinkedHashMap<>();
+    Map<ActivityInstanceImpl, String> allActivityIds = new HashMap<>();
     Map<Object, Object> parentIds = new HashMap<>();
     List<BasicDBObject> dbActivityInstances = readList(dbWorkflowInstance, WorkflowInstanceFields.ACTIVITY_INSTANCES);
     if (dbActivityInstances!=null) {
       for (BasicDBObject dbActivityInstance: dbActivityInstances) {
         ActivityInstanceImpl activityInstance = readActivityInstance(workflowInstance, dbActivityInstance, requestContext);
         allActivityInstances.put(activityInstance.id, activityInstance);
-        parentIds.put(activityInstance.id, dbActivityInstance.get(WorkflowInstanceFields.PARENT));
+        String activityId = readString(dbActivityInstance, ActivityInstanceFields.ACTIVITY_ID);
+        allActivityIds.put(activityInstance, activityId);
+        parentIds.put(activityInstance.id, dbActivityInstance.get(ActivityInstanceFields.PARENT));
       }
     }
     
@@ -367,6 +405,15 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       activityInstance.parent = (parentId!=null ? allActivityInstances.get(parentId.toString()) : workflowInstance);
       activityInstance.parent.addActivityInstance(activityInstance);
     }
+
+    String workflowId = readId(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);
+    WorkflowImpl workflow = workflowEngine.getWorkflowImpl(workflowId, requestContext);
+    if (workflow==null) {
+      throw new RuntimeException("No workflow for instance "+workflowInstance.id);
+    }
+    workflowInstance.workflow = workflow;
+    workflowInstance.scope = workflow;
+    resolveActivityReferences(workflowInstance, workflow, allActivityIds);
     
     workflowInstance.variableInstances = readVariableInstances(dbWorkflowInstance, workflowInstance);
     workflowInstance.work = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK, workflowInstance);
@@ -375,14 +422,27 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     return workflowInstance;
   }
 
+  protected void resolveActivityReferences(ScopeInstanceImpl scopeInstance, ScopeImpl scope, Map<ActivityInstanceImpl, String> allActivityIds) {
+    if (scopeInstance.activityInstances!=null) {
+      for (ActivityInstanceImpl activityInstance : scopeInstance.activityInstances) {
+        String activityId = allActivityIds.get(activityInstance);
+        ActivityImpl activity = scope.findActivityByIdLocal(activityId);
+        activityInstance.activity = activity;
+        activityInstance.scope = activity;
+        ScopeImpl nestedScope = activity.multiInstance==null ? activity : activity.parent;
+        resolveActivityReferences(activityInstance, nestedScope, allActivityIds);
+      }
+    }
+  }
+
   @SuppressWarnings("unchecked")
   protected Queue<ActivityInstanceImpl> readWork(BasicDBObject dbWorkflowInstance, String fieldName, WorkflowInstanceImpl workflowInstance) {
     Queue<ActivityInstanceImpl> workQueue = null;
-    List<ObjectId> workActivityInstanceIds = (List<ObjectId>) dbWorkflowInstance.get(fieldName);
+    List<String> workActivityInstanceIds = (List<String>) dbWorkflowInstance.get(fieldName);
     if (workActivityInstanceIds!=null) {
       workQueue = new LinkedList<>();
-      for (ObjectId workActivityInstanceId: workActivityInstanceIds) {
-        ActivityInstanceImpl workActivityInstance = workflowInstance.findActivityInstance(workActivityInstanceId.toString());
+      for (String workActivityInstanceId: workActivityInstanceIds) {
+        ActivityInstanceImpl workActivityInstance = workflowInstance.findActivityInstance(workActivityInstanceId);
         workQueue.add(workActivityInstance);
       }
     }
@@ -394,22 +454,32 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     if (dbVariableInstances!=null) {
       for (BasicDBObject dbVariableInstance: dbVariableInstances) {
         VariableInstanceImpl variableInstance = new VariableInstanceImpl();
-        variableInstance.processEngine = workflowEngine;
-        variableInstance.processInstance = parent.workflowInstance;
-        variableInstance.id = readId(dbVariableInstance, WorkflowInstanceFields._ID);
-        variableInstance.variableDefinitionId = readString(dbVariableInstance, WorkflowInstanceFields.VARIABLE_ID);
-        WorkflowImpl workflow = parent.workflowInstance.workflow;
-        if (workflow!=null) {
-          variableInstance.variableDefinition = workflow.findVariable(variableInstance.variableDefinitionId);
-          variableInstance.variableDefinitionId = variableInstance.variableDefinition.id;
-          variableInstance.dataType = variableInstance.variableDefinition.dataType;
-          variableInstance.value = variableInstance.dataType.convertJsonToInternalValue(dbVariableInstance.get(WorkflowInstanceFields.VALUE));
+        variableInstance.workflowEngine = workflowEngine;
+        variableInstance.id = readString(dbVariableInstance, VariableInstanceFields._ID);
+        variableInstance.parent = parent;
+        variableInstance.workflowInstance = parent.workflowInstance;
+        variableInstance.workflow = parent.workflow;
+        String variableId = readString(dbVariableInstance, VariableInstanceFields.VARIABLE_ID);
+        variableInstance.variable = findVariableByIdRecurseParents(parent.scope, variableId);
+        if (variableInstance.variable!=null) {
+          variableInstance.dataType = variableInstance.variable.dataType;
+          variableInstance.value = variableInstance.dataType.convertJsonToInternalValue(dbVariableInstance.get(VariableInstanceFields.VALUE));
         }
         parent.addVariableInstance(variableInstance);
       }
     }
-
     return null;
+  }
+
+  protected VariableImpl findVariableByIdRecurseParents(ScopeImpl scope, String variableId) {
+    if (scope==null) {
+      return null;
+    }
+    VariableImpl variable = scope.findVariableByIdLocal(variableId);
+    if (variable!=null) {
+      return variable;
+    }
+    return findVariableByIdRecurseParents(scope.parent, variableId);
   }
 
   protected BasicDBObject writeLock(LockImpl lock) {
@@ -417,8 +487,8 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       return null;
     }
     BasicDBObject dbLock = new BasicDBObject();
-    writeTimeOpt(dbLock, WorkflowInstanceFields.TIME, lock.time);
-    writeObjectOpt(dbLock, WorkflowInstanceFields.OWNER, lock.owner);
+    writeTimeOpt(dbLock, WorkflowInstanceLockFields.TIME, lock.time);
+    writeObjectOpt(dbLock, WorkflowInstanceLockFields.OWNER, lock.owner);
     return dbLock;
   }
   
@@ -427,8 +497,8 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       return null;
     }
     LockImpl lock = new LockImpl();
-    lock.owner = readString(dbLock, WorkflowInstanceFields.OWNER);
-    lock.time = readTime(dbLock, WorkflowInstanceFields.TIME);
+    lock.owner = readString(dbLock, WorkflowInstanceLockFields.OWNER);
+    lock.time = readTime(dbLock, WorkflowInstanceLockFields.TIME);
     return lock;
   }
   
@@ -450,37 +520,30 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
 
   protected BasicDBObject writeActivityInstance(ActivityInstanceImpl activityInstance) {
-    String parentId = (activityInstance.parent.isProcessInstance() ? null : activityInstance.parent.getId());
+    String parentId = (activityInstance.parent.isProcessInstance() ? null : activityInstance.parent.id);
     BasicDBObject dbActivity = new BasicDBObject();
-    writeId(dbActivity, WorkflowInstanceFields._ID, activityInstance.id);
-    writeStringOpt(dbActivity, WorkflowInstanceFields.ACTIVITY_ID, activityInstance.activityId);
-    writeStringOpt(dbActivity, WorkflowInstanceFields.WORK_STATE, activityInstance.workState);
-    writeIdOpt(dbActivity, WorkflowInstanceFields.PARENT, parentId);
-    writeIdOpt(dbActivity, WorkflowInstanceFields.CALLED_WORKFLOW_INSTANCE_ID, activityInstance.calledWorkflowInstanceId);
-    writeTimeOpt(dbActivity, WorkflowInstanceFields.START, activityInstance.start);
-    writeTimeOpt(dbActivity, WorkflowInstanceFields.END, activityInstance.end);
-    writeLongOpt(dbActivity, WorkflowInstanceFields.DURATION, activityInstance.duration);
+    writeString(dbActivity, ActivityInstanceFields._ID, activityInstance.id);
+    writeStringOpt(dbActivity, ActivityInstanceFields.ACTIVITY_ID, activityInstance.activity.id);
+    writeStringOpt(dbActivity, ActivityInstanceFields.WORK_STATE, activityInstance.workState);
+    writeStringOpt(dbActivity, ActivityInstanceFields.PARENT, parentId);
+    writeStringOpt(dbActivity, ActivityInstanceFields.CALLED_WORKFLOW_INSTANCE_ID, activityInstance.calledWorkflowInstanceId);
+    writeTimeOpt(dbActivity, ActivityInstanceFields.START, activityInstance.start);
+    writeTimeOpt(dbActivity, ActivityInstanceFields.END, activityInstance.end);
+    writeLongOpt(dbActivity, ActivityInstanceFields.DURATION, activityInstance.duration);
     return dbActivity;
   }
   
   protected ActivityInstanceImpl readActivityInstance(WorkflowInstanceImpl processInstance, BasicDBObject dbActivityInstance, RequestContext requestContext) {
     ActivityInstanceImpl activityInstance = new ActivityInstanceImpl();
-    activityInstance.id = readId(dbActivityInstance, WorkflowInstanceFields._ID);
-    activityInstance.start = readTime(dbActivityInstance, WorkflowInstanceFields.START);
-    activityInstance.end = readTime(dbActivityInstance, WorkflowInstanceFields.END);
-    activityInstance.calledWorkflowInstanceId = readId(dbActivityInstance, WorkflowInstanceFields.CALLED_WORKFLOW_INSTANCE_ID);
-    activityInstance.duration = readLong(dbActivityInstance, WorkflowInstanceFields.DURATION);
-    activityInstance.workState = readString(dbActivityInstance, WorkflowInstanceFields.WORK_STATE);
-    activityInstance.activityId = readString(dbActivityInstance, WorkflowInstanceFields.ACTIVITY_ID);
+    activityInstance.id = readString(dbActivityInstance, ActivityInstanceFields._ID);
+    activityInstance.start = readTime(dbActivityInstance, ActivityInstanceFields.START);
+    activityInstance.end = readTime(dbActivityInstance, ActivityInstanceFields.END);
+    activityInstance.calledWorkflowInstanceId = readString(dbActivityInstance, ActivityInstanceFields.CALLED_WORKFLOW_INSTANCE_ID);
+    activityInstance.duration = readLong(dbActivityInstance, ActivityInstanceFields.DURATION);
+    activityInstance.workState = readString(dbActivityInstance, ActivityInstanceFields.WORK_STATE);
     activityInstance.workflowEngine = workflowEngine;
     activityInstance.requestContext = requestContext;
-    WorkflowImpl workflow = processInstance.workflow;
-    if (workflow!=null) {
-      activityInstance.workflow = workflow;
-      activityInstance.activityDefinition = workflow.findActivity(activityInstance.activityId);
-      activityInstance.activityId = activityInstance.activityDefinition.id;
-      activityInstance.scopeDefinition = activityInstance.activityDefinition;
-    }
+    activityInstance.workflow = processInstance.workflow;
     activityInstance.workflowInstance = processInstance;
     activityInstance.variableInstances = readVariableInstances(dbActivityInstance, activityInstance);
     return activityInstance;
@@ -488,15 +551,15 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
 
   protected void writeVariables(BasicDBObject dbScope, ScopeInstanceImpl scope) {
     if (scope.variableInstances!=null) {
-      ScopeInstanceImpl parent = scope.getParent();
-      String parentId = (parent!=null ? parent.getId() : null);
-      for (VariableInstanceImpl variable: scope.variableInstances) {
+      ScopeInstanceImpl parent = scope.parent;
+      String parentId = (parent!=null ? parent.id : null);
+      for (VariableInstanceImpl variableInstance: scope.variableInstances) {
         BasicDBObject dbVariable = new BasicDBObject();
-        writeId(dbVariable, WorkflowInstanceFields._ID, variable.id);
-        writeString(dbVariable, WorkflowInstanceFields.VARIABLE_ID, variable.variableDefinitionId);
-        writeIdOpt(dbVariable, WorkflowInstanceFields.PARENT, parentId);
-        Object jsonValue = variable.dataType.convertInternalToJsonValue(variable.value);
-        writeObjectOpt(dbVariable, WorkflowInstanceFields.VALUE, jsonValue);
+        writeString(dbVariable, VariableInstanceFields._ID, variableInstance.id);
+        writeString(dbVariable, VariableInstanceFields.VARIABLE_ID, variableInstance.variable.id);
+        writeStringOpt(dbVariable, VariableInstanceFields.PARENT, parentId);
+        Object jsonValue = variableInstance.dataType.convertInternalToJsonValue(variableInstance.value);
+        writeObjectOpt(dbVariable, VariableInstanceFields.VALUE, jsonValue);
         writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
       }
     }
@@ -506,10 +569,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     return workflowEngine;
   }
   
-  public MongoWorkflowEngineConfiguration.WorkflowInstanceFields getFields() {
-    return fields;
-  }
-
   public WriteConcern getWriteConcernStoreProcessInstance() {
     return writeConcernInsertWorkflowInstance;
   }

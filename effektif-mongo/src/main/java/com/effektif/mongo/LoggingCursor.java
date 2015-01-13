@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBDecoderFactory;
@@ -29,7 +30,7 @@ import com.mongodb.ServerAddress;
 
 public class LoggingCursor extends DBCursor {
   
-  public static final Logger log = MongoWorkflowEngine.log;
+  public static final Logger log = WorkflowEngineImpl.log;
 
   protected DBCursor cursor;
   protected MongoCollection mongoCollection;
@@ -174,11 +175,13 @@ public class LoggingCursor extends DBCursor {
     return cursor.getOptions();
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public int numGetMores() {
     return cursor.numGetMores();
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public List<Integer> getSizes() {
     return cursor.getSizes();

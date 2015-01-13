@@ -28,6 +28,14 @@
       <version>2.12.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.effektif</groupId>
+      <artifactId>effektif-workflow-impl</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+      <classifier>tests</classifier>
+    </dependency>
+    
   </dependencies>
 
 </project>

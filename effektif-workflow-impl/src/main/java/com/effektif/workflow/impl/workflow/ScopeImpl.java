@@ -196,5 +196,9 @@ public abstract class ScopeImpl extends BaseImpl {
 
   public ActivityImpl getActivityByIdLocal(String activityId) {
     return activities!=null ? activities.get(activityId) : null;
+  }
+
+  public VariableImpl findVariableByIdLocal(String variableId) {
+    return variables!=null ? variables.get(variableId) : null;
   } 
 }

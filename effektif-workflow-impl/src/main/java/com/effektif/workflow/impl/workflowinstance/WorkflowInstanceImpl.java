@@ -262,7 +262,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public String toString() {
-    return "("+(id!=null ? id.toString() : Integer.toString(System.identityHashCode(this)))+"|wi)";
+    return "("+(workflow.name!=null?workflow.name+"|":"")+(id!=null ? id.toString() : Integer.toString(System.identityHashCode(this)))+")";
   }
 
   public void removeLock() {

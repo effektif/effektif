@@ -20,14 +20,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.impl.Time;
-import com.effektif.impl.job.Job;
-import com.effektif.impl.job.JobExecution;
-import com.effektif.impl.job.JobQueryImpl;
-import com.effektif.impl.job.JobType;
-import com.effektif.impl.job.Lock;
-import com.effektif.impl.json.JsonService;
-import com.effektif.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.Time;
+import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.job.JobExecution;
+import com.effektif.workflow.impl.job.JobQueryImpl;
+import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.job.Lock;
+import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
@@ -89,7 +89,7 @@ public class MongoJobs extends MongoCollection {
     DBObject dbLock = BasicDBObjectBuilder.start()
       .append(fields.time, Time.now().toDate())
       .append(fields.owner, lockOwner)
-      .current();
+      .get();
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set").append(fields.lock, dbLock).pop()
       .get();

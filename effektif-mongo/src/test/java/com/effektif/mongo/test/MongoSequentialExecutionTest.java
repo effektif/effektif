@@ -13,12 +13,16 @@
  * limitations under the License. */
 package com.effektif.mongo.test;
 
-import com.heisenberg.test.execution.SequentialExecutionTest;
+import org.junit.Before;
+
+import com.effektif.workflow.test.execution.SequentialExecutionTest;
 
 
 public class MongoSequentialExecutionTest extends SequentialExecutionTest {
 
-  public MongoSequentialExecutionTest() {
-    useMongoWorkflowEngine();
+  @Override
+  @Before
+  public void initializeWorkflowEngine() {
+    workflowEngine = MongoTestHelper.getCachedMongoWorkflowEngine();
   }
 }

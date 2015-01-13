@@ -13,12 +13,19 @@
  * limitations under the License. */
 package com.effektif.mongo.test;
 
-import com.heisenberg.test.execution.CallActivityTest;
+import com.effektif.mongo.MongoWorkflowEngineConfiguration;
+import com.effektif.workflow.api.WorkflowEngine;
 
 
-public class MongoCallActivityTest extends CallActivityTest {
+public class MongoTestHelper {
 
-  public MongoCallActivityTest() {
-    useMongoWorkflowEngine();
+  public static WorkflowEngine cachedMongoWorkflowEngine = null;
+
+  public static WorkflowEngine getCachedMongoWorkflowEngine() {
+    if (cachedMongoWorkflowEngine==null) {
+      cachedMongoWorkflowEngine = new MongoWorkflowEngineConfiguration()
+        .buildWorkflowEngine();
+    }
+    return cachedMongoWorkflowEngine;
   }
 }
