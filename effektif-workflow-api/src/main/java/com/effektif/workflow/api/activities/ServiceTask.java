@@ -16,4 +16,10 @@ package com.effektif.workflow.api.activities;
 
 public abstract class ServiceTask extends NoneTask {
 
+  public ServiceTask() {
+  }
+
+  public ServiceTask(String id) {
+    super(id);
+  }
 }

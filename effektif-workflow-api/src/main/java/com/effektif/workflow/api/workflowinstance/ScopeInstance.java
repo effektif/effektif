@@ -15,6 +15,8 @@ package com.effektif.workflow.api.workflowinstance;
 
 import java.util.List;
 
+import javax.print.attribute.HashPrintServiceAttributeSet;
+
 
 public class ScopeInstance {
   
@@ -96,6 +98,20 @@ public class ScopeInstance {
         ActivityInstance theOne = activityInstance.findOpenActivityInstance(activityId);
         if (theOne!=null) {
           return theOne;
+        }
+      }
+    }
+    return null;
+  }
+  
+  public Object getVariableValue(String variableId) {
+    if (variableId==null) {
+      return null;
+    }
+    if (variableInstances!=null) {
+      for (VariableInstance variableInstance: variableInstances) {
+        if (variableId.equals(variableInstance.getVariableId())) {
+          return variableInstance.getValue();
         }
       }
     }

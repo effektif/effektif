@@ -49,7 +49,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     if (taskName==null) {
       taskName = activityInstance.activity.id;
     }
-    List<String> taskCandidateIds = activityInstance.getValue(candidateIdBindings);
+    List<String> taskCandidateIds = activityInstance.getValuesFlat(candidateIdBindings);
     String assigneeId = (taskCandidateIds!=null && taskCandidateIds.size()==1 ? taskCandidateIds.get(0) : null);
     
     taskService.saveTask(new Task()

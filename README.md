@@ -6,23 +6,16 @@ Effektif
 ```java
 // Create the default (in-memory) workflow engine
 WorkflowEngine workflowEngine = new MemoryWorkflowEngineConfiguration()
-   // for test purposes it's best to avoid concurrency so 
-   // the synchronous executor service is configured here
-   .registerService(new SynchronousExecutorService())
    .buildWorkflowEngine();
 
 // Create a workflow
 Workflow workflow = new Workflow()
-  .activity(new NoneTask()
-    .id("a")
+  .activity(new NoneTask("a")
     .transitionTo("b"))
-  .activity(new NoneTask()
-    .id("b"));
+  .activity(new NoneTask("b"));
 
 // Deploy the workflow to the engine
-String workflowId = workflowEngine.deployWorkflow(workflow)
-  .checkNoErrorsAndNoWarnings()
-  .getWorkflowId();
+String workflowId = workflowEngine.deployWorkflow(workflow).getId();
 
 // Start a new workflow instance
 StartCommand start = new StartCommand()

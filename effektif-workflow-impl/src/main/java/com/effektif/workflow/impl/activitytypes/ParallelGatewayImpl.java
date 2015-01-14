@@ -38,16 +38,12 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
   public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser validator) {
     // at least one in, at least one out
     List<Transition> incomingTransitions = activityImpl.getIncomingTransitions();
-    if (log.isDebugEnabled())
-      log.debug("  incoming "+incomingTransitions.size());
     if (incomingTransitions==null || incomingTransitions.isEmpty()) {
       validator.addWarning("Parallel gateway '%s' does not have incoming transitions", activityImpl.id);
     } else {
       nbrOfIncomingTransitions = incomingTransitions.size();
     }
     List<Transition> outgoingTransitions = activityImpl.getOutgoingTransitions();
-    if (log.isDebugEnabled())
-      log.debug("  outgoing "+outgoingTransitions.size());
     if (outgoingTransitions==null || outgoingTransitions.isEmpty()) {
       validator.addWarning("Parallel gateway '%s' does not have outgoing transitions", activityImpl.id);
     } else {

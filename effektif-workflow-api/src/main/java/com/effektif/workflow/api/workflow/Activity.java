@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -29,11 +28,16 @@ public class Activity extends Scope {
   
   protected String defaultTransitionId;
   protected MultiInstance multiInstance;
-  
-  @JsonIgnore
   protected List<Transition> outgoingTransitions;
   protected Map<String, Object> configuration;
+  
+  public Activity() {
+  }
 
+  public Activity(String id) {
+    this.id = id;
+  }
+  
   public String getDefaultTransitionId() {
     return this.defaultTransitionId;
   }

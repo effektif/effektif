@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
+import com.effektif.workflow.api.variables.Number;
+
 
 public class NumberType extends AbstractDataType {
 
@@ -25,7 +27,7 @@ public class NumberType extends AbstractDataType {
     if (jsonValue instanceof Double) {
       return jsonValue;
     } else if (jsonValue instanceof Number) {
-      return ((Number)jsonValue).doubleValue();
+      return ((java.lang.Number)jsonValue).doubleValue();
     } else if (jsonValue instanceof String) { 
       try {
         return Double.parseDouble((String) jsonValue);

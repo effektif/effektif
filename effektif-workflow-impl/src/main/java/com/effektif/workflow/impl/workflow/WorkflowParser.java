@@ -71,19 +71,14 @@ public class WorkflowParser {
    * Use one parser for each parse.
    * By returning the parser itself you can access the  */
   public static WorkflowParser parse(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
-    if (log.isDebugEnabled()) {
-      log.debug("Parsing workflow");
-    }
     WorkflowParser parse = new WorkflowParser(workflowEngine, workflowApi);
     parse.pushContext(workflowApi);
     parse.workflow = new WorkflowImpl();
     parse.workflow.parse(workflowApi, parse);
     parse.popContext();
-    
     if (!parse.issues.isEmpty()) {
       workflowApi.setIssues(parse.issues);
     }
-    
     return parse;
   }
 
@@ -183,6 +178,26 @@ public class WorkflowParser {
       bindingImpls.add(parseBinding(configurationElement, bindingValueType, false, activityId, key));
     }
     return bindingImpls;
+  }
+  
+  public String parseString(Activity activityApi, String key, boolean required) {
+    Object configurationValue = parseObject(activityApi, key, required);
+    if (!(configurationValue instanceof String)) {
+      addError("Configuration '%s' in activity '%s' must be a string, but was '%s' (%s)", key, activityApi.getId(), configurationValue.toString(), configurationValue.getClass().getSimpleName());
+      return null;
+    }
+    return (String)configurationValue;
+  }
+
+  public Object parseObject(Activity activityApi, String key, boolean required) {
+    Object configurationValue = activityApi.getConfiguration(key);
+    if (configurationValue==null) {
+      if (required) {
+        addWarning("Configuration '%s' in activity '%s' not specified, but is required", key, activityApi.getId());
+      }
+      return null;
+    }
+    return configurationValue;
   }
 
   protected <T> BindingImpl<T> parseBinding(Object o, Class<T> bindingValueType, boolean required, String activityId, String key) {

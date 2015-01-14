@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.test;
 
-import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
 
 
@@ -24,6 +23,6 @@ public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfigu
 
   @Override
   protected void initializeExecutorService() {
-    registerService(new SynchronousExecutorService());
+    synchronous();
   }
 }

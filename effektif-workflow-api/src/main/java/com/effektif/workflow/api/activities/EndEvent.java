@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("endEvent")
 public class EndEvent extends Activity {
 
-  public static final EndEvent INSTANCE = new EndEvent();
+  public EndEvent() {
+  }
 
+  public EndEvent(String id) {
+    super(id);
+  }
 }

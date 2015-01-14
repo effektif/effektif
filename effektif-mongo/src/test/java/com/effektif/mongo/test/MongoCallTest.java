@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,15 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
+package com.effektif.mongo.test;
+
+import org.junit.Before;
+
+import com.effektif.workflow.test.execution.CallTest;
 
 
-import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+public class MongoCallTest extends CallTest {
 
-public interface WorkflowInstanceEventListener {
-  
-  void started(ActivityInstanceImpl activityInstance);
-  void ended(ActivityInstanceImpl activityInstance);
-  void transition(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo);
+  @Override
+  @Before
+  public void initializeWorkflowEngine() {
+    workflowEngine = MongoTestHelper.getCachedMongoWorkflowEngine();
+  }
 }

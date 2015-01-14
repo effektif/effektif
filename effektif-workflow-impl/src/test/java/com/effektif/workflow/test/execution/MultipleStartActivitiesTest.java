@@ -23,38 +23,29 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
 
-public class SequentialExecutionTest extends WorkflowTest {
+public class MultipleStartActivitiesTest extends WorkflowTest {
   
   @Test
-  public void testOne() {
-    Workflow workflow = new Workflow()
-      .activity(new UserTask("one")
-        .transitionTo("two"))
+  public void testDefaultStartActivitiesParallelExecution() {
+    Workflow workflow = new Workflow() 
+      .activity(new UserTask("one"))
       .activity(new UserTask("two")
         .transitionTo("three"))
       .activity(new UserTask("three"));
     
     workflow = deploy(workflow);
-    
     WorkflowInstance workflowInstance = start(workflow);
     
-    assertOpen(workflowInstance, "one");
+    assertOpen(workflowInstance, "one", "two");
     
-    String oneId = getActivityInstanceId(workflowInstance, "one");
-    
-    workflowInstance = sendMessage(workflowInstance, oneId);
+    workflowInstance = endTask(workflowInstance, "two");
 
-    assertOpen(workflowInstance, "two");
-    
-    String twoId = getActivityInstanceId(workflowInstance, "two");
-    
-    workflowInstance = sendMessage(workflowInstance, twoId);
+    assertOpen(workflowInstance, "one", "three");
 
-    assertOpen(workflowInstance, "three");
-    
-    String threeId = getActivityInstanceId(workflowInstance, "three");
+    workflowInstance = endTask(workflowInstance, "one");
+    workflowInstance = endTask(workflowInstance, "three");
 
-    workflowInstance = sendMessage(workflowInstance, threeId);
+    assertOpen(workflowInstance);
 
     assertTrue(workflowInstance.isEnded());
   }

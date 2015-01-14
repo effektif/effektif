@@ -21,6 +21,13 @@ public class Transition extends Base {
   protected String from;
   protected String to;
   protected String condition;
+  
+  public Transition() {
+  }
+  
+  public Transition(String id) {
+    id(id);
+  }
 
   public String getFrom() {
     return this.from;

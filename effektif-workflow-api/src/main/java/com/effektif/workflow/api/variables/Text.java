@@ -17,11 +17,13 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
- * @author Tom Baeyens
- */
 @JsonTypeName
 public class Text extends Variable {
 
-  public static final Text INSTANCE = new Text();
+  public Text() {
+  }
+
+  public Text(String id) {
+    super(id);
+  }
 }

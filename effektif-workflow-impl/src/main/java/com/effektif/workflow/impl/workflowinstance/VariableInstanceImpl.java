@@ -48,6 +48,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     this.value = value;
     if (updates!=null) {
       updates.isValueChanged = true;
+      parent.propagateActivityInstanceChange();
     }
   }
   

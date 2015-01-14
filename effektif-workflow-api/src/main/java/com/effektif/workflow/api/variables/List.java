@@ -19,14 +19,25 @@ import com.effektif.workflow.api.workflow.Variable;
 /**
  * @author Tom Baeyens
  */
-public class List {
+public class List extends Variable {
 
   protected Variable elementType;
   
   public List() {
   }
-  public List(Variable elementType) {
+  
+  public List(String id) {
+    super(id);
+  }
+
+  public List(String id, Variable elementType) {
+    super(id);
+    elementType(elementType);
+  }
+
+  public List elementType(Variable elementType) {
     this.elementType = elementType;
+    return this;
   }
 
   public Variable getElementType() {

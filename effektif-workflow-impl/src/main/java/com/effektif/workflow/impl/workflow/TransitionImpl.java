@@ -26,8 +26,8 @@ public class TransitionImpl extends BaseImpl {
   public ActivityImpl to;
   public Script conditionScript;
 
-  public void parse(Transition apiTransition, ScopeImpl parent, WorkflowParser validator, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
-    super.parse(apiTransition, validator, parent);
+  public void parse(Transition apiTransition, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
+    super.parse(apiTransition, parser, parent);
 
     ActivityImpl activityHavingThisAsDefault = activitiesByDefaultTransitionId.remove(id);
     if (activityHavingThisAsDefault!=null) {
@@ -36,27 +36,27 @@ public class TransitionImpl extends BaseImpl {
 
     String fromId = apiTransition.getFrom();
     if (fromId==null) {
-      validator.addWarning("Transition has no 'from' specified");
+      parser.addWarning("Transition has no 'from' specified");
     } else {
       this.from = parent.getActivityByIdLocal(fromId);
       if (this.from!=null) {
         this.from.addOutgoingTransition(this);
         if (activityHavingThisAsDefault!=null && activityHavingThisAsDefault!=from) {
-          validator.addWarning("Default transition '%s' does not leave from activity '%s'", id, activityHavingThisAsDefault.id);
+          parser.addWarning("Default transition '%s' does not leave from activity '%s'", id, activityHavingThisAsDefault.id);
         }
       } else {
-        validator.addError("Transition has an invalid value for 'from' (%s) : %s", fromId, validator.getExistingActivityIdsText(parent));
+        parser.addError("Transition has an invalid value for 'from' (%s) : %s", fromId, parser.getExistingActivityIdsText(parent));
       }
     }
     String toId = apiTransition.getTo();
     if (toId==null) {
-      validator.addWarning("Transition has no 'to' specified");
+      parser.addWarning("Transition has no 'to' specified");
     } else {
       this.to = parent.getActivityByIdLocal(toId);
       if (this.to!=null) {
         this.to.addIncomingTransition(this);
       } else {
-        validator.addError("Transition has an invalid value for 'to' (%s) : %s", toId, validator.getExistingActivityIdsText(parent));
+        parser.addError("Transition has an invalid value for 'to' (%s) : %s", toId, parser.getExistingActivityIdsText(parent));
       }
     }
     if (apiTransition.getCondition()!=null) {
@@ -66,7 +66,7 @@ public class TransitionImpl extends BaseImpl {
             .getService(ScriptService.class)
             .compile(apiTransition.getCondition());
       } catch (Exception e) {
-        validator.addError("Transition (%s)--%s>(%s) has an invalid condition expression '%s' : %s", 
+        parser.addError("Transition (%s)--%s>(%s) has an invalid condition expression '%s' : %s", 
                 fromId, (id!=null ? id+"--" : ""),
                 toId, apiTransition.getCondition(), e.getMessage());
       }

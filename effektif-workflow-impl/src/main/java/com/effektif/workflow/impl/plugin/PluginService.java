@@ -96,7 +96,7 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     Exceptions.checkNotNullParameter(apiVariable, "apiVariable");
     Class<? extends DataType> dataTypeClass = dataTypeClasses.get(apiVariable.getClass());
     if (dataTypeClass==null) {
-      throw new RuntimeException("No ActivityType defined for "+apiVariable.getClass().getName());
+      throw new RuntimeException("No DataType defined for "+apiVariable.getClass().getName());
     }
     try {
       return dataTypeClass.newInstance();

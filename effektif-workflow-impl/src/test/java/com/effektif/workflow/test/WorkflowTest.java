@@ -14,10 +14,13 @@
 package com.effektif.workflow.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.CloseAction;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +39,9 @@ import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.task.Task;
+import com.effektif.workflow.impl.task.TaskQuery;
+import com.effektif.workflow.impl.task.TaskService;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */
@@ -59,6 +65,7 @@ public class WorkflowTest {
   @After
   public void after() {
     logWorkflowEngineContents();
+    deleteWorkflowEngineContents();
   }
 
   public Workflow deploy(Workflow workflow) {
@@ -108,14 +115,24 @@ public class WorkflowTest {
     Assert.assertNotNull("No open activity instance found "+activityId+" not found", activityInstance);
     return activityInstance.getId();
   }
+  
+  public WorkflowInstance endTask(WorkflowInstance workflowInstance, String activityId) {
+    ActivityInstance activityInstance = workflowInstance.findOpenActivityInstance(activityId);
+    assertNotNull("Activity '"+activityId+"' not in workflow instance", activityInstance);
+    return workflowEngine.sendMessage(new MessageCommand()
+      .workflowInstanceId(workflowInstance.getId())
+      .activityInstanceId(activityInstance.getId()));
+  }
 
   protected void logWorkflowEngineContents() {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
-    JsonService jsonService = ((WorkflowEngineImpl) workflowEngine).getServiceRegistry().getService(JsonService.class);
+    WorkflowEngineImpl workflowEngineImpl = (WorkflowEngineImpl) workflowEngine;
+    JsonService jsonService = workflowEngineImpl.getServiceRegistry().getService(JsonService.class);
+    TaskService taskService = workflowEngineImpl.getServiceRegistry().getService(TaskService.class);
 
     StringBuilder cleanLog = new StringBuilder();
-    cleanLog.append("Cleaning up workflow engine\n");
+    cleanLog.append("Workflow engine contents\n");
     
 //    List<Job> jobs = jobService.newJobQuery().asList();
 //    if (jobs != null && !jobs.isEmpty()) {
@@ -132,20 +149,19 @@ public class WorkflowTest {
 //      }
 //    }
 
-//    List<Task> tasks = taskService.newTaskQuery().asList();
-//    if (tasks != null && !tasks.isEmpty()) {
-//      int i = 0;
-//      cleanLog.append("\n### tasks ######################################################## \n");
-//      for (Task task : tasks) {
-//        taskService.deleteTask(task.getId());
-//        cleanLog.append("--- Deleted task ");
-//        cleanLog.append(i);
-//        cleanLog.append(" ---\n");
-//        cleanLog.append(jsonService.objectToJsonStringPretty(task));
-//        cleanLog.append("\n");
-//        i++;
-//      }
-//    }
+    List<Task> tasks = taskService.findTasks(new TaskQuery());
+    if (tasks != null && !tasks.isEmpty()) {
+      int i = 0;
+      cleanLog.append("\n### tasks ######################################################## \n");
+      for (Task task : tasks) {
+        cleanLog.append("--- Deleted task ");
+        cleanLog.append(i);
+        cleanLog.append(" ---\n");
+        cleanLog.append(jsonService.objectToJsonStringPretty(task));
+        cleanLog.append("\n");
+        i++;
+      }
+    }
 
     List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery());
     if (workflowInstances != null && !workflowInstances.isEmpty()) {
@@ -174,5 +190,14 @@ public class WorkflowTest {
       }
     }
     log.debug(cleanLog.toString());
+  }
+  
+  protected void deleteWorkflowEngineContents() {
+    workflowEngine.deleteWorkflows(new WorkflowQuery());
+    workflowEngine.deleteWorkflowInstances(new WorkflowInstanceQuery());
+    
+    WorkflowEngineImpl workflowEngineImpl = (WorkflowEngineImpl) workflowEngine;
+    TaskService taskService = workflowEngineImpl.getServiceRegistry().getService(TaskService.class);
+    taskService.deleteTask(new TaskQuery());
   }
 }

@@ -22,6 +22,13 @@ public class UserTask extends NoneTask {
   public static final String KEY_NAME = "name";
   public static final String KEY_CANDIDATE_IDS = "candidateIds";
   
+  public UserTask() {
+  }
+
+  public UserTask(String id) {
+    super(id);
+  }
+
   public UserTask name(String name) {
     setConfigurationBindingValue(KEY_NAME, name);
     return this;

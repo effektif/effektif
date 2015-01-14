@@ -16,8 +16,13 @@ package com.effektif.workflow.api.activities;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-
 @JsonTypeName("httpServiceTask")
 public class HttpServiceTask extends ServiceTask {
 
+  public HttpServiceTask() {
+  }
+
+  public HttpServiceTask(String id) {
+    super(id);
+  }
 }

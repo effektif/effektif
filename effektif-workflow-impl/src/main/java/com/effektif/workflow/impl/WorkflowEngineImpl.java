@@ -122,6 +122,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       workflowImpl.id = workflowId;
       workflowStore.insertWorkflow(workflowApi, workflowImpl, requestContext);
       workflowCache.put(workflowImpl);
+    } else {
+      throw new RuntimeException(parser.issues.getIssueReport());
     }
     return workflowApi;
   }

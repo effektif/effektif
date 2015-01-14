@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.impl.plugin.TypedValue;
 import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
 public class ScriptBindings implements Bindings {
@@ -64,7 +65,7 @@ public class ScriptBindings implements Bindings {
       return true;
     }
     if (name.length()>0) {
-      return scopeInstance.scope.hasVariable(name);
+      return scopeInstance.scope.hasVariableRecursive(name);
     }
     return false;
   }
@@ -88,18 +89,18 @@ public class ScriptBindings implements Bindings {
     return dataType.convertInternalToScriptValue(value, language);
   }
   
-  protected String getVariableDefinitionId(String scriptVariableName) {
+  protected String getVariableId(String scriptVariableName) {
     if (scriptToProcessMappings!=null) {
-      String variableDefinitionId = scriptToProcessMappings.get(scriptVariableName);
-      if (variableDefinitionId!=null) {
-        return variableDefinitionId;
+      String variableId = scriptToProcessMappings.get(scriptVariableName);
+      if (variableId!=null) {
+        return variableId;
       }
     }
     return scriptVariableName;
   }
 
   public TypedValue getTypedValue(String scriptVariableName) {
-    String variableId = getVariableDefinitionId(scriptVariableName);
+    String variableId = getVariableId(scriptVariableName);
     return scopeInstance.getVariableTypedValue(variableId);
   }
 
@@ -124,12 +125,12 @@ public class ScriptBindings implements Bindings {
     if (isIgnored(scriptVariableName)){
       return null;
     }
-    TypedValue typedValue = getTypedValue(scriptVariableName);
-    if (typedValue!=null) {
-      String variableDefinitionId = getVariableDefinitionId(scriptVariableName);
-      DataType dataType = typedValue.getType();
+    String variableId = getVariableId(scriptVariableName);
+    if (variableId!=null) {
+      VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
+      DataType dataType = variableInstance.dataType;
       Object value = dataType.convertScriptValueToInternal(scriptValue, language);
-      scopeInstance.setVariableValue(variableDefinitionId, value);
+      variableInstance.setValue(value);
     } else {
       scopeInstance.createVariableInstanceByValue(scriptValue);
     }

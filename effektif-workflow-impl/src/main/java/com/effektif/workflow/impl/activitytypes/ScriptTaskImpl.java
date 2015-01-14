@@ -19,7 +19,6 @@ import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;
-import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowParser;
@@ -29,34 +28,28 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;
-  public String script;
   public Map<String, String> scriptToWorkflowMappings;
-  public String resultVariableId;
-  public Script compiledScript;
+  public Script script;
   
   public ScriptTaskImpl() {
     super(ScriptTask.class);
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser validator) {
-    if (script!=null) {
-      this.scriptService = validator.getServiceRegistry().getService(ScriptService.class);
-      this.compiledScript = scriptService.compile(script);
-      this.compiledScript.scriptToProcessMappings = scriptToWorkflowMappings;
+  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser parser) {
+    this.scriptService = parser.getServiceRegistry().getService(ScriptService.class);
+    this.scriptToWorkflowMappings = (Map<String, String>) parser.parseObject(activityApi, ScriptTask.KEY_MAPPINGS, false);
+    String scriptText = parser.parseString(activityApi, ScriptTask.KEY_SCRIPT, true);
+    if (scriptText!=null) {
+      script = scriptService.compile(scriptText);
+      script.scriptToProcessMappings = scriptToWorkflowMappings;
     }
-    // TODO if specified, check if the resultVariableDefinitionId exists
   }
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     if (script!=null) {
-      ScriptResult scriptResult = scriptService.evaluateScript(activityInstance, compiledScript);
-      scriptResult.getResult();
-      /* Object result = 
-        if (resultVariableDefinitionId!=null) {
-        activityInstance.setVariableValue(resultVariableDefinitionId, result);
-      } */
+      scriptService.evaluateScript(activityInstance, script);
     }
     activityInstance.onwards();
   }

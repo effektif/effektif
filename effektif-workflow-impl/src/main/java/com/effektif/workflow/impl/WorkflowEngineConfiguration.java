@@ -149,7 +149,7 @@ public abstract class WorkflowEngineConfiguration {
     registerDataType(new ListType());
     // registerJavaBeanType(CallMapping.class);
   }
-
+  
   public WorkflowEngine buildWorkflowEngine() {
     return new WorkflowEngineImpl(this);
   }
@@ -159,6 +159,11 @@ public abstract class WorkflowEngineConfiguration {
     if (service instanceof Initializable) {
       initializables.add((Initializable)service);
     }
+    return this;
+  }
+  
+  public WorkflowEngineConfiguration synchronous() {
+    registerService(new SynchronousExecutorService());
     return this;
   }
 

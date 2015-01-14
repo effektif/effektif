@@ -30,6 +30,13 @@ public class Call extends Activity {
   public static final String INPUT_MAPPINGS = "inputMappings";
   public static final String OUTPUT_MAPPINGS = "outputMappings";
   
+  public Call() {
+  }
+
+  public Call(String id) {
+    super(id);
+  }
+
   public Call subWorkflowId(String subWorkflowId) {
     setConfigurationBindingValue(SUB_WORKFLOW_ID, subWorkflowId);
     return this;

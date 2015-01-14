@@ -38,31 +38,31 @@ public abstract class ScopeImpl extends BaseImpl {
   public void parse(Scope apiScope, WorkflowParser workflowParser, ScopeImpl parent) {
     super.parse(apiScope, workflowParser, parent);
     
-    List<Variable> apiVariables = apiScope.getVariables();
-    if (apiVariables!=null) {
+    List<Variable> variableApi = apiScope.getVariables();
+    if (variableApi!=null) {
       Set<String> variableIds = new HashSet<>();
       int i = 0;
-      for (Variable apiVariable: apiVariables) {
-        VariableImpl variable = new VariableImpl();
+      for (Variable apiVariable: variableApi) {
+        VariableImpl variableImpl = new VariableImpl();
         workflowParser.pushContext("variables", apiVariable, i);
-        variableIds.add(variable.id);
-        if (variableIds.contains(variable.id)) {
-          workflowParser.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variable.id);
+        if (variableIds.contains(apiVariable.getId())) {
+          workflowParser.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variableImpl.id);
         }
-        variable.parse(apiVariable, this, workflowParser);
-        addVariable(variable);
+        variableIds.add(apiVariable.getId());
+        variableImpl.parse(apiVariable, this, workflowParser);
+        addVariable(variableImpl);
         workflowParser.popContext();
         i++;
       }
     }
     
-    List<Timer> apiTimers = apiScope.getTimers();
-    if (apiTimers!=null) {
+    List<Timer> timersApi = apiScope.getTimers();
+    if (timersApi!=null) {
       int i = 0;
-      for (Timer apiTimer: apiTimers) {
+      for (Timer timerApi: timersApi) {
         TimerImpl timer = new TimerImpl();
-        workflowParser.pushContext("timers", apiTimer, i);
-        timer.parse(apiTimer, this, workflowParser);
+        workflowParser.pushContext("timers", timerApi, i);
+        timer.parse(timerApi, this, workflowParser);
         addTimer(timer);
         workflowParser.popContext();
         i++;
@@ -70,34 +70,34 @@ public abstract class ScopeImpl extends BaseImpl {
     }
 
     Map<String, ActivityImpl> activitiesByDefaultTransitionId = new HashMap<>();
-    List<Activity> apiActivities = apiScope.getActivities();
-    if (apiActivities!=null) {
+    List<Activity> activitiesApi = apiScope.getActivities();
+    if (activitiesApi!=null) {
       Set<String> activityIds = new HashSet<>();
       int i = 0;
-      for (Activity apiActivity: apiActivities) {
-        ActivityImpl activity = new ActivityImpl();
-        workflowParser.pushContext("activities", apiActivity, i);
-        activity.parse(apiActivity, apiScope, workflowParser, this);
-        addActivity(activity);
-        if (activityIds.contains(activity.id)) {
-          workflowParser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activity.id);
+      for (Activity activityApi: activitiesApi) {
+        ActivityImpl activityImpl = new ActivityImpl();
+        workflowParser.pushContext("activities", activityApi, i);
+        activityImpl.parse(activityApi, apiScope, workflowParser, this);
+        addActivity(activityImpl);
+        if (activityIds.contains(activityImpl.id)) {
+          workflowParser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activityImpl.id);
         }
-        if (apiActivity.getDefaultTransitionId()!=null) {
-          activitiesByDefaultTransitionId.put(apiActivity.getDefaultTransitionId(), activity);
+        if (activityApi.getDefaultTransitionId()!=null) {
+          activitiesByDefaultTransitionId.put(activityApi.getDefaultTransitionId(), activityImpl);
         }
         workflowParser.popContext();
         i++;
       }
     }
 
-    List<Transition> apiTransitions = apiScope.getTransitions();
-    if (apiTransitions!=null) {
+    List<Transition> transitionsApi = apiScope.getTransitions();
+    if (transitionsApi!=null) {
       int i = 0;
-      for (Transition apiTransition: apiTransitions) {
-        TransitionImpl transition = new TransitionImpl();
-        workflowParser.pushContext("transitions", apiTransition, i);
-        transition.parse(apiTransition, this, workflowParser, activitiesByDefaultTransitionId);
-        addTransition(transition);
+      for (Transition transitionApi: transitionsApi) {
+        TransitionImpl transitionImpl = new TransitionImpl();
+        workflowParser.pushContext("transitions", transitionApi, i);
+        transitionImpl.parse(transitionApi, this, workflowParser, activitiesByDefaultTransitionId);
+        addTransition(transitionImpl);
         workflowParser.popContext();
         i++;
       }
@@ -108,7 +108,7 @@ public abstract class ScopeImpl extends BaseImpl {
       // that's why they are validated after the transitions.
       int i = 0;
       for (ActivityImpl activity : activities.values()) {
-        Activity apiActivity = apiActivities.get(i);
+        Activity apiActivity = activitiesApi.get(i);
         if (activity.activityType != null) {
           workflowParser.pushContext("activities", apiActivity, i);
           activity.activityType.parse(activity, apiActivity, workflowParser);
@@ -178,19 +178,29 @@ public abstract class ScopeImpl extends BaseImpl {
     return parent!=null;
   }
 
-  public boolean hasActivities() {
+  public boolean hasActivitiesLocal() {
     return activities!=null && !activities.isEmpty();
   }
 
-  public boolean hasVariables() {
+  public boolean hasVariablesLocal() {
     return variables!=null && !variables.isEmpty();
   }
 
-  public boolean hasTransitions() {
+  public boolean hasTransitionsLocal() {
     return transitions!=null && !transitions.isEmpty();
   }
   
-  public boolean hasVariable(String variableId) {
+  public boolean hasVariableRecursive(String variableId) {
+    if (hasVariableLocal(variableId)) {
+      return true;
+    }
+    if (parent!=null) {
+      return parent.hasVariableRecursive(variableId);
+    }
+    return false;
+  }
+
+  public boolean hasVariableLocal(String variableId) {
     return variables!=null && variables.containsKey(variableId);
   }
 

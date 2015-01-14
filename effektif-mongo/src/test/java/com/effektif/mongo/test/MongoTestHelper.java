@@ -25,6 +25,7 @@ public class MongoTestHelper {
     if (cachedMongoWorkflowEngine==null) {
       cachedMongoWorkflowEngine = new MongoWorkflowEngineConfiguration()
         .prettyPrint()
+        .synchronous()
         .buildWorkflowEngine();
     }
     return cachedMongoWorkflowEngine;

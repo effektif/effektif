@@ -22,7 +22,6 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
 
 
@@ -35,18 +34,13 @@ public class ApiExamplesTest {
   public void testApiExample() {
     // Create the default (in-memory) workflow engine
     WorkflowEngine workflowEngine = new MemoryWorkflowEngineConfiguration()
-       // for test purposes it's best to avoid concurrency so 
-       // the synchronous executor service is configured here
-       .registerService(new SynchronousExecutorService())
        .buildWorkflowEngine();
     
     // Create a workflow
     Workflow workflow = new Workflow()
-      .activity(new NoneTask()
-        .id("a")
+      .activity(new NoneTask("a")
         .transitionTo("b"))
-      .activity(new NoneTask()
-        .id("b"));
+      .activity(new NoneTask("b"));
 
     // Deploy the workflow to the engine
     String workflowId = workflowEngine.deployWorkflow(workflow).getId();

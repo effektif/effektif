@@ -14,10 +14,6 @@
 package com.effektif.workflow.api.workflowinstance;
 
 
-
-
-
-
 public class VariableInstance {
 
   protected String id;

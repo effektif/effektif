@@ -125,4 +125,6 @@ public class Workflow extends Scope {
   public void setIssues(ParseIssues issues) {
     this.issues = issues;
   }
+  
+  
 }

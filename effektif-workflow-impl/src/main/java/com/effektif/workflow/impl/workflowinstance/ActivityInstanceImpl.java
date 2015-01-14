@@ -121,7 +121,9 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     this.workState = workState;
     if (updates!=null) {
       getUpdates().isWorkStateChanged = true;
-      propagateActivityInstanceChange(parent);
+      if (parent!=null) {
+        parent.propagateActivityInstanceChange();
+      }
     }
   }
 
@@ -143,13 +145,14 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public void takeTransition(TransitionImpl transition) {
     ActivityImpl to = transition.to;
     end(to==null);
-    for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
-      listener.transition(this, transition);
-    }
+    ActivityInstanceImpl toActivityInstance = null;
     if (to!=null) {
       if (log.isDebugEnabled())
         log.debug("Taking transition to "+to);
-      parent.createActivityInstance(to);
+      toActivityInstance = parent.createActivityInstance(to);
+    }
+    for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
+      listener.transition(this, transition, toActivityInstance);
     }
   }
   
@@ -186,7 +189,9 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     }
     if (updates!=null) {
       updates.isEndChanged = true;
-      propagateActivityInstanceChange(parent);
+      if (parent!=null) {
+        parent.propagateActivityInstanceChange();
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.S
 import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,31 +80,31 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public abstract boolean isProcessInstance();
   
-  protected void toScopeInstance(ScopeInstance w) {
-    w.setId(id);
-    w.setStart(start);
-    w.setEnd(end);
-    w.setDuration(duration);
+  protected void toScopeInstance(ScopeInstance scopeInstanceApi) {
+    scopeInstanceApi.setId(id);
+    scopeInstanceApi.setStart(start);
+    scopeInstanceApi.setEnd(end);
+    scopeInstanceApi.setDuration(duration);
     if (activityInstances!=null && !activityInstances.isEmpty()) {
-      List<ActivityInstance> activityInstances = new ArrayList<>();
-      for (ActivityInstanceImpl activityInstance: this.activityInstances) {
-        activityInstances.add(activityInstance.toActivityInstance());
+      List<ActivityInstance> activityInstanceApis = new ArrayList<>();
+      for (ActivityInstanceImpl activityInstanceImpl: this.activityInstances) {
+        activityInstanceApis.add(activityInstanceImpl.toActivityInstance());
       }
-      w.setActivityInstances(activityInstances);
+      scopeInstanceApi.setActivityInstances(activityInstanceApis);
     }
     if (variableInstances!=null && !variableInstances.isEmpty()) {
-      List<VariableInstance> variableInstances = new ArrayList<>();
-      for (VariableInstanceImpl variableInstance: this.variableInstances) {
-        variableInstances.add(variableInstance.toVariableInstance());
+      List<VariableInstance> variableInstanceApis = new ArrayList<>();
+      for (VariableInstanceImpl variableInstanceImpl: this.variableInstances) {
+        variableInstanceApis.add(variableInstanceImpl.toVariableInstance());
       }
-      w.setVariableInstances(variableInstances);
+      scopeInstanceApi.setVariableInstances(variableInstanceApis);
     }
     if (timerInstances!=null && !timerInstances.isEmpty()) {
-      List<TimerInstance> timerInstances = new ArrayList<>();
-      for (TimerInstanceImpl timerInstance: this.timerInstances) {
-        timerInstances.add(timerInstance.toTimerInstance());
+      List<TimerInstance> timerInstanceApis = new ArrayList<>();
+      for (TimerInstanceImpl timerInstanceImpl: this.timerInstances) {
+        timerInstanceApis.add(timerInstanceImpl.toTimerInstance());
       }
-      w.setTimerInstances(timerInstances);
+      scopeInstanceApi.setTimerInstances(timerInstanceApis);
     }
   }
 
@@ -123,7 +124,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     activityInstance.start = Time.now();
     if (updates!=null) {
       activityInstance.updates = new ActivityInstanceUpdates(true);
-      propagateActivityInstanceChange(this);
+      if (parent!=null) {
+        parent.propagateActivityInstanceChange();
+      }
     }
     addActivityInstance(activityInstance);
     activityInstance.initializeVariableInstances();
@@ -147,15 +150,15 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public void initializeVariableInstances() {
     if (scope.variables!=null && !scope.variables.isEmpty()) {
-      for (VariableImpl variableDefinition: scope.variables.values()) {
-        createVariableInstance(variableDefinition);
+      for (VariableImpl variable: scope.variables.values()) {
+        createVariableInstance(variable);
       }
     }
   }
 
   public VariableInstanceImpl createVariableInstance(VariableImpl variable) {
     String variableInstanceId = workflowInstance.generateNextVariableInstanceId();
-    VariableInstanceImpl variableInstance = new VariableInstanceImpl(parent, variable, variableInstanceId);
+    VariableInstanceImpl variableInstance = new VariableInstanceImpl(this, variable, variableInstanceId);
     variableInstance.workflowEngine = workflowEngine;
     variableInstance.workflowInstance = workflowInstance;
     variableInstance.dataType = variable.dataType;
@@ -164,7 +167,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     if (updates!=null) {
       variableInstance.updates = new VariableInstanceUpdates(true);
       updates.isVariableInstancesChanged = true;
-      propagateActivityInstanceChange(this);
+      if (parent!=null) {
+        parent.propagateActivityInstanceChange();
+      }
     }
     addVariableInstance(variableInstance);
     return variableInstance;
@@ -196,14 +201,29 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return null;
   }
 
-  public <T> List<T> getValue(List<BindingImpl<T>> bindings) {
-    List<T> list = new ArrayList<>();
+  public <T> List<T> getValues(List<BindingImpl<T>> bindings) {
+    List<T> values = new ArrayList<>();
     if (bindings!=null) {
       for (BindingImpl<T> binding: bindings) {
-        list.add(getValue(binding));
+        values.add(getValue(binding));
       }
     }
-    return list;
+    return values;
+  }
+
+  public <T> List<T> getValuesFlat(List<BindingImpl<T>> bindings) {
+    List<?> values = getValues(bindings);
+    List<T> flatValues = new ArrayList<>();
+    if (values!=null) {
+      for (Object value: values) {
+        if (value instanceof Collection) {
+          flatValues.addAll((Collection)value);
+        } else {
+          flatValues.add((T) value);
+        }
+      }
+    }
+    return flatValues;
   }
 
   public Object getVariable(String variableDefinitionId) {
@@ -221,19 +241,23 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
   }
 
-  public void setVariableValue(String variableDefinitionId, Object value) {
+  public void setVariableValue(String variableId, Object value) {
     if (variableInstances!=null) {
-      VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableDefinitionId);
+      VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableId);
       if (variableInstance!=null) {
         variableInstance.setValue(value);
         if (updates!=null) {
           updates.isVariableInstancesChanged = true;
-          propagateActivityInstanceChange(parent);
+          if (parent!=null) { 
+            parent.propagateActivityInstanceChange();
+          }
         }
+        return;
       }
     }
     if (parent!=null) {
-      parent.setVariableValue(variableDefinitionId, value);
+      parent.setVariableValue(variableId, value);
+      return;
     }
     createVariableInstanceByValue(value);
   }
@@ -250,18 +274,26 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     VariableInstanceImpl variableInstance = createVariableInstance(variable);
     variableInstance.setValue(value);
   }
-
-  public TypedValue getVariableTypedValue(String variableId) {
+  
+  public VariableInstanceImpl findVariableInstance(String variableId) {
     if (variableInstances!=null) {
       VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableId);
       if (variableInstance!=null) {
-        DataType dataType = variableInstance.variable.dataType;
-        Object value = variableInstance.getValue();
-        return new TypedValue(dataType, value);
+        return variableInstance;
       }
     }
     if (parent!=null) {
-      return parent.getVariableTypedValue(variableId);
+      return parent.findVariableInstance(variableId);
+    }
+    return null;
+  }
+  
+  public TypedValue getVariableTypedValue(String variableId) {
+    VariableInstanceImpl variableInstance = findVariableInstance(variableId);
+    if (variableInstance!=null) {
+      DataType dataType = variableInstance.variable.dataType;
+      Object value = variableInstance.getValue();
+      return new TypedValue(dataType, value);
     }
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }
@@ -358,10 +390,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
   }
   
-  protected void propagateActivityInstanceChange(ScopeInstanceImpl scopeInstance) {
-    if (scopeInstance!=null) {
-      scopeInstance.updates.isActivityInstancesChanged = true;
-      propagateActivityInstanceChange(scopeInstance.parent);
+  public void propagateActivityInstanceChange() {
+    if (updates!=null) {
+      updates.isActivityInstancesChanged = true;
+      if (parent != null) {
+        parent.propagateActivityInstanceChange();
+      }
     }
   }
 

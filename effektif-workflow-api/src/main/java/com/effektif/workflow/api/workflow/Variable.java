@@ -21,4 +21,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public class Variable extends Base {
 
+  public Variable() {
+  }
+
+  public Variable(String id) {
+    id(id);
+  }
 }

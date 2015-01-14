@@ -33,10 +33,8 @@ public class VariableImpl {
 
   public void parse(Variable apiVariable, ScopeImpl parent, WorkflowParser validator) {
     this.apiVariable = apiVariable;
-    String id = apiVariable.getId();
-    if (id!=null && !"".equals(id)) {
-      this.id = id;
-    } else {
+    this.id = apiVariable.getId();
+    if (id==null || "".equals(id)) {
       validator.addError("Variable has no id");
     }
     this.parent = parent;

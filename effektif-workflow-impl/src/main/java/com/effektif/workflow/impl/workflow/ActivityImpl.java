@@ -37,36 +37,34 @@ public class ActivityImpl extends ScopeImpl {
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void parse(Activity apiActivity, Scope apiScope, WorkflowParser workflowParser, ScopeImpl parent) {
-    super.parse(apiActivity, workflowParser, parent);
-    String id = apiActivity.getId();
-    if (id!=null && !"".equals(id)) {
-      this.id = id;
-    } else {
+  public void parse(Activity activityApi, Scope scopeApi, WorkflowParser workflowParser, ScopeImpl parent) {
+    super.parse(activityApi, workflowParser, parent);
+    this.id = activityApi.getId();
+    if (id==null || "".equals(id)) {
       workflowParser.addError("Activity has no id");
     }
 
     PluginService pluginService = workflowParser.workflowEngine.getServiceRegistry().getService(PluginService.class);
-    this.activityType = pluginService.instantiateActivityType(apiActivity);
-    this.activityType.parse(this, apiActivity, workflowParser);
+    this.activityType = pluginService.instantiateActivityType(activityApi);
     // some activity types need to validate incoming and outgoing transitions, 
-    // that's why they are NOT validated here, but after the transitions.
+    // that's why they are NOT parsed here, but after the transitions.
     if (this.activityType==null) {
       workflowParser.addError("Activity '%s' has no activityType configured", id);
     }
 
-    if (apiActivity.getMultiInstance()!=null) {
+    if (activityApi.getMultiInstance()!=null) {
       this.multiInstance = new MultiInstanceImpl();
       workflowParser.pushContext(multiInstance);
-      this.multiInstance.parse(apiActivity.getMultiInstance(), this, workflowParser);
+      this.multiInstance.parse(activityApi.getMultiInstance(), this, workflowParser);
       workflowParser.popContext();
     }
     
-    if (apiActivity.getOutgoingTransitions()!=null) {
-      for (Transition transition: apiActivity.getOutgoingTransitions()) {
-        transition.from(apiActivity.getId());
-        apiScope.transition(transition);
+    if (activityApi.getOutgoingTransitions()!=null) {
+      for (Transition transition: activityApi.getOutgoingTransitions()) {
+        transition.from(activityApi.getId());
+        scopeApi.transition(transition);
       }
+      activityApi.setOutgoingTransitions(null);
     }
   }
 

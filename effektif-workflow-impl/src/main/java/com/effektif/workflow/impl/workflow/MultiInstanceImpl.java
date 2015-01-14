@@ -29,16 +29,16 @@ public class MultiInstanceImpl {
   public VariableImpl elementVariable;
   public List<BindingImpl<Object>> valueBindings;
 
-  public void parse(MultiInstance apiMultiInstance, ScopeImpl parent, WorkflowParser parser) {
-    if (apiMultiInstance.getValueBindings()!=null) {
+  public void parse(MultiInstance multiInstanceApi, ScopeImpl parent, WorkflowParser parser) {
+    if (multiInstanceApi.getValueBindings()!=null) {
       valueBindings = new ArrayList<>();
-      for (Binding valueBinding: apiMultiInstance.getValueBindings()) {
+      for (Binding valueBinding: multiInstanceApi.getValueBindings()) {
         valueBindings.add(parser.parseBinding(valueBinding, Object.class, parent.id, "valueBindings"));
       }
     } else {
       parser.addError("Multi instance has no valueBindings");
     }
-    Variable apiElementVariable = apiMultiInstance.getVariable();
+    Variable apiElementVariable = multiInstanceApi.getVariable();
     if (apiElementVariable!=null) {
       elementVariable = new VariableImpl();
       parser.pushContext("elementVariable", apiElementVariable);

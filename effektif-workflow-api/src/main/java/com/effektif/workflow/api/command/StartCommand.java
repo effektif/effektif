@@ -40,4 +40,16 @@ public class StartCommand extends AbstractCommand {
     this.workflowName = workflowName;
     return this;
   }
+  
+  @Override
+  public StartCommand variableValue(String variableId, Object variableValue) {
+    super.variableValue(variableId, variableValue);
+    return this;
+  }
+  
+  @Override
+  public StartCommand organizationId(String organizationId) {
+    super.organizationId(organizationId);
+    return this;
+  }
 }

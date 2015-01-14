@@ -17,13 +17,14 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** this task doesn't do anything, it just continues (aka noop, pass-through).
- * 
- * @author Walter White
- */
+/** this task doesn't do anything, it just continues (aka noop, pass-through). */
 @JsonTypeName("noneTask")
 public class NoneTask extends Activity {
 
-  public static final NoneTask INSTANCE = new NoneTask();
+  public NoneTask() {
+  }
 
+  public NoneTask(String id) {
+    super(id);
+  }
 }

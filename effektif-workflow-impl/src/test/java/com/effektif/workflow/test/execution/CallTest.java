@@ -32,19 +32,17 @@ import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.test.WorkflowTest;
 
 
-public class CallActivityTest extends WorkflowTest {
+public class CallTest extends WorkflowTest {
   
   @Test
   public void testCallActivity() {
     Workflow subWorkflow = new Workflow()
-      .activity(new UserTask()
-        .id("subtask"));
+      .activity(new UserTask("subtask"));
     
     String subWorkflowId = workflowEngine.deployWorkflow(subWorkflow).getId();
     
     Workflow superWorkflow = new Workflow()
-      .activity(new Call()
-        .id("call")
+      .activity(new Call("call")
         .inputMappingVariable("a", "b")
         .subWorkflowId(subWorkflowId));
     

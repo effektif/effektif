@@ -20,5 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("exclusiveGateway")
 public class ExclusiveGateway extends Activity {
 
-  public static final ExclusiveGateway INSTANCE = new ExclusiveGateway();
+  public ExclusiveGateway() {
+  }
+
+  public ExclusiveGateway(String id) {
+    super(id);
+  }
 }

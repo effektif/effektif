@@ -26,6 +26,13 @@ public class ScriptTask extends NoneTask {
   public static final String KEY_MAPPINGS = "mapping";
   public static final String KEY_RESULT_VARIABLE_ID = "resultVariableId";
   
+  public ScriptTask() {
+  }
+
+  public ScriptTask(String id) {
+    super(id);
+  }
+
   public ScriptTask script(String script) {
     setConfiguration(KEY_SCRIPT, script);
     return this;
