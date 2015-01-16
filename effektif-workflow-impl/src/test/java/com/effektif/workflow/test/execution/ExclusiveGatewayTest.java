@@ -19,7 +19,7 @@ import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.command.StartCommand;
-import com.effektif.workflow.api.variables.Number;
+import com.effektif.workflow.api.type.NumberType;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -31,10 +31,10 @@ public class ExclusiveGatewayTest extends WorkflowTest {
   @Test
   public void testExclusiveGateway() {
     Workflow w = new Workflow()
-      .variable(new Number("v"))
-      .activity(new StartEvent("start")
+      .variable("v", new NumberType())
+      .activity("start", new StartEvent()
         .transitionTo("?"))
-      .activity(new ExclusiveGateway("?")
+      .activity("?", new ExclusiveGateway()
         .defaultTransitionId("default"))
       .transition(new Transition()
         .condition("v < 10")

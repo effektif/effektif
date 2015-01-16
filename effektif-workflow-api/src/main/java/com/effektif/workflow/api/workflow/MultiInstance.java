@@ -16,6 +16,8 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.type.Type;
+
 
 public class MultiInstance {
 
@@ -32,7 +34,12 @@ public class MultiInstance {
     this.variable = variable;
     return this;
   }
-  
+  public MultiInstance variable(String id, Type type) {
+    this.variable = new Variable()
+      .id(id)
+      .type(type);
+    return this;
+  }
   public List<Binding> getValueBindings() {
     return this.valueBindings;
   }

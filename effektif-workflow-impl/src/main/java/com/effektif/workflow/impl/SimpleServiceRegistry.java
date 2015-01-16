@@ -21,7 +21,7 @@ import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
@@ -70,8 +70,8 @@ public class SimpleServiceRegistry implements ServiceRegistry {
     for (Class<?> javaBeanType: configuration.javaBeanTypes) {
       pluginService.registerJavaBeanType(javaBeanType);
     }
-    for (DataType dataType: configuration.dataTypes) {
-      pluginService.registerDataType(dataType);
+    for (DataType type: configuration.types) {
+      pluginService.registerDataType(type);
     }
     for (ActivityType activityType: configuration.activityTypes) {
       pluginService.registerActivityType(activityType);

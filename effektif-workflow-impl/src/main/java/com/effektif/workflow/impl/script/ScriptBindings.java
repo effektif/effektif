@@ -26,8 +26,8 @@ import javax.script.Bindings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.TypedValue;
-import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
@@ -42,7 +42,7 @@ public class ScriptBindings implements Bindings {
   protected Console console;
 
   public ScriptBindings(Script script, ScopeInstanceImpl scopeInstance, Writer logWriter) {
-    this.scriptToProcessMappings = script.scriptToProcessMappings;
+    this.scriptToProcessMappings = script.mappings;
     this.language = script.language;
     this.scopeInstance = scopeInstance;
     this.console = new Console(logWriter);
@@ -84,9 +84,9 @@ public class ScriptBindings implements Bindings {
       log.debug("ScriptBindings.get("+scriptVariableName+")");
     }
     TypedValue typedValue = getTypedValue(scriptVariableName);
-    DataType dataType = typedValue.getType();
+    DataType type = typedValue.getType();
     Object value = typedValue.getValue();
-    return dataType.convertInternalToScriptValue(value, language);
+    return type.convertInternalToScriptValue(value, language);
   }
   
   protected String getVariableId(String scriptVariableName) {
@@ -128,8 +128,8 @@ public class ScriptBindings implements Bindings {
     String variableId = getVariableId(scriptVariableName);
     if (variableId!=null) {
       VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
-      DataType dataType = variableInstance.dataType;
-      Object value = dataType.convertScriptValueToInternal(scriptValue, language);
+      DataType type = variableInstance.type;
+      Object value = type.convertScriptValueToInternal(scriptValue, language);
       variableInstance.setValue(value);
     } else {
       scopeInstance.createVariableInstanceByValue(scriptValue);

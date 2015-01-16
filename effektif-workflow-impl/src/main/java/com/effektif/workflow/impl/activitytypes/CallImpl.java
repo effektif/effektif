@@ -19,22 +19,21 @@ import java.util.List;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.CallMapping;
 import com.effektif.workflow.api.command.StartCommand;
-import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.type.BindingType;
+import com.effektif.workflow.api.type.ListType;
+import com.effektif.workflow.api.type.ObjectField;
+import com.effektif.workflow.api.type.ObjectType;
+import com.effektif.workflow.api.type.VariableIdType;
+import com.effektif.workflow.api.type.WorkflowIdType;
+import com.effektif.workflow.api.type.WorkflowNameType;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.WorkflowSerializer;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
-import com.effektif.workflow.impl.tooling.ConfigurationField;
-import com.effektif.workflow.impl.tooling.ConfigurationPanel;
-import com.effektif.workflow.impl.tooling.FieldTypeBinding;
-import com.effektif.workflow.impl.tooling.FieldTypeList;
-import com.effektif.workflow.impl.tooling.FieldTypeObject;
-import com.effektif.workflow.impl.tooling.FieldTypeVariableId;
-import com.effektif.workflow.impl.tooling.FieldTypeWorkflowId;
-import com.effektif.workflow.impl.tooling.FieldTypeWorkflowName;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -51,53 +50,50 @@ public class CallImpl extends AbstractActivityType<Call> {
   }
 
   @Override
-  public ConfigurationPanel getConfigurationPanel() {
-    return new ConfigurationPanel("Call")
+  public ObjectType getDescriptor() {
+    return new ObjectType(Call.class)
       .description("Invoke another workflow")
-      .field(new ConfigurationField("Sub worfklow id")
-        .key(Call.SUB_WORKFLOW_ID)
-        .type(new FieldTypeWorkflowId()))
-      .field(new ConfigurationField("Sub workflow name")
-        .key(Call.SUB_WORKFLOW_NAME)
-        .type(new FieldTypeBinding(new FieldTypeWorkflowName())))
-      .field(new ConfigurationField("Input mappings")
-        .key(Call.INPUT_MAPPINGS)
-        .type(new FieldTypeList(new FieldTypeObject()
-          .field(new ConfigurationField("Item in this workflow")
-            .key("sourceBinding")
-            .type(new FieldTypeBinding()))
-          .field(new ConfigurationField("Variable in the sub workflow")
-            .key("destinationVariableId")
-            .type(new FieldTypeVariableId())))))
-      .field(new ConfigurationField("Output mappings")
-        .key(Call.OUTPUT_MAPPINGS)
-        .type(new FieldTypeList(new FieldTypeObject()
-          .field(new ConfigurationField("Item in the sub workflow")
-            .key("sourceBinding")
-            .type(new FieldTypeBinding()))
-          .field(new ConfigurationField("Variable in this workflow")
-            .key("destinationVariableId")
-            .type(new FieldTypeVariableId())))));
-  }
-  
-  @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser workflowParser) {
-    subProcessId = workflowParser.parseBinding(activityApi, Call.SUB_WORKFLOW_ID, String.class);
-    subProcessName = workflowParser.parseBinding(activityApi, Call.SUB_WORKFLOW_NAME, String.class);
-    inputMappings = validateCallMappings(activityApi, Call.INPUT_MAPPINGS, workflowParser);
-    outputMappings = validateCallMappings(activityApi, Call.OUTPUT_MAPPINGS, workflowParser);
+      .field(new ObjectField("subWorkflowId")
+        .type(new BindingType(new WorkflowIdType()))
+        .label("Fixed sub worfklow version"))
+      .field(new ObjectField("subWorkflowName")
+        .type(new BindingType(new WorkflowNameType()))
+        .label("Sub workflow latest version"))
+      .field(new ObjectField("inputMappings")
+        .label("Input mappings")
+        .type(new ListType(new ObjectType(CallMapping.class)
+          .field(new ObjectField("sourceBinding")
+            .type(new BindingType())
+            .label("Item in this workflow"))
+          .field(new ObjectField("Variable in the sub workflow")
+            .label("destinationVariableId")
+            .type(new VariableIdType())))))
+      .field(new ObjectField("Output mappings")
+        .name("outputMappings")
+        .type(new ListType(new ObjectType()
+          .field(new ObjectField("Item in the sub workflow")
+            .label("sourceBinding")
+            .type(new BindingType()))
+          .field(new ObjectField("Variable in this workflow")
+            .label("destinationVariableId")
+            .type(new VariableIdType())))));
   }
 
-  private List<CallMappingImpl> validateCallMappings(Activity activityApi, String key, WorkflowParser workflowParser) {
-    List<Object> callMappings = (List<Object>) activityApi.getConfiguration(key); 
-    if (callMappings!=null) {
-      String activityId = activityApi.getId();
-      List<CallMappingImpl> callMappingImpls = new ArrayList<>(callMappings.size());
+  @Override
+  public void parse(ActivityImpl activityImpl, Call call, WorkflowParser workflowParser) {
+    subProcessId = workflowParser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
+    subProcessName = workflowParser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
+    inputMappings = parseMappings(call.getInputMappings(), call, "inputMappings", workflowParser);
+    outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", workflowParser);
+  }
+
+  protected List<CallMappingImpl> parseMappings(List<CallMapping> callMappingsApi, Call call, String fieldName, WorkflowParser workflowParser) {
+    if (callMappingsApi!=null) {
+      List<CallMappingImpl> callMappingImpls = new ArrayList<>(callMappingsApi.size());
       int i=0;
-      for (Object callMappingObject: callMappings) {
-        CallMapping callMapping = workflowParser.parseObject(callMappingObject, CallMapping.class, false, activityId, key);
+      for (CallMapping callMapping: callMappingsApi) {
         CallMappingImpl callMappingImpl = new CallMappingImpl();
-        callMappingImpl.sourceBinding = workflowParser.parseBinding(callMapping.getSourceBinding(), Object.class, activityId, key+"["+i+"]");
+        callMappingImpl.sourceBinding = workflowParser.parseBinding(callMapping.getSourceBinding(), Object.class, false, call, fieldName+"["+i+"]");
         callMappingImpl.destinationVariableId = callMapping.getDestinationVariableId();
         i++;
       }

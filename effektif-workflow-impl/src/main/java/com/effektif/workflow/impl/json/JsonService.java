@@ -17,6 +17,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
+import com.effektif.workflow.api.workflow.Workflow;
+
 
 public interface JsonService {
   
@@ -35,4 +37,8 @@ public interface JsonService {
   <T> T jsonToObject(Reader reader, Class<T> type);
   
   <T> T jsonMapToObject(Map<String,Object> jsonMap, Class<T> type);
+
+  void serializeWorkflow(Workflow workflow);
+
+  Workflow deserializeWorkflow(Workflow workflow);
 }

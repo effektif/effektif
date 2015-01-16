@@ -13,25 +13,24 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.impl.type.DataType;
 
 
 public class TypedValue {
 
-  DataType dataType;
+  DataType type;
   Object value;
 
-  public TypedValue(DataType dataType, Object value) {
-    this.dataType = dataType;
+  public TypedValue(DataType type, Object value) {
+    this.type = type;
     this.value = value;
   }
 
   public DataType getType() {
-    return dataType;
+    return type;
   }
   
-  public void setType(DataType dataType) {
-    this.dataType = dataType;
+  public void setType(DataType type) {
+    this.type = type;
   }
   
   public Object getValue() {

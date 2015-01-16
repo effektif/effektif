@@ -13,15 +13,29 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import java.util.HashMap;
+import java.util.Map;
 
 
+public class Transition {
 
-public class Transition extends Base {
-
+  protected String id;
   protected String from;
   protected String to;
   protected String condition;
-  
+  protected Map<String,Object> properties;
+
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public Transition id(String id) {
+    this.id = id;
+    return this;
+  }
+
   public Transition() {
   }
   
@@ -59,6 +73,21 @@ public class Transition extends Base {
   }
   public Transition condition(String condition) {
     this.condition = condition;
+    return this;
+  }
+
+  public Map<String,Object> getProperties() {
+    return this.properties;
+  }
+  public void setProperties(Map<String,Object> properties) {
+    this.properties = properties;
+  }
+  
+  public Transition property(String key,Object value) {
+    if (properties==null) {
+      properties = new HashMap<>();
+    }
+    this.properties.put(key, value);
     return this;
   }
 }

@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.type.Type;
+
 
 /** Describes how the value is obtained 
  * for an activity input parameter. */
@@ -22,6 +24,10 @@ public class Binding {
    * This is mutually exclusive with variableId and expression */
   protected Object value;
   
+  /** the engine will initialize this so 
+   * the value can be deserialized. */
+  protected Type type;
+
   /** reference to the variable that will contain the input value.  
    * This is mutually exclusive with value and expression */
   protected String variableId;
@@ -60,6 +66,17 @@ public class Binding {
   }
   public Binding expression(String expression) {
     this.expression = expression;
+    return this;
+  }
+
+  public Type getType() {
+    return this.type;
+  }
+  public void setType(Type type) {
+    this.type = type;
+  }
+  public Binding type(Type type) {
+    this.type = type;
     return this;
   }
 }

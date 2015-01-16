@@ -19,6 +19,7 @@ import java.util.List;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.PluginService;
 
@@ -39,7 +40,6 @@ public class ActivityImpl extends ScopeImpl {
 
   public void parse(Activity activityApi, Scope scopeApi, WorkflowParser workflowParser, ScopeImpl parent) {
     super.parse(activityApi, workflowParser, parent);
-    this.id = activityApi.getId();
     if (id==null || "".equals(id)) {
       workflowParser.addError("Activity has no id");
     }
@@ -55,7 +55,7 @@ public class ActivityImpl extends ScopeImpl {
     if (activityApi.getMultiInstance()!=null) {
       this.multiInstance = new MultiInstanceImpl();
       workflowParser.pushContext(multiInstance);
-      this.multiInstance.parse(activityApi.getMultiInstance(), this, workflowParser);
+      this.multiInstance.parse(activityApi, this, workflowParser);
       workflowParser.popContext();
     }
     

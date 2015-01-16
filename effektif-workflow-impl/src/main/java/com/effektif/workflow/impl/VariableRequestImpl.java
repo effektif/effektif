@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,7 +53,7 @@ public abstract class VariableRequestImpl {
         for (VariableImpl variableDefinition: variableDefinitions) {
           String variableId = variableDefinition.id;
           Object internalValue = variableValues.get(variableId);
-          Object serializedValue = variableDefinition.dataType.convertInternalToJsonValue(internalValue);
+          Object serializedValue = variableDefinition.type.convertInternalToJsonValue(internalValue);
           serializedValues.put(variableId, serializedValue);
         }
       }
@@ -69,7 +69,7 @@ public abstract class VariableRequestImpl {
         for (VariableImpl variableDefinition: variableDefinitions) {
           String variableId = variableDefinition.id;
           Object jsonValue = variableValues.get(variableId);
-          Object internalValue = variableDefinition.dataType.convertJsonToInternalValue(jsonValue);
+          Object internalValue = variableDefinition.type.convertJsonToInternalValue(jsonValue);
           internalValues.put(variableId, internalValue);
         }
       }
@@ -85,13 +85,13 @@ public abstract class VariableRequestImpl {
     return this;
   }
 
-  public VariableRequestImpl variableValue(String variableDefinitionId, Object value, DataType dataType) {
+  public VariableRequestImpl variableValue(String variableDefinitionId, Object value, DataType type) {
     if (variableValues==null) {
       variableValues = new LinkedHashMap<>();
       variableDataTypes = new HashMap<>();
     }
     variableValues.put(variableDefinitionId, value);
-    variableDataTypes.put(variableDefinitionId, dataType);
+    variableDataTypes.put(variableDefinitionId, type);
     return this;
   }
 

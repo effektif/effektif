@@ -462,8 +462,8 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         String variableId = readString(dbVariableInstance, VariableInstanceFields.VARIABLE_ID);
         variableInstance.variable = findVariableByIdRecurseParents(parent.scope, variableId);
         if (variableInstance.variable!=null) {
-          variableInstance.dataType = variableInstance.variable.dataType;
-          variableInstance.value = variableInstance.dataType.convertJsonToInternalValue(dbVariableInstance.get(VariableInstanceFields.VALUE));
+          variableInstance.type = variableInstance.variable.type;
+          variableInstance.value = variableInstance.type.convertJsonToInternalValue(dbVariableInstance.get(VariableInstanceFields.VALUE));
         }
         parent.addVariableInstance(variableInstance);
       }
@@ -558,7 +558,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         writeString(dbVariable, VariableInstanceFields._ID, variableInstance.id);
         writeString(dbVariable, VariableInstanceFields.VARIABLE_ID, variableInstance.variable.id);
         writeStringOpt(dbVariable, VariableInstanceFields.PARENT, parentId);
-        Object jsonValue = variableInstance.dataType.convertInternalToJsonValue(variableInstance.value);
+        Object jsonValue = variableInstance.type.convertInternalToJsonValue(variableInstance.value);
         writeObjectOpt(dbVariable, VariableInstanceFields.VALUE, jsonValue);
         writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
       }

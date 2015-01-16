@@ -16,13 +16,12 @@ package com.effektif.workflow.impl.activitytypes;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.task.Task;
 import com.effektif.workflow.impl.task.TaskService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -37,10 +36,10 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser parser) {
+  public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
     this.taskService = parser.getServiceRegistry().getService(TaskService.class);
-    this.nameBinding = parser.parseBinding(activityApi, UserTask.KEY_NAME, String.class, false);
-    this.candidateIdBindings = parser.parseBindings(activityApi, UserTask.KEY_CANDIDATE_IDS, String.class);
+    this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), String.class, false, userTaskApi, "nameBinding");
+    this.candidateIdBindings = parser.parseBindings(userTaskApi.getCandidateIdBindings(), String.class, false, userTaskApi, "candidateIdBindings");
   }
   
   @Override

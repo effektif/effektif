@@ -25,7 +25,7 @@ public class Script {
   public CompiledScript compiledScript;
 
   /** maps script variable names to process variable definition names */ 
-  public Map<String, String> scriptToProcessMappings;
+  public Map<String, String> mappings;
 
   public Script language(String language) {
     this.language = language;
@@ -38,10 +38,10 @@ public class Script {
   }
   
   public Script scriptToProcessMapping(String scriptVariableName, String variableDefinitionId) {
-    if (scriptToProcessMappings==null) {
-      scriptToProcessMappings = new HashMap<>();
+    if (mappings==null) {
+      mappings = new HashMap<>();
     }
-    scriptToProcessMappings.put(scriptVariableName, variableDefinitionId);
+    mappings.put(scriptVariableName, variableDefinitionId);
     return this;
   }
 }

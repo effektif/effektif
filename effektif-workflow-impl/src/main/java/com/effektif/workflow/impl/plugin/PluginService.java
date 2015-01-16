@@ -13,20 +13,23 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.type.ObjectType;
+import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.tooling.ConfigurationPanel;
-import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.plugin.Serializer.ObjectSerializer;
+import com.effektif.workflow.impl.type.JavaBeanTypeImpl;
+import com.effektif.workflow.impl.type.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,13 +38,18 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
   
   private static final Logger log = LoggerFactory.getLogger(PluginService.class);
   
-  public List<ConfigurationPanel> activityTypeConfigurationPanels = new ArrayList<>();
-  public List<ConfigurationPanel> dataTypeConfigurationPanels = new ArrayList<>();
   public ObjectMapper objectMapper;
+  protected WorkflowParser workflowParser;
 
   // maps activity api configuration classes to activity type implementation classes
+  public Map<Class<?>, ObjectType> activityTypeDescriptors = new LinkedHashMap<>();
   public Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
+  public Map<Class<?>, ActivityType> activityTypes = new HashMap<>();
+  public Map<Class<?>, ObjectTypeImpl> activityTypeSerializers = new HashMap<>();
+
+  public Map<Class<?>, ObjectType> dataTypeDescriptors = new LinkedHashMap<>();
   public Map<Class<?>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
+  public Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
   
 //  @JsonIgnore
 //  public Map<Type,ObjectType> dataTypeDescriptorsByValueType = new HashMap<>();
@@ -54,36 +62,42 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
   @Override
   public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
+    WorkflowEngineImpl workflowEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
+    workflowParser = new WorkflowParser(workflowEngine);
   }
 
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
     dataTypeClasses.put(apiClass, dataType.getClass());
     objectMapper.registerSubtypes(apiClass);
+    dataTypesByValueClass.put(dataType.getValueClass(), dataType);
+  }
+
+  public void registerJavaBeanType(Class<?> javaBeanClass) {
+    registerDataType(new JavaBeanTypeImpl(javaBeanClass));
   }
 
   public void registerActivityType(ActivityType activityType) {
     Class apiClass = activityType.getApiClass();
+    ObjectType descriptor = activityType.getDescriptor();
     activityTypeClasses.put(apiClass, activityType.getClass());
+    activityTypeDescriptors.put(apiClass, descriptor);
+    ObjectTypeImpl serializer = new ObjectTypeImpl(apiClass);
+    serializer.parse(descriptor, workflowParser);
+    activityTypeSerializers.put(apiClass, serializer);
+    activityTypes.put(apiClass, activityType);
     objectMapper.registerSubtypes(apiClass);
-  }
-  
-  public void registerJavaBeanType(Class<?> javaBeanClass) {
-//    Exceptions.checkNotNullParameter(javaBeanClass, "javaBeanClass");
-//    objectMapper.registerSubtypes(javaBeanClass);
-//    return registerDataType(new JavaBeanType(javaBeanClass));
-    throw new RuntimeException("TODO");
   }
   
   public void registerJobType(Class<? extends JobType> jobType) {
     objectMapper.registerSubtypes(jobType);
   }
 
-  public ActivityType instantiateActivityType(Activity apiActivity) {
-    Exceptions.checkNotNullParameter(apiActivity, "apiActivity");
-    Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(apiActivity.getClass());
+  public ActivityType instantiateActivityType(Activity activityApi) {
+    Exceptions.checkNotNullParameter(activityApi, "apiActivity");
+    Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(activityApi.getClass());
     if (activityTypeClass==null) {
-      throw new RuntimeException("No ActivityType defined for "+apiActivity.getClass().getName());
+      throw new RuntimeException("No ActivityType defined for "+activityApi.getClass().getName());
     }
     try {
       return activityTypeClass.newInstance();
@@ -92,11 +106,11 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     }
   }
   
-  public DataType instantiateDataType(Variable apiVariable) {
-    Exceptions.checkNotNullParameter(apiVariable, "apiVariable");
-    Class<? extends DataType> dataTypeClass = dataTypeClasses.get(apiVariable.getClass());
+  public DataType instantiateDataType(Type typeApi) {
+    Exceptions.checkNotNullParameter(typeApi, "apiVariable");
+    Class<? extends DataType> dataTypeClass = dataTypeClasses.get(typeApi.getClass());
     if (dataTypeClass==null) {
-      throw new RuntimeException("No DataType defined for "+apiVariable.getClass().getName());
+      throw new RuntimeException("No DataType defined for "+typeApi.getClass().getName());
     }
     try {
       return dataTypeClass.newInstance();
@@ -105,6 +119,24 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     }
   }
   
+  public ObjectType getActivityTypeDescriptor(Class<?> activityApiClass) {
+    return activityTypeDescriptors.get(activityApiClass);
+  }
+
+  public ActivityType getActivityType(Class<? extends Activity> activityApiClass) {
+    return activityTypes.get(activityApiClass);
+  }
+
+  public DataType getDataTypeByValueClass(Class<?> valueClass) {
+    return dataTypesByValueClass.get(valueClass);
+  }
+
+  public ObjectTypeImpl getActivityTypeSerializer(Class<? extends Activity> activityApiClass) {
+    return activityTypeSerializers.get(activityApiClass);
+  }
+  
+
+
 //  public List<ObjectType> activityTypeDescriptors = new ArrayList<>();
 //  public List<ObjectType> dataTypeDescriptors = new ArrayList<>();
 //

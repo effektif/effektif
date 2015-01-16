@@ -26,79 +26,90 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
 
 
-public abstract class ScopeImpl extends BaseImpl {
+public abstract class ScopeImpl {
 
+  public String id;
+  public ScopeImpl parent;
+  public WorkflowEngineImpl workflowEngine;
+  public WorkflowImpl workflow;
   public Map<String, ActivityImpl> activities;
   public Map<String, VariableImpl> variables;
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
   
-  public void parse(Scope apiScope, WorkflowParser workflowParser, ScopeImpl parent) {
-    super.parse(apiScope, workflowParser, parent);
+  public void parse(Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
+    this.id = scopeApi.getId();
+    this.workflowEngine = parser.workflowEngine;
+    if (parent!=null) {
+      this.parent = parent;
+      this.workflow = parent.workflow;
+    }
     
-    List<Variable> variableApi = apiScope.getVariables();
+    List<Variable> variableApi = scopeApi.getVariables();
     if (variableApi!=null) {
       Set<String> variableIds = new HashSet<>();
       int i = 0;
       for (Variable apiVariable: variableApi) {
         VariableImpl variableImpl = new VariableImpl();
-        workflowParser.pushContext("variables", apiVariable, i);
+        parser.pushContext("variables", apiVariable, i);
         if (variableIds.contains(apiVariable.getId())) {
-          workflowParser.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variableImpl.id);
+          parser.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variableImpl.id);
         }
         variableIds.add(apiVariable.getId());
-        variableImpl.parse(apiVariable, this, workflowParser);
+        variableImpl.parse(apiVariable, this, parser);
         addVariable(variableImpl);
-        workflowParser.popContext();
+        parser.popContext();
         i++;
       }
     }
     
-    List<Timer> timersApi = apiScope.getTimers();
+    List<Timer> timersApi = scopeApi.getTimers();
     if (timersApi!=null) {
       int i = 0;
       for (Timer timerApi: timersApi) {
         TimerImpl timer = new TimerImpl();
-        workflowParser.pushContext("timers", timerApi, i);
-        timer.parse(timerApi, this, workflowParser);
+        parser.pushContext("timers", timerApi, i);
+        timer.parse(timerApi, this, parser);
         addTimer(timer);
-        workflowParser.popContext();
+        parser.popContext();
         i++;
       }
     }
 
     Map<String, ActivityImpl> activitiesByDefaultTransitionId = new HashMap<>();
-    List<Activity> activitiesApi = apiScope.getActivities();
+    List<Activity> activitiesApi = scopeApi.getActivities();
     if (activitiesApi!=null) {
       Set<String> activityIds = new HashSet<>();
       int i = 0;
       for (Activity activityApi: activitiesApi) {
         ActivityImpl activityImpl = new ActivityImpl();
-        workflowParser.pushContext("activities", activityApi, i);
-        activityImpl.parse(activityApi, apiScope, workflowParser, this);
+        parser.pushContext("activities", activityApi, i);
+        activityImpl.parse(activityApi, scopeApi, parser, this);
         addActivity(activityImpl);
         if (activityIds.contains(activityImpl.id)) {
-          workflowParser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activityImpl.id);
+          parser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activityImpl.id);
         }
         if (activityApi.getDefaultTransitionId()!=null) {
           activitiesByDefaultTransitionId.put(activityApi.getDefaultTransitionId(), activityImpl);
         }
-        workflowParser.popContext();
+        parser.popContext();
         i++;
       }
     }
 
-    List<Transition> transitionsApi = apiScope.getTransitions();
+    List<Transition> transitionsApi = scopeApi.getTransitions();
     if (transitionsApi!=null) {
       int i = 0;
       for (Transition transitionApi: transitionsApi) {
         TransitionImpl transitionImpl = new TransitionImpl();
-        workflowParser.pushContext("transitions", transitionApi, i);
-        transitionImpl.parse(transitionApi, this, workflowParser, activitiesByDefaultTransitionId);
+        parser.pushContext("transitions", transitionApi, i);
+        transitionImpl.parse(transitionApi, this, parser, activitiesByDefaultTransitionId);
         addTransition(transitionImpl);
-        workflowParser.popContext();
+        parser.popContext();
         i++;
       }
     }
@@ -110,9 +121,9 @@ public abstract class ScopeImpl extends BaseImpl {
       for (ActivityImpl activity : activities.values()) {
         Activity apiActivity = activitiesApi.get(i);
         if (activity.activityType != null) {
-          workflowParser.pushContext("activities", apiActivity, i);
-          activity.activityType.parse(activity, apiActivity, workflowParser);
-          workflowParser.popContext();
+          parser.pushContext("activities", apiActivity, i);
+          activity.activityType.parse(activity, apiActivity, parser);
+          parser.popContext();
         }
         i++;
       }
@@ -121,7 +132,7 @@ public abstract class ScopeImpl extends BaseImpl {
     if (!activitiesByDefaultTransitionId.isEmpty()) {
       for (String nonExistingDefaultTransitionId: activitiesByDefaultTransitionId.keySet()) {
         ActivityImpl activity = activitiesByDefaultTransitionId.get(nonExistingDefaultTransitionId);
-        workflowParser.addError("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
+        parser.addError("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
       }
     }
   }
@@ -174,7 +185,7 @@ public abstract class ScopeImpl extends BaseImpl {
   }
 
 
-  public boolean isProcessDefinition() {
+  public boolean isWorkflow() {
     return parent!=null;
   }
 

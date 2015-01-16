@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.command.StartCommand;
-import com.effektif.workflow.api.variables.Text;
+import com.effektif.workflow.api.type.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
@@ -30,9 +30,9 @@ public class ScriptTest extends WorkflowTest {
   @Test
   public void testScript() {
     Workflow workflow = new Workflow()
-      .variable(new Text("n"))
-      .variable(new Text("m"))
-      .activity(new ScriptTask("s")
+      .variable("n", new TextType())
+      .variable("m", new TextType())
+      .activity("s", new ScriptTask()
         .variableMapping("name", "n")
         .variableMapping("message", "m")
         .script("message = 'Hello ' + name;"));

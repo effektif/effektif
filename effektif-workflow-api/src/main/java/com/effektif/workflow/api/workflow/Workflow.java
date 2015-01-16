@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.type.Type;
+
 
 
 public class Workflow extends Scope {
@@ -93,13 +95,23 @@ public class Workflow extends Scope {
     return this;
   }
   @Override
+  public Workflow activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+  @Override
   public Workflow transition(Transition transition) {
     super.transition(transition);
     return this;
   }
   @Override
-  public Workflow variable(Variable variable) {
-    super.variable(variable);
+  public Workflow transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+  @Override
+  public Workflow variable(String id, Type type) {
+    super.variable(id, type);
     return this;
   }
   @Override

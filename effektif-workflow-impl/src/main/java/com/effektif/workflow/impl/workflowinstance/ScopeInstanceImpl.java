@@ -34,11 +34,11 @@ import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.TypedValue;
-import com.effektif.workflow.impl.type.AnyDataType;
-import com.effektif.workflow.impl.type.DataType;
-import com.effektif.workflow.impl.type.NumberType;
-import com.effektif.workflow.impl.type.TextType;
+import com.effektif.workflow.impl.type.AnyDataTypeImpl;
+import com.effektif.workflow.impl.type.NumberTypeImpl;
+import com.effektif.workflow.impl.type.TextTypeImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
@@ -161,7 +161,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     VariableInstanceImpl variableInstance = new VariableInstanceImpl(this, variable, variableInstanceId);
     variableInstance.workflowEngine = workflowEngine;
     variableInstance.workflowInstance = workflowInstance;
-    variableInstance.dataType = variable.dataType;
+    variableInstance.type = variable.type;
     variableInstance.value = variable.initialValue;
     variableInstance.variable = variable;
     if (updates!=null) {
@@ -265,11 +265,11 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public void createVariableInstanceByValue(Object value) {
     VariableImpl variable = new VariableImpl();
     if (value instanceof String) {
-      variable.dataType = new TextType();
+      variable.type = new TextTypeImpl();
     } else if (value instanceof Number) {
-      variable.dataType = new NumberType();
+      variable.type = new NumberTypeImpl();
     } else {
-      variable.dataType = new AnyDataType();
+      variable.type = new AnyDataTypeImpl();
     }
     VariableInstanceImpl variableInstance = createVariableInstance(variable);
     variableInstance.setValue(value);
@@ -291,9 +291,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public TypedValue getVariableTypedValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
     if (variableInstance!=null) {
-      DataType dataType = variableInstance.variable.dataType;
+      DataType type = variableInstance.variable.type;
       Object value = variableInstance.getValue();
-      return new TypedValue(dataType, value);
+      return new TypedValue(type, value);
     }
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }

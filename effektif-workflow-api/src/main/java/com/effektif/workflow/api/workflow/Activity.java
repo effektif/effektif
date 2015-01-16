@@ -14,9 +14,7 @@
 package com.effektif.workflow.api.workflow;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -29,7 +27,6 @@ public class Activity extends Scope {
   protected String defaultTransitionId;
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
-  protected Map<String, Object> configuration;
   
   public Activity() {
   }
@@ -81,95 +78,24 @@ public class Activity extends Scope {
     this.outgoingTransitions = outgoingTransitions;
   }
 
-  protected Scope setConfigurationBindingValue(String key, Object value) {
-    setConfiguration(key, new Binding().value(value));
-    return this;
-  }
-
-  protected Scope setConfigurationBindingVariableId(String key, String variableId) {
-    setConfiguration(key, new Binding().variableId(variableId));
-    return this;
-  }
-
-  protected Scope setConfigurationBindingExpression(String key, String expression) {
-    setConfiguration(key, new Binding().expression(expression));
-    return this;
-  }
-
-  protected Scope setConfiguration(String key, Object value) {
-    if (configuration==null) {
-      configuration = new HashMap<>(); 
-    }
-    configuration.put(key, value);
-    return this;
-  }
-  
-  protected Scope addConfigurationBindingValue(String key, Object value) {
-    addConfiguration(key, new Binding().value(value));
-    return this;
-  }
-
-  protected Scope addConfigurationBindingVariableId(String key, String variableId) {
-    addConfiguration(key, new Binding().variableId(variableId));
-    return this;
-  }
-
-  protected Scope addConfigurationBindingExpression(String key, String expression) {
-    addConfiguration(key, new Binding().expression(expression));
-    return this;
-  }
-
-  protected Scope addConfiguration(String key, Object value) {
-    if (configuration==null) {
-      configuration = new HashMap<>(); 
-    }
-    List<Object> values = (List<Object>) configuration.get(key);
-    if (values==null) {
-      values = new ArrayList<>();
-      configuration.put(key, values);
-    }
-    values.add(value);
-    return this;
-  }
-  
-  
-  
-//  protected Object getInputValue(String key) {
-//    if (inputs!=null) {
-//      for (Input input : inputs) {
-//        if (key.equals(input.key)
-//            && input.binding instanceof BindingValue) {
-//          return ((BindingValue)input.binding).value;
-//        }
-//      }
-//    }
-//    return null;
-//  }
-//  
-  public Object getConfiguration(String key) {
-    return configuration!=null ? configuration.get(key) : null;
-  }
-
-//  public List<Input> getInputs(String key) {
-//    List<Input> keyInputs = new ArrayList<>();
-//    if (inputs!=null) {
-//      for (Input input : inputs) {
-//        if (key.equals(input.key)) {
-//          keyInputs.add(input);
-//        }
-//      }
-//    }
-//    return keyInputs;
-//  }
-
   @Override
   public Activity activity(Activity activity) {
     super.activity(activity);
     return this;
   }
   @Override
+  public Activity activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+  @Override
   public Activity transition(Transition transition) {
     super.transition(transition);
+    return this;
+  }
+  @Override
+  public Activity transition(String id, Transition transition) {
+    super.transition(id, transition);
     return this;
   }
   @Override

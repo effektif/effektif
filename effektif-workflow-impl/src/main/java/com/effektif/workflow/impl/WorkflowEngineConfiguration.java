@@ -36,11 +36,11 @@ import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.script.ScriptServiceImpl;
-import com.effektif.workflow.impl.type.DataType;
-import com.effektif.workflow.impl.type.ListType;
-import com.effektif.workflow.impl.type.NumberType;
-import com.effektif.workflow.impl.type.TextType;
+import com.effektif.workflow.impl.type.ListTypeImpl;
+import com.effektif.workflow.impl.type.NumberTypeImpl;
+import com.effektif.workflow.impl.type.TextTypeImpl;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -70,7 +70,7 @@ public abstract class WorkflowEngineConfiguration {
   protected ServiceRegistry serviceRegistry;
   protected List<Initializable> initializables = new ArrayList<>();
   protected List<ActivityType> activityTypes = new ArrayList<>();
-  protected List<DataType> dataTypes = new ArrayList<>();
+  protected List<DataType> types = new ArrayList<>();
   protected List<Class<? extends JobType>> jobTypeClasses = new ArrayList<>();
   protected List<Class<?>> javaBeanTypes = new ArrayList<>();
   
@@ -144,9 +144,9 @@ public abstract class WorkflowEngineConfiguration {
   }
 
   protected void initializeDefaultDataTypes() {
-    registerDataType(new TextType());
-    registerDataType(new NumberType());
-    registerDataType(new ListType());
+    registerDataType(new TextTypeImpl());
+    registerDataType(new NumberTypeImpl());
+    registerDataType(new ListTypeImpl());
     // registerJavaBeanType(CallMapping.class);
   }
   
@@ -177,8 +177,8 @@ public abstract class WorkflowEngineConfiguration {
     return this;
   }
 
-  public WorkflowEngineConfiguration registerDataType(DataType dataType) {
-    dataTypes.add(dataType);
+  public WorkflowEngineConfiguration registerDataType(DataType type) {
+    types.add(type);
     return this;
   }
 

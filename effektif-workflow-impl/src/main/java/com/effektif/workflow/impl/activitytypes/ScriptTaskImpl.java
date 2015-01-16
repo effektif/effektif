@@ -16,40 +16,39 @@ package com.effektif.workflow.impl.activitytypes;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.ScriptTask;
-import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;
-  public Map<String, String> scriptToWorkflowMappings;
-  public Script script;
+  public Map<String, String> mappings;
+  public Script compiledScript;
   
   public ScriptTaskImpl() {
     super(ScriptTask.class);
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser parser) {
+  public void parse(ActivityImpl activityImpl, ScriptTask scriptTask, WorkflowParser parser) {
     this.scriptService = parser.getServiceRegistry().getService(ScriptService.class);
-    this.scriptToWorkflowMappings = (Map<String, String>) parser.parseObject(activityApi, ScriptTask.KEY_MAPPINGS, false);
-    String scriptText = parser.parseString(activityApi, ScriptTask.KEY_SCRIPT, true);
-    if (scriptText!=null) {
-      script = scriptService.compile(scriptText);
-      script.scriptToProcessMappings = scriptToWorkflowMappings;
+    this.mappings = scriptTask.getMappings();
+    String script = scriptTask.getScript();
+    if (script!=null) {
+      compiledScript = scriptService.compile(script);
+      compiledScript.mappings = mappings;
     }
   }
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
-    if (script!=null) {
-      scriptService.evaluateScript(activityInstance, script);
+    if (compiledScript!=null) {
+      scriptService.evaluateScript(activityInstance, compiledScript);
     }
     activityInstance.onwards();
   }

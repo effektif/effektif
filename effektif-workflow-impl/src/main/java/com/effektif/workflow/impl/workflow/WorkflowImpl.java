@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.workflow;
 import java.util.List;
 
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.WorkflowParser;
 
 
 public class WorkflowImpl extends ScopeImpl {

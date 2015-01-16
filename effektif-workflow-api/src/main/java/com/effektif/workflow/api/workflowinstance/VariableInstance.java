@@ -13,10 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.effektif.workflow.api.type.Type;
+
 
 public class VariableInstance {
 
   protected String id;
+  protected String variableId;
+  protected Object value;
+  protected Type type;
 
   public String getId() {
     return this.id;
@@ -25,8 +30,6 @@ public class VariableInstance {
     this.id = id;
   }
   
-  protected String variableId;
-
   public String getVariableId() {
     return this.variableId;
   }
@@ -34,12 +37,17 @@ public class VariableInstance {
     this.variableId = variableId;
   }
 
-  protected Object value;
-
   public Object getValue() {
     return this.value;
   }
   public void setValue(Object value) {
     this.value = value;
+  }
+
+  public Type getType() {
+    return this.type;
+  }
+  public void setType(Type type) {
+    this.type = type;
   }
 }

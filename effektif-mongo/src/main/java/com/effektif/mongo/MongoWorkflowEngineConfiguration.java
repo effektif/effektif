@@ -22,7 +22,7 @@ import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -208,8 +208,8 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   }
 
   @Override
-  public MongoWorkflowEngineConfiguration registerDataType(DataType dataType) {
-    super.registerDataType(dataType);
+  public MongoWorkflowEngineConfiguration registerDataType(DataType type) {
+    super.registerDataType(type);
     return this;
   }
   

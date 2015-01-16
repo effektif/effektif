@@ -13,6 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -25,10 +28,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends Activity {
 
-  public static final String SUB_WORKFLOW_ID = "subWorkflowId";
-  public static final String SUB_WORKFLOW_NAME = "subWorkflowName";
-  public static final String INPUT_MAPPINGS = "inputMappings";
-  public static final String OUTPUT_MAPPINGS = "outputMappings";
+  protected Binding subWorkflowIdBinding; 
+  protected Binding subWorkflowNameBinding; 
+  protected List<CallMapping> inputMappings; 
+  protected List<CallMapping> outputMappings; 
   
   public Call() {
   }
@@ -38,17 +41,17 @@ public class Call extends Activity {
   }
 
   public Call subWorkflowId(String subWorkflowId) {
-    setConfigurationBindingValue(SUB_WORKFLOW_ID, subWorkflowId);
+    this.subWorkflowIdBinding = new Binding().value(subWorkflowId);
     return this;
   }
 
   public Call subWorkflowIdExpression(String subWorkflowIdExpression) {
-    setConfigurationBindingExpression(SUB_WORKFLOW_ID,subWorkflowIdExpression);
+    this.subWorkflowIdBinding = new Binding().expression(subWorkflowIdExpression);
     return this;
   }
 
   public Call subWorkflowIdVariableId(String subWorkflowIdVariableId) {
-    setConfigurationBindingVariableId(SUB_WORKFLOW_ID, subWorkflowIdVariableId);
+    this.subWorkflowIdBinding = new Binding().variableId(subWorkflowIdVariableId);
     return this;
   }
   
@@ -69,24 +72,28 @@ public class Call extends Activity {
     return this;
   }
 
-  public Call addInputMapping(Binding sourceBinding, String destinationVariableId) {
-    CallMapping inputCallMapping = new CallMapping()
+  public Call addInputMapping(Binding sourceBinding, String subWorkflowVariableId) {
+    if (inputMappings==null) {
+      inputMappings = new ArrayList<>();
+    }
+    inputMappings.add(new CallMapping()
       .sourceBinding(sourceBinding)
-      .destinationVariableId(destinationVariableId);
-    addConfiguration(INPUT_MAPPINGS, inputCallMapping);
+      .destinationVariableId(subWorkflowVariableId));
     return this;
   }
 
-  public Call outputMapping(String calledVariableId, String callerVariableId) {
-    outputMapping(new Binding().variableId(calledVariableId), callerVariableId);
+  public Call outputMapping(String subWorkflowVariableId, String variableId) {
+    outputMapping(new Binding().variableId(subWorkflowVariableId), variableId);
     return this;
   }
 
   public Call outputMapping(Binding calledBinding, String callerVariableId) {
-    CallMapping outputMapping = new CallMapping()
+    if (outputMappings==null) {
+      outputMappings = new ArrayList<>();
+    }
+    outputMappings.add(new CallMapping()
       .sourceBinding(calledBinding)
-      .destinationVariableId(callerVariableId);
-    addConfiguration(OUTPUT_MAPPINGS, outputMapping);
+      .destinationVariableId(callerVariableId));
     return this;
   }
   
@@ -142,5 +149,45 @@ public class Call extends Activity {
   public Call property(String key, Object value) {
     super.property(key, value);
     return this;
+  }
+
+  
+  public Binding getSubWorkflowIdBinding() {
+    return subWorkflowIdBinding;
+  }
+
+  
+  public void setSubWorkflowIdBinding(Binding subWorkflowIdBinding) {
+    this.subWorkflowIdBinding = subWorkflowIdBinding;
+  }
+
+  
+  public Binding getSubWorkflowNameBinding() {
+    return subWorkflowNameBinding;
+  }
+
+  
+  public void setSubWorkflowNameBinding(Binding subWorkflowNameBinding) {
+    this.subWorkflowNameBinding = subWorkflowNameBinding;
+  }
+
+  
+  public List<CallMapping> getInputMappings() {
+    return inputMappings;
+  }
+
+  
+  public void setInputMappings(List<CallMapping> inputMappings) {
+    this.inputMappings = inputMappings;
+  }
+
+  
+  public List<CallMapping> getOutputMappings() {
+    return outputMappings;
+  }
+
+  
+  public void setOutputMappings(List<CallMapping> outputMappings) {
+    this.outputMappings = outputMappings;
   }
 }

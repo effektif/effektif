@@ -14,21 +14,42 @@
 package com.effektif.workflow.api.workflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.effektif.workflow.api.type.Type;
 
 
-public class Scope extends Base {
+public class Scope {
 
+  protected String id;
   protected List<Activity> activities;
   protected List<Transition> transitions;
   protected List<Variable> variables;
   protected List<Timer> timers;
+  protected Map<String,Object> properties;
+
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public Scope id(String id) {
+    this.id = id;
+    return this;
+  }
 
   public List<Activity> getActivities() {
     return this.activities;
   }
   public void setActivities(List<Activity> activities) {
     this.activities = activities;
+  }
+  public Scope activity(String id, Activity activity) {
+    activity(activity.id(id));
+    return this;
   }
   public Scope activity(Activity activity) {
     if (this.activities==null) {
@@ -44,6 +65,10 @@ public class Scope extends Base {
   public void setTransitions(List<Transition> transitions) {
     this.transitions = transitions;
   }
+  public Scope transition(String id, Transition transition) {
+    transition(transition.id(id));
+    return this;
+  }
   public Scope transition(Transition transition) {
     if (this.transitions==null) {
       this.transitions = new ArrayList<>();
@@ -57,6 +82,12 @@ public class Scope extends Base {
   }
   public void setVariables(List<Variable> variables) {
     this.variables = variables;
+  }
+  public Scope variable(String id, Type type) {
+    variable(new Variable()
+      .id(id)
+      .type(type));
+    return this;
   }
   public Scope variable(Variable variable) {
     if (this.variables==null) {
@@ -78,6 +109,20 @@ public class Scope extends Base {
       this.timers = new ArrayList<>();
     }
     this.timers.add(timer);
+    return this;
+  }
+  
+  public Map<String,Object> getProperties() {
+    return this.properties;
+  }
+  public void setProperties(Map<String,Object> properties) {
+    this.properties = properties;
+  }
+  public Scope property(String key,Object value) {
+    if (properties==null) {
+      properties = new HashMap<>();
+    }
+    this.properties.put(key, value);
     return this;
   }
 }

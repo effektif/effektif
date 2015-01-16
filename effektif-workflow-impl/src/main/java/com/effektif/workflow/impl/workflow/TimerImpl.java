@@ -14,14 +14,25 @@
 package com.effektif.workflow.impl.workflow;
 
 import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.JobType;
 
 
-public class TimerImpl extends BaseImpl {
+public class TimerImpl {
   
+  public String id;
+  public ScopeImpl parent;
+  public WorkflowEngineImpl workflowEngine;
+  public WorkflowImpl workflow;
   public JobType jobType;
 
-  public void parse(Timer apiTimer, ScopeImpl parent, WorkflowParser validator) {
-    super.parse(apiTimer, validator, parent);
+  public void parse(Timer timerApi, ScopeImpl parent, WorkflowParser parser) {
+    this.id = timerApi.getId();
+    this.workflowEngine = parser.workflowEngine;
+    if (parent!=null) {
+      this.parent = parent;
+      this.workflow = parent.workflow;
+    }
   }
 }

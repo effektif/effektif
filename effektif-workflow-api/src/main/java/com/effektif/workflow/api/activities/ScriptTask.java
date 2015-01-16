@@ -22,9 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("scriptTask")
 public class ScriptTask extends NoneTask {
 
-  public static final String KEY_SCRIPT = "script";
-  public static final String KEY_MAPPINGS = "mapping";
-  public static final String KEY_RESULT_VARIABLE_ID = "resultVariableId";
+  protected String script;
+  protected Map<String,String> mappings;
   
   public ScriptTask() {
   }
@@ -34,22 +33,31 @@ public class ScriptTask extends NoneTask {
   }
 
   public ScriptTask script(String script) {
-    setConfiguration(KEY_SCRIPT, script);
+    this.script = script;
     return this;
   }
   
   public ScriptTask variableMapping(String scriptVariableName, String workflowVariableId) {
-    Map<String,String> mappings = (Map<String, String>) getConfiguration(KEY_MAPPINGS);
     if (mappings==null) {
       mappings = new HashMap<>();
-      setConfiguration(KEY_MAPPINGS, mappings);
     }
     mappings.put(scriptVariableName, workflowVariableId);
     return this;
   }
   
-  public ScriptTask resultVariableId(String resultVariableId) {
-    setConfiguration(KEY_RESULT_VARIABLE_ID, resultVariableId);
-    return this;
-  } 
+  public String getScript() {
+    return script;
+  }
+  
+  public void setScript(String script) {
+    this.script = script;
+  }
+  
+  public Map<String, String> getMappings() {
+    return mappings;
+  }
+  
+  public void setMappings(Map<String, String> mappings) {
+    this.mappings = mappings;
+  }
 }

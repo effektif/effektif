@@ -17,8 +17,8 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.command.StartCommand;
-import com.effektif.workflow.api.variables.List;
-import com.effektif.workflow.api.variables.Text;
+import com.effektif.workflow.api.type.ListType;
+import com.effektif.workflow.api.type.TextType;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -32,12 +32,12 @@ public class MultiInstanceTest extends WorkflowTest {
   @Test
   public void testTask() throws Exception {
     Workflow workflow = new Workflow()
-      .variable(new List("reviewers", new Text()))
+      .variable("reviewers", new ListType(new TextType()))
       .activity(new UserTask("Review")
         .candidateIdVariableId("reviewer")
         .multiInstance(new MultiInstance()
           .valuesVariableId("reviewers")
-          .variable(new Text("reviewer"))));
+          .variable("reviewer", new TextType())));
     
     workflow = deploy(workflow);
     

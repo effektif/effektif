@@ -13,9 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.types;
 
-import com.effektif.workflow.impl.type.TextType;
+import com.effektif.workflow.impl.type.TextTypeImpl;
 
 
-public class VariableIdType extends TextType {
+public class VariableIdType extends TextTypeImpl {
 
 }

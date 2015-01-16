@@ -13,14 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("userTask")
 public class UserTask extends NoneTask {
   
-  public static final String KEY_NAME = "name";
-  public static final String KEY_CANDIDATE_IDS = "candidateIds";
+  protected Binding nameBinding;
+  protected List<Binding> candidateIdBindings;
   
   public UserTask() {
   }
@@ -30,32 +34,58 @@ public class UserTask extends NoneTask {
   }
 
   public UserTask name(String name) {
-    setConfigurationBindingValue(KEY_NAME, name);
+    this.nameBinding = new Binding().value(name);
     return this;
   }
 
   public UserTask nameVariableId(String nameVariableId) {
-    setConfigurationBindingVariableId(KEY_NAME, nameVariableId);
+    this.nameBinding = new Binding().variableId(nameVariableId);
     return this;
   }
 
   public UserTask nameExpression(String nameExpression) {
-    setConfigurationBindingExpression(KEY_NAME, nameExpression);
+    this.nameBinding = new Binding().expression(nameExpression);
     return this;
   }
 
+  /** adds a candidate id value to the list */
   public UserTask candidateId(String candidateId) {
-    addConfigurationBindingValue(KEY_CANDIDATE_IDS, candidateId);
+    addCandidateId(new Binding().value(candidateId));
     return this;
   }
 
+  /** adds a candidate id variable to the list */
   public UserTask candidateIdVariableId(String candidateIdVariableId) {
-    addConfigurationBindingVariableId(KEY_CANDIDATE_IDS, candidateIdVariableId);
+    addCandidateId(new Binding().variableId(candidateIdVariableId));
     return this;
   }
 
+  /** adds a candidate id expression to the list */
   public UserTask candidateIdExpression(String candidateIdExpression) {
-    addConfigurationBindingExpression(KEY_CANDIDATE_IDS, candidateIdExpression);
+    addCandidateId(new Binding().expression(candidateIdExpression));
     return this;
+  }
+
+  protected void addCandidateId(Binding binding) {
+    if (candidateIdBindings==null) {
+      candidateIdBindings = new ArrayList<>();
+    }
+    candidateIdBindings.add(binding);
+  }
+  
+  public Binding getNameBinding() {
+    return nameBinding;
+  }
+  
+  public void setNameBinding(Binding nameBinding) {
+    this.nameBinding = nameBinding;
+  }
+  
+  public List<Binding> getCandidateIdBindings() {
+    return candidateIdBindings;
+  }
+  
+  public void setCandidateIdBindings(List<Binding> candidateIdBindings) {
+    this.candidateIdBindings = candidateIdBindings;
   }
 }

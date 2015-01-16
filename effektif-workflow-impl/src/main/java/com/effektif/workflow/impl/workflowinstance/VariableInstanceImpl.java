@@ -14,7 +14,7 @@
 package com.effektif.workflow.impl.workflowinstance;
 
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
 
@@ -22,7 +22,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public Object value;
   public VariableImpl variable;
-  public DataType dataType;
+  public DataType type;
   public VariableInstanceUpdates updates;
 
   public VariableInstanceImpl() {
@@ -36,6 +36,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setValue(value);
+    variableInstance.setType(variable.type.getApiType());
     variableInstance.setVariableId(variable.id);
     return variableInstance;
   }

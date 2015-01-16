@@ -13,37 +13,37 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
+import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.PluginService;
-import com.effektif.workflow.impl.type.DataType;
 
 
 public class VariableImpl {
   
-  public Variable apiVariable;
-
   public String id;
-  public DataType dataType;
+  public DataType type;
   public Object initialValue;
 
   public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;  
   public ScopeImpl parent;
 
-  public void parse(Variable apiVariable, ScopeImpl parent, WorkflowParser validator) {
-    this.apiVariable = apiVariable;
-    this.id = apiVariable.getId();
+  public void parse(Variable variableApi, ScopeImpl parent, WorkflowParser parser) {
+    this.id = variableApi.getId();
     if (id==null || "".equals(id)) {
-      validator.addError("Variable has no id");
+      parser.addError("Variable has no id");
     }
     this.parent = parent;
-    PluginService pluginService = validator.workflowEngine.getServiceRegistry().getService(PluginService.class);
-    this.dataType = pluginService.instantiateDataType(apiVariable);
-    this.dataType.validate(this, apiVariable, validator);
-  }
-
-  public Variable toVariable() {
-    return apiVariable;
+    PluginService pluginService = parser.workflowEngine.getServiceRegistry().getService(PluginService.class);
+    Type typeApi = variableApi.getType();
+    if (typeApi!=null) {
+      this.type = pluginService.instantiateDataType(typeApi);
+      this.type.parse(typeApi, parser);
+    } else {
+      parser.addError("Variable '%s' %s does not have a type", id, parent.isWorkflow() ? "in the workflow" : "in activity '"+parent.id+"'");
+    }
   }
 }

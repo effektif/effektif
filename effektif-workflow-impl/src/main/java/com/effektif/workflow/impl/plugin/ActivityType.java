@@ -13,24 +13,23 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.impl.tooling.ConfigurationPanel;
+import com.effektif.workflow.api.type.ObjectType;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public interface ActivityType extends Plugin {
+public interface ActivityType<T> extends Plugin {
   
   /** provides the data structure to the UI how this activity can be configured so that the UI can show a dialog */
-  ConfigurationPanel getConfigurationPanel();
+  ObjectType getDescriptor();
   
   Class<?> getApiClass();
 
   /** called when the process is being validated or deployed.
    * Note that configuration values in the activityApi object could be the target java beans classes, 
    * or the detyped json representation (maps, lists, Strings, etc) if it's coming from json parsing. */
-  void parse(ActivityImpl activityImpl, Activity activityApi, WorkflowParser validator);
+  void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser);
   
   boolean isAsync(ActivityInstanceImpl activityInstance);
 
