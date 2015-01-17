@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class JavaBeanType extends ObjectType {
 
   protected Class<?> javaClass;
+  
+  public JavaBeanType(Class javaClass) {
+    javaClass(javaClass);
+  }
 
   public Class<?> getJavaClass() {
     return this.javaClass;

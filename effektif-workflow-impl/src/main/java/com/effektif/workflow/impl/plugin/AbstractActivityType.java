@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import com.effektif.workflow.api.type.ObjectType;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.WorkflowSerializer;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 

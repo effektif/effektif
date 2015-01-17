@@ -11,9 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.serialization;
+package com.effektif.workflow.impl.type;
+
+import com.effektif.workflow.api.type.VariableIdType;
 
 
-public class SerializationTest {
+public class VariableIdTypeImpl extends TextTypeImpl {
 
+  public VariableIdTypeImpl() {
+    super(VariableIdType.class);
+  }
 }

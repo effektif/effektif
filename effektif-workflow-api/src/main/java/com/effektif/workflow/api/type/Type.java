@@ -21,23 +21,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public class Type {
   
-  /** used during deserialization of api models */
-  protected Class<?> apiClass;
-
-  public Type() {
-  }
-  public Type(Class< ? > apiClass) {
-    this.apiClass = apiClass;
-  }
-
-  public Class< ? > getApiClass() {
-    return apiClass;
-  }
-  public void setApiClass(Class< ? > apiClass) {
-    this.apiClass = apiClass;
-  }
-  public Type apiClass(Class<?> apiClass) {
-    this.apiClass = apiClass;
-    return this;
-  }
 }

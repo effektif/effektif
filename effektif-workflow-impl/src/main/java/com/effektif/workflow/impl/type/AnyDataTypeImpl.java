@@ -20,12 +20,11 @@ import com.effektif.workflow.impl.plugin.AbstractDataType;
 public class AnyDataTypeImpl extends AbstractDataType {
 
   public AnyDataTypeImpl() {
-    super(null);
+    super(null, Object.class);
   }
 
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     return jsonValue;
   }
-
 }

@@ -22,10 +22,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
@@ -53,8 +50,6 @@ import com.effektif.workflow.test.WorkflowTest;
 public class EventListenerTest extends WorkflowTest {
   
   private class LoggingListener implements WorkflowInstanceEventListener {
-    public final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
-
     private List<String> events = new ArrayList<>();
 
     public List<String> getEvents() {

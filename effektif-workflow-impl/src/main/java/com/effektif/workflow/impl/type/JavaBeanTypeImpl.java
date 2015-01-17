@@ -22,19 +22,21 @@ import com.effektif.workflow.impl.json.JsonService;
 
 public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
   
-  public Class<?> javaClass;
   public JsonService jsonService;
 
+  public JavaBeanTypeImpl() {
+    super(JavaBeanType.class, null);
+  }
+
   public JavaBeanTypeImpl(Class<?> javaClass) {
-    super(JavaBeanType.class);
-    this.javaClass = javaClass;
-    this.apiType = new JavaBeanType().javaClass(javaClass);
+    super(JavaBeanType.class, javaClass);
   }
 
   @Override
-  public void parse(JavaBeanType javaBean, WorkflowParser validator) {
-    this.jsonService = validator.getServiceRegistry().getService(JsonService.class);
-    this.javaClass = javaBean.getJavaClass();
+  public void parse(JavaBeanType javaBeanTypeApi, WorkflowParser parser) {
+    this.jsonService = parser.getServiceRegistry().getService(JsonService.class);
+    this.valueClass = javaBeanTypeApi.getJavaClass();
+    super.parse(javaBeanTypeApi, parser);
   }
 
   @Override
@@ -42,8 +44,8 @@ public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
     if (internalValue==null) {
       return;
     }
-    if (! javaClass.isAssignableFrom(internalValue.getClass())) {
-      throw new InvalidValueException("Invalid internal value: was "+internalValue+" ("+internalValue.getClass().getName()+"), expected "+javaClass.getName());
+    if (! valueClass.isAssignableFrom(internalValue.getClass())) {
+      throw new InvalidValueException("Invalid internal value: was "+internalValue+" ("+internalValue.getClass().getName()+"), expected "+valueClass.getName());
     }
   }
 
@@ -52,7 +54,7 @@ public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue==null) return null;
     if (Map.class.isAssignableFrom(jsonValue.getClass())) {
-      return jsonService.jsonMapToObject((Map<String,Object>)jsonValue, javaClass);
+      return jsonService.jsonMapToObject((Map<String,Object>)jsonValue, valueClass);
     }
     throw new InvalidValueException("Couldn't convert json: "+jsonValue+" ("+jsonValue.getClass().getName()+")");
   }
@@ -65,7 +67,7 @@ public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
   
   @Override
   public Class< ? > getValueClass() {
-    return javaClass;
+    return valueClass;
   }
   
   public JsonService getJsonService() {

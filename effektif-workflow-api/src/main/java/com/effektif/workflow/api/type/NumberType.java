@@ -19,7 +19,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("number")
 public class NumberType extends Type {
 
-  public NumberType() {
-    super(Number.class);
-  }
 }

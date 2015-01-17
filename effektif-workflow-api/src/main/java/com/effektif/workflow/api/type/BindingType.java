@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.api.type;
 
-import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -23,10 +22,8 @@ public class BindingType extends Type {
   protected Type targetType;
 
   public BindingType() {
-    super(Binding.class);
   }
   public BindingType(Type targetType) {
-    super(Binding.class);
     this.targetType = targetType;
   }
 

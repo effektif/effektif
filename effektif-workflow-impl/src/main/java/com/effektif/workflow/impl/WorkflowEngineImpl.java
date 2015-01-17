@@ -57,7 +57,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   protected WorkflowEngineImpl() {
   }
 
-  protected WorkflowEngineImpl(WorkflowEngineConfiguration configuration) {
+  public WorkflowEngineImpl(WorkflowEngineConfiguration configuration) {
     this.serviceRegistry = configuration.getServiceRegistry();
     this.serviceRegistry.registerService(this);
     initializeId(configuration);

@@ -36,7 +36,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setValue(value);
-    variableInstance.setType(variable.type.getApiType());
+    variableInstance.setType(variable.type.getTypeApi());
     variableInstance.setVariableId(variable.id);
     return variableInstance;
   }

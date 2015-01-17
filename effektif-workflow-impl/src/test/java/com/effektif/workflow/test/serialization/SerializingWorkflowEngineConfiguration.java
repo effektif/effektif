@@ -16,7 +16,6 @@ package com.effektif.workflow.test.serialization;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
-import com.effektif.workflow.test.TestWorkflowEngineConfiguration;
 
 
 public class SerializingWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {

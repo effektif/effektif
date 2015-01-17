@@ -25,11 +25,12 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   protected List<String> options;
   
   public ChoiceTypeImpl() {
-    super(ChoiceType.class);
+    super(ChoiceType.class, String.class);
   }
   
   @Override
-  public void parse(ChoiceType choiceApi, WorkflowParser validator) {
+  public void parse(ChoiceType choiceApi, WorkflowParser parser) {
+    super.parse(choiceApi, parser);
     this.options = choiceApi.getOptions();
   }
 

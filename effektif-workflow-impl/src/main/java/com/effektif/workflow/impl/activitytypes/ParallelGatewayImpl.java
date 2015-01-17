@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;

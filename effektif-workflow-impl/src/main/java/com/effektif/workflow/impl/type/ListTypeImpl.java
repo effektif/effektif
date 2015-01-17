@@ -30,11 +30,11 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   
   /** constructor for json & persistence, dataType is a required field. */
   public ListTypeImpl() {
-    super(ListType.class);
+    super(ListType.class, List.class);
   }
 
   public ListTypeImpl(DataType elementDataType) {
-    this();
+    super(ListType.class, List.class);
     this.elementDataType = elementDataType;
   }
 
@@ -42,13 +42,36 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   public boolean isSerializeRequired() {
     return elementDataType!=null ? elementDataType.isSerializeRequired() : false;
   }
+  
+  @Override
+  public void serialize(Object value) {
+    if (value==null) {
+      return;
+    }
+    List<Object> list = (List<Object>) value;
+    for (Object element: list) {
+      elementDataType.serialize(element);
+    }
+  }
 
   @Override
-  public void parse(ListType listType, WorkflowParser validator) {
-    PluginService pluginService = validator.getServiceRegistry().getService(PluginService.class);
+  public void deserialize(Object value) {
+    if (value==null) {
+      return;
+    }
+    List<Object> list = (List<Object>) value;
+    for (Object element: list) {
+      elementDataType.deserialize(element);
+    }
+  }
+
+  @Override
+  public void parse(ListType listType, WorkflowParser parser) {
+    super.parse(listType, parser);
+    PluginService pluginService = parser.getServiceRegistry().getService(PluginService.class);
     Type elementVariable = listType.getElementType();
     this.elementDataType = pluginService.instantiateDataType(elementVariable);
-    this.elementDataType.parse(elementVariable, validator);
+    this.elementDataType.parse(elementVariable, parser);
   }
 
   @Override

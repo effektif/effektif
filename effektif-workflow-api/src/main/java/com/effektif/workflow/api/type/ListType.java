@@ -22,10 +22,8 @@ public class ListType extends Type {
   protected Type elementType;
 
   public ListType() {
-    super(ListType.class);
   }
   public ListType(Type elementType) {
-    super(ListType.class);
     this.elementType = elementType;
   }
 

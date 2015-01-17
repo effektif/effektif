@@ -19,7 +19,6 @@ import java.util.Map;
 import javax.script.CompiledScript;
 
 import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;

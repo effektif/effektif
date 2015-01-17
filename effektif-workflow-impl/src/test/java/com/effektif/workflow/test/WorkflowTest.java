@@ -47,7 +47,7 @@ public class WorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
-  protected static WorkflowEngine cachedDefaultWorkflowEngine = null;
+  public static WorkflowEngine cachedDefaultWorkflowEngine = null;
   
   protected WorkflowEngine workflowEngine = null;
   
@@ -62,8 +62,10 @@ public class WorkflowTest {
   
   @After
   public void after() {
-    logWorkflowEngineContents();
-    deleteWorkflowEngineContents();
+    if (workflowEngine!=null) {
+      logWorkflowEngineContents();
+      deleteWorkflowEngineContents();
+    }
   }
 
   public Workflow deploy(Workflow workflow) {

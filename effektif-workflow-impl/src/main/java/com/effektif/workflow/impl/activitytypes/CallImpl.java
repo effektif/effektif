@@ -20,6 +20,7 @@ import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.CallMapping;
 import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.type.BindingType;
+import com.effektif.workflow.api.type.JavaBeanType;
 import com.effektif.workflow.api.type.ListType;
 import com.effektif.workflow.api.type.ObjectField;
 import com.effektif.workflow.api.type.ObjectType;
@@ -29,7 +30,6 @@ import com.effektif.workflow.api.type.WorkflowNameType;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.WorkflowSerializer;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.plugin.AbstractActivityType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -40,8 +40,8 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 public class CallImpl extends AbstractActivityType<Call> {
 
   // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
-  BindingImpl<String> subProcessName;
-  BindingImpl<String> subProcessId;
+  BindingImpl<String> subWorkflowIdBinding;
+  BindingImpl<String> subWorkflowNameBinding;
   List<CallMappingImpl> inputMappings;
   List<CallMappingImpl> outputMappings;
 
@@ -51,38 +51,38 @@ public class CallImpl extends AbstractActivityType<Call> {
 
   @Override
   public ObjectType getDescriptor() {
-    return new ObjectType(Call.class)
+    return new JavaBeanType(Call.class)
       .description("Invoke another workflow")
-      .field(new ObjectField("subWorkflowId")
+      .field(new ObjectField("subWorkflowIdBinding")
         .type(new BindingType(new WorkflowIdType()))
         .label("Fixed sub worfklow version"))
-      .field(new ObjectField("subWorkflowName")
+      .field(new ObjectField("subWorkflowNameBinding")
         .type(new BindingType(new WorkflowNameType()))
         .label("Sub workflow latest version"))
       .field(new ObjectField("inputMappings")
         .label("Input mappings")
-        .type(new ListType(new ObjectType(CallMapping.class)
+        .type(new ListType(new JavaBeanType(CallMapping.class)
           .field(new ObjectField("sourceBinding")
             .type(new BindingType())
             .label("Item in this workflow"))
-          .field(new ObjectField("Variable in the sub workflow")
-            .label("destinationVariableId")
+          .field(new ObjectField("destinationVariableId")
+            .label("Variable in the sub workflow")
             .type(new VariableIdType())))))
-      .field(new ObjectField("Output mappings")
-        .name("outputMappings")
-        .type(new ListType(new ObjectType()
-          .field(new ObjectField("Item in the sub workflow")
-            .label("sourceBinding")
+      .field(new ObjectField("outputMappings")
+        .label("Output mappings")
+        .type(new ListType(new JavaBeanType(CallMapping.class)
+          .field(new ObjectField("sourceBinding")
+            .label("Item in the sub workflow")
             .type(new BindingType()))
-          .field(new ObjectField("Variable in this workflow")
-            .label("destinationVariableId")
+          .field(new ObjectField("destinationVariableId")
+            .label("Variable in this workflow")
             .type(new VariableIdType())))));
   }
 
   @Override
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser workflowParser) {
-    subProcessId = workflowParser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
-    subProcessName = workflowParser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
+    subWorkflowIdBinding = workflowParser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
+    subWorkflowNameBinding = workflowParser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
     inputMappings = parseMappings(call.getInputMappings(), call, "inputMappings", workflowParser);
     outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", workflowParser);
   }
@@ -108,10 +108,10 @@ public class CallImpl extends AbstractActivityType<Call> {
     WorkflowEngineImpl workflowEngine = activityInstanceImpl.workflowEngine;
 
     String subProcessIdValue = null;
-    if (subProcessId!=null) {
-      subProcessIdValue = activityInstance.getValue(subProcessId);
-    } else if (subProcessName!=null) {
-      String subProcessNameValue = activityInstance.getValue(subProcessName);
+    if (subWorkflowIdBinding!=null) {
+      subProcessIdValue = activityInstance.getValue(subWorkflowIdBinding);
+    } else if (subWorkflowNameBinding!=null) {
+      String subProcessNameValue = activityInstance.getValue(subWorkflowNameBinding);
       WorkflowStore workflowStore = workflowEngine.getWorkflowStore();
       subProcessIdValue = workflowStore.findLatestWorkflowIdByName(subProcessNameValue, activityInstance.requestContext);
       if (subProcessIdValue==null) {

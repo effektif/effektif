@@ -14,14 +14,17 @@
 package com.effektif.workflow.impl.type;
 
 import com.effektif.workflow.api.type.TextType;
-import com.effektif.workflow.impl.WorkflowSerializer;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
 
 
-public class TextTypeImpl extends AbstractDataType {
+public class TextTypeImpl extends AbstractDataType<TextType> {
 
   public TextTypeImpl() {
-    super(TextType.class);
+    super(TextType.class, String.class);
+  }
+  
+  public TextTypeImpl(Class apiClass) {
+    super(apiClass, String.class);
   }
 
   @Override
@@ -30,10 +33,5 @@ public class TextTypeImpl extends AbstractDataType {
       return valueApi;
     }
     throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getSimpleName());
-  }
-
-  @Override
-  public Class< ? > getValueClass() {
-    return String.class;
   }
 }

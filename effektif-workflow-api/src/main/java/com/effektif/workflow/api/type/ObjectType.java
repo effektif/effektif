@@ -23,12 +23,6 @@ public class ObjectType extends Type {
   protected String label;
   protected String description;
 
-  public ObjectType() {
-  }
-  public ObjectType(Class apiClass) {
-    super(apiClass);
-  }
-  
   public String getLabel() {
     return this.label;
   }
@@ -67,12 +61,6 @@ public class ObjectType extends Type {
       fields = new ArrayList<>();
     }
     fields.add(field);
-    return this;
-  }
-
-  @Override
-  public ObjectType apiClass(Class< ? > apiClass) {
-    super.apiClass(apiClass);
     return this;
   }
 }

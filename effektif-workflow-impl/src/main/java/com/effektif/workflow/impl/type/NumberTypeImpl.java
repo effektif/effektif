@@ -20,9 +20,9 @@ import com.effektif.workflow.impl.plugin.AbstractDataType;
 public class NumberTypeImpl extends AbstractDataType {
 
   public NumberTypeImpl() {
-    super(NumberType.class);
+    super(NumberType.class, Number.class);
   }
-
+  
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue instanceof Double) {
@@ -39,4 +39,8 @@ public class NumberTypeImpl extends AbstractDataType {
     return null;
   }
 
+  @Override
+  public Class getValueClass() {
+    return Number.class;
+  }
 }

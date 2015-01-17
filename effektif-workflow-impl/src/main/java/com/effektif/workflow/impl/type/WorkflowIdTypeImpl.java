@@ -13,7 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.type;
 
+import com.effektif.workflow.api.type.WorkflowIdType;
+
 
 public class WorkflowIdTypeImpl extends TextTypeImpl {
 
+  public WorkflowIdTypeImpl() {
+    super(WorkflowIdType.class);
+  }
 }

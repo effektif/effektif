@@ -26,9 +26,6 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.json.JacksonJsonService;
-import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -45,14 +42,6 @@ public class CallTest extends WorkflowTest {
       .activity(new Call("call")
         .inputMappingVariable("a", "b")
         .subWorkflowId(subWorkflowId));
-    
-    JsonService jsonService = ((WorkflowEngineImpl)workflowEngine).jsonService;
-    log.debug("om: "+System.identityHashCode(((JacksonJsonService)jsonService).objectMapper));
-    
-    log.debug("super workflow: "+jsonService.objectToJsonStringPretty(superWorkflow));
-    String superWorkflowJson = jsonService.objectToJsonStringPretty(superWorkflow);
-    superWorkflow = jsonService.jsonToObject(superWorkflowJson, Workflow.class);
-    log.debug("super workflow: "+jsonService.objectToJsonStringPretty(superWorkflow));
     
     String superWorkflowId = workflowEngine.deployWorkflow(superWorkflow).getId();
     

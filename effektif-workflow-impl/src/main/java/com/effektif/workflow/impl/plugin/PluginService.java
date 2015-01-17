@@ -27,7 +27,6 @@ import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.plugin.Serializer.ObjectSerializer;
 import com.effektif.workflow.impl.type.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.type.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
@@ -70,7 +69,10 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     Class apiClass = dataType.getApiClass();
     dataTypeClasses.put(apiClass, dataType.getClass());
     objectMapper.registerSubtypes(apiClass);
-    dataTypesByValueClass.put(dataType.getValueClass(), dataType);
+    Class valueClass = dataType.getValueClass();
+    if (valueClass!=null) {
+      dataTypesByValueClass.put(valueClass, dataType);
+    }
   }
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {
@@ -78,15 +80,17 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
   }
 
   public void registerActivityType(ActivityType activityType) {
-    Class apiClass = activityType.getApiClass();
+    Class activityTypeApiClass = activityType.getApiClass();
     ObjectType descriptor = activityType.getDescriptor();
-    activityTypeClasses.put(apiClass, activityType.getClass());
-    activityTypeDescriptors.put(apiClass, descriptor);
-    ObjectTypeImpl serializer = new ObjectTypeImpl(apiClass);
-    serializer.parse(descriptor, workflowParser);
-    activityTypeSerializers.put(apiClass, serializer);
-    activityTypes.put(apiClass, activityType);
-    objectMapper.registerSubtypes(apiClass);
+    activityTypeClasses.put(activityTypeApiClass, activityType.getClass());
+    activityTypeDescriptors.put(activityTypeApiClass, descriptor);
+    activityTypes.put(activityTypeApiClass, activityType);
+    objectMapper.registerSubtypes(activityTypeApiClass);
+    if (descriptor!=null) {
+      ObjectTypeImpl serializer = new ObjectTypeImpl(activityTypeApiClass);
+      serializer.parse(descriptor, workflowParser);
+      activityTypeSerializers.put(activityTypeApiClass, serializer);
+    }
   }
   
   public void registerJobType(Class<? extends JobType> jobType) {
@@ -107,7 +111,7 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
   }
   
   public DataType instantiateDataType(Type typeApi) {
-    Exceptions.checkNotNullParameter(typeApi, "apiVariable");
+    Exceptions.checkNotNullParameter(typeApi, "typeApi");
     Class<? extends DataType> dataTypeClass = dataTypeClasses.get(typeApi.getClass());
     if (dataTypeClass==null) {
       throw new RuntimeException("No DataType defined for "+typeApi.getClass().getName());

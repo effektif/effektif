@@ -15,25 +15,27 @@ package com.effektif.workflow.impl.plugin;
 
 import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.WorkflowSerializer;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.type.InvalidValueException;
 
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
-  protected T apiType;
+  protected T typeApi;
   protected Class<?> apiClass;
+  protected Class<?> valueClass = Object.class;
   
-  public AbstractDataType(Class< ? > apiClass) {
+  public AbstractDataType(Class< ? > apiClass, Class< ? > valueClass) {
     this.apiClass = apiClass;
+    this.valueClass = valueClass; 
   }
   
   public Class< ? > getApiClass() {
     return apiClass;
   }
   
-  public T getApiType() {
-    return apiType;
+  public T getTypeApi() {
+    return typeApi;
   }
   
   public boolean isSerializeRequired() {
@@ -41,13 +43,17 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   }
   
   @Override
-  public void serialize(Object value, WorkflowSerializer serializer) {
+  public void serialize(Object value) {
+  }
+  
+  @Override
+  public void deserialize(Object value) {
   }
 
   public abstract Object convertJsonToInternalValue(Object jsonValue);
 
   public void parse(T typeApi, WorkflowParser parser) {
-    this.apiType = typeApi;
+    this.typeApi = typeApi;
   }
 
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
@@ -64,8 +70,9 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public Object convertScriptValueToInternal(Object scriptValue, String language) {
     return scriptValue;
   }
-  
+
+  @Override
   public Class< ? > getValueClass() {
-    return null;
+    return valueClass;
   }
 }

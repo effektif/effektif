@@ -17,7 +17,6 @@ import java.lang.reflect.Field;
 
 import com.effektif.workflow.api.type.ObjectField;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.WorkflowSerializer;
 import com.effektif.workflow.impl.plugin.DataType;
 
 
@@ -34,24 +33,35 @@ public class ObjectFieldImpl {
     this.name = name;
   }
   
-  public void parse(ObjectField fieldApi, WorkflowParser parser) {
+  public void parse(Class< ? > objectClass, ObjectField fieldApi, WorkflowParser parser) {
     try {
       this.name = fieldApi.getName();
       this.type = parser.parseType(fieldApi.getType());
-      this.field = this.type.getValueClass().getField(name);
+      this.field = objectClass.getDeclaredField(name);
       this.field.setAccessible(true);
-    } catch (NoSuchFieldException | SecurityException e) {
-      throw new RuntimeException();
+    } catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+      throw new RuntimeException(e);
     }
   }
 
-  public void serialize(Object value, WorkflowSerializer serializer) {
+  public void serialize(Object value) {
     if (type.isSerializeRequired()) {
       try {
         Object fieldValue = field.get(value);
-        type.serialize(fieldValue, serializer);
+        type.serialize(fieldValue);
       } catch (IllegalArgumentException | IllegalAccessException e) {
-        throw new RuntimeException();
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  public void deserialize(Object value) {
+    if (type.isSerializeRequired()) {
+      try {
+        Object fieldValue = field.get(value);
+        type.deserialize(fieldValue);
+      } catch (IllegalArgumentException | IllegalAccessException e) {
+        throw new RuntimeException(e);
       }
     }
   }

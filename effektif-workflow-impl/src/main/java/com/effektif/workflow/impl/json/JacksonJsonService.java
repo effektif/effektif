@@ -17,13 +17,19 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.plugin.Initializable;
+import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.ObjectTypeImpl;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -37,13 +43,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class JacksonJsonService implements JsonService, Initializable<WorkflowEngineConfiguration> {
   
-  public JsonFactory jsonFactory;
-  public ObjectMapper objectMapper;
+  protected JsonFactory jsonFactory;
+  protected ObjectMapper objectMapper;
+  protected PluginService pluginService; 
 
   @Override
   public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
     this.jsonFactory = serviceRegistry.getService(JsonFactory.class);
+    this.pluginService = serviceRegistry.getService(PluginService.class);
     
     objectMapper
       .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -133,5 +141,47 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
 
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+  }
+
+  /** Ensures types are added to the untyped values so this model can be deserialized.
+   * Jackson can serialize fields of type object.  But to deserialize, sometimes 
+   * the right type is needed such as for binding values.  This method adds
+   * the type information to the serialized form so deserialization can use it. */
+  @Override
+  public Workflow serializeWorkflow(Workflow workflow) {
+    serializeScope(workflow);
+    return workflow;
+  }
+
+  @Override
+  public Workflow deserializeWorkflow(Workflow workflow) {
+    deserializeScope(workflow);
+    return workflow;
+  }
+  
+  protected void serializeScope(Scope scopeApi) {
+    List<Activity> activitiesApi = scopeApi.getActivities();
+    if (activitiesApi!=null) {
+      for (Activity activityApi: activitiesApi) {
+        ObjectTypeImpl serializer = pluginService.getActivityTypeSerializer(activityApi.getClass());
+        if (serializer!=null && serializer.isSerializeRequired()) {
+          serializer.serialize(activityApi);
+        }
+        serializeScope(activityApi);
+      }
+    }
+  }
+
+  protected void deserializeScope(Scope scopeApi) {
+    List<Activity> activitiesApi = scopeApi.getActivities();
+    if (activitiesApi!=null) {
+      for (Activity activityApi: activitiesApi) {
+        ObjectTypeImpl serializer = pluginService.getActivityTypeSerializer(activityApi.getClass());
+        if (serializer!=null && serializer.isSerializeRequired()) {
+          serializer.deserialize(activityApi);
+        }
+        deserializeScope(activityApi);
+      }
+    }
   }
 }

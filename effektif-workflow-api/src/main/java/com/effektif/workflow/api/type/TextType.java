@@ -19,8 +19,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("text")
 public class TextType extends Type {
 
-  public TextType() {
-    super(String.class);
-  }
-  
 }

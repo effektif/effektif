@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.plugin;
 
 import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.WorkflowSerializer;
 import com.effektif.workflow.impl.type.InvalidValueException;
 
 
@@ -26,10 +25,11 @@ public interface DataType<T extends Type> extends Plugin {
 
   Class< ? > getValueClass();
   Class< ? > getApiClass();
-  T getApiType();
+  T getTypeApi();
 
   boolean isSerializeRequired();
-  void serialize(Object value, WorkflowSerializer serializer);
+  void serialize(Object value);
+  void deserialize(Object value);
 
   void parse(T typeApi, WorkflowParser parser);
 

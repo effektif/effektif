@@ -38,7 +38,7 @@ public interface JsonService {
   
   <T> T jsonMapToObject(Map<String,Object> jsonMap, Class<T> type);
 
-  void serializeWorkflow(Workflow workflow);
+  Workflow serializeWorkflow(Workflow workflow);
 
   Workflow deserializeWorkflow(Workflow workflow);
 }
