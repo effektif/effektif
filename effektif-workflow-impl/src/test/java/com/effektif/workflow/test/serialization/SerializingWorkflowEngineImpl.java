@@ -13,11 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.command.AbstractCommand;
 import com.effektif.workflow.api.command.MessageCommand;
 import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.command.StartCommand;
@@ -56,8 +58,16 @@ public class SerializingWorkflowEngineImpl extends WorkflowEngineImpl {
     return jsonService.deserializeWorkflow(workflow);
   }
   
-  protected StartCommand wireizeStartCommand(StartCommand startCommand) {
-    return wireize(startCommand, StartCommand.class);
+  protected WorkflowInstance wireizeWorkflowInstance(WorkflowInstance workflowInstance) {
+    // workflowInstance = jsonService.serializeWorkflowInstance(workflowInstance);
+    workflowInstance = wireize(workflowInstance, WorkflowInstance.class);
+    return jsonService.deserializeWorkflowInstance(workflowInstance);
+  }
+  
+  protected <T extends AbstractCommand> T wireizeCommand(T command) {
+    command = jsonService.serializeCommand(command);
+    command = wireize(command, (Class<T>) command.getClass());
+    return jsonService.deserializeCommand(command);
   }
 
   protected <T> T wireize(Object o, Class<T> type) {
@@ -94,20 +104,34 @@ public class SerializingWorkflowEngineImpl extends WorkflowEngineImpl {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
-    return null;
+    return findWorkflows(workflowQuery, null);
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext) {
-    return null;
+  public List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext) {
+    query = wireize(query, WorkflowQuery.class);
+    requestContext = wireize(requestContext, RequestContext.class);
+    List<Workflow> workflows = workflowEngine.findWorkflows(query, requestContext);
+    if (workflows==null) {
+      return null;
+    }
+    List<Workflow> wirizedWorkflows = new ArrayList<>(workflows.size());
+    for (Workflow workflow: workflows) {
+      wirizedWorkflows.add(wireizeWorkflow(workflow));
+    }
+    return wirizedWorkflows;
   }
 
   @Override
-  public void deleteWorkflows(WorkflowQuery workflowQuery) {
+  public void deleteWorkflows(WorkflowQuery query) {
+    deleteWorkflows(query, null);
   }
 
   @Override
-  public void deleteWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext) {
+  public void deleteWorkflows(WorkflowQuery query, RequestContext requestContext) {
+    query = wireize(query, WorkflowQuery.class);
+    requestContext = wireize(requestContext, RequestContext.class);
+    workflowEngine.deleteWorkflows(query, requestContext);
   }
 
   @Override
@@ -117,7 +141,7 @@ public class SerializingWorkflowEngineImpl extends WorkflowEngineImpl {
 
   @Override
   public WorkflowInstance startWorkflowInstance(StartCommand startCommand, RequestContext requestContext) {
-    startCommand = wireizeStartCommand(startCommand);
+    startCommand = wireizeCommand(startCommand);
     requestContext = wireize(requestContext, RequestContext.class);
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(startCommand, requestContext);
     return wireize(workflowInstance, WorkflowInstance.class);
@@ -125,30 +149,47 @@ public class SerializingWorkflowEngineImpl extends WorkflowEngineImpl {
 
   @Override
   public WorkflowInstance sendMessage(MessageCommand messageCommand) {
-    return null;
+    return sendMessage(messageCommand, null);
   }
 
   @Override
   public WorkflowInstance sendMessage(MessageCommand messageCommand, RequestContext requestContext) {
-    return null;
+    messageCommand = wireizeCommand(messageCommand);
+    requestContext = wireize(requestContext, RequestContext.class);
+    WorkflowInstance workflowInstance = workflowEngine.sendMessage(messageCommand, requestContext);
+    return wireizeWorkflowInstance(workflowInstance);
   }
 
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
-    return null;
+    return findWorkflowInstances(query, null);
   }
 
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
-    return null;
+    query = wireize(query, WorkflowInstanceQuery.class);
+    requestContext = wireize(requestContext, RequestContext.class);
+    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(query, requestContext);
+    if (workflowInstances==null) {
+      return null;
+    }
+    List<WorkflowInstance> wirizedWorkflowInstances = new ArrayList<>(workflowInstances.size());
+    for (WorkflowInstance workflowInstance: workflowInstances) {
+      wirizedWorkflowInstances.add(wireizeWorkflowInstance(workflowInstance));
+    }
+    return wirizedWorkflowInstances;
   }
 
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query) {
+    deleteWorkflowInstances(query, null);
   }
 
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
+    query = wireize(query, WorkflowInstanceQuery.class);
+    requestContext = wireize(requestContext, RequestContext.class);
+    workflowEngine.deleteWorkflowInstances(query, requestContext);
   }
 
   @Override

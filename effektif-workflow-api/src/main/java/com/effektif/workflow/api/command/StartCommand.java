@@ -46,10 +46,4 @@ public class StartCommand extends AbstractCommand {
     super.variableValue(variableId, variableValue);
     return this;
   }
-  
-  @Override
-  public StartCommand organizationId(String organizationId) {
-    super.organizationId(organizationId);
-    return this;
-  }
 }

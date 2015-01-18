@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.command.VariableValue;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -232,10 +233,11 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   /** sets all entries individually, variableValues maps variable ids to values */
-  public void setVariableValues(Map<String, Object> variableValues) {
+  public void setVariableValues(List<VariableValue> variableValues) {
     if (variableValues!=null) {
-      for (String variableId: variableValues.keySet()) {
-        Object value = variableValues.get(variableId);
+      for (VariableValue variableValue: variableValues) {
+        String variableId = variableValue.getVariableId();
+        Object value = variableValue.getValue();
         setVariableValue(variableId, value);
       }
     }
@@ -311,8 +313,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
   }
-  
-  
   
   public abstract void end();
 

@@ -22,10 +22,16 @@ import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.command.AbstractCommand;
+import com.effektif.workflow.api.command.VariableValue;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
@@ -46,12 +52,14 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
   protected JsonFactory jsonFactory;
   protected ObjectMapper objectMapper;
   protected PluginService pluginService; 
+  protected WorkflowEngineImpl workflowEngine; 
 
   @Override
   public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
     this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
     this.jsonFactory = serviceRegistry.getService(JsonFactory.class);
     this.pluginService = serviceRegistry.getService(PluginService.class);
+    this.workflowEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
     
     objectMapper
       .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -183,5 +191,46 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
         deserializeScope(activityApi);
       }
     }
+  }
+
+  @Override
+  public WorkflowInstance deserializeWorkflowInstance(WorkflowInstance workflowInstance) {
+    new RuntimeException("TODO deserialize the variable values").printStackTrace();
+    return workflowInstance;
+  }
+
+  @Override
+  public <T extends AbstractCommand> T serializeCommand(T command) {
+    if (command==null || command.getVariableValues()==null) {
+      return command;
+    }
+    for (VariableValue variableValue: command.getVariableValues()) {
+      Object value = variableValue.getValue();
+      if (value!=null && variableValue.getType()==null) {
+        DataType dataType = pluginService.getDataTypeByValueClass(value.getClass());
+        if (dataType==null) {
+          throw new RuntimeException("No data type found for value "+value+" ("+value.getClass().getName()+")");
+        }
+        variableValue.type(dataType.getTypeApi());
+      }
+    }
+    return command;
+  }
+
+  @Override
+  public <T extends AbstractCommand> T deserializeCommand(T command) {
+    if (command==null || command.getVariableValues()==null) {
+      return command;
+    }
+    for (VariableValue variableValue: command.getVariableValues()) {
+      Object value = variableValue.getValue();
+      if (value!=null && variableValue.getType()!=null) {
+        DataType dataType = pluginService.instantiateDataType(variableValue.getType());
+        WorkflowParser parser = new WorkflowParser(workflowEngine);
+        dataType.parse(variableValue.getType(), parser);
+        variableValue.value(dataType.deserialize(value));
+      }
+    }
+    return command;
   }
 }

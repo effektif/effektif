@@ -24,8 +24,8 @@ public class Binding {
    * This is mutually exclusive with variableId and expression */
   protected Object value;
   
-  /** the engine will initialize this so 
-   * the value can be deserialized. */
+  /** type of the specified value.  This will be set by the engine during serialization 
+   * so the value can be deserialized to the proper java object. */
   protected Type type;
 
   /** reference to the variable that will contain the input value.  

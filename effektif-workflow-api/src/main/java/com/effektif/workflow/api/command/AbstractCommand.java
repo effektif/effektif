@@ -13,42 +13,29 @@
  * limitations under the License. */
 package com.effektif.workflow.api.command;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 
-/**
- * @author Tom Baeyens
- */
 public abstract class AbstractCommand {
 
-  protected String organizationId;
-  protected Map<String,Object> variableValues;
+  protected List<VariableValue> variableValues;
 
-  public Map<String,Object> getVariableValues() {
+  public List<VariableValue> getVariableValues() {
     return this.variableValues;
   }
 
-  public void setVariableValues(Map<String,Object> variableValues) {
+  public void setVariableValues(List<VariableValue> variableValues) {
     this.variableValues = variableValues;
   }
   
   public AbstractCommand variableValue(String variableId, Object variableValue) {
     if (variableValues==null) {
-      variableValues = new HashMap<>();
+      variableValues = new ArrayList<>();
     }
-    variableValues.put(variableId, variableValue);
-    return this;
-  }
-
-  public String getOrganizationId() {
-    return this.organizationId;
-  }
-  public void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
-  }
-  public AbstractCommand organizationId(String organizationId) {
-    this.organizationId = organizationId;
+    variableValues.add(new VariableValue()
+      .variableId(variableId)
+      .value(variableValue));
     return this;
   }
 }

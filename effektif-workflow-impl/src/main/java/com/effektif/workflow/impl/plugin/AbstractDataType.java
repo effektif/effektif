@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.plugin;
 
 import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.type.InvalidValueException;
 
 
@@ -43,11 +42,13 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   }
   
   @Override
-  public void serialize(Object value) {
+  public Object serialize(Object value) {
+    return value;
   }
   
   @Override
-  public void deserialize(Object value) {
+  public Object deserialize(Object value) {
+    return value;
   }
 
   public abstract Object convertJsonToInternalValue(Object jsonValue);

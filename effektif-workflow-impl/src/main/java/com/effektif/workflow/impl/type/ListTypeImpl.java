@@ -44,25 +44,29 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   }
   
   @Override
-  public void serialize(Object value) {
-    if (value==null) {
-      return;
+  public Object serialize(Object o) {
+    if (o==null || ((List<Object>)o).isEmpty()) {
+      return o;
     }
-    List<Object> list = (List<Object>) value;
+    List<Object> list = (List<Object>) o;
+    List<Object> serialized = new ArrayList<>(list.size()); 
     for (Object element: list) {
-      elementDataType.serialize(element);
+      serialized.add(elementDataType.serialize(element));
     }
+    return serialized;
   }
 
   @Override
-  public void deserialize(Object value) {
-    if (value==null) {
-      return;
+  public Object deserialize(Object o) {
+    if (o==null || ((List<Object>)o).isEmpty()) {
+      return o;
     }
-    List<Object> list = (List<Object>) value;
+    List<Object> list = (List<Object>) o;
+    List<Object> deserialized = new ArrayList<>(list.size()); 
     for (Object element: list) {
-      elementDataType.deserialize(element);
+      deserialized.add(elementDataType.deserialize(element));
     }
+    return deserialized;
   }
 
   @Override

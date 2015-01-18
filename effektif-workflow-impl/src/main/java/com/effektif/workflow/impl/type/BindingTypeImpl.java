@@ -17,6 +17,7 @@ import com.effektif.workflow.api.type.BindingType;
 import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.PluginService;
@@ -26,6 +27,7 @@ public class BindingTypeImpl extends AbstractDataType<BindingType> {
   
   protected DataType targetType;
   protected PluginService pluginService;
+  protected JsonService jsonService;
 
   public BindingTypeImpl() {
     super(BindingType.class, Object.class);
@@ -37,18 +39,33 @@ public class BindingTypeImpl extends AbstractDataType<BindingType> {
   }
 
   @Override
-  public void serialize(Object o) {
-    Binding binding = (Binding) o;
-    Object value = binding.getValue();
-    if (value!=null && binding.getType()==null) {
-      DataType dataType = pluginService.getDataTypeByValueClass(value.getClass());
-      if (dataType==null) {
-        throw new RuntimeException("No data type found for value "+value+" ("+value.getClass().getName()+")");
+  public Object serialize(Object o) {
+    if (o!=null) {
+      Binding binding = (Binding) o;
+      Object value = binding.getValue();
+      if (value!=null && binding.getType()==null) {
+        DataType dataType = pluginService.getDataTypeByValueClass(value.getClass());
+        if (dataType==null) {
+          throw new RuntimeException("No data type found for value "+value+" ("+value.getClass().getName()+")");
+        }
+        binding.type(dataType.getTypeApi());
       }
-      binding.type(dataType.getTypeApi());
     }
+    return o;
   }
   
+  @Override
+  public Object deserialize(Object o) {
+    if (o!=null) {
+      Binding binding = (Binding) o;
+      Object value = binding.getValue();
+      if (value!=null && binding.getType()!=null) {
+        binding.value(targetType.deserialize(binding.getValue()));
+      }
+    }
+    return o;
+  }
+
   @Override
   public void parse(BindingType bindingTypeApi, WorkflowParser parser) {
     super.parse(bindingTypeApi, parser);

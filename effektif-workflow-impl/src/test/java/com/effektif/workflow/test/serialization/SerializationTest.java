@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.test.WorkflowTest;
-import com.effektif.workflow.test.execution.ScriptTest;
+import com.effektif.workflow.test.execution.CallTest;
 
 
-@SuiteClasses(ScriptTest.class)
+@SuiteClasses(CallTest.class)
 @RunWith(Suite.class)
 public class SerializationTest {
   

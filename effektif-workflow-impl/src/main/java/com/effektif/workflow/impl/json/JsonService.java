@@ -17,7 +17,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
+import com.effektif.workflow.api.command.AbstractCommand;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.plugin.DataType;
 
 
 public interface JsonService {
@@ -39,6 +42,12 @@ public interface JsonService {
   <T> T jsonMapToObject(Map<String,Object> jsonMap, Class<T> type);
 
   Workflow serializeWorkflow(Workflow workflow);
-
   Workflow deserializeWorkflow(Workflow workflow);
+
+  // Engine always generates workflow instances and will ensure all types are present at all times
+  // WorkflowInstance serializeWorkflowInstance(WorkflowInstance workflowInstance);
+  WorkflowInstance deserializeWorkflowInstance(WorkflowInstance workflowInstance);
+
+  <T extends AbstractCommand> T serializeCommand(T command);
+  <T extends AbstractCommand> T deserializeCommand(T command);
 }

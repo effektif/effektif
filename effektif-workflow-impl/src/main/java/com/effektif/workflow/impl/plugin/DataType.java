@@ -28,8 +28,8 @@ public interface DataType<T extends Type> extends Plugin {
   T getTypeApi();
 
   boolean isSerializeRequired();
-  void serialize(Object value);
-  void deserialize(Object value);
+  Object serialize(Object value);
+  Object deserialize(Object value);
 
   void parse(T typeApi, WorkflowParser parser);
 

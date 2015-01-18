@@ -15,10 +15,10 @@ package com.effektif.workflow.impl.type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.type.ObjectField;
 import com.effektif.workflow.api.type.ObjectType;
-import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
@@ -28,6 +28,7 @@ public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
   
   protected List<ObjectFieldImpl> fields;
   protected boolean isSerializeRequired;
+  protected JsonService jsonService;
 
   public ObjectTypeImpl() {
     super(ObjectType.class, null);
@@ -45,20 +46,25 @@ public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
     return isSerializeRequired;
   }
 
-  public void serialize(Object value) {
+  public Object serialize(Object o) {
     if (isSerializeRequired && fields!=null) {
       for (ObjectFieldImpl field: fields) {
-        field.serialize(value);
+        field.serialize(o);
       }
     }
+    return o;
   }
 
-  public void deserialize(Object value) {
+  public Object deserialize(Object o) {
+    if (o instanceof Map) {
+      o = jsonService.jsonMapToObject((Map<String,Object>) o, valueClass);
+    }
     if (isSerializeRequired && fields!=null) {
       for (ObjectFieldImpl field: fields) {
-        field.deserialize(value);
+        field.deserialize(o);
       }
     }
+    return o;
   }
 
   @Override
