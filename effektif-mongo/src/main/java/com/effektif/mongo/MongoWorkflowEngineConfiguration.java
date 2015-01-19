@@ -82,6 +82,7 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   protected WriteConcern writeConcernJobs;
   
   public MongoWorkflowEngineConfiguration() {
+    configureDefaults();
     registerService(new MongoWorkflowStore());
     registerService(new MongoWorkflowInstanceStore());
     registerService(new MemoryTaskService());

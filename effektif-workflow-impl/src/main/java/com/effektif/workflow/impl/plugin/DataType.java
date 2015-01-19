@@ -14,7 +14,6 @@
 package com.effektif.workflow.impl.plugin;
 
 import com.effektif.workflow.api.type.Type;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.type.InvalidValueException;
 
 
@@ -31,7 +30,7 @@ public interface DataType<T extends Type> extends Plugin {
   Object serialize(Object value);
   Object deserialize(Object value);
 
-  void parse(T typeApi, WorkflowParser parser);
+  void initialize(T typeApi, ServiceRegistry serviceRegistry);
 
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;

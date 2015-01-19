@@ -272,10 +272,4 @@ public class WorkflowParser {
     return startActivities;
   }
 
-  public DataType parseType(Type typeApi) {
-    PluginService pluginService = workflowEngine.getServiceRegistry().getService(PluginService.class);
-    DataType dataType = pluginService.instantiateDataType(typeApi);
-    dataType.parse(typeApi, this);
-    return dataType;
-  }
 }

@@ -23,6 +23,7 @@ import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.command.MessageCommand;
 import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.type.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -31,6 +32,52 @@ import com.effektif.workflow.test.WorkflowTest;
 
 public class CallTest extends WorkflowTest {
   
+  @Test
+  public void testCallActivityInputVariableMapping() {
+    Workflow subWorkflow = new Workflow()
+      .variable("performer", new TextType())
+      .activity("subtask", new UserTask()
+        .candidateIdVariableId("performer")
+      );
+    
+    subWorkflow = deploy(subWorkflow);
+    
+    Workflow superWorkflow = new Workflow()
+      .variable("assignee", new TextType())
+      .activity(new Call("call")
+        .inputMappingVariable("assignee", "performer")
+        .subWorkflowId(subWorkflow.getId()));
+    
+    superWorkflow = deploy(superWorkflow);
+    
+    WorkflowInstance superInstance = workflowEngine.startWorkflowInstance(new StartCommand()
+      .workflowId(superWorkflow.getId())
+      .variableValue("assignee", "johndoe")
+    );
+    
+    ActivityInstance callActivityInstance = superInstance.findOpenActivityInstance("call");
+    assertNotNull(callActivityInstance.getCalledWorkflowInstanceId());
+    
+    WorkflowInstance subInstance = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery()
+        .workflowInstanceId(callActivityInstance.getCalledWorkflowInstanceId()))
+      .get(0);
+    
+    assertNotNull(subInstance);
+    
+    ActivityInstance subtaskInstance = subInstance.findOpenActivityInstance("subtask");
+    
+    subInstance = workflowEngine.sendMessage(new MessageCommand()
+      .workflowInstanceId(subInstance.getId())
+      .activityInstanceId(subtaskInstance.getId()));
+    
+    assertTrue(subInstance.isEnded());
+
+    superInstance = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery()
+        .workflowInstanceId(superInstance.getId()))
+      .get(0);
+    assertTrue(superInstance.isEnded());
+  }
+
   @Test
   public void testCallActivity() {
     Workflow subWorkflow = new Workflow()

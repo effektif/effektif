@@ -53,7 +53,7 @@ public class MemoryTaskService implements TaskService, Initializable<WorkflowEng
   }
 
   @Override
-  public void deleteTask(TaskQuery taskQuery) {
+  public void deleteTasks(TaskQuery taskQuery) {
     tasks.clear();
   }
 }

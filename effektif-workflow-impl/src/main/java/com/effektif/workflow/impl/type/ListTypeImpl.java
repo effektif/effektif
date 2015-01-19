@@ -18,10 +18,10 @@ import java.util.List;
 
 import com.effektif.workflow.api.type.ListType;
 import com.effektif.workflow.api.type.Type;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.PluginService;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 public class ListTypeImpl extends AbstractDataType<ListType> {
@@ -70,12 +70,12 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   }
 
   @Override
-  public void parse(ListType listType, WorkflowParser parser) {
-    super.parse(listType, parser);
-    PluginService pluginService = parser.getServiceRegistry().getService(PluginService.class);
-    Type elementVariable = listType.getElementType();
-    this.elementDataType = pluginService.instantiateDataType(elementVariable);
-    this.elementDataType.parse(elementVariable, parser);
+  public void initialize(ListType listType, ServiceRegistry serviceRegistry) {
+    super.initialize(listType, serviceRegistry);
+    PluginService pluginService = serviceRegistry.getService(PluginService.class);
+    Type elementType = listType.getElementType();
+    this.elementDataType = pluginService.createDataType(elementType);
+    this.elementDataType.initialize(elementType, serviceRegistry);
   }
 
   @Override

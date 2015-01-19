@@ -19,6 +19,7 @@ import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 public class MemoryWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
 
   public MemoryWorkflowEngineConfiguration() {
+    configureDefaults();
     registerService(new MemoryWorkflowStore());
     registerService(new MemoryWorkflowInstanceStore());
     registerService(new MemoryTaskService());

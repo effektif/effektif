@@ -25,16 +25,14 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
 
 
-/**
- * @author Walter White
- */
 public class ApiExamplesTest {
 
   @Test
   public void testApiExample() {
     // Create the default (in-memory) workflow engine
     WorkflowEngine workflowEngine = new MemoryWorkflowEngineConfiguration()
-       .buildWorkflowEngine();
+      .initialize()
+      .getWorkflowEngine();
     
     // Create a workflow
     Workflow workflow = new Workflow()

@@ -35,6 +35,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.task.Task;
@@ -47,17 +48,26 @@ public class WorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
-  public static WorkflowEngine cachedDefaultWorkflowEngine = null;
+  public static WorkflowEngineConfiguration cachedConfiguration = null;
+  public static WorkflowEngine cachedWorkflowEngine = null;
+  public static TaskService cachedTaskService = null;
   
+  protected WorkflowEngineConfiguration configuration = null;
   protected WorkflowEngine workflowEngine = null;
+  protected TaskService taskService = null;
   
   @Before
   public void initializeWorkflowEngine() {
-    if (cachedDefaultWorkflowEngine==null) {
-      cachedDefaultWorkflowEngine = new TestWorkflowEngineConfiguration()
-        .buildWorkflowEngine(); 
+    if (workflowEngine==null || taskService==null) {
+      if (cachedWorkflowEngine==null) {
+        cachedConfiguration = new TestWorkflowEngineConfiguration();
+        cachedWorkflowEngine = cachedConfiguration.getWorkflowEngine();
+        cachedTaskService = cachedConfiguration.getTaskService();
+      }
+      configuration = cachedConfiguration;
+      workflowEngine = cachedWorkflowEngine;
+      taskService = cachedTaskService;
     }
-    workflowEngine = cachedDefaultWorkflowEngine;
   }
   
   @After
@@ -127,9 +137,8 @@ public class WorkflowTest {
   protected void logWorkflowEngineContents() {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
-    WorkflowEngineImpl workflowEngineImpl = (WorkflowEngineImpl) workflowEngine;
-    JsonService jsonService = workflowEngineImpl.getServiceRegistry().getService(JsonService.class);
-    TaskService taskService = workflowEngineImpl.getServiceRegistry().getService(TaskService.class);
+    JsonService jsonService = configuration.getServiceRegistry().getService(JsonService.class);
+    TaskService taskService = configuration.getServiceRegistry().getService(TaskService.class);
 
     StringBuilder cleanLog = new StringBuilder();
     cleanLog.append("Workflow engine contents\n");
@@ -195,9 +204,6 @@ public class WorkflowTest {
   protected void deleteWorkflowEngineContents() {
     workflowEngine.deleteWorkflows(new WorkflowQuery());
     workflowEngine.deleteWorkflowInstances(new WorkflowInstanceQuery());
-    
-    WorkflowEngineImpl workflowEngineImpl = (WorkflowEngineImpl) workflowEngine;
-    TaskService taskService = workflowEngineImpl.getServiceRegistry().getService(TaskService.class);
-    taskService.deleteTask(new TaskQuery());
+    taskService.deleteTasks(new TaskQuery());
   }
 }

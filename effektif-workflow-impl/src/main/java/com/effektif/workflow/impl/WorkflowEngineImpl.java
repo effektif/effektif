@@ -13,13 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +30,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activitytypes.CallerReference;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -41,7 +38,7 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
-public class WorkflowEngineImpl implements WorkflowEngine {
+public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
 
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
@@ -54,42 +51,18 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   public ServiceRegistry serviceRegistry;
   public List<WorkflowInstanceEventListener> listeners;
 
-  protected WorkflowEngineImpl() {
-  }
-
-  public WorkflowEngineImpl(WorkflowEngineConfiguration configuration) {
-    this.serviceRegistry = configuration.getServiceRegistry();
-    this.serviceRegistry.registerService(this);
-    initializeId(configuration);
-    this.serviceRegistry.prepare(configuration);
+  @Override
+  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
+    this.id = configuration.getId();
     this.jsonService = serviceRegistry.getService(JsonService.class);
     this.executorService = serviceRegistry.getService(ExecutorService.class);
     this.workflowCache = serviceRegistry.getService(WorkflowCache.class);
     this.workflowStore = serviceRegistry.getService(WorkflowStore.class);
     this.workflowInstanceStore = serviceRegistry.getService(WorkflowInstanceStore.class);
+    this.serviceRegistry = serviceRegistry;
     this.listeners = new ArrayList<>();
   }
   
-  protected void initializeId(WorkflowEngineConfiguration configuration) {
-    this.id = configuration.getId();
-    if (id==null) {
-      try {
-        id = InetAddress.getLocalHost().getHostAddress();
-        try {
-          String processName = ManagementFactory.getRuntimeMXBean().getName();
-          int atIndex = processName.indexOf('@');
-          if (atIndex > 0) {
-            id += ":" + processName.substring(0, atIndex);
-          }
-        } catch (Exception e) {
-          id += ":?";
-        }
-      } catch (UnknownHostException e1) {
-        id = UUID.randomUUID().toString();
-      }
-    }
-  }
-
   public void startup() {
   }
 

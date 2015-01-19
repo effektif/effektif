@@ -16,13 +16,15 @@ package com.effektif.workflow.test;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
 
 
-/**
- * @author Tom Baeyens
- */
 public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
 
+  public TestWorkflowEngineConfiguration() {
+    super();
+    initialize();
+  }
+
   @Override
-  protected void initializeExecutorService() {
+  protected void configureDefaultExecutorService() {
     synchronous();
   }
 }

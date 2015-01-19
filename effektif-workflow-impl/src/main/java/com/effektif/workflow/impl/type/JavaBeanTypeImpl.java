@@ -16,8 +16,8 @@ package com.effektif.workflow.impl.type;
 import java.util.Map;
 
 import com.effektif.workflow.api.type.JavaBeanType;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
@@ -33,10 +33,10 @@ public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
   }
 
   @Override
-  public void parse(JavaBeanType javaBeanTypeApi, WorkflowParser parser) {
-    this.jsonService = parser.getServiceRegistry().getService(JsonService.class);
+  public void initialize(JavaBeanType javaBeanTypeApi, ServiceRegistry serviceRegistry) {
+    this.jsonService = serviceRegistry.getService(JsonService.class);
     this.valueClass = javaBeanTypeApi.getJavaClass();
-    super.parse(javaBeanTypeApi, parser);
+    super.initialize(javaBeanTypeApi, serviceRegistry);
   }
 
   @Override

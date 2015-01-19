@@ -16,8 +16,11 @@ package com.effektif.workflow.impl.type;
 import java.lang.reflect.Field;
 
 import com.effektif.workflow.api.type.ObjectField;
+import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.DataType;
+import com.effektif.workflow.impl.plugin.PluginService;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 public class ObjectFieldImpl {
@@ -33,10 +36,12 @@ public class ObjectFieldImpl {
     this.name = name;
   }
   
-  public void parse(Class< ? > objectClass, ObjectField fieldApi, WorkflowParser parser) {
+  public void parse(Class< ? > objectClass, ObjectField fieldApi, ServiceRegistry serviceRegistry) {
     try {
       this.name = fieldApi.getName();
-      this.type = parser.parseType(fieldApi.getType());
+      Type fieldType = fieldApi.getType();
+      PluginService pluginService = serviceRegistry.getService(PluginService.class);
+      this.type = pluginService.createDataType(fieldType);
       this.field = objectClass.getDeclaredField(name);
       this.field.setAccessible(true);
     } catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {

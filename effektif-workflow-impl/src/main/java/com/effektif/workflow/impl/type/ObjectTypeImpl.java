@@ -19,9 +19,9 @@ import java.util.Map;
 
 import com.effektif.workflow.api.type.ObjectField;
 import com.effektif.workflow.api.type.ObjectType;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
@@ -68,14 +68,14 @@ public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
   }
 
   @Override
-  public void parse(T typeApi, WorkflowParser parser) {
-    super.parse(typeApi, parser);
+  public void initialize(T typeApi, ServiceRegistry serviceRegistry) {
+    super.initialize(typeApi, serviceRegistry);
     List<ObjectField> fieldsApi = typeApi.getFields();
     if (fieldsApi!=null) {
       fields = new ArrayList<>(fieldsApi.size());
       for (ObjectField fieldApi: fieldsApi) {
         ObjectFieldImpl fieldImpl = new ObjectFieldImpl();
-        fieldImpl.parse(valueClass, fieldApi, parser);
+        fieldImpl.parse(valueClass, fieldApi, serviceRegistry);
         isSerializeRequired = isSerializeRequired || (fieldImpl.type!=null && fieldImpl.type.isSerializeRequired());
         fields.add(fieldImpl);
       }

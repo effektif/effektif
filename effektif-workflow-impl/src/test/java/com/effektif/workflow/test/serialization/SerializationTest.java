@@ -22,6 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.test.TestWorkflowEngineConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 import com.effektif.workflow.test.execution.CallTest;
 
@@ -32,19 +36,31 @@ public class SerializationTest {
   
   private static final Logger log = LoggerFactory.getLogger(SerializationTest.class);
   
+  static WorkflowEngineConfiguration originalConfiguration;
   static WorkflowEngine originalWorkflowEngine;
+  static TaskService originalTaskService;
 
   @BeforeClass
   public static void switchToSerializingWorkflowEngine() {
     log.debug("Switching to serializing workflow engine");
-    originalWorkflowEngine = WorkflowTest.cachedDefaultWorkflowEngine;
-    WorkflowTest.cachedDefaultWorkflowEngine = new SerializingWorkflowEngineConfiguration()
-      .buildWorkflowEngine();
+    originalConfiguration = WorkflowTest.cachedConfiguration;
+    originalWorkflowEngine = WorkflowTest.cachedWorkflowEngine;
+    originalTaskService = WorkflowTest.cachedTaskService;
+    
+    WorkflowEngineConfiguration configuration = new TestWorkflowEngineConfiguration();
+    WorkflowEngine workflowEngine = configuration.getWorkflowEngine(); 
+    TaskService taskService = configuration.getTaskService(); 
+    JsonService jsonService = configuration.getServiceRegistry().getService(JsonService.class);
+    WorkflowTest.cachedConfiguration = configuration;
+    WorkflowTest.cachedWorkflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
+    WorkflowTest.cachedTaskService = new SerializingTaskServiceImpl(taskService, jsonService);
   }
 
   @AfterClass
   public static void switchBackToOriginalWorkflowEngine() {
     log.debug("Switching back to original workflow engine");
-    WorkflowTest.cachedDefaultWorkflowEngine = originalWorkflowEngine;
+    WorkflowTest.cachedConfiguration = originalConfiguration;
+    WorkflowTest.cachedWorkflowEngine = originalWorkflowEngine;
+    WorkflowTest.cachedTaskService = originalTaskService;
   }
 }

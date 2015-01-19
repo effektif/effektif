@@ -16,11 +16,11 @@ package com.effektif.workflow.impl.type;
 import com.effektif.workflow.api.type.BindingType;
 import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.PluginService;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 public class BindingTypeImpl extends AbstractDataType<BindingType> {
@@ -44,11 +44,8 @@ public class BindingTypeImpl extends AbstractDataType<BindingType> {
       Binding binding = (Binding) o;
       Object value = binding.getValue();
       if (value!=null && binding.getType()==null) {
-        DataType dataType = pluginService.getDataTypeByValueClass(value.getClass());
-        if (dataType==null) {
-          throw new RuntimeException("No data type found for value "+value+" ("+value.getClass().getName()+")");
-        }
-        binding.type(dataType.getTypeApi());
+        Type type = pluginService.getTypeByValue(value);
+        binding.type(type);
       }
     }
     return o;
@@ -67,12 +64,12 @@ public class BindingTypeImpl extends AbstractDataType<BindingType> {
   }
 
   @Override
-  public void parse(BindingType bindingTypeApi, WorkflowParser parser) {
-    super.parse(bindingTypeApi, parser);
-    this.pluginService = parser.getServiceRegistry().getService(PluginService.class);
+  public void initialize(BindingType bindingTypeApi, ServiceRegistry serviceRegistry) {
+    super.initialize(bindingTypeApi, serviceRegistry);
+    this.pluginService = serviceRegistry.getService(PluginService.class);
     Type targetTypeApi = bindingTypeApi.getTargetType();
     if (targetTypeApi!=null) {
-      this.targetType = parser.parseType(targetTypeApi);
+      this.targetType = pluginService.createDataType(targetTypeApi);
       this.valueClass = this.targetType.getValueClass();
     } 
   }

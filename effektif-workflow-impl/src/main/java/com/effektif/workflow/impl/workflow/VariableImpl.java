@@ -23,13 +23,13 @@ import com.effektif.workflow.impl.plugin.PluginService;
 
 public class VariableImpl {
   
-  public String id;
-  public DataType type;
-  public Object initialValue;
-
   public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;  
   public ScopeImpl parent;
+
+  public String id;
+  public DataType type;
+  public Object initialValue;
 
   public void parse(Variable variableApi, ScopeImpl parent, WorkflowParser parser) {
     this.id = variableApi.getId();
@@ -40,8 +40,7 @@ public class VariableImpl {
     PluginService pluginService = parser.workflowEngine.getServiceRegistry().getService(PluginService.class);
     Type typeApi = variableApi.getType();
     if (typeApi!=null) {
-      this.type = pluginService.instantiateDataType(typeApi);
-      this.type.parse(typeApi, parser);
+      this.type = pluginService.createDataType(typeApi);
     } else {
       parser.addError("Variable '%s' %s does not have a type", id, parent.isWorkflow() ? "in the workflow" : "in activity '"+parent.id+"'");
     }

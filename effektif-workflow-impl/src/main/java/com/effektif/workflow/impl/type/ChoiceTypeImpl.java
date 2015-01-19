@@ -16,8 +16,8 @@ package com.effektif.workflow.impl.type;
 import java.util.List;
 
 import com.effektif.workflow.api.type.ChoiceType;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.AbstractDataType;
+import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
@@ -29,8 +29,8 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   }
   
   @Override
-  public void parse(ChoiceType choiceApi, WorkflowParser parser) {
-    super.parse(choiceApi, parser);
+  public void initialize(ChoiceType choiceApi, ServiceRegistry serviceRegistry) {
+    super.initialize(choiceApi, serviceRegistry);
     this.options = choiceApi.getOptions();
   }
 

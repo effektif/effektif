@@ -24,13 +24,16 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.command.AbstractCommand;
 import com.effektif.workflow.api.command.VariableValue;
+import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.api.workflowinstance.ScopeInstance;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
@@ -195,8 +198,31 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
 
   @Override
   public WorkflowInstance deserializeWorkflowInstance(WorkflowInstance workflowInstance) {
-    new RuntimeException("TODO deserialize the variable values").printStackTrace();
+    deserializeScopeInstance(workflowInstance);
     return workflowInstance;
+  }
+
+  protected void deserializeScopeInstance(ScopeInstance scopeInstance) {
+    if (scopeInstance.getVariableInstances()!=null) {
+      for (VariableInstance variableInstance: scopeInstance.getVariableInstances()) {
+        deserializeVariableInstance(variableInstance);
+      }
+    }
+    if (scopeInstance.getActivityInstances()!=null) {
+      for (ActivityInstance activityInstance: scopeInstance.getActivityInstances()) {
+        deserializeScopeInstance(activityInstance);
+      }
+    }
+  }
+
+  protected void deserializeVariableInstance(VariableInstance variableInstance) {
+    Object value = variableInstance.getValue();
+    Type type = variableInstance.getType();
+    if (value!=null && type!=null) {
+      DataType dataType = pluginService.createDataType(type);
+      Object deserializedValue = dataType.deserialize(value);
+      variableInstance.setValue(deserializedValue);
+    }
   }
 
   @Override
@@ -225,10 +251,9 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
     for (VariableValue variableValue: command.getVariableValues()) {
       Object value = variableValue.getValue();
       if (value!=null && variableValue.getType()!=null) {
-        DataType dataType = pluginService.instantiateDataType(variableValue.getType());
-        WorkflowParser parser = new WorkflowParser(workflowEngine);
-        dataType.parse(variableValue.getType(), parser);
-        variableValue.value(dataType.deserialize(value));
+        DataType dataType = pluginService.createDataType(variableValue.getType());
+        Object deserializedValue = dataType.deserialize(value);
+        variableValue.value(deserializedValue);
       }
     }
     return command;

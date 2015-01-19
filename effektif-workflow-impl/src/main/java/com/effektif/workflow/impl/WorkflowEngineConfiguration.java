@@ -13,8 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.script.ScriptEngineManager;
 
@@ -39,6 +43,7 @@ import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.script.ScriptServiceImpl;
+import com.effektif.workflow.impl.task.TaskService;
 import com.effektif.workflow.impl.type.BindingTypeImpl;
 import com.effektif.workflow.impl.type.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.type.ListTypeImpl;
@@ -59,19 +64,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * E.g. MongoWorkflowEngineConfiguration or ClientWorkflowEngineConfiguration. 
  * 
  * <pre>{@code
- * WorkflowEngine workflowEngine = new WorkflowEngineConfiguration()
+ * WorkflowEngineConfiguration configuration = new MemoryWorkflowEngineConfiguration()
  *   .registerDataType(new MyCustomDataType())
  *   .registerJavaBeanType(MyCustomJavaBean.class)
  *   .registerActivityType(new MyCustomActivityType())
  *   .registerService(new MyCustomServiceObject())
- *   .buildWorkflowEngine();
+ *   .initialize();
+ *   
+ * WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
+ * TaskService taskService = configuration.getTaskService();
  * }</pre>
- * 
- * 
- * @author Walter White
  */
 public abstract class WorkflowEngineConfiguration {
   
+  protected boolean isInitialized;
   protected String id;
   protected ServiceRegistry serviceRegistry;
   protected List<Initializable> initializables = new ArrayList<>();
@@ -82,20 +88,67 @@ public abstract class WorkflowEngineConfiguration {
   
   public WorkflowEngineConfiguration() {
     this(new SimpleServiceRegistry());
-    initializeObjectMapper();
-    initializeDescriptors();
-    initializeDefaultActivityTypes();
-    initializeDefaultDataTypes();
-    initializeScriptManager();
-    initializeJsonFactory();
-    initializeJsonService();
-    initializeScriptService();
-    initializeExpressionService();
-    initializeExecutorService();
-    initializeProcessDefinitionCache();
+  }
+
+  protected void configureDefaults() {
+    configureDefaultWorkflowEngine();
+    configureDefaultId();
+    configureDefaultObjectMapper();
+    configureDefaultJsonFactory();
+    configureDefaultPluginService();
+    configureDefaultActivityTypes();
+    configureDefaultDataTypes();
+    configureDefaultScriptManager();
+    configureDefaultJsonService();
+    configureDefaultScriptService();
+    configureDefaultExpressionService();
+    configureDefaultExecutorService();
+    configureDefaultWorkflowCache();
   }
   
-  protected void initializeDefaultActivityTypes() {
+  protected WorkflowEngineConfiguration(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
+  
+  /** must be invoked before the workflow engine and task service are retrieved,
+   * and no further configurations can be set after this method is called.
+   * @return this so it can be used in a fluent style. */
+  public WorkflowEngineConfiguration initialize() {
+    isInitialized = true;
+    PluginService pluginService = serviceRegistry.getService(PluginService.class);
+    for (Initializable initializable: initializables) {
+      initializable.initialize(serviceRegistry, this);
+    }
+    for (Class<?> javaBeanType: javaBeanTypes) {
+      pluginService.registerJavaBeanType(javaBeanType);
+    }
+    for (DataType type: types) {
+      pluginService.registerDataType(type);
+    }
+    for (ActivityType activityType: activityTypes) {
+      pluginService.registerActivityType(activityType);
+    }
+    for (Class<? extends JobType> jobTypeClass: jobTypeClasses) {
+      pluginService.registerJobType(jobTypeClass);
+    }
+    return this;
+  }
+  
+  public WorkflowEngine getWorkflowEngine() {
+    checkInitialized();
+    return serviceRegistry.getService(WorkflowEngine.class);
+  }
+
+  public TaskService getTaskService() {
+    checkInitialized();
+    return serviceRegistry.getService(TaskService.class);
+  }
+  
+  protected void configureDefaultWorkflowEngine() {
+    registerService(new WorkflowEngineImpl());
+  }
+
+  protected void configureDefaultActivityTypes() {
     registerActivityType(new StartEventImpl());
     registerActivityType(new EndEventImpl());
     registerActivityType(new EmbeddedSubprocessImpl());
@@ -109,7 +162,7 @@ public abstract class WorkflowEngineConfiguration {
     registerActivityType(new HttpServiceTaskImpl());
   }
 
-  protected void initializeDefaultDataTypes() {
+  protected void configureDefaultDataTypes() {
     registerDataType(new BindingTypeImpl());
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());
@@ -121,51 +174,63 @@ public abstract class WorkflowEngineConfiguration {
     registerJavaBeanType(CallMapping.class);
   }
   
-  public WorkflowEngineConfiguration(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
+  protected void configureDefaultId() {
+    if (id==null) {
+      try {
+        id = InetAddress.getLocalHost().getHostAddress();
+        try {
+          String processName = ManagementFactory.getRuntimeMXBean().getName();
+          int atIndex = processName.indexOf('@');
+          if (atIndex > 0) {
+            id += ":" + processName.substring(0, atIndex);
+          }
+        } catch (Exception e) {
+          id += ":?";
+        }
+      } catch (UnknownHostException e1) {
+        id = UUID.randomUUID().toString();
+      }
+    }
   }
 
-  protected void initializeProcessDefinitionCache() {
+  protected void configureDefaultWorkflowCache() {
     registerService(new SimpleWorkflowCache());
   }
 
-  protected void initializeExecutorService() {
+  protected void configureDefaultExecutorService() {
     registerService(new AsynchronousExecutorService());
   }
 
-  protected void initializeExpressionService() {
+  protected void configureDefaultExpressionService() {
     registerService(new ExpressionServiceImpl());
   }
 
-  protected void initializeScriptService() {
+  protected void configureDefaultScriptService() {
     registerService(new ScriptServiceImpl());
   }
 
-  protected void initializeJsonService() {
+  protected void configureDefaultJsonService() {
     registerService(new JacksonJsonService());
   }
 
-  protected void initializeDescriptors() {
+  protected void configureDefaultPluginService() {
     registerService(new PluginService());
   }
 
-  protected void initializeObjectMapper() {
+  protected void configureDefaultObjectMapper() {
     registerService(new ObjectMapper());
   }
 
-  protected void initializeJsonFactory() {
+  protected void configureDefaultJsonFactory() {
     registerService(new JsonFactory());
   }
 
-  protected void initializeScriptManager() {
+  protected void configureDefaultScriptManager() {
     registerService(new ScriptEngineManager());
   }
 
-  public WorkflowEngine buildWorkflowEngine() {
-    return new WorkflowEngineImpl(this);
-  }
-
   public WorkflowEngineConfiguration registerService(Object service) {
+    checkUninitialized();
     serviceRegistry.registerService(service);
     if (service instanceof Initializable) {
       initializables.add((Initializable)service);
@@ -174,48 +239,63 @@ public abstract class WorkflowEngineConfiguration {
   }
   
   public WorkflowEngineConfiguration synchronous() {
+    checkUninitialized();
     registerService(new SynchronousExecutorService());
     return this;
   }
 
   public WorkflowEngineConfiguration registerJavaBeanType(Class<?> javaBeanType) {
+    checkUninitialized();
     javaBeanTypes.add(javaBeanType);
     return this;
   }
 
   public WorkflowEngineConfiguration registerActivityType(ActivityType activityType) {
+    checkUninitialized();
     activityTypes.add(activityType);
     return this;
   }
 
   public WorkflowEngineConfiguration registerDataType(DataType type) {
+    checkUninitialized();
     types.add(type);
     return this;
   }
 
   public WorkflowEngineConfiguration registerJobType(Class<? extends JobType> jobTypeClass) {
+    checkUninitialized();
     jobTypeClasses.add(jobTypeClass);
     return this;
   }
 
   public WorkflowEngineConfiguration id(String id) {
+    checkUninitialized();
     this.id = id;
     return this;
   }
 
-  public String getId() {
-    return id;
+  public void setId(String id) {
+    checkUninitialized();
+    this.id = id;
   }
   
-  public void setId(String id) {
-    this.id = id;
+  public String getId() {
+    return id;
   }
   
   public ServiceRegistry getServiceRegistry() {
     return serviceRegistry;
   }
 
-  public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
+  protected void checkInitialized() {
+    if (!isInitialized) {
+      throw new RuntimeException("Please, initialize the configuration first with workflowEngineConfiguration.initialize()");
+    }
+  }
+  
+  protected void checkUninitialized() {
+    if (isInitialized) {
+      throw new RuntimeException("This configuration is already initialized.  Please perform all configurations before invoking .initialized()");
+    }
   }
 }

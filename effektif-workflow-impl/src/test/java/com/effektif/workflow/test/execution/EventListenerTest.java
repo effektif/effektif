@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,12 +79,15 @@ public class EventListenerTest extends WorkflowTest {
   @Override
   @Before
   public void initializeWorkflowEngine() {
-    workflowEngine = new TestWorkflowEngineConfiguration()
-      .buildWorkflowEngine();
-    
+    super.initializeWorkflowEngine();
     listener = new LoggingListener();
     workflowEngineImpl = (WorkflowEngineImpl) workflowEngine;
     workflowEngineImpl.addListener(listener);
+  }
+  
+  @After
+  public void removeListener() {
+    workflowEngineImpl.removeListener(listener);
   }
 
   @Test

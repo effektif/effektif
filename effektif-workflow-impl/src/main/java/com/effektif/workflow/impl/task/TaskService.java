@@ -22,6 +22,6 @@ public interface TaskService {
 
   List<Task> findTasks(TaskQuery taskQuery);
 
-  void deleteTask(TaskQuery taskQuery);
+  void deleteTasks(TaskQuery taskQuery);
 
 }

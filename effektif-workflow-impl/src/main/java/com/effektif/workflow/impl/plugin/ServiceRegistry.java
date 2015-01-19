@@ -21,6 +21,4 @@ public interface ServiceRegistry {
   <T> T getService(Class<T> serviceClass);
   
   ServiceRegistry registerService(Object service);
-
-  void prepare(WorkflowEngineConfiguration configuration);
 }
