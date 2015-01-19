@@ -95,6 +95,7 @@ public class CallImpl extends AbstractActivityType<Call> {
         CallMappingImpl callMappingImpl = new CallMappingImpl();
         callMappingImpl.sourceBinding = workflowParser.parseBinding(callMapping.getSourceBinding(), Object.class, false, call, fieldName+"["+i+"]");
         callMappingImpl.destinationVariableId = callMapping.getDestinationVariableId();
+        callMappingImpls.add(callMappingImpl);
         i++;
       }
       return callMappingImpls;

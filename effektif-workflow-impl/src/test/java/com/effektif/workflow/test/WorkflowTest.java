@@ -49,8 +49,6 @@ public class WorkflowTest {
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
   public static WorkflowEngineConfiguration cachedConfiguration = null;
-  public static WorkflowEngine cachedWorkflowEngine = null;
-  public static TaskService cachedTaskService = null;
   
   protected WorkflowEngineConfiguration configuration = null;
   protected WorkflowEngine workflowEngine = null;
@@ -59,14 +57,12 @@ public class WorkflowTest {
   @Before
   public void initializeWorkflowEngine() {
     if (workflowEngine==null || taskService==null) {
-      if (cachedWorkflowEngine==null) {
+      if (configuration==null) {
         cachedConfiguration = new TestWorkflowEngineConfiguration();
-        cachedWorkflowEngine = cachedConfiguration.getWorkflowEngine();
-        cachedTaskService = cachedConfiguration.getTaskService();
       }
       configuration = cachedConfiguration;
-      workflowEngine = cachedWorkflowEngine;
-      taskService = cachedTaskService;
+      workflowEngine = configuration.getWorkflowEngine();
+      taskService = configuration.getTaskService();
     }
   }
   

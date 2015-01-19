@@ -11,32 +11,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.execution;
+package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.command.StartCommand;
+import com.effektif.workflow.api.type.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.task.TaskQuery;
-import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
 
-public class TaskTest extends WorkflowTest {
-
+public class ScriptTest extends WorkflowTest {
+  
   @Test
-  public void testTask() throws Exception {
+  public void testScript() {
     Workflow workflow = new Workflow()
-      .activity(new UserTask("Task one"));
-    
+      .variable("n", new TextType())
+      .variable("m", new TextType())
+      .activity("s", new ScriptTask()
+        .variableMapping("name", "n")
+        .variableMapping("message", "m")
+        .script("message = 'Hello ' + name;"));
+
     workflow = deploy(workflow);
     
-    start(workflow);
-    
-    TaskService taskService = ((WorkflowEngineImpl)workflowEngine).getServiceRegistry().getService(TaskService.class);
-    assertEquals("Task one", taskService.findTasks(new TaskQuery()).get(0).getName());
+    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new StartCommand()
+      .workflowId(workflow.getId())
+      .variableValue("n", "World"));
+
+    assertEquals("Hello World", workflowInstance.getVariableValue("m"));
   }
 }

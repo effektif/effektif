@@ -233,11 +233,8 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
     for (VariableValue variableValue: command.getVariableValues()) {
       Object value = variableValue.getValue();
       if (value!=null && variableValue.getType()==null) {
-        DataType dataType = pluginService.getDataTypeByValueClass(value.getClass());
-        if (dataType==null) {
-          throw new RuntimeException("No data type found for value "+value+" ("+value.getClass().getName()+")");
-        }
-        variableValue.type(dataType.getTypeApi());
+        Type type = pluginService.getTypeByValue(value);
+        variableValue.type(type);
       }
     }
     return command;

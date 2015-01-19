@@ -64,7 +64,6 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   }
   
   public static class JobExecutionFields {
-    
   }
 
   
@@ -90,7 +89,7 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
   }
   
   @Override
-  public WorkflowEngine buildWorkflowEngine() {
+  public WorkflowEngineConfiguration initialize() {
     MongoClient mongoClient = new MongoClient(
             getServerAddresses(), 
             getCredentials(), 
@@ -99,11 +98,9 @@ public class MongoWorkflowEngineConfiguration extends WorkflowEngineConfiguratio
     
     DB db = mongoClient.getDB(getDatabaseName());
     registerService(db);
-    
-    return super.buildWorkflowEngine();
+
+    return super.initialize();
   }
-
-
 
   public MongoWorkflowEngineConfiguration server(String host) {
     if (serverAddresses==null) {

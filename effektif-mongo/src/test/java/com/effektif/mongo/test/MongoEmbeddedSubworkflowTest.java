@@ -14,15 +14,17 @@
 package com.effektif.mongo.test;
 
 import org.junit.Before;
+import org.junit.Ignore;
 
-import com.effektif.workflow.test.execution.EmbeddedSuprocessTest;
+import com.effektif.workflow.test.api.EmbeddedSuprocessTest;
 
-
+@Ignore // use this to debug an individual test 
 public class MongoEmbeddedSubworkflowTest extends EmbeddedSuprocessTest {
 
   @Override
   @Before
   public void initializeWorkflowEngine() {
-    workflowEngine = MongoTestHelper.getCachedMongoWorkflowEngine();
+    cachedConfiguration = MongoApiSuite.createMongoWorkflowEngineConfiguration();
+    super.initializeWorkflowEngine();
   }
 }

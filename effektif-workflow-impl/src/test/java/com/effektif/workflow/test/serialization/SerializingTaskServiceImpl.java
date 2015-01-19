@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.impl.json.JsonService;
@@ -21,27 +22,38 @@ import com.effektif.workflow.impl.task.TaskQuery;
 import com.effektif.workflow.impl.task.TaskService;
 
 
-public class SerializingTaskServiceImpl implements TaskService {
+public class SerializingTaskServiceImpl extends AbstractSerializingService implements TaskService {
   
   protected TaskService taskService;
-  protected JsonService jsonService;
 
   public SerializingTaskServiceImpl(TaskService taskService, JsonService jsonService) {
+    super(jsonService);
     this.taskService = taskService;
-    this.jsonService = jsonService;
   }
 
   @Override
   public void saveTask(Task task) {
+    task = wireize(task, Task.class);
+    taskService.saveTask(task);
   }
 
   @Override
-  public List<Task> findTasks(TaskQuery taskQuery) {
-    return null;
+  public List<Task> findTasks(TaskQuery query) {
+    query = wireize(query, TaskQuery.class);
+    List<Task> tasks = taskService.findTasks(query);
+    if (tasks==null) {
+      return null;
+    }
+    List<Task> wireizedTasks = new ArrayList<>(tasks.size());
+    for (Task task: tasks) {
+      wireizedTasks.add(wireize(task, Task.class));
+    }
+    return tasks;
   }
 
   @Override
-  public void deleteTasks(TaskQuery taskQuery) {
+  public void deleteTasks(TaskQuery query) {
+    query = wireize(query, TaskQuery.class);
+    taskService.deleteTasks(query);
   }
-
 }

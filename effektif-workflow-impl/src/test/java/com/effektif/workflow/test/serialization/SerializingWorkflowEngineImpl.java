@@ -28,20 +28,16 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
 
 
-public class SerializingWorkflowEngineImpl extends WorkflowEngineImpl {
-  
-  private static final Logger log = LoggerFactory.getLogger(SerializingWorkflowEngineImpl.class);
+public class SerializingWorkflowEngineImpl extends AbstractSerializingService implements WorkflowEngine {
   
   WorkflowEngine workflowEngine;
-  JsonService jsonService;
 
   public SerializingWorkflowEngineImpl(WorkflowEngine workflowEngine, JsonService jsonService) {
+    super(jsonService);
     this.workflowEngine = workflowEngine;
-    this.jsonService = jsonService;
   }
 
   protected Workflow wireizeWorkflow(Workflow workflow) {
@@ -63,13 +59,6 @@ public class SerializingWorkflowEngineImpl extends WorkflowEngineImpl {
     return jsonService.deserializeCommand(command);
   }
 
-  protected <T> T wireize(Object o, Class<T> type) {
-    if (o==null) return null;
-    String jsonString = jsonService.objectToJsonStringPretty(o);
-    log.debug("wirized: "+jsonString);
-    return jsonService.jsonToObject(jsonString, type);
-  }
-  
   @Override
   public Workflow deployWorkflow(Workflow workflow) {
     return deployWorkflow(workflow, null);

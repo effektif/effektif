@@ -13,14 +13,20 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.type.JavaBeanType;
+import com.effektif.workflow.api.type.ListType;
+import com.effektif.workflow.api.type.NumberType;
 import com.effektif.workflow.api.type.ObjectType;
+import com.effektif.workflow.api.type.TextType;
 import com.effektif.workflow.api.type.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
@@ -46,8 +52,9 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
 
   protected Map<Class<?>, ObjectType> dataTypeDescriptors = new LinkedHashMap<>();
   protected Map<Class<?>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
-  protected Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
-  
+
+  protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
+
   public PluginService() {
   }
 
@@ -61,14 +68,12 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     Class apiClass = dataType.getApiClass();
     dataTypeClasses.put(apiClass, dataType.getClass());
     objectMapper.registerSubtypes(apiClass);
-    Class valueClass = dataType.getValueClass();
-    if (valueClass!=null) {
-      dataTypesByValueClass.put(valueClass, dataType);
-    }
   }
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {
-    registerDataType(new JavaBeanTypeImpl(javaBeanClass));
+    JavaBeanTypeImpl javaBeanType = new JavaBeanTypeImpl(javaBeanClass);
+    javaBeanTypes.put(javaBeanClass, javaBeanType);
+    registerDataType(javaBeanType);
   }
 
   public void registerActivityType(ActivityType activityType) {
@@ -110,20 +115,35 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     return activityTypes.get(activityApiClass);
   }
 
-  public DataType getDataTypeByValueClass(Class<?> valueClass) {
-    return dataTypesByValueClass.get(valueClass);
-  }
-
   public ObjectTypeImpl getActivityTypeSerializer(Class<? extends Activity> activityApiClass) {
     return activityTypeSerializers.get(activityApiClass);
   }
 
   public Type getTypeByValue(Object value) {
-    DataType dataType = getDataTypeByValueClass(value.getClass());
-    if (dataType==null) {
-      throw new RuntimeException("No data type found for value "+value+" ("+value.getClass().getName()+")");
+    if (value==null) {
+      return null;
     }
-    return dataType.getTypeApi();
+    Class<?> valueClass = value.getClass();
+    if (String.class.isAssignableFrom(valueClass)) {
+      return new TextType();
+    }
+    if (Number.class.isAssignableFrom(valueClass)) {
+      return new NumberType();
+    }
+    if (Collection.class.isAssignableFrom(valueClass)) {
+      ListType listType = new ListType();
+      Iterator iterator = ((Collection)value).iterator();
+      if (iterator.hasNext()) {
+        Object elementValue = iterator.next();
+        Type elementType = getTypeByValue(elementValue);
+        listType.elementType(elementType);
+      }
+      return listType;
+
+    } else if (javaBeanTypes.containsKey(valueClass)) {
+      return new JavaBeanType(valueClass);
+    }
+    throw new RuntimeException("No data type found for value "+value+" ("+valueClass.getName()+")");
   }
 
   public DataType createDataType(Type type) {

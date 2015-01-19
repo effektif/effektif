@@ -22,7 +22,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public Object value;
   public VariableImpl variable;
-  public DataType type;
+  public DataType type; // used when variables are created dynamically
   public VariableInstanceUpdates updates;
 
   public VariableInstanceImpl() {
@@ -36,7 +36,11 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setValue(value);
-    variableInstance.setType(variable.type.getTypeApi());
+    if (variable.type!=null) {
+      variableInstance.setType(variable.type.toType());
+    } else {
+      variableInstance.setType(type.toType());
+    }
     variableInstance.setVariableId(variable.id);
     return variableInstance;
   }

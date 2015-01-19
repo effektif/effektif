@@ -11,10 +11,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.execution;
+package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -27,34 +26,28 @@ import com.effektif.workflow.api.type.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.task.Task;
+import com.effektif.workflow.impl.task.TaskQuery;
 import com.effektif.workflow.test.WorkflowTest;
 
 
 public class CallTest extends WorkflowTest {
   
   @Test
-  public void testCallActivityInputVariableMapping() {
+  public void testCallActivity() {
     Workflow subWorkflow = new Workflow()
-      .variable("performer", new TextType())
-      .activity("subtask", new UserTask()
-        .candidateIdVariableId("performer")
-      );
+      .activity(new UserTask("subtask"));
     
     subWorkflow = deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .variable("assignee", new TextType())
       .activity(new Call("call")
-        .inputMappingVariable("assignee", "performer")
         .subWorkflowId(subWorkflow.getId()));
-    
+
     superWorkflow = deploy(superWorkflow);
-    
-    WorkflowInstance superInstance = workflowEngine.startWorkflowInstance(new StartCommand()
-      .workflowId(superWorkflow.getId())
-      .variableValue("assignee", "johndoe")
-    );
-    
+
+    WorkflowInstance superInstance = start(superWorkflow);
+
     ActivityInstance callActivityInstance = superInstance.findOpenActivityInstance("call");
     assertNotNull(callActivityInstance.getCalledWorkflowInstanceId());
     
@@ -79,43 +72,55 @@ public class CallTest extends WorkflowTest {
   }
 
   @Test
-  public void testCallActivity() {
+  public void testCallActivityInputMappingVariable() {
     Workflow subWorkflow = new Workflow()
-      .activity(new UserTask("subtask"));
+      .variable("performer", new TextType())
+      .activity("subtask", new UserTask()
+        .candidateIdVariableId("performer")
+      );
     
-    String subWorkflowId = workflowEngine.deployWorkflow(subWorkflow).getId();
+    subWorkflow = deploy(subWorkflow);
+    
+    Workflow superWorkflow = new Workflow()
+      .variable("assignee", new TextType())
+      .activity(new Call("call")
+        .inputMappingVariable("assignee", "performer")
+        .subWorkflowId(subWorkflow.getId()));
+    
+    superWorkflow = deploy(superWorkflow);
+    
+    workflowEngine.startWorkflowInstance(new StartCommand()
+      .workflowId(superWorkflow.getId())
+      .variableValue("assignee", "johndoe")
+    );
+    
+    Task task = taskService.findTasks(new TaskQuery()).get(0);
+    assertEquals("johndoe", task.getAssigneeId());
+  }
+
+  @Test
+  public void testCallActivityInputMappingValue() {
+    Workflow subWorkflow = new Workflow()
+      .variable("performer", new TextType())
+      .activity("subtask", new UserTask()
+        .candidateIdVariableId("performer")
+      );
+    
+    subWorkflow = deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
       .activity(new Call("call")
-        .inputMappingVariable("a", "b")
-        .subWorkflowId(subWorkflowId));
+        .inputMappingValue("johndoe", "performer")
+        .subWorkflowId(subWorkflow.getId()));
     
-    String superWorkflowId = workflowEngine.deployWorkflow(superWorkflow).getId();
+    superWorkflow = deploy(superWorkflow);
     
-    WorkflowInstance superInstance = workflowEngine.startWorkflowInstance(new StartCommand()
-      .workflowId(superWorkflowId)
+    workflowEngine.startWorkflowInstance(new StartCommand()
+      .workflowId(superWorkflow.getId())
+      .variableValue("assignee", "johndoe")
     );
-
-    ActivityInstance callActivityInstance = superInstance.findOpenActivityInstance("call");
-    assertNotNull(callActivityInstance.getCalledWorkflowInstanceId());
     
-    WorkflowInstance subInstance = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery()
-        .workflowInstanceId(callActivityInstance.getCalledWorkflowInstanceId()))
-      .get(0);
-    
-    assertNotNull(subInstance);
-    
-    ActivityInstance subtaskInstance = subInstance.findOpenActivityInstance("subtask");
-    
-    subInstance = workflowEngine.sendMessage(new MessageCommand()
-      .workflowInstanceId(subInstance.getId())
-      .activityInstanceId(subtaskInstance.getId()));
-    
-    assertTrue(subInstance.isEnded());
-
-    superInstance = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery()
-        .workflowInstanceId(superInstance.getId()))
-      .get(0);
-    assertTrue(superInstance.isEnded());
+    Task task = taskService.findTasks(new TaskQuery()).get(0);
+    assertEquals("johndoe", task.getAssigneeId());
   }
 }

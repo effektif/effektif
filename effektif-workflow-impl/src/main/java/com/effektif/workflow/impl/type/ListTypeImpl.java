@@ -74,8 +74,10 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     super.initialize(listType, serviceRegistry);
     PluginService pluginService = serviceRegistry.getService(PluginService.class);
     Type elementType = listType.getElementType();
-    this.elementDataType = pluginService.createDataType(elementType);
-    this.elementDataType.initialize(elementType, serviceRegistry);
+    if (elementType!=null) {
+      this.elementDataType = pluginService.createDataType(elementType);
+      this.elementDataType.initialize(elementType, serviceRegistry);
+    }
   }
 
   @Override

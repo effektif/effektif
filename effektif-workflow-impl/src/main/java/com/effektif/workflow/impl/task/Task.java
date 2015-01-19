@@ -74,7 +74,7 @@ public class Task {
   }
 
   
-  public Object getAssigneeId() {
+  public String getAssigneeId() {
     return assigneeId;
   }
 
@@ -83,6 +83,7 @@ public class Task {
     this.assigneeId = assigneeId;
   }
 
+  
   
   public List<String> getCandidateIds() {
     return candidateIds;
@@ -94,12 +95,12 @@ public class Task {
   }
 
   
-  public Object getActivityInstanceId() {
+  public String getActivityInstanceId() {
     return activityInstanceId;
   }
 
   
-  public Object getWorkflowInstanceId() {
+  public String getWorkflowInstanceId() {
     return workflowInstanceId;
   }
 

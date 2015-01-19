@@ -19,7 +19,7 @@ import com.effektif.workflow.impl.type.InvalidValueException;
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
-  protected T typeApi;
+  protected T cachedType;
   protected Class<?> apiClass;
   protected Class<?> valueClass = Object.class;
   
@@ -32,8 +32,8 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return apiClass;
   }
   
-  public T getTypeApi() {
-    return typeApi;
+  public T toType() {
+    return cachedType;
   }
   
   public boolean isSerializeRequired() {
@@ -53,7 +53,7 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public abstract Object convertJsonToInternalValue(Object jsonValue);
 
   public void initialize(T typeApi, ServiceRegistry serviceRegistry) {
-    this.typeApi = typeApi;
+    this.cachedType = typeApi;
   }
 
   public void validateInternalValue(Object internalValue) throws InvalidValueException {

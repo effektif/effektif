@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.test.execution;
+package com.effektif.workflow.test.implementation;
 
 import static org.junit.Assert.assertEquals;
 

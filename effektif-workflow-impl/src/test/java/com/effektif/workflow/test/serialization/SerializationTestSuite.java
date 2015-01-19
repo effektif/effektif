@@ -21,46 +21,48 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.task.TaskService;
-import com.effektif.workflow.test.TestWorkflowEngineConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
-import com.effektif.workflow.test.execution.CallTest;
+import com.effektif.workflow.test.api.CallTest;
+import com.effektif.workflow.test.api.EmbeddedSuprocessTest;
+import com.effektif.workflow.test.api.ExclusiveGatewayTest;
+import com.effektif.workflow.test.api.MultiInstanceTest;
+import com.effektif.workflow.test.api.MultipleStartActivitiesTest;
+import com.effektif.workflow.test.api.ParallelGatewayTest;
+import com.effektif.workflow.test.api.ScriptTest;
+import com.effektif.workflow.test.api.SequentialExecutionTest;
+import com.effektif.workflow.test.api.TaskTest;
 
 
-@SuiteClasses(CallTest.class)
+@SuiteClasses({    
+  CallTest.class,
+  EmbeddedSuprocessTest.class,
+  ExclusiveGatewayTest.class,
+  MultiInstanceTest.class,
+  MultipleStartActivitiesTest.class,
+  ParallelGatewayTest.class,
+  ScriptTest.class,
+  SequentialExecutionTest.class,
+  TaskTest.class
+})
 @RunWith(Suite.class)
-public class SerializationTest {
+public class SerializationTestSuite {
   
-  private static final Logger log = LoggerFactory.getLogger(SerializationTest.class);
+  private static final Logger log = LoggerFactory.getLogger(SerializationTestSuite.class);
   
   static WorkflowEngineConfiguration originalConfiguration;
-  static WorkflowEngine originalWorkflowEngine;
-  static TaskService originalTaskService;
 
   @BeforeClass
   public static void switchToSerializingWorkflowEngine() {
     log.debug("Switching to serializing workflow engine");
     originalConfiguration = WorkflowTest.cachedConfiguration;
-    originalWorkflowEngine = WorkflowTest.cachedWorkflowEngine;
-    originalTaskService = WorkflowTest.cachedTaskService;
     
-    WorkflowEngineConfiguration configuration = new TestWorkflowEngineConfiguration();
-    WorkflowEngine workflowEngine = configuration.getWorkflowEngine(); 
-    TaskService taskService = configuration.getTaskService(); 
-    JsonService jsonService = configuration.getServiceRegistry().getService(JsonService.class);
-    WorkflowTest.cachedConfiguration = configuration;
-    WorkflowTest.cachedWorkflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
-    WorkflowTest.cachedTaskService = new SerializingTaskServiceImpl(taskService, jsonService);
+    WorkflowTest.cachedConfiguration = new SerializingWorkflowEngineConfiguration();
   }
 
   @AfterClass
   public static void switchBackToOriginalWorkflowEngine() {
     log.debug("Switching back to original workflow engine");
     WorkflowTest.cachedConfiguration = originalConfiguration;
-    WorkflowTest.cachedWorkflowEngine = originalWorkflowEngine;
-    WorkflowTest.cachedTaskService = originalTaskService;
   }
 }

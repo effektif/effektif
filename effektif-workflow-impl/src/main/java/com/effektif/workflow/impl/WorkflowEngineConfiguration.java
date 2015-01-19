@@ -167,10 +167,10 @@ public abstract class WorkflowEngineConfiguration {
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());
     registerDataType(new ListTypeImpl());
-    registerDataType(new TextTypeImpl());
     registerDataType(new VariableIdTypeImpl());
     registerDataType(new WorkflowIdTypeImpl());
     registerDataType(new WorkflowNameTypeImpl());
+    registerDataType(new TextTypeImpl());
     registerJavaBeanType(CallMapping.class);
   }
   

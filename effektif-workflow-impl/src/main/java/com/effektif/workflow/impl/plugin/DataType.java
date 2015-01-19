@@ -24,7 +24,7 @@ public interface DataType<T extends Type> extends Plugin {
 
   Class< ? > getValueClass();
   Class< ? > getApiClass();
-  T getTypeApi();
+  T toType();
 
   boolean isSerializeRequired();
   Object serialize(Object value);
