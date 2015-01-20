@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.job;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
@@ -21,9 +23,9 @@ public interface JobController {
   /** allows process jobs to get the locked process instance */
   WorkflowInstanceImpl getProcessInstance();
 
-  void rescheduleFromNow(Long delayInMillis);
+  void rescheduleFromNow(int delayInMillis);
   
-  void rescheduleFor(Long duedate);
+  void rescheduleFor(LocalDateTime duedate);
   
   void log(String msg);
 }

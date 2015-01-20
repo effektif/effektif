@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -108,15 +110,17 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
     if (workflowName==null) {
       return null;
     }
-    Workflow latest = null;
+    Workflow latestWorkflow = null;
+    LocalDateTime latestDeployTime = null;
     for (Workflow workflow: workflows.values()) {
       if ( workflowName.equals(workflow.getName())
-           && (latest==null || workflow.getDeployedTime() < latest.getDeployedTime())
+           && (latestDeployTime==null || latestDeployTime.isAfter(workflow.getDeployedTime()))
          ) {
-        latest = workflow;
+        latestWorkflow = workflow;
+        latestDeployTime = workflow.getDeployedTime();
       }
     }
-    return latest!=null ? latest.getId() : null;
+    return latestWorkflow!=null ? latestWorkflow.getId() : null;
   }
 
   @Override

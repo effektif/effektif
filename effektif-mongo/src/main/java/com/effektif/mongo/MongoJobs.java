@@ -14,19 +14,20 @@
 package com.effektif.mongo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobExecution;
 import com.effektif.workflow.impl.job.JobQueryImpl;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.job.Lock;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.util.Time;
+import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
@@ -71,7 +72,7 @@ public class MongoJobs extends MongoCollection {
   }
 
   protected BasicDBObjectBuilder buildJobQuery(boolean mustHaveProcessInstance) {
-    Long now = Time.now();
+    Date now = Time.now().toDate();
     return BasicDBObjectBuilder.start()
       .append("$or", new DBObject[]{
         new BasicDBObject(fields.duedate, new BasicDBObject("$exists", false)),
@@ -86,7 +87,7 @@ public class MongoJobs extends MongoCollection {
       .push(fields.lock).append("$exists", false).pop()
       .get();
     DBObject dbLock = BasicDBObjectBuilder.start()
-      .append(fields.time, Time.now())
+      .append(fields.time, Time.now().toDate())
       .append(fields.owner, lockOwner)
       .get();
     DBObject update = BasicDBObjectBuilder.start()
@@ -137,7 +138,7 @@ public class MongoJobs extends MongoCollection {
 
   public void readLock(Job job, BasicDBObject dbLock) {
     if (dbLock!=null) {
-      job.lock = new Lock();
+      job.lock = new LockImpl();
       job.lock.time = readTime(dbLock, fields.time);
       job.lock.owner = readString(dbLock, fields.owner);
     }
@@ -182,7 +183,7 @@ public class MongoJobs extends MongoCollection {
     }
   }
 
-  public void writeLock(BasicDBObject dbJob, Lock lock) {
+  public void writeLock(BasicDBObject dbJob, LockImpl lock) {
     if (lock!=null) {
       BasicDBObject dbLock = new BasicDBObject();
       writeTimeOpt(dbLock, fields.time, lock.time);

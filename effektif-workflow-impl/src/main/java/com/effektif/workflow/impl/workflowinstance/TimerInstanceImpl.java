@@ -13,12 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflowinstance;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 
 
 public class TimerInstanceImpl extends BaseInstanceImpl {
   
-  protected Long duedate;
+  protected LocalDateTime duedate;
 
   public TimerInstance toTimerInstance() {
     TimerInstance timerInstance = new TimerInstance();
@@ -26,10 +28,10 @@ public class TimerInstanceImpl extends BaseInstanceImpl {
     return timerInstance;
   }
 
-  public Long getDuedate() {
+  public LocalDateTime getDuedate() {
     return this.duedate;
   }
-  public void setDuedate(Long duedate) {
+  public void setDuedate(LocalDateTime duedate) {
     this.duedate = duedate;
   }
 }

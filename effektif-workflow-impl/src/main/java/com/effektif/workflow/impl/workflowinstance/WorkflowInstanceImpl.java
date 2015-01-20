@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +32,10 @@ import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
-import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activitytypes.CallImpl;
+import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
@@ -277,10 +278,10 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
   
-  public void setEnd(Long end) {
+  public void setEnd(LocalDateTime end) {
     this.end = end;
     if (start!=null && end!=null) {
-      this.duration = end-start;
+      this.duration = end.toDate().getTime()-start.toDate().getTime();
     }
     if (updates!=null) {
       getUpdates().isEndChanged = true;

@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.type.Type;
 
 
@@ -20,7 +22,7 @@ import com.effektif.workflow.api.type.Type;
 public class Workflow extends Scope {
 
   protected String name;
-  protected Long deployedTime;
+  protected LocalDateTime deployedTime;
   protected String deployedBy;
   protected String organizationId;
   protected String processId;
@@ -38,10 +40,10 @@ public class Workflow extends Scope {
     return this;
   }
 
-  public Long getDeployedTime() {
+  public LocalDateTime getDeployedTime() {
     return this.deployedTime;
   }
-  public void setDeployedTime(Long deployedTime) {
+  public void setDeployedTime(LocalDateTime deployedTime) {
     this.deployedTime = deployedTime;
   }
 

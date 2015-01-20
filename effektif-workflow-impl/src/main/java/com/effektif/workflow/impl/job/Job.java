@@ -6,7 +6,10 @@ package com.effektif.workflow.impl.job;
 
 import java.util.LinkedList;
 
-import com.effektif.workflow.impl.Time;
+import org.joda.time.LocalDateTime;
+
+import com.effektif.workflow.impl.util.Time;
+import com.effektif.workflow.impl.workflowinstance.LockImpl;
 
 
 /**
@@ -21,13 +24,13 @@ public class Job {
   
   public String id;
   public String key;
-  public Long duedate;
-  public Lock lock;
+  public LocalDateTime duedate;
+  public LockImpl lock;
   public LinkedList<JobExecution> executions;
   /** retries left.  null when no retries have been performed. 0 when this job has permanently failed. */
   public Long retries;
   public Long retryDelay;
-  public Long done;
+  public LocalDateTime done;
   public Boolean dead;
 
   public String organizationId;
@@ -61,17 +64,17 @@ public class Job {
     return this;
   }
   
-  public Job done(Long done) {
+  public Job done(LocalDateTime done) {
     this.done = done;
     return this;
   }
   
-  public Job duedate(Long duedate) {
+  public Job duedate(LocalDateTime duedate) {
     this.duedate = duedate;
     return this;
   }
   
-  public Job lock(Lock lock) {
+  public Job lock(LockImpl lock) {
     this.lock = lock;
     return this;
   }
@@ -114,11 +117,11 @@ public class Job {
     this.dead = dead;
   }
 
-  public void rescheduleFromNow(Long delayInMillis) {
-    rescheduleFor(Time.now()+delayInMillis);
+  public void rescheduleFromNow(int delayInMillis) {
+    rescheduleFor(Time.now().plusMillis((int)delayInMillis));
   }
 
-  public void rescheduleFor(Long duedate) {
+  public void rescheduleFor(LocalDateTime duedate) {
     this.duedate = duedate;
   }
 
@@ -143,12 +146,12 @@ public class Job {
   }
 
   
-  public Long getDuedate() {
+  public LocalDateTime getDuedate() {
     return duedate;
   }
 
   
-  public Lock getLock() {
+  public LockImpl getLock() {
     return lock;
   }
 
@@ -168,7 +171,7 @@ public class Job {
   }
 
   
-  public Long getDone() {
+  public LocalDateTime getDone() {
     return done;
   }
 

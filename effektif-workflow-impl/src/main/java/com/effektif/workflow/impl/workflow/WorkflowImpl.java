@@ -15,6 +15,8 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowParser;
 
@@ -24,7 +26,7 @@ public class WorkflowImpl extends ScopeImpl {
   public List<ActivityImpl> startActivities;
   public String organizationId;
   public String name;
-  public Long deployedTime;
+  public LocalDateTime deployedTime;
   public String deployedBy;
   public Long version;
 

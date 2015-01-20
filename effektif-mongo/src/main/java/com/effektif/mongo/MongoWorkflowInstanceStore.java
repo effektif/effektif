@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 
 import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Exceptions;
+import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
@@ -315,7 +315,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set")
         .push(WorkflowInstanceFields.LOCK)
-          .add(WorkflowInstanceLockFields.TIME, Time.now())
+          .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
           .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
         .pop()
       .pop()

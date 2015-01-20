@@ -23,7 +23,6 @@ public class WorkflowInstance extends ScopeInstance {
   protected String callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
 
-
   public String getCallerWorkflowInstanceId() {
     return this.callerWorkflowInstanceId;
   }

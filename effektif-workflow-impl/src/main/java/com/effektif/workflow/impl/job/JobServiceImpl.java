@@ -13,12 +13,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.effektif.workflow.impl.ExecutorService;
-import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
@@ -190,7 +190,7 @@ public abstract class JobServiceImpl implements JobService, Initializable<Workfl
           job.retries--;
           long retry = jobType.getMaxRetries()-job.retries;
           int delayInSeconds = jobType.getRetryDelayInSeconds(retry);
-          jobExecution.rescheduleFromNow((long)delayInSeconds*1000);
+          jobExecution.rescheduleFromNow(delayInSeconds*1000);
           if (listener!=null) {
             listener.notifyJobRetry(jobExecution);
           }

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,13 +34,13 @@ import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.ExpressionService;
-import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.plugin.TypedValue;
 import com.effektif.workflow.impl.type.AnyDataTypeImpl;
 import com.effektif.workflow.impl.type.NumberTypeImpl;
 import com.effektif.workflow.impl.type.TextTypeImpl;
+import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
@@ -53,8 +54,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public RequestContext requestContext;
   
   public ScopeImpl scope;
-  public Long start;
-  public Long end;
+  public LocalDateTime start;
+  public LocalDateTime end;
   public Long duration;
   public List<ActivityInstanceImpl> activityInstances;
   public List<VariableInstanceImpl> variableInstances;
@@ -75,7 +76,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     this.start = Time.now();
   }
 
-  public abstract void setEnd(Long end); 
+  public abstract void setEnd(LocalDateTime end); 
   
   public abstract void ended(ActivityInstanceImpl activityInstance);
 

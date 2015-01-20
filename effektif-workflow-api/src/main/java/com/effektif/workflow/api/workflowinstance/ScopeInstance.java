@@ -15,16 +15,16 @@ package com.effektif.workflow.api.workflowinstance;
 
 import java.util.List;
 
-import javax.print.attribute.HashPrintServiceAttributeSet;
+import org.joda.time.LocalDateTime;
 
 
 public class ScopeInstance {
   
   protected String id;
 
-  protected Long start;
+  protected LocalDateTime start;
 
-  protected Long end;
+  protected LocalDateTime end;
 
   protected Long duration;
 
@@ -42,17 +42,17 @@ public class ScopeInstance {
     this.id = id;
   }
 
-  public Long getStart() {
+  public LocalDateTime getStart() {
     return this.start;
   }
-  public void setStart(Long start) {
+  public void setStart(LocalDateTime start) {
     this.start = start;
   }
 
-  public Long getEnd() {
+  public LocalDateTime getEnd() {
     return this.end;
   }
-  public void setEnd(Long end) {
+  public void setEnd(LocalDateTime end) {
     this.end = end;
   }
   

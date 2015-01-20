@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.effektif.workflow.impl.Time;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQueryImpl;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.util.Time;
 
 
 public class MemoryJobServiceImpl extends JobServiceImpl {
@@ -80,9 +80,7 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
   }
 
   public boolean duedateHasPast(Job job) {
-    long nowMillis = Time.now();
-    long duedateMillis = job.duedate;
-    return (duedateMillis - nowMillis)<=0;
+    return job.duedate==null || job.duedate.isBefore(Time.now());
   }
 
   @Override

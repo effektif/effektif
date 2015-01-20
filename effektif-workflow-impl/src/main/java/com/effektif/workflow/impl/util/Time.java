@@ -11,19 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
+package com.effektif.workflow.impl.util;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 
 
 public class Time {
   
-  // tests can overwrite this to control the time
-  public static Long now = null;
+  public static LocalDateTime now = null;
   
-  public static Long now() {
+  public static LocalDateTime now() {
     if (now!=null) {
       return now;
     }
-    return System.currentTimeMillis();
+    return new LocalDateTime(DateTimeZone.UTC);
   }
 }

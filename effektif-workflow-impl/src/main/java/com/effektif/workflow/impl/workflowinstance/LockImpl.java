@@ -13,19 +13,19 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflowinstance;
 
-
+import org.joda.time.LocalDateTime;
 
 
 public class LockImpl {
 
-  public Long time;
+  public LocalDateTime time;
   public String owner;
   
-  public Long getTime() {
+  public LocalDateTime getTime() {
     return time;
   }
   
-  public void setTime(Long time) {
+  public void setTime(LocalDateTime time) {
     this.time = time;
   }
   
