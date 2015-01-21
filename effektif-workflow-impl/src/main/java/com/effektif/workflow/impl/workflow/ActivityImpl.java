@@ -86,7 +86,7 @@ public class ActivityImpl extends ScopeImpl {
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public List<Transition> getOutgoingTransitions() {
+  public List<TransitionImpl> getOutgoingTransitions() {
     return (List) outgoingTransitions;
   }
 

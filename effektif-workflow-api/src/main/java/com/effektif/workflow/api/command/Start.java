@@ -14,7 +14,7 @@
 package com.effektif.workflow.api.command;
 
 
-public class StartCommand extends AbstractCommand {
+public class Start extends AbstractCommand {
   
   protected String workflowId;
   protected String workflowName;
@@ -25,7 +25,7 @@ public class StartCommand extends AbstractCommand {
   public void setWorkflowId(String workflowId) {
     this.workflowId = workflowId;
   }
-  public StartCommand workflowId(String workflowId) {
+  public Start workflowId(String workflowId) {
     this.workflowId = workflowId;
     return this;
   }
@@ -36,13 +36,13 @@ public class StartCommand extends AbstractCommand {
   public void setWorkflowName(String workflowName) {
     this.workflowName = workflowName;
   }
-  public StartCommand workflowName(String workflowName) {
+  public Start workflowName(String workflowName) {
     this.workflowName = workflowName;
     return this;
   }
   
   @Override
-  public StartCommand variableValue(String variableId, Object variableValue) {
+  public Start variableValue(String variableId, Object variableValue) {
     super.variableValue(variableId, variableValue);
     return this;
   }

@@ -15,7 +15,6 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -26,13 +25,13 @@ public interface WorkflowInstanceStore {
 
   void insertWorkflowInstance(WorkflowInstanceImpl worklflowInstance);
 
-  WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId, RequestContext requestContext);
+  WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId);
 
   void flush(WorkflowInstanceImpl workflowInstance);
 
   void flushAndUnlock(WorkflowInstanceImpl workflowInstance);
 
-  List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext);
+  List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
-  void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext);
+  void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 }

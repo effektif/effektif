@@ -39,7 +39,8 @@ public class SimpleWorkflowCache implements WorkflowCache, Initializable<Workflo
   }
 
   @Override
-  public WorkflowImpl get(String workflowId, RequestContext requestContext) {
+  public WorkflowImpl get(String workflowId) {
+    RequestContext requestContext = RequestContext.current();
     String organizationId = requestContext!=null ? requestContext.getOrganizationId() : null;
     return workflows.get(getKey(workflowId, organizationId));
   }

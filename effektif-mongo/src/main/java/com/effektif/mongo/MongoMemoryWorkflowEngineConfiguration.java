@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,21 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.workflowinstance;
+package com.effektif.mongo;
+
+import com.effektif.workflow.impl.memory.MemoryTaskService;
+import com.effektif.workflow.impl.memory.MemoryWorkflowStore;
 
 
-public class ActivityInstanceUpdates extends ScopeInstanceUpdates {
+public class MongoMemoryWorkflowEngineConfiguration extends MongoWorkflowEngineConfiguration {
 
-  public boolean isWorkStateChanged;
-  public boolean isTransitionsTakenChanged;
-
-  public ActivityInstanceUpdates(boolean isNew) {
-    this.isNew = isNew;
+  public MongoMemoryWorkflowEngineConfiguration() {
+    configureDefaults();
+    registerService(new MemoryWorkflowStore());
+    registerService(new MongoWorkflowInstanceStore());
+    registerService(new MemoryTaskService());
+    registerService(new MongoJobs());
   }
-
-  public void reset(boolean isNew) {
-    super.reset(isNew);
-    isWorkStateChanged = false;
-    isTransitionsTakenChanged = false;
-  }
+  
 }

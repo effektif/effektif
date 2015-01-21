@@ -15,7 +15,6 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -31,17 +30,16 @@ public interface WorkflowStore {
   /** creates a (globally) unique id to be used for a new workflow being deployed */
   String generateWorkflowId();
 
-  void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext);
+  void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl);
 
-  /** loads the api workflow representation from the store 
-   * @param requestContext */
-  List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext);
+  /** loads the api workflow representation from the store */
+  List<Workflow> findWorkflows(WorkflowQuery query);
 
-  void deleteWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext);
+  void deleteWorkflows(WorkflowQuery workflowQuery);
 
-  String findLatestWorkflowIdByName(String workflowName, RequestContext requestContext);
+  String findLatestWorkflowIdByName(String workflowName);
 
   /** loads the executable workflow */
-  Workflow loadWorkflowById(String workflowId, RequestContext requestContext);
+  Workflow loadWorkflowById(String workflowId);
 
 }

@@ -116,7 +116,7 @@ public abstract class JobServiceImpl implements JobService, Initializable<Workfl
            && processInstanceIds!=null 
            && processInstanceIds.hasNext()) {
       String workflowInstanceId = processInstanceIds.next();
-      WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, null, null);
+      WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, null);
       boolean keepGoing = true;
       while (isRunning && keepGoing) {
         Job job = lockNextWorkflowJob(workflowInstanceId);

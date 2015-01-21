@@ -22,17 +22,21 @@ public class RequestContext {
 
   protected String autheticatedUserId;
   protected String organizationId;
-  protected Map<Object,Object> userDefinedContext;
+  protected Map<Object,Object> properties;
 
-  public static void current(RequestContext requestContext) {
+  public static void set(RequestContext requestContext) {
     current.set(requestContext);
+  }
+
+  public static void unset() {
+    current.remove();
   }
 
   public static RequestContext authenticate(String authenticatedUserId, String organizationId) {
     RequestContext requestContext = new RequestContext()
       .authenticatedUserId(authenticatedUserId)
       .organizationId(organizationId);
-    current(requestContext);
+    set(requestContext);
     return requestContext;
   }
   
@@ -62,39 +66,35 @@ public class RequestContext {
     return this;
   }
   
-  public RequestContext set(Object key, Object value) {
-    userDefinedContext.put(key, value);
+  public RequestContext setProperty(Object key, Object value) {
+    properties.put(key, value);
     return this;
   }
 
-  public RequestContext set(Object value) {
+  public RequestContext setProperty(Object value) {
     if (value!=null) {
-      set(value.getClass(), value);
+      setPropertyByType(value.getClass(), value);
     }
     return this;
   }
   
-  protected void set(Class<?> type, Object value) {
+  protected void setPropertyByType(Class<?> type, Object value) {
     Class< ? > clazz = value.getClass();
-    userDefinedContext.put(clazz, value);
+    properties.put(clazz, value);
     for (Class< ? > interf: clazz.getInterfaces()) {
-      set(interf, value);
+      setPropertyByType(interf, value);
     }
     Class< ? > superclass = clazz.getSuperclass();
     if (superclass!=Object.class) {
-      set(superclass, value);
+      setPropertyByType(superclass, value);
     }
   }
 
-  public Object get(Object key) {
-    return userDefinedContext!=null ? userDefinedContext.get(key) : null;
+  public Object getProperty(Object key) {
+    return properties!=null ? properties.get(key) : null;
   }
 
-  public <T> T get(Class<T> type) {
-    return userDefinedContext!=null ? (T) userDefinedContext.get(type) : null;
-  }
-
-  public static boolean hasOrganizationId(RequestContext requestContext) {
-    return requestContext!=null ? requestContext.organizationId!=null : false;
+  public <T> T getProperty(Class<T> type) {
+    return properties!=null ? (T) properties.get(type) : null;
   }
 }

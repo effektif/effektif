@@ -22,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -236,5 +237,9 @@ public class MongoCollection {
   
   public boolean isPretty() {
     return isPretty;
+  }
+  
+  protected static boolean hasOrganizationId(RequestContext requestContext) {
+    return requestContext!=null ? requestContext.getOrganizationId()!=null : false;
   }
 }

@@ -15,9 +15,9 @@ package com.effektif.workflow.api;
 
 import java.util.List;
 
-import com.effektif.workflow.api.command.MessageCommand;
+import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.StartCommand;
+import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -43,40 +43,33 @@ public interface WorkflowEngine {
   /** Validates and deploys if there are no errors. */
   Workflow deployWorkflow(Workflow workflow);
   
-  /** Validates and deploys if there are no errors. */
-  Workflow deployWorkflow(Workflow workflow, RequestContext requestContext);
-
   /** Only validates the given workflow and reports any issues in the response {@link Workflow#getIssues()}. */
   Workflow validateWorkflow(Workflow workflow);
 
-  /** Only validates the given workflow and reports any issues in the response {@link Workflow#getIssues()}. */
-  Workflow validateWorkflow(Workflow workflow, RequestContext requestContext);
-
   List<Workflow> findWorkflows(WorkflowQuery workflowQuery);
 
-  List<Workflow> findWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext);
-  
   void deleteWorkflows(WorkflowQuery workflowQuery);
 
-  void deleteWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext);
-  
-  /** Use a {@link StartCommand trigger} to start a new process instance for a process definition. */
-  WorkflowInstance startWorkflowInstance(StartCommand startCommand);
+  /** starts a new workflow instance for the specified deployed workflow.
+   * This is a convenience method. Only the {@link Workflow#getId() id} is used 
+   * of the given workflow. The given workflow has to be deployed before otherwise
+   * a RuntimeException is raised.*/
+  WorkflowInstance startWorkflowInstance(Workflow workflow);
 
-  /** Use a {@link StartCommand trigger} to start a new process instance for a process definition. */
-  WorkflowInstance startWorkflowInstance(StartCommand startCommand, RequestContext requestContext);
+  /** starts a new workflow instance with the data specified in the Start object. */
+  WorkflowInstance startWorkflowInstance(Start start);
 
-  /** Use a {@link MessageCommand message} to end a waiting activity instance in a process instance. */
-  WorkflowInstance sendMessage(MessageCommand messageCommand);
-
-  /** Use a {@link MessageCommand message} to end a waiting activity instance in a process instance. */
-  WorkflowInstance sendMessage(MessageCommand messageCommand, RequestContext requestContext);
+  /** Sends a {@link Message message} to an activity instance, most likely this is invoked 
+   * to end the specified activity instance and move workflow execution forward from there. */
+  WorkflowInstance sendMessage(Message messageCommand);
 
   List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query);
   
-  List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext);
-  
   void deleteWorkflowInstances(WorkflowInstanceQuery query);
 
-  void deleteWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext);
+  /** Creates a derived workflow engine and applies the request context to all 
+   * methods invoked on the returned workflow engine.  Most commonly used to  
+   * set the authenticated user invoking the operations on the returned
+   * workflow engine.*/
+  WorkflowEngine createWorkflowEngine(RequestContext requestContext);
 }

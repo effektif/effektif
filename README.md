@@ -1,12 +1,12 @@
-Effektif
-========
+Effektif is an easy, scalable workflow engine for designed for the cloud.  It's embeddable in JVM applications like Java and scala.  Effektif runs in memory or with a persistence engine like eg MongoDB.
 
-## Example API usage
+A workflow is based on a diagram (eg BPMN or nodes and edges) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.
 
 ```java
-// Create the default (in-memory) workflow engine
+// Create the in-memory workflow engine, easy for testing
 WorkflowEngine workflowEngine = new MemoryWorkflowEngineConfiguration()
-   .buildWorkflowEngine();
+  .initialize()
+  .getWorkflowEngine();
 
 // Create a workflow
 Workflow workflow = new Workflow()
@@ -15,14 +15,21 @@ Workflow workflow = new Workflow()
   .activity(new NoneTask("b"));
 
 // Deploy the workflow to the engine
-String workflowId = workflowEngine.deployWorkflow(workflow).getId();
+workflow = workflowEngine.deployWorkflow(workflow);
 
 // Start a new workflow instance
-StartCommand start = new StartCommand()
-  .workflowId(workflowId);
-WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
+WorkflowInstance workflowInstance = workflowEngine
+  .startWorkflowInstance(workflow);
 
 assertTrue(workflowInstance.isEnded());
+
 ```
 
-## [Creating workflows](https://github.com/effektif/effektif-oss/tree/master/docs/01-creating-workflows.md)
+# Contents
+
+* [Getting started](Getting-started)
+* [Workflow engine types](Workflow-engine-types)
+* [Activities](Activities)
+* [Variables](Variables)
+* [Create your own activity](Create-your-own-activity)
+* [Create your own datasource](Create-your-own-datasource)

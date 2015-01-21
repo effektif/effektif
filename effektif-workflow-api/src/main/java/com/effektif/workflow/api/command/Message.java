@@ -14,7 +14,7 @@
 package com.effektif.workflow.api.command;
 
 
-public class MessageCommand extends AbstractCommand {
+public class Message extends AbstractCommand {
 
   protected String workflowInstanceId;
 
@@ -24,7 +24,7 @@ public class MessageCommand extends AbstractCommand {
   public void setWorkflowInstanceId(String workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
-  public MessageCommand workflowInstanceId(String workflowInstanceId) {
+  public Message workflowInstanceId(String workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
     return this;
   }
@@ -37,7 +37,7 @@ public class MessageCommand extends AbstractCommand {
   public void setActivityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
   }
-  public MessageCommand activityInstanceId(String activityInstanceId) {
+  public Message activityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
     return this;
   }

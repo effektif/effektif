@@ -13,12 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
 public interface WorkflowCache {
 
-  WorkflowImpl get(String workflowId, RequestContext requestContext);
+  WorkflowImpl get(String workflowId);
   void put(WorkflowImpl workflow);
 }

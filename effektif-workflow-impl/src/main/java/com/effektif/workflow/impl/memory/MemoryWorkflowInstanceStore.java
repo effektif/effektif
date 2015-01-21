@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -77,7 +76,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
   }
   
   @Override
-  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
+  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery query) {
     if (query.getWorkflowInstanceId()!=null) {
       WorkflowInstanceImpl workflowInstance = workflowInstances.get(query.getWorkflowInstanceId());
       if (workflowInstance.isIncluded(query)) {
@@ -99,19 +98,19 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
   }
 
   @Override
-  public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery, RequestContext requestContext) {
-    for (WorkflowInstanceImpl workflowInstance: findWorkflowInstances(workflowInstanceQuery, requestContext)) {
+  public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
+    for (WorkflowInstanceImpl workflowInstance: findWorkflowInstances(workflowInstanceQuery)) {
       workflowInstances.remove(workflowInstance.id);
     }
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId, RequestContext requestContext) {
+  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
       .workflowInstanceId(workflowInstanceId)
       .activityInstanceId(activityInstanceId);
     query.setLimit(1);
-    List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(query, requestContext);
+    List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(query);
     if (workflowInstances==null || workflowInstances.isEmpty()) { 
       throw new RuntimeException("Process instance doesn't exist");
     }

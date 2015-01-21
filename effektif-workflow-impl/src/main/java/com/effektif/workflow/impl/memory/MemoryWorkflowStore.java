@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
@@ -51,7 +50,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
+  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl) {
     workflows.put(workflowApi.getId(), workflowApi);
 
     String workflowName = workflowApi.getName();
@@ -68,7 +67,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext) {
+  public List<Workflow> findWorkflows(WorkflowQuery query) {
     List<Workflow> result = null;
     if (query.getWorkflowId()!=null) {
       result = new ArrayList<Workflow>();
@@ -106,7 +105,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public String findLatestWorkflowIdByName(String workflowName, RequestContext requestContext) {
+  public String findLatestWorkflowIdByName(String workflowName) {
     if (workflowName==null) {
       return null;
     }
@@ -124,14 +123,14 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public void deleteWorkflows(WorkflowQuery query, RequestContext requestContext) {
-    for (Workflow workflow: findWorkflows(query, requestContext)) {
+  public void deleteWorkflows(WorkflowQuery query) {
+    for (Workflow workflow: findWorkflows(query)) {
       workflows.remove(workflow.getId());
     }
   }
 
   @Override
-  public Workflow loadWorkflowById(String workflowId, RequestContext requestContext) {
+  public Workflow loadWorkflowById(String workflowId) {
     return workflows.get(workflowId);
   }
 }

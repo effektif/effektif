@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.MessageCommand;
-import com.effektif.workflow.api.command.StartCommand;
+import com.effektif.workflow.api.command.Message;
+import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -79,12 +79,12 @@ public class WorkflowTest {
   }
 
   public WorkflowInstance start(Workflow workflow) {
-    return workflowEngine.startWorkflowInstance(new StartCommand()
+    return workflowEngine.startWorkflowInstance(new Start()
       .workflowId(workflow.getId()));
   }
   
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {
-    return workflowEngine.sendMessage(new MessageCommand()
+    return workflowEngine.sendMessage(new Message()
       .workflowInstanceId(workflowInstance.getId())
       .activityInstanceId(activityInstanceId));
   }
@@ -125,7 +125,7 @@ public class WorkflowTest {
   public WorkflowInstance endTask(WorkflowInstance workflowInstance, String activityId) {
     ActivityInstance activityInstance = workflowInstance.findOpenActivityInstance(activityId);
     assertNotNull("Activity '"+activityId+"' not in workflow instance", activityInstance);
-    return workflowEngine.sendMessage(new MessageCommand()
+    return workflowEngine.sendMessage(new Message()
       .workflowInstanceId(workflowInstance.getId())
       .activityInstanceId(activityInstance.getId()));
   }

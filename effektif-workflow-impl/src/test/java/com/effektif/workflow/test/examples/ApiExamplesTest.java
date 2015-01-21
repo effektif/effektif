@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.command.StartCommand;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
@@ -39,14 +38,12 @@ public class ApiExamplesTest {
       .activity(new NoneTask("a")
         .transitionTo("b"))
       .activity(new NoneTask("b"));
-
+    
     // Deploy the workflow to the engine
-    String workflowId = workflowEngine.deployWorkflow(workflow).getId();
-
+    workflow = workflowEngine.deployWorkflow(workflow);
+    
     // Start a new workflow instance
-    StartCommand start = new StartCommand()
-      .workflowId(workflowId);
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
+    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(workflow);
     
     assertTrue(workflowInstance.isEnded());
   }

@@ -86,7 +86,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   @Override
-  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl, RequestContext requestContext) {
+  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl) {
     String workflowName = workflowApi.getName();
     if (workflowName!=null) {
       // try if we can acquire the lock right away (without retry)
@@ -159,9 +159,9 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext) {
+  public List<Workflow> findWorkflows(WorkflowQuery query) {
     List<Workflow> workflows = new ArrayList<Workflow>();
-    DBCursor cursor = createWorkflowDbCursor(query, requestContext);
+    DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
       dbWorkflow.put("id", dbWorkflow.remove(FieldsWorkflow._ID).toString());
@@ -172,24 +172,25 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
   
   @Override
-  public Workflow loadWorkflowById(String workflowId, RequestContext requestContext) {
+  public Workflow loadWorkflowById(String workflowId) {
     List<Workflow> workflows = findWorkflows(new WorkflowQuery()
-      .workflowId(workflowId), requestContext);
+      .workflowId(workflowId));
     return !workflows.isEmpty() ? workflows.get(0) : null;
   }
 
   @Override
-  public void deleteWorkflows(WorkflowQuery query, RequestContext requestContext) {
-    BasicDBObject dbQuery = createWorkflowDbQuery(query, requestContext);
+  public void deleteWorkflows(WorkflowQuery query) {
+    BasicDBObject dbQuery = createWorkflowDbQuery(query);
     remove(dbQuery);
   }
 
   @Override
-  public String findLatestWorkflowIdByName(String workflowName, RequestContext requestContext) {
+  public String findLatestWorkflowIdByName(String workflowName) {
     Exceptions.checkNotNullParameter(workflowName, "workflowName");
     BasicDBObject dbQuery = new BasicDBObject();
     dbQuery.append(FieldsWorkflow.NAME, workflowName);
-    if (RequestContext.hasOrganizationId(requestContext)) {
+    RequestContext requestContext = RequestContext.current();
+    if (hasOrganizationId(requestContext)) {
       dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
     }
     BasicDBObject dbFields = new BasicDBObject(FieldsWorkflow._ID, 1);
@@ -197,8 +198,8 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     return dbWorkflow!=null ? dbWorkflow.get("_id").toString() : null;
   }
 
-  public DBCursor createWorkflowDbCursor(WorkflowQuery query, RequestContext requestContext) {
-    BasicDBObject dbQuery = createWorkflowDbQuery(query, requestContext);
+  public DBCursor createWorkflowDbCursor(WorkflowQuery query) {
+    BasicDBObject dbQuery = createWorkflowDbQuery(query);
     DBCursor dbCursor = find(dbQuery);
     if (query.getLimit()!=null) {
       dbCursor.limit(query.getLimit());
@@ -209,10 +210,11 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     return dbCursor;
   }
 
-  protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query, RequestContext requestContext) {
+  protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query) {
     BasicDBObject dbQuery = new BasicDBObject();
-    if (RequestContext.hasOrganizationId(requestContext)) {
-      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, query.getWorkflowId());
+    RequestContext requestContext = RequestContext.current();
+    if (hasOrganizationId(requestContext)) {
+      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
     }
     if (query.getWorkflowId()!=null) {
       dbQuery.append(FieldsWorkflow._ID, new ObjectId(query.getWorkflowId()));
@@ -232,7 +234,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     }
     return dbOrderBy;
   }
-
+  
   private String getDbField(String field) {
     if (WorkflowQuery.FIELD_DEPLOY_TIME.equals(field)) {
       return FieldsWorkflow.DEPLOYED_TIME;

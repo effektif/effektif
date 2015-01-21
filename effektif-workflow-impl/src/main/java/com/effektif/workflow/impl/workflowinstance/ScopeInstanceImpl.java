@@ -37,9 +37,9 @@ import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.plugin.TypedValue;
-import com.effektif.workflow.impl.type.AnyDataTypeImpl;
-import com.effektif.workflow.impl.type.NumberTypeImpl;
-import com.effektif.workflow.impl.type.TextTypeImpl;
+import com.effektif.workflow.impl.types.AnyDataTypeImpl;
+import com.effektif.workflow.impl.types.NumberTypeImpl;
+import com.effektif.workflow.impl.types.TextTypeImpl;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -51,8 +51,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
-  public RequestContext requestContext;
-  
   public ScopeImpl scope;
   public LocalDateTime start;
   public LocalDateTime end;
@@ -71,7 +69,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public ScopeInstanceImpl(ScopeInstanceImpl parent, ScopeImpl scope, String id) {
     super(parent, id);
-    this.requestContext = parent.requestContext;
     this.scope = scope;
     this.start = Time.now();
   }

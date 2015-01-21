@@ -16,14 +16,11 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.command.AbstractCommand;
-import com.effektif.workflow.api.command.MessageCommand;
+import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.StartCommand;
+import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -61,39 +58,22 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
 
   @Override
   public Workflow deployWorkflow(Workflow workflow) {
-    return deployWorkflow(workflow, null);
-  }
-
-  @Override
-  public Workflow deployWorkflow(Workflow workflow, RequestContext requestContext) {
     workflow = wireizeWorkflow(workflow);
-    workflow = workflowEngine.deployWorkflow(workflow, requestContext);
+    workflow = workflowEngine.deployWorkflow(workflow);
     return wireizeWorkflow(workflow);
   }
 
   @Override
   public Workflow validateWorkflow(Workflow workflow) {
-    return validateWorkflow(workflow, null);
-  }
-
-  @Override
-  public Workflow validateWorkflow(Workflow workflow, RequestContext requestContext) {
     workflow = wireizeWorkflow(workflow);
-    requestContext = wireize(requestContext, RequestContext.class);
-    workflow = workflowEngine.validateWorkflow(workflow, requestContext);
+    workflow = workflowEngine.validateWorkflow(workflow);
     return wireizeWorkflow(workflow);
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
-    return findWorkflows(workflowQuery, null);
-  }
-
-  @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query, RequestContext requestContext) {
+  public List<Workflow> findWorkflows(WorkflowQuery query) {
     query = wireize(query, WorkflowQuery.class);
-    requestContext = wireize(requestContext, RequestContext.class);
-    List<Workflow> workflows = workflowEngine.findWorkflows(query, requestContext);
+    List<Workflow> workflows = workflowEngine.findWorkflows(query);
     if (workflows==null) {
       return null;
     }
@@ -106,52 +86,34 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
 
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
-    deleteWorkflows(query, null);
-  }
-
-  @Override
-  public void deleteWorkflows(WorkflowQuery query, RequestContext requestContext) {
     query = wireize(query, WorkflowQuery.class);
-    requestContext = wireize(requestContext, RequestContext.class);
-    workflowEngine.deleteWorkflows(query, requestContext);
+    workflowEngine.deleteWorkflows(query);
   }
 
   @Override
-  public WorkflowInstance startWorkflowInstance(StartCommand startCommand) {
-    return startWorkflowInstance(startCommand, null);
+  public WorkflowInstance startWorkflowInstance(Workflow workflow) {
+    String workflowId = workflow.getId();
+    return startWorkflowInstance(new Start().workflowId(workflowId));
   }
 
   @Override
-  public WorkflowInstance startWorkflowInstance(StartCommand startCommand, RequestContext requestContext) {
-    startCommand = wireizeCommand(startCommand);
-    requestContext = wireize(requestContext, RequestContext.class);
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(startCommand, requestContext);
+  public WorkflowInstance startWorkflowInstance(Start start) {
+    start = wireizeCommand(start);
+    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
     return wireize(workflowInstance, WorkflowInstance.class);
   }
 
   @Override
-  public WorkflowInstance sendMessage(MessageCommand messageCommand) {
-    return sendMessage(messageCommand, null);
-  }
-
-  @Override
-  public WorkflowInstance sendMessage(MessageCommand messageCommand, RequestContext requestContext) {
-    messageCommand = wireizeCommand(messageCommand);
-    requestContext = wireize(requestContext, RequestContext.class);
-    WorkflowInstance workflowInstance = workflowEngine.sendMessage(messageCommand, requestContext);
+  public WorkflowInstance sendMessage(Message message) {
+    message = wireizeCommand(message);
+    WorkflowInstance workflowInstance = workflowEngine.sendMessage(message);
     return wireizeWorkflowInstance(workflowInstance);
   }
 
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
-    return findWorkflowInstances(query, null);
-  }
-
-  @Override
-  public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
     query = wireize(query, WorkflowInstanceQuery.class);
-    requestContext = wireize(requestContext, RequestContext.class);
-    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(query, requestContext);
+    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(query);
     if (workflowInstances==null) {
       return null;
     }
@@ -164,13 +126,12 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
 
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query) {
-    deleteWorkflowInstances(query, null);
+    query = wireize(query, WorkflowInstanceQuery.class);
+    workflowEngine.deleteWorkflowInstances(query);
   }
 
   @Override
-  public void deleteWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
-    query = wireize(query, WorkflowInstanceQuery.class);
-    requestContext = wireize(requestContext, RequestContext.class);
-    workflowEngine.deleteWorkflowInstances(query, requestContext);
+  public WorkflowEngine createWorkflowEngine(RequestContext requestContext) {
+    throw new RuntimeException("please implement");
   }
 }
