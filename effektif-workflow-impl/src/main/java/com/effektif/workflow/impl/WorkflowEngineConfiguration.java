@@ -25,6 +25,7 @@ import javax.script.ScriptEngineManager;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.CallMapping;
 import com.effektif.workflow.impl.activities.CallImpl;
+import com.effektif.workflow.impl.activities.EmailTaskImpl;
 import com.effektif.workflow.impl.activities.EmbeddedSubprocessImpl;
 import com.effektif.workflow.impl.activities.EndEventImpl;
 import com.effektif.workflow.impl.activities.ExclusiveGatewayImpl;
@@ -38,6 +39,7 @@ import com.effektif.workflow.impl.activities.UserTaskImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
 import com.effektif.workflow.impl.plugin.ActivityType;
+import com.effektif.workflow.impl.plugin.AdapterConnection;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
@@ -85,7 +87,8 @@ public abstract class WorkflowEngineConfiguration {
   protected List<DataType> types = new ArrayList<>();
   protected List<Class<? extends JobType>> jobTypeClasses = new ArrayList<>();
   protected List<Class<?>> javaBeanTypes = new ArrayList<>();
-  
+  protected List<AdapterConnection> adapterConnections = new ArrayList<>();
+
   public WorkflowEngineConfiguration() {
     this(new SimpleServiceRegistry());
   }
@@ -106,51 +109,10 @@ public abstract class WorkflowEngineConfiguration {
     configureDefaultWorkflowCache();
   }
   
-  protected WorkflowEngineConfiguration(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-  }
-  
-  /** must be invoked before the workflow engine and task service are retrieved,
-   * and no further configurations can be set after this method is called.
-   * @return this so it can be used in a fluent style. */
-  public WorkflowEngineConfiguration initialize() {
-    isInitialized = true;
-    PluginService pluginService = serviceRegistry.getService(PluginService.class);
-    for (Initializable initializable: initializables) {
-      initializable.initialize(serviceRegistry, this);
-    }
-    for (Class<?> javaBeanType: javaBeanTypes) {
-      pluginService.registerJavaBeanType(javaBeanType);
-    }
-    for (DataType type: types) {
-      pluginService.registerDataType(type);
-    }
-    for (ActivityType activityType: activityTypes) {
-      pluginService.registerActivityType(activityType);
-    }
-    for (Class<? extends JobType> jobTypeClass: jobTypeClasses) {
-      pluginService.registerJobType(jobTypeClass);
-    }
-    return this;
-  }
-  
-  public WorkflowEngine getWorkflowEngine() {
-    checkInitialized();
-    return serviceRegistry.getService(WorkflowEngine.class);
-  }
-
-  public TaskService getTaskService() {
-    checkInitialized();
-    return serviceRegistry.getService(TaskService.class);
-  }
-  
-  protected void configureDefaultWorkflowEngine() {
-    registerService(new WorkflowEngineImpl());
-  }
-
   protected void configureDefaultActivityTypes() {
     registerActivityType(new StartEventImpl());
     registerActivityType(new EndEventImpl());
+    registerActivityType(new EmailTaskImpl());
     registerActivityType(new EmbeddedSubprocessImpl());
     registerActivityType(new ExclusiveGatewayImpl());
     registerActivityType(new ParallelGatewayImpl());
@@ -174,6 +136,53 @@ public abstract class WorkflowEngineConfiguration {
     registerJavaBeanType(CallMapping.class);
   }
   
+  protected WorkflowEngineConfiguration(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
+  
+  /** must be invoked before the workflow engine and task service are retrieved,
+   * and no further configurations can be set after this method is called.
+   * @return this so it can be used in a fluent style. */
+  public WorkflowEngineConfiguration initialize() {
+    if (!isInitialized) {
+      isInitialized = true;
+      PluginService pluginService = serviceRegistry.getService(PluginService.class);
+      for (Initializable initializable : initializables) {
+        initializable.initialize(serviceRegistry, this);
+      }
+      for (Class< ? > javaBeanType : javaBeanTypes) {
+        pluginService.registerJavaBeanType(javaBeanType);
+      }
+      for (DataType type : types) {
+        pluginService.registerDataType(type);
+      }
+      for (ActivityType activityType : activityTypes) {
+        pluginService.registerActivityType(activityType);
+      }
+      for (Class< ? extends JobType> jobTypeClass : jobTypeClasses) {
+        pluginService.registerJobType(jobTypeClass);
+      }
+      for (AdapterConnection adapterConnection : adapterConnections) {
+        pluginService.registerAdapterConnection(adapterConnection);
+      }
+    }
+    return this;
+  }
+  
+  public WorkflowEngine getWorkflowEngine() {
+    checkInitialized();
+    return serviceRegistry.getService(WorkflowEngine.class);
+  }
+
+  public TaskService getTaskService() {
+    checkInitialized();
+    return serviceRegistry.getService(TaskService.class);
+  }
+  
+  protected void configureDefaultWorkflowEngine() {
+    registerService(new WorkflowEngineImpl());
+  }
+
   protected void configureDefaultId() {
     if (id==null) {
       try {
@@ -267,6 +276,18 @@ public abstract class WorkflowEngineConfiguration {
     jobTypeClasses.add(jobTypeClass);
     return this;
   }
+
+  public WorkflowEngineConfiguration registerAdapter(String adapterUrl) {
+    registerAdapter(new AdapterConnection().url(adapterUrl));
+    return this;
+  }
+
+  public WorkflowEngineConfiguration registerAdapter(AdapterConnection adapterConnection) {
+    checkUninitialized();
+    adapterConnections.add(adapterConnection);
+    return this;
+  }
+
 
   public WorkflowEngineConfiguration id(String id) {
     checkUninitialized();

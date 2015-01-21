@@ -52,7 +52,6 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
 
   protected Map<Class<?>, ObjectType> dataTypeDescriptors = new LinkedHashMap<>();
   protected Map<Class<?>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
-
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
 
   public PluginService() {
@@ -163,6 +162,9 @@ public class PluginService implements Initializable<WorkflowEngineConfiguration>
     } catch (Exception e) {
       throw new RuntimeException("Couldn't instantiate "+dataTypeClass+": "+e.getMessage(), e);
     }
+  }
+
+  public void registerAdapterConnection(AdapterConnection adapterConnection) {
   }
   
 

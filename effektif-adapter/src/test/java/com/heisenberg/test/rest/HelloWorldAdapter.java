@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+/* Copyright 2014 Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,23 +11,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test;
+package com.heisenberg.test.rest;
 
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
+import com.effektif.adapter.ActivityAdapter;
+import com.effektif.adapter.ActivityRequest;
+import com.effektif.adapter.ActivityResponse;
+import com.effektif.workflow.api.types.ObjectType;
 
 
-public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
+public class HelloWorldAdapter implements ActivityAdapter {
 
   @Override
-  protected void configureDefaultExecutorService() {
-    synchronous();
+  public ObjectType getDescriptor() {
+    return null;
   }
 
   @Override
-  public TestWorkflowEngineConfiguration initialize() {
-    super.initialize();
-    return this;
+  public ActivityResponse execute(ActivityRequest activityRequest) {
+    return null;
   }
-  
   
 }
+

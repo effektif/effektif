@@ -11,23 +11,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test;
+package com.effektif.workflow.impl.activities;
 
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
+import com.effektif.workflow.api.activities.EmailTask;
+import com.effektif.workflow.impl.plugin.AbstractActivityType;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
+public class EmailTaskImpl extends AbstractActivityType {
 
-  @Override
-  protected void configureDefaultExecutorService() {
-    synchronous();
+  public EmailTaskImpl() {
+    super(EmailTask.class);
   }
 
   @Override
-  public TestWorkflowEngineConfiguration initialize() {
-    super.initialize();
-    return this;
+  public void execute(ActivityInstanceImpl activityInstance) {
   }
-  
-  
+
 }

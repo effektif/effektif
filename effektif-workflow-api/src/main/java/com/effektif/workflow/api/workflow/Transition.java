@@ -24,6 +24,7 @@ public class Transition {
   protected String to;
   protected String condition;
   protected Map<String,Object> properties;
+  protected boolean isToNext;
 
   public String getId() {
     return this.id;
@@ -65,6 +66,11 @@ public class Transition {
     return this;
   }
   
+  public Transition toNext() {
+    this.isToNext = true;
+    return this;
+  }
+  
   public String getCondition() {
     return this.condition;
   }
@@ -89,5 +95,8 @@ public class Transition {
     }
     this.properties.put(key, value);
     return this;
+  }
+  public boolean isToNext() {
+    return isToNext;
   }
 }

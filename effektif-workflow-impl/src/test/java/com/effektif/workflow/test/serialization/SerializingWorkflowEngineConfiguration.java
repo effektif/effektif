@@ -26,12 +26,18 @@ public class SerializingWorkflowEngineConfiguration extends WorkflowEngineConfig
   TaskService taskService;
   
   public SerializingWorkflowEngineConfiguration() {
-    TestWorkflowEngineConfiguration configuration = new TestWorkflowEngineConfiguration();
+    TestWorkflowEngineConfiguration configuration = new TestWorkflowEngineConfiguration()
+      .initialize();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine(); 
     TaskService taskService = configuration.getTaskService(); 
     JsonService jsonService = configuration.getServiceRegistry().getService(JsonService.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
     this.taskService = new SerializingTaskServiceImpl(taskService, jsonService);
+  }
+  
+  @Override
+  public SerializingWorkflowEngineConfiguration initialize() {
+    return this;
   }
 
   public WorkflowEngine getWorkflowEngine() {

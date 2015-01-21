@@ -61,6 +61,11 @@ public class Activity extends Scope {
     transitionTo(new Transition().to(toActivityId));
     return this;
   }
+  
+  public Activity transitionToNext() {
+    transitionTo(new Transition().toNext());
+    return this;
+  }
 
   public Activity transitionTo(Transition transition) {
     if (this.outgoingTransitions==null) {

@@ -11,23 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test;
+package com.effektif.adapter;
 
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import com.effektif.workflow.api.types.ObjectType;
 
 
-public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
-
-  @Override
-  protected void configureDefaultExecutorService() {
-    synchronous();
-  }
-
-  @Override
-  public TestWorkflowEngineConfiguration initialize() {
-    super.initialize();
-    return this;
-  }
+@Path("/activities")
+public class ActivitiesResource {
   
+  List<ObjectType> activityDescriptors = new ArrayList<>();
   
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<ObjectType> getActivityDescriptors() {
+    return activityDescriptors;
+  }
 }

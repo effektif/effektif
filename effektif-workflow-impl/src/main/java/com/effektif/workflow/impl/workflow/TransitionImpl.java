@@ -60,15 +60,25 @@ public class TransitionImpl {
         parser.addError("Transition has an invalid value for 'from' (%s) : %s", fromId, parser.getExistingActivityIdsText(parent));
       }
     }
-    String toId = transitionApi.getTo();
-    if (toId==null) {
-      parser.addWarning("Transition has no 'to' specified");
-    } else {
-      this.to = parent.getActivityByIdLocal(toId);
+    String toId = null;
+    if (transitionApi.isToNext()) {
+      this.to = parent.getNextActivity(from);
       if (this.to!=null) {
         this.to.addIncomingTransition(this);
       } else {
-        parser.addError("Transition has an invalid value for 'to' (%s) : %s", toId, parser.getExistingActivityIdsText(parent));
+        parser.addWarning("Transition has no next");
+      }
+    } else {
+      toId = transitionApi.getTo();
+      if (toId==null) {
+        parser.addWarning("Transition has no 'to' specified");
+      } else {
+        this.to = parent.getActivityByIdLocal(toId);
+        if (this.to!=null) {
+          this.to.addIncomingTransition(this);
+        } else {
+          parser.addError("Transition has an invalid value for 'to' (%s) : %s", toId, parser.getExistingActivityIdsText(parent));
+        }
       }
     }
     if (transitionApi.getCondition()!=null) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+/* Copyright 2014 Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,22 +11,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test;
+package com.effektif.adapter.helpers;
 
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
+import javax.ws.rs.ext.ContextResolver;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
+public class ObjectMapperResolver implements ContextResolver<ObjectMapper> {
+  
+  ObjectMapper objectMapper;
 
-  @Override
-  protected void configureDefaultExecutorService() {
-    synchronous();
+  public ObjectMapperResolver(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
   }
 
   @Override
-  public TestWorkflowEngineConfiguration initialize() {
-    super.initialize();
-    return this;
+  public ObjectMapper getContext(Class< ? > type) {
+    return objectMapper;
   }
   
   

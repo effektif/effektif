@@ -6,7 +6,8 @@
 - [ ] In the data types, InvalidValueException vs ParseContext
 - [ ] the taken outgoing transition have to be recorded
 - [ ] add timers to scopes and scope instances
-- [ ] evaluate outgoing transition conditions (in ActivityInstanceImpl.onwards) 
+- [ ] evaluate outgoing transition conditions (in ActivityInstanceImpl.onwards)
+- [ ] add libraries to maven central: http://central.sonatype.org/pages/ossrh-guide.html ,  http://maven.apache.org/guides/mini/guide-central-repository-upload.html
 - [ ] Figure out how to secure java script for our own servers:  Check out Rhino's SandboxShutter
 - [ ] Test if the script engine is thread safe. CompiledScript seems to be tied to a ScriptEngine. It should be investigated if concurrent script execution can overwrite each other's context.
 

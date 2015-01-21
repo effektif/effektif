@@ -16,6 +16,7 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 

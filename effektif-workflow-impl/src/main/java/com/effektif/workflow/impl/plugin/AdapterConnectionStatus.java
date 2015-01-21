@@ -11,23 +11,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test;
-
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
+package com.effektif.workflow.impl.plugin;
 
 
-public class TestWorkflowEngineConfiguration extends MemoryWorkflowEngineConfiguration {
+public enum AdapterConnectionStatus {
 
-  @Override
-  protected void configureDefaultExecutorService() {
-    synchronous();
-  }
-
-  @Override
-  public TestWorkflowEngineConfiguration initialize() {
-    super.initialize();
-    return this;
-  }
-  
-  
+  UNKNOWN,
+  OK,
+  ERROR
 }

@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.workflow;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,5 +222,23 @@ public abstract class ScopeImpl {
 
   public VariableImpl findVariableByIdLocal(String variableId) {
     return variables!=null ? variables.get(variableId) : null;
+  }
+
+  public ActivityImpl getNextActivity(ActivityImpl previous) {
+    if (activities!=null) {
+      // this depends on the map being a *Linked*HashMap that preserves the order
+      Iterator<ActivityImpl> iterator = activities.values().iterator();
+      while (iterator.hasNext()) {
+        ActivityImpl activity = iterator.next();
+        if (previous==activity) {
+          if (iterator.hasNext()) {
+            return iterator.next();
+          } else {
+            return null;
+          }
+        }
+      }
+    }
+    return null;
   } 
 }

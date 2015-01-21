@@ -36,7 +36,6 @@ import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.task.Task;
 import com.effektif.workflow.impl.task.TaskQuery;
@@ -61,6 +60,7 @@ public class WorkflowTest {
         cachedConfiguration = new TestWorkflowEngineConfiguration();
       }
       configuration = cachedConfiguration;
+      configuration.initialize();
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
     }
