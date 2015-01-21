@@ -28,13 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.activitytypes.CallImpl;
+import com.effektif.workflow.impl.activities.CallImpl;
+import com.effektif.workflow.impl.plugin.ActivityType;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -57,10 +57,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstanceImpl() {
   }
   
-  public WorkflowInstanceImpl(RequestContext requestContext, WorkflowEngineImpl workflowEngine, WorkflowImpl workflow, String workflowInstanceId) {
+  public WorkflowInstanceImpl(WorkflowEngineImpl workflowEngine, WorkflowImpl workflow, String workflowInstanceId) {
     this.id = workflowInstanceId;
     this.workflowEngine = workflowEngine;
-    this.requestContext = requestContext;
     this.organizationId = workflow.organizationId;
     this.workflow = workflow;
     this.scope = workflow;
@@ -96,14 +95,16 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     WorkflowInstanceStore workflowInstanceStore = workflowEngine.getWorkflowInstanceStore();
     boolean isFirst = true;
     while (hasWork()) {
+      ActivityInstanceImpl activityInstance = getNextWork();
+      ActivityImpl activity = activityInstance.getActivity();
+      ActivityType activityType = activity.activityType;
+
       // in the first iteration, the updates will be empty and hence no updates will be flushed
-      if (isFirst) {
+      if (isFirst || activityType.isFlushSkippable()) {
         isFirst = false;
       } else {
         workflowInstanceStore.flush(this); 
       }
-      ActivityInstanceImpl activityInstance = getNextWork();
-      ActivityImpl activity = activityInstance.getActivity();
       
       if (STATE_STARTING.equals(activityInstance.workState)) {
         if (log.isDebugEnabled())
@@ -143,26 +144,26 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
     if (hasAsyncWork()) {
       if (log.isDebugEnabled())
-        log.debug("Going asynchronous "+workflowInstance);
-      workflowInstanceStore.flush(workflowInstance);
+        log.debug("Going asynchronous "+this);
+      workflowInstanceStore.flush(this);
       ExecutorService executor = workflowEngine.getExecutorService();
       executor.execute(new Runnable(){
         public void run() {
           try {
-            workflowInstance.work = workflowInstance.workAsync;
-            workflowInstance.workAsync = null;
-            workflowInstance.workflowInstance.isAsync = true;
-            if (workflowInstance.updates!=null) {
-              workflowInstance.getUpdates().isWorkChanged = true;
-              workflowInstance.getUpdates().isAsyncWorkChanged = true;
+            work = workAsync;
+            workAsync = null;
+            isAsync = true;
+            if (updates!=null) {
+              getUpdates().isWorkChanged = true;
+              getUpdates().isAsyncWorkChanged = true;
             }
-            workflowInstance.executeWork();
+            executeWork();
           } catch (Throwable e) {
             e.printStackTrace();
           }
         }});
     } else {
-      workflowInstanceStore.flushAndUnlock(workflowInstance.workflowInstance);
+      workflowInstanceStore.flushAndUnlock(this);
     }
   }
   
@@ -170,8 +171,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     if (callerWorkflowInstanceId!=null) {
       WorkflowInstanceImpl callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
               workflowInstance.callerWorkflowInstanceId,
-              workflowInstance.callerActivityInstanceId,
-              requestContext);
+              workflowInstance.callerActivityInstanceId);
       ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
       if (callerActivityInstance.isEnded()) {
         throw new RuntimeException("Call activity instance "+callerActivityInstance+" is already ended");

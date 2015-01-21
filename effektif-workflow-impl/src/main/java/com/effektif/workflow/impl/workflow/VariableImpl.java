@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;

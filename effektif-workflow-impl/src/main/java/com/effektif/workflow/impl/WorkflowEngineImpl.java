@@ -21,14 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.MessageCommand;
+import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.StartCommand;
+import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.activitytypes.CallerReference;
+import com.effektif.workflow.impl.activities.CallerReference;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
@@ -75,14 +75,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
   
   @Override
   public Workflow deployWorkflow(Workflow workflowApi) {
-    return deployWorkflow(workflowApi, RequestContext.current());
-  }
-
-  @Override
-  public Workflow deployWorkflow(Workflow workflowApi, RequestContext requestContext) {
     if (log.isDebugEnabled()) {
       log.debug("Deploying workflow");
     }
+    RequestContext requestContext = RequestContext.current();
     if (requestContext!=null) {
       workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
       workflowApi.organizationId(requestContext.getOrganizationId());
@@ -90,10 +86,13 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
     WorkflowParser parser = WorkflowParser.parse(this, workflowApi);
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
-      String workflowId = workflowStore.generateWorkflowId(); 
-      workflowApi.setId(workflowId);
-      workflowImpl.id = workflowId;
-      workflowStore.insertWorkflow(workflowApi, workflowImpl, requestContext);
+      String workflowId; 
+      if (workflowApi.getId()==null) {
+        workflowId = workflowStore.generateWorkflowId();
+        workflowApi.setId(workflowId);
+      }
+      workflowImpl.id = workflowApi.getId();
+      workflowStore.insertWorkflow(workflowApi, workflowImpl);
       workflowCache.put(workflowImpl);
     } else {
       throw new RuntimeException(parser.issues.getIssueReport());
@@ -103,14 +102,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
 
   @Override
   public Workflow validateWorkflow(Workflow workflowApi) {
-    return validateWorkflow(workflowApi, RequestContext.current());
-  }
-  
-  @Override
-  public Workflow validateWorkflow(Workflow workflowApi, RequestContext requestContext) {
     if (log.isDebugEnabled()) {
       log.debug("Validating workflow");
     }
+    RequestContext requestContext = RequestContext.current();
     if (requestContext!=null) {
       workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
       workflowApi.organizationId(requestContext.getOrganizationId());
@@ -121,48 +116,42 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
-    return findWorkflows(workflowQuery, RequestContext.current()); 
-  }
-
-  @Override
-  public List<Workflow> findWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext) {
-    return workflowStore.findWorkflows(workflowQuery, requestContext);
+    return workflowStore.findWorkflows(workflowQuery);
   }
   
   @Override
   public void deleteWorkflows(WorkflowQuery workflowQuery) {
-    deleteWorkflows(workflowQuery, RequestContext.current());
-  }
-    
-  @Override
-  public void deleteWorkflows(WorkflowQuery workflowQuery, RequestContext requestContext) {
-    workflowStore.deleteWorkflows(workflowQuery, requestContext);
+    workflowStore.deleteWorkflows(workflowQuery);
   }
 
-  public WorkflowInstance startWorkflowInstance(StartCommand startCommand) {
-    return startWorkflowInstance(startCommand, RequestContext.current());
-  }
-  
   @Override
-  public WorkflowInstance startWorkflowInstance(StartCommand startCommand, RequestContext requestContext) {
-    return startWorkflowInstance(startCommand, null, requestContext);
+  public WorkflowInstance startWorkflowInstance(Workflow workflow) {
+    String workflowId = workflow.getId();
+    if (workflowId==null) {
+      throw new RuntimeException("Please ensure that the given workflow is deployed first");
+    }
+    return startWorkflowInstance(new Start().workflowId(workflowId), null);
+  }
+
+  public WorkflowInstance startWorkflowInstance(Start startCommand) {
+    return startWorkflowInstance(startCommand, null);
   }
 
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
-  public WorkflowInstance startWorkflowInstance(StartCommand startCommand, CallerReference callerReference, RequestContext requestContext) {
+  public WorkflowInstance startWorkflowInstance(Start startCommand, CallerReference callerReference) {
     String workflowId = startCommand.getWorkflowId();
     if (workflowId==null) {
       if (startCommand.getWorkflowName()!=null) {
-        workflowId = workflowStore.findLatestWorkflowIdByName(startCommand.getWorkflowName(), requestContext);
+        workflowId = workflowStore.findLatestWorkflowIdByName(startCommand.getWorkflowName());
         if (workflowId==null) throw new RuntimeException("No workflow found for name '"+startCommand.getWorkflowName()+"'");
       } else {
         throw new RuntimeException("No workflow specified");
       }
     }
 
-    WorkflowImpl workflow = getWorkflowImpl(workflowId, requestContext);
+    WorkflowImpl workflow = getWorkflowImpl(workflowId);
     String workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
-    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(requestContext, this, workflow, workflowInstanceId);
+    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(this, workflow, workflowInstanceId);
     if (callerReference!=null) {
       workflowInstance.callerWorkflowInstanceId = callerReference.callerWorkflowInstanceId;
       workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
@@ -185,13 +174,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
   }
   
   @Override
-  public WorkflowInstance sendMessage(MessageCommand message) {
-    return sendMessage(message, RequestContext.current());
-  }
-  
-  @Override
-  public WorkflowInstance sendMessage(MessageCommand message, RequestContext requestContext) {
-    WorkflowInstanceImpl workflowInstance = lockProcessInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId(), requestContext);
+  public WorkflowInstance sendMessage(Message message) {
+    WorkflowInstanceImpl workflowInstance = lockProcessInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
     workflowInstance.setVariableValues(message.getVariableValues());
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(message.getActivityInstanceId());
     if (activityInstance.isEnded()) {
@@ -207,31 +191,20 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
 
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query) {
-    deleteWorkflowInstances(query, RequestContext.current());
-  }
-
-
-  @Override
-  public void deleteWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
-    workflowInstanceStore.deleteWorkflowInstances(query, requestContext);
+    workflowInstanceStore.deleteWorkflowInstances(query);
   }
 
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
-    return findWorkflowInstances(query, RequestContext.current());
-  }
-  
-  @Override
-  public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query, RequestContext requestContext) {
-    List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(query, requestContext);
+    List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(query);
     return WorkflowInstanceImpl.toWorkflowInstances(workflowInstances);
   }
   
   /** retrieves the executable form of the workflow using the workflow cache */
-  public WorkflowImpl getWorkflowImpl(String workflowId, RequestContext requestContext) {
-    WorkflowImpl workflowImpl = workflowCache.get(workflowId, requestContext);
+  public WorkflowImpl getWorkflowImpl(String workflowId) {
+    WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
-      Workflow workflow = workflowStore.loadWorkflowById(workflowId, requestContext);
+      Workflow workflow = workflowStore.loadWorkflowById(workflowId);
       workflowImpl = WorkflowParser.parse(this, workflow)
         .checkNoErrors() // throws runtime exception if there are errors
         .getWorkflow();
@@ -242,12 +215,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
   
   public WorkflowInstanceImpl lockProcessInstanceWithRetry(
           final String workflowInstanceId, 
-          final String activityInstanceId,
-          final RequestContext requestContext) {
+          final String activityInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {
       @Override
       public WorkflowInstanceImpl tryOnce() {
-        return workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, activityInstanceId, requestContext);
+        return workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, activityInstanceId);
       }
       @Override
       protected void failedWaitingForRetry() {
@@ -311,5 +283,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
 
   public List<WorkflowInstanceEventListener> getListeners() {
     return Collections.unmodifiableList(listeners);
+  }
+
+  @Override
+  public WorkflowEngine createWorkflowEngine(RequestContext requestContext) {
+    return new ContextualWorkflowEngine(this, requestContext);
   }
 }

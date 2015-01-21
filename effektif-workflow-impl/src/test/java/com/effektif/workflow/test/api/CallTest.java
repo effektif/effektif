@@ -19,10 +19,10 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.command.MessageCommand;
-import com.effektif.workflow.api.command.StartCommand;
+import com.effektif.workflow.api.command.Message;
+import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.type.TextType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -59,7 +59,7 @@ public class CallTest extends WorkflowTest {
     
     ActivityInstance subtaskInstance = subInstance.findOpenActivityInstance("subtask");
     
-    subInstance = workflowEngine.sendMessage(new MessageCommand()
+    subInstance = workflowEngine.sendMessage(new Message()
       .workflowInstanceId(subInstance.getId())
       .activityInstanceId(subtaskInstance.getId()));
     
@@ -89,7 +89,7 @@ public class CallTest extends WorkflowTest {
     
     superWorkflow = deploy(superWorkflow);
     
-    workflowEngine.startWorkflowInstance(new StartCommand()
+    workflowEngine.startWorkflowInstance(new Start()
       .workflowId(superWorkflow.getId())
       .variableValue("assignee", "johndoe")
     );
@@ -115,7 +115,7 @@ public class CallTest extends WorkflowTest {
     
     superWorkflow = deploy(superWorkflow);
     
-    workflowEngine.startWorkflowInstance(new StartCommand()
+    workflowEngine.startWorkflowInstance(new Start()
       .workflowId(superWorkflow.getId())
       .variableValue("assignee", "johndoe")
     );

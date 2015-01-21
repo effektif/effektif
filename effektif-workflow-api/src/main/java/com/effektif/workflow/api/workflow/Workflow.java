@@ -15,7 +15,7 @@ package com.effektif.workflow.api.workflow;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.Type;
 
 
 

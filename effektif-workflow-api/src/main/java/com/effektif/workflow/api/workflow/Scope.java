@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.Type;
 
 
 public class Scope {

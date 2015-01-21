@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.api.type.ObjectType;
+import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -30,7 +30,9 @@ public interface ActivityType<T> extends Plugin {
    * Note that configuration values in the activityApi object could be the target java beans classes, 
    * or the detyped json representation (maps, lists, Strings, etc) if it's coming from json parsing. */
   void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser);
-  
+
+  boolean isFlushSkippable();
+
   boolean isAsync(ActivityInstanceImpl activityInstance);
 
   /** called when the execution flow arrives in this activity */
@@ -41,4 +43,7 @@ public interface ActivityType<T> extends Plugin {
 
   /** called when a nested activity instance is ended */
   void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance);
+
+  boolean saveTransitionsTaken();
+
 }

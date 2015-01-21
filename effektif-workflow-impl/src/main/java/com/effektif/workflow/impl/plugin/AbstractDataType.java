@@ -13,8 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.plugin;
 
-import com.effektif.workflow.api.type.Type;
-import com.effektif.workflow.impl.type.InvalidValueException;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.impl.types.InvalidValueException;
 
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {

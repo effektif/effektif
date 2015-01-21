@@ -18,8 +18,8 @@ import org.junit.Test;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.command.StartCommand;
-import com.effektif.workflow.api.type.NumberType;
+import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -50,19 +50,19 @@ public class ExclusiveGatewayTest extends WorkflowTest {
     
     w = deploy(w);
 
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new StartCommand()
+    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(w.getId())
       .variableValue("v", 5));
     
     assertOpen(workflowInstance, "t1");
 
-    workflowInstance = workflowEngine.startWorkflowInstance(new StartCommand()
+    workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(w.getId())
       .variableValue("v", 50));
 
     assertOpen(workflowInstance, "t2");
 
-    workflowInstance = workflowEngine.startWorkflowInstance(new StartCommand()
+    workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(w.getId())
       .variableValue("v", 500));
 

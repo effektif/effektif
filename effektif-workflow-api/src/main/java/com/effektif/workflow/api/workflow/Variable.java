@@ -16,7 +16,7 @@ package com.effektif.workflow.api.workflow;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;

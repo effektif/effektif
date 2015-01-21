@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.Type;
 
 
 public class VariableInstance {

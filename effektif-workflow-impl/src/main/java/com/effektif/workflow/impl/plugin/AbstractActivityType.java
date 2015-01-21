@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.plugin;
 
 import org.slf4j.Logger;
 
-import com.effektif.workflow.api.type.ObjectType;
+import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -61,6 +61,18 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
   public boolean isAsync(ActivityInstanceImpl activityInstance) {
     return false;
   }
+
+  @Override
+  public boolean isFlushSkippable() {
+    return false;
+  }
+
+  @Override
+  public boolean saveTransitionsTaken() {
+    return false;
+  }
+  
+  
 
 //  @SuppressWarnings({ "rawtypes", "unchecked" })
 //  @Override

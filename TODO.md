@@ -1,12 +1,12 @@
 # Tasks
 
-- [x] inline BaseImpl into it's subclasses 
+- [ ] check workflow date persistence (deployedTime)
 - [ ] Merge java bean type and object type
 - [ ] reintroduce automatic descriptor scanning of activity types
 - [ ] In the data types, InvalidValueException vs ParseContext
-- [ ] ensure that events and gateways are performed synchronous, don't trigger flushes and are not stored 
-      (except for excl gateways, for those, the selected outgoing transition has to be recorded)
+- [ ] the taken outgoing transition have to be recorded
 - [ ] add timers to scopes and scope instances
+- [ ] evaluate outgoing transition conditions (in ActivityInstanceImpl.onwards) 
 - [ ] Figure out how to secure java script for our own servers:  Check out Rhino's SandboxShutter
 - [ ] Test if the script engine is thread safe. CompiledScript seems to be tied to a ScriptEngine. It should be investigated if concurrent script execution can overwrite each other's context.
 

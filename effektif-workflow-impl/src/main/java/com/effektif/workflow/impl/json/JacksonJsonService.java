@@ -24,7 +24,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.command.AbstractCommand;
 import com.effektif.workflow.api.command.VariableValue;
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -38,7 +38,7 @@ import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.Initializable;
 import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.type.ObjectTypeImpl;
+import com.effektif.workflow.impl.types.ObjectTypeImpl;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

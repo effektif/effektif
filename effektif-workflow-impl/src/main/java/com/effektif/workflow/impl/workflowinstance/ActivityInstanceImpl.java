@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflowinstance;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.joda.time.LocalDateTime;
@@ -50,6 +52,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public ActivityImpl activity;
   public String workState;
   public String calledWorkflowInstanceId;
+  public List<String> transitionsTaken;
   
   public ActivityInstanceImpl() {
   }
@@ -87,6 +90,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       // Note that process concurrency does not require java concurrency
       end(false);
       for (TransitionImpl transitionDefinition: activity.outgoingTransitions) {
+        // TODO evaluate conditions if there are any
         takeTransition(transitionDefinition);
       }
     } else {
@@ -144,6 +148,9 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
    * This methods will also end the current activity instance.
    * This method can be called multiple times in one start() */
   public void takeTransition(TransitionImpl transition) {
+    if (transition.id!=null || activity.activityType.saveTransitionsTaken()) {
+      addTransitionTaken(transition.id);
+    }
     ActivityImpl to = transition.to;
     end(to==null);
     ActivityInstanceImpl toActivityInstance = null;
@@ -157,6 +164,19 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     }
   }
   
+  protected void addTransitionTaken(String transitionId) {
+    if (transitionsTaken==null) {
+      transitionsTaken = new ArrayList<>();
+    }
+    transitionsTaken.add(transitionId);
+    if (updates!=null) {
+      getUpdates().isTransitionsTakenChanged = true;
+      if (parent!=null) {
+        parent.propagateActivityInstanceChange();
+      }
+    }
+  }
+
   @Override
   public void ended(ActivityInstanceImpl nestedEndedActivityInstance) {
     activity.activityType.ended(this, nestedEndedActivityInstance);

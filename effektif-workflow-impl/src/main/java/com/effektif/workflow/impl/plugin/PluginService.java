@@ -22,17 +22,17 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.type.JavaBeanType;
-import com.effektif.workflow.api.type.ListType;
-import com.effektif.workflow.api.type.NumberType;
-import com.effektif.workflow.api.type.ObjectType;
-import com.effektif.workflow.api.type.TextType;
-import com.effektif.workflow.api.type.Type;
+import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.NumberType;
+import com.effektif.workflow.api.types.ObjectType;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.type.JavaBeanTypeImpl;
-import com.effektif.workflow.impl.type.ObjectTypeImpl;
+import com.effektif.workflow.impl.types.JavaBeanTypeImpl;
+import com.effektif.workflow.impl.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
