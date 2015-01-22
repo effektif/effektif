@@ -13,10 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.api.command;
 
+import com.effektif.workflow.api.types.Type;
+
 
 public class Message extends AbstractCommand {
 
   protected String workflowInstanceId;
+  protected String activityInstanceId;
 
   public String getWorkflowInstanceId() {
     return this.workflowInstanceId;
@@ -29,8 +32,6 @@ public class Message extends AbstractCommand {
     return this;
   }
   
-  protected String activityInstanceId;
-
   public String getActivityInstanceId() {
     return this.activityInstanceId;
   }
@@ -41,5 +42,16 @@ public class Message extends AbstractCommand {
     this.activityInstanceId = activityInstanceId;
     return this;
   }
+
+  @Override
+  public Message variableValue(String variableId, Object variableValue) {
+    super.variableValue(variableId, variableValue);
+    return this;
+  }
   
+  @Override
+  public Message variableValue(String variableId, Object variableValue, Type type) {
+    super.variableValue(variableId, variableValue, type);
+    return this;
+  }
 }

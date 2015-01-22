@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.api.command;
 
+import com.effektif.workflow.api.types.Type;
+
 
 public class Start extends AbstractCommand {
   
@@ -44,6 +46,12 @@ public class Start extends AbstractCommand {
   @Override
   public Start variableValue(String variableId, Object variableValue) {
     super.variableValue(variableId, variableValue);
+    return this;
+  }
+
+  @Override
+  public Start variableValue(String variableId, Object variableValue, Type type) {
+    super.variableValue(variableId, variableValue, type);
     return this;
   }
 }

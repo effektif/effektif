@@ -16,20 +16,27 @@ package com.heisenberg.test.rest;
 import com.effektif.adapter.ActivityAdapter;
 import com.effektif.adapter.ActivityRequest;
 import com.effektif.adapter.ActivityResponse;
+import com.effektif.workflow.api.types.BindingType;
+import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.ObjectType;
+import com.effektif.workflow.api.types.TextType;
 
 
 public class HelloWorldAdapter implements ActivityAdapter {
 
   @Override
   public ObjectType getDescriptor() {
-    return null;
+    return new ObjectType()
+      .description("Say hello")
+      .field(new ObjectField("greeting")
+        .type(new BindingType(new TextType()))
+        .label("The greeting"));
   }
 
   @Override
   public ActivityResponse execute(ActivityRequest activityRequest) {
+    String greeting = activityRequest.getValue("greeting");
     return null;
   }
-  
 }
 

@@ -14,13 +14,12 @@
 package com.effektif.workflow.impl.plugin;
 
 
-
-public class TypedValue {
+public class TypedValueImpl {
 
   DataType type;
   Object value;
 
-  public TypedValue(DataType type, Object value) {
+  public TypedValueImpl(DataType type, Object value) {
     this.type = type;
     this.value = value;
   }

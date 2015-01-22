@@ -13,29 +13,36 @@
  * limitations under the License. */
 package com.effektif.workflow.api.command;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.effektif.workflow.api.types.Type;
 
 
 public abstract class AbstractCommand {
 
-  protected List<VariableValue> variableValues;
+  protected Map<String,TypedValue> variableValues;
 
-  public List<VariableValue> getVariableValues() {
+  public Map<String,TypedValue> getVariableValues() {
     return this.variableValues;
   }
 
-  public void setVariableValues(List<VariableValue> variableValues) {
+  public void setVariableValues(Map<String,TypedValue> variableValues) {
     this.variableValues = variableValues;
   }
-  
+
   public AbstractCommand variableValue(String variableId, Object variableValue) {
+    variableValue(variableId, variableValue, null);
+    return this;
+  }
+
+  public AbstractCommand variableValue(String variableId, Object variableValue, Type type) {
     if (variableValues==null) {
-      variableValues = new ArrayList<>();
+      variableValues = new LinkedHashMap<>();
     }
-    variableValues.add(new VariableValue()
-      .variableId(variableId)
-      .value(variableValue));
+    variableValues.put(variableId, new TypedValue()
+      .value(variableValue)
+      .type(type));
     return this;
   }
 }

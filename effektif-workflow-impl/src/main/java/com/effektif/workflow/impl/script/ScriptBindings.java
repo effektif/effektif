@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.impl.plugin.DataType;
-import com.effektif.workflow.impl.plugin.TypedValue;
+import com.effektif.workflow.impl.plugin.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
@@ -83,7 +83,7 @@ public class ScriptBindings implements Bindings {
     if (!isIgnored(scriptVariableName)) {
       log.debug("ScriptBindings.get("+scriptVariableName+")");
     }
-    TypedValue typedValue = getTypedValue(scriptVariableName);
+    TypedValueImpl typedValue = getTypedValue(scriptVariableName);
     DataType type = typedValue.getType();
     Object value = typedValue.getValue();
     return type.convertInternalToScriptValue(value, language);
@@ -99,7 +99,7 @@ public class ScriptBindings implements Bindings {
     return scriptVariableName;
   }
 
-  public TypedValue getTypedValue(String scriptVariableName) {
+  public TypedValueImpl getTypedValue(String scriptVariableName) {
     String variableId = getVariableId(scriptVariableName);
     return scopeInstance.getVariableTypedValue(variableId);
   }

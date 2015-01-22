@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.VariableValue;
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -36,7 +36,7 @@ import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.plugin.DataType;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.plugin.TypedValue;
+import com.effektif.workflow.impl.plugin.TypedValueImpl;
 import com.effektif.workflow.impl.types.AnyDataTypeImpl;
 import com.effektif.workflow.impl.types.NumberTypeImpl;
 import com.effektif.workflow.impl.types.TextTypeImpl;
@@ -226,16 +226,15 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   public Object getVariable(String variableDefinitionId) {
-    TypedValue typedValue = getVariableTypedValue(variableDefinitionId);
+    TypedValueImpl typedValue = getVariableTypedValue(variableDefinitionId);
     return typedValue!=null ? typedValue.getValue() : null;
   }
 
   /** sets all entries individually, variableValues maps variable ids to values */
-  public void setVariableValues(List<VariableValue> variableValues) {
+  public void setVariableValues(Map<String,TypedValue> variableValues) {
     if (variableValues!=null) {
-      for (VariableValue variableValue: variableValues) {
-        String variableId = variableValue.getVariableId();
-        Object value = variableValue.getValue();
+      for (String variableId: variableValues.keySet()) {
+        Object value = variableValues.get(variableId);
         setVariableValue(variableId, value);
       }
     }
@@ -288,12 +287,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return null;
   }
   
-  public TypedValue getVariableTypedValue(String variableId) {
+  public TypedValueImpl getVariableTypedValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
     if (variableInstance!=null) {
       DataType type = variableInstance.variable.type;
       Object value = variableInstance.getValue();
-      return new TypedValue(type, value);
+      return new TypedValueImpl(type, value);
     }
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }

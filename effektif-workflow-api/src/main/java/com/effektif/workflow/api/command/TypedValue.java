@@ -16,30 +16,18 @@ package com.effektif.workflow.api.command;
 import com.effektif.workflow.api.types.Type;
 
 
-public class VariableValue {
+public class TypedValue {
 
-  protected String variableId;
   protected Object value;
   protected Type type;
 
-  public String getVariableId() {
-    return this.variableId;
-  }
-  public void setVariableId(String variableId) {
-    this.variableId = variableId;
-  }
-  public VariableValue variableId(String variableId) {
-    this.variableId = variableId;
-    return this;
-  }
-  
   public Object getValue() {
     return this.value;
   }
   public void setValue(Object value) {
     this.value = value;
   }
-  public VariableValue value(Object value) {
+  public TypedValue value(Object value) {
     this.value = value;
     return this;
   }
@@ -50,7 +38,7 @@ public class VariableValue {
   public void setType(Type type) {
     this.type = type;
   }
-  public VariableValue type(Type type) {
+  public TypedValue type(Type type) {
     this.type = type;
     return this;
   }

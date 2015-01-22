@@ -23,7 +23,7 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.command.AbstractCommand;
-import com.effektif.workflow.api.command.VariableValue;
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
@@ -227,14 +227,15 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
 
   @Override
   public <T extends AbstractCommand> T serializeCommand(T command) {
-    if (command==null || command.getVariableValues()==null) {
+    Map<String, TypedValue> variableValues = command.getVariableValues();
+    if (command==null || variableValues==null) {
       return command;
     }
-    for (VariableValue variableValue: command.getVariableValues()) {
-      Object value = variableValue.getValue();
-      if (value!=null && variableValue.getType()==null) {
-        Type type = pluginService.getTypeByValue(value);
-        variableValue.type(type);
+    for (String variableId: variableValues.keySet()) {
+      TypedValue typedValue = variableValues.get(variableId);
+      if (typedValue!=null && typedValue.getType()==null) {
+        Type type = pluginService.getTypeByValue(typedValue);
+        typedValue.type(type);
       }
     }
     return command;
@@ -242,15 +243,16 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
 
   @Override
   public <T extends AbstractCommand> T deserializeCommand(T command) {
-    if (command==null || command.getVariableValues()==null) {
+    Map<String, TypedValue> variableValues = command.getVariableValues();
+    if (command==null || variableValues==null) {
       return command;
     }
-    for (VariableValue variableValue: command.getVariableValues()) {
-      Object value = variableValue.getValue();
-      if (value!=null && variableValue.getType()!=null) {
-        DataType dataType = pluginService.createDataType(variableValue.getType());
-        Object deserializedValue = dataType.deserialize(value);
-        variableValue.value(deserializedValue);
+    for (String variableId: variableValues.keySet()) {
+      TypedValue typedValue = variableValues.get(variableId);
+      if (typedValue!=null && typedValue.getType()!=null) {
+        DataType dataType = pluginService.createDataType(typedValue.getType());
+        Object deserializedValue = dataType.deserialize(typedValue.getValue());
+        typedValue.value(deserializedValue);
       }
     }
     return command;
