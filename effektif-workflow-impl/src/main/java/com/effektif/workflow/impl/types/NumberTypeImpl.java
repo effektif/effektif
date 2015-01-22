@@ -14,15 +14,22 @@
 package com.effektif.workflow.impl.types;
 
 import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.impl.plugin.AbstractDataType;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.InvalidValueException;
 
 
 public class NumberTypeImpl extends AbstractDataType {
 
   public NumberTypeImpl() {
-    super(NumberType.class, Number.class);
+    super(NumberType.class);
+    this.valueClass = Number.class;
   }
   
+  @Override
+  public boolean isStatic() {
+    return true;
+  }
+
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue instanceof Double) {
@@ -37,10 +44,5 @@ public class NumberTypeImpl extends AbstractDataType {
       }
     }
     return null;
-  }
-
-  @Override
-  public Class getValueClass() {
-    return Number.class;
   }
 }

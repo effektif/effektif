@@ -17,10 +17,9 @@ import java.lang.reflect.Field;
 
 import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.plugin.DataType;
-import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.type.DataTypeService;
 
 
 public class ObjectFieldImpl {
@@ -29,45 +28,20 @@ public class ObjectFieldImpl {
   protected DataType type;
   protected Field field;
   
-  public ObjectFieldImpl() {
-  }
-  
   public ObjectFieldImpl(String name) {
     this.name = name;
   }
-  
-  public void parse(Class< ? > objectClass, ObjectField fieldApi, ServiceRegistry serviceRegistry) {
+
+  public ObjectFieldImpl(Class< ? > objectClass, ObjectField fieldApi, ServiceRegistry serviceRegistry) {
     try {
       this.name = fieldApi.getName();
       Type fieldType = fieldApi.getType();
-      PluginService pluginService = serviceRegistry.getService(PluginService.class);
-      this.type = pluginService.createDataType(fieldType);
+      DataTypeService dataTypeService = serviceRegistry.getService(DataTypeService.class);
+      this.type = dataTypeService.createDataType(fieldType);
       this.field = objectClass.getDeclaredField(name);
       this.field.setAccessible(true);
     } catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  public void serialize(Object value) {
-    if (type.isSerializeRequired()) {
-      try {
-        Object fieldValue = field.get(value);
-        type.serialize(fieldValue);
-      } catch (IllegalArgumentException | IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  public void deserialize(Object value) {
-    if (type.isSerializeRequired()) {
-      try {
-        Object fieldValue = field.get(value);
-        type.deserialize(fieldValue);
-      } catch (IllegalArgumentException | IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
     }
   }
 

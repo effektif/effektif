@@ -13,20 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.TypeHelper;
 
 
 /** Describes how the value is obtained 
  * for an activity input parameter. */
-public class Binding {
+public class Binding<T extends Type> {
 
   /** the fixed input value.  
    * This is mutually exclusive with variableId and expression */
-  protected Object value;
-  
-  /** type of the specified value.  This will be set by the engine during serialization 
-   * so the value can be deserialized to the proper java object. */
-  protected Type type;
+  protected TypedValue typedValue;
 
   /** reference to the variable that will contain the input value.  
    * This is mutually exclusive with value and expression */
@@ -37,14 +35,27 @@ public class Binding {
   protected String expression;
 
   public Object getValue() {
-    return this.value;
+    return typedValue!=null ? typedValue.getValue() : null;
   }
-  public void setValue(Object value) {
-    this.value = value;
-  }
+  
   public Binding value(Object value) {
-    this.value = value;
+    this.typedValue = new TypedValue()
+      .value(value)
+      .type(TypeHelper.getTypeByValue(value));
     return this;
+  }
+  
+  public Binding typedValue(TypedValue typedValue) {
+    this.typedValue = typedValue;
+    return this;
+  }
+  
+  public TypedValue getTypedValue() {
+    return typedValue;
+  }
+  
+  public void setTypedValue(TypedValue typedValue) {
+    this.typedValue = typedValue;
   }
 
   public String getVariableId() {
@@ -66,17 +77,6 @@ public class Binding {
   }
   public Binding expression(String expression) {
     this.expression = expression;
-    return this;
-  }
-
-  public Type getType() {
-    return this.type;
-  }
-  public void setType(Type type) {
-    this.type = type;
-  }
-  public Binding type(Type type) {
-    this.type = type;
     return this;
   }
 }

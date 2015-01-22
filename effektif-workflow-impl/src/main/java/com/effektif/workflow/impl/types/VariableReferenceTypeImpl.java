@@ -11,12 +11,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.impl.types;
+
+import com.effektif.workflow.api.types.VariableReferenceType;
+import com.effektif.workflow.impl.type.AbstractDataType;
 
 
-public enum AdapterConnectionStatus {
+public class VariableReferenceTypeImpl extends AbstractDataType<VariableReferenceType> {
 
-  UNKNOWN,
-  OK,
-  ERROR
+  public VariableReferenceTypeImpl() {
+    super(VariableReferenceType.class);
+  }
+
+  @Override
+  public boolean isStatic() {
+    return true;
+  }
 }
+

@@ -36,24 +36,26 @@ import com.effektif.workflow.impl.activities.ParallelGatewayImpl;
 import com.effektif.workflow.impl.activities.ScriptTaskImpl;
 import com.effektif.workflow.impl.activities.StartEventImpl;
 import com.effektif.workflow.impl.activities.UserTaskImpl;
+import com.effektif.workflow.impl.adapter.AdapterConnection;
+import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
 import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.AdapterConnection;
-import com.effektif.workflow.impl.plugin.DataType;
+import com.effektif.workflow.impl.plugin.ActivityTypeService;
 import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.script.ScriptServiceImpl;
 import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.type.DataTypeService;
 import com.effektif.workflow.impl.types.BindingTypeImpl;
 import com.effektif.workflow.impl.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.types.ListTypeImpl;
 import com.effektif.workflow.impl.types.NumberTypeImpl;
 import com.effektif.workflow.impl.types.TextTypeImpl;
-import com.effektif.workflow.impl.types.VariableIdTypeImpl;
-import com.effektif.workflow.impl.types.WorkflowIdTypeImpl;
-import com.effektif.workflow.impl.types.WorkflowNameTypeImpl;
+import com.effektif.workflow.impl.types.UserReferenceTypeImpl;
+import com.effektif.workflow.impl.types.VariableReferenceTypeImpl;
+import com.effektif.workflow.impl.types.WorkflowReferenceTypeImpl;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -98,7 +100,9 @@ public abstract class WorkflowEngineConfiguration {
     configureDefaultId();
     configureDefaultObjectMapper();
     configureDefaultJsonFactory();
-    configureDefaultPluginService();
+    configureDefaultActivityTypeService();
+    configureDefaultDataTypeService();
+    configureDefaultAdapterService();
     configureDefaultActivityTypes();
     configureDefaultDataTypes();
     configureDefaultScriptManager();
@@ -129,10 +133,10 @@ public abstract class WorkflowEngineConfiguration {
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());
     registerDataType(new ListTypeImpl());
-    registerDataType(new VariableIdTypeImpl());
-    registerDataType(new WorkflowIdTypeImpl());
-    registerDataType(new WorkflowNameTypeImpl());
     registerDataType(new TextTypeImpl());
+    registerDataType(new UserReferenceTypeImpl());
+    registerDataType(new VariableReferenceTypeImpl());
+    registerDataType(new WorkflowReferenceTypeImpl());
     registerJavaBeanType(CallMapping.class);
   }
   
@@ -146,24 +150,26 @@ public abstract class WorkflowEngineConfiguration {
   public WorkflowEngineConfiguration initialize() {
     if (!isInitialized) {
       isInitialized = true;
-      PluginService pluginService = serviceRegistry.getService(PluginService.class);
       for (Initializable initializable : initializables) {
         initializable.initialize(serviceRegistry, this);
       }
+      DataTypeService dataTypeService = serviceRegistry.getService(DataTypeService.class);
       for (Class< ? > javaBeanType : javaBeanTypes) {
-        pluginService.registerJavaBeanType(javaBeanType);
+        dataTypeService.registerJavaBeanType(javaBeanType);
       }
       for (DataType type : types) {
-        pluginService.registerDataType(type);
+        dataTypeService.registerDataType(type);
       }
+      ActivityTypeService activityTypeService = serviceRegistry.getService(ActivityTypeService.class);
       for (ActivityType activityType : activityTypes) {
-        pluginService.registerActivityType(activityType);
+        activityTypeService.registerActivityType(activityType);
       }
       for (Class< ? extends JobType> jobTypeClass : jobTypeClasses) {
-        pluginService.registerJobType(jobTypeClass);
+        activityTypeService.registerJobType(jobTypeClass);
       }
+      AdapterService adapterService = serviceRegistry.getService(AdapterService.class);
       for (AdapterConnection adapterConnection : adapterConnections) {
-        pluginService.registerAdapterConnection(adapterConnection);
+        adapterService.registerAdapterConnection(adapterConnection);
       }
     }
     return this;
@@ -222,10 +228,18 @@ public abstract class WorkflowEngineConfiguration {
     registerService(new JacksonJsonService());
   }
 
-  protected void configureDefaultPluginService() {
-    registerService(new PluginService());
+  protected void configureDefaultActivityTypeService() {
+    registerService(new ActivityTypeService());
   }
-
+  
+  protected void configureDefaultDataTypeService() {
+    registerService(new DataTypeService());
+  }
+  
+  protected void configureDefaultAdapterService() {
+    registerService(new AdapterService());
+  }
+  
   protected void configureDefaultObjectMapper() {
     registerService(new ObjectMapper());
   }

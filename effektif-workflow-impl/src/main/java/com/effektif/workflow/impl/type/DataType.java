@@ -11,10 +11,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.impl.type;
 
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.types.InvalidValueException;
+import com.effektif.workflow.impl.plugin.Plugin;
 
 
 public interface DataType<T extends Type> extends Plugin {
@@ -22,15 +22,12 @@ public interface DataType<T extends Type> extends Plugin {
   // TODO byte[] getIconBytes();
   // TODO String getIconMimeType();
 
-  Class< ? > getValueClass();
-  Class< ? > getApiClass();
+  Class<?> getValueClass();
+  Class<? extends Type> getApiClass();
+  boolean isStatic();
   T toType();
 
-  boolean isSerializeRequired();
-  Object serialize(Object value);
-  Object deserialize(Object value);
-
-  void initialize(T typeApi, ServiceRegistry serviceRegistry);
+  TypeGenerator getTypeGenerator();
 
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;

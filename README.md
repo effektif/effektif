@@ -1,16 +1,21 @@
 # Effektif
 
-Effektif is an easy, scalable workflow engine for designed for the cloud.  It's embeddable in JVM applications like Java and scala.  Effektif runs in memory or with a persistence engine like eg MongoDB.
+Effektif is a flexible workflow engine that you can leverage when building your apps.  
 
 * Embeddable in any Java, Scala or JVM app
 * REST API
-* Optional & pluggable persistence
+* Pluggable persistence
+  * In-memory (no serialization)
+  * Horizontally scalable NoSQL persistence
 * Microservice architecture
 * Easy to extend and customize
 * Designed for the cloud
 * Horizontally scalable
+* Apache 2.0 license
 
 A workflow is based on a diagram (eg BPMN or nodes and edges) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.
+
+## Example
 
 ![Example diagram](README-diagram.png?raw=true "Workflow diagram")
 
@@ -44,16 +49,17 @@ assertEquals("Move open issues", tasks.get(0).getName());
 assertEquals(1, tasks.size());
 ```
 
-# User Documentation
+## User Documentation
 
+* Who is behind this project?
 * [Getting started](Getting-started)
-* [Workflow engine types](Workflow-engine-types)
-* [Building workflows](Building workflows)
-* [Create your own activity](Create-your-own-activity)
-* [Create your own datasource](Create-your-own-datasource)
-* [Run the REST service](Run-the-REST-service)
+* Workflow engine types
+* Building workflows
+* Create your own activity
+* Create your own datasource
+* Run the REST service
 
-# Developer Documentation
+## Developer Documentation
 
 * Building the sources
 * Working with MongoDB

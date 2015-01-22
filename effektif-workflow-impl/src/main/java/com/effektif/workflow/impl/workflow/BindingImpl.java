@@ -16,10 +16,6 @@ package com.effektif.workflow.impl.workflow;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-
-/**
- * @author Tom Baeyens
- */
 public class BindingImpl<T> {
 
   public Class<?> expectedValueType;

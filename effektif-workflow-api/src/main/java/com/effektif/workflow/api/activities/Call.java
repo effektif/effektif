@@ -16,6 +16,7 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.types.WorkflowReferenceType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -28,8 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends Activity {
 
-  protected Binding subWorkflowIdBinding; 
-  protected Binding subWorkflowNameBinding; 
+  protected Binding<WorkflowReferenceType> subWorkflowBinding; 
   protected List<CallMapping> inputMappings; 
   protected List<CallMapping> outputMappings; 
   
@@ -41,17 +41,17 @@ public class Call extends Activity {
   }
 
   public Call subWorkflowId(String subWorkflowId) {
-    this.subWorkflowIdBinding = new Binding().value(subWorkflowId);
+    this.subWorkflowBinding = new Binding().value(subWorkflowId);
     return this;
   }
 
   public Call subWorkflowIdExpression(String subWorkflowIdExpression) {
-    this.subWorkflowIdBinding = new Binding().expression(subWorkflowIdExpression);
+    this.subWorkflowBinding = new Binding().expression(subWorkflowIdExpression);
     return this;
   }
 
   public Call subWorkflowIdVariableId(String subWorkflowIdVariableId) {
-    this.subWorkflowIdBinding = new Binding().variableId(subWorkflowIdVariableId);
+    this.subWorkflowBinding = new Binding().variableId(subWorkflowIdVariableId);
     return this;
   }
   
@@ -152,23 +152,13 @@ public class Call extends Activity {
   }
 
   
-  public Binding getSubWorkflowIdBinding() {
-    return subWorkflowIdBinding;
+  public Binding getSubWorkflowBinding() {
+    return subWorkflowBinding;
   }
 
   
-  public void setSubWorkflowIdBinding(Binding subWorkflowIdBinding) {
-    this.subWorkflowIdBinding = subWorkflowIdBinding;
-  }
-
-  
-  public Binding getSubWorkflowNameBinding() {
-    return subWorkflowNameBinding;
-  }
-
-  
-  public void setSubWorkflowNameBinding(Binding subWorkflowNameBinding) {
-    this.subWorkflowNameBinding = subWorkflowNameBinding;
+  public void setSubWorkflowBinding(Binding subWorkflowIdBinding) {
+    this.subWorkflowBinding = subWorkflowIdBinding;
   }
 
   

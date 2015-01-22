@@ -14,7 +14,7 @@
 package com.effektif.workflow.impl.workflowinstance;
 
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.plugin.DataType;
+import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
 

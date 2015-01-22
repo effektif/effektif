@@ -33,9 +33,9 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.DataType;
-import com.effektif.workflow.impl.plugin.PluginService;
+import com.effektif.workflow.impl.plugin.ActivityTypeService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
@@ -168,7 +168,7 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding binding, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {
+  public <T> BindingImpl<T> parseBinding(Binding<?> binding, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {
     String activityId = activityApi.getId();
     if (binding==null) {
       if (required) {

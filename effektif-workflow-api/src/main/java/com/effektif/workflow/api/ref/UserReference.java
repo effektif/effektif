@@ -11,14 +11,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.types;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+package com.effektif.workflow.api.ref;
 
 
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public class Type {
+public class UserReference {
 
+  protected String id;
+  protected String fullName;
+
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public UserReference id(String id) {
+    this.id = id;
+    return this;
+  }
+  
+  public String getFullName() {
+    return this.fullName;
+  }
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
+  }
+  public UserReference fullName(String fullName) {
+    this.fullName = fullName;
+    return this;
+  }
 }

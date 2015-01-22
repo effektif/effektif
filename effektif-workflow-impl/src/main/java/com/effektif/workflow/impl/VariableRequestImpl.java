@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.DataType;
+import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;

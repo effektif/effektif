@@ -11,14 +11,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.types;
-
-import com.effektif.workflow.api.types.WorkflowNameType;
+package com.effektif.workflow.impl.adapter;
 
 
-public class WorkflowNameTypeImpl extends TextTypeImpl {
+public class AdapterService {
 
-  public WorkflowNameTypeImpl() {
-    super(WorkflowNameType.class);
+  public void registerAdapterConnection(AdapterConnection adapterConnection) {
   }
+
 }

@@ -26,9 +26,6 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
 
-/**
- * @author Walter White
- */
 public class EmbeddedSuprocessTest extends WorkflowTest {
   
   /**          +-------------+

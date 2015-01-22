@@ -37,37 +37,18 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
     this.workflowEngine = workflowEngine;
   }
 
-  protected Workflow wireizeWorkflow(Workflow workflow) {
-    workflow = jsonService.serializeWorkflow(workflow);
-    workflow = wireize(workflow, Workflow.class);
-    return jsonService.deserializeWorkflow(workflow);
-  }
-  
-  protected WorkflowInstance wireizeWorkflowInstance(WorkflowInstance workflowInstance) {
-    // serializing is not necessary as the engine ensures that the type is always added
-    // workflowInstance = jsonService.serializeWorkflowInstance(workflowInstance);
-    workflowInstance = wireize(workflowInstance, WorkflowInstance.class);
-    return jsonService.deserializeWorkflowInstance(workflowInstance);
-  }
-  
-  protected <T extends AbstractCommand> T wireizeCommand(T command) {
-    command = jsonService.serializeCommand(command);
-    command = wireize(command, (Class<T>) command.getClass());
-    return jsonService.deserializeCommand(command);
-  }
-
   @Override
   public Workflow deployWorkflow(Workflow workflow) {
-    workflow = wireizeWorkflow(workflow);
+    workflow = wireize(workflow, Workflow.class);
     workflow = workflowEngine.deployWorkflow(workflow);
-    return wireizeWorkflow(workflow);
+    return wireize(workflow, Workflow.class);
   }
 
   @Override
   public Workflow validateWorkflow(Workflow workflow) {
-    workflow = wireizeWorkflow(workflow);
+    workflow = wireize(workflow, Workflow.class);
     workflow = workflowEngine.validateWorkflow(workflow);
-    return wireizeWorkflow(workflow);
+    return wireize(workflow, Workflow.class);
   }
 
   @Override
@@ -79,7 +60,7 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
     }
     List<Workflow> wirizedWorkflows = new ArrayList<>(workflows.size());
     for (Workflow workflow: workflows) {
-      wirizedWorkflows.add(wireizeWorkflow(workflow));
+      wirizedWorkflows.add(wireize(workflow, Workflow.class));
     }
     return wirizedWorkflows;
   }
@@ -98,16 +79,16 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
 
   @Override
   public WorkflowInstance startWorkflowInstance(Start start) {
-    start = wireizeCommand(start);
+    start = wireize(start, Start.class);
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
     return wireize(workflowInstance, WorkflowInstance.class);
   }
 
   @Override
   public WorkflowInstance sendMessage(Message message) {
-    message = wireizeCommand(message);
+    message = wireize(message, Message.class);
     WorkflowInstance workflowInstance = workflowEngine.sendMessage(message);
-    return wireizeWorkflowInstance(workflowInstance);
+    return wireize(workflowInstance, WorkflowInstance.class);
   }
 
   @Override
@@ -119,7 +100,7 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
     }
     List<WorkflowInstance> wirizedWorkflowInstances = new ArrayList<>(workflowInstances.size());
     for (WorkflowInstance workflowInstance: workflowInstances) {
-      wirizedWorkflowInstances.add(wireizeWorkflowInstance(workflowInstance));
+      wirizedWorkflowInstances.add(wireize(workflowInstance, WorkflowInstance.class));
     }
     return wirizedWorkflowInstances;
   }

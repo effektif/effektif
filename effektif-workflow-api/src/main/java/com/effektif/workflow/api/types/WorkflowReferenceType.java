@@ -16,7 +16,7 @@ package com.effektif.workflow.api.types;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("workflowId")
-public class WorkflowIdType extends TextType {
+@JsonTypeName("workflowRef")
+public class WorkflowReferenceType extends Type {
 
 }

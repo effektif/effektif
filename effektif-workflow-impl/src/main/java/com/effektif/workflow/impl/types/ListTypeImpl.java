@@ -18,10 +18,14 @@ import java.util.List;
 
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.plugin.AbstractDataType;
-import com.effektif.workflow.impl.plugin.DataType;
-import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.type.InvalidValueException;
+import com.effektif.workflow.impl.type.TypeGenerator;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
 public class ListTypeImpl extends AbstractDataType<ListType> {
@@ -30,54 +34,38 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   
   /** constructor for json & persistence, dataType is a required field. */
   public ListTypeImpl() {
-    super(ListType.class, List.class);
+    super(ListType.class);
+    this.valueClass = List.class;
   }
 
-  public ListTypeImpl(DataType elementDataType) {
-    super(ListType.class, List.class);
-    this.elementDataType = elementDataType;
-  }
+//  public ListTypeImpl(DataType elementDataType) {
+//    super(ListType.class);
+//    this.valueClass = List.class;
+//    this.elementDataType = elementDataType;
+//  }
 
-  @Override
-  public boolean isSerializeRequired() {
-    return elementDataType!=null ? elementDataType.isSerializeRequired() : false;
+  public ListTypeImpl(ListType listType, ServiceRegistry serviceRegistry) {
+    super(ListType.class);
+    this.valueClass = List.class;
+    Type elementType = listType.getElementType();
+    if (elementType!=null) {
+      DataTypeService dataTypeService = serviceRegistry.getService(DataTypeService.class);
+      this.elementDataType = dataTypeService.createDataType(elementType);
+    }
   }
   
   @Override
-  public Object serialize(Object o) {
-    if (o==null || ((List<Object>)o).isEmpty()) {
-      return o;
-    }
-    List<Object> list = (List<Object>) o;
-    List<Object> serialized = new ArrayList<>(list.size()); 
-    for (Object element: list) {
-      serialized.add(elementDataType.serialize(element));
-    }
-    return serialized;
-  }
-
-  @Override
-  public Object deserialize(Object o) {
-    if (o==null || ((List<Object>)o).isEmpty()) {
-      return o;
-    }
-    List<Object> list = (List<Object>) o;
-    List<Object> deserialized = new ArrayList<>(list.size()); 
-    for (Object element: list) {
-      deserialized.add(elementDataType.deserialize(element));
-    }
-    return deserialized;
-  }
-
-  @Override
-  public void initialize(ListType listType, ServiceRegistry serviceRegistry) {
-    super.initialize(listType, serviceRegistry);
-    PluginService pluginService = serviceRegistry.getService(PluginService.class);
-    Type elementType = listType.getElementType();
-    if (elementType!=null) {
-      this.elementDataType = pluginService.createDataType(elementType);
-      this.elementDataType.initialize(elementType, serviceRegistry);
-    }
+  public TypeGenerator getTypeGenerator() {
+    return new TypeGenerator<ListType>() {
+      @Override
+      public JavaType createJavaType(ListType listType, TypeFactory typeFactory, DataTypeService dataTypeService) {
+        Type elementType = listType.getElementType();
+        if (elementType==null) {
+          return null;
+        }
+        return typeFactory.constructParametricType(List.class, dataTypeService.createJavaType(elementType));
+      }
+    };
   }
 
   @Override

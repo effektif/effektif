@@ -16,24 +16,21 @@ package com.effektif.workflow.impl.types;
 import java.util.List;
 
 import com.effektif.workflow.api.types.ChoiceType;
-import com.effektif.workflow.impl.plugin.AbstractDataType;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.type.InvalidValueException;
 
 
 public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   
   protected List<String> options;
   
-  public ChoiceTypeImpl() {
-    super(ChoiceType.class, String.class);
+  public ChoiceTypeImpl(ChoiceType choiceApi, DataTypeService dataTypeService) {
+    super(ChoiceType.class);
+    this.options = choiceApi.getOptions();
+    this.valueClass = String.class;
   }
   
-  @Override
-  public void initialize(ChoiceType choiceApi, ServiceRegistry serviceRegistry) {
-    super.initialize(choiceApi, serviceRegistry);
-    this.options = choiceApi.getOptions();
-  }
-
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     validateInternalValue(jsonValue);

@@ -15,61 +15,29 @@ package com.effektif.workflow.impl.types;
 
 import com.effektif.workflow.api.types.BindingType;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.AbstractDataType;
-import com.effektif.workflow.impl.plugin.DataType;
-import com.effektif.workflow.impl.plugin.PluginService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.type.InvalidValueException;
 
 
 public class BindingTypeImpl extends AbstractDataType<BindingType> {
   
   protected DataType targetType;
-  protected PluginService pluginService;
-  protected JsonService jsonService;
+  protected DataTypeService dataTypeService;
 
   public BindingTypeImpl() {
-    super(BindingType.class, Object.class);
-  }
-
-  @Override
-  public boolean isSerializeRequired() {
-    return true;
-  }
-
-  @Override
-  public Object serialize(Object o) {
-    if (o!=null) {
-      Binding binding = (Binding) o;
-      Object value = binding.getValue();
-      if (value!=null && binding.getType()==null) {
-        Type type = pluginService.getTypeByValue(value);
-        binding.type(type);
-      }
-    }
-    return o;
+    super(BindingType.class);
   }
   
-  @Override
-  public Object deserialize(Object o) {
-    if (o!=null) {
-      Binding binding = (Binding) o;
-      Object value = binding.getValue();
-      if (value!=null && binding.getType()!=null) {
-        binding.value(targetType.deserialize(binding.getValue()));
-      }
-    }
-    return o;
-  }
+  public BindingTypeImpl(BindingType bindingTypeApi, ServiceRegistry serviceRegistry) {
+    super(BindingType.class);
 
-  @Override
-  public void initialize(BindingType bindingTypeApi, ServiceRegistry serviceRegistry) {
-    super.initialize(bindingTypeApi, serviceRegistry);
-    this.pluginService = serviceRegistry.getService(PluginService.class);
+    this.dataTypeService = serviceRegistry.getService(DataTypeService.class);
     Type targetTypeApi = bindingTypeApi.getTargetType();
     if (targetTypeApi!=null) {
-      this.targetType = pluginService.createDataType(targetTypeApi);
+      this.targetType = dataTypeService.createDataType(targetTypeApi);
       this.valueClass = this.targetType.getValueClass();
     } 
   }

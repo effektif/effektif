@@ -14,17 +14,25 @@
 package com.effektif.workflow.impl.types;
 
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.impl.plugin.AbstractDataType;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.InvalidValueException;
 
 
 public class TextTypeImpl extends AbstractDataType<TextType> {
 
   public TextTypeImpl() {
-    super(TextType.class, String.class);
+    super(TextType.class);
+    this.valueClass = String.class;
   }
   
-  public TextTypeImpl(Class apiClass) {
-    super(apiClass, String.class);
+  protected TextTypeImpl(Class apiClass) {
+    super(apiClass);
+    this.valueClass = String.class;
+  }
+  
+  @Override
+  public boolean isStatic() {
+    return true;
   }
 
   @Override

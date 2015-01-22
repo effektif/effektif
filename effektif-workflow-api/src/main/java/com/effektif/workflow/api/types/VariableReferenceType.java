@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,32 +11,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.api.types;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-public class TypedValueImpl {
+@JsonTypeName("variableRef")
+public class VariableReferenceType extends Type {
 
-  DataType type;
-  Object value;
-
-  public TypedValueImpl(DataType type, Object value) {
-    this.type = type;
-    this.value = value;
-  }
-
-  public DataType getType() {
-    return type;
-  }
-  
-  public void setType(DataType type) {
-    this.type = type;
-  }
-  
-  public Object getValue() {
-    return value;
-  }
-  
-  public void setValue(Object value) {
-    this.value = value;
-  }
 }

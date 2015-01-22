@@ -15,70 +15,46 @@ package com.effektif.workflow.impl.types;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.AbstractDataType;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.InvalidValueException;
 
 
 public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
   
   protected List<ObjectFieldImpl> fields;
-  protected boolean isSerializeRequired;
   protected JsonService jsonService;
 
   public ObjectTypeImpl() {
-    super(ObjectType.class, null);
+    super(ObjectType.class);
   }
 
-  public ObjectTypeImpl(Class< ? > valueClass) {
-    super(ObjectType.class, valueClass);
+  public ObjectTypeImpl(ObjectType typeApi, ServiceRegistry serviceRegistry) {
+    this(typeApi, serviceRegistry, null);
   }
 
-  public ObjectTypeImpl(Class<?> apiClass, Class< ? > valueClass) {
-    super(apiClass, valueClass);
-  }
-
-  public boolean isSerializeRequired() {
-    return isSerializeRequired;
-  }
-
-  public Object serialize(Object o) {
-    if (isSerializeRequired && fields!=null) {
-      for (ObjectFieldImpl field: fields) {
-        field.serialize(o);
-      }
-    }
-    return o;
-  }
-
-  public Object deserialize(Object o) {
-    if (o instanceof Map) {
-      o = jsonService.jsonMapToObject((Map<String,Object>) o, valueClass);
-    }
-    if (isSerializeRequired && fields!=null) {
-      for (ObjectFieldImpl field: fields) {
-        field.deserialize(o);
-      }
-    }
-    return o;
-  }
-
-  @Override
-  public void initialize(T typeApi, ServiceRegistry serviceRegistry) {
-    super.initialize(typeApi, serviceRegistry);
+  public ObjectTypeImpl(ObjectType typeApi, ServiceRegistry serviceRegistry, Class<?> valueClass) {
+    super(typeApi.getClass());
+    this.valueClass = valueClass;
     List<ObjectField> fieldsApi = typeApi.getFields();
     if (fieldsApi!=null) {
       fields = new ArrayList<>(fieldsApi.size());
       for (ObjectField fieldApi: fieldsApi) {
-        ObjectFieldImpl fieldImpl = new ObjectFieldImpl();
-        fieldImpl.parse(valueClass, fieldApi, serviceRegistry);
-        isSerializeRequired = isSerializeRequired || (fieldImpl.type!=null && fieldImpl.type.isSerializeRequired());
+        ObjectFieldImpl fieldImpl = new ObjectFieldImpl(valueClass, fieldApi, serviceRegistry);
         fields.add(fieldImpl);
       }
+    }
+  }
+
+  public Object getFieldValue(Object o, ObjectFieldImpl field) {
+    try {
+      return field.field.get(o);
+    } catch (IllegalArgumentException | IllegalAccessException e) {
+      throw new RuntimeException(e);
     }
   }
 

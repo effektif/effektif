@@ -11,12 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.types;
+package com.effektif.workflow.impl.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.types.WorkflowReferenceType;
+import com.effektif.workflow.impl.type.AbstractDataType;
 
 
-@JsonTypeName("workflowName")
-public class WorkflowNameType extends TextType {
+public class WorkflowReferenceTypeImpl extends AbstractDataType<WorkflowReferenceType> {
 
+  public WorkflowReferenceTypeImpl() {
+    super(WorkflowReferenceType.class);
+  }
+
+  @Override
+  public boolean isStatic() {
+    return true;
+  }
 }

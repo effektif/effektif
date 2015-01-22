@@ -13,18 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.types;
 
-import com.effektif.workflow.impl.plugin.AbstractDataType;
-
+import com.effektif.workflow.impl.type.AbstractDataType;
 
 
 public class AnyDataTypeImpl extends AbstractDataType {
 
   public AnyDataTypeImpl() {
-    super(null, Object.class);
+    super(null);
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return jsonValue;
-  }
 }

@@ -13,30 +13,54 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.types;
 
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.type.AbstractDataType;
+import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.type.InvalidValueException;
+import com.effektif.workflow.impl.type.TypeGenerator;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
-public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
+public class JavaBeanTypeImpl extends AbstractDataType<JavaBeanType> {
   
   public JsonService jsonService;
-
+  
   public JavaBeanTypeImpl() {
-    super(JavaBeanType.class, null);
+    super(JavaBeanType.class);
+  }
+  
+  public JavaBeanTypeImpl(Class<?> javaBeanClass) {
+    super(JavaBeanType.class);
+    this.valueClass = javaBeanClass;
   }
 
-  public JavaBeanTypeImpl(Class<?> javaClass) {
-    super(JavaBeanType.class, javaClass);
+  public JavaBeanTypeImpl(JavaBeanType javaBeanTypeApi, ServiceRegistry serviceRegistry) {
+    super(JavaBeanType.class);
+
+    this.valueClass = javaBeanTypeApi.getJavaClass();
+    this.jsonService = serviceRegistry.getService(JsonService.class);
   }
 
   @Override
-  public void initialize(JavaBeanType javaBeanTypeApi, ServiceRegistry serviceRegistry) {
-    this.jsonService = serviceRegistry.getService(JsonService.class);
-    this.valueClass = javaBeanTypeApi.getJavaClass();
-    super.initialize(javaBeanTypeApi, serviceRegistry);
+  public TypeGenerator getTypeGenerator() {
+    return new TypeGenerator<JavaBeanType>() {
+      @Override
+      public JavaType createJavaType(JavaBeanType javaBeanType, TypeFactory typeFactory, DataTypeService dataTypeService) {
+        Class< ? > javaClass = javaBeanType.getJavaClass();
+        if (javaClass==null) {
+          return null;
+        }
+        return typeFactory.constructType(javaClass);
+      }
+    };
   }
 
   @Override

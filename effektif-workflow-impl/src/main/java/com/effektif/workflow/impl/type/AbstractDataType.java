@@ -11,24 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.plugin;
+package com.effektif.workflow.impl.type;
 
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.types.InvalidValueException;
 
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
   protected T cachedType;
-  protected Class<?> apiClass;
-  protected Class<?> valueClass = Object.class;
+  protected Class<? extends Type> apiClass;
+  protected Class<?> valueClass;
   
-  public AbstractDataType(Class< ? > apiClass, Class< ? > valueClass) {
+  public AbstractDataType(Class<? extends Type> apiClass) {
     this.apiClass = apiClass;
-    this.valueClass = valueClass; 
   }
   
-  public Class< ? > getApiClass() {
+  @Override
+  public boolean isStatic() {
+    return false;
+  }
+
+  public Class<? extends Type> getApiClass() {
     return apiClass;
   }
   
@@ -36,24 +39,14 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return cachedType;
   }
   
-  public boolean isSerializeRequired() {
-    return false;
-  }
-  
   @Override
-  public Object serialize(Object value) {
-    return value;
-  }
-  
-  @Override
-  public Object deserialize(Object value) {
-    return value;
+  public TypeGenerator getTypeGenerator() {
+    return null;
   }
 
-  public abstract Object convertJsonToInternalValue(Object jsonValue);
-
-  public void initialize(T typeApi, ServiceRegistry serviceRegistry) {
-    this.cachedType = typeApi;
+  @Override
+  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+    return jsonValue;
   }
 
   public void validateInternalValue(Object internalValue) throws InvalidValueException {

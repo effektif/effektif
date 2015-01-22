@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,14 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.types;
+package com.effektif.workflow.impl.type;
+
+import com.effektif.workflow.api.types.Type;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
-public class InvalidValueException extends RuntimeException {
+public interface TypeGenerator<T extends Type> {
 
-  private static final long serialVersionUID = 1L;
-
-  public InvalidValueException(String message) {
-    super(message);
-  }
+  JavaType createJavaType(T type, TypeFactory typeFactory, DataTypeService dataTypeService);
 }
