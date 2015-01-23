@@ -21,7 +21,7 @@ import com.effektif.workflow.impl.json.JsonService;
 
 public class AbstractSerializingService {
   
-  private static final Logger log = LoggerFactory.getLogger(SerializationTest.class);
+  protected static final Logger log = LoggerFactory.getLogger(SerializationTest.class+".JSON");
 
   protected JsonService jsonService;
   
@@ -29,10 +29,10 @@ public class AbstractSerializingService {
     this.jsonService = jsonService;
   }
 
-  protected <T> T wireize(Object o, Class<T> type) {
+  protected <T> T wireize(String name, Object o, Class<T> type) {
     if (o==null) return null;
     String jsonString = jsonService.objectToJsonStringPretty(o);
-    log.debug("wirized: "+jsonString);
+    log.debug(name+jsonString);
     return jsonService.jsonToObject(jsonString, type);
   }
 }

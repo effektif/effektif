@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.effektif.adapter.Adapter;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.test.TestWorkflowEngineConfiguration;
+import com.effektif.workflow.test.TestConfiguration;
 
 
 public class AdapterTest {
@@ -39,7 +39,7 @@ public class AdapterTest {
       .registerActivityAdapter(new HelloWorldAdapter());
     workflowAdapter.startup();
     
-    WorkflowEngine workflowEngine = new TestWorkflowEngineConfiguration()
+    WorkflowEngine workflowEngine = new TestConfiguration()
       .registerAdapter("http://localhost:"+port+"/")
       .initialize()
       .getWorkflowEngine();

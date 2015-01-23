@@ -18,8 +18,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.task.TaskQuery;
 import com.effektif.workflow.test.WorkflowTest;
 
 

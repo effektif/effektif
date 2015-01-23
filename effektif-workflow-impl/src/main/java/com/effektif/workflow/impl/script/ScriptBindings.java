@@ -27,8 +27,8 @@ import javax.script.Bindings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.type.DataType;
-import com.effektif.workflow.impl.type.TypedValueImpl;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 

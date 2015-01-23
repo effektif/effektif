@@ -14,12 +14,12 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.RequestContext;
@@ -28,10 +28,11 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.activities.CallerReference;
+import com.effektif.workflow.impl.activity.types.CallerReference;
+import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -49,18 +50,21 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
   public WorkflowStore workflowStore;
   public WorkflowInstanceStore workflowInstanceStore;
   public JsonService jsonService;
-  public ServiceRegistry serviceRegistry;
+  public Brewery brewery;
   public List<WorkflowInstanceEventListener> listeners;
+  protected Configuration configuration;
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
-    this.id = configuration.getId();
-    this.jsonService = serviceRegistry.getService(JsonService.class);
-    this.executorService = serviceRegistry.getService(ExecutorService.class);
-    this.workflowCache = serviceRegistry.getService(WorkflowCache.class);
-    this.workflowStore = serviceRegistry.getService(WorkflowStore.class);
-    this.workflowInstanceStore = serviceRegistry.getService(WorkflowInstanceStore.class);
-    this.serviceRegistry = serviceRegistry;
+  public void initialize(Brewery brewery) {
+    WorkflowEngineConfiguration workflowEngineConfiguration = brewery.get(WorkflowEngineConfiguration.class);
+    this.id = workflowEngineConfiguration.getId();
+    this.configuration = brewery.get(Configuration.class);
+    this.jsonService = brewery.get(JsonService.class);
+    this.executorService = brewery.get(ExecutorService.class);
+    this.workflowCache = brewery.get(WorkflowCache.class);
+    this.workflowStore = brewery.get(WorkflowStore.class);
+    this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
+    this.brewery = brewery;
     this.listeners = new ArrayList<>();
   }
   
@@ -83,7 +87,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
       workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
       workflowApi.organizationId(requestContext.getOrganizationId());
     }
-    WorkflowParser parser = WorkflowParser.parse(this, workflowApi);
+    WorkflowParser parser = WorkflowParser.parse(configuration, workflowApi);
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
       String workflowId; 
@@ -110,7 +114,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
       workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
       workflowApi.organizationId(requestContext.getOrganizationId());
     }
-    WorkflowParser.parse(this, workflowApi);
+    WorkflowParser.parse(configuration, workflowApi);
     return workflowApi;
   }
 
@@ -151,7 +155,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
 
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
     String workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
-    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(this, workflow, workflowInstanceId);
+    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(configuration, workflow, workflowInstanceId);
     if (callerReference!=null) {
       workflowInstance.callerWorkflowInstanceId = callerReference.callerWorkflowInstanceId;
       workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
@@ -163,6 +167,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
       for (ActivityImpl startActivityDefinition: workflow.startActivities) {
         workflowInstance.execute(startActivityDefinition);
       }
+    } else {
+      workflowInstance.end();
     }
     LockImpl lock = new LockImpl();
     lock.setTime(Time.now());
@@ -205,7 +211,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
       Workflow workflow = workflowStore.loadWorkflowById(workflowId);
-      workflowImpl = WorkflowParser.parse(this, workflow)
+      workflowImpl = WorkflowParser.parse(configuration, workflow)
         .checkNoErrors() // throws runtime exception if there are errors
         .getWorkflow();
       workflowCache.put(workflowImpl);
@@ -240,19 +246,23 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
     };
     return retry.tryManyTimes();
   }
+  
+//  public WorkflowEngineImpl addAdapter(String adapterUrl) {
+//    addAdapter(new AdapterConnection().url(adapterUrl));
+//    return this;
+//  }
+//
+//  protected List<AdapterConnection> adapterConnections = new ArrayList<>();
+//  public WorkflowEngineImpl addAdapter(AdapterConnection adapterConnection) {
+//    adapterStore.addAdapter()
+//    adapterConnections.add(adapterConnection);
+//    return this;
+//  }
 
   public String getId() {
     return id;
   }
 
-  public ServiceRegistry getServiceRegistry() {
-    return serviceRegistry;
-  }
-  
-  public JsonService getJsonService() {
-    return jsonService;
-  }
-  
   public ExecutorService getExecutorService() {
     return executorService;
   }
@@ -267,22 +277,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
   
   public WorkflowInstanceStore getWorkflowInstanceStore() {
     return workflowInstanceStore;
-  }
-
-  public void addListener(WorkflowInstanceEventListener listener) {
-    synchronized (listener) {
-      listeners.add(listener);
-    }
-  }
-
-  public void removeListener(WorkflowInstanceEventListener listener) {
-    synchronized (listener) {
-      listeners.remove(listener);
-    }
-  }
-
-  public List<WorkflowInstanceEventListener> getListeners() {
-    return Collections.unmodifiableList(listeners);
   }
 
   @Override

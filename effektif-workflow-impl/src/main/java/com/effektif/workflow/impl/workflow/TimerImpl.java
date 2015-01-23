@@ -13,8 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.JobType;
 
@@ -23,13 +23,13 @@ public class TimerImpl {
   
   public String id;
   public ScopeImpl parent;
-  public WorkflowEngineImpl workflowEngine;
+  public Configuration configuration;
   public WorkflowImpl workflow;
   public JobType jobType;
 
   public void parse(Timer timerApi, ScopeImpl parent, WorkflowParser parser) {
     this.id = timerApi.getId();
-    this.workflowEngine = parser.workflowEngine;
+    this.configuration = parser.configuration;
     if (parent!=null) {
       this.parent = parent;
       this.workflow = parent.workflow;

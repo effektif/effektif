@@ -34,12 +34,12 @@ import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.ExpressionService;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.type.DataType;
-import com.effektif.workflow.impl.type.TypedValueImpl;
-import com.effektif.workflow.impl.types.AnyDataTypeImpl;
-import com.effektif.workflow.impl.types.NumberTypeImpl;
-import com.effektif.workflow.impl.types.TextTypeImpl;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.data.types.AnyDataTypeImpl;
+import com.effektif.workflow.impl.data.types.NumberTypeImpl;
+import com.effektif.workflow.impl.data.types.TextTypeImpl;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -158,7 +158,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public VariableInstanceImpl createVariableInstance(VariableImpl variable) {
     String variableInstanceId = workflowInstance.generateNextVariableInstanceId();
     VariableInstanceImpl variableInstance = new VariableInstanceImpl(this, variable, variableInstanceId);
-    variableInstance.workflowEngine = workflowEngine;
+    variableInstance.configuration = configuration;
     variableInstance.workflowInstance = workflowInstance;
     variableInstance.type = variable.type;
     variableInstance.value = variable.initialValue;
@@ -194,7 +194,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       return (T) getVariable(binding.variableId);
     }
     if (binding.expression!=null) {
-      ExpressionService expressionService = getServiceRegistry().getService(ExpressionService.class);
+      ExpressionService expressionService = getConfiguration().get(ExpressionService.class);
       return (T) expressionService.execute(binding.expression, this);
     }
     return null;
@@ -357,10 +357,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
     return null;
-  }
-
-  public ServiceRegistry getServiceRegistry() {
-    return workflowEngine.getServiceRegistry();
   }
 
   // updates ////////////////////////////////////////////////////////////

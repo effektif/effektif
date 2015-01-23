@@ -22,10 +22,10 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.WorkflowInstanceEventListener;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -71,7 +71,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public void execute() {
-    for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
+    for (WorkflowInstanceEventListener listener : workflow.listeners) {
       listener.started(this);
     }
     activity.activityType.execute(this);
@@ -109,7 +109,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
         throw new RuntimeException("Can't end this activity instance. There are open activity instances: " +this);
       }
       setEnd(Time.now());
-      for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
+      for (WorkflowInstanceEventListener listener : workflow.listeners) {
         listener.ended(this);
       }
       if (notifyParent) {
@@ -159,7 +159,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
         log.debug("Taking transition to "+to);
       toActivityInstance = parent.createActivityInstance(to);
     }
-    for (WorkflowInstanceEventListener listener : workflowEngine.listeners) {
+    for (WorkflowInstanceEventListener listener : workflow.listeners) {
       listener.transition(this, transition, toActivityInstance);
     }
   }
@@ -245,11 +245,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     return (ActivityInstanceUpdates) updates;
   }
 
-  @Override
-  public ServiceRegistry getServiceRegistry() {
-    return workflowEngine.getServiceRegistry();
-  }
-  
   public void trackUpdates(boolean isNew) {
     if (updates==null) {
       updates = new ActivityInstanceUpdates(isNew);

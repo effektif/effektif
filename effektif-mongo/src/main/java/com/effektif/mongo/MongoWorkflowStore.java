@@ -28,9 +28,9 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.Retry;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowStore;
+import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.mongodb.BasicDBObject;
@@ -41,7 +41,7 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 
 
-public class MongoWorkflowStore extends MongoCollection implements WorkflowStore, Initializable<MongoWorkflowEngineConfiguration> {
+public class MongoWorkflowStore extends MongoCollection implements WorkflowStore, Initializable<MongoConfiguration> {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
@@ -73,13 +73,13 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, MongoWorkflowEngineConfiguration configuration) {
-    DB db = serviceRegistry.getService(DB.class);
+  public void initialize(Brewery brewery, MongoConfiguration configuration) {
+    DB db = brewery.get(DB.class);
     this.dbCollection = db.getCollection(configuration.getWorkflowsCollectionName());
     this.isPretty = configuration.isPretty;
-    this.jsonService = serviceRegistry.getService(JsonService.class);
+    this.jsonService = brewery.get(JsonService.class);
     this.writeConcernInsertWorkflow = configuration.getWriteConcernInsertWorkflow(this.dbCollection);
-    this.workflowEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
+    this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
     this.workflowVersions = new MongoCollection();
     this.workflowVersions.dbCollection = db.getCollection(configuration.getWorkflowsCollectionName());
     this.workflowVersions.isPretty =configuration.isPretty; 

@@ -22,7 +22,7 @@ import java.util.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
@@ -32,10 +32,7 @@ import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.ActivityTypeService;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.type.DataType;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
@@ -52,7 +49,7 @@ public class WorkflowParser {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowParser.class);
   
-  public WorkflowEngineImpl workflowEngine;
+  public Configuration configuration;
   public WorkflowImpl workflow;
   public LinkedList<String> path;
   public ParseIssues issues;
@@ -79,8 +76,8 @@ public class WorkflowParser {
    * adds any parse issues to workflowApi.
    * Use one parser for each parse.
    * By returning the parser itself you can access the  */
-  public static WorkflowParser parse(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
-    WorkflowParser parse = new WorkflowParser(workflowEngine, workflowApi);
+  public static WorkflowParser parse(Configuration configuration, Workflow workflowApi) {
+    WorkflowParser parse = new WorkflowParser(configuration, workflowApi);
     parse.pushContext(workflowApi);
     parse.workflow = new WorkflowImpl();
     parse.workflow.parse(workflowApi, parse);
@@ -91,12 +88,12 @@ public class WorkflowParser {
     return parse;
   }
 
-  public WorkflowParser(WorkflowEngineImpl workflowEngine) {
-    this.workflowEngine = workflowEngine;
+  public WorkflowParser(Configuration configuration) {
+    this.configuration = configuration;
   }
   
-  public WorkflowParser(WorkflowEngineImpl workflowEngine, Workflow workflowApi) {
-    this.workflowEngine = workflowEngine;
+  public WorkflowParser(Configuration configuration, Workflow workflowApi) {
+    this.configuration = configuration;
     this.path = new LinkedList<>();
     this.contextStack = new Stack<>();
     this.issues = new ParseIssues();
@@ -187,7 +184,7 @@ public class WorkflowParser {
       values++;
     }
     if (binding.getExpression()!=null) {
-      ExpressionService expressionService = workflowEngine.getServiceRegistry().getService(ExpressionService.class);
+      ExpressionService expressionService = configuration.get(ExpressionService.class);
       try {
         bindingImpl.expression = expressionService.compile(binding.getExpression());
       } catch (Exception e) {
@@ -218,10 +215,6 @@ public class WorkflowParser {
     return bindingImpls;
   }
   
-
-  protected JsonService getJsonService() {
-    return workflowEngine.getServiceRegistry().getService(JsonService.class);
-  }
 
   public void addError(String message, Object... messageArgs) {
     ValidationContext currentContext = contextStack.peek();
@@ -255,11 +248,14 @@ public class WorkflowParser {
     return workflow;
   }
 
-  public ServiceRegistry getServiceRegistry() {
-    return workflowEngine.getServiceRegistry();
+  public <T> T getConfiguration(Class<T> type) {
+    return configuration.get(type);
   }
 
   public List<ActivityImpl> getStartActivities(ScopeImpl scope) {
+    if (scope.activities==null) {
+      return null;
+    }
     List<ActivityImpl> startActivities = new ArrayList<>(scope.activities.values());
     if (scope.transitions!=null) {
       for (TransitionImpl transition: scope.transitions) {

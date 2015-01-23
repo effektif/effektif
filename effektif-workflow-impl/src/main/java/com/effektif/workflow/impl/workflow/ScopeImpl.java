@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 
 
@@ -35,7 +35,7 @@ public abstract class ScopeImpl {
 
   public String id;
   public ScopeImpl parent;
-  public WorkflowEngineImpl workflowEngine;
+  public Configuration configuration;
   public WorkflowImpl workflow;
   public Map<String, ActivityImpl> activities;
   public Map<String, VariableImpl> variables;
@@ -44,7 +44,7 @@ public abstract class ScopeImpl {
   
   public void parse(Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
     this.id = scopeApi.getId();
-    this.workflowEngine = parser.workflowEngine;
+    this.configuration = parser.configuration;
     if (parent!=null) {
       this.parent = parent;
       this.workflow = parent.workflow;

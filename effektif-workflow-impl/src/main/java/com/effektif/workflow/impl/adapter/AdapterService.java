@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.adapter;
 
 public class AdapterService {
 
+
   public void registerAdapterConnection(AdapterConnection adapterConnection) {
   }
 

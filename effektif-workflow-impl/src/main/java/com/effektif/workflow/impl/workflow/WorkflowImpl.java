@@ -18,7 +18,9 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.WorkflowInstanceEventListener;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 
 
 public class WorkflowImpl extends ScopeImpl {
@@ -29,6 +31,7 @@ public class WorkflowImpl extends ScopeImpl {
   public LocalDateTime deployedTime;
   public String deployedBy;
   public Long version;
+  public List<WorkflowInstanceEventListener> listeners;
 
   public void parse(Workflow apiWorkflow, WorkflowParser parse) {
     this.workflow = this;
@@ -39,10 +42,10 @@ public class WorkflowImpl extends ScopeImpl {
     this.deployedTime = apiWorkflow.getDeployedTime();
     this.deployedBy = apiWorkflow.getDeployedBy();
     this.version = apiWorkflow.getVersion();
+    this.listeners = parse.getConfiguration(WorkflowEngineConfiguration.class).getListeners();
   }
 
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
   }
-  
 }

@@ -17,8 +17,8 @@ import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.type.DataType;
-import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
 
 
 public class VariableImpl {
@@ -37,7 +37,7 @@ public class VariableImpl {
       parser.addError("Variable has no id");
     }
     this.parent = parent;
-    DataTypeService dataTypeService = parser.getServiceRegistry().getService(DataTypeService.class);
+    DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
     Type typeApi = variableApi.getType();
     if (typeApi!=null) {
       this.type = dataTypeService.createDataType(typeApi);

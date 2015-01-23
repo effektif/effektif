@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflowinstance;
 
-import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
@@ -26,7 +26,7 @@ public class BaseInstanceImpl {
   public ScopeInstanceImpl parent;
   public WorkflowInstanceImpl workflowInstance;
   public WorkflowImpl workflow;
-  public WorkflowEngineImpl workflowEngine;
+  public Configuration configuration;
 
   public BaseInstanceImpl() {
   }
@@ -36,6 +36,26 @@ public class BaseInstanceImpl {
     this.parent = parent;
     this.workflowInstance = parent.workflowInstance;
     this.workflow = parent.workflowInstance.workflow;
-    this.workflowEngine = parent.workflowEngine;
+    this.configuration = parent.configuration;
+  }
+
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+  
+  public String getId() {
+    return id;
+  }
+  
+  public ScopeInstanceImpl getParent() {
+    return parent;
+  }
+  
+  public WorkflowInstanceImpl getWorkflowInstance() {
+    return workflowInstance;
+  }
+  
+  public WorkflowImpl getWorkflow() {
+    return workflow;
   }
 }

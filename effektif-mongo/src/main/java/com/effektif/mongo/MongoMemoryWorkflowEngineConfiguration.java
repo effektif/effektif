@@ -17,10 +17,9 @@ import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.effektif.workflow.impl.memory.MemoryWorkflowStore;
 
 
-public class MongoMemoryWorkflowEngineConfiguration extends MongoWorkflowEngineConfiguration {
+public class MongoMemoryWorkflowEngineConfiguration extends MongoConfiguration {
 
   public MongoMemoryWorkflowEngineConfiguration() {
-    configureDefaults();
     registerService(new MemoryWorkflowStore());
     registerService(new MongoWorkflowInstanceStore());
     registerService(new MemoryTaskService());

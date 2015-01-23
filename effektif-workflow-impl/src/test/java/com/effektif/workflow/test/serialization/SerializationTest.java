@@ -15,12 +15,16 @@ package com.effektif.workflow.test.serialization;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.Test;
+import org.junit.internal.builders.JUnit4Builder;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
 import org.junit.runners.Suite;
+import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.test.WorkflowTest;
 import com.effektif.workflow.test.api.CallTest;
 import com.effektif.workflow.test.api.EmbeddedSuprocessTest;
@@ -31,24 +35,13 @@ import com.effektif.workflow.test.api.ParallelGatewayTest;
 import com.effektif.workflow.test.api.ScriptTest;
 import com.effektif.workflow.test.api.SequentialExecutionTest;
 import com.effektif.workflow.test.api.TaskTest;
+import com.effektif.workflow.test.api.VariableTypesTest;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({    
-  CallTest.class,
-  EmbeddedSuprocessTest.class,
-  ExclusiveGatewayTest.class,
-  MultiInstanceTest.class,
-  MultipleStartActivitiesTest.class,
-  ParallelGatewayTest.class,
-  ScriptTest.class,
-  SequentialExecutionTest.class,
-  TaskTest.class
-})
 public class SerializationTest {
   
   private static final Logger log = LoggerFactory.getLogger(SerializationTest.class);
   
-  static WorkflowEngineConfiguration originalConfiguration;
+  static Configuration originalConfiguration;
   
   @BeforeClass
   public static void switchToSerializingWorkflowEngine() {
@@ -56,6 +49,24 @@ public class SerializationTest {
     originalConfiguration = WorkflowTest.cachedConfiguration;
     
     WorkflowTest.cachedConfiguration = new SerializingWorkflowEngineConfiguration();
+  }
+  
+  @Test
+  public void testSerialization() throws InitializationError {
+    Suite suite = new Suite(new JUnit4Builder(), new Class[]{
+      CallTest.class,
+      EmbeddedSuprocessTest.class,
+      ExclusiveGatewayTest.class,
+      MultiInstanceTest.class,
+      MultipleStartActivitiesTest.class,
+      ParallelGatewayTest.class,
+      ScriptTest.class,
+      SequentialExecutionTest.class,
+      TaskTest.class,
+      VariableTypesTest.class
+    });
+    JUnitCore c = new JUnitCore();
+    c.run(Request.runner(suite));
   }
 
   @AfterClass

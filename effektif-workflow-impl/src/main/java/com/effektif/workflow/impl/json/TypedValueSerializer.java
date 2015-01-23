@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonMappingException;

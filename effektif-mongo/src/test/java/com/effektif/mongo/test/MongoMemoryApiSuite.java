@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.mongo.MongoMemoryWorkflowEngineConfiguration;
+import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 import com.effektif.workflow.test.api.CallTest;
 import com.effektif.workflow.test.api.EmbeddedSuprocessTest;
@@ -53,7 +53,7 @@ public class MongoMemoryApiSuite {
   
   private static final Logger log = LoggerFactory.getLogger(MongoMemoryApiSuite.class);
   
-  static WorkflowEngineConfiguration originalConfiguration;
+  static DefaultConfiguration originalConfiguration;
   static WorkflowEngine originalWorkflowEngine;
   static TaskService originalTaskService;
 
@@ -62,11 +62,11 @@ public class MongoMemoryApiSuite {
     log.debug("Switching to mongo workflow engine");
     originalConfiguration = WorkflowTest.cachedConfiguration;
     
-    WorkflowEngineConfiguration configuration = createMongoMemoryWorkflowEngineConfiguration();
+    DefaultConfiguration configuration = createMongoMemoryWorkflowEngineConfiguration();
     WorkflowTest.cachedConfiguration = configuration;
   }
 
-  public static WorkflowEngineConfiguration createMongoMemoryWorkflowEngineConfiguration() {
+  public static DefaultConfiguration createMongoMemoryWorkflowEngineConfiguration() {
     return new MongoMemoryWorkflowEngineConfiguration()
       .prettyPrint()
       .synchronous()

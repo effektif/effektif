@@ -31,9 +31,10 @@ import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceEventListener;
+import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-import com.effektif.workflow.test.TestWorkflowEngineConfiguration;
+import com.effektif.workflow.test.TestConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 /* Copyright (c) 2014, Effektif GmbH.
  * 
@@ -81,13 +82,14 @@ public class EventListenerTest extends WorkflowTest {
   public void initializeWorkflowEngine() {
     super.initializeWorkflowEngine();
     listener = new LoggingListener();
-    workflowEngineImpl = (WorkflowEngineImpl) workflowEngine;
-    workflowEngineImpl.addListener(listener);
+    WorkflowEngineConfiguration workflowEngineConfiguration = configuration.get(WorkflowEngineConfiguration.class);
+    workflowEngineConfiguration.addListener(listener);
   }
   
   @After
   public void removeListener() {
-    workflowEngineImpl.removeListener(listener);
+    WorkflowEngineConfiguration workflowEngineConfiguration = configuration.get(WorkflowEngineConfiguration.class);
+    workflowEngineConfiguration.removeListener(listener);
   }
 
   @Test

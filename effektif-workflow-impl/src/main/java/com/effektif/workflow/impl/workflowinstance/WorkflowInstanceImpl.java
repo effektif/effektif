@@ -27,14 +27,15 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.activities.CallImpl;
-import com.effektif.workflow.impl.plugin.ActivityType;
+import com.effektif.workflow.impl.activity.ActivityType;
+import com.effektif.workflow.impl.activity.types.CallImpl;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -57,9 +58,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstanceImpl() {
   }
   
-  public WorkflowInstanceImpl(WorkflowEngineImpl workflowEngine, WorkflowImpl workflow, String workflowInstanceId) {
+  public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, String workflowInstanceId) {
     this.id = workflowInstanceId;
-    this.workflowEngine = workflowEngine;
+    this.configuration = configuration;
     this.organizationId = workflow.organizationId;
     this.workflow = workflow;
     this.scope = workflow;
@@ -92,7 +93,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
   
   public void executeWork() {
-    WorkflowInstanceStore workflowInstanceStore = workflowEngine.getWorkflowInstanceStore();
+    WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     boolean isFirst = true;
     while (hasWork()) {
       ActivityInstanceImpl activityInstance = getNextWork();
@@ -146,7 +147,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       if (log.isDebugEnabled())
         log.debug("Going asynchronous "+this);
       workflowInstanceStore.flush(this);
-      ExecutorService executor = workflowEngine.getExecutorService();
+      ExecutorService executor = configuration.get(ExecutorService.class);
       executor.execute(new Runnable(){
         public void run() {
           try {
@@ -169,6 +170,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public void workflowInstanceEnded() {
     if (callerWorkflowInstanceId!=null) {
+      WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
       WorkflowInstanceImpl callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
               workflowInstance.callerWorkflowInstanceId,
               workflowInstance.callerActivityInstanceId);

@@ -20,8 +20,8 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.plugin.ActivityType;
-import com.effektif.workflow.impl.plugin.ActivityTypeService;
+import com.effektif.workflow.impl.activity.ActivityType;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
 
 
 public class ActivityImpl extends ScopeImpl {
@@ -44,7 +44,7 @@ public class ActivityImpl extends ScopeImpl {
       workflowParser.addError("Activity has no id");
     }
 
-    ActivityTypeService activityTypeService = workflowParser.workflowEngine.getServiceRegistry().getService(ActivityTypeService.class);
+    ActivityTypeService activityTypeService = workflowParser.getConfiguration(ActivityTypeService.class);
     this.activityType = activityTypeService.instantiateActivityType(activityApi);
     // some activity types need to validate incoming and outgoing transitions, 
     // that's why they are NOT parsed here, but after the transitions.

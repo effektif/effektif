@@ -20,28 +20,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.task.Task;
-import com.effektif.workflow.impl.task.TaskQuery;
-import com.effektif.workflow.impl.task.TaskService;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */
@@ -49,20 +47,19 @@ public class WorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
-  public static WorkflowEngineConfiguration cachedConfiguration = null;
+  public static Configuration cachedConfiguration = null;
   
-  protected WorkflowEngineConfiguration configuration = null;
+  protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   protected TaskService taskService = null;
   
   @Before
   public void initializeWorkflowEngine() {
     if (workflowEngine==null || taskService==null) {
-      if (configuration==null) {
-        cachedConfiguration = new TestWorkflowEngineConfiguration();
+      if (cachedConfiguration==null) {
+        cachedConfiguration = new TestConfiguration();
       }
       configuration = cachedConfiguration;
-      configuration.initialize();
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
     }
@@ -135,8 +132,8 @@ public class WorkflowTest {
   protected void logWorkflowEngineContents() {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
-    JsonService jsonService = configuration.getServiceRegistry().getService(JsonService.class);
-    TaskService taskService = configuration.getServiceRegistry().getService(TaskService.class);
+    JsonService jsonService = configuration.get(JsonService.class);
+    TaskService taskService = configuration.get(TaskService.class);
 
     StringBuilder cleanLog = new StringBuilder();
     cleanLog.append("Workflow engine contents\n");

@@ -22,11 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQueryImpl;
 import com.effektif.workflow.impl.job.JobServiceImpl;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Time;
 
 
@@ -41,8 +40,8 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
   }
   
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
-    super.initialize(serviceRegistry, configuration);
+  public void initialize(Brewery brewery) {
+    super.initialize(brewery);
     this.workflowInstanceIds = new HashSet<>();
     this.jobs = new LinkedList<>();
     this.jobsDone = new ArrayList<>();

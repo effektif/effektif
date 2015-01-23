@@ -19,24 +19,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
 /** caches executable workflows */
-public class SimpleWorkflowCache implements WorkflowCache, Initializable<WorkflowEngineConfiguration> {
+public class SimpleWorkflowCache implements WorkflowCache {
   
-  protected Map<Object, WorkflowImpl> workflows;
-
-  public SimpleWorkflowCache() {
-  }
-
-  @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
-    workflows = new ConcurrentHashMap<Object, WorkflowImpl>();
-  }
+  protected Map<Object, WorkflowImpl> workflows = new ConcurrentHashMap<Object, WorkflowImpl>();
 
   @Override
   public WorkflowImpl get(String workflowId) {
@@ -58,5 +48,13 @@ public class SimpleWorkflowCache implements WorkflowCache, Initializable<Workflo
   @Override
   public void put(WorkflowImpl workflow) {
     workflows.put(getKey(workflow.id, workflow.organizationId), workflow);
+  }
+  
+  public Map<Object, WorkflowImpl> getWorkflows() {
+    return workflows;
+  }
+  
+  public void setWorkflows(Map<Object, WorkflowImpl> workflows) {
+    this.workflows = workflows;
   }
 }

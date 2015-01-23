@@ -21,10 +21,10 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.mongo.MongoWorkflowEngineConfiguration;
+import com.effektif.mongo.MongoConfiguration;
+import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 import com.effektif.workflow.test.api.CallTest;
 import com.effektif.workflow.test.api.EmbeddedSuprocessTest;
@@ -53,7 +53,7 @@ public class MongoApiSuite {
   
   private static final Logger log = LoggerFactory.getLogger(MongoApiSuite.class);
   
-  static WorkflowEngineConfiguration originalConfiguration;
+  static DefaultConfiguration originalConfiguration;
   static WorkflowEngine originalWorkflowEngine;
   static TaskService originalTaskService;
 
@@ -62,12 +62,12 @@ public class MongoApiSuite {
     log.debug("Switching to mongo workflow engine");
     originalConfiguration = WorkflowTest.cachedConfiguration;
     
-    WorkflowEngineConfiguration configuration = createMongoWorkflowEngineConfiguration();
+    DefaultConfiguration configuration = createMongoWorkflowEngineConfiguration();
     WorkflowTest.cachedConfiguration = configuration;
   }
 
-  public static WorkflowEngineConfiguration createMongoWorkflowEngineConfiguration() {
-    return new MongoWorkflowEngineConfiguration()
+  public static DefaultConfiguration createMongoWorkflowEngineConfiguration() {
+    return new MongoConfiguration()
       .prettyPrint()
       .synchronous()
       .initialize();

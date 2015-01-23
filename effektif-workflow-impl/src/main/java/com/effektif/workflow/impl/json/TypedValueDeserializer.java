@@ -16,7 +16,7 @@ package com.effektif.workflow.impl.json;
 import java.io.IOException;
 
 import com.effektif.workflow.api.command.TypedValue;
-import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;

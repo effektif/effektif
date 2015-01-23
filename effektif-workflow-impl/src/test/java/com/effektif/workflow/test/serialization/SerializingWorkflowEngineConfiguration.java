@@ -13,38 +13,37 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.task.TaskService;
-import com.effektif.workflow.test.TestWorkflowEngineConfiguration;
+import com.effektif.workflow.test.TestConfiguration;
 
 
-public class SerializingWorkflowEngineConfiguration extends WorkflowEngineConfiguration {
+public class SerializingWorkflowEngineConfiguration implements Configuration {
 
   WorkflowEngine workflowEngine;
   TaskService taskService;
   
   public SerializingWorkflowEngineConfiguration() {
-    TestWorkflowEngineConfiguration configuration = new TestWorkflowEngineConfiguration()
-      .initialize();
+    TestConfiguration configuration = new TestConfiguration();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine(); 
     TaskService taskService = configuration.getTaskService(); 
-    JsonService jsonService = configuration.getServiceRegistry().getService(JsonService.class);
+    JsonService jsonService = configuration.getRegistry().get(JsonService.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
     this.taskService = new SerializingTaskServiceImpl(taskService, jsonService);
   }
   
-  @Override
-  public SerializingWorkflowEngineConfiguration initialize() {
-    return this;
-  }
-
   public WorkflowEngine getWorkflowEngine() {
     return workflowEngine;
   }
   
   public TaskService getTaskService() {
     return taskService;
+  }
+
+  @Override
+  public <T> T get(Class<T> type) {
+    throw new RuntimeException("damn.. i didn't expect you needed "+type);
   }
 }

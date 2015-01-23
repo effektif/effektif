@@ -16,10 +16,10 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.TaskService;
+import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.task.Task;
-import com.effektif.workflow.impl.task.TaskQuery;
-import com.effektif.workflow.impl.task.TaskService;
 
 
 public class SerializingTaskServiceImpl extends AbstractSerializingService implements TaskService {
@@ -33,27 +33,30 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
 
   @Override
   public void saveTask(Task task) {
-    task = wireize(task, Task.class);
+    log.debug("saveTask");
+    task = wireize("  -task->", task, Task.class);
     taskService.saveTask(task);
   }
 
   @Override
   public List<Task> findTasks(TaskQuery query) {
-    query = wireize(query, TaskQuery.class);
+    log.debug("findTasks");
+    query = wireize("  -query->", query, TaskQuery.class);
     List<Task> tasks = taskService.findTasks(query);
     if (tasks==null) {
       return null;
     }
     List<Task> wireizedTasks = new ArrayList<>(tasks.size());
     for (Task task: tasks) {
-      wireizedTasks.add(wireize(task, Task.class));
+      wireizedTasks.add(wireize("  <-task-", task, Task.class));
     }
     return tasks;
   }
 
   @Override
   public void deleteTasks(TaskQuery query) {
-    query = wireize(query, TaskQuery.class);
+    log.debug("deleteTasks");
+    query = wireize("  -query->", query, TaskQuery.class);
     taskService.deleteTasks(query);
   }
 }

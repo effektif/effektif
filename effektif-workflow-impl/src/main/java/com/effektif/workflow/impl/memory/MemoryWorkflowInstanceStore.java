@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.memory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,33 +25,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
-public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initializable<WorkflowEngineConfiguration> {
+public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initializable {
   
   private static final Logger log = WorkflowEngineImpl.log;
 
   protected String workflowEngineId;
   protected Map<String, WorkflowInstanceImpl> workflowInstances;
-  protected Set<String> lockedWorkflowInstances;
+  protected Set<String> lockedWorkflowInstanceIds;
   
   public MemoryWorkflowInstanceStore() {
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
+  public void initialize(Brewery brewery) {
     this.workflowInstances = new ConcurrentHashMap<>();
-    this.lockedWorkflowInstances = Collections.synchronizedSet(new HashSet<String>());
-    this.workflowEngineId = serviceRegistry.getService(WorkflowEngineImpl.class).getId();
+    this.lockedWorkflowInstanceIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    this.workflowEngineId = brewery.get(WorkflowEngineConfiguration.class).getId();
   }
   
   @Override
@@ -71,7 +70,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
 
   @Override
   public void flushAndUnlock(WorkflowInstanceImpl processInstance) {
-    lockedWorkflowInstances.remove(processInstance.id);
+    lockedWorkflowInstanceIds.remove(processInstance.id);
     processInstance.removeLock();
   }
   
@@ -116,10 +115,10 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Initi
     }
     WorkflowInstanceImpl workflowInstance = workflowInstances.get(0);
     workflowInstanceId = workflowInstance.id;
-    if (lockedWorkflowInstances.contains(workflowInstanceId)) {
+    if (lockedWorkflowInstanceIds.contains(workflowInstanceId)) {
       throw new RuntimeException("Process instance "+workflowInstanceId+" is already locked");
     }
-    lockedWorkflowInstances.add(workflowInstanceId);
+    lockedWorkflowInstanceIds.add(workflowInstanceId);
     LockImpl lock = new LockImpl();
     lock.setTime(Time.now());
     lock.setOwner(workflowEngineId);

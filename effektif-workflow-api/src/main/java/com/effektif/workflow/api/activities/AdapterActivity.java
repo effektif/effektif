@@ -13,36 +13,40 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
 
 
 public class AdapterActivity extends Activity {
 
-  protected String adapterType;
-  protected Map<String,Binding> configuration;
+  protected String adapterConnectionId;
+  protected Map<String,Object> configuration;
 
-  public String getAdapterType() {
-    return this.adapterType;
+  public String getAdapterConnectionId() {
+    return this.adapterConnectionId;
   }
-  public void setAdapterType(String adapterType) {
-    this.adapterType = adapterType;
+  public void setAdapterConnectionId(String adapterConnectionId) {
+    this.adapterConnectionId = adapterConnectionId;
   }
-  public AdapterActivity adapterType(String adapterType) {
-    this.adapterType = adapterType;
+  public AdapterActivity adapterConnectionId(String adapterConnectionId) {
+    this.adapterConnectionId = adapterConnectionId;
     return this;
   }
   
-  public Map<String,Binding> getConfiguration() {
+  public Map<String,Object> getConfiguration() {
     return this.configuration;
   }
-  public void setConfiguration(Map<String,Binding> configuration) {
+  public void setConfiguration(Map<String,Object> configuration) {
     this.configuration = configuration;
   }
-  public AdapterActivity configuration(Map<String,Binding> configuration) {
-    this.configuration = configuration;
+
+  public AdapterActivity configurationValue(String key, Object value) {
+    if (configuration==null) {
+      configuration = new HashMap<>();
+    }
+    configuration.put(key, value);
     return this;
   }
 }

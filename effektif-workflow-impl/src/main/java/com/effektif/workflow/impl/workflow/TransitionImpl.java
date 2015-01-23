@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.Map;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -26,7 +27,7 @@ public class TransitionImpl {
 
   public String id;
   public ScopeImpl parent;
-  public WorkflowEngineImpl workflowEngine;
+  public Configuration configuration;
   public WorkflowImpl workflow;
 
   public ActivityImpl from;
@@ -35,7 +36,7 @@ public class TransitionImpl {
 
   public void parse(Transition transitionApi, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
     this.id = transitionApi.getId();
-    this.workflowEngine = parser.workflowEngine;
+    this.configuration = parser.configuration;
     if (parent!=null) {
       this.parent = parent;
       this.workflow = parent.workflow;
@@ -83,9 +84,8 @@ public class TransitionImpl {
     }
     if (transitionApi.getCondition()!=null) {
       try {
-          this.conditionScript = workflowEngine
-            .getServiceRegistry()
-            .getService(ScriptService.class)
+          this.conditionScript = configuration
+            .get(ScriptService.class)
             .compile(transitionApi.getCondition());
       } catch (Exception e) {
         parser.addError("Transition (%s)--%s>(%s) has an invalid condition expression '%s' : %s", 

@@ -39,4 +39,3 @@ public class HelloWorldAdapter implements ActivityAdapter {
     return null;
   }
 }
-

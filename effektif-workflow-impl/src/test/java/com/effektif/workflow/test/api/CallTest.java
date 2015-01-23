@@ -22,12 +22,12 @@ import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.task.Task;
-import com.effektif.workflow.impl.task.TaskQuery;
 import com.effektif.workflow.test.WorkflowTest;
 
 

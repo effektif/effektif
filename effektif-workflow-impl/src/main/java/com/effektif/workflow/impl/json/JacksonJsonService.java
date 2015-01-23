@@ -22,10 +22,9 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.command.TypedValue;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
-import com.effektif.workflow.impl.type.DataTypeService;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -44,7 +43,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
 
-public class JacksonJsonService implements JsonService, Initializable<WorkflowEngineConfiguration> {
+public class JacksonJsonService implements JsonService, Initializable {
   
   protected JsonFactory jsonFactory;
   protected ObjectMapper objectMapper;
@@ -53,9 +52,9 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
 //  protected WorkflowEngineImpl workflowEngine; 
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
-    this.objectMapper = serviceRegistry.getService(ObjectMapper.class);
-    this.jsonFactory = serviceRegistry.getService(JsonFactory.class);
+  public void initialize(Brewery brewery) {
+    this.objectMapper = brewery.get(ObjectMapper.class);
+    this.jsonFactory = brewery.get(JsonFactory.class);
 //    this.activityTypeService = serviceRegistry.getService(ActivityTypeService.class);
 //    this.workflowEngine = serviceRegistry.getService(WorkflowEngineImpl.class);
     
@@ -65,7 +64,7 @@ public class JacksonJsonService implements JsonService, Initializable<WorkflowEn
       .setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
       .setSerializationInclusion(Include.NON_EMPTY);
 
-    final DataTypeService dataTypeService = serviceRegistry.getService(DataTypeService.class);
+    final DataTypeService dataTypeService = brewery.get(DataTypeService.class);
 
     SimpleModule module = new SimpleModule();
     module.addSerializer(new LocalDateTimeSerializer());

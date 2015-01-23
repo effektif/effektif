@@ -23,14 +23,13 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.plugin.Initializable;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
-public class MemoryWorkflowStore implements WorkflowStore, Initializable<WorkflowEngineConfiguration> {
+public class MemoryWorkflowStore implements WorkflowStore, Initializable {
 
   protected Map<String, Long> nextVersionByName;
   protected Map<String, Workflow> workflows;
@@ -39,7 +38,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable<Workflo
   }
 
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
+  public void initialize(Brewery brewery) {
     this.workflows = new ConcurrentHashMap<String, Workflow>();
     this.nextVersionByName = new ConcurrentHashMap<String, Long>();
   }

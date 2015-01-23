@@ -20,12 +20,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobExecution;
 import com.effektif.workflow.impl.job.JobQueryImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.mongodb.BasicDBObject;
@@ -37,7 +37,7 @@ import com.mongodb.WriteConcern;
 
 public class MongoJobs extends MongoCollection {
 
-  protected MongoWorkflowEngineConfiguration.JobFields fields;
+  protected MongoConfiguration.JobFields fields;
   protected WriteConcern writeConcernJobs;
   protected String lockOwner;
   protected JsonService jsonService;
@@ -45,7 +45,7 @@ public class MongoJobs extends MongoCollection {
   public MongoJobs() {
   }
 
-  public MongoJobs(ServiceRegistry serviceRegistry) {
+  public MongoJobs(Brewery brewery) {
   }
 
   public void saveJob(Job job) {

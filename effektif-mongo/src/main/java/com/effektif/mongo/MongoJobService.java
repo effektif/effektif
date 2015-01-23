@@ -16,13 +16,12 @@ package com.effektif.mongo;
 import java.util.Iterator;
 import java.util.List;
 
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQueryImpl;
 import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.plugin.ServiceRegistry;
 
 
 
@@ -34,9 +33,9 @@ public class MongoJobService extends JobServiceImpl implements JobService {
   }
   
   @Override
-  public void initialize(ServiceRegistry serviceRegistry, WorkflowEngineConfiguration configuration) {
-    super.initialize(serviceRegistry, configuration);
-    this.jobs = serviceRegistry.getService(MongoJobs.class);
+  public void initialize(Brewery brewery) {
+    super.initialize(brewery);
+    this.jobs = brewery.get(MongoJobs.class);
   }
 
   @Override

@@ -13,22 +13,22 @@
  * limitations under the License. */
 package com.effektif.workflow.test.examples;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import org.junit.Test;
 
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.memory.MemoryWorkflowEngineConfiguration;
-import com.effektif.workflow.impl.task.Task;
-import com.effektif.workflow.impl.task.TaskQuery;
-import com.effektif.workflow.impl.task.TaskService;
+import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 
 public class ApiExamplesTest {
@@ -36,8 +36,7 @@ public class ApiExamplesTest {
   @Test
   public void testApiExample() {
     // Create the default (in-memory) workflow engine
-    WorkflowEngineConfiguration configuration = new MemoryWorkflowEngineConfiguration()
-      .initialize();
+    Configuration configuration = new MemoryConfiguration();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     TaskService taskService = configuration.getTaskService();
     
