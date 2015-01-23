@@ -13,15 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.command.TypedValue;
 
 
 public class VariableInstance {
 
   protected String id;
   protected String variableId;
-  protected Object value;
-  protected Type type;
+  protected TypedValue typedValue;
 
   public String getId() {
     return this.id;
@@ -37,17 +36,14 @@ public class VariableInstance {
     this.variableId = variableId;
   }
 
+  public TypedValue getTypedValue() {
+    return this.typedValue;
+  }
+  public void setTypedValue(TypedValue typedValue) {
+    this.typedValue = typedValue;
+  }
+  
   public Object getValue() {
-    return this.value;
-  }
-  public void setValue(Object value) {
-    this.value = value;
-  }
-
-  public Type getType() {
-    return this.type;
-  }
-  public void setType(Type type) {
-    this.type = type;
+    return typedValue!=null ? typedValue.getValue() : null;
   }
 }

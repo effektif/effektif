@@ -168,7 +168,7 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<?> binding, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {
     String activityId = activityApi.getId();
     if (binding==null) {
       if (required) {

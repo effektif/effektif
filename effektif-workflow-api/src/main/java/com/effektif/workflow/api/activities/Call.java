@@ -16,7 +16,6 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.types.WorkflowReferenceType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -29,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends Activity {
 
-  protected Binding<WorkflowReferenceType> subWorkflowBinding; 
+  protected Binding<String> subWorkflowIdBinding; 
+  protected Binding<String> subWorkflowNameBinding; 
   protected List<CallMapping> inputMappings; 
   protected List<CallMapping> outputMappings; 
   
@@ -41,21 +41,22 @@ public class Call extends Activity {
   }
 
   public Call subWorkflowId(String subWorkflowId) {
-    this.subWorkflowBinding = new Binding().value(subWorkflowId);
+    this.subWorkflowIdBinding = new Binding().value(subWorkflowId);
     return this;
   }
 
-  public Call subWorkflowIdExpression(String subWorkflowIdExpression) {
-    this.subWorkflowBinding = new Binding().expression(subWorkflowIdExpression);
-    return this;
-  }
-
-  public Call subWorkflowIdVariableId(String subWorkflowIdVariableId) {
-    this.subWorkflowBinding = new Binding().variableId(subWorkflowIdVariableId);
+  public Call subWorkflowName(String subWorkflowName) {
+    this.subWorkflowNameBinding = new Binding().value(subWorkflowName);
     return this;
   }
   
-  // TODO sub workflow name property methods
+  public Binding<String> getSubWorkflowIdBinding() {
+    return subWorkflowIdBinding;
+  }
+  
+  public Binding<String> getSubWorkflowNameBinding() {
+    return subWorkflowNameBinding;
+  }
 
   public Call inputMappingValue(Object value, String subWorkflowVariableId) {
     addInputMapping(new Binding().value(value), subWorkflowVariableId);
@@ -151,17 +152,6 @@ public class Call extends Activity {
     return this;
   }
 
-  
-  public Binding getSubWorkflowBinding() {
-    return subWorkflowBinding;
-  }
-
-  
-  public void setSubWorkflowBinding(Binding subWorkflowIdBinding) {
-    this.subWorkflowBinding = subWorkflowIdBinding;
-  }
-
-  
   public List<CallMapping> getInputMappings() {
     return inputMappings;
   }
@@ -180,4 +170,6 @@ public class Call extends Activity {
   public void setOutputMappings(List<CallMapping> outputMappings) {
     this.outputMappings = outputMappings;
   }
+  
+  
 }

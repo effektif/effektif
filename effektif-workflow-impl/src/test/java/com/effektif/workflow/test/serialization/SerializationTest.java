@@ -17,7 +17,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +32,8 @@ import com.effektif.workflow.test.api.ScriptTest;
 import com.effektif.workflow.test.api.SequentialExecutionTest;
 import com.effektif.workflow.test.api.TaskTest;
 
-
-@SuiteClasses({    
+@RunWith(Suite.class)
+@Suite.SuiteClasses({    
   CallTest.class,
   EmbeddedSuprocessTest.class,
   ExclusiveGatewayTest.class,
@@ -45,13 +44,12 @@ import com.effektif.workflow.test.api.TaskTest;
   SequentialExecutionTest.class,
   TaskTest.class
 })
-@RunWith(Suite.class)
-public class SerializationTestSuite {
+public class SerializationTest {
   
-  private static final Logger log = LoggerFactory.getLogger(SerializationTestSuite.class);
+  private static final Logger log = LoggerFactory.getLogger(SerializationTest.class);
   
   static WorkflowEngineConfiguration originalConfiguration;
-
+  
   @BeforeClass
   public static void switchToSerializingWorkflowEngine() {
     log.debug("Switching to serializing workflow engine");

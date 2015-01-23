@@ -234,7 +234,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public void setVariableValues(Map<String,TypedValue> variableValues) {
     if (variableValues!=null) {
       for (String variableId: variableValues.keySet()) {
-        Object value = variableValues.get(variableId);
+        TypedValue typedValue = variableValues.get(variableId);
+        Object value = typedValue!=null ? typedValue.getValue() : null;
         setVariableValue(variableId, value);
       }
     }

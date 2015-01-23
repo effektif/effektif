@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflowinstance;
 
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.type.DataType;
 import com.effektif.workflow.impl.workflow.VariableImpl;
@@ -35,13 +36,15 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
-    variableInstance.setValue(value);
-    if (variable.type!=null) {
-      variableInstance.setType(variable.type.toType());
-    } else {
-      variableInstance.setType(type.toType());
-    }
     variableInstance.setVariableId(variable.id);
+    TypedValue typedValue = new TypedValue()
+      .value(value);
+    if (variable.type!=null) {
+      typedValue.type(variable.type.toType());
+    } else {
+      typedValue.type(type.toType());
+    }
+    variableInstance.setTypedValue(typedValue);
     return variableInstance;
   }
 

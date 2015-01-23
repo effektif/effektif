@@ -13,26 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.effektif.workflow.impl.json.JsonService;
+import org.junit.Test;
 
 
-public class AbstractSerializingService {
-  
-  private static final Logger log = LoggerFactory.getLogger(SerializationTest.class);
+public class MyTestingTest {
 
-  protected JsonService jsonService;
-  
-  public AbstractSerializingService(JsonService jsonService) {
-    this.jsonService = jsonService;
-  }
-
-  protected <T> T wireize(Object o, Class<T> type) {
-    if (o==null) return null;
-    String jsonString = jsonService.objectToJsonStringPretty(o);
-    log.debug("wirized: "+jsonString);
-    return jsonService.jsonToObject(jsonString, type);
+  @Test
+  public void runThisTest() {
+    
   }
 }

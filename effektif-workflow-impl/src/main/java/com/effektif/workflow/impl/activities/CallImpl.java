@@ -25,6 +25,7 @@ import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.ObjectType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.VariableReferenceType;
 import com.effektif.workflow.api.types.WorkflowReferenceType;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -40,7 +41,8 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 public class CallImpl extends AbstractActivityType<Call> {
 
   // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
-  BindingImpl<WorkflowReference> subWorkflowBinding;
+  BindingImpl<String> subWorkflowIdBinding;
+  BindingImpl<String> subWorkflowNameBinding;
   List<CallMappingImpl> inputMappings;
   List<CallMappingImpl> outputMappings;
 
@@ -52,9 +54,12 @@ public class CallImpl extends AbstractActivityType<Call> {
   public ObjectType getDescriptor() {
     return new JavaBeanType(Call.class)
       .description("Invoke another workflow")
-      .field(new ObjectField("subWorkflowBinding")
-        .type(new BindingType(new WorkflowReferenceType()))
-        .label("Sub worfklow"))
+      .field(new ObjectField("subWorkflowIdBinding")
+        .type(new BindingType(new TextType()))
+        .label("Sub worfklow id"))
+      .field(new ObjectField("subWorkflowNameBinding")
+        .type(new BindingType(new TextType()))
+        .label("Sub worfklow name"))
       .field(new ObjectField("inputMappings")
         .label("Input mappings")
         .type(new ListType(new JavaBeanType(CallMapping.class)
@@ -77,7 +82,8 @@ public class CallImpl extends AbstractActivityType<Call> {
 
   @Override
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser workflowParser) {
-    subWorkflowBinding = workflowParser.parseBinding(call.getSubWorkflowBinding(), WorkflowReference.class, false, call, "subWorkflowIdBinding");
+    subWorkflowIdBinding = workflowParser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
+    subWorkflowNameBinding = workflowParser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
     inputMappings = parseMappings(call.getInputMappings(), call, "inputMappings", workflowParser);
     outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", workflowParser);
   }
@@ -103,28 +109,23 @@ public class CallImpl extends AbstractActivityType<Call> {
     ActivityInstanceImpl activityInstanceImpl = (ActivityInstanceImpl) activityInstance;
     WorkflowEngineImpl workflowEngine = activityInstanceImpl.workflowEngine;
 
-    String subWorkflowIdValue = null;
-    if (subWorkflowBinding!=null) {
-      WorkflowReference workflowReference = activityInstance.getValue(subWorkflowBinding);
-      if (workflowReference.getId()!=null) {
-        subWorkflowIdValue = workflowReference.getId(); 
-      } else if (workflowReference.getName()!=null) {
-        String subProcessNameValue = workflowReference.getName();
-        WorkflowStore workflowStore = workflowEngine.getWorkflowStore();
-        subWorkflowIdValue = workflowStore.findLatestWorkflowIdByName(subProcessNameValue);
-        if (subWorkflowIdValue==null) {
-          throw new RuntimeException("Couldn't find sub workflow by name: "+subProcessNameValue);
-        }
-      } else {
-        log.debug("WorkflowReference does not contain id nore name");
+    String subWorkflowId = null;
+    if (subWorkflowIdBinding!=null) {
+      subWorkflowId = activityInstance.getValue(subWorkflowIdBinding);
+    } else if (subWorkflowNameBinding!=null) {
+      String subProcessName = activityInstance.getValue(subWorkflowNameBinding);
+      WorkflowStore workflowStore = workflowEngine.getWorkflowStore();
+      subWorkflowId = workflowStore.findLatestWorkflowIdByName(subProcessName);
+      if (subWorkflowId==null) {
+        throw new RuntimeException("Couldn't find sub workflow by name: "+subProcessName);
       }
     } else {
       log.debug("No sub workflow binding was configured");
     }
     
-    if (subWorkflowIdValue!=null) {
+    if (subWorkflowId!=null) {
       Start start = new Start()
-        .workflowId(subWorkflowIdValue);
+        .workflowId(subWorkflowId);
       
       if (inputMappings!=null) {
         for (CallMappingImpl inputMapping: inputMappings) {

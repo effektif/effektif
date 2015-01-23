@@ -20,7 +20,7 @@ import com.effektif.workflow.api.types.TypeHelper;
 
 /** Describes how the value is obtained 
  * for an activity input parameter. */
-public class Binding<T extends Type> {
+public class Binding<T> {
 
   /** the fixed input value.  
    * This is mutually exclusive with variableId and expression */
@@ -39,12 +39,20 @@ public class Binding<T extends Type> {
   }
   
   public Binding value(Object value) {
+    return valueTyped(value, TypeHelper.getTypeByValue(value));
+  }
+
+  /** sets a fixed value with the given type.*/
+  // The naming is like this for code completion convenience.
+  // This way, developers can always start typing 'value' and then 
+  // look for that method that allowed them to pass in the type.
+  public Binding valueTyped(Object value, Type type) {
     this.typedValue = new TypedValue()
       .value(value)
-      .type(TypeHelper.getTypeByValue(value));
+      .type(type);
     return this;
   }
-  
+
   public Binding typedValue(TypedValue typedValue) {
     this.typedValue = typedValue;
     return this;
