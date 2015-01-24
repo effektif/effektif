@@ -25,7 +25,7 @@ public interface DataType<T extends Type> extends Plugin {
   Class<?> getValueClass();
   Class<? extends Type> getApiClass();
   boolean isStatic();
-  T toType();
+  T serialize();
 
   TypeGenerator getTypeGenerator();
 

@@ -37,6 +37,19 @@ public class ActivityImpl extends ScopeImpl {
   public MultiInstanceImpl multiInstance;
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
+  
+  public Activity serialize() {
+    Activity activity = (Activity) activityType.serialize();
+    activity.setId(id);
+    if (defaultTransition!=null) {
+      activity.setDefaultTransitionId(defaultTransition.id);
+    }
+    if (multiInstance!=null) {
+      activity.setMultiInstance(multiInstance.serialize());
+    }
+    serialize(activity);
+    return activity;
+  }
 
   public void parse(Activity activityApi, Scope scopeApi, WorkflowParser workflowParser, ScopeImpl parent) {
     super.parse(activityApi, workflowParser, parent);
@@ -66,6 +79,18 @@ public class ActivityImpl extends ScopeImpl {
       }
       activityApi.setOutgoingTransitions(null);
     }
+    
+    clean(activityApi);
+  }
+  
+  protected void clean(Activity activityApi) {
+    activityApi.setId(null);
+    activityApi.setDefaultTransitionId(null);
+    activityApi.setMultiInstance(null);
+    activityApi.setActivities(null);
+    activityApi.setTransitions(null);
+    activityApi.setVariables(null);
+    activityApi.setTimers(null);
   }
 
   public boolean isMultiInstance() {
@@ -107,9 +132,8 @@ public class ActivityImpl extends ScopeImpl {
   }
 
   
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public List<Transition> getIncomingTransitions() {
-    return (List) incomingTransitions;
+  public List<TransitionImpl> getIncomingTransitions() {
+    return incomingTransitions;
   }
 
   public void setIncomingTransitions(List<TransitionImpl> incomingTransitionDefinitions) {

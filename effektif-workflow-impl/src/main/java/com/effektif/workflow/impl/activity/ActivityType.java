@@ -25,10 +25,15 @@ public interface ActivityType<T> extends Plugin {
   ObjectType getDescriptor();
   
   Class<?> getApiClass();
+  
+  T serialize();
 
   /** called when the process is being validated or deployed.
    * Note that configuration values in the activityApi object could be the target java beans classes, 
-   * or the detyped json representation (maps, lists, Strings, etc) if it's coming from json parsing. */
+   * or the detyped json representation (maps, lists, Strings, etc) if it's coming from json parsing. 
+   * 
+   * @param activityApi will only contain the activity-specific fields.  The other fields 
+   *   may be cleaned if the object gets stored and retrieved from the db storage. */
   void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser);
 
   boolean isFlushSkippable();

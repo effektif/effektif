@@ -34,5 +34,4 @@ public class NoneTaskImpl extends AbstractActivityType<NoneTask> {
   public boolean isFlushSkippable() {
     return true;
   }
-
 }

@@ -13,14 +13,17 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class BindingImpl<T> {
 
   public Class<?> expectedValueType;
-  public Object value;
+  public TypedValueImpl typedValue;
   public String variableId;
+  public String expressionText;
   public Object expression;
   
   public BindingImpl(Class< ? > expectedValueType) {
@@ -29,5 +32,13 @@ public class BindingImpl<T> {
 
   public String getValue(ActivityInstanceImpl activityInstance) {
     return null;
+  }
+
+  public Binding serialize() {
+    Binding binding = new Binding();
+    binding.setTypedValue(typedValue.serialize());
+    binding.setVariableId(variableId);
+    binding.setExpression(expressionText);
+    return binding;
   }
 }

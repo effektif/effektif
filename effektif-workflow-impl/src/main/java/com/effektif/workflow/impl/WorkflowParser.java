@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
@@ -32,6 +33,9 @@ import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
@@ -76,7 +80,7 @@ public class WorkflowParser {
    * Use one parser for each parse.
    * By returning the parser itself you can access the  */
   public static WorkflowParser parse(Configuration configuration, Workflow workflowApi) {
-    WorkflowParser parse = new WorkflowParser(configuration, workflowApi);
+    WorkflowParser parse = new WorkflowParser(configuration);
     parse.pushContext(workflowApi);
     parse.workflow = new WorkflowImpl();
     parse.workflow.parse(workflowApi, parse);
@@ -88,10 +92,6 @@ public class WorkflowParser {
   }
 
   public WorkflowParser(Configuration configuration) {
-    this.configuration = configuration;
-  }
-  
-  public WorkflowParser(Configuration configuration, Workflow workflowApi) {
     this.configuration = configuration;
     this.path = new LinkedList<>();
     this.contextStack = new Stack<>();
@@ -175,7 +175,7 @@ public class WorkflowParser {
     BindingImpl bindingImpl = new BindingImpl(bindingValueType);
     int values = 0;
     if (binding.getValue()!=null) {
-      bindingImpl.value = binding.getValue();
+      bindingImpl.typedValue = parseTypedValue(binding.getTypedValue());
       values++;
     }
     if (binding.getVariableId()!=null) {
@@ -197,6 +197,15 @@ public class WorkflowParser {
       addError("Multiple values specified for '%s' for activity '%s'", fieldName, activityId);
     }
     return bindingImpl;
+  }
+
+  protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
+    if (typedValue==null) {
+      return null;
+    }
+    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+    DataType type = dataTypeService.createDataType(typedValue.getType());
+    return new TypedValueImpl(type, typedValue.getValue());
   }
 
   public <T> List<BindingImpl<T>> parseBindings(List<Binding> bindings, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {

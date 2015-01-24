@@ -18,7 +18,7 @@ import com.effektif.workflow.api.types.Type;
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
-  protected T cachedType;
+  protected T serializable;
   protected Class<? extends Type> apiClass;
   protected Class<?> valueClass;
   
@@ -35,8 +35,8 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return apiClass;
   }
   
-  public T toType() {
-    return cachedType;
+  public T serialize() {
+    return serializable;
   }
   
   @Override

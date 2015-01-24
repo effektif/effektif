@@ -17,7 +17,6 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
@@ -32,7 +31,16 @@ public class TransitionImpl {
 
   public ActivityImpl from;
   public ActivityImpl to;
+  public String conditionScriptText;
   public Script conditionScript;
+
+  public Transition serialize() {
+    Transition transition = new Transition();
+    if (from!=null) transition.setFrom(from.id);
+    if (to!=null) transition.setFrom(to.id);
+    transition.setCondition(conditionScriptText);
+    return transition;
+  }
 
   public void parse(Transition transitionApi, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
     this.id = transitionApi.getId();
@@ -84,9 +92,10 @@ public class TransitionImpl {
     }
     if (transitionApi.getCondition()!=null) {
       try {
-          this.conditionScript = configuration
+        this.conditionScriptText = transitionApi.getCondition();
+        this.conditionScript = configuration
             .get(ScriptService.class)
-            .compile(transitionApi.getCondition());
+            .compile(this.conditionScriptText);
       } catch (Exception e) {
         parser.addError("Transition (%s)--%s>(%s) has an invalid condition expression '%s' : %s", 
                 fromId, (id!=null ? id+"--" : ""),

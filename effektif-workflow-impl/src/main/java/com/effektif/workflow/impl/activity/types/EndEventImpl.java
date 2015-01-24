@@ -20,8 +20,6 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 public class EndEventImpl extends AbstractActivityType<EndEvent> {
 
-  public static final EndEventImpl INSTANCE = new EndEventImpl();
-
   public EndEventImpl() {
     super(EndEvent.class);
   }

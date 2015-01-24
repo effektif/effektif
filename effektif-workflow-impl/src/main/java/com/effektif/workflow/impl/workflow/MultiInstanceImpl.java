@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.workflow.Activity;
@@ -21,9 +22,6 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
 
 
-/**
- * @author Tom Baeyens
- */
 public class MultiInstanceImpl {
 
   public VariableImpl elementVariable;
@@ -41,5 +39,16 @@ public class MultiInstanceImpl {
     } else {
       parser.addError("Multi instance has no elementVariable");
     }
+  }
+
+  public MultiInstance serialize() {
+    return null;
+  }
+
+  public void addValueBinding(BindingImpl binding) {
+    if (valueBindings==null) {
+      valueBindings = new ArrayList<>();
+    }
+    valueBindings.add(binding);
   }
 }

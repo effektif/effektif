@@ -36,19 +36,30 @@ public class WorkflowImpl extends ScopeImpl {
   public WorkflowImpl() {
   }
 
-  public void parse(Workflow apiWorkflow, WorkflowParser parse) {
+  public void parse(Workflow apiWorkflow, WorkflowParser parser) {
     this.workflow = this;
-    super.parse(apiWorkflow, parse, null);
-    this.startActivities = parse.getStartActivities(this);
+    super.parse(apiWorkflow, parser, null);
+    this.startActivities = parser.getStartActivities(this);
     this.organizationId = apiWorkflow.getOrganizationId();
     this.name = apiWorkflow.getName();
     this.deployedTime = apiWorkflow.getDeployedTime();
     this.deployedBy = apiWorkflow.getDeployedBy();
     this.version = apiWorkflow.getVersion();
-    this.listeners = parse.getConfiguration(WorkflowEngineConfiguration.class).getListeners();
+    this.listeners = parser.getConfiguration(WorkflowEngineConfiguration.class).getListeners();
   }
 
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
+  }
+
+  public Workflow toWorkflow() {
+    Workflow workflow = new Workflow();
+    workflow.setOrganizationId(organizationId);
+    workflow.setName(name);
+    workflow.setDeployedTime(deployedTime);
+    workflow.setDeployedBy(deployedBy);
+    workflow.setVersion(version);
+    super.serialize(workflow);
+    return workflow;
   }
 }

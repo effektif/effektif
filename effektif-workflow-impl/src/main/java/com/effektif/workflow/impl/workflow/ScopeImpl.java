@@ -42,6 +42,30 @@ public abstract class ScopeImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
   
+  public void serialize(Scope scope) {
+    scope.setId(id);
+    if (activities!=null) {
+      for (ActivityImpl activity: activities.values()) {
+        scope.activity(activity.serialize());
+      }
+    }
+    if (variables!=null) {
+      for (VariableImpl variable: variables.values()) {
+        scope.variable(variable.serialize());
+      }
+    }
+    if (transitions!=null) {
+      for (TransitionImpl transition: transitions) {
+        scope.transition(transition.serialize());
+      }
+    }
+    if (timers!=null) {
+      for (TimerImpl timer: timers) {
+        scope.timer(timer.serialize());
+      }
+    }
+  } 
+
   public void parse(Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
     this.id = scopeApi.getId();
     this.configuration = parser.configuration;
@@ -89,13 +113,13 @@ public abstract class ScopeImpl {
       for (Activity activityApi: activitiesApi) {
         ActivityImpl activityImpl = new ActivityImpl();
         parser.pushContext("activities", activityApi, i);
+        if (activityApi.getDefaultTransitionId()!=null) {
+          activitiesByDefaultTransitionId.put(activityApi.getDefaultTransitionId(), activityImpl);
+        }
         activityImpl.parse(activityApi, scopeApi, parser, this);
         addActivity(activityImpl);
         if (activityIds.contains(activityImpl.id)) {
           parser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activityImpl.id);
-        }
-        if (activityApi.getDefaultTransitionId()!=null) {
-          activitiesByDefaultTransitionId.put(activityApi.getDefaultTransitionId(), activityImpl);
         }
         parser.popContext();
         i++;
@@ -137,7 +161,7 @@ public abstract class ScopeImpl {
       }
     }
   }
-
+  
   public void addTimer(TimerImpl timer) {
     if (timers==null) {
       timers = new ArrayList<>();
@@ -240,5 +264,5 @@ public abstract class ScopeImpl {
       }
     }
     return null;
-  } 
+  }
 }

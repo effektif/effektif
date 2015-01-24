@@ -40,9 +40,9 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     TypedValue typedValue = new TypedValue()
       .value(value);
     if (variable.type!=null) {
-      typedValue.type(variable.type.toType());
+      typedValue.type(variable.type.serialize());
     } else {
-      typedValue.type(type.toType());
+      typedValue.type(type.serialize());
     }
     variableInstance.setTypedValue(typedValue);
     return variableInstance;

@@ -21,7 +21,6 @@ public class Timer {
 
   protected String id;
   protected String type;
-  protected Map<String,Object> configuration;
   protected String duedate;
   protected String repeat;
   protected Map<String,Object> properties;
@@ -48,17 +47,6 @@ public class Timer {
     return this;
   }
   
-  public Map<String,Object> getConfiguration() {
-    return this.configuration;
-  }
-  public void setConfiguration(Map<String,Object> configuration) {
-    this.configuration = configuration;
-  }
-  public Timer configuration(Map<String,Object> configuration) {
-    this.configuration = configuration;
-    return this;
-  }
-
   public String getDuedate() {
     return this.duedate;
   }

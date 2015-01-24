@@ -18,7 +18,9 @@ import java.util.Map;
 
 import javax.script.CompiledScript;
 
+import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.script.Script;
@@ -40,10 +42,11 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, ExclusiveGateway activityApi, WorkflowParser parser) {
+  public void parse(ActivityImpl activityImpl, ExclusiveGateway exclusiveGateway, WorkflowParser parser) {
+    super.parse(activityImpl, exclusiveGateway, parser);
     scriptService = parser.getConfiguration(ScriptService.class);
   }
-
+  
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     ActivityImpl activity = activityInstance.activity;

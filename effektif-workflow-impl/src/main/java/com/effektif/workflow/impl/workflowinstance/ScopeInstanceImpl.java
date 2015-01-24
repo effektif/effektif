@@ -187,8 +187,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     if (binding==null) {
       return null;
     }
-    if (binding.value!=null) {
-      return (T) binding.value;
+    if (binding.typedValue!=null) {
+      return (T) binding.typedValue.value;
     }
     if (binding.variableId!=null) {
       return (T) getVariable(binding.variableId);

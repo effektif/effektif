@@ -27,5 +27,4 @@ public class EmailTaskImpl extends AbstractActivityType {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
   }
-
 }

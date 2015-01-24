@@ -5,6 +5,7 @@
 - [ ] reintroduce automatic descriptor scanning of activity types
 - [ ] In the data types, InvalidValueException vs ParseContext
 - [ ] the taken outgoing transition have to be recorded
+- [ ] improve ActivityType conversion method naming: toActivity and parse.  either serialize and deserialize or toActivity and fromActivity or setActivity & getActivity... 
 - [ ] add timers to scopes and scope instances
 - [ ] evaluate outgoing transition conditions (in ActivityInstanceImpl.onwards)
 - [ ] add libraries to maven central: http://central.sonatype.org/pages/ossrh-guide.html ,  http://maven.apache.org/guides/mini/guide-central-repository-upload.html

@@ -37,11 +37,12 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
 
   @Override
   public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
+    super.parse(activityImpl, userTaskApi, parser);
     this.taskService = parser.getConfiguration(TaskService.class);
     this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), String.class, false, userTaskApi, "nameBinding");
     this.candidateIdBindings = parser.parseBindings(userTaskApi.getCandidateIdBindings(), String.class, false, userTaskApi, "candidateIdBindings");
   }
-  
+
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     String taskName = activityInstance.getValue(nameBinding);

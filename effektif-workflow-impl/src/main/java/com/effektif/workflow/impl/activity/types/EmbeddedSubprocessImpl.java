@@ -24,8 +24,6 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubprocess> {
 
-  public static final EmbeddedSubprocessImpl INSTANCE = new EmbeddedSubprocessImpl();
-  
   protected List<ActivityImpl> startActivities;
   
   public EmbeddedSubprocessImpl() {
@@ -33,8 +31,9 @@ public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubproc
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, EmbeddedSubprocess activityApi, WorkflowParser validator) {
-    this.startActivities = validator.getStartActivities(activityImpl);
+  public void parse(ActivityImpl activityImpl, EmbeddedSubprocess embeddedSubworkflow, WorkflowParser parser) {
+    super.parse(activityImpl, embeddedSubworkflow, parser);
+    this.startActivities = parser.getStartActivities(activityImpl);
   }
 
   @Override

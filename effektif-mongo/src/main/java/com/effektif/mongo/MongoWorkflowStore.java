@@ -14,24 +14,41 @@
 package com.effektif.mongo;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.Retry;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.util.Exceptions;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
+import com.effektif.workflow.impl.workflow.ScopeImpl;
+import com.effektif.workflow.impl.workflow.TransitionImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -47,11 +64,22 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   
   protected WorkflowEngineImpl workflowEngine;
   protected JsonService jsonService;
+  protected DataTypeService dataTypeService;
   protected WriteConcern writeConcernInsertWorkflow;
   protected MongoCollection workflowVersions;
+  protected ActivityTypeService activityTypeService;
+  protected Configuration configuration;
+  protected ScriptService scriptService;
 
-  interface FieldsWorkflow {
+  interface FieldsScope {
     String _ID = "_id";
+    String ACTIVITIES = "activities";
+    String VARIABLES = "variables";
+    String TRANSITIONS = "transitions";
+    String TIMERS = "timers";
+  }
+
+  interface FieldsWorkflow extends FieldsScope {
     String NAME = "name";
     String DEPLOYED_TIME = "deployedTime";
     String DEPLOYED_BY = "deployedBy";
@@ -60,6 +88,41 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     String VERSION = "version";
   }
   
+  interface FieldsActivity extends FieldsScope {
+    String DEFAULT_TRANSITION_ID = "defaultTransitionId";
+    String MULTI_INSTANCE = "multiInstance";
+    String ACTIVITY_TYPE = "type";
+  }
+
+  interface FieldsBinding {
+    String EXPRESSION = "expression";
+    String VARIABLE_ID = "variableId";
+    String TYPED_VALUE = "value";
+  }
+
+  interface FieldsTypedValue {
+    String TYPE = "type";
+    String VALUE = "value";
+  }
+
+  interface FieldsMultiInstance {
+    String ELEMENT_VARIABLE = "elementVariable";
+    String VALUE_BINDINGS = "valueBindings";
+  }
+  
+  interface FieldsTransition {
+    String _ID = "_id";
+    String FROM = "from";
+    String TO = "to";
+    String CONDITION = null;
+  }
+
+  interface FieldsVariable {
+    String _ID = "_id";
+    String TYPE = "type";
+    String INITIAL_VALUE = "initialValue";
+  }
+
   interface FieldsWorkflowVersions {
     String _ID = "_id";
     String WORKFLOW_NAME = "workflowName";
@@ -77,18 +140,21 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     DB db = brewery.get(DB.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.dbCollection = db.getCollection(mongoConfiguration.getWorkflowsCollectionName());
-    this.isPretty = mongoConfiguration.isPretty;
-    this.jsonService = brewery.get(JsonService.class);
-    this.writeConcernInsertWorkflow = mongoConfiguration.getWriteConcernInsertWorkflow(this.dbCollection);
-    this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
     this.workflowVersions = new MongoCollection();
     this.workflowVersions.dbCollection = db.getCollection(mongoConfiguration.getWorkflowsCollectionName());
     this.workflowVersions.isPretty =mongoConfiguration.isPretty; 
+    this.configuration = brewery.get(Configuration.class);
+    this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
+    this.jsonService = brewery.get(JsonService.class);
+    this.scriptService = brewery.get(ScriptService.class);
+    this.activityTypeService = brewery.get(ActivityTypeService.class);
+    this.writeConcernInsertWorkflow = mongoConfiguration.getWriteConcernInsertWorkflow(this.dbCollection);
+    this.isPretty = mongoConfiguration.isPretty;
   }
 
   @Override
-  public void insertWorkflow(Workflow workflowApi, WorkflowImpl workflowImpl) {
-    String workflowName = workflowApi.getName();
+  public void insertWorkflow(WorkflowImpl workflow) {
+    String workflowName = workflow.name;
     if (workflowName!=null) {
       // try if we can acquire the lock right away (without retry)
       BasicDBObject workflowVersions = lockWorkflowVersions(workflowName);
@@ -102,17 +168,12 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
         workflowVersions = lockWorkflowVersionsWithRetry(workflowName);
       }
       List<String> versionIds = (List<String>) workflowVersions.get(FieldsWorkflowVersions.VERSION_IDS);
-      workflowImpl.version = ((long)versionIds.size())+1;
-      workflowApi.setVersion(workflowImpl.version);
-      versionIds.add(workflowImpl.id);
+      workflow.version = ((long)versionIds.size())+1;
+      versionIds.add(workflow.id);
       updateAndUnlockWorkflowVersions(workflowVersions);
     }
 
-    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflowApi);
-    BasicDBObject dbWorkflow = new BasicDBObject();
-    String workflowId = (String)jsonWorkflow.remove("id");
-    dbWorkflow.put(FieldsWorkflow._ID, new ObjectId(workflowId));
-    dbWorkflow.putAll(jsonWorkflow);
+    BasicDBObject dbWorkflow = writeWorkflow(workflow);
     insert(dbWorkflow, writeConcernInsertWorkflow);
   }
 
@@ -160,21 +221,21 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
-    List<Workflow> workflows = new ArrayList<Workflow>();
+  public List<WorkflowImpl> findWorkflows(WorkflowQuery query) {
+    List<WorkflowImpl> workflows = new ArrayList<WorkflowImpl>();
     DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
       dbWorkflow.put("id", dbWorkflow.remove(FieldsWorkflow._ID).toString());
-      Workflow workflow = jsonService.jsonMapToObject(dbWorkflow, Workflow.class);
+      WorkflowImpl workflow = readWorkflow(dbWorkflow);
       workflows.add(workflow);
     }
     return workflows;
   }
   
   @Override
-  public Workflow loadWorkflowById(String workflowId) {
-    List<Workflow> workflows = findWorkflows(new WorkflowQuery()
+  public WorkflowImpl loadWorkflowById(String workflowId) {
+    List<WorkflowImpl> workflows = findWorkflows(new WorkflowQuery()
       .workflowId(workflowId));
     return !workflows.isEmpty() ? workflows.get(0) : null;
   }
@@ -243,157 +304,277 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     throw new RuntimeException("Unknown field "+field);
   }
 
-//  @Override
-//  public void deleteWorkflow(String workflowId) {
-//    BasicDBObject query = new BasicDBObject(fields._id, new ObjectId(workflowId));
-//    remove(query);
-//  }
-//
-//  public Workflow readWorkflow(BasicDBObject dbWorkflow) {
-//    Workflow workflow = new WorkflowImpl();
-//    workflow.setId(readId(dbWorkflow, FLD_WF._id));
-//    workflow.setName(readString(dbWorkflow, FLD_WF.name));
-//    workflow.setDeployedTime(readTime(dbWorkflow, FLD_WF.deployedTime));
-//    workflow.setDeployedBy(readId(dbWorkflow, FLD_WF.deployedBy));
-//    workflow.setOrganizationId(readId(dbWorkflow, FLD_WF.organizationId));
-//    workflow.setVersion(readLong(dbWorkflow, FLD_WF.version));
-//    readActivities(workflow, dbWorkflow);
-//    readVariables(workflow, dbWorkflow);
-//    readTransitions(workflow, dbWorkflow);
-//    return workflow;
-//  }
-//  
-//  public BasicDBObject writeWorkflow(Workflow workflow) {
-//    BasicDBObject dbWorkflow = new BasicDBObject();
-//    Stack<BasicDBObject> dbObjectStack = new Stack<>();
-//    dbObjectStack.push(dbWorkflow);
-//    writeId(dbWorkflow, FLD_WF._id, workflow.getId());
-//    writeString(dbWorkflow, FLD_WF.name, workflow.getName());
-//    writeTimeOpt(dbWorkflow, FLD_WF.deployedTime, workflow.getDeployedTime());
-//    writeIdOpt(dbWorkflow, FLD_WF.deployedBy, workflow.getDeployedBy());
-//    writeIdOpt(dbWorkflow, FLD_WF.organizationId, workflow.getOrganizationId());
-//    writeObjectOpt(dbWorkflow, FLD_WF.version, workflow.getVersion());
-//    writeActivities(workflow, dbObjectStack);
-//    writeTransitions(workflow, dbObjectStack);
-//    writeVariables(workflow, dbObjectStack);
-//    return dbWorkflow;
-//  }
-//  
-//  protected void readActivities(Scope scope, BasicDBObject dbScope) {
-//    List<BasicDBObject> dbActivities = readList(dbScope, FLD_WF.activitys);
-//    if (dbActivities!=null) {
-//      for (BasicDBObject dbActivity: dbActivities) {
-//        ActivityImpl activity = new ActivityImpl();
-//        activity.id = readString(dbActivity, FLD_WF._id);
-//        Map<String,Object> activityTypeJson = readObjectMap(dbActivity, FLD_WF.activityType);
-//        activity.activityType = jsonService.jsonMapToObject(activityTypeJson, ActivityType.class);
-//        readActivities(activity, dbActivity);
-//        readVariables(activity, dbActivity);
-//        readTransitions(activity, dbActivity);
-//        scope.addActivity(activity);
-//      }
-//    }
-//  }
-//
-//  protected void writeActivities(Scope scope, Stack<Map<String,Object>> dbObjectStack) {
-//    if (scope.getActivities()!=null) {
-//      for (Activity activity: scope.getActivities()) {
-//        
-//        Map<String,Object> dbActivity = jsonService.objectToJsonMap(activity);
-//        Map<String,Object> dbParentScope = dbObjectStack.peek(); 
-//        dbObjectStack.push(dbActivity);
-//        // writeString(dbActivity, fields._id, activity.getId());
-//        // writeObjectOpt(dbActivity, fields.activityType, activityTypeJson);
-//        
-//        writeActivities(activity, dbObjectStack);
-//        writeTransitions(activity, dbObjectStack);
-//        writeVariables(activity, dbObjectStack);
-//        dbObjectStack.pop();
-//      }
-//    }
-//  }
-//
-//  protected void readTransitions(ScopeImpl scope, BasicDBObject dbScope) {
-//    List<BasicDBObject> dbTransitions = readList(dbScope, FLD_WF.transitions);
-//    if (dbTransitions!=null) {
-//      for (BasicDBObject dbTransition: dbTransitions) {
-//        TransitionImpl transition = new TransitionImpl();
-//        transition.id = readString(dbTransition, FLD_WF._id);
-//        transition.fromId = readString(dbTransition, FLD_WF.from);
-//        transition.toId = readString(dbTransition, FLD_WF.to);
-//        scope.addTransition(transition);
-//      }
-//    }
-//  }
-//  
-//  protected void writeTransitions(ScopeImpl scope, Stack<BasicDBObject> dbObjectStack) {
-//    if (scope.transitionDefinitions!=null) {
-//      for (TransitionImpl transition: scope.transitionDefinitions) {
-//        BasicDBObject dbParentScope = dbObjectStack.peek(); 
-//        BasicDBObject dbTransition = new BasicDBObject();
-//        writeStringOpt(dbTransition, FLD_WF._id, transition.id);
-//        writeObjectOpt(dbTransition, FLD_WF.from, transition.fromId!=null ? transition.fromId : (transition.from!=null ? transition.from.id : null));
-//        writeObjectOpt(dbTransition, FLD_WF.to, transition.toId!=null ? transition.toId : (transition.to!=null ? transition.to.id : null));
-//        writeListElementOpt(dbParentScope, FLD_WF.transitions, dbTransition);
-//      }
-//    }
-//  }
-//
-//  protected void readVariables(ScopeImpl scope, BasicDBObject dbScope) {
-//    List<BasicDBObject> dbVariables = readList(dbScope, FLD_WF.variables);
-//    if (dbVariables!=null) {
-//      scope.variableDefinitions = new ArrayList<>();
-//      for (BasicDBObject dbVariable: dbVariables) {
-//        VariableImpl variable = new VariableImpl();
-//        variable.id = readString(dbVariable, FLD_WF._id);
-//        
-//        Map<String,Object> dataTypeJson = readObjectMap(dbVariable, FLD_WF.dataType);
-//        variable.dataType = jsonService.jsonMapToObject(dataTypeJson, DataType.class);
-//
-//        Object dbInitialValue = dbVariable.get(FLD_WF.initialValue);
-//        variable.initialValue = variable.dataType
-//                .convertJsonToInternalValue(dbInitialValue);
-//        
-//        scope.variableDefinitions.add(variable);
-//      }
-//    }
-//  }
-//
-//  protected void writeVariables(ScopeImpl scope, Stack<BasicDBObject> dbObjectStack) {
-//    if (scope.variableDefinitions!=null) {
-//      for (VariableImpl variable: scope.variableDefinitions) {
-//        BasicDBObject dbParentScope = dbObjectStack.peek(); 
-//        BasicDBObject dbVariable = new BasicDBObject();
-//        writeString(dbVariable, FLD_WF._id, variable.id);
-//        
-//        Map<String,Object> dataTypeJson = jsonService.objectToJsonMap(variable.dataType);
-//        writeObjectOpt(dbVariable, FLD_WF.dataType, dataTypeJson);
-//
-//        if (variable.initialValue!=null) {
-//          Object jsonValue = variable.dataType
-//                  .convertInternalToJsonValue(variable.initialValue);
-//          writeObjectOpt(dbVariable, FLD_WF.initialValue, jsonValue);
-//        }
-//
-//        writeListElementOpt(dbParentScope, FLD_WF.variables, dbVariable);
-//      }
-//    }
-//  }
+  public WorkflowImpl readWorkflow(BasicDBObject dbWorkflow) {
+    WorkflowParser parser = new WorkflowParser(configuration);
+    
+    WorkflowImpl workflow = new WorkflowImpl();
+    workflow.id = readId(dbWorkflow, FieldsWorkflow._ID);
+    workflow.name = readString(dbWorkflow, FieldsWorkflow.NAME);
+    workflow.deployedTime = readTime(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME);
+    workflow.deployedBy = readId(dbWorkflow, FieldsWorkflow.DEPLOYED_BY);
+    workflow.organizationId = readId(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID);
+    workflow.version = readLong(dbWorkflow, FieldsWorkflow.VERSION);
+    workflow.workflow = workflow;
+    workflow.configuration = configuration;
+    workflow.listeners = configuration.get(WorkflowEngineConfiguration.class).getListeners();
+    readActivities(workflow, dbWorkflow, parser);
+    readVariables(workflow, dbWorkflow);
+    readTransitions(workflow, dbWorkflow);
+    workflow.startActivities = parser.getStartActivities(workflow); 
+    return workflow;
+  }
+  
+  public BasicDBObject writeWorkflow(WorkflowImpl workflow) {
+    BasicDBObject dbWorkflow = new BasicDBObject();
+    Stack<Map<String,Object>> dbObjectStack = new Stack<>();
+    dbObjectStack.push(dbWorkflow);
+    writeId(dbWorkflow, FieldsWorkflow._ID, workflow.id);
+    writeString(dbWorkflow, FieldsWorkflow.NAME, workflow.name);
+    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, workflow.deployedTime);
+    writeIdOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_BY, workflow.deployedBy);
+    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, workflow.organizationId);
+    writeObjectOpt(dbWorkflow, FieldsWorkflow.VERSION, workflow.version);
+    
+    writeActivities(workflow, dbObjectStack);
+    writeTransitions(workflow, dbObjectStack);
+    writeVariables(workflow, dbObjectStack);
+    writeTimers(workflow, dbObjectStack);
+    return dbWorkflow;
+  }
+  
+  protected void readActivities(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser) {
+    List<BasicDBObject> dbActivities = readList(dbScope, FieldsWorkflow.ACTIVITIES);
+    if (dbActivities!=null) {
+      for (BasicDBObject dbActivity: dbActivities) {
+        ActivityImpl activity = new ActivityImpl();
+        activity.id = readString(dbActivity, FieldsWorkflow._ID);
+        activity.workflow = scope.workflow;
+        activity.configuration = configuration;
+        activity.parent = scope;
+        
+        activity.multiInstance = readMultiInstance(readBasicDBObject(dbActivity, FieldsActivity.MULTI_INSTANCE));
+        activity.defaultTransition = TODO;
+        activity.incomingTransitions = TODO;
+        activity.outgoingTransitions = TODO;
+        
+        readActivities(activity, dbActivity, parser);
+        readVariables(activity, dbActivity);
+        readTransitions(activity, dbActivity);
 
-//
-//@Override
-//public void addError(String message, Object... messageArgs) {
-//  throw new RuntimeException("Should not happen when reading process definitions from db: "+String.format(message, messageArgs));
-//}
-//
-//@Override
-//public void addWarning(String message, Object... messageArgs) {
-//  // warnings should be ignored during reading of process definition from db.
-//}
-//
-//
-//  @Override
-//  public ServiceRegistry getServiceRegistry() {
-//    return serviceRegistry;
-//  }
+        Map<String,Object> dbActivityType = readObjectMap(dbActivity, FieldsActivity.ACTIVITY_TYPE);
+        Activity activityApi = jsonService.jsonMapToObject(dbActivityType, Activity.class);
+        activity.activityType = activityTypeService.instantiateActivityType(activityApi);
+        activity.activityType.parse(activity, activityApi, parser);
+        scope.addActivity(activity);
+      }
+    }
+  }
+
+  protected void writeActivities(ScopeImpl scope, Stack<Map<String,Object>> dbObjectStack) {
+    if (scope.activities!=null) {
+      for (ActivityImpl activity: scope.activities.values()) {
+        Map<String,Object> dbActivity = new BasicDBObject();
+        Map<String,Object> dbParentScope = dbObjectStack.peek(); 
+        dbObjectStack.push(dbActivity);
+        
+        Map<String, Object> dbActivityType = jsonService.objectToJsonMap(activity.activityType);
+        writeObjectOpt(dbActivity, FieldsActivity.ACTIVITY_TYPE, dbActivityType);
+        
+        writeString(dbActivity, FieldsActivity._ID, activity.id);
+        writeString(dbActivity, FieldsActivity.DEFAULT_TRANSITION_ID, activity.id);
+        writeObjectOpt(dbActivity, FieldsActivity.MULTI_INSTANCE, writeMultiInstance(activity.multiInstance));
+        writeActivities(activity, dbObjectStack);
+        writeTransitions(activity, dbObjectStack);
+        writeVariables(activity, dbObjectStack);
+        writeTimers(activity, dbObjectStack);
+        dbObjectStack.pop();
+        writeListElementOpt(dbParentScope, FieldsWorkflow.ACTIVITIES, dbActivity);
+      }
+    }
+  }
+
+  protected MultiInstanceImpl readMultiInstance(BasicDBObject dbMultiInstance) {
+    if (dbMultiInstance==null) {
+      return null;
+    }
+    MultiInstanceImpl multiInstance = new MultiInstanceImpl();
+    BasicDBObject dbVariable = readBasicDBObject(dbMultiInstance, FieldsMultiInstance.ELEMENT_VARIABLE);
+    multiInstance.elementVariable = readVariable(null, dbVariable);
+    List<BasicDBObject> dbValueBindings = readList(dbVariable, FieldsMultiInstance.VALUE_BINDINGS);
+    if (dbValueBindings!=null) {
+      multiInstance.valueBindings = new ArrayList<>(dbValueBindings.size());
+      for (BasicDBObject dbValueBinding: dbValueBindings) {
+        multiInstance.addValueBinding(readBinding(dbValueBinding));
+      }
+    }
+    return multiInstance;
+  }
+
+  protected Map<String, Object> writeMultiInstance(MultiInstanceImpl multiInstance) {
+    if (multiInstance==null) {
+      return null;
+    }
+    Map<String, Object> dbMultiInstance = new BasicDBObject();
+    writeObjectOpt(dbMultiInstance, FieldsMultiInstance.ELEMENT_VARIABLE, writeVariable(multiInstance.elementVariable));
+    if (multiInstance.valueBindings!=null) {
+      for (BindingImpl binding: multiInstance.valueBindings) {
+        writeListElementOpt(dbMultiInstance, FieldsMultiInstance.VALUE_BINDINGS, writeBinding(binding));
+      }
+    }
+    return dbMultiInstance;
+  }
+
+  protected BindingImpl readBinding(BasicDBObject dbBinding) {
+    if (dbBinding==null) {
+      return null;
+    }
+    BindingImpl binding = new BindingImpl<>(null);
+    // i hope a null value for binding.expectedValueType is ok 
+    binding.typedValue = readTypedValue(readBasicDBObject(dbBinding, FieldsBinding.TYPED_VALUE));
+    binding.variableId = readString(dbBinding, FieldsBinding.VARIABLE_ID);
+    binding.expressionText = readString(dbBinding, FieldsBinding.EXPRESSION);
+    binding.expression = scriptService.compile(binding.expressionText);
+    return binding;
+  }
+
+  protected BasicDBObject writeBinding(BindingImpl binding) {
+    BasicDBObject dbBinding = new BasicDBObject();
+    writeStringOpt(dbBinding, FieldsBinding.EXPRESSION, binding.expressionText);
+    writeStringOpt(dbBinding, FieldsBinding.VARIABLE_ID, binding.variableId);
+    writeObjectOpt(dbBinding, FieldsBinding.TYPED_VALUE, writeTypedValue(binding.typedValue));
+    return dbBinding;
+  }
+
+  protected TypedValueImpl readTypedValue(BasicDBObject dbTypedValue) {
+    if (dbTypedValue==null) {
+      return null;
+    }
+    DataType dataType = null;
+    Object value = null;
+    Map<String,Object> dbType = readObjectMap(dbTypedValue, FieldsTypedValue.TYPE);
+    if (dbType!=null) {
+      Type type = jsonService.jsonMapToObject(dbType, Type.class);
+      dataType = dataTypeService.createDataType(type);
+      
+      Object dbValue = readObject(dbTypedValue, FieldsTypedValue.VALUE);
+      value = dataType.convertJsonToInternalValue(dbValue);
+    }
+    return new TypedValueImpl(dataType, value);
+  }
+
+  protected BasicDBObject writeTypedValue(TypedValueImpl typedValue) {
+    if (typedValue==null) {
+      return null;
+    }
+    BasicDBObject dbTypedValue = new BasicDBObject();
+    if (typedValue.type!=null) {
+      Map<String,Object> dbType = jsonService.objectToJsonMap(typedValue.type.serialize());
+      writeObjectOpt(dbTypedValue, FieldsTypedValue.TYPE, dbType);
+      if (typedValue.value!=null) {
+        Object dbValue = typedValue.type.convertInternalToJsonValue(typedValue.value);
+        writeObjectOpt(dbTypedValue, FieldsTypedValue.VALUE, dbValue);
+      }
+    }
+    return dbTypedValue;
+  }
+
+  protected void readTransitions(ScopeImpl scope, BasicDBObject dbScope) {
+    List<BasicDBObject> dbTransitions = readList(dbScope, FieldsWorkflow.TRANSITIONS);
+    if (dbTransitions!=null) {
+      for (BasicDBObject dbTransition: dbTransitions) {
+        TransitionImpl transition = new TransitionImpl();
+        transition.id = readString(dbTransition, FieldsTransition._ID);
+        transition.configuration = configuration;
+        transition.parent = scope;
+        transition.workflow = scope.workflow;
+        
+        String fromId = readString(dbTransition, FieldsTransition.FROM);
+        transition.from = scope.findActivityByIdLocal(fromId);
+        
+        String toId = readString(dbTransition, FieldsTransition.TO);
+        transition.to = scope.findActivityByIdLocal(toId);
+        
+        String script = readString(dbTransition, FieldsTransition.CONDITION);
+        if (script!=null) {
+          transition.conditionScriptText = script; 
+          transition.conditionScript = scriptService.compile(script);
+        }
+
+        scope.addTransition(transition);
+      }
+    }
+  }
+  
+  protected void writeTransitions(ScopeImpl scope, Stack<Map<String,Object>> dbObjectStack) {
+    if (scope.transitions!=null) {
+      for (TransitionImpl transition: scope.transitions) {
+        Map<String,Object> dbParentScope = dbObjectStack.peek(); 
+        BasicDBObject dbTransition = new BasicDBObject();
+        writeStringOpt(dbTransition, FieldsTransition._ID, transition.id);
+        writeObjectOpt(dbTransition, FieldsTransition.FROM, transition.from!=null ? transition.from.id : null);
+        writeObjectOpt(dbTransition, FieldsTransition.TO, transition.to!=null ? transition.to.id : null);
+        writeObjectOpt(dbTransition, FieldsTransition.CONDITION, transition.conditionScriptText);
+        writeListElementOpt(dbParentScope, FieldsScope.TRANSITIONS, dbTransition);
+      }
+    }
+  }
+
+  protected void readVariables(ScopeImpl scope, BasicDBObject dbScope) {
+    List<BasicDBObject> dbVariables = readList(dbScope, FieldsWorkflow.VARIABLES);
+    if (dbVariables!=null) {
+      for (BasicDBObject dbVariable: dbVariables) {
+        VariableImpl variable = readVariable(scope, dbVariable);
+        scope.addVariable(variable);
+      }
+    }
+  }
+
+  protected void writeVariables(ScopeImpl scope, Stack<Map<String,Object>> dbObjectStack) {
+    if (scope.variables!=null) {
+      for (VariableImpl variable: scope.variables.values()) {
+        Map<String,Object> dbParentScope = dbObjectStack.peek(); 
+        BasicDBObject dbVariable = writeVariable(variable);
+        writeListElementOpt(dbParentScope, FieldsScope.VARIABLES, dbVariable);
+      }
+    }
+  }
+
+  protected VariableImpl readVariable(ScopeImpl scope, BasicDBObject dbVariable) {
+    VariableImpl variable = new VariableImpl();
+    variable.id = readString(dbVariable, FieldsWorkflow._ID);
+    if (scope!=null) {
+      variable.parent = scope;
+      variable.workflow = scope.workflow;
+    }
+    Map<String,Object> dbType = readObjectMap(dbVariable, FieldsVariable.TYPE);
+    if (dbType!=null) {
+      Type type = jsonService.jsonMapToObject(dbType, Type.class);
+      variable.type = dataTypeService.createDataType(type);
+      Object dbInitialValue = dbVariable.get(FieldsVariable.INITIAL_VALUE);
+      if (dbInitialValue!=null) {
+        variable.initialValue = variable.type.convertJsonToInternalValue(dbInitialValue);
+      }
+    }
+    return variable;
+  }
+
+  public BasicDBObject writeVariable(VariableImpl variable) {
+    BasicDBObject dbVariable = new BasicDBObject();
+    writeString(dbVariable, FieldsWorkflow._ID, variable.id);
+    
+    if (variable.type!=null) {
+      Map<String,Object> dbType = jsonService.objectToJsonMap(variable.type);
+      writeObjectOpt(dbVariable, FieldsVariable.TYPE, dbType);
+      if (variable.initialValue!=null) {
+        Object dbValue = variable.type.convertInternalToJsonValue(variable.initialValue);
+        writeObjectOpt(dbVariable, FieldsVariable.INITIAL_VALUE, dbValue);
+      }
+    }
+
+    return dbVariable;
+  }
+
+  protected void writeTimers(ScopeImpl scope, Stack<Map<String,Object>> dbObjectStack) {
+    throw new RuntimeException("TODO");
+  }
 }

@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.workflow;
 
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -23,7 +22,6 @@ import com.effektif.workflow.impl.data.DataTypeService;
 
 public class VariableImpl {
   
-  public WorkflowEngineImpl workflowEngine;
   public WorkflowImpl workflow;  
   public ScopeImpl parent;
 
@@ -44,5 +42,9 @@ public class VariableImpl {
     } else {
       parser.addError("Variable '%s' %s does not have a type", id, parent.isWorkflow() ? "in the workflow" : "in activity '"+parent.id+"'");
     }
+  }
+
+  public Variable serialize() {
+    return null;
   }
 }

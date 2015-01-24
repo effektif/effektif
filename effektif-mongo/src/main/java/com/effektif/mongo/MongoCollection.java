@@ -43,49 +43,49 @@ public class MongoCollection {
     return new ObjectId().toString();
   }
 
-  public void writeId(BasicDBObject o, String fieldName, String value) {
+  public void writeId(Map<String,Object> o, String fieldName, String value) {
     o.put(fieldName, new ObjectId(value));
   }
 
-  public void writeIdOpt(BasicDBObject o, String fieldName, String value) {
+  public void writeIdOpt(Map<String,Object> o, String fieldName, String value) {
     if (value!=null) {
       o.put(fieldName, new ObjectId(value));
     }
   }
 
-  public void writeString(BasicDBObject o, String fieldName, Object value) {
+  public void writeString(Map<String,Object> o, String fieldName, Object value) {
     writeObject(o, fieldName, value);
   }
 
-  public void writeStringOpt(BasicDBObject o, String fieldName, String value) {
+  public void writeStringOpt(Map<String,Object> o, String fieldName, String value) {
     writeObjectOpt(o, fieldName, value);
   }
 
-  public void writeLongOpt(BasicDBObject o, String fieldName, Long value) {
+  public void writeLongOpt(Map<String,Object> o, String fieldName, Long value) {
     writeObjectOpt(o, fieldName, value);
   }
 
-  public void writeBooleanOpt(BasicDBObject o, String fieldName, Object value) {
+  public void writeBooleanOpt(Map<String,Object> o, String fieldName, Object value) {
     writeObjectOpt(o, fieldName, value);
   }
 
-  public void writeObject(BasicDBObject o, String fieldName, Object value) {
+  public void writeObject(Map<String,Object> o, String fieldName, Object value) {
     o.put(fieldName, value);
   }
 
-  public void writeObjectOpt(BasicDBObject o, String fieldName, Object value) {
+  public void writeObjectOpt(Map<String,Object> o, String fieldName, Object value) {
     if (value!=null) {
       o.put(fieldName, value);
     }
   }
   
-  public void writeTimeOpt(BasicDBObject o, String fieldName, LocalDateTime value) {
+  public void writeTimeOpt(Map<String,Object> o, String fieldName, LocalDateTime value) {
     if (value!=null) {
       o.put(fieldName, value.toDate());
     }
   }
 
-  public void writeListElementOpt(BasicDBObject o, String fieldName, Object element) {
+  public void writeListElementOpt(Map<String,Object> o, String fieldName, Object element) {
     if (element!=null) {
       @SuppressWarnings("unchecked")
       List<Object> list = (List<Object>) o.get(fieldName);

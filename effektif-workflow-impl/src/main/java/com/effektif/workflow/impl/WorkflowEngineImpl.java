@@ -96,7 +96,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         workflowApi.setId(workflowId);
       }
       workflowImpl.id = workflowApi.getId();
-      workflowStore.insertWorkflow(workflowApi, workflowImpl);
+      workflowStore.insertWorkflow(workflowImpl);
+      workflowApi.setVersion(workflowImpl.version);
       workflowCache.put(workflowImpl);
     } else {
       throw new RuntimeException(parser.issues.getIssueReport());
@@ -120,7 +121,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
-    return workflowStore.findWorkflows(workflowQuery);
+    List<WorkflowImpl> workflowImpls = workflowStore.findWorkflows(workflowQuery);
+    List<Workflow> workflowApis = new ArrayList<>(workflowImpls.size());
+    for (WorkflowImpl workflowImpl: workflowImpls) {
+      workflowApis.add(workflowImpl.toWorkflow());
+    }
+    return workflowApis;
   }
   
   @Override
@@ -208,15 +214,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   
   /** retrieves the executable form of the workflow using the workflow cache */
   public WorkflowImpl getWorkflowImpl(String workflowId) {
-    WorkflowImpl workflowImpl = workflowCache.get(workflowId);
-    if (workflowImpl==null) {
-      Workflow workflow = workflowStore.loadWorkflowById(workflowId);
-      workflowImpl = WorkflowParser.parse(configuration, workflow)
-        .checkNoErrors() // throws runtime exception if there are errors
-        .getWorkflow();
-      workflowCache.put(workflowImpl);
+    WorkflowImpl workflow = workflowCache.get(workflowId);
+    if (workflow==null) {
+      workflow = workflowStore.loadWorkflowById(workflowId);
+      workflowCache.put(workflow);
     }
-    return workflowImpl;
+    return workflow;
   }
   
   public WorkflowInstanceImpl lockProcessInstanceWithRetry(

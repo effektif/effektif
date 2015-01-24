@@ -170,6 +170,14 @@ public class Call extends Activity {
   public void setOutputMappings(List<CallMapping> outputMappings) {
     this.outputMappings = outputMappings;
   }
+
   
+  public void setSubWorkflowIdBinding(Binding<String> subWorkflowIdBinding) {
+    this.subWorkflowIdBinding = subWorkflowIdBinding;
+  }
+
   
+  public void setSubWorkflowNameBinding(Binding<String> subWorkflowNameBinding) {
+    this.subWorkflowNameBinding = subWorkflowNameBinding;
+  }
 }

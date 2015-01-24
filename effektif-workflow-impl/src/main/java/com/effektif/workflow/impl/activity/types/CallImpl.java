@@ -80,27 +80,28 @@ public class CallImpl extends AbstractActivityType<Call> {
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Call call, WorkflowParser workflowParser) {
-    subWorkflowIdBinding = workflowParser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
-    subWorkflowNameBinding = workflowParser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
-    inputMappings = parseMappings(call.getInputMappings(), call, "inputMappings", workflowParser);
-    outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", workflowParser);
+  public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
+    super.parse(activityImpl, call, parser);
+    subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
+    subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
+    inputMappings = parseMappings(call.getInputMappings(), call, "inputMappings", parser);
+    outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", parser);
   }
 
-  protected List<CallMappingImpl> parseMappings(List<CallMapping> callMappingsApi, Call call, String fieldName, WorkflowParser workflowParser) {
-    if (callMappingsApi!=null) {
-      List<CallMappingImpl> callMappingImpls = new ArrayList<>(callMappingsApi.size());
-      int i=0;
-      for (CallMapping callMapping: callMappingsApi) {
-        CallMappingImpl callMappingImpl = new CallMappingImpl();
-        callMappingImpl.sourceBinding = workflowParser.parseBinding(callMapping.getSourceBinding(), Object.class, false, call, fieldName+"["+i+"]");
-        callMappingImpl.destinationVariableId = callMapping.getDestinationVariableId();
-        callMappingImpls.add(callMappingImpl);
-        i++;
-      }
-      return callMappingImpls;
+  protected List<CallMappingImpl> parseMappings(List<CallMapping> mappingsApi, Call call, String fieldName, WorkflowParser workflowParser) {
+    if (mappingsApi==null) {
+      return null;
     }
-    return null;
+    List<CallMappingImpl> mappingImpls = new ArrayList<>(mappingsApi.size());
+    int i=0;
+    for (CallMapping mappingApi: mappingsApi) {
+      CallMappingImpl mappingImpl = new CallMappingImpl();
+      mappingImpl.sourceBinding = workflowParser.parseBinding(mappingApi.getSourceBinding(), Object.class, false, call, fieldName+"["+i+"]");
+      mappingImpl.destinationVariableId = mappingApi.getDestinationVariableId();
+      mappingImpls.add(mappingImpl);
+      i++;
+    }
+    return mappingImpls;
   }
 
   @Override

@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity.types;
 
+import com.effektif.workflow.api.activities.CallMapping;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 
 
@@ -20,5 +21,13 @@ public class CallMappingImpl {
   
   protected BindingImpl<Object> sourceBinding;
   protected String destinationVariableId;
-
+  
+  public CallMapping serialize() {
+    CallMapping mapping = new CallMapping();
+    if (sourceBinding!=null) {
+      mapping.setSourceBinding(sourceBinding.serialize());
+    }
+    mapping.setDestinationVariableId(destinationVariableId);
+    return mapping;
+  }
 }

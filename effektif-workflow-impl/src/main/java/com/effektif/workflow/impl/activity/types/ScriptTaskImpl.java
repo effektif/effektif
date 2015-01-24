@@ -28,7 +28,8 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;
   public Map<String, String> mappings;
-  public Script compiledScript;
+  public String scriptText;
+  public Script script;
   
   public ScriptTaskImpl() {
     super(ScriptTask.class);
@@ -36,19 +37,20 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   @Override
   public void parse(ActivityImpl activityImpl, ScriptTask scriptTask, WorkflowParser parser) {
+    super.parse(activityImpl, scriptTask, parser);
     this.scriptService = parser.getConfiguration(ScriptService.class);
     this.mappings = scriptTask.getMappings();
-    String script = scriptTask.getScript();
-    if (script!=null) {
-      compiledScript = scriptService.compile(script);
-      compiledScript.mappings = mappings;
+    this.scriptText = scriptTask.getScript();
+    if (scriptText!=null) {
+      script = scriptService.compile(scriptText);
+      script.mappings = mappings;
     }
   }
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
-    if (compiledScript!=null) {
-      scriptService.evaluateScript(activityInstance, compiledScript);
+    if (script!=null) {
+      scriptService.evaluateScript(activityInstance, script);
     }
     activityInstance.onwards();
   }

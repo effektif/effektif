@@ -13,12 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.data;
 
+import com.effektif.workflow.api.command.TypedValue;
 
 
 public class TypedValueImpl {
 
-  DataType type;
-  Object value;
+  public DataType type;
+  public Object value;
 
   public TypedValueImpl(DataType type, Object value) {
     this.type = type;
@@ -39,5 +40,12 @@ public class TypedValueImpl {
   
   public void setValue(Object value) {
     this.value = value;
+  }
+
+  public TypedValue serialize() {
+    TypedValue typedValue = new TypedValue();
+    typedValue.setType(type.serialize());
+    typedValue.setValue(value);
+    return typedValue;
   }
 }

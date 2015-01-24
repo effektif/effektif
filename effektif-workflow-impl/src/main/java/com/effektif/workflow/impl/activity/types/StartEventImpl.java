@@ -20,8 +20,6 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 public class StartEventImpl extends AbstractActivityType<StartEvent> {
 
-  public static final StartEventImpl INSTANCE = new StartEventImpl();
-
   public StartEventImpl() {
     super(StartEvent.class);
   }
