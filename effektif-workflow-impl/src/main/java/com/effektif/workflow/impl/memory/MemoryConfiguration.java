@@ -19,9 +19,9 @@ import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 public class MemoryConfiguration extends DefaultConfiguration {
 
   public MemoryConfiguration() {
-    brewery.register(new MemoryWorkflowStore());
-    brewery.register(new MemoryWorkflowInstanceStore());
-    brewery.register(new MemoryTaskService());
-    brewery.register(new MemoryJobServiceImpl());
+    brewery.ingredient(new MemoryWorkflowStore());
+    brewery.ingredient(new MemoryWorkflowInstanceStore());
+    brewery.ingredient(new MemoryTaskService());
+    brewery.ingredient(new MemoryJobServiceImpl());
   }
 }

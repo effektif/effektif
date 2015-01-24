@@ -17,11 +17,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
-import com.effektif.workflow.impl.data.DataType;
-import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
@@ -37,36 +33,6 @@ public class MongoConfiguration extends DefaultConfiguration {
 
   public static List<ServerAddress> DEFAULT_SERVER_ADDRESSES = Lists.of(createServerAddress("localhost", null));
   
-
-  public static class JobFields {
-    public String _id = "_id";
-    public String key = "key";
-    public String duedate = "duedate";
-    public String lock = "lock";
-    public String executions= "executions";
-    public String retries = "retries";
-    public String retryDelay = "retryDelay";
-    public String done = "done";
-    public String dead = "dead";
-    public String organizationId = "organizationId";
-    public String processId = "processId";
-    public String workflowId = "workflowId";
-    public String workflowInstanceId = "workflowInstanceId";
-    public String lockWorkflowInstance = "lockWorkflowInstance";
-    public String activityInstanceId = "activityInstanceId";
-    public String taskId = "taskId";
-    public String error = "error";
-    public String logs = "logs";
-    public String time = "time";
-    public String duration = "duration";
-    public String owner = "owner";
-    public String jobType = "jobType";
-  }
-  
-  public static class JobExecutionFields {
-  }
-
-  
   protected List<ServerAddress> serverAddresses;
   protected String databaseName = "effektif";
   protected List<MongoCredential> credentials;
@@ -81,26 +47,15 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected WriteConcern writeConcernJobs;
   
   public MongoConfiguration() {
-    registerService(new MongoWorkflowStore());
-    registerService(new MongoWorkflowInstanceStore());
-    registerService(new MemoryTaskService());
-    registerService(new MongoJobs());
+    brewery.ingredient(this);
+    brewery.supplier(new MongoClientFactory(), MongoClient.class);
+    brewery.supplier(new MongoDbFactory(), DB.class);
+    brewery.ingredient(new MongoWorkflowStore());
+    brewery.ingredient(new MongoWorkflowInstanceStore());
+    brewery.ingredient(new MemoryTaskService());
+    brewery.ingredient(new MongoJobs());
   }
   
-  @Override
-  public DefaultConfiguration initialize() {
-    MongoClient mongoClient = new MongoClient(
-            getServerAddresses(), 
-            getCredentials(), 
-            getOptionBuilder().build());
-    registerService(mongoClient);
-    
-    DB db = mongoClient.getDB(getDatabaseName());
-    registerService(db);
-
-    return super.initialize();
-  }
-
   public MongoConfiguration server(String host) {
     if (serverAddresses==null) {
       serverAddresses = new ArrayList<>();
@@ -186,36 +141,6 @@ public class MongoConfiguration extends DefaultConfiguration {
     return this;
   }
   
-  @Override
-  public MongoConfiguration registerService(Object service) {
-    super.registerService(service);
-    return this;
-  }
-
-  @Override
-  public MongoConfiguration registerJavaBeanType(Class< ? > javaBeanType) {
-    super.registerJavaBeanType(javaBeanType);
-    return this;
-  }
-
-  @Override
-  public MongoConfiguration registerActivityType(ActivityType activityType) {
-    super.registerActivityType(activityType);
-    return this;
-  }
-
-  @Override
-  public MongoConfiguration registerDataType(DataType type) {
-    super.registerDataType(type);
-    return this;
-  }
-  
-  @Override
-  public MongoConfiguration registerJobType(Class< ? extends JobType> jobTypeClass) {
-    super.registerJobType(jobTypeClass);
-    return this;
-  }
-
   public void setServerAddresses(List<ServerAddress> serverAddresses) {
     this.serverAddresses = serverAddresses;
   }

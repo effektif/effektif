@@ -42,7 +42,7 @@ public abstract class DefaultConfiguration implements Configuration {
   protected String id;
   protected Brewery brewery;
   
-  protected List<Initializable> initializables = new ArrayList<>();
+  protected List<Brewable> brewables = new ArrayList<>();
   protected List<ActivityType> activityTypes = new ArrayList<>();
   protected List<DataType> types = new ArrayList<>();
   protected List<Class<? extends JobType>> jobTypeClasses = new ArrayList<>();
@@ -50,7 +50,7 @@ public abstract class DefaultConfiguration implements Configuration {
 
   public DefaultConfiguration() {
     brewery = new Brewery();
-    brewery.register(this);
+    brewery.ingredient(this);
     registerDefaultWorkflowEngine();
     registerDefaultObjectMapper();
     registerDefaultJsonFactory();
@@ -74,52 +74,52 @@ public abstract class DefaultConfiguration implements Configuration {
   }
   
   protected void registerDefaultWorkflowEngine() {
-    brewery.register(new WorkflowEngineConfiguration());
-    brewery.register(new WorkflowEngineImpl());
+    brewery.ingredient(new WorkflowEngineConfiguration());
+    brewery.ingredient(new WorkflowEngineImpl());
   }
   
   protected void registerDefaultWorkflowCache() {
-    brewery.register(new SimpleWorkflowCache());
+    brewery.ingredient(new SimpleWorkflowCache());
   }
 
   protected void registerDefaultExecutorService() {
-    brewery.register(new AsynchronousExecutorService());
+    brewery.ingredient(new AsynchronousExecutorService());
   }
 
   protected void registerDefaultExpressionService() {
-    brewery.register(new ExpressionServiceImpl());
+    brewery.ingredient(new ExpressionServiceImpl());
   }
 
   protected void registerDefaultScriptService() {
-    brewery.register(new ScriptServiceImpl());
+    brewery.ingredient(new ScriptServiceImpl());
   }
 
   protected void registerDefaultJsonService() {
-    brewery.register(new JacksonJsonService());
+    brewery.ingredient(new JacksonJsonService());
   }
 
   protected void registerDefaultActivityTypeService() {
-    brewery.register(new DefaultActivityTypeService());
+    brewery.ingredient(new DefaultActivityTypeService());
   }
   
   protected void registerDefaultDataTypeService() {
-    brewery.register(new DefaultDataTypeService());
+    brewery.ingredient(new DefaultDataTypeService());
   }
   
   protected void registerDefaultAdapterService() {
-    brewery.register(new AdapterService());
+    brewery.ingredient(new AdapterService());
   }
   
   protected void registerDefaultObjectMapper() {
-    brewery.register(new ObjectMapper());
+    brewery.ingredient(new ObjectMapper());
   }
 
   protected void registerDefaultJsonFactory() {
-    brewery.register(new JsonFactory());
+    brewery.ingredient(new JsonFactory());
   }
 
   protected void registerDefaultScriptManager() {
-    brewery.register(new ScriptEngineManager());
+    brewery.ingredient(new ScriptEngineManager());
   }
 
   public DefaultConfiguration id(String id) {
@@ -128,7 +128,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
   
   public DefaultConfiguration synchronous() {
-    brewery.register(new SynchronousExecutorService());
+    brewery.ingredient(new SynchronousExecutorService());
     return this;
   }
 

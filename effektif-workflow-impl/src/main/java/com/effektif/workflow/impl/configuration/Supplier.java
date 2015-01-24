@@ -14,8 +14,8 @@
 package com.effektif.workflow.impl.configuration;
 
 
-public interface Factory {
+public interface Supplier {
 
-  Object create(String name, Brewery brewery);
+  Object supply(Brewery brewery, String name);
 
 }

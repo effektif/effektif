@@ -14,7 +14,8 @@
 package com.effektif.workflow.impl.configuration;
 
 
-public interface Registerable {
+public interface Brewable {
 
-  void register(Brewery brewery);
+  void brew(Brewery brewery);
+
 }

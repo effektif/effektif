@@ -37,10 +37,35 @@ import com.mongodb.WriteConcern;
 
 public class MongoJobs extends MongoCollection {
 
-  protected MongoConfiguration.JobFields fields;
+  public static class JobFields {
+    public String _id = "_id";
+    public String key = "key";
+    public String duedate = "duedate";
+    public String lock = "lock";
+    public String executions= "executions";
+    public String retries = "retries";
+    public String retryDelay = "retryDelay";
+    public String done = "done";
+    public String dead = "dead";
+    public String organizationId = "organizationId";
+    public String processId = "processId";
+    public String workflowId = "workflowId";
+    public String workflowInstanceId = "workflowInstanceId";
+    public String lockWorkflowInstance = "lockWorkflowInstance";
+    public String activityInstanceId = "activityInstanceId";
+    public String taskId = "taskId";
+    public String error = "error";
+    public String logs = "logs";
+    public String time = "time";
+    public String duration = "duration";
+    public String owner = "owner";
+    public String jobType = "jobType";
+  }
+
   protected WriteConcern writeConcernJobs;
   protected String lockOwner;
   protected JsonService jsonService;
+  protected MongoJobs.JobFields fields;
 
   public MongoJobs() {
   }

@@ -28,8 +28,8 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.Retry;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -41,7 +41,7 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 
 
-public class MongoWorkflowStore extends MongoCollection implements WorkflowStore, Initializable<MongoConfiguration> {
+public class MongoWorkflowStore extends MongoCollection implements WorkflowStore, Brewable {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
@@ -73,16 +73,17 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   @Override
-  public void initialize(Brewery brewery, MongoConfiguration configuration) {
+  public void brew(Brewery brewery) {
     DB db = brewery.get(DB.class);
-    this.dbCollection = db.getCollection(configuration.getWorkflowsCollectionName());
-    this.isPretty = configuration.isPretty;
+    MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
+    this.dbCollection = db.getCollection(mongoConfiguration.getWorkflowsCollectionName());
+    this.isPretty = mongoConfiguration.isPretty;
     this.jsonService = brewery.get(JsonService.class);
-    this.writeConcernInsertWorkflow = configuration.getWriteConcernInsertWorkflow(this.dbCollection);
+    this.writeConcernInsertWorkflow = mongoConfiguration.getWriteConcernInsertWorkflow(this.dbCollection);
     this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
     this.workflowVersions = new MongoCollection();
-    this.workflowVersions.dbCollection = db.getCollection(configuration.getWorkflowsCollectionName());
-    this.workflowVersions.isPretty =configuration.isPretty; 
+    this.workflowVersions.dbCollection = db.getCollection(mongoConfiguration.getWorkflowsCollectionName());
+    this.workflowVersions.isPretty =mongoConfiguration.isPretty; 
   }
 
   @Override

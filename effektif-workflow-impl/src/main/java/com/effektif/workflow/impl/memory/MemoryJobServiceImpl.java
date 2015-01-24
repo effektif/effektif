@@ -40,8 +40,8 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
   }
   
   @Override
-  public void initialize(Brewery brewery) {
-    super.initialize(brewery);
+  public void brew(Brewery brewery) {
+    super.brew(brewery);
     this.workflowInstanceIds = new HashSet<>();
     this.jobs = new LinkedList<>();
     this.jobsDone = new ArrayList<>();

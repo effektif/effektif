@@ -33,8 +33,8 @@ public class MongoJobService extends JobServiceImpl implements JobService {
   }
   
   @Override
-  public void initialize(Brewery brewery) {
-    super.initialize(brewery);
+  public void brew(Brewery brewery) {
+    super.brew(brewery);
     this.jobs = brewery.get(MongoJobs.class);
   }
 

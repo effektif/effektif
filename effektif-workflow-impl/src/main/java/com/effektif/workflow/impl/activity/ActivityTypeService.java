@@ -24,14 +24,14 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class ActivityTypeService implements Initializable {
+public class ActivityTypeService implements Brewable {
   
   private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
   
@@ -48,7 +48,7 @@ public class ActivityTypeService implements Initializable {
   }
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.objectMapper = brewery.get(ObjectMapper.class);
     this.configuration = brewery.get(Configuration.class);
   }

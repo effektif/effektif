@@ -15,7 +15,7 @@ import java.util.TimerTask;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.util.Time;
@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public abstract class JobServiceImpl implements JobService, Initializable {
+public abstract class JobServiceImpl implements JobService, Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
@@ -46,7 +46,7 @@ public abstract class JobServiceImpl implements JobService, Initializable {
   }
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.processEngine = brewery.get(WorkflowEngineImpl.class);
     this.executor = brewery.get(ExecutorService.class);
   }

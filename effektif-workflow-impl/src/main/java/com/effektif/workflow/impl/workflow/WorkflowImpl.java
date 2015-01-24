@@ -32,6 +32,9 @@ public class WorkflowImpl extends ScopeImpl {
   public String deployedBy;
   public Long version;
   public List<WorkflowInstanceEventListener> listeners;
+  
+  public WorkflowImpl() {
+  }
 
   public void parse(Workflow apiWorkflow, WorkflowParser parse) {
     this.workflow = this;

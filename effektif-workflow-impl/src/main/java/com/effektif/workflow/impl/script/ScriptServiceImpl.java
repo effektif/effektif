@@ -21,11 +21,11 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
-public class ScriptServiceImpl implements ScriptService, Initializable {
+public class ScriptServiceImpl implements ScriptService, Brewable {
 
   public static final String JAVASCRIPT = "JavaScript";
 
@@ -35,7 +35,7 @@ public class ScriptServiceImpl implements ScriptService, Initializable {
   }
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.scriptEngineManager = brewery.get(ScriptEngineManager.class);
   }
 

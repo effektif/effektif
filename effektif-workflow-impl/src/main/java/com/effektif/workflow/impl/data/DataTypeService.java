@@ -28,13 +28,13 @@ import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class DataTypeService implements Initializable {
+public class DataTypeService implements Brewable {
   
   protected Configuration configuration;
   protected ObjectMapper objectMapper;
@@ -46,7 +46,7 @@ public class DataTypeService implements Initializable {
   protected Map<Class<? extends Type>, TypeGenerator> typeGenerators = new HashMap<>();
   
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     this.objectMapper = brewery.get(ObjectMapper.class);
   }

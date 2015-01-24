@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 
 
-public class AsynchronousExecutorService implements ExecutorService, Initializable {
+public class AsynchronousExecutorService implements ExecutorService, Brewable {
   
   private static final Logger log = WorkflowEngineImpl.log;
   
@@ -41,7 +41,7 @@ public class AsynchronousExecutorService implements ExecutorService, Initializab
   }
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4, new ThreadPoolExecutor.CallerRunsPolicy());
     this.queue = scheduledThreadPoolExecutor.getQueue();
     this.executor = scheduledThreadPoolExecutor;

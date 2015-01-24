@@ -23,7 +23,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
 
-public class JacksonJsonService implements JsonService, Initializable {
+public class JacksonJsonService implements JsonService, Brewable {
   
   protected JsonFactory jsonFactory;
   protected ObjectMapper objectMapper;
@@ -52,7 +52,7 @@ public class JacksonJsonService implements JsonService, Initializable {
 //  protected WorkflowEngineImpl workflowEngine; 
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.objectMapper = brewery.get(ObjectMapper.class);
     this.jsonFactory = brewery.get(JsonFactory.class);
 //    this.activityTypeService = serviceRegistry.getService(ActivityTypeService.class);

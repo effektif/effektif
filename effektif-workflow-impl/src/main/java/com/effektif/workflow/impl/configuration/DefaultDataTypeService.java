@@ -28,8 +28,8 @@ import com.effektif.workflow.impl.data.types.WorkflowReferenceTypeImpl;
 public class DefaultDataTypeService extends DataTypeService {
 
   @Override
-  public void initialize(Brewery brewery) {
-    super.initialize(brewery);
+  public void brew(Brewery brewery) {
+    super.brew(brewery);
     registerDataType(new BindingTypeImpl());
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());

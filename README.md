@@ -53,7 +53,7 @@ assertEquals(1, tasks.size());
 
 * Who is behind this project?
 * [Getting started](Getting-started)
-* Workflow engine types
+* [Workflow engine types](Workflow-engine-types)
 * Building workflows
 * Create your own activity
 * Create your own datasource

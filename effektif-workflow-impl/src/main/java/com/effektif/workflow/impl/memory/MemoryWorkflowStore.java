@@ -25,11 +25,11 @@ import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
-public class MemoryWorkflowStore implements WorkflowStore, Initializable {
+public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
   protected Map<String, Long> nextVersionByName;
   protected Map<String, Workflow> workflows;
@@ -38,7 +38,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Initializable {
   }
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.workflows = new ConcurrentHashMap<String, Workflow>();
     this.nextVersionByName = new ConcurrentHashMap<String, Long>();
   }

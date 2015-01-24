@@ -14,21 +14,35 @@
 package com.effektif.workflow.impl.configuration;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.effektif.workflow.impl.util.Exceptions;
 
 
-/** brews service objects used by the implementation from raw configuration materials.
+/** brews service objects used by the implementation from raw configuration ingredients.
  * (minimalistic ioc container) */ 
 public class Brewery {
   
   // private static final Logger log = LoggerFactory.getLogger(Brewery.class);
 
+  /** maps aliases to object names. 
+   * aliases are typically interface or superclass names. 
+   * object names are typically the most specific classname of the object. */
   Map<String,String> aliases = new HashMap<>();
-  Map<String,Factory> factories = new HashMap<>();
-  Map<String,Object> created = new HashMap<>();
-  Map<String,Object> initialized = new HashMap<>();
+  
+  /** maps object names to a supplier, which can create the object on demand. */  
+  Map<String,Supplier> suppliers = new HashMap<>();
+  
+  /** maps names to a ingredients are objects that potentially need to be brewed before they become a brew */
+  Map<String,Object> ingredients = new HashMap<>();
+  
+  /** the names of objects that are being brewed, to prevent that they are brewed twice */
+  Set<String> brewing = new HashSet<>();
+  
+  /** maps object names to brews, which are the final cached objects that are delivered */
+  Map<String,Object> brews = new HashMap<>();
 
   @SuppressWarnings("unchecked")
   public <T> T get(Class<T> type) {
@@ -40,74 +54,92 @@ public class Brewery {
     if (aliases.containsKey(name)) {
       name = aliases.get(name);
     }
-    Object o = initialized.get(name);
+    Object o = brews.get(name);
     if (o!=null) {
       return o;
     }
-    o = created.remove(name);
+    o = ingredients.get(name);
     if (o!=null) {
-      initialize(o);
+      brew(o);
       return o;
     } 
-    Factory factory = factories.get(name);
-    if (factory!=null) {
-      return factory.create(name, this);
+    Supplier supplier = suppliers.get(name);
+    if (supplier!=null) {
+      // log.debug("supplying("+name+")");
+      return supplier.supply(this, name);
     }
-    throw new RuntimeException(name+" is not in registry");
+    String contents = "brews\n";
+    for (String n: brews.keySet()) {
+      contents += "  "+n+"\n";
+    }
+    contents += "ingredients\n";
+    for (String n: ingredients.keySet()) {
+      contents += "  "+n+"\n";
+    }
+    contents += "suppliers\n";
+    for (String n: suppliers.keySet()) {
+      contents += "  "+n+"\n";
+    }
+    contents += "aliasses\n";
+    for (String n: aliases.keySet()) {
+      contents += "  "+n+"-->"+aliases.get(n)+"\n";
+    }
+    // log.debug("\n\n"+contents);
+    throw new RuntimeException(name+" is not in registry: \n"+contents);
   }
 
-  public void initialize(Object o) {
+  public void brew(Object o) {
     String name = o.getClass().getName();
-    registerAlias(name, o.getClass());
-    initialize(o, name);
+    alias(name, o.getClass());
+    brew(o, name);
   }
 
-  public void initialize(Object o, String name) {
-    if (o instanceof Initializable) {
-      // log.debug("initializing("+name+")");
-      ((Initializable)o).initialize(this);
+  public void brew(Object o, String name) {
+    if ( (o instanceof Brewable) 
+         &&!brewing.contains(name) ) {
+      // log.debug("brewing("+name+")");
+      brewing.add(name);
+      ((Brewable)o).brew(this);
+      brewing.remove(name);
     }
-    initialized.put(name, o);
+    brews.put(name, o);
   }
 
-  public void register(Object o) {
-    String name = o.getClass().getName();
-    registerAlias(name, o.getClass());
-    register(o, name);
+  public void ingredient(Object ingredient) {
+    String name = ingredient.getClass().getName();
+    alias(name, ingredient.getClass());
+    ingredient(ingredient, name);
   }
 
-  public void register(Object o, String name) {
-    // log.debug("created("+o+")-->"+name);
-    created.put(name, o);
-    if (o instanceof Registerable) {
-      ((Registerable)o).register(this);
-    }
+  public void ingredient(Object ingredient, String name) {
+    // log.debug("ingredient("+ingredient+")-->"+name);
+    ingredients.put(name, ingredient);
   }
 
-  public void registerFactory(Factory f, Class<?> type) {
-    String name = type.getClass().getName();
-    registerFactory(f, name);
-    registerAlias(name, type);
+  public void supplier(Supplier supplier, Class<?> type) {
+    String name = type.getName();
+    supplier(supplier, name);
+    alias(name, type);
   }
 
-  public void registerFactory(Factory f, String name) {
-    factories.put(name, f);
+  public void supplier(Supplier supplier, String name) {
+    suppliers.put(name, supplier);
   }
 
-  public void registerAlias(String alias, String name) {
+  public void alias(String alias, String name) {
     // log.debug("alias("+alias+")-->"+name);
     aliases.put(alias, name);
   }
 
-  protected void registerAlias(String name, Class<?>... types) {
+  protected void alias(String name, Class<?>... types) {
     if (types!=null) {
       for (Class<?> serviceType: types) {
-        registerAlias(serviceType.getName(), name);
+        alias(serviceType.getName(), name);
         Class< ? > superclass = serviceType.getSuperclass();
         if (superclass!=null && superclass!=Object.class) {
-          registerAlias(name, superclass);
+          alias(name, superclass);
         }
-        registerAlias(name, serviceType.getInterfaces());
+        alias(name, serviceType.getInterfaces());
       }
     }
   }

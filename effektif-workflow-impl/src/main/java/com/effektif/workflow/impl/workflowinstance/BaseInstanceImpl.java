@@ -17,9 +17,6 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
-/**
- * @author Tom Baeyens
- */
 public class BaseInstanceImpl {
 
   public String id;
@@ -35,7 +32,7 @@ public class BaseInstanceImpl {
     this.id = id;
     this.parent = parent;
     this.workflowInstance = parent.workflowInstance;
-    this.workflow = parent.workflowInstance.workflow;
+    this.workflow = parent.workflow;
     this.configuration = parent.configuration;
   }
 

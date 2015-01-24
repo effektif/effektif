@@ -29,8 +29,8 @@ import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -51,11 +51,12 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 
 
-public class MongoWorkflowInstanceStore extends MongoCollection implements WorkflowInstanceStore, Initializable {
+public class MongoWorkflowInstanceStore extends MongoCollection implements WorkflowInstanceStore, Brewable {
   
   public static final Logger log = WorkflowEngineImpl.log;
 
   protected Configuration configuration;
+  protected WorkflowEngineImpl workflowEngine;
   protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
   
@@ -81,10 +82,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
     String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
   }
-  
-  public Long nextActivityInstanceId;
-  public Long nextVariableInstanceId;
-
   
   interface ActivityInstanceFields extends ScopeInstanceFields {
     String PARENT = "parent";
@@ -112,13 +109,15 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
   
   @Override
-  public void initialize(Brewery brewery, MongoConfiguration configuration) {
+  public void brew(Brewery brewery) {
+    MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     DB db = brewery.get(DB.class);
-    this.dbCollection = db.getCollection(configuration.workflowInstancesCollectionName);
-    this.isPretty = configuration.isPretty;
-    this.configuration = brewery.get(WorkflowEngineImpl.class);
-    this.writeConcernInsertWorkflowInstance = configuration.getWriteConcernInsertWorkflowInstance(this.dbCollection);
-    this.writeConcernFlushUpdates = configuration.getWriteConcernFlushUpdates(this.dbCollection);
+    this.configuration = brewery.get(MongoConfiguration.class);
+    this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
+    this.dbCollection = db.getCollection(mongoConfiguration.workflowInstancesCollectionName);
+    this.isPretty = mongoConfiguration.isPretty;
+    this.writeConcernInsertWorkflowInstance = mongoConfiguration.getWriteConcernInsertWorkflowInstance(this.dbCollection);
+    this.writeConcernFlushUpdates = mongoConfiguration.getWriteConcernFlushUpdates(this.dbCollection);
   }
   
   @Override
@@ -153,7 +152,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     if (updates.isEndChanged) {
       if (log.isDebugEnabled())
         log.debug("  Workflow instance ended");
-      sets.append(WorkflowInstanceFields.END, workflowInstance.end);
+      sets.append(WorkflowInstanceFields.END, workflowInstance.end.toDate());
       sets.append(WorkflowInstanceFields.DURATION, workflowInstance.duration);
     }
     // MongoDB can't combine updates of array elements together with 
@@ -318,7 +317,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       .push("$set")
         .push(WorkflowInstanceFields.LOCK)
           .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
-          .add(WorkflowInstanceLockFields.OWNER, configuration.getId())
+          .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
         .pop()
       .pop()
       .get();
@@ -374,9 +373,16 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
 
   public WorkflowInstanceImpl readWorkflowInstance(BasicDBObject dbWorkflowInstance) {
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
-    workflowInstance.configuration = configuration;
-    workflowInstance.workflowInstance = workflowInstance;
     workflowInstance.id = readId(dbWorkflowInstance, WorkflowInstanceFields._ID);
+    String workflowId = readId(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);
+    WorkflowImpl workflow = workflowEngine.getWorkflowImpl(workflowId);
+    if (workflow==null) {
+      throw new RuntimeException("No workflow for instance "+workflowInstance.id);
+    }
+    workflowInstance.workflow = workflow;
+    workflowInstance.workflowInstance = workflowInstance;
+    workflowInstance.scope = workflow;
+    workflowInstance.configuration = configuration;
     workflowInstance.organizationId = readString(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
     workflowInstance.callerWorkflowInstanceId = readString(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID);
     workflowInstance.callerActivityInstanceId = readString(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID);
@@ -407,13 +413,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
       activityInstance.parent.addActivityInstance(activityInstance);
     }
 
-    String workflowId = readId(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);
-    WorkflowImpl workflow = configuration.getWorkflowImpl(workflowId);
-    if (workflow==null) {
-      throw new RuntimeException("No workflow for instance "+workflowInstance.id);
-    }
-    workflowInstance.workflow = workflow;
-    workflowInstance.scope = workflow;
     resolveActivityReferences(workflowInstance, workflow, allActivityIds);
     
     workflowInstance.variableInstances = readVariableInstances(dbWorkflowInstance, workflowInstance);
@@ -563,10 +562,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
       }
     }
-  }
-  
-  public WorkflowEngineImpl getProcessEngine() {
-    return configuration;
   }
   
   public WriteConcern getWriteConcernStoreProcessInstance() {

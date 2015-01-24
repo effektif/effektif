@@ -31,8 +31,8 @@ import com.effektif.workflow.impl.activity.types.UserTaskImpl;
 public class DefaultActivityTypeService extends ActivityTypeService {
   
   @Override
-  public void initialize(Brewery brewery) {
-    super.initialize(brewery);
+  public void brew(Brewery brewery) {
+    super.brew(brewery);
     registerActivityType(new StartEventImpl());
     registerActivityType(new EndEventImpl());
     registerActivityType(new EmailTaskImpl());

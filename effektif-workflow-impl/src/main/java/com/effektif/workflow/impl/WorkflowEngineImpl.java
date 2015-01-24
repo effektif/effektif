@@ -29,7 +29,7 @@ import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.types.CallerReference;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.json.JsonService;
@@ -40,7 +40,7 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
-public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
+public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
@@ -55,7 +55,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Initializable {
   protected Configuration configuration;
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     WorkflowEngineConfiguration workflowEngineConfiguration = brewery.get(WorkflowEngineConfiguration.class);
     this.id = workflowEngineConfiguration.getId();
     this.configuration = brewery.get(Configuration.class);

@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.script.Script;
 import com.effektif.workflow.impl.script.ScriptService;
@@ -23,12 +23,12 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class ExpressionServiceImpl implements ExpressionService, Initializable {
+public class ExpressionServiceImpl implements ExpressionService, Brewable {
   
   protected ScriptService scriptService;
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void brew(Brewery brewery) {
     this.scriptService = brewery.get(ScriptService.class);
   }
 

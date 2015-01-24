@@ -13,17 +13,21 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import com.effektif.workflow.impl.memory.MemoryTaskService;
-import com.effektif.workflow.impl.memory.MemoryWorkflowStore;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Supplier;
+import com.mongodb.MongoClient;
 
 
-public class MongoMemoryWorkflowEngineConfiguration extends MongoConfiguration {
+public class MongoClientFactory implements Supplier {
 
-  public MongoMemoryWorkflowEngineConfiguration() {
-    registerService(new MemoryWorkflowStore());
-    registerService(new MongoWorkflowInstanceStore());
-    registerService(new MemoryTaskService());
-    registerService(new MongoJobs());
+  @Override
+  public Object supply(Brewery brewery, String name) {
+    MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
+    MongoClient mongoClient = new MongoClient(
+            mongoConfiguration.getServerAddresses(), 
+            mongoConfiguration.getCredentials(), 
+            mongoConfiguration.getOptionBuilder().build());
+    brewery.brew(mongoClient);
+    return mongoClient;
   }
-  
 }
