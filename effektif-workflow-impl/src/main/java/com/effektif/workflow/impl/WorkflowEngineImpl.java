@@ -28,10 +28,12 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.activity.types.CallerReference;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -66,6 +68,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.brewery = brewery;
     this.listeners = new ArrayList<>();
+    
+    // ensuring the default activity types are registered
+    brewery.get(ActivityTypeService.class);
+    // ensuring the default data types are registered
+    brewery.get(DataTypeService.class);
   }
   
   public void startup() {

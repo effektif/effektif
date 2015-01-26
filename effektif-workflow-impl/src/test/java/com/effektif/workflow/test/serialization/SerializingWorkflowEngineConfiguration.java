@@ -24,14 +24,16 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
 
   WorkflowEngine workflowEngine;
   TaskService taskService;
+  Configuration configuration;
   
   public SerializingWorkflowEngineConfiguration() {
     TestConfiguration configuration = new TestConfiguration();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine(); 
     TaskService taskService = configuration.getTaskService(); 
-    JsonService jsonService = configuration.getRegistry().get(JsonService.class);
+    JsonService jsonService = configuration.get(JsonService.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
     this.taskService = new SerializingTaskServiceImpl(taskService, jsonService);
+    this.configuration = configuration;
   }
   
   public WorkflowEngine getWorkflowEngine() {
@@ -44,6 +46,13 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
 
   @Override
   public <T> T get(Class<T> type) {
+    if (JsonService.class.isAssignableFrom(type)) {
+      return configuration.get(type);
+    } else if (WorkflowEngine.class.isAssignableFrom(type)) {
+      return (T) workflowEngine;
+    } else if (TaskService.class.isAssignableFrom(type)) {
+      return (T) taskService;
+    }
     throw new RuntimeException("damn.. i didn't expect you needed "+type);
   }
 }

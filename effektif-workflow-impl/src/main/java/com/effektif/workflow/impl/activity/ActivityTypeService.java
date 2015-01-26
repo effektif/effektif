@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.workflow.Activity;
@@ -30,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ActivityTypeService implements Brewable {
   
-  // private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
+  private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
   
   protected ObjectMapper objectMapper;
   protected Configuration configuration;
@@ -56,6 +59,8 @@ public class ActivityTypeService implements Brewable {
     activityTypeClasses.put(activityTypeApiClass, activityType.getClass());
     activityTypeDescriptors.put(activityTypeApiClass, descriptor);
     activityTypes.put(activityTypeApiClass, activityType);
+    
+    log.debug("Registering "+activityTypeApiClass);
     objectMapper.registerSubtypes(activityTypeApiClass);
     if (descriptor!=null) {
       ObjectTypeImpl serializer = new ObjectTypeImpl(descriptor, configuration, activityTypeApiClass);

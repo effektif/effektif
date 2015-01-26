@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.util.Exceptions;
  * (minimalistic ioc container) */ 
 public class Brewery {
   
-  // private static final Logger log = LoggerFactory.getLogger(Brewery.class);
+   // private static final Logger log = LoggerFactory.getLogger(Brewery.class);
 
   /** maps aliases to object names. 
    * aliases are typically interface or superclass names. 

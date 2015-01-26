@@ -14,7 +14,7 @@
 package com.effektif.mongo;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -47,6 +47,7 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
+import com.effektif.workflow.impl.workflow.TimerImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -226,7 +227,6 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
-      dbWorkflow.put("id", dbWorkflow.remove(FieldsWorkflow._ID).toString());
       WorkflowImpl workflow = readWorkflow(dbWorkflow);
       workflows.add(workflow);
     }
@@ -275,11 +275,11 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query) {
     BasicDBObject dbQuery = new BasicDBObject();
     RequestContext requestContext = RequestContext.current();
-    if (hasOrganizationId(requestContext)) {
-      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
-    }
     if (query.getWorkflowId()!=null) {
       dbQuery.append(FieldsWorkflow._ID, new ObjectId(query.getWorkflowId()));
+    }
+    if (hasOrganizationId(requestContext)) {
+      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
     }
     if (query.getWorkflowName()!=null) {
       dbQuery.append(FieldsWorkflow.NAME, query.getWorkflowName());
@@ -317,13 +317,18 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     workflow.workflow = workflow;
     workflow.configuration = configuration;
     workflow.listeners = configuration.get(WorkflowEngineConfiguration.class).getListeners();
-    readActivities(workflow, dbWorkflow, parser);
-    readVariables(workflow, dbWorkflow);
-    readTransitions(workflow, dbWorkflow);
-    workflow.startActivities = parser.getStartActivities(workflow); 
+    
+    readScope(workflow, dbWorkflow, parser);
+    workflow.startActivities = parser.getStartActivities(workflow);
+    
+    if (parser.hasErrors()) {
+      log.error("Couldn't read workflow "+workflow.id+" from database: \n"+parser.getIssues().getIssueReport());
+      return null;
+    }
+    
     return workflow;
   }
-  
+
   public BasicDBObject writeWorkflow(WorkflowImpl workflow) {
     BasicDBObject dbWorkflow = new BasicDBObject();
     Stack<Map<String,Object>> dbObjectStack = new Stack<>();
@@ -342,7 +347,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     return dbWorkflow;
   }
   
-  protected void readActivities(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser) {
+  protected void readActivities(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser, Map<String,String> defaultTransitionIds) {
     List<BasicDBObject> dbActivities = readList(dbScope, FieldsWorkflow.ACTIVITIES);
     if (dbActivities!=null) {
       for (BasicDBObject dbActivity: dbActivities) {
@@ -352,24 +357,42 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
         activity.configuration = configuration;
         activity.parent = scope;
         
-        activity.multiInstance = readMultiInstance(readBasicDBObject(dbActivity, FieldsActivity.MULTI_INSTANCE));
-        activity.defaultTransition = TODO;
-        activity.incomingTransitions = TODO;
-        activity.outgoingTransitions = TODO;
+        activity.multiInstance = readMultiInstance(readBasicDBObject(dbActivity, FieldsActivity.MULTI_INSTANCE), parser);
+        String defaultTransitionId = (String) dbActivity.get(FieldsActivity.DEFAULT_TRANSITION_ID);
+        if (defaultTransitionId!=null) {
+          defaultTransitionIds.put(activity.id, defaultTransitionId);
+        }
         
-        readActivities(activity, dbActivity, parser);
-        readVariables(activity, dbActivity);
-        readTransitions(activity, dbActivity);
+        readScope(activity, dbActivity, parser);
 
         Map<String,Object> dbActivityType = readObjectMap(dbActivity, FieldsActivity.ACTIVITY_TYPE);
-        Activity activityApi = jsonService.jsonMapToObject(dbActivityType, Activity.class);
-        activity.activityType = activityTypeService.instantiateActivityType(activityApi);
-        activity.activityType.parse(activity, activityApi, parser);
-        scope.addActivity(activity);
+        log.debug("ACTIVITY JSON: "+PrettyPrinter.toJsonPrettyPrint(dbActivityType));
+        Activity activityApi = null;
+        try {
+          activityApi = jsonService.jsonMapToObject(dbActivityType, Activity.class);
+          activity.activityType = activityTypeService.instantiateActivityType(activityApi);
+          activity.activityType.parse(activity, activityApi, parser);
+          scope.addActivity(activity);
+        } catch (Exception e) {
+          parser.addError("Couldn't parse activity %s", dbActivityType);
+        }
       }
     }
   }
 
+  protected void readScope(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser) {
+    Map<String,String> defaultTransitionIds = new HashMap<>();
+    readActivities(scope, dbScope, parser, defaultTransitionIds);
+    readVariables(scope, dbScope, parser);
+    readTransitions(scope, dbScope);
+    if (!defaultTransitionIds.isEmpty()) {
+      for (ActivityImpl activity: scope.activities.values()) {
+        String defaultTransitionId = defaultTransitionIds.get(activity.id);
+        activity.defaultTransition = activity.findTransitionByIdLocal(defaultTransitionId);
+      }
+    }
+  }
+  
   protected void writeActivities(ScopeImpl scope, Stack<Map<String,Object>> dbObjectStack) {
     if (scope.activities!=null) {
       for (ActivityImpl activity: scope.activities.values()) {
@@ -377,7 +400,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
         Map<String,Object> dbParentScope = dbObjectStack.peek(); 
         dbObjectStack.push(dbActivity);
         
-        Map<String, Object> dbActivityType = jsonService.objectToJsonMap(activity.activityType);
+        Map<String, Object> dbActivityType = jsonService.objectToJsonMap(activity.activityType.serialize());
         writeObjectOpt(dbActivity, FieldsActivity.ACTIVITY_TYPE, dbActivityType);
         
         writeString(dbActivity, FieldsActivity._ID, activity.id);
@@ -393,13 +416,13 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     }
   }
 
-  protected MultiInstanceImpl readMultiInstance(BasicDBObject dbMultiInstance) {
+  protected MultiInstanceImpl readMultiInstance(BasicDBObject dbMultiInstance, WorkflowParser parser) {
     if (dbMultiInstance==null) {
       return null;
     }
     MultiInstanceImpl multiInstance = new MultiInstanceImpl();
     BasicDBObject dbVariable = readBasicDBObject(dbMultiInstance, FieldsMultiInstance.ELEMENT_VARIABLE);
-    multiInstance.elementVariable = readVariable(null, dbVariable);
+    multiInstance.elementVariable = readVariable(null, dbVariable, parser);
     List<BasicDBObject> dbValueBindings = readList(dbVariable, FieldsMultiInstance.VALUE_BINDINGS);
     if (dbValueBindings!=null) {
       multiInstance.valueBindings = new ArrayList<>(dbValueBindings.size());
@@ -490,9 +513,11 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
         
         String fromId = readString(dbTransition, FieldsTransition.FROM);
         transition.from = scope.findActivityByIdLocal(fromId);
+        transition.from.addOutgoingTransition(transition);
         
         String toId = readString(dbTransition, FieldsTransition.TO);
         transition.to = scope.findActivityByIdLocal(toId);
+        transition.to.addIncomingTransition(transition);
         
         String script = readString(dbTransition, FieldsTransition.CONDITION);
         if (script!=null) {
@@ -519,11 +544,11 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     }
   }
 
-  protected void readVariables(ScopeImpl scope, BasicDBObject dbScope) {
+  protected void readVariables(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser) {
     List<BasicDBObject> dbVariables = readList(dbScope, FieldsWorkflow.VARIABLES);
     if (dbVariables!=null) {
       for (BasicDBObject dbVariable: dbVariables) {
-        VariableImpl variable = readVariable(scope, dbVariable);
+        VariableImpl variable = readVariable(scope, dbVariable, parser);
         scope.addVariable(variable);
       }
     }
@@ -539,7 +564,7 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     }
   }
 
-  protected VariableImpl readVariable(ScopeImpl scope, BasicDBObject dbVariable) {
+  protected VariableImpl readVariable(ScopeImpl scope, BasicDBObject dbVariable, WorkflowParser parser) {
     VariableImpl variable = new VariableImpl();
     variable.id = readString(dbVariable, FieldsWorkflow._ID);
     if (scope!=null) {
@@ -548,11 +573,19 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     }
     Map<String,Object> dbType = readObjectMap(dbVariable, FieldsVariable.TYPE);
     if (dbType!=null) {
-      Type type = jsonService.jsonMapToObject(dbType, Type.class);
-      variable.type = dataTypeService.createDataType(type);
-      Object dbInitialValue = dbVariable.get(FieldsVariable.INITIAL_VALUE);
-      if (dbInitialValue!=null) {
-        variable.initialValue = variable.type.convertJsonToInternalValue(dbInitialValue);
+      try {
+        Type type = jsonService.jsonMapToObject(dbType, Type.class);
+        variable.type = dataTypeService.createDataType(type);
+        Object dbInitialValue = dbVariable.get(FieldsVariable.INITIAL_VALUE);
+        if (dbInitialValue!=null) {
+          try {
+            variable.initialValue = variable.type.convertJsonToInternalValue(dbInitialValue);
+          } catch (Exception e) {
+            parser.addError("Couldn't parse initial value from db: %s", dbInitialValue);
+          }
+        }
+      } catch (Exception e) {
+        parser.addError("Couldn't parse type from db: %s", dbType);
       }
     }
     return variable;
@@ -575,6 +608,10 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
   }
 
   protected void writeTimers(ScopeImpl scope, Stack<Map<String,Object>> dbObjectStack) {
-    throw new RuntimeException("TODO");
+    if (scope.timers!=null) {
+      for (TimerImpl timer: scope.timers) {
+        throw new RuntimeException("TODO");
+      }
+    }
   }
 }

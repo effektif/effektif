@@ -194,7 +194,7 @@ public abstract class ScopeImpl {
     activity.parent = this;
   }
 
-  protected TransitionImpl findTransitionByIdLocal(String transitionId) {
+  public TransitionImpl findTransitionByIdLocal(String transitionId) {
     if (transitions!=null) {
       for (TransitionImpl transition: transitions) {
         if (transitionId.equals(transition.id)) {

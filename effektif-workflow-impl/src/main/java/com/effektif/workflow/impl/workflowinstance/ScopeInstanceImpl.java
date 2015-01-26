@@ -77,7 +77,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public abstract void ended(ActivityInstanceImpl activityInstance);
 
-  public abstract boolean isProcessInstance();
+  public abstract boolean isWorkflowInstance();
   
   protected void toScopeInstance(ScopeInstance scopeInstanceApi) {
     scopeInstanceApi.setId(id);

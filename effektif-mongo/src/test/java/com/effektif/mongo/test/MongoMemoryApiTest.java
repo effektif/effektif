@@ -11,20 +11,36 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.serialization;
+package com.effektif.mongo.test;
 
 import org.junit.Test;
-import org.junit.runners.model.InitializationError;
 
+import com.effektif.mongo.MongoMemoryConfiguration;
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.test.TestSuiteHelper;
+import com.mongodb.DB;
 
-public class SerializationTest {
+
+public class MongoMemoryApiTest {
   
   @Test
-  public void testSerialization() throws InitializationError {
-    TestSuiteHelper.run(new SerializingWorkflowEngineConfiguration()
+  public void testApiWithMongoConfiguration() {
+    Configuration configuration = createMongoMemoryWorkflowEngineConfiguration();
+    
+    DB db = configuration.get(DB.class);
+    db.dropDatabase();
+
+    TestSuiteHelper.run(configuration
       // use the next line if you only want to run 1 test
       // , CallTest.class, "testCallActivity"
       );
   }
+
+  public static Configuration createMongoMemoryWorkflowEngineConfiguration() {
+    return new MongoMemoryConfiguration()
+      .prettyPrint()
+      .synchronous()
+      .storeWorkflowIdsAsStrings();
+  }
+
 }

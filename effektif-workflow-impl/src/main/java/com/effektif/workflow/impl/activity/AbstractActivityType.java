@@ -79,8 +79,6 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
     return false;
   }
   
-  
-
 //  @SuppressWarnings({ "rawtypes", "unchecked" })
 //  @Override
 //  public void validate(ActivityImpl activity, T apiActivity, Validator validator) {

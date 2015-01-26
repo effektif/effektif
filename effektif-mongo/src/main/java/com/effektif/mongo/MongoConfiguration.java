@@ -45,7 +45,8 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
   protected WriteConcern writeConcernJobs;
-  
+  protected boolean storeWorkflowIdsAsStrings = false;
+
   public MongoConfiguration() {
     brewery.ingredient(this);
     brewery.supplier(new MongoClientFactory(), MongoClient.class);
@@ -141,6 +142,11 @@ public class MongoConfiguration extends DefaultConfiguration {
     return this;
   }
   
+  public MongoConfiguration storeWorkflowIdsAsStrings() {
+    this.storeWorkflowIdsAsStrings = true;
+    return this;
+  }
+
   public void setServerAddresses(List<ServerAddress> serverAddresses) {
     this.serverAddresses = serverAddresses;
   }
@@ -208,6 +214,14 @@ public class MongoConfiguration extends DefaultConfiguration {
   public void setPretty(boolean isPretty) {
     this.isPretty = isPretty;
   }
+
+  public boolean getStoreWorkflowIdsAsString() {
+    return this.storeWorkflowIdsAsStrings;
+  }
+  
+  public void setStoreWorkflowIdsAsString(boolean storeWorkflowIdsAsStrings) {
+    this.storeWorkflowIdsAsStrings = storeWorkflowIdsAsStrings;
+  }
   
   public void setOptionBuilder(MongoClientOptions.Builder optionBuilder) {
     this.optionBuilder = optionBuilder;
@@ -235,5 +249,16 @@ public class MongoConfiguration extends DefaultConfiguration {
   
   public static WriteConcern getWriteConcern(DBCollection dbCollection, WriteConcern configuredWriteConcern) {
     return configuredWriteConcern!=null ? configuredWriteConcern : dbCollection.getWriteConcern();
+  }
+
+  @Override
+  public MongoConfiguration synchronous() {
+    super.synchronous();
+    return this;
+  }
+
+  public MongoConfiguration databaseName(String databaseName) {
+    this.databaseName = databaseName;
+    return this;
   }
 }

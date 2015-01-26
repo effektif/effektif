@@ -297,7 +297,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   @Override
-  public boolean isProcessInstance() {
+  public boolean isWorkflowInstance() {
     return true;
   }
 
