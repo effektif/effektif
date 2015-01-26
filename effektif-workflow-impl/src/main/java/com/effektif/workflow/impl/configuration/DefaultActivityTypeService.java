@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl.configuration;
 
 import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.activity.types.AdapterActivityImpl;
 import com.effektif.workflow.impl.activity.types.CallImpl;
 import com.effektif.workflow.impl.activity.types.EmailTaskImpl;
 import com.effektif.workflow.impl.activity.types.EmbeddedSubprocessImpl;
@@ -33,18 +34,19 @@ public class DefaultActivityTypeService extends ActivityTypeService {
   @Override
   public void brew(Brewery brewery) {
     super.brew(brewery);
-    registerActivityType(new StartEventImpl());
+    registerActivityType(new AdapterActivityImpl());
+    registerActivityType(new CallImpl());
     registerActivityType(new EndEventImpl());
     registerActivityType(new EmailTaskImpl());
     registerActivityType(new EmbeddedSubprocessImpl());
     registerActivityType(new ExclusiveGatewayImpl());
-    registerActivityType(new ParallelGatewayImpl());
-    registerActivityType(new CallImpl());
-    registerActivityType(new ScriptTaskImpl());
-    registerActivityType(new UserTaskImpl());
-    registerActivityType(new NoneTaskImpl());
     registerActivityType(new JavaServiceTaskImpl());
     registerActivityType(new HttpServiceTaskImpl());
+    registerActivityType(new NoneTaskImpl());
+    registerActivityType(new ParallelGatewayImpl());
+    registerActivityType(new ScriptTaskImpl());
+    registerActivityType(new StartEventImpl());
+    registerActivityType(new UserTaskImpl());
   }
 
 }

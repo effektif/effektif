@@ -11,15 +11,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
+package com.effektif.workflow.impl.adapter;
 
-import com.effektif.workflow.impl.adapter.Descriptor;
+import java.util.List;
+
+import com.effektif.workflow.api.command.RequestContext;
 
 
-public interface ActivityAdapter {
+public interface AdapterService {
+  
+  Adapter saveAdapter(Adapter adapter);
+  
+  Adapter refreshAdapter(String adapterId);
 
-  Descriptor getDescriptor();
+  List<Adapter> findAdapters(AdapterQuery adapterQuery);
 
-  ActivityResponse execute(ActivityRequest activityRequest);
-
+  void deleteAdapters(AdapterQuery adapterQuery);
+  
+  AdapterService createAdapterService(RequestContext requestContext);
 }

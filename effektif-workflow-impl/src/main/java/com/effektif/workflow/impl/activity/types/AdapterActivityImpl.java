@@ -19,6 +19,8 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
+  
+  String adapterId;
 
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
@@ -27,5 +29,4 @@ public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
   }
-
 }

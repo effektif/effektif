@@ -25,7 +25,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.util.BadRequestException;
@@ -68,11 +67,14 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         HttpEntity httpEntity = response.getEntity();
         if (httpEntity != null) {
           InputStream inputStream = httpEntity.getContent();
-          CollectionLikeType listOfDescriptors = TypeFactory.defaultInstance().constructCollectionType(List.class, ObjectType.class);
-          List<ObjectType> adapterDescriptors = objectMapper.readValue(inputStream, listOfDescriptors);
-          for (ObjectType descriptor: adapterDescriptors) {
-            log.debug("Adapter said: "+descriptor.getDescription());
+          CollectionLikeType listOfDescriptors = TypeFactory.defaultInstance().constructCollectionType(List.class, Descriptor.class);
+          List<Descriptor> adapterDescriptors = objectMapper.readValue(inputStream, listOfDescriptors);
+          for (Descriptor descriptor: adapterDescriptors) {
+            log.debug("Adding descriptor: "+descriptor.getKey());
+            adapter.addDescriptor(descriptor);
           }
+          
+          saveAdapter(adapter);
         }
         
       } catch (IOException e) {

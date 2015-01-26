@@ -26,7 +26,8 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
-  public T serializable;
+  /** the api activity containing the serializable configuration */ 
+  public T configuration;
   public Class<?> apiClass;
   
   public AbstractActivityType(Class< ? > apiClass) {
@@ -44,12 +45,12 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
   
   @Override
   public void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser) {
-    this.serializable = activityApi;
+    this.configuration = activityApi;
   }
   
   @Override
   public T serialize() {
-    return serializable;
+    return configuration;
   }
 
   public abstract void execute(ActivityInstanceImpl activityInstance);

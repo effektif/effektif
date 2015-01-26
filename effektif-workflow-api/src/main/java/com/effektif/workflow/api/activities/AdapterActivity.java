@@ -21,17 +21,29 @@ import com.effektif.workflow.api.workflow.Activity;
 
 public class AdapterActivity extends Activity {
 
-  protected String adapterConnectionId;
+  protected String adapterId;
+  protected String adapterKey;
   protected Map<String,Object> configuration;
 
-  public String getAdapterConnectionId() {
-    return this.adapterConnectionId;
+  public String getAdapterId() {
+    return this.adapterId;
   }
-  public void setAdapterConnectionId(String adapterConnectionId) {
-    this.adapterConnectionId = adapterConnectionId;
+  public void setAdapterId(String adapterId) {
+    this.adapterId = adapterId;
   }
-  public AdapterActivity adapterConnectionId(String adapterConnectionId) {
-    this.adapterConnectionId = adapterConnectionId;
+  public AdapterActivity adapterId(String adapterId) {
+    this.adapterId = adapterId;
+    return this;
+  }
+  
+  public String getAdapterKey() {
+    return this.adapterKey;
+  }
+  public void setAdapterKey(String adapterKey) {
+    this.adapterKey = adapterKey;
+  }
+  public AdapterActivity adapterKey(String adapterKey) {
+    this.adapterKey = adapterKey;
     return this;
   }
   

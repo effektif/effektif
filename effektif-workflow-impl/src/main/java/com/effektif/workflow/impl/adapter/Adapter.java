@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.adapter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.activities.AdapterActivity;
 import com.effektif.workflow.api.types.ObjectType;
@@ -26,12 +28,21 @@ public class Adapter {
   protected String url;
   protected String authorization;
   protected String organizationId;
-  protected ObjectType objectType;
+  protected Map<String,Descriptor> descriptors;
 
   // runtime status fields
   protected AdapterStatus status;
   protected List<AdapterActivity> recentActivity;
   protected Long executions;
+  
+  public void addDescriptor(Descriptor descriptor) {
+    if (descriptor.key!=null) {
+      if (descriptors == null) {
+        descriptors = new HashMap<>();
+      }
+      descriptors.put(descriptor.key, descriptor);
+    }
+  }
   
   public String getUrl() {
     return this.url;
@@ -84,13 +95,6 @@ public class Adapter {
     return this;
   }
 
-  public ObjectType getObjectType() {
-    return this.objectType;
-  }
-  public void setObjectType(ObjectType objectType) {
-    this.objectType = objectType;
-  }
-  
   public List<AdapterActivity> getRecentActivity() {
     return recentActivity;
   }
@@ -105,5 +109,15 @@ public class Adapter {
   
   public void setExecutions(Long executions) {
     this.executions = executions;
+  }
+
+  
+  public Map<String, Descriptor> getDescriptors() {
+    return descriptors;
+  }
+
+  
+  public void setDescriptors(Map<String, Descriptor> descriptors) {
+    this.descriptors = descriptors;
   }
 }

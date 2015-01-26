@@ -51,7 +51,10 @@ public class AdapterTest {
     adapterService.refreshAdapter(adapter.getId());
 
     Workflow workflow = new Workflow()
-      .activity("hello", new AdapterActivity());
+      .activity("hello", new AdapterActivity()
+        .adapterId(adapter.getId())
+        .adapterKey("hello")
+      );
     
     workflow = workflowEngine.deployWorkflow(workflow);
     

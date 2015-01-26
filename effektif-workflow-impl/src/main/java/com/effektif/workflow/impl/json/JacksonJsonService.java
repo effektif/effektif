@@ -22,8 +22,9 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.command.TypedValue;
-import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.adapter.Descriptor;
 import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -63,6 +64,8 @@ public class JacksonJsonService implements JsonService, Brewable {
       .setVisibility(PropertyAccessor.ALL, Visibility.NONE)
       .setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
       .setSerializationInclusion(Include.NON_EMPTY);
+
+    objectMapper.registerSubtypes(Descriptor.class);
 
     final DataTypeService dataTypeService = brewery.get(DataTypeService.class);
 

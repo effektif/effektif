@@ -17,17 +17,17 @@ import com.effektif.adapter.ActivityAdapter;
 import com.effektif.adapter.ActivityRequest;
 import com.effektif.adapter.ActivityResponse;
 import com.effektif.workflow.api.types.BindingType;
-import com.effektif.workflow.api.types.MapType;
 import com.effektif.workflow.api.types.ObjectField;
-import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.impl.adapter.Descriptor;
 
 
 public class HelloWorldAdapter implements ActivityAdapter {
 
   @Override
-  public ObjectType getDescriptor() {
-    return new MapType()
+  public Descriptor getDescriptor() {
+    return new Descriptor()
+      .key("hello")
       .description("Say hello")
       .field(new ObjectField("greeting")
         .type(new BindingType(new TextType()))
