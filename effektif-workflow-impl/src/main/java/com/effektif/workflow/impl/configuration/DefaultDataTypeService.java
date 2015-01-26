@@ -18,6 +18,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.types.BindingTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
+import com.effektif.workflow.impl.data.types.MapTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
 import com.effektif.workflow.impl.data.types.UserReferenceTypeImpl;
@@ -34,6 +35,7 @@ public class DefaultDataTypeService extends DataTypeService {
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());
     registerDataType(new ListTypeImpl());
+    registerDataType(new MapTypeImpl());
     registerDataType(new TextTypeImpl());
     registerDataType(new UserReferenceTypeImpl());
     registerDataType(new VariableReferenceTypeImpl());

@@ -11,12 +11,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.heisenberg.test.rest;
+package com.effektif.adapter.test;
 
 import com.effektif.adapter.ActivityAdapter;
 import com.effektif.adapter.ActivityRequest;
 import com.effektif.adapter.ActivityResponse;
 import com.effektif.workflow.api.types.BindingType;
+import com.effektif.workflow.api.types.MapType;
 import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.types.TextType;
@@ -26,7 +27,7 @@ public class HelloWorldAdapter implements ActivityAdapter {
 
   @Override
   public ObjectType getDescriptor() {
-    return new ObjectType()
+    return new MapType()
       .description("Say hello")
       .field(new ObjectField("greeting")
         .type(new BindingType(new TextType()))
@@ -35,7 +36,7 @@ public class HelloWorldAdapter implements ActivityAdapter {
 
   @Override
   public ActivityResponse execute(ActivityRequest activityRequest) {
-    String greeting = activityRequest.getValue("greeting");
+//    String greeting = activityRequest.getValue("greeting");
     return null;
   }
 }

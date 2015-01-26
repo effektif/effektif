@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ObjectType extends Type {
+public abstract class ObjectType extends Type {
 
   protected List<ObjectField> fields;
   protected String label;

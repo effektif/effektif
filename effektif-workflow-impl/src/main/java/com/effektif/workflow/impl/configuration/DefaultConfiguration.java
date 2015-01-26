@@ -27,7 +27,6 @@ import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JacksonJsonService;
@@ -51,18 +50,17 @@ public abstract class DefaultConfiguration implements Configuration {
   public DefaultConfiguration() {
     brewery = new Brewery();
     brewery.ingredient(this);
-    registerDefaultWorkflowEngine();
-    registerDefaultObjectMapper();
-    registerDefaultJsonFactory();
     registerDefaultActivityTypeService();
     registerDefaultDataTypeService();
-    registerDefaultAdapterService();
-    registerDefaultScriptManager();
-    registerDefaultExpressionService();
-    registerDefaultJsonService();
-    registerDefaultScriptService();
     registerDefaultExecutorService();
+    registerDefaultExpressionService();
+    registerDefaultJsonFactory();
+    registerDefaultJsonService();
+    registerDefaultObjectMapper();
+    registerDefaultScriptManager();
+    registerDefaultScriptService();
     registerDefaultWorkflowCache();
+    registerDefaultWorkflowEngine();
   }
   
   public WorkflowEngine getWorkflowEngine() {
@@ -72,7 +70,7 @@ public abstract class DefaultConfiguration implements Configuration {
   public TaskService getTaskService() {
     return brewery.get(TaskService.class);
   }
-  
+
   protected void registerDefaultWorkflowEngine() {
     brewery.ingredient(new WorkflowEngineConfiguration());
     brewery.ingredient(new WorkflowEngineImpl());
@@ -104,10 +102,6 @@ public abstract class DefaultConfiguration implements Configuration {
   
   protected void registerDefaultDataTypeService() {
     brewery.ingredient(new DefaultDataTypeService());
-  }
-  
-  protected void registerDefaultAdapterService() {
-    brewery.ingredient(new AdapterService());
   }
   
   protected void registerDefaultObjectMapper() {

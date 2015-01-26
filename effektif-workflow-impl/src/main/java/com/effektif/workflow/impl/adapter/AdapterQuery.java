@@ -14,10 +14,18 @@
 package com.effektif.workflow.impl.adapter;
 
 
-public class AdapterService {
+public class AdapterQuery {
 
+  protected String adapterId;
 
-  public void registerAdapterConnection(AdapterConnection adapterConnection) {
+  public String getAdapterId() {
+    return this.adapterId;
   }
-
+  public void setAdapterId(String adapterId) {
+    this.adapterId = adapterId;
+  }
+  public AdapterQuery adapterId(String adapterId) {
+    this.adapterId = adapterId;
+    return this;
+  }
 }

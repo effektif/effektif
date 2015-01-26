@@ -19,7 +19,7 @@ import java.util.List;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.ObjectType;
-import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonService;
@@ -30,8 +30,8 @@ public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
   protected List<ObjectFieldImpl> fields;
   protected JsonService jsonService;
 
-  public ObjectTypeImpl() {
-    super(ObjectType.class);
+  public ObjectTypeImpl(Class<? extends Type> apiClass) {
+    super(apiClass);
   }
 
   public ObjectTypeImpl(ObjectType typeApi, Configuration configuration) {

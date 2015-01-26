@@ -11,18 +11,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.memory;
-
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+package com.effektif.workflow.impl.adapter;
 
 
-public class MemoryConfiguration extends DefaultConfiguration {
+public enum AdapterStatus {
 
-  public MemoryConfiguration() {
-    brewery.ingredient(new MemoryWorkflowStore());
-    brewery.ingredient(new MemoryWorkflowInstanceStore());
-    brewery.ingredient(new MemoryTaskService());
-    brewery.ingredient(new MemoryJobServiceImpl());
-    brewery.ingredient(new MemoryAdapterService());
-  }
+  UNKNOWN,
+  OK,
+  ERROR
 }

@@ -30,18 +30,18 @@ import com.effektif.workflow.impl.json.JsonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class Adapter {
+public class AdapterServer {
 
-  public static final Logger log = LoggerFactory.getLogger(Adapter.class);
+  public static final Logger log = LoggerFactory.getLogger(AdapterServer.class);
   
-  Integer port;
-  ObjectMapper objectMapper;
-  ResourceConfig config;
-  Server server;
-  JsonService jsonService;
-  ActivitiesResource activitiesResource;
+  protected Integer port;
+  protected ObjectMapper objectMapper;
+  protected ResourceConfig config;
+  protected Server server;
+  protected JsonService jsonService;
+  protected ActivitiesResource activitiesResource;
   
-  public Adapter() {
+  public AdapterServer() {
     objectMapper = new ObjectMapper();
     config = new ResourceConfig();
     activitiesResource = new ActivitiesResource();
@@ -53,19 +53,20 @@ public class Adapter {
             new DefaultExceptionMapper(),
             activitiesResource
             );
+    
   }
   
-  public Adapter port(Integer port) {
+  public AdapterServer port(Integer port) {
     this.port = port;
     return this;
   }
 
-  public Adapter registerActivityAdapter(ActivityAdapter activityAdapter) {
+  public AdapterServer registerActivityAdapter(ActivityAdapter activityAdapter) {
     activitiesResource.activityDescriptors.add(activityAdapter.getDescriptor());
     return this;
   }
 
-  public Adapter registerSubclass(Class<?> subclass) {
+  public AdapterServer registerSubclass(Class<?> subclass) {
     objectMapper.registerSubtypes(subclass);
     return this;
   }

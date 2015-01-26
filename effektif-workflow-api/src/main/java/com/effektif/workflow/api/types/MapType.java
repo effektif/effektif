@@ -16,7 +16,9 @@ package com.effektif.workflow.api.types;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeName("map")
+/** over json this behaves as a json object. 
+ * in java this represented as a hashmap. */
+@JsonTypeName("object")
 public class MapType extends ObjectType {
 
 }

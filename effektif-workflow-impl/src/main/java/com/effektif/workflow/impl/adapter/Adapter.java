@@ -13,21 +13,25 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.adapter;
 
-import org.joda.time.LocalDateTime;
+import java.util.List;
+
+import com.effektif.workflow.api.activities.AdapterActivity;
+import com.effektif.workflow.api.types.ObjectType;
 
 
-public class AdapterConnection {
+public class Adapter {
 
   // configuration fields
+  protected String id;
   protected String url;
   protected String authorization;
   protected String organizationId;
-  protected Long updateIntervalMillis;
-  
+  protected ObjectType objectType;
+
   // runtime status fields
-  protected AdapterConnectionStatus status;
-  protected String errorMessage;
-  protected LocalDateTime lastContact;
+  protected AdapterStatus status;
+  protected List<AdapterActivity> recentActivity;
+  protected Long executions;
   
   public String getUrl() {
     return this.url;
@@ -35,7 +39,7 @@ public class AdapterConnection {
   public void setUrl(String url) {
     this.url = url;
   }
-  public AdapterConnection url(String url) {
+  public Adapter url(String url) {
     this.url = url;
     return this;
   }
@@ -46,7 +50,7 @@ public class AdapterConnection {
   public void setAuthorization(String authorization) {
     this.authorization = authorization;
   }
-  public AdapterConnection authorization(String authorization) {
+  public Adapter authorization(String authorization) {
     this.authorization = authorization;
     return this;
   }
@@ -57,40 +61,49 @@ public class AdapterConnection {
   public void setOrganizationId(String organizationId) {
     this.organizationId = organizationId;
   }
-  public AdapterConnection organizationId(String organizationId) {
+  public Adapter organizationId(String organizationId) {
     this.organizationId = organizationId;
     return this;
   }
 
-  public Long getUpdateIntervalMillis() {
-    return this.updateIntervalMillis;
-  }
-  public void setUpdateIntervalMillis(Long updateIntervalMillis) {
-    this.updateIntervalMillis = updateIntervalMillis;
-  }
-  public AdapterConnection updateIntervalMillis(Long updateIntervalMillis) {
-    this.updateIntervalMillis = updateIntervalMillis;
-    return this;
-  }
-
-  public AdapterConnectionStatus getStatus() {
+  public AdapterStatus getStatus() {
     return this.status;
   }
-  public void setStatus(AdapterConnectionStatus status) {
+  public void setStatus(AdapterStatus status) {
     this.status = status;
   }
 
-  public String getErrorMessage() {
-    return this.errorMessage;
+  public String getId() {
+    return this.id;
   }
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
+  public void setId(String id) {
+    this.id = id;
+  }
+  public Adapter id(String id) {
+    this.id = id;
+    return this;
   }
 
-  public LocalDateTime getLastContact() {
-    return this.lastContact;
+  public ObjectType getObjectType() {
+    return this.objectType;
   }
-  public void setLastContact(LocalDateTime lastContact) {
-    this.lastContact = lastContact;
+  public void setObjectType(ObjectType objectType) {
+    this.objectType = objectType;
+  }
+  
+  public List<AdapterActivity> getRecentActivity() {
+    return recentActivity;
+  }
+  
+  public void setRecentActivity(List<AdapterActivity> recentActivity) {
+    this.recentActivity = recentActivity;
+  }
+  
+  public Long getExecutions() {
+    return executions;
+  }
+  
+  public void setExecutions(Long executions) {
+    this.executions = executions;
   }
 }

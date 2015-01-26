@@ -15,6 +15,7 @@ package com.effektif.workflow.api;
 
 import java.util.List;
 
+import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 
@@ -27,4 +28,8 @@ public interface TaskService {
 
   void deleteTasks(TaskQuery taskQuery);
 
+  /** Creates a derived task service and applies the request context to all 
+   * methods invoked on the returned task service.  Most commonly used to  
+   * set the authenticated user invoking the operations on the returned.*/
+  TaskService createTaskService(RequestContext requestContext);
 }

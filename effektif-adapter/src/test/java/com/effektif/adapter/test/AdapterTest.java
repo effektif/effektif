@@ -11,12 +11,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.heisenberg.test.rest;
+package com.effektif.adapter.test;
 
 import org.junit.Test;
 
-import com.effektif.adapter.Adapter;
+import com.effektif.adapter.AdapterServer;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.activities.AdapterActivity;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.adapter.Adapter;
+import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.test.TestConfiguration;
 
 
@@ -34,18 +38,25 @@ public class AdapterTest {
   @Test
   public void testAdapter() {
     int port = 11111;
-    Adapter workflowAdapter = new Adapter()
-      .port(11111)
+    AdapterServer adapterServer = new AdapterServer()
+      .port(port)
       .registerActivityAdapter(new HelloWorldAdapter());
-    workflowAdapter.startup();
+    adapterServer.startup();
     
-    WorkflowEngine workflowEngine = new TestConfiguration()
-      .registerAdapter("http://localhost:"+port+"/")
-      .initialize()
-      .getWorkflowEngine();
+    TestConfiguration configuration = new TestConfiguration();
+    WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
+
+    AdapterService adapterService = configuration.get(AdapterService.class);
+    Adapter adapter = adapterService.saveAdapter(new Adapter().url("http://localhost:"+port+"/"));
+    adapterService.refreshAdapter(adapter.getId());
+
+    Workflow workflow = new Workflow()
+      .activity("hello", new AdapterActivity());
     
+    workflow = workflowEngine.deployWorkflow(workflow);
     
+    workflowEngine.startWorkflowInstance(workflow);
     
-    workflowAdapter.shutdown();
+    adapterServer.shutdown();
   }
 }

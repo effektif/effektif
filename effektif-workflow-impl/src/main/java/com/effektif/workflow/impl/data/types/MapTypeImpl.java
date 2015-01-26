@@ -11,12 +11,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.adapter;
+package com.effektif.workflow.impl.data.types;
+
+import java.util.Map;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.MapType;
 
 
-public enum AdapterConnectionStatus {
+public class MapTypeImpl extends ObjectTypeImpl<MapType> {
 
-  UNKNOWN,
-  OK,
-  ERROR
+  public MapTypeImpl() {
+    super(MapType.class);
+  }
+
+  public MapTypeImpl(MapType typeApi, Configuration configuration) {
+    super(typeApi, configuration, Map.class);
+  }
+
 }

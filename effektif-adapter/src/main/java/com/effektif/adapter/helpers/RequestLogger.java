@@ -141,8 +141,8 @@ public class RequestLogger implements ContainerRequestFilter, ContainerResponseF
   protected String getJsonPrettyString(String entityString) {
     try {
       @SuppressWarnings("unchecked")
-      Map<String,Object> jsonMap = (Map<String,Object>) OBJECT_MAPPER.readValue(entityString, Map.class);
-      return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMap);
+      Object json = OBJECT_MAPPER.readValue(entityString, Object.class);
+      return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(json);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
