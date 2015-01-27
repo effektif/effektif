@@ -11,9 +11,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
+package com.effektif.workflow.impl.adapter;
+
+import java.util.Map;
+
+import com.effektif.workflow.api.command.TypedValue;
 
 
-public class ActivityResponse {
+public class ExecuteResponse {
+
+  protected Map<String,TypedValue> outputParameterValues;
 
 }

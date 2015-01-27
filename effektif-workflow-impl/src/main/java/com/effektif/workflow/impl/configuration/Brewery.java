@@ -14,9 +14,7 @@
 package com.effektif.workflow.impl.configuration;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.effektif.workflow.impl.util.Exceptions;
 
@@ -38,12 +36,9 @@ public class Brewery {
   /** maps names to a ingredients are objects that potentially need to be brewed before they become a brew */
   Map<String,Object> ingredients = new HashMap<>();
   
-  /** the names of objects that are being brewed, to prevent that they are brewed twice */
-  Set<String> brewing = new HashSet<>();
-  
   /** maps object names to brews, which are the final cached objects that are delivered */
   Map<String,Object> brews = new HashMap<>();
-
+  
   @SuppressWarnings("unchecked")
   public <T> T get(Class<T> type) {
     Exceptions.checkNotNullParameter(type, "type");
@@ -51,22 +46,27 @@ public class Brewery {
   }
 
   public synchronized Object get(String name) {
+    // log.debug("getting("+name+")");
     if (aliases.containsKey(name)) {
       name = aliases.get(name);
     }
     Object o = brews.get(name);
     if (o!=null) {
+      // log.debug("returning cached brew("+name+") "+System.identityHashCode(o));
       return o;
     }
     o = ingredients.get(name);
     if (o!=null) {
       brew(o);
+      // log.debug("returning brewed("+name+") "+System.identityHashCode(o));
       return o;
     } 
     Supplier supplier = suppliers.get(name);
     if (supplier!=null) {
       // log.debug("supplying("+name+")");
-      return supplier.supply(this, name);
+      o = supplier.supply(this);
+      // log.debug("returning supplied("+name+") "+System.identityHashCode(o));
+      return o;
     }
     String contents = "brews\n";
     for (String n: brews.keySet()) {
@@ -95,14 +95,11 @@ public class Brewery {
   }
 
   public void brew(Object o, String name) {
-    if ( (o instanceof Brewable) 
-         &&!brewing.contains(name) ) {
-      // log.debug("brewing("+name+")");
-      brewing.add(name);
-      ((Brewable)o).brew(this);
-      brewing.remove(name);
-    }
     brews.put(name, o);
+    if (o instanceof Brewable) {
+      // log.debug("brewing("+name+")");
+      ((Brewable)o).brew(this);
+    }
   }
 
   public void ingredient(Object ingredient) {
@@ -118,8 +115,8 @@ public class Brewery {
 
   public void supplier(Supplier supplier, Class<?> type) {
     String name = type.getName();
-    supplier(supplier, name);
     alias(name, type);
+    supplier(supplier, name);
   }
 
   public void supplier(Supplier supplier, String name) {

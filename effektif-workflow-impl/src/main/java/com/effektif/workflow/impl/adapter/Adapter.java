@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.AdapterActivity;
-import com.effektif.workflow.api.types.ObjectType;
 
 
 public class Adapter {
@@ -28,19 +27,19 @@ public class Adapter {
   protected String url;
   protected String authorization;
   protected String organizationId;
-  protected Map<String,Descriptor> descriptors;
+  protected Map<String,ActivityDescriptor> descriptors;
 
   // runtime status fields
   protected AdapterStatus status;
   protected List<AdapterActivity> recentActivity;
   protected Long executions;
   
-  public void addDescriptor(Descriptor descriptor) {
-    if (descriptor.key!=null) {
+  public void addDescriptor(ActivityDescriptor descriptor) {
+    if (descriptor.getActivityKey()!=null) {
       if (descriptors == null) {
         descriptors = new HashMap<>();
       }
-      descriptors.put(descriptor.key, descriptor);
+      descriptors.put(descriptor.getActivityKey(), descriptor);
     }
   }
   
@@ -112,12 +111,14 @@ public class Adapter {
   }
 
   
-  public Map<String, Descriptor> getDescriptors() {
+  public Map<String, ActivityDescriptor> getDescriptors() {
     return descriptors;
   }
 
   
-  public void setDescriptors(Map<String, Descriptor> descriptors) {
+  public void setDescriptors(Map<String, ActivityDescriptor> descriptors) {
     this.descriptors = descriptors;
   }
+
+  
 }

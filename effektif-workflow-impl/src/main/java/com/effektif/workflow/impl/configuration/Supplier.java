@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.configuration;
 
 
 public interface Supplier {
-
-  Object supply(Brewery brewery, String name);
-
+  
+  Object supply(Brewery brewery);
 }

@@ -21,17 +21,45 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.impl.adapter.ExecuteRequest;
+import com.effektif.workflow.impl.adapter.ExecuteResponse;
+import com.effektif.workflow.impl.util.BadRequestException;
+
 
 @Path("/execute")
 public class ExecuteResource {
   
-  Map<String, ActivityAdapter> activityAdapters = new HashMap<>();
+  private static final Logger log = LoggerFactory.getLogger(ExecuteResource.class);
+
+  protected Configuration configuration;
+  /** maps activity keys to activity adapters */
+  protected Map<String, ActivityAdapter> activityAdapters = new HashMap<>();
   
+  public ExecuteResource(Configuration configuration) {
+    this.configuration = configuration;
+  }
+
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public ActivityResponse execute(ActivityRequest activityRequest) {
-    String activityType = activityRequest.getActivityType();
-    ActivityAdapter activityAdapter = activityAdapters.get(activityType);
-    return activityAdapter.execute(activityRequest);
+  public ExecuteResponse execute(ExecuteRequest executeRequest) {
+    String activityKey = executeRequest.getActivityKey();
+    ActivityAdapter activityAdapter = activityAdapters.get(activityKey);
+    if (activityAdapter==null) {
+      throw new BadRequestException("No activity found for key "+activityKey);
+    }
+    ActivityContext activityContext = new ActivityContext(configuration, executeRequest);
+    activityAdapter.execute(activityContext);
+    return activityContext.getExecuteResponse();
   }
+
+  public void addActivityAdapter(ActivityAdapter activityAdapter) {
+    String activityKey = activityAdapter.getDescriptor().getActivityKey();
+    log.debug("Adding activity '"+activityKey+"' --> "+activityAdapter);
+    activityAdapters.put(activityKey, activityAdapter);
+  }
+
 }

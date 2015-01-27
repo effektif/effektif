@@ -17,10 +17,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
-import com.effektif.workflow.api.command.AbstractCommand;
-import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-
 
 public interface JsonService {
   

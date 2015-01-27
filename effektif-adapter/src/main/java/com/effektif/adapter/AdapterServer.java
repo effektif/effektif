@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.adapter.helpers.DefaultExceptionMapper;
 import com.effektif.adapter.helpers.ObjectMapperResolver;
 import com.effektif.adapter.helpers.RequestLogger;
-import com.effektif.workflow.impl.json.JacksonJsonService;
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.json.JsonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,20 +40,23 @@ public class AdapterServer {
   protected Server server;
   protected JsonService jsonService;
   protected ActivitiesResource activitiesResource;
+  protected ExecuteResource executeResource;
   
   public AdapterServer() {
-    objectMapper = new ObjectMapper();
-    config = new ResourceConfig();
+    Configuration configuration = new DefaultAdapterConfiguration();
+    objectMapper = configuration.get(ObjectMapper.class);
+    
     activitiesResource = new ActivitiesResource();
-    jsonService = new JacksonJsonService();
+    executeResource = new ExecuteResource(configuration);
+    
+    config = new ResourceConfig();
     config.registerInstances(
             new JacksonFeature(),
             new ObjectMapperResolver(objectMapper),
             new RequestLogger(),
             new DefaultExceptionMapper(),
-            activitiesResource
-            );
-    
+            activitiesResource,
+            executeResource);
   }
   
   public AdapterServer port(Integer port) {
@@ -62,14 +65,15 @@ public class AdapterServer {
   }
 
   public AdapterServer registerActivityAdapter(ActivityAdapter activityAdapter) {
-    activitiesResource.activityDescriptors.add(activityAdapter.getDescriptor());
+    activitiesResource.addActivityAdapter(activityAdapter);
+    executeResource.addActivityAdapter(activityAdapter);
     return this;
   }
 
-  public AdapterServer registerSubclass(Class<?> subclass) {
-    objectMapper.registerSubtypes(subclass);
-    return this;
-  }
+//  public AdapterServer registerSubclass(Class<?> subclass) {
+//    objectMapper.registerSubtypes(subclass);
+//    return this;
+//  }
 
   public void startup() {
     try {

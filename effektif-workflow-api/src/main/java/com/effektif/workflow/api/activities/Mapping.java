@@ -17,26 +17,26 @@ import com.effektif.workflow.api.workflow.Binding;
 
 
 
-public class CallMapping {
+public class Mapping {
   
   protected Binding sourceBinding;
-  protected String destinationVariableId;
+  protected String destinationKey;
   
-  public CallMapping() {
+  public Mapping() {
   }
 
-  public CallMapping(Binding sourceBinding, String destinationVariableId) {
+  public Mapping(Binding sourceBinding, String destinationVariableId) {
     this.sourceBinding = sourceBinding;
-    this.destinationVariableId = destinationVariableId;
+    this.destinationKey = destinationVariableId;
   }
 
-  public CallMapping sourceBinding(Binding sourceBinding) {
+  public Mapping sourceBinding(Binding sourceBinding) {
     this.sourceBinding = sourceBinding;
     return this;
   }
 
-  public CallMapping destinationVariableId(String destinationVariableId) {
-    this.destinationVariableId = destinationVariableId;
+  public Mapping destinationKey(String destinationKey) {
+    this.destinationKey = destinationKey;
     return this;
   }
 
@@ -48,11 +48,11 @@ public class CallMapping {
     this.sourceBinding = sourceBinding;
   }
   
-  public String getDestinationVariableId() {
-    return destinationVariableId;
+  public String getDestinationKey() {
+    return destinationKey;
   }
   
-  public void setDestinationVariableId(String destinationVariableId) {
-    this.destinationVariableId = destinationVariableId;
+  public void setDestinationKey(String destinationKey) {
+    this.destinationKey = destinationKey;
   }
 }

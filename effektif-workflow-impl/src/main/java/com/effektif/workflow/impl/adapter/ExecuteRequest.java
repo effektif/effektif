@@ -11,26 +11,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
+package com.effektif.workflow.impl.adapter;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ActivityRequest {
+import com.effektif.workflow.api.command.TypedValue;
+
+
+public class ExecuteRequest {
   
-  protected String activityType;
+  private static final Logger log = LoggerFactory.getLogger(ExecuteRequest.class);
+
+  protected String activityKey;
   protected String workflowInstanceId;
   protected String activityInstanceId;
-  protected Map<String,Object> variables;
-
-  public String getActivityType() {
-    return this.activityType;
+  protected Map<String,TypedValue> inputParameters;
+  
+  public String getActivityKey() {
+    return this.activityKey;
   }
-  public void setActivityType(String activityType) {
-    this.activityType = activityType;
+  public void setActivityKey(String activityKey) {
+    this.activityKey = activityKey;
   }
-  public ActivityRequest activityType(String activityType) {
-    this.activityType = activityType;
+  public ExecuteRequest activityKey(String activityKey) {
+    this.activityKey = activityKey;
     return this;
   }
 
@@ -40,7 +47,7 @@ public class ActivityRequest {
   public void setWorkflowInstanceId(String workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
-  public ActivityRequest workflowInstanceId(String workflowInstanceId) {
+  public ExecuteRequest workflowInstanceId(String workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
     return this;
   }
@@ -51,9 +58,16 @@ public class ActivityRequest {
   public void setActivityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
   }
-  public ActivityRequest activityInstanceId(String activityInstanceId) {
+  public ExecuteRequest activityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
     return this;
   }
 
+  public Map<String, TypedValue> getInputParameters() {
+    return inputParameters;
+  }
+  
+  public void setInputParameters(Map<String, TypedValue> inputParameters) {
+    this.inputParameters = inputParameters;
+  }
 }

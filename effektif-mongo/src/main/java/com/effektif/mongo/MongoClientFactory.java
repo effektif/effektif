@@ -21,7 +21,7 @@ import com.mongodb.MongoClient;
 public class MongoClientFactory implements Supplier {
 
   @Override
-  public Object supply(Brewery brewery, String name) {
+  public Object supply(Brewery brewery) {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     MongoClient mongoClient = new MongoClient(
             mongoConfiguration.getServerAddresses(), 

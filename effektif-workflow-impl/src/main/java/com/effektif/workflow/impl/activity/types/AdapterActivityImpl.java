@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.activities.AdapterActivity;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -20,7 +22,10 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
   
-  String adapterId;
+  protected String adapterId;
+  protected String activityKey;
+  protected Map<String,MappingImpl> inputMappings;
+  protected Map<String,MappingImpl> outputMappings;
 
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
@@ -28,5 +33,49 @@ public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
+  }
+
+  public String getAdapterId() {
+    return this.adapterId;
+  }
+  public void setAdapterId(String adapterId) {
+    this.adapterId = adapterId;
+  }
+  public AdapterActivityImpl adapterId(String adapterId) {
+    this.adapterId = adapterId;
+    return this;
+  }
+  
+  public String getActivityKey() {
+    return this.activityKey;
+  }
+  public void setActivityKey(String activityKey) {
+    this.activityKey = activityKey;
+  }
+  public AdapterActivityImpl activityKey(String activityKey) {
+    this.activityKey = activityKey;
+    return this;
+  }
+  
+  public Map<String,MappingImpl> getInputMappings() {
+    return this.inputMappings;
+  }
+  public void setInputMappings(Map<String,MappingImpl> inputMappings) {
+    this.inputMappings = inputMappings;
+  }
+  public AdapterActivityImpl inputMappings(Map<String,MappingImpl> inputMappings) {
+    this.inputMappings = inputMappings;
+    return this;
+  }
+  
+  public Map<String,MappingImpl> getOutputMappings() {
+    return this.outputMappings;
+  }
+  public void setOutputMappings(Map<String,MappingImpl> outputMappings) {
+    this.outputMappings = outputMappings;
+  }
+  public AdapterActivityImpl outputMappings(Map<String,MappingImpl> outputMappings) {
+    this.outputMappings = outputMappings;
+    return this;
   }
 }

@@ -18,7 +18,7 @@ import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.activities.CallMapping;
+import com.effektif.workflow.api.activities.Mapping;
 import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.types.BindingType;
 import com.effektif.workflow.api.types.JavaBeanType;
@@ -42,8 +42,8 @@ public class CallImpl extends AbstractActivityType<Call> {
   // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   BindingImpl<String> subWorkflowIdBinding;
   BindingImpl<String> subWorkflowNameBinding;
-  List<CallMappingImpl> inputMappings;
-  List<CallMappingImpl> outputMappings;
+  List<MappingImpl> inputMappings;
+  List<MappingImpl> outputMappings;
 
   public CallImpl() {
     super(Call.class);
@@ -61,7 +61,7 @@ public class CallImpl extends AbstractActivityType<Call> {
         .label("Sub worfklow name"))
       .field(new ObjectField("inputMappings")
         .label("Input mappings")
-        .type(new ListType(new JavaBeanType(CallMapping.class)
+        .type(new ListType(new JavaBeanType(Mapping.class)
           .field(new ObjectField("sourceBinding")
             .type(new BindingType())
             .label("Item in this workflow"))
@@ -70,7 +70,7 @@ public class CallImpl extends AbstractActivityType<Call> {
             .type(new VariableReferenceType())))))
       .field(new ObjectField("outputMappings")
         .label("Output mappings")
-        .type(new ListType(new JavaBeanType(CallMapping.class)
+        .type(new ListType(new JavaBeanType(Mapping.class)
           .field(new ObjectField("sourceBinding")
             .label("Item in the sub workflow")
             .type(new BindingType()))
@@ -88,16 +88,16 @@ public class CallImpl extends AbstractActivityType<Call> {
     outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", parser);
   }
 
-  protected List<CallMappingImpl> parseMappings(List<CallMapping> mappingsApi, Call call, String fieldName, WorkflowParser workflowParser) {
+  protected List<MappingImpl> parseMappings(List<Mapping> mappingsApi, Call call, String fieldName, WorkflowParser workflowParser) {
     if (mappingsApi==null) {
       return null;
     }
-    List<CallMappingImpl> mappingImpls = new ArrayList<>(mappingsApi.size());
+    List<MappingImpl> mappingImpls = new ArrayList<>(mappingsApi.size());
     int i=0;
-    for (CallMapping mappingApi: mappingsApi) {
-      CallMappingImpl mappingImpl = new CallMappingImpl();
+    for (Mapping mappingApi: mappingsApi) {
+      MappingImpl mappingImpl = new MappingImpl();
       mappingImpl.sourceBinding = workflowParser.parseBinding(mappingApi.getSourceBinding(), Object.class, false, call, fieldName+"["+i+"]");
-      mappingImpl.destinationVariableId = mappingApi.getDestinationVariableId();
+      mappingImpl.destinationKey = mappingApi.getDestinationKey();
       mappingImpls.add(mappingImpl);
       i++;
     }
@@ -128,9 +128,9 @@ public class CallImpl extends AbstractActivityType<Call> {
         .workflowId(subWorkflowId);
       
       if (inputMappings!=null) {
-        for (CallMappingImpl inputMapping: inputMappings) {
+        for (MappingImpl inputMapping: inputMappings) {
           Object value = activityInstance.getValue(inputMapping.sourceBinding);
-          start.variableValue(inputMapping.destinationVariableId, value);
+          start.variableValue(inputMapping.destinationKey, value);
         }
       }
       
@@ -148,9 +148,9 @@ public class CallImpl extends AbstractActivityType<Call> {
   
   public void calledProcessInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
     if (outputMappings!=null) {
-      for (CallMappingImpl outputMapping: outputMappings) {
+      for (MappingImpl outputMapping: outputMappings) {
         Object value = calledProcessInstance.getValue(outputMapping.sourceBinding);
-        activityInstance.setVariableValue(outputMapping.destinationVariableId, value);
+        activityInstance.setVariableValue(outputMapping.destinationKey, value);
       }
     }
   }

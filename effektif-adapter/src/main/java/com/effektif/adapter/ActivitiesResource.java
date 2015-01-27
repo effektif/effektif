@@ -21,17 +21,21 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.effektif.workflow.api.types.ObjectType;
+import com.effektif.workflow.impl.adapter.ActivityDescriptor;
 
 
 @Path("/activities")
 public class ActivitiesResource {
   
-  List<ObjectType> activityDescriptors = new ArrayList<>();
+  List<ActivityDescriptor> activityDescriptors = new ArrayList<>();
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<ObjectType> getActivityDescriptors() {
+  public List<ActivityDescriptor> getActivityDescriptors() {
     return activityDescriptors;
+  }
+  
+  public void addActivityAdapter(ActivityAdapter activityAdapter) {
+    activityDescriptors.add(activityAdapter.getDescriptor());
   }
 }

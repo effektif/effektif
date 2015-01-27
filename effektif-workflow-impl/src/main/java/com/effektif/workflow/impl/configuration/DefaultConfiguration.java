@@ -13,9 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.script.ScriptEngineManager;
 
 import com.effektif.workflow.api.Configuration;
@@ -26,9 +23,7 @@ import com.effektif.workflow.impl.ExpressionServiceImpl;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.data.DataType;
-import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JacksonJsonService;
 import com.effektif.workflow.impl.script.ScriptServiceImpl;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -41,12 +36,6 @@ public abstract class DefaultConfiguration implements Configuration {
   protected String id;
   protected Brewery brewery;
   
-  protected List<Brewable> brewables = new ArrayList<>();
-  protected List<ActivityType> activityTypes = new ArrayList<>();
-  protected List<DataType> types = new ArrayList<>();
-  protected List<Class<? extends JobType>> jobTypeClasses = new ArrayList<>();
-  protected List<Class<?>> javaBeanTypes = new ArrayList<>();
-
   public DefaultConfiguration() {
     brewery = new Brewery();
     brewery.ingredient(this);
@@ -105,7 +94,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
   
   protected void registerDefaultObjectMapper() {
-    brewery.ingredient(new ObjectMapper());
+    brewery.supplier(new DefaultObjectMapperSupplier(), ObjectMapper.class);
   }
 
   protected void registerDefaultJsonFactory() {

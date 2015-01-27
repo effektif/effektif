@@ -30,8 +30,8 @@ public class Call extends Activity {
 
   protected Binding<String> subWorkflowIdBinding; 
   protected Binding<String> subWorkflowNameBinding; 
-  protected List<CallMapping> inputMappings; 
-  protected List<CallMapping> outputMappings; 
+  protected List<Mapping> inputMappings; 
+  protected List<Mapping> outputMappings; 
   
   public Call() {
   }
@@ -77,9 +77,9 @@ public class Call extends Activity {
     if (inputMappings==null) {
       inputMappings = new ArrayList<>();
     }
-    inputMappings.add(new CallMapping()
+    inputMappings.add(new Mapping()
       .sourceBinding(sourceBinding)
-      .destinationVariableId(subWorkflowVariableId));
+      .destinationKey(subWorkflowVariableId));
     return this;
   }
 
@@ -92,9 +92,9 @@ public class Call extends Activity {
     if (outputMappings==null) {
       outputMappings = new ArrayList<>();
     }
-    outputMappings.add(new CallMapping()
+    outputMappings.add(new Mapping()
       .sourceBinding(calledBinding)
-      .destinationVariableId(callerVariableId));
+      .destinationKey(callerVariableId));
     return this;
   }
   
@@ -152,22 +152,22 @@ public class Call extends Activity {
     return this;
   }
 
-  public List<CallMapping> getInputMappings() {
+  public List<Mapping> getInputMappings() {
     return inputMappings;
   }
 
   
-  public void setInputMappings(List<CallMapping> inputMappings) {
+  public void setInputMappings(List<Mapping> inputMappings) {
     this.inputMappings = inputMappings;
   }
 
   
-  public List<CallMapping> getOutputMappings() {
+  public List<Mapping> getOutputMappings() {
     return outputMappings;
   }
 
   
-  public void setOutputMappings(List<CallMapping> outputMappings) {
+  public void setOutputMappings(List<Mapping> outputMappings) {
     this.outputMappings = outputMappings;
   }
 

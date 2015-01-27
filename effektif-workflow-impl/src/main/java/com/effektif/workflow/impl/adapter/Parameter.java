@@ -13,16 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.adapter;
 
-import com.effektif.workflow.api.types.ObjectField;
-import com.effektif.workflow.api.types.ObjectType;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.types.Type;
 
 
-@JsonTypeName("descriptor")
-public class Descriptor extends ObjectType {
-  
-  /** identifies the activity within the scope of an adapter */
+public class Parameter {
+
   protected String key;
+  protected String label;
+  protected Type type;
 
   public String getKey() {
     return this.key;
@@ -30,27 +28,30 @@ public class Descriptor extends ObjectType {
   public void setKey(String key) {
     this.key = key;
   }
-  /** identifies the activity within the scope of an adapter */
-  public Descriptor key(String key) {
+  public Parameter key(String key) {
     this.key = key;
     return this;
   }
 
-  @Override
-  public Descriptor label(String label) {
-    super.label(label);
+  public Type getType() {
+    return this.type;
+  }
+  public void setType(Type type) {
+    this.type = type;
+  }
+  public Parameter type(Type type) {
+    this.type = type;
     return this;
   }
 
-  @Override
-  public Descriptor description(String description) {
-    super.description(description);
-    return this;
+  public String getLabel() {
+    return this.label;
   }
-
-  @Override
-  public Descriptor field(ObjectField field) {
-    super.field(field);
+  public void setLabel(String label) {
+    this.label = label;
+  }
+  public Parameter label(String label) {
+    this.label = label;
     return this;
   }
 }

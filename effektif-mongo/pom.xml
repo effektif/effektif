@@ -28,6 +28,15 @@
       <version>2.12.4</version>
     </dependency>
 
+    <!-- TEST DEPENDENCIES -->
+
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.9.9-RC1</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>com.effektif</groupId>
       <artifactId>effektif-workflow-impl</artifactId>

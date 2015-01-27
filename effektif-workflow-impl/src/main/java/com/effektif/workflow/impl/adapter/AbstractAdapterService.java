@@ -67,10 +67,10 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         HttpEntity httpEntity = response.getEntity();
         if (httpEntity != null) {
           InputStream inputStream = httpEntity.getContent();
-          CollectionLikeType listOfDescriptors = TypeFactory.defaultInstance().constructCollectionType(List.class, Descriptor.class);
-          List<Descriptor> adapterDescriptors = objectMapper.readValue(inputStream, listOfDescriptors);
-          for (Descriptor descriptor: adapterDescriptors) {
-            log.debug("Adding descriptor: "+descriptor.getKey());
+          CollectionLikeType listOfDescriptors = TypeFactory.defaultInstance().constructCollectionType(List.class, ActivityDescriptor.class);
+          List<ActivityDescriptor> adapterDescriptors = objectMapper.readValue(inputStream, listOfDescriptors);
+          for (ActivityDescriptor descriptor: adapterDescriptors) {
+            log.debug("Adding descriptor: "+descriptor.getActivityKey());
             adapter.addDescriptor(descriptor);
           }
           

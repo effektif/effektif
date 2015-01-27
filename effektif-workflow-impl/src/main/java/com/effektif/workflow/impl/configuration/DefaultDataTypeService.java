@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.configuration;
 
-import com.effektif.workflow.api.activities.CallMapping;
+import com.effektif.workflow.api.activities.Mapping;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.types.BindingTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
@@ -40,6 +40,6 @@ public class DefaultDataTypeService extends DataTypeService {
     registerDataType(new UserReferenceTypeImpl());
     registerDataType(new VariableReferenceTypeImpl());
     registerDataType(new WorkflowReferenceTypeImpl());
-    registerJavaBeanType(CallMapping.class);
+    registerJavaBeanType(Mapping.class);
   }
 }

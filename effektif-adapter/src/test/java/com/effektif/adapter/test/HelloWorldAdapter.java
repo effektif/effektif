@@ -13,30 +13,35 @@
  * limitations under the License. */
 package com.effektif.adapter.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.adapter.ActivityAdapter;
-import com.effektif.adapter.ActivityRequest;
-import com.effektif.adapter.ActivityResponse;
-import com.effektif.workflow.api.types.BindingType;
-import com.effektif.workflow.api.types.ObjectField;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.impl.adapter.Descriptor;
+import com.effektif.adapter.ActivityContext;
+import com.effektif.workflow.impl.adapter.ActivityDescriptor;
 
 
 public class HelloWorldAdapter implements ActivityAdapter {
+  
+  private static final Logger log = LoggerFactory.getLogger(HelloWorldAdapter.class);
+
+  private static final String NAME = "name";
+  private static final String GREETING = "greeting";
 
   @Override
-  public Descriptor getDescriptor() {
-    return new Descriptor()
-      .key("hello")
-      .description("Say hello")
-      .field(new ObjectField("greeting")
-        .type(new BindingType(new TextType()))
-        .label("The greeting"));
+  public ActivityDescriptor getDescriptor() {
+    return new ActivityDescriptor()
+      .activityKey("hello")
+      .inputParameterString(NAME, "Name")
+      .outputParameterString(GREETING, "Message");
   }
 
   @Override
-  public ActivityResponse execute(ActivityRequest activityRequest) {
-//    String greeting = activityRequest.getValue("greeting");
-    return null;
+  public void execute(ActivityContext activityContext) {
+    String name = (String) activityContext.getInputParameterValue(NAME);
+    log.debug("NAME: "+name);
+    
+    activityContext.setOutputParameterValue(GREETING, "Hi, "+name);
+    activityContext.onwards();
   }
 }

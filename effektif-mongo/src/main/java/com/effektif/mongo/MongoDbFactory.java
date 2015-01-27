@@ -22,10 +22,9 @@ import com.mongodb.MongoClient;
 public class MongoDbFactory implements Supplier {
 
   @Override
-  public Object supply(Brewery brewery, String name) {
+  public Object supply(Brewery brewery) {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     MongoClient mongoClient = brewery.get(MongoClient.class);
-    
     String databaseName = mongoConfiguration.getDatabaseName();
     DB db = mongoClient.getDB(databaseName);
     brewery.brew(db);
