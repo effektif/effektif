@@ -13,22 +13,24 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.activities.AdapterActivity;
-import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
+public class AdapterActivityImpl extends MappableActivityImpl<AdapterActivity> {
   
   protected String adapterId;
   protected String activityKey;
-  protected Map<String,MappingImpl> inputMappings;
-  protected Map<String,MappingImpl> outputMappings;
 
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
+  }
+  
+  @Override
+  public void parse(ActivityImpl activityImpl, AdapterActivity adapterActivity, WorkflowParser parser) {
+    super.parse(activityImpl, adapterActivity, parser);
   }
 
   @Override
@@ -54,28 +56,6 @@ public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
   }
   public AdapterActivityImpl activityKey(String activityKey) {
     this.activityKey = activityKey;
-    return this;
-  }
-  
-  public Map<String,MappingImpl> getInputMappings() {
-    return this.inputMappings;
-  }
-  public void setInputMappings(Map<String,MappingImpl> inputMappings) {
-    this.inputMappings = inputMappings;
-  }
-  public AdapterActivityImpl inputMappings(Map<String,MappingImpl> inputMappings) {
-    this.inputMappings = inputMappings;
-    return this;
-  }
-  
-  public Map<String,MappingImpl> getOutputMappings() {
-    return this.outputMappings;
-  }
-  public void setOutputMappings(Map<String,MappingImpl> outputMappings) {
-    this.outputMappings = outputMappings;
-  }
-  public AdapterActivityImpl outputMappings(Map<String,MappingImpl> outputMappings) {
-    this.outputMappings = outputMappings;
     return this;
   }
 }

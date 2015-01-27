@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.activities.AdapterActivity;
-
 
 public class Adapter {
 
@@ -31,8 +29,8 @@ public class Adapter {
 
   // runtime status fields
   protected AdapterStatus status;
-  protected List<AdapterActivity> recentActivity;
-  protected Long executions;
+  protected List<AdapterLog> logs;
+  protected Map<String,Long> executions;
   
   public void addDescriptor(ActivityDescriptor descriptor) {
     if (descriptor.getActivityKey()!=null) {
@@ -94,23 +92,14 @@ public class Adapter {
     return this;
   }
 
-  public List<AdapterActivity> getRecentActivity() {
-    return recentActivity;
+  public List<AdapterLog> getLogs() {
+    return logs;
   }
   
-  public void setRecentActivity(List<AdapterActivity> recentActivity) {
-    this.recentActivity = recentActivity;
-  }
-  
-  public Long getExecutions() {
-    return executions;
-  }
-  
-  public void setExecutions(Long executions) {
-    this.executions = executions;
+  public void setLogs(List<AdapterLog> logs) {
+    this.logs = logs;
   }
 
-  
   public Map<String, ActivityDescriptor> getDescriptors() {
     return descriptors;
   }

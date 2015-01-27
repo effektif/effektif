@@ -27,14 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.ExpressionService;
-import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.data.types.AnyDataTypeImpl;
@@ -181,25 +179,41 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     variableInstances.add(variableInstance);
   }
-  
-  @SuppressWarnings("unchecked")
+
   public <T> T getValue(BindingImpl<T> binding) {
+    TypedValueImpl typedValue = getTypedValue(binding);
+    return (T) (typedValue!=null ? typedValue.value : null);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> TypedValueImpl getTypedValue(BindingImpl<T> binding) {
     if (binding==null) {
       return null;
     }
     if (binding.typedValue!=null) {
-      return (T) binding.typedValue.value;
+      return binding.typedValue;
     }
     if (binding.variableId!=null) {
-      return (T) getVariable(binding.variableId);
+      return getTypedValue(binding.variableId);
     }
     if (binding.expression!=null) {
       ExpressionService expressionService = getConfiguration().get(ExpressionService.class);
-      return (T) expressionService.execute(binding.expression, this);
+      Object value = expressionService.execute(binding.expression, this);
+      return new TypedValueImpl(null, value);
     }
     return null;
   }
-
+  
+  public TypedValueImpl getTypedValue(String variableId) {
+    VariableInstanceImpl variableInstance = findVariableInstance(variableId);
+    if (variableInstance!=null) {
+      DataType type = variableInstance.variable.type;
+      Object value = variableInstance.getValue();
+      return new TypedValueImpl(type, value);
+    }
+    throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
+  }
+  
   public <T> List<T> getValues(List<BindingImpl<T>> bindings) {
     List<T> values = new ArrayList<>();
     if (bindings!=null) {
@@ -223,11 +237,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
     return flatValues;
-  }
-
-  public Object getVariable(String variableDefinitionId) {
-    TypedValueImpl typedValue = getVariableTypedValue(variableDefinitionId);
-    return typedValue!=null ? typedValue.getValue() : null;
   }
 
   /** sets all entries individually, variableValues maps variable ids to values */
@@ -286,16 +295,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       return parent.findVariableInstance(variableId);
     }
     return null;
-  }
-  
-  public TypedValueImpl getVariableTypedValue(String variableId) {
-    VariableInstanceImpl variableInstance = findVariableInstance(variableId);
-    if (variableInstance!=null) {
-      DataType type = variableInstance.variable.type;
-      Object value = variableInstance.getValue();
-      return new TypedValueImpl(type, value);
-    }
-    throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }
   
   protected VariableInstanceImpl getVariableInstanceLocal(String variableId) {

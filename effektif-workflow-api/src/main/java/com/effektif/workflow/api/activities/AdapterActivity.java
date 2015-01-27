@@ -13,17 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-public class AdapterActivity extends Activity {
+/** delegates to an activity that is running on an external adapter server */
+@JsonTypeName("adapterActivity")
+public class AdapterActivity extends MappableActivity {
 
   protected String adapterId;
   protected String adapterKey;
-  protected Map<String,Object> configuration;
 
   public String getAdapterId() {
     return this.adapterId;
@@ -47,18 +51,89 @@ public class AdapterActivity extends Activity {
     return this;
   }
   
-  public Map<String,Object> getConfiguration() {
-    return this.configuration;
-  }
-  public void setConfiguration(Map<String,Object> configuration) {
-    this.configuration = configuration;
-  }
-
-  public AdapterActivity configurationValue(String key, Object value) {
-    if (configuration==null) {
-      configuration = new HashMap<>();
-    }
-    configuration.put(key, value);
+  @Override
+  public AdapterActivity multiInstance(MultiInstance multiInstance) {
+    super.multiInstance(multiInstance);
     return this;
   }
+
+  @Override
+  public AdapterActivity transitionTo(String toActivityId) {
+    super.transitionTo(toActivityId);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity transitionTo(Transition transition) {
+    super.transitionTo(transition);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity activity(Activity activity) {
+    super.activity(activity);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity transition(Transition transition) {
+    super.transition(transition);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity variable(Variable variable) {
+    super.variable(variable);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity timer(Timer timer) {
+    super.timer(timer);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity id(String id) {
+    super.id(id);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+  
+  
+  @Override
+  public AdapterActivity inputMappingValue(Object value, String subWorkflowVariableId) {
+    super.inputMappingValue(value, subWorkflowVariableId);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity inputMappingVariable(String variableId, String subWorkflowVariableId) {
+    super.inputMappingVariable(variableId, subWorkflowVariableId);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity inputMappingExpression(String expression, String subWorkflowVariableId) {
+    super.inputMappingExpression(expression, subWorkflowVariableId);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity outputMapping(String subWorkflowVariableId, String variableId) {
+    super.outputMapping(subWorkflowVariableId, variableId);
+    return this;
+  }
+
+  @Override
+  public AdapterActivity outputMapping(Binding calledBinding, String callerVariableId) {
+    super.outputMapping(calledBinding, callerVariableId);
+    return this;
+  }
+
 }

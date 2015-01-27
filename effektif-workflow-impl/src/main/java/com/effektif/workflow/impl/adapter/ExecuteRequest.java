@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.adapter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -69,5 +70,11 @@ public class ExecuteRequest {
   
   public void setInputParameters(Map<String, TypedValue> inputParameters) {
     this.inputParameters = inputParameters;
+  }
+  public void inputParameter(String parameterKey, TypedValue typedValue) {
+    if (inputParameters==null) {
+      inputParameters = new HashMap<>();
+    }
+    inputParameters.put(parameterKey, typedValue);
   }
 }

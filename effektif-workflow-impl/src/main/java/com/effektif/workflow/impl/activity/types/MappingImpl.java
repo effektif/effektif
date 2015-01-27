@@ -19,8 +19,8 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 
 public class MappingImpl {
   
-  protected BindingImpl<Object> sourceBinding;
-  protected String destinationKey;
+  public BindingImpl<Object> sourceBinding;
+  public String destinationKey;
   
   public Mapping serialize() {
     Mapping mapping = new Mapping();

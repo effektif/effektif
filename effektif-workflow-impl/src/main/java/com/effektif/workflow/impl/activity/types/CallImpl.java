@@ -37,13 +37,11 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
-public class CallImpl extends AbstractActivityType<Call> {
+public class CallImpl extends MappableActivityImpl<Call> {
 
   // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   BindingImpl<String> subWorkflowIdBinding;
   BindingImpl<String> subWorkflowNameBinding;
-  List<MappingImpl> inputMappings;
-  List<MappingImpl> outputMappings;
 
   public CallImpl() {
     super(Call.class);
@@ -51,32 +49,33 @@ public class CallImpl extends AbstractActivityType<Call> {
 
   @Override
   public ObjectType getDescriptor() {
-    return new JavaBeanType(Call.class)
-      .description("Invoke another workflow")
-      .field(new ObjectField("subWorkflowIdBinding")
-        .type(new BindingType(new TextType()))
-        .label("Sub worfklow id"))
-      .field(new ObjectField("subWorkflowNameBinding")
-        .type(new BindingType(new TextType()))
-        .label("Sub worfklow name"))
-      .field(new ObjectField("inputMappings")
-        .label("Input mappings")
-        .type(new ListType(new JavaBeanType(Mapping.class)
-          .field(new ObjectField("sourceBinding")
-            .type(new BindingType())
-            .label("Item in this workflow"))
-          .field(new ObjectField("destinationVariableId")
-            .label("Variable in the sub workflow")
-            .type(new VariableReferenceType())))))
-      .field(new ObjectField("outputMappings")
-        .label("Output mappings")
-        .type(new ListType(new JavaBeanType(Mapping.class)
-          .field(new ObjectField("sourceBinding")
-            .label("Item in the sub workflow")
-            .type(new BindingType()))
-          .field(new ObjectField("destinationVariableId")
-            .label("Variable in this workflow")
-            .type(new VariableReferenceType())))));
+    return null;
+//    return new JavaBeanType(Call.class)
+//      .description("Invoke another workflow")
+//      .field(new ObjectField("subWorkflowIdBinding")
+//        .type(new BindingType(new TextType()))
+//        .label("Sub worfklow id"))
+//      .field(new ObjectField("subWorkflowNameBinding")
+//        .type(new BindingType(new TextType()))
+//        .label("Sub worfklow name"))
+//      .field(new ObjectField("inputMappings")
+//        .label("Input mappings")
+//        .type(new ListType(new JavaBeanType(Mapping.class)
+//          .field(new ObjectField("sourceBinding")
+//            .type(new BindingType())
+//            .label("Item in this workflow"))
+//          .field(new ObjectField("destinationVariableId")
+//            .label("Variable in the sub workflow")
+//            .type(new VariableReferenceType())))))
+//      .field(new ObjectField("outputMappings")
+//        .label("Output mappings")
+//        .type(new ListType(new JavaBeanType(Mapping.class)
+//          .field(new ObjectField("sourceBinding")
+//            .label("Item in the sub workflow")
+//            .type(new BindingType()))
+//          .field(new ObjectField("destinationVariableId")
+//            .label("Variable in this workflow")
+//            .type(new VariableReferenceType())))));
   }
 
   @Override
@@ -84,24 +83,6 @@ public class CallImpl extends AbstractActivityType<Call> {
     super.parse(activityImpl, call, parser);
     subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
     subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
-    inputMappings = parseMappings(call.getInputMappings(), call, "inputMappings", parser);
-    outputMappings = parseMappings(call.getOutputMappings(), call, "outputMappings", parser);
-  }
-
-  protected List<MappingImpl> parseMappings(List<Mapping> mappingsApi, Call call, String fieldName, WorkflowParser workflowParser) {
-    if (mappingsApi==null) {
-      return null;
-    }
-    List<MappingImpl> mappingImpls = new ArrayList<>(mappingsApi.size());
-    int i=0;
-    for (Mapping mappingApi: mappingsApi) {
-      MappingImpl mappingImpl = new MappingImpl();
-      mappingImpl.sourceBinding = workflowParser.parseBinding(mappingApi.getSourceBinding(), Object.class, false, call, fieldName+"["+i+"]");
-      mappingImpl.destinationKey = mappingApi.getDestinationKey();
-      mappingImpls.add(mappingImpl);
-      i++;
-    }
-    return mappingImpls;
   }
 
   @Override

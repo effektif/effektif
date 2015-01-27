@@ -122,7 +122,7 @@ public class ScriptBindings implements Bindings {
 
   public TypedValueImpl getTypedValue(String scriptVariableName) {
     String variableId = getVariableId(scriptVariableName);
-    return scopeInstance.getVariableTypedValue(variableId);
+    return scopeInstance.getTypedValue(variableId);
   }
 
   @Override

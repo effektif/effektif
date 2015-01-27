@@ -13,9 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -26,12 +23,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /* invokes another workflow and ends when the other workflow instance completes */ 
 @JsonTypeName("call")
-public class Call extends Activity {
+public class Call extends MappableActivity {
 
   protected Binding<String> subWorkflowIdBinding; 
   protected Binding<String> subWorkflowNameBinding; 
-  protected List<Mapping> inputMappings; 
-  protected List<Mapping> outputMappings; 
   
   public Call() {
   }
@@ -58,46 +53,14 @@ public class Call extends Activity {
     return subWorkflowNameBinding;
   }
 
-  public Call inputMappingValue(Object value, String subWorkflowVariableId) {
-    addInputMapping(new Binding().value(value), subWorkflowVariableId);
-    return this;
-  }
-
-  public Call inputMappingVariable(String variableId, String subWorkflowVariableId) {
-    addInputMapping(new Binding().variableId(variableId), subWorkflowVariableId);
-    return this;
-  }
-
-  public Call inputMappingExpression(String expression, String subWorkflowVariableId) {
-    addInputMapping(new Binding().expression(expression), subWorkflowVariableId);
-    return this;
-  }
-
-  public Call addInputMapping(Binding sourceBinding, String subWorkflowVariableId) {
-    if (inputMappings==null) {
-      inputMappings = new ArrayList<>();
-    }
-    inputMappings.add(new Mapping()
-      .sourceBinding(sourceBinding)
-      .destinationKey(subWorkflowVariableId));
-    return this;
-  }
-
-  public Call outputMapping(String subWorkflowVariableId, String variableId) {
-    outputMapping(new Binding().variableId(subWorkflowVariableId), variableId);
-    return this;
-  }
-
-  public Call outputMapping(Binding calledBinding, String callerVariableId) {
-    if (outputMappings==null) {
-      outputMappings = new ArrayList<>();
-    }
-    outputMappings.add(new Mapping()
-      .sourceBinding(calledBinding)
-      .destinationKey(callerVariableId));
-    return this;
+  public void setSubWorkflowIdBinding(Binding<String> subWorkflowIdBinding) {
+    this.subWorkflowIdBinding = subWorkflowIdBinding;
   }
   
+  public void setSubWorkflowNameBinding(Binding<String> subWorkflowNameBinding) {
+    this.subWorkflowNameBinding = subWorkflowNameBinding;
+  }
+
   @Override
   public Call multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);
@@ -151,33 +114,35 @@ public class Call extends Activity {
     super.property(key, value);
     return this;
   }
-
-  public List<Mapping> getInputMappings() {
-    return inputMappings;
+  
+  
+  @Override
+  public Call inputMappingValue(Object value, String subWorkflowVariableId) {
+    super.inputMappingValue(value, subWorkflowVariableId);
+    return this;
   }
 
-  
-  public void setInputMappings(List<Mapping> inputMappings) {
-    this.inputMappings = inputMappings;
+  @Override
+  public Call inputMappingVariable(String variableId, String subWorkflowVariableId) {
+    super.inputMappingVariable(variableId, subWorkflowVariableId);
+    return this;
   }
 
-  
-  public List<Mapping> getOutputMappings() {
-    return outputMappings;
+  @Override
+  public Call inputMappingExpression(String expression, String subWorkflowVariableId) {
+    super.inputMappingExpression(expression, subWorkflowVariableId);
+    return this;
   }
 
-  
-  public void setOutputMappings(List<Mapping> outputMappings) {
-    this.outputMappings = outputMappings;
+  @Override
+  public Call outputMapping(String subWorkflowVariableId, String variableId) {
+    super.outputMapping(subWorkflowVariableId, variableId);
+    return this;
   }
 
-  
-  public void setSubWorkflowIdBinding(Binding<String> subWorkflowIdBinding) {
-    this.subWorkflowIdBinding = subWorkflowIdBinding;
-  }
-
-  
-  public void setSubWorkflowNameBinding(Binding<String> subWorkflowNameBinding) {
-    this.subWorkflowNameBinding = subWorkflowNameBinding;
+  @Override
+  public Call outputMapping(Binding calledBinding, String callerVariableId) {
+    super.outputMapping(calledBinding, callerVariableId);
+    return this;
   }
 }
