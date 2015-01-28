@@ -52,13 +52,13 @@ assertEquals(1, tasks.size());
 ## User Documentation
 
 * Who is behind this project?
-* [Getting started](Getting-started)
-* [Workflow engine types](Workflow-engine-types)
+* [Getting started](wiki/Getting-started)
+* [Workflow engine types](wiki/Workflow-engine-types)
 * Building workflows
 * Create your own activity
 * Create your own datasource
 * Run the REST service
-* [Advanced features](Advanced-features)
+* [Advanced features](wiki/Advanced-features)
 
 ## Developer Documentation
 
