@@ -37,6 +37,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -53,9 +54,9 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowInstanceStore workflowInstanceStore;
   public JsonService jsonService;
   public Brewery brewery;
-  public List<WorkflowInstanceEventListener> listeners;
   protected Configuration configuration;
-
+  public List<WorkflowExecutionListener> workflowExecutionListeners;
+  
   @Override
   public void brew(Brewery brewery) {
     WorkflowEngineConfiguration workflowEngineConfiguration = brewery.get(WorkflowEngineConfiguration.class);
@@ -67,7 +68,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowStore = brewery.get(WorkflowStore.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.brewery = brewery;
-    this.listeners = new ArrayList<>();
     
     // ensuring the default activity types are registered
     brewery.get(ActivityTypeService.class);
@@ -105,12 +105,15 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowImpl.id = workflowApi.getId();
       workflowStore.insertWorkflow(workflowImpl);
       workflowApi.setVersion(workflowImpl.version);
+      
       workflowCache.put(workflowImpl);
     } else {
       throw new RuntimeException(parser.issues.getIssueReport());
     }
     return workflowApi;
   }
+  
+  
 
   @Override
   public Workflow validateWorkflow(Workflow workflowApi) {
@@ -292,5 +295,53 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   @Override
   public WorkflowEngine createWorkflowEngine(RequestContext requestContext) {
     return new ContextualWorkflowEngine(this, requestContext);
+  }
+
+  public void addWorkflowExecutionListener(WorkflowExecutionListener workflowExecutionListener) {
+    if (workflowExecutionListeners==null) {
+      workflowExecutionListeners = new ArrayList<>();
+    }
+    workflowExecutionListeners.add(workflowExecutionListener);
+  }
+  
+  public void removeWorkflowExecutionListener(WorkflowExecutionListener workflowExecutionListener) {
+    if (workflowExecutionListeners!=null) {
+      workflowExecutionListeners.remove(workflowExecutionListener);
+      if (workflowExecutionListeners.isEmpty()) {
+        workflowExecutionListeners = null;
+      }
+    }
+  }
+
+  public List<WorkflowExecutionListener> getWorkflowExecutionListeners() {
+    return workflowExecutionListeners;
+  }
+  
+  public void setWorkflowExecutionListeners(List<WorkflowExecutionListener> workflowExecutionListeners) {
+    this.workflowExecutionListeners = workflowExecutionListeners;
+  }
+  
+  public void notifyActivityInstanceStarted(ActivityInstanceImpl activityInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.started(activityInstance);
+      }
+    }
+  }
+
+  public void notifyActivityInstanceEnded(ActivityInstanceImpl activityInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.ended(activityInstance);
+      }
+    }
+  }
+
+  public void notifyTransitionTaken(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.transition(activityInstanceFrom, transition, activityInstanceTo);
+      }
+    }
   }
 }

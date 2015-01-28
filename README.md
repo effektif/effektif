@@ -58,10 +58,12 @@ assertEquals(1, tasks.size());
 * Create your own activity
 * Create your own datasource
 * Run the REST service
+* [Advanced features](Advanced-features)
 
 ## Developer Documentation
 
 * Building the sources
 * Working with MongoDB
+* Architecture
 * How to contribute
 * Coding style

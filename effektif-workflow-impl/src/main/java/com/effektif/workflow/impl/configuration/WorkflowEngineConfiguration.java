@@ -16,17 +16,12 @@ package com.effektif.workflow.impl.configuration;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.effektif.workflow.impl.WorkflowInstanceEventListener;
 
 
 public class WorkflowEngineConfiguration {
 
   protected String id;
-  public List<WorkflowInstanceEventListener> listeners = new CopyOnWriteArrayList<>();
 
   public String getId() {
     if (id==null) {
@@ -58,15 +53,4 @@ public class WorkflowEngineConfiguration {
     return id;
   }
   
-  public synchronized void addListener(WorkflowInstanceEventListener listener) {
-    listeners.add(listener);
-  }
-
-  public synchronized void removeListener(WorkflowInstanceEventListener listener) {
-    listeners.remove(listener);
-  }
-  
-  public synchronized List<WorkflowInstanceEventListener> getListeners() {
-    return listeners;
-  }
 }

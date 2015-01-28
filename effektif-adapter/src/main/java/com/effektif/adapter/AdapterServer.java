@@ -70,11 +70,6 @@ public class AdapterServer {
     return this;
   }
 
-//  public AdapterServer registerSubclass(Class<?> subclass) {
-//    objectMapper.registerSubtypes(subclass);
-//    return this;
-//  }
-
   public void startup() {
     try {
       URI baseUri = new URI("http://localhost"+(port!=null ? ":"+port : "")+"/");

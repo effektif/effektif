@@ -30,11 +30,9 @@ import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.WorkflowInstanceEventListener;
-import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.WorkflowExecutionListener;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-import com.effektif.workflow.test.TestConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 /* Copyright (c) 2014, Effektif GmbH.
  * 
@@ -49,9 +47,9 @@ import com.effektif.workflow.test.WorkflowTest;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-public class EventListenerTest extends WorkflowTest {
+public class ExecutionListenerTest extends WorkflowTest {
   
-  private class LoggingListener implements WorkflowInstanceEventListener {
+  private class LoggingListener implements WorkflowExecutionListener {
     private List<String> events = new ArrayList<>();
 
     public List<String> getEvents() {
@@ -74,7 +72,6 @@ public class EventListenerTest extends WorkflowTest {
     }
   }
 
-  WorkflowEngineImpl workflowEngineImpl;
   LoggingListener listener;
 
   @Override
@@ -82,14 +79,14 @@ public class EventListenerTest extends WorkflowTest {
   public void initializeWorkflowEngine() {
     super.initializeWorkflowEngine();
     listener = new LoggingListener();
-    WorkflowEngineConfiguration workflowEngineConfiguration = configuration.get(WorkflowEngineConfiguration.class);
-    workflowEngineConfiguration.addListener(listener);
+    ((WorkflowEngineImpl)workflowEngine)
+      .addWorkflowExecutionListener(listener);
   }
   
   @After
   public void removeListener() {
-    WorkflowEngineConfiguration workflowEngineConfiguration = configuration.get(WorkflowEngineConfiguration.class);
-    workflowEngineConfiguration.removeListener(listener);
+    ((WorkflowEngineImpl)workflowEngine)
+      .removeWorkflowExecutionListener(listener);
   }
 
   @Test

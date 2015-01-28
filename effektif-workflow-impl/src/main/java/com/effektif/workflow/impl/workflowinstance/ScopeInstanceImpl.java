@@ -57,6 +57,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public List<VariableInstanceImpl> variableInstances;
   public Map<String, VariableInstanceImpl> variableInstancesMap;
   public List<TimerInstanceImpl> timerInstances;
+  public Map<String,Object> properties;
 
   // As long as the workflow instance is not saved, the updates collection is null.
   // That means it's not yet necessary to collect the updates. 

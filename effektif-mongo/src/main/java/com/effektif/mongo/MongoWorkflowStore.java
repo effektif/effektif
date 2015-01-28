@@ -36,7 +36,6 @@ import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -316,7 +315,6 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     workflow.version = readLong(dbWorkflow, FieldsWorkflow.VERSION);
     workflow.workflow = workflow;
     workflow.configuration = configuration;
-    workflow.listeners = configuration.get(WorkflowEngineConfiguration.class).getListeners();
     
     readScope(workflow, dbWorkflow, parser);
     workflow.startActivities = parser.getStartActivities(workflow);

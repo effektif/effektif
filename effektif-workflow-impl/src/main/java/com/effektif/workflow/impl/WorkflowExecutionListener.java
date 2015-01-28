@@ -17,8 +17,8 @@ package com.effektif.workflow.impl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
-public interface WorkflowInstanceEventListener {
-  
+public interface WorkflowExecutionListener {
+
   void started(ActivityInstanceImpl activityInstance);
   void ended(ActivityInstanceImpl activityInstance);
   void transition(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo);
