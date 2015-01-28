@@ -52,13 +52,13 @@ assertEquals(1, tasks.size());
 ## User Documentation
 
 * Who is behind this project?
-* [Getting started](wiki/Getting-started)
-* [Workflow engine types](wiki/Workflow-engine-types)
+* [Getting started](https://github.com/effektif/effektif-oss/wiki/Getting-started)
+* [Workflow engine types](https://github.com/effektif/effektif-oss/wiki/Workflow-engine-types)
 * Building workflows
 * Create your own activity
 * Create your own datasource
 * Run the REST service
-* [Advanced features](wiki/Advanced-features)
+* [Advanced features](https://github.com/effektif/effektif-oss/wiki/Advanced-features)
 
 ## Developer Documentation
 
