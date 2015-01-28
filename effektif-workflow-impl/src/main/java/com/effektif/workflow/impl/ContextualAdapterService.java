@@ -19,6 +19,8 @@ import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterQuery;
 import com.effektif.workflow.impl.adapter.AdapterService;
+import com.effektif.workflow.impl.adapter.ExecuteRequest;
+import com.effektif.workflow.impl.adapter.ExecuteResponse;
 
 
 public class ContextualAdapterService implements AdapterService {
@@ -36,6 +38,16 @@ public class ContextualAdapterService implements AdapterService {
     try {
       RequestContext.set(requestContext);
       return adapterService.saveAdapter(adapter);
+    } finally {
+      RequestContext.unset();
+    }
+  }
+
+  @Override
+  public ExecuteResponse executeAdapterActivity(String adapterId, ExecuteRequest executeRequest) {
+    try {
+      RequestContext.set(requestContext);
+      return adapterService.executeAdapterActivity(adapterId, executeRequest);
     } finally {
       RequestContext.unset();
     }

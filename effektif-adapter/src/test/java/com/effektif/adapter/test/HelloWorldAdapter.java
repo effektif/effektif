@@ -25,8 +25,8 @@ public class HelloWorldAdapter implements ActivityAdapter {
   
   private static final Logger log = LoggerFactory.getLogger(HelloWorldAdapter.class);
 
-  private static final String NAME = "name";
-  private static final String GREETING = "greeting";
+  public static final String NAME = "name";
+  public static final String GREETING = "greeting";
 
   @Override
   public ActivityDescriptor getDescriptor() {

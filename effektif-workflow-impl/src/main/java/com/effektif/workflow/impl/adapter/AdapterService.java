@@ -24,9 +24,12 @@ public interface AdapterService {
   
   Adapter refreshAdapter(String adapterId);
 
+  ExecuteResponse executeAdapterActivity(String adapterId, ExecuteRequest executeRequest);
+
   List<Adapter> findAdapters(AdapterQuery adapterQuery);
 
   void deleteAdapters(AdapterQuery adapterQuery);
   
   AdapterService createAdapterService(RequestContext requestContext);
+  
 }

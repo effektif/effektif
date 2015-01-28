@@ -13,6 +13,7 @@
     <module>effektif-workflow-api</module>
     <module>effektif-workflow-impl</module>
     <module>effektif-mongo</module>
+    <module>effektif-adapter</module>
   </modules>
 
   <dependencies>

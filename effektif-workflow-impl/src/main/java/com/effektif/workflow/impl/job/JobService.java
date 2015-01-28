@@ -15,14 +15,9 @@ package com.effektif.workflow.impl.job;
 
 
 
-
 public interface JobService {
-
-  Job newJob(JobType jobType);
 
   void saveJob(Job job);
 
-  JobQuery newJobQuery();
-
-  void deleteJob(String jobId);
+  void deleteJobs(JobQuery query);
 }

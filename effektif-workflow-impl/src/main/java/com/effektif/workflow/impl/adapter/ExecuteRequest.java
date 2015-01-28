@@ -16,15 +16,12 @@ package com.effektif.workflow.impl.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.command.TypedValue;
 
 
 public class ExecuteRequest {
   
-  private static final Logger log = LoggerFactory.getLogger(ExecuteRequest.class);
+  // private static final Logger log = LoggerFactory.getLogger(ExecuteRequest.class);
 
   protected String activityKey;
   protected String workflowInstanceId;
@@ -76,5 +73,10 @@ public class ExecuteRequest {
       inputParameters = new HashMap<>();
     }
     inputParameters.put(parameterKey, typedValue);
+  }
+
+  public Object getInputParameterValue(String inputParameterKey) {
+    TypedValue typedValue = inputParameters!=null ? inputParameters.get(inputParameterKey) : null;
+    return typedValue!=null ? typedValue.getValue() : null;
   }
 }

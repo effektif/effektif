@@ -204,11 +204,19 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     return null;
   }
+
+  public Object getValue(String variableId) {
+    VariableInstanceImpl variableInstance = findVariableInstance(variableId);
+    if (variableInstance!=null) {
+      return variableInstance.getValue();
+    }
+    throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
+  }
   
   public TypedValueImpl getTypedValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
     if (variableInstance!=null) {
-      DataType type = variableInstance.variable.type;
+      DataType type = variableInstance.variable!=null ? variableInstance.variable.type : variableInstance.type;
       Object value = variableInstance.getValue();
       return new TypedValueImpl(type, value);
     }

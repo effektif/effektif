@@ -13,20 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.activities.Mapping;
 import com.effektif.workflow.api.command.Start;
-import com.effektif.workflow.api.types.BindingType;
-import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.ObjectField;
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.types.ObjectType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.VariableReferenceType;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -37,11 +30,14 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
-public class CallImpl extends MappableActivityImpl<Call> {
+public class CallImpl extends AbstractActivityType<Call> {
 
   // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   BindingImpl<String> subWorkflowIdBinding;
   BindingImpl<String> subWorkflowNameBinding;
+  protected Map<String,String> inputMappings; 
+  protected Map<String,TypedValue> inputMappingValues; 
+  protected Map<String,String> outputMappings; 
 
   public CallImpl() {
     super(Call.class);
@@ -81,8 +77,11 @@ public class CallImpl extends MappableActivityImpl<Call> {
   @Override
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
     super.parse(activityImpl, call, parser);
-    subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
-    subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
+    this.subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
+    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
+    this.inputMappings = call.getInputMappings();
+    this.inputMappingValues = call.getInputMappingValues();
+    this.outputMappings = call.getOutputMappings();
   }
 
   @Override
@@ -109,9 +108,16 @@ public class CallImpl extends MappableActivityImpl<Call> {
         .workflowId(subWorkflowId);
       
       if (inputMappings!=null) {
-        for (MappingImpl inputMapping: inputMappings) {
-          Object value = activityInstance.getValue(inputMapping.sourceBinding);
-          start.variableValue(inputMapping.destinationKey, value);
+        for (String subWorkflowVariableId: inputMappings.keySet()) {
+          String variableId = inputMappings.get(subWorkflowVariableId);
+          Object value = activityInstance.getValue(variableId);
+          start.variableValue(subWorkflowVariableId, value);
+        }
+      }
+      if (inputMappingValues!=null) {
+        for (String subWorkflowVariableId: inputMappingValues.keySet()) {
+          TypedValue typedValue = inputMappingValues.get(subWorkflowVariableId);
+          start.variableValue(subWorkflowVariableId, typedValue.getValue());
         }
       }
       
@@ -129,9 +135,10 @@ public class CallImpl extends MappableActivityImpl<Call> {
   
   public void calledProcessInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
     if (outputMappings!=null) {
-      for (MappingImpl outputMapping: outputMappings) {
-        Object value = calledProcessInstance.getValue(outputMapping.sourceBinding);
-        activityInstance.setVariableValue(outputMapping.destinationKey, value);
+      for (String variableId: outputMappings.keySet()) {
+        String subWorkflowVariableId = outputMappings.get(variableId);
+        Object value = calledProcessInstance.getValue(subWorkflowVariableId);
+        activityInstance.setVariableValue(variableId, value);
       }
     }
   }

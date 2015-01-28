@@ -15,10 +15,7 @@ package com.effektif.workflow.impl.job;
 
 
 /** job type with default retry strategy: 3 retries in total, 
- * one after 3 seconds one after an hour and one after 24 hours
- * 
- * @author Walter White
- */
+ * one after 3 seconds one after an hour and one after 24 hours */
 public abstract class AbstractJobType implements JobType {
 
   @Override

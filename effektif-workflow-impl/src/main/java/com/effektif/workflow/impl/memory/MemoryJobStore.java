@@ -22,26 +22,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
-import com.effektif.workflow.impl.job.JobQueryImpl;
-import com.effektif.workflow.impl.job.JobServiceImpl;
+import com.effektif.workflow.impl.job.JobQuery;
+import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.util.Time;
 
 
-public class MemoryJobServiceImpl extends JobServiceImpl {
+public class MemoryJobStore implements JobStore, Brewable {
   
   protected Set<String> workflowInstanceIds;
   protected LinkedList<Job> jobs;
   protected List<Job> jobsDone;
   protected Map<String,Job> jobsById;
 
-  public MemoryJobServiceImpl() {
-  }
-  
   @Override
   public void brew(Brewery brewery) {
-    super.brew(brewery);
     this.workflowInstanceIds = new HashSet<>();
     this.jobs = new LinkedList<>();
     this.jobsDone = new ArrayList<>();
@@ -79,7 +76,7 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
   }
 
   public boolean duedateHasPast(Job job) {
-    return job.duedate==null || job.duedate.isBefore(Time.now());
+    return job.duedate==null || job.duedate.compareTo(Time.now())<=0;
   }
 
   @Override
@@ -101,11 +98,37 @@ public class MemoryJobServiceImpl extends JobServiceImpl {
   }
 
   @Override
-  public List<Job> findJobs(JobQueryImpl jobQuery) {
+  public List<Job> findJobs(JobQuery jobQuery) {
     return jobs;
   }
 
   @Override
-  public void deleteJob(String jobId) {
+  public void deleteJobs(JobQuery query) {
+    String jobId = query.getJobId();
+    if (jobId!=null) {
+      Job job = jobsById.get(jobId);
+      if (job!=null && meetsCriteria(job, query)) {
+        jobsById.remove(jobId);
+        jobs.remove(job);
+        jobsDone.remove(job);
+      }
+    } else {
+      deleteJobs(jobs.iterator(), query);
+      deleteJobs(jobsDone.iterator(), query);
+    }
+  }
+
+  protected void deleteJobs(Iterator<Job> iterator, JobQuery query) {
+    while(iterator.hasNext()) {
+      Job job = iterator.next();
+      if (meetsCriteria(job, query)) {
+        jobsById.remove(job.getId());
+        jobs.remove(job);
+      }
+    }
+  }
+
+  protected boolean meetsCriteria(Job job, JobQuery query) {
+    return query.getJobId()!=null && query.getJobId().equals(job.id);
   }
 }

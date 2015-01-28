@@ -78,7 +78,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery query) {
     if (query.getWorkflowInstanceId()!=null) {
       WorkflowInstanceImpl workflowInstance = workflowInstances.get(query.getWorkflowInstanceId());
-      if (workflowInstance.isIncluded(query)) {
+      if (workflowInstance!=null && workflowInstance.isIncluded(query)) {
         return Lists.of(workflowInstance);
       } else {
         return Collections.EMPTY_LIST;

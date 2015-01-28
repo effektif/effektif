@@ -12,9 +12,6 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 
 
-/**
- * @author Tom Baeyens
- */
 public class Job {
   
   // private static final Logger log = LoggerFactory.getLogger(Job.class);
@@ -39,18 +36,8 @@ public class Job {
   public String workflowInstanceId;
   public String activityInstanceId;
   public String taskId;
+
   
-  public Job() {
-  }
-
-  public Job(JobService jobService, JobType jobType) {
-    this.jobService = jobService;
-    this.jobType = jobType;
-  }
-
-  public void save() {
-    jobService.saveJob(this);
-  }
 
   /** setting the id means the job service will ensure there is 
    * exactly 1 such job in the system. */

@@ -8,29 +8,24 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.effektif.workflow.impl.ExecutorService;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
-/**
- * @author Tom Baeyens
- */
 public abstract class JobServiceImpl implements JobService, Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
-  public WorkflowEngineImpl processEngine;
-  public ExecutorService executor = null;
+  protected WorkflowInstanceStore workflowInstanceStore;
+  protected JobStore jobStore;
+  protected ExecutorService executor;
 
   // configuration 
   public long checkInterval = 30 * 1000; // 30 seconds
@@ -41,18 +36,11 @@ public abstract class JobServiceImpl implements JobService, Brewable {
   public Timer timer = null;
   public Timer checkOtherJobsTimer = null;
   public JobServiceListener listener = null;
-  
-  public JobServiceImpl() {
-  }
 
   @Override
   public void brew(Brewery brewery) {
-    this.processEngine = brewery.get(WorkflowEngineImpl.class);
+    this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.executor = brewery.get(ExecutorService.class);
-  }
-
-  public Job newJob(JobType jobType) {
-    return new Job(this, jobType);
   }
 
   public void setListener(JobServiceListener listener) {
@@ -110,8 +98,7 @@ public abstract class JobServiceImpl implements JobService, Brewable {
   }
 
   public void checkProcessJobs() {
-    WorkflowInstanceStore workflowInstanceStore = processEngine.getWorkflowInstanceStore();
-    Iterator<String> processInstanceIds = getWorkflowInstanceIdsToLockForJobs();
+    Iterator<String> processInstanceIds = jobStore.getWorkflowInstanceIdsToLockForJobs();
     while (isRunning 
            && processInstanceIds!=null 
            && processInstanceIds.hasNext()) {
@@ -119,7 +106,7 @@ public abstract class JobServiceImpl implements JobService, Brewable {
       WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, null);
       boolean keepGoing = true;
       while (isRunning && keepGoing) {
-        Job job = lockNextWorkflowJob(workflowInstanceId);
+        Job job = jobStore.lockNextWorkflowJob(workflowInstanceId);
         if (job != null) {
           executor.execute(new ExecuteJob(job, lockedProcessInstance));
         } else {
@@ -133,7 +120,7 @@ public abstract class JobServiceImpl implements JobService, Brewable {
   public void checkOtherJobs() {
     boolean keepGoing = true;
     while (isRunning && keepGoing) {
-      Job job = lockNextOtherJob();
+      Job job = jobStore.lockNextOtherJob();
       if (job != null) {
         executor.execute(new ExecuteJob(job));
       } else {
@@ -215,25 +202,4 @@ public abstract class JobServiceImpl implements JobService, Brewable {
     }
   }
 
-  @Override
-  public JobQuery newJobQuery() {
-    return new JobQueryImpl(this);
-  }
-
-  public abstract List<Job> findJobs(JobQueryImpl jobQuery);
-  
-  /** returns the ids of process instance that have jobs requiring
-   * a process instance lock. When a job requires a process instance lock, 
-   * it has to specify {@link Job#workflowInstanceId} and set {@link Job#lockWorkflowInstance} to true.
-   * This method is allowed to return null. */
-  public abstract Iterator<String> getWorkflowInstanceIdsToLockForJobs();
-
-  /** locks a job having the given processInstanceId and retrieves it from the store */
-  public abstract Job lockNextWorkflowJob(String processInstanceId);
-
-  /** locks a job not having a {@link Job#lockWorkflowInstance} specified  
-   * and retrieves it from the store */
-  public abstract Job lockNextOtherJob();
-
-  public abstract void saveJob(Job job);
 }

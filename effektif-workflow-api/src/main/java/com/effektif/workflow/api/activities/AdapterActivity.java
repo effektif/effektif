@@ -13,8 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -24,10 +27,13 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /** delegates to an activity that is running on an external adapter server */
 @JsonTypeName("adapterActivity")
-public class AdapterActivity extends MappableActivity {
+public class AdapterActivity extends Activity {
 
   protected String adapterId;
-  protected String adapterKey;
+  protected String activityKey;
+  protected Map<String,String> inputMappings; 
+  protected Map<String,TypedValue> inputMappingValues; 
+  protected Map<String,String> outputMappings; 
 
   public String getAdapterId() {
     return this.adapterId;
@@ -40,17 +46,80 @@ public class AdapterActivity extends MappableActivity {
     return this;
   }
   
-  public String getAdapterKey() {
-    return this.adapterKey;
+  public String getActivityKey() {
+    return this.activityKey;
   }
-  public void setAdapterKey(String adapterKey) {
-    this.adapterKey = adapterKey;
+  public void setActivityKey(String activityKey) {
+    this.activityKey = activityKey;
   }
-  public AdapterActivity adapterKey(String adapterKey) {
-    this.adapterKey = adapterKey;
+  public AdapterActivity activityKey(String activityKey) {
+    this.activityKey = activityKey;
     return this;
   }
   
+  /** copies the variable from this workflow to the adapter activity when it is invoked */
+  public AdapterActivity inputMapping(String adapterKey, String variableId) {
+    if (inputMappings==null) {
+      inputMappings = new HashMap<>();
+    }
+    inputMappings.put(adapterKey, variableId);
+    return this;
+  }
+
+  /** copies the static value to the adapter activity when it is invoked,
+   * This method uses reflection and the data type service to find the type form the value. */
+  public AdapterActivity inputMappingValue(String adapterKey, Object value) {
+    inputMappingValue(adapterKey, new TypedValue().value(value));
+    return this;
+  }
+
+  /** copies the static typed value to the adapter activity when it is invoked */
+  public AdapterActivity inputMappingValue(String adapterKey, TypedValue typedValue) {
+    if (inputMappingValues==null) {
+      inputMappingValues = new HashMap<>();
+    }
+    inputMappingValues.put(adapterKey, typedValue);
+    return this;
+  }
+
+  /** copies the adapter output value into a variable of this workflow when the activity is finished */
+  public AdapterActivity outputMapping(String variableId, String adapterKey) {
+    if (outputMappings==null) {
+      outputMappings = new HashMap<>();
+    }
+    outputMappings.put(variableId, adapterKey);
+    return this;
+  }
+  
+  public Map<String, String> getInputMappings() {
+    return inputMappings;
+  }
+
+  
+  public void setInputMappings(Map<String, String> inputMappings) {
+    this.inputMappings = inputMappings;
+  }
+
+  
+  public Map<String, String> getOutputMappings() {
+    return outputMappings;
+  }
+
+  
+  public void setOutputMappings(Map<String, String> outputMappings) {
+    this.outputMappings = outputMappings;
+  }
+
+  
+  public Map<String, TypedValue> getInputMappingValues() {
+    return inputMappingValues;
+  }
+
+  
+  public void setInputMappingValues(Map<String, TypedValue> inputMappingValues) {
+    this.inputMappingValues = inputMappingValues;
+  }
+
   @Override
   public AdapterActivity multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);
@@ -104,36 +173,4 @@ public class AdapterActivity extends MappableActivity {
     super.property(key, value);
     return this;
   }
-  
-  
-  @Override
-  public AdapterActivity inputMappingValue(Object value, String subWorkflowVariableId) {
-    super.inputMappingValue(value, subWorkflowVariableId);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputMappingVariable(String variableId, String subWorkflowVariableId) {
-    super.inputMappingVariable(variableId, subWorkflowVariableId);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputMappingExpression(String expression, String subWorkflowVariableId) {
-    super.inputMappingExpression(expression, subWorkflowVariableId);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity outputMapping(String subWorkflowVariableId, String variableId) {
-    super.outputMapping(subWorkflowVariableId, variableId);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity outputMapping(Binding calledBinding, String callerVariableId) {
-    super.outputMapping(calledBinding, callerVariableId);
-    return this;
-  }
-
 }

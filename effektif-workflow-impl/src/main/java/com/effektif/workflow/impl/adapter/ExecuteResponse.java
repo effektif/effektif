@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.adapter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.command.TypedValue;
@@ -20,6 +21,30 @@ import com.effektif.workflow.api.command.TypedValue;
 
 public class ExecuteResponse {
 
+  protected boolean onwards;
   protected Map<String,TypedValue> outputParameterValues;
 
+  
+  public Map<String, TypedValue> getOutputParameterValues() {
+    return outputParameterValues;
+  }
+  
+  public void setOutputParameterValues(Map<String, TypedValue> outputParameterValues) {
+    this.outputParameterValues = outputParameterValues;
+  }
+
+  public void setOutputParameterValue(String outputParameterKey, Object value) {
+    if (outputParameterValues==null) {
+      outputParameterValues = new HashMap<>(); 
+    }
+    outputParameterValues.put(outputParameterKey, new TypedValue().value(value));
+  }
+
+  public boolean isOnwards() {
+    return onwards;
+  }
+  
+  public void setOnwards(boolean onwards) {
+    this.onwards = onwards;
+  }
 }

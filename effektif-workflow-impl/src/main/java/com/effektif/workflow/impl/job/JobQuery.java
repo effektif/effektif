@@ -13,11 +13,20 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.job;
 
-import java.util.List;
 
 
-public interface JobQuery {
+public class JobQuery {
 
-  List<Job> asList();
+  protected String jobId;
 
+  public String getJobId() {
+    return this.jobId;
+  }
+  public void setJobId(String jobId) {
+    this.jobId = jobId;
+  }
+  public JobQuery jobId(String jobId) {
+    this.jobId = jobId;
+    return this;
+  }
 }

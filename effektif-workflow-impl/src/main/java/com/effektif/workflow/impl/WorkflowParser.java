@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.activities.Mapping;
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -34,7 +33,6 @@ import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.activity.types.MappingImpl;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -278,19 +276,4 @@ public class WorkflowParser {
     return startActivities;
   }
 
-  public List<MappingImpl> parseMappings(List<Mapping> mappingsApi, Activity activity, String fieldName) {
-    if (mappingsApi==null) {
-      return null;
-    }
-    List<MappingImpl> mappingImpls = new ArrayList<>(mappingsApi.size());
-    int i=0;
-    for (Mapping mappingApi: mappingsApi) {
-      MappingImpl mappingImpl = new MappingImpl();
-      mappingImpl.sourceBinding = this.parseBinding(mappingApi.getSourceBinding(), Object.class, false, activity, fieldName+"["+i+"]");
-      mappingImpl.destinationKey = mappingApi.getDestinationKey();
-      mappingImpls.add(mappingImpl);
-      i++;
-    }
-    return mappingImpls;
-  }
 }

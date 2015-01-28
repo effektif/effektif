@@ -39,6 +39,8 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.job.JobQuery;
+import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.json.JsonService;
 
 
@@ -52,6 +54,7 @@ public class WorkflowTest {
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   protected TaskService taskService = null;
+  protected JobService jobService = null;
   
   @Before
   public void initializeWorkflowEngine() {
@@ -62,12 +65,13 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
+      jobService = configuration.get(JobService.class);
     }
   }
   
   @After
   public void after() {
-    if (workflowEngine!=null) {
+    if (configuration!=null) {
       logWorkflowEngineContents();
       deleteWorkflowEngineContents();
     }
@@ -200,5 +204,6 @@ public class WorkflowTest {
     workflowEngine.deleteWorkflows(new WorkflowQuery());
     workflowEngine.deleteWorkflowInstances(new WorkflowInstanceQuery());
     taskService.deleteTasks(new TaskQuery());
+    jobService.deleteJobs(new JobQuery());
   }
 }

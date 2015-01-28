@@ -82,16 +82,16 @@ public class CallTest extends WorkflowTest {
     subWorkflow = deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .variable("assignee", new TextType())
+      .variable("guineapig", new TextType())
       .activity(new Call("call")
-        .inputMappingVariable("assignee", "performer")
+        .inputMapping("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
     
     superWorkflow = deploy(superWorkflow);
     
     workflowEngine.startWorkflowInstance(new Start()
       .workflowId(superWorkflow.getId())
-      .variableValue("assignee", "johndoe")
+      .variableValue("guineapig", "johndoe")
     );
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
@@ -110,15 +110,12 @@ public class CallTest extends WorkflowTest {
     
     Workflow superWorkflow = new Workflow()
       .activity(new Call("call")
-        .inputMappingValue("johndoe", "performer")
+        .inputMappingValue("performer", "johndoe")
         .subWorkflowId(subWorkflow.getId()));
     
     superWorkflow = deploy(superWorkflow);
     
-    workflowEngine.startWorkflowInstance(new Start()
-      .workflowId(superWorkflow.getId())
-      .variableValue("assignee", "johndoe")
-    );
+    start(superWorkflow);
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
     assertEquals("johndoe", task.getAssigneeId());

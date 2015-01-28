@@ -13,6 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -23,10 +27,13 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /* invokes another workflow and ends when the other workflow instance completes */ 
 @JsonTypeName("call")
-public class Call extends MappableActivity {
+public class Call extends Activity {
 
   protected Binding<String> subWorkflowIdBinding; 
   protected Binding<String> subWorkflowNameBinding; 
+  protected Map<String,String> inputMappings; 
+  protected Map<String,TypedValue> inputMappingValues; 
+  protected Map<String,String> outputMappings; 
   
   public Call() {
   }
@@ -115,34 +122,63 @@ public class Call extends MappableActivity {
     return this;
   }
   
+  /** copies the variable from this workflow to the subworkflow when it is created */
+  public Call inputMapping(String subWorkflowVariableId, String variableId) {
+    if (inputMappings==null) {
+      inputMappings = new HashMap<>();
+    }
+    inputMappings.put(subWorkflowVariableId, variableId);
+    return this;
+  }
+
+  public Call inputMappingValue(String subWorkflowVariableId, Object value) {
+    inputMappingValue(subWorkflowVariableId, new TypedValue().value(value));
+    return this;
+  }
+
+  public Call inputMappingValue(String subWorkflowVariableId, TypedValue typedValue) {
+    if (inputMappingValues==null) {
+      inputMappingValues = new HashMap<>();
+    }
+    inputMappingValues.put(subWorkflowVariableId, typedValue);
+    return this;
+  }
+
+  /** copies the variable from the subworkflow to this subworkflow when it finishes */
+  public Call outputMapping(String variableId, String subWorkflowVariableId) {
+    if (outputMappings==null) {
+      outputMappings = new HashMap<>();
+    }
+    outputMappings.put(variableId, subWorkflowVariableId);
+    return this;
+  }
   
-  @Override
-  public Call inputMappingValue(Object value, String subWorkflowVariableId) {
-    super.inputMappingValue(value, subWorkflowVariableId);
-    return this;
+  public Map<String, String> getInputMappings() {
+    return inputMappings;
   }
 
-  @Override
-  public Call inputMappingVariable(String variableId, String subWorkflowVariableId) {
-    super.inputMappingVariable(variableId, subWorkflowVariableId);
-    return this;
+  
+  public void setInputMappings(Map<String, String> inputMappings) {
+    this.inputMappings = inputMappings;
   }
 
-  @Override
-  public Call inputMappingExpression(String expression, String subWorkflowVariableId) {
-    super.inputMappingExpression(expression, subWorkflowVariableId);
-    return this;
+  
+  public Map<String, String> getOutputMappings() {
+    return outputMappings;
   }
 
-  @Override
-  public Call outputMapping(String subWorkflowVariableId, String variableId) {
-    super.outputMapping(subWorkflowVariableId, variableId);
-    return this;
+  
+  public void setOutputMappings(Map<String, String> outputMappings) {
+    this.outputMappings = outputMappings;
   }
 
-  @Override
-  public Call outputMapping(Binding calledBinding, String callerVariableId) {
-    super.outputMapping(calledBinding, callerVariableId);
-    return this;
+  
+  public Map<String, TypedValue> getInputMappingValues() {
+    return inputMappingValues;
+  }
+
+  
+  public void setInputMappingValues(Map<String, TypedValue> inputMappingValues) {
+    this.inputMappingValues = inputMappingValues;
   }
 }

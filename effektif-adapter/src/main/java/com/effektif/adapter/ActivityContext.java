@@ -35,7 +35,6 @@ public class ActivityContext {
   protected DataTypeService dataTypeService;
   protected ExecuteRequest executeRequest;
   protected ExecuteResponse executeResponse;
-  protected Boolean onwards;
   
   public ActivityContext(Configuration configuration, ExecuteRequest executeRequest) {
     this.configuration = configuration;
@@ -84,17 +83,13 @@ public class ActivityContext {
   public void setExecuteRequest(ExecuteRequest executeRequest) {
     this.executeRequest = executeRequest;
   }
-  public String getInputParameterValue(String name) {
-    return null;
+  public Object getInputParameterValue(String parameterKey) {
+    return executeRequest.getInputParameterValue(parameterKey);
   }
   public void setOutputParameterValue(String greeting, String string) {
   }
 
   public void onwards() {
-    this.onwards = true;
+    executeResponse.setOnwards(true);
   }
-  public Boolean getOnwards() {
-    return this.onwards;
-  }
-
 }

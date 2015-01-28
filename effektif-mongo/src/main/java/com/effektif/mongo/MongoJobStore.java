@@ -20,10 +20,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobExecution;
 import com.effektif.workflow.impl.job.JobQuery;
+import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Time;
@@ -35,8 +37,8 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 
 
-public class MongoJobs extends MongoCollection {
-
+public class MongoJobStore extends MongoCollection implements JobStore, Brewable {
+  
   public static class JobFields {
     public String _id = "_id";
     public String key = "key";
@@ -62,17 +64,15 @@ public class MongoJobs extends MongoCollection {
     public String jobType = "jobType";
   }
 
+  protected JsonService jsonService;
   protected WriteConcern writeConcernJobs;
   protected String lockOwner;
-  protected JsonService jsonService;
   protected MongoJobs.JobFields fields;
-
-  public MongoJobs() {
+  
+  @Override
+  public void brew(Brewery brewery) {
   }
-
-  public MongoJobs(Brewery brewery) {
-  }
-
+  
   public void saveJob(Job job) {
     BasicDBObject dbJob = writeJob(job);
     if (job.key!=null) {
@@ -83,8 +83,10 @@ public class MongoJobs extends MongoCollection {
     }
   }
   
-  public Iterator<String> getProcessInstanceIdsToLockForJobs() {
-    DBObject query = buildJobQuery(true).get();
+  public Iterator<String> getWorkflowInstanceIdsToLockForJobs() {
+    DBObject query = buildLockNextJobQuery()
+      .push(fields.workflowInstanceId).append("$exists", true).pop()
+      .get();
     DBObject retrieveFields = new BasicDBObject(fields.workflowInstanceId, true);
     DBCursor jobsDueHavingProcessInstance = find(query, retrieveFields);
     List<String> processInstanceIds = new ArrayList<>();
@@ -96,21 +98,23 @@ public class MongoJobs extends MongoCollection {
     return processInstanceIds.iterator();
   }
 
-  protected BasicDBObjectBuilder buildJobQuery(boolean mustHaveProcessInstance) {
-    Date now = Time.now().toDate();
-    return BasicDBObjectBuilder.start()
-      .append("$or", new DBObject[]{
-        new BasicDBObject(fields.duedate, new BasicDBObject("$exists", false)),
-        new BasicDBObject(fields.duedate, new BasicDBObject("$lte", now))
-      })
-      .push(fields.done).append("$exists", false).pop()
-      .push(fields.workflowInstanceId).append("$exists", mustHaveProcessInstance).pop();
+  @Override
+  public Job lockNextWorkflowJob(String processInstanceId) {
+    DBObject query = buildLockNextJobQuery()
+            .append(fields.workflowInstanceId, processInstanceId)
+            .get();
+    return lockNextJob(query);
   }
 
-  public Job lockJob(boolean mustHaveProcessInstance) {
-    DBObject query = buildJobQuery(mustHaveProcessInstance)
-      .push(fields.lock).append("$exists", false).pop()
+  @Override
+  public Job lockNextOtherJob() {
+    DBObject query = buildLockNextJobQuery()
+      .push(fields.workflowInstanceId).append("$exists", false).pop()
       .get();
+    return lockNextJob(query);
+  }
+
+  public Job lockNextJob(DBObject query) {
     DBObject dbLock = BasicDBObjectBuilder.start()
       .append(fields.time, Time.now().toDate())
       .append(fields.owner, lockOwner)
@@ -123,6 +127,16 @@ public class MongoJobs extends MongoCollection {
       return readJob(dbJob);
     }
     return null;
+  }
+
+  protected BasicDBObjectBuilder buildLockNextJobQuery() {
+    Date now = Time.now().toDate();
+    return BasicDBObjectBuilder.start()
+      .append("$or", new DBObject[]{
+        new BasicDBObject(fields.duedate, new BasicDBObject("$exists", false)),
+        new BasicDBObject(fields.duedate, new BasicDBObject("$lte", now))
+      })
+      .push(fields.done).append("$exists", false).pop();
   }
 
   public Job readJob(BasicDBObject dbJob) {
@@ -217,13 +231,14 @@ public class MongoJobs extends MongoCollection {
     }
   }
 
-  public void deleteJob(String jobId) {
+  @Override
+  public void deleteJobs(JobQuery query) {
     throw new RuntimeException("TODO");
   }
 
   public List<Job> findJobs(JobQuery jobQuery) {
     List<Job> jobs = new ArrayList<Job>();
-    BasicDBObject query = buildQuery(jobQuery);
+    BasicDBObject query = buildLockNextJobQuery(jobQuery);
     DBCursor jobCursor = find(query);
     while (jobCursor.hasNext()) {
       BasicDBObject dbJob = (BasicDBObject) jobCursor.next();
@@ -231,9 +246,5 @@ public class MongoJobs extends MongoCollection {
       jobs.add(job);
     }
     return jobs;
-  }
-
-  public BasicDBObject buildQuery(JobQuery jobQuery) {
-    return null;
   }
 }

@@ -53,7 +53,8 @@ public class AdapterTest {
     Workflow workflow = new Workflow()
       .activity("hello", new AdapterActivity()
         .adapterId(adapter.getId())
-        .adapterKey("hello")
+        .activityKey("hello")
+        .inputMappingValue(HelloWorldAdapter.NAME, "Walter")
       );
     
     workflow = workflowEngine.deployWorkflow(workflow);

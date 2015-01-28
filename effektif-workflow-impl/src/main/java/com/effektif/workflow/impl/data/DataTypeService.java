@@ -21,9 +21,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
@@ -39,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DataTypeService implements Brewable {
   
-  private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);
+  // private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);
   
   protected Configuration configuration;
   protected ObjectMapper objectMapper;
@@ -73,7 +70,6 @@ public class DataTypeService implements Brewable {
       Constructor<?> constructor = findDataTypeConstructor(dataType.getClass());
       dataTypeConstructors.put(apiClass, constructor);
     }
-    log.debug("registering with objectmapper "+System.identityHashCode(objectMapper)+" : "+apiClass.getName());
     objectMapper.registerSubtypes(apiClass);
   }
   
