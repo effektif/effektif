@@ -13,17 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.effektif.workflow.api.workflow.Script;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("scriptTask")
 public class ScriptTask extends NoneTask {
 
-  protected String script;
-  protected Map<String,String> mappings;
+  protected Script script;
   
   public ScriptTask() {
   }
@@ -32,32 +29,32 @@ public class ScriptTask extends NoneTask {
     super(id);
   }
 
-  public ScriptTask script(String script) {
+  public ScriptTask script(Script script) {
     this.script = script;
     return this;
   }
   
-  public ScriptTask variableMapping(String scriptVariableName, String workflowVariableId) {
-    if (mappings==null) {
-      mappings = new HashMap<>();
+  public ScriptTask script(String script) {
+    if (this.script == null) {
+      this.script = new Script();
     }
-    mappings.put(scriptVariableName, workflowVariableId);
+    this.script.script(script);
+    return this;
+  }
+
+  public ScriptTask scriptMapping(String scriptVariableName, String variableId) {
+    if (this.script == null) {
+      this.script = new Script();
+    }
+    this.script.mapping(scriptVariableName, variableId);
     return this;
   }
   
-  public String getScript() {
+  public Script getScript() {
     return script;
   }
   
-  public void setScript(String script) {
+  public void setScript(Script script) {
     this.script = script;
-  }
-  
-  public Map<String, String> getMappings() {
-    return mappings;
-  }
-  
-  public void setMappings(Map<String, String> mappings) {
-    this.mappings = mappings;
   }
 }

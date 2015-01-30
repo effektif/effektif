@@ -20,18 +20,25 @@ import javax.script.CompiledScript;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
-public class ScriptServiceImpl implements ScriptService, Brewable {
+public class StandardScriptService implements ScriptService, Brewable {
 
   public static final String JAVASCRIPT = "JavaScript";
 
   protected ScriptEngineManager scriptEngineManager;
+  protected String language;
   
-  public ScriptServiceImpl() {
+  public StandardScriptService() {
+  }
+
+  public StandardScriptService(String language) {
+    this.language = language;
   }
 
   @Override
@@ -39,36 +46,33 @@ public class ScriptServiceImpl implements ScriptService, Brewable {
     this.scriptEngineManager = brewery.get(ScriptEngineManager.class);
   }
 
-  public Script compile(String script) {
-    return compile(script, null);
-  }
-  
-  public Script compile(String scriptText, String language) {
+  public ScriptImpl compile(Script script, WorkflowParser parser) {
+    ScriptImpl scriptImpl = new ScriptImpl();
+    scriptImpl.mappings = script.getMappings();
+    
+    String language = script.getLanguage();
     if (language==null) {
       language = JAVASCRIPT;
     }
-    CompiledScript compiledScript = buildCompiledScript(scriptText, language);
-    return new Script()
-      .language(language)
-      .compiledScript(compiledScript);
-  }
-
-  protected CompiledScript buildCompiledScript(String scriptText, String language) {
+    Compilable compilable = (Compilable) scriptEngineManager.getEngineByName(language);
+    scriptImpl.scriptService = new StandardScriptService(language);
+    
     try {
-      Compilable compilable = (Compilable) scriptEngineManager.getEngineByName(language);
-      return compilable.compile(scriptText);
+      scriptImpl.compiledScript = compilable.compile(script.getScript());
     } catch (ScriptException e) {
-      throw new RuntimeException(e);
+      parser.addError("Script doesn't compile: %s", e.getMessage()); 
     }
+    return scriptImpl;
   }
-
+  
   @Override
-  public ScriptResult evaluateScript(ScopeInstanceImpl scopeInstance, Script script) {
+  public ScriptResult evaluate(ScopeInstanceImpl scopeInstance, ScriptImpl script) {
     ScriptResult scriptResult = new ScriptResult();
     try {
       StringWriter logWriter = new StringWriter();
-      ScriptContextImpl scriptContext = new ScriptContextImpl(scopeInstance, script, logWriter);
-      Object result = script.compiledScript.eval(scriptContext);
+      StandardScriptContext scriptContext = new StandardScriptContext(scopeInstance, script, logWriter);
+      CompiledScript compiledScript = (CompiledScript) script.compiledScript;
+      Object result = compiledScript.eval(scriptContext);
       scriptResult.setResult(result);
       scriptResult.setLogs(logWriter.toString());
     } catch (ScriptException e) {

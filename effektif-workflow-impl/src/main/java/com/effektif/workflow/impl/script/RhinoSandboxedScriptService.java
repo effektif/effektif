@@ -25,15 +25,11 @@ import sun.org.mozilla.javascript.internal.WrapFactory;
 
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
-public class SandboxedRhinoScriptService extends RhinoScriptService implements ScriptService, Brewable {
+public class RhinoSandboxedScriptService extends RhinoScriptService implements ScriptService, Brewable {
 
-  private static final Logger log = LoggerFactory.getLogger(SandboxedRhinoScriptService.class);
+  private static final Logger log = LoggerFactory.getLogger(RhinoSandboxedScriptService.class);
   
   protected long maxScriptDurationInMillis = 1*1000; // 10 seconds
   
@@ -41,29 +37,38 @@ public class SandboxedRhinoScriptService extends RhinoScriptService implements S
   public void brew(Brewery brewery) {
     this.maxScriptDurationInMillis = 1*1000; // 10 seconds
     this.contextFactory = new SandboxContextFactory();
+    ContextFactory.initGlobal(this.contextFactory);
   }
 
-  
   ///////////////////////////////////////////////////
   // FOR TEST
-  public static void main(String[] args) {
-    String scriptText = "var scriptVar = workflowVar + ' world;";
-    SandboxedRhinoScriptService sandboxedRhinoScriptService = new SandboxedRhinoScriptService();
-    Script script = sandboxedRhinoScriptService.compile(scriptText);
-
-    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
-    VariableImpl variable = new VariableImpl();
-    variable.id = "existingVar";
-    variable.type = new TextTypeImpl();
-    VariableInstanceImpl variableInstance = workflowInstance.createVariableInstance(variable);
-    variableInstance.value = "hello";
-
-    ScriptResult result = sandboxedRhinoScriptService.evaluate(workflowInstance, script);
-  }
-  public SandboxedRhinoScriptService() {
-    this.contextFactory = new SandboxContextFactory();
-    ContextFactory.initGlobal(contextFactory);
-  }
+//  public static void main(String[] args) {
+//    String scriptText = "var scriptVar = workflowVar + ' world'; \n"
+//            + "console.log('byby'); "
+//            + "scriptVar;";
+//    RhinoSandboxedScriptService rhinoSandboxedScriptService = new RhinoSandboxedScriptService();
+//    rhinoSandboxedScriptService.brew(null);
+//    
+//    ScriptImpl script = rhinoSandboxedScriptService.compile(scriptText);
+//    script.mappings = new HashMap<>();
+//    // script.mappings.put("workflowVar", "i");
+//
+//    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
+//    workflowInstance.workflowInstance = workflowInstance;
+//    workflowInstance.nextVariableInstanceId = 1l;
+//    VariableImpl variable = new VariableImpl();
+//    variable.id = "scriptVar";
+//    VariableInstanceImpl variableInstance = workflowInstance.createVariableInstance(variable);
+//    variableInstance.type = new TextTypeImpl();
+//    variableInstance.value = "hello";
+//
+//    ScriptResult result = rhinoSandboxedScriptService.evaluate(workflowInstance, script);
+//    System.out.println();
+//    System.out.println("Result   : "+result.result);
+//    System.out.println("Logs     : "+result.logs);
+//    System.out.println("Updates  : "+result.updates);
+//    System.out.println("Exception: "+result.exception);
+//  }
   //
   ///////////////////////////////////////////////////
 

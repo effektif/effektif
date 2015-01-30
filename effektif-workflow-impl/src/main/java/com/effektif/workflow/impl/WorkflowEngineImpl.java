@@ -103,8 +103,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         workflowApi.setId(workflowId);
       }
       workflowImpl.id = workflowApi.getId();
-      workflowStore.insertWorkflow(workflowImpl);
-      workflowApi.setVersion(workflowImpl.version);
+      workflowStore.insertWorkflow(workflowApi);
+      workflowImpl.version = workflowApi.getVersion();
       
       workflowCache.put(workflowImpl);
     } else {
@@ -113,8 +113,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return workflowApi;
   }
   
-  
-
+ 
   @Override
   public Workflow validateWorkflow(Workflow workflowApi) {
     if (log.isDebugEnabled()) {
@@ -131,12 +130,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
-    List<WorkflowImpl> workflowImpls = workflowStore.findWorkflows(workflowQuery);
-    List<Workflow> workflowApis = new ArrayList<>(workflowImpls.size());
-    for (WorkflowImpl workflowImpl: workflowImpls) {
-      workflowApis.add(workflowImpl.toWorkflow());
-    }
-    return workflowApis;
+    return workflowStore.findWorkflows(workflowQuery);
   }
   
   @Override
@@ -224,12 +218,14 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   
   /** retrieves the executable form of the workflow using the workflow cache */
   public WorkflowImpl getWorkflowImpl(String workflowId) {
-    WorkflowImpl workflow = workflowCache.get(workflowId);
-    if (workflow==null) {
-      workflow = workflowStore.loadWorkflowById(workflowId);
-      workflowCache.put(workflow);
+    WorkflowImpl workflowImpl = workflowCache.get(workflowId);
+    if (workflowImpl==null) {
+      Workflow workflow = workflowStore.loadWorkflowById(workflowId);
+      WorkflowParser parser = WorkflowParser.parse(configuration, workflow);
+      workflowImpl = parser.getWorkflow();
+      workflowCache.put(workflowImpl);
     }
-    return workflow;
+    return workflowImpl;
   }
   
   public WorkflowInstanceImpl lockProcessInstanceWithRetry(
@@ -260,18 +256,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return retry.tryManyTimes();
   }
   
-//  public WorkflowEngineImpl addAdapter(String adapterUrl) {
-//    addAdapter(new AdapterConnection().url(adapterUrl));
-//    return this;
-//  }
-//
-//  protected List<AdapterConnection> adapterConnections = new ArrayList<>();
-//  public WorkflowEngineImpl addAdapter(AdapterConnection adapterConnection) {
-//    adapterStore.addAdapter()
-//    adapterConnections.add(adapterConnection);
-//    return this;
-//  }
-
   public String getId() {
     return id;
   }

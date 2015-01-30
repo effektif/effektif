@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.workflowinstance;
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
 
@@ -64,4 +65,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     updates = new VariableInstanceUpdates(isNew);
   }
 
+  public TypedValueImpl getTypedValue() {
+    return new TypedValueImpl(type, value);
+  }
 }

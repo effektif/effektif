@@ -16,13 +16,15 @@ package com.effektif.workflow.api.workflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.types.BooleanType;
+
 
 public class Transition {
 
   protected String id;
   protected String from;
   protected String to;
-  protected String condition;
+  protected Expression condition;
   protected Map<String,Object> properties;
   protected boolean isToNext;
 
@@ -71,14 +73,27 @@ public class Transition {
     return this;
   }
   
-  public String getCondition() {
+  public Expression getCondition() {
     return this.condition;
   }
-  public void setCondition(String condition) {
+  public void setCondition(Expression condition) {
     this.condition = condition;
   }
   public Transition condition(String condition) {
-    this.condition = condition;
+    if (this.condition == null) {
+      this.condition = new Expression()
+        .type(BooleanType.INSTANCE);
+    }
+    this.condition.script(condition);
+    return this;
+  }
+
+  public Transition conditionMapping(String scriptVariableName, String variableId) {
+    if (this.condition == null) {
+      this.condition = new Expression()
+        .type(BooleanType.INSTANCE);
+    }
+    this.condition.mapping(scriptVariableName, variableId);
     return this;
   }
 

@@ -51,14 +51,14 @@ public class WorkflowImpl extends ScopeImpl {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
   }
 
-  public Workflow toWorkflow() {
-    Workflow workflow = new Workflow();
-    workflow.setOrganizationId(organizationId);
-    workflow.setName(name);
-    workflow.setDeployedTime(deployedTime);
-    workflow.setDeployedBy(deployedBy);
-    workflow.setVersion(version);
-    super.serialize(workflow);
-    return workflow;
-  }
+//  public Workflow toWorkflow() {
+//    Workflow workflow = new Workflow();
+//    workflow.setOrganizationId(organizationId);
+//    workflow.setName(name);
+//    workflow.setDeployedTime(deployedTime);
+//    workflow.setDeployedBy(deployedBy);
+//    workflow.setVersion(version);
+//    super.serialize(workflow);
+//    return workflow;
+//  }
 }

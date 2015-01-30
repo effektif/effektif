@@ -18,7 +18,7 @@ import java.util.Map;
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.script.Script;
+import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -28,8 +28,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;
   public Map<String, String> mappings;
-  public String scriptText;
-  public Script script;
+  public ScriptImpl script;
   
   public ScriptTaskImpl() {
     super(ScriptTask.class);
@@ -39,18 +38,13 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   public void parse(ActivityImpl activityImpl, ScriptTask scriptTask, WorkflowParser parser) {
     super.parse(activityImpl, scriptTask, parser);
     this.scriptService = parser.getConfiguration(ScriptService.class);
-    this.mappings = scriptTask.getMappings();
-    this.scriptText = scriptTask.getScript();
-    if (scriptText!=null) {
-      script = scriptService.compile(scriptText);
-      script.mappings = mappings;
-    }
+    this.script = scriptService.compile(scriptTask.getScript(), parser);
   }
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     if (script!=null) {
-      scriptService.evaluate(activityInstance, script);
+      script.evaluate(activityInstance);
     }
     activityInstance.onwards();
   }

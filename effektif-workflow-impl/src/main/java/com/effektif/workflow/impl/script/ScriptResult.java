@@ -13,6 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.script;
 
+import java.util.Map;
+
+import com.effektif.workflow.impl.data.TypedValueImpl;
+
 
 
 public class ScriptResult {
@@ -20,6 +24,7 @@ public class ScriptResult {
   protected Object result;
   protected Throwable exception;
   protected String logs;
+  protected Map<String,TypedValueImpl> updates;
 
   public Object getResult() {
     return result;
@@ -43,5 +48,13 @@ public class ScriptResult {
   
   public void setLogs(String logs) {
     this.logs = logs;
+  }
+  
+  public Map<String, TypedValueImpl> getUpdates() {
+    return updates;
+  }
+  
+  public void setUpdates(Map<String, TypedValueImpl> updates) {
+    this.updates = updates;
   }
 }

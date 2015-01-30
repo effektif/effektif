@@ -13,34 +13,77 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
-import com.effektif.workflow.api.workflow.Binding;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
+import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
+import com.effektif.workflow.impl.script.ExpressionService;
+import com.effektif.workflow.impl.script.ScriptImpl;
+import com.effektif.workflow.impl.script.ScriptResult;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 public class BindingImpl<T> {
 
-  public Class<?> expectedValueType;
   public TypedValueImpl typedValue;
   public String variableId;
-  public String expressionText;
-  public Object expression;
+  public List<String> fields;
+  public ExpressionService expressionService; 
+  public ScriptImpl expression;
+  public DataType expressionExpectedType;
+  public List<BindingImpl> bindings;
+  public DataType bindingsElementType;
   
-  TODO List<BindingImpl> bindings;
+  public BindingImpl(Configuration configuration) {
+    this.expressionService = configuration.get(ExpressionService.class);
+  }
   
-  public BindingImpl(Class< ? > expectedValueType) {
-    this.expectedValueType = expectedValueType;
-  }
-
-  public String getValue(ActivityInstanceImpl activityInstance) {
-    return null;
-  }
-
-  public Binding serialize() {
-    Binding binding = new Binding();
-    binding.setTypedValue(typedValue.serialize());
-    binding.setVariableId(variableId);
-    binding.setExpression(expressionText);
-    return binding;
+  public TypedValueImpl getTypedValue(ScopeInstanceImpl scopeInstance) {
+    TypedValueImpl typedValue = null;
+    if (this.typedValue!=null) {
+      typedValue = this.typedValue;
+    
+    } else if (this.variableId!=null) {
+      typedValue = scopeInstance.getTypedValue(this.variableId);
+      if (this.fields!=null) {
+        for (String field: this.fields) {
+          ObjectTypeImpl<?> objectType = (ObjectTypeImpl< ? >) typedValue.type; 
+          objectType.dereference(typedValue, field);
+        }
+      }
+      
+    } else if (this.expression!=null) {
+      ScriptResult scriptResult = expression.evaluate(scopeInstance);
+      Object result = scriptResult.getResult();
+      if (expressionExpectedType!=null) {
+        // TODO result = expressionExpectedType.shoehorn(result);
+        typedValue = new TypedValueImpl(expressionExpectedType, result);
+      }
+      
+    } else if (this.bindings!=null) {
+      List<Object> values = new ArrayList<>();
+      for (BindingImpl binding: this.bindings) {
+        TypedValueImpl elementValue = binding.getTypedValue(scopeInstance);
+        if (elementValue!=null && elementValue.value!=null) {
+          if (Collection.class.isAssignableFrom(elementValue.value.getClass())) {
+            Iterator iterator = ((Collection)elementValue.value).iterator();
+            while (iterator.hasNext()) {
+              values.add(iterator.next());
+            }
+          } else {
+            values.add(elementValue.value);
+          }
+        }
+      }
+      ListTypeImpl type = new ListTypeImpl(bindingsElementType);
+      return new TypedValueImpl(type, values);
+    }
+    return typedValue;
   }
 }

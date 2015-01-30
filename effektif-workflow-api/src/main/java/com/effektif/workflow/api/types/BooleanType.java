@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,12 +11,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.script;
+package com.effektif.workflow.api.types;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-public class Conditions {
+@JsonTypeName("boolean")
+public class BooleanType extends Type {
 
-  public boolean contains(String text, String substring) {
-    return text.toLowerCase().contains(substring.toLowerCase());
-  }
+  public static final BooleanType INSTANCE = new BooleanType(); 
 }

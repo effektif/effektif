@@ -16,8 +16,6 @@ package com.effektif.workflow.impl.script;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.script.ScriptException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +24,8 @@ import sun.org.mozilla.javascript.internal.ContextAction;
 import sun.org.mozilla.javascript.internal.ContextFactory;
 import sun.org.mozilla.javascript.internal.Scriptable;
 
+import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
@@ -43,51 +43,51 @@ public class RhinoScriptService implements ScriptService, Brewable {
   }
 
   @Override
-  public Script compile(final String scriptText) {
-    Script script = new Script();
-    script.compiledScript = contextFactory.call(new ContextAction() {
+  public ScriptImpl compile(final Script script, final WorkflowParser parser) {
+    ScriptImpl scriptImpl = new ScriptImpl();
+    scriptImpl.scriptService = this;
+    scriptImpl.mappings = script.getMappings();
+    scriptImpl.compiledScript = contextFactory.call(new ContextAction() {
       public Object run(Context context) {
-        return context.compileString(scriptText, "script", 1, null);
+        try {
+          return context.compileString(script.getScript(), "script", 1, null);
+        } catch (Exception e) {
+          parser.addError("Script doesn't compile: %s", e.getMessage());
+          return null;
+        }
       }
     });
-    return script;
+    return scriptImpl;
   }
 
   @Override
-  public ScriptResult evaluate(final ScopeInstanceImpl scopeInstance, final Script script) {
+  public ScriptResult evaluate(final ScopeInstanceImpl scopeInstance, final ScriptImpl script) {
     return (ScriptResult) contextFactory.call(new ContextAction() {
       public Object run(Context context) {
-        // TODO consider calling context.seal(key); to make things more secure
         Scriptable scope = context.initStandardObjects();
         
-        StringWriter console = new StringWriter();
-        VariableScope variableScope = new VariableScope(scopeInstance, console, scope);
+        StringWriter consoleData = new StringWriter();
+        PrintWriter console = new PrintWriter(consoleData);
+        RhinoVariableScope rhinoVariableScope = new RhinoVariableScope(scopeInstance, script.mappings, console, scope);
         
-//      NativeObject greeting = new NativeObject();
-//      greeting.put("message", greeting, "hello");
-//      scope.put("greeting", scope, greeting);
-//      scope.put("console", scope, new Console(new StringWriter()));
-        
+        ScriptResult scriptResult = new ScriptResult();
         try {
           sun.org.mozilla.javascript.internal.Script rhinoCompiledScript = (sun.org.mozilla.javascript.internal.Script) script.compiledScript;
-          Object result = rhinoCompiledScript.exec(context, variableScope);
-          scriptOutput.setLogs(console.toString());
-        } catch (ScriptException e) {
-          e.printStackTrace();
-          scriptOutput.setException(e);
+          Object result = rhinoCompiledScript.exec(context, rhinoVariableScope);
+          
+          if (script.expectedResultType!=null && result!=null) {
+            result = script.expectedResultType.convertJsonToInternalValue(result);
+          }
+          scriptResult.setResult(result);
+          scriptResult.setUpdates(rhinoVariableScope.getUpdatedVariableValues());
+          
+        } catch (Exception e) {
+          log.debug("Exception in JavaScript: "+e.getMessage(), e);
+          console.println("Exception while executing script: "+e.toString());
+          scriptResult.setException(e);
         }
-        
-        if (script.mappings!=null) {
-          // TODO map output variables
-        }
-        
-//      if (result instanceof NativeObject) {
-//      NativeObject nObj = (NativeObject) result;
-//      for (Object key : nObj.getAllIds()) {
-//        System.out.println(key);
-//        System.out.println(nObj.get((String) key, nObj));
-//      }
-        
+
+        scriptResult.setLogs(consoleData.toString());
         return scriptResult;
       }
     });

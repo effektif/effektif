@@ -11,14 +11,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.types;
+package com.effektif.workflow.impl.script;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.workflow.Expression;
+import com.effektif.workflow.impl.WorkflowParser;
 
 
-@JsonTypeName("text")
-public class TextType extends Type {
+/**
+ * @author Tom Baeyens
+ */
+public interface ExpressionService {
 
-  public static final TextType INSTANCE = new TextType(); 
-
+  ScriptImpl compile(Expression expression, WorkflowParser parser);
 }

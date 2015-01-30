@@ -13,8 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.data.types;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectField;
@@ -22,12 +23,13 @@ import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.json.JsonService;
 
 
 public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
   
-  protected List<ObjectFieldImpl> fields;
+  protected Map<String, ObjectFieldImpl> fields;
   protected JsonService jsonService;
 
   public ObjectTypeImpl(Class<? extends Type> apiClass) {
@@ -43,43 +45,48 @@ public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
     this.valueClass = valueClass;
     List<ObjectField> fieldsApi = typeApi.getFields();
     if (fieldsApi!=null) {
-      fields = new ArrayList<>(fieldsApi.size());
       for (ObjectField fieldApi: fieldsApi) {
-        ObjectFieldImpl fieldImpl = new ObjectFieldImpl(valueClass, fieldApi, configuration);
-        fields.add(fieldImpl);
+        ObjectFieldImpl fieldImpl = createField(configuration, valueClass, fieldApi);
+        field(fieldImpl);
       }
     }
   }
 
-  public Object getFieldValue(Object o, ObjectFieldImpl field) {
-    try {
-      return field.field.get(o);
-    } catch (IllegalArgumentException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
+  protected ObjectFieldImpl createField(Configuration configuration, Class< ? > valueClass, ObjectField fieldApi) {
+    return new ObjectFieldImpl(valueClass, fieldApi, configuration);
   }
+
 
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     return null;
   }
 
-  public List<ObjectFieldImpl> getFields() {
-    return this.fields;
-  }
-  public void setFields(List<ObjectFieldImpl> fields) {
-    this.fields = fields;
-  }
+  
   public ObjectTypeImpl field(ObjectFieldImpl field) {
     if (this.fields==null) {
-      this.fields = new ArrayList<>();
+      this.fields = new LinkedHashMap<>();
     }
-    this.fields.add(field);
+    this.fields.put(field.name, field);
     return this;
   }
 
   @Override
   public Class< ? > getValueClass() {
     return valueClass;
+  }
+
+  public void dereference(TypedValueImpl typedValue, String fieldName) {
+    if (typedValue==null) {
+      return;
+    }
+    ObjectFieldImpl field = fields.get(fieldName);
+    if (typedValue.value==null || field==null) {
+      typedValue.type = null;
+      typedValue.value = null;
+      return;
+    }
+    typedValue.type = field.type;
+    field.dereferenceValue(typedValue);
   }
 }

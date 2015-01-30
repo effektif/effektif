@@ -24,14 +24,14 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
-public class ScriptContextImpl extends SimpleScriptContext {
+public class StandardScriptContext extends SimpleScriptContext {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
   
-  public ScriptContextImpl(ScopeInstanceImpl scopeInstance, Script script, Writer logWriter) {
+  public StandardScriptContext(ScopeInstanceImpl scopeInstance, ScriptImpl script, Writer logWriter) {
     setWriter(logWriter);
     setErrorWriter(logWriter);
-    setBindings(new ScriptBindings(script, scopeInstance, logWriter), ENGINE_SCOPE);
+    setBindings(new StandardScriptBindings(script, scopeInstance, logWriter), ENGINE_SCOPE);
   }
 
 }

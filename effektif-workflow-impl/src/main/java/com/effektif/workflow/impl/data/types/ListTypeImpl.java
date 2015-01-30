@@ -38,11 +38,11 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     this.valueClass = List.class;
   }
 
-//  public ListTypeImpl(DataType elementDataType) {
-//    super(ListType.class);
-//    this.valueClass = List.class;
-//    this.elementDataType = elementDataType;
-//  }
+  public ListTypeImpl(DataType elementDataType) {
+    super(ListType.class);
+    this.valueClass = List.class;
+    this.elementDataType = elementDataType;
+  }
 
   public ListTypeImpl(ListType listType, Configuration configuration) {
     super(ListType.class);

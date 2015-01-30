@@ -22,16 +22,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
 public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
   protected Map<String, Long> nextVersionByName;
-  protected Map<String, WorkflowImpl> workflows;
+  protected Map<String, Workflow> workflows;
 
   public MemoryWorkflowStore() {
   }
@@ -48,26 +48,26 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public void insertWorkflow(WorkflowImpl workflowImpl) {
-    workflows.put(workflowImpl.id, workflowImpl);
+  public void insertWorkflow(Workflow workflow) {
+    workflows.put(workflow.getId(), workflow);
 
-    String workflowName = workflowImpl.name;
+    String workflowName = workflow.getName();
     if (workflowName!=null) {
       Long nextVersion = nextVersionByName.get(workflowName);
       if (nextVersion==null) {
         nextVersion = 1l;
       }
-      workflowImpl.version = nextVersion;
+      workflow.setVersion(nextVersion);
       nextVersion++;
       nextVersionByName.put(workflowName, nextVersion);
     }
   }
 
   @Override
-  public List<WorkflowImpl> findWorkflows(WorkflowQuery query) {
-    List<WorkflowImpl> result = new ArrayList<>();
+  public List<Workflow> findWorkflows(WorkflowQuery query) {
+    List<Workflow> result = new ArrayList<>();
     if (query.getWorkflowId()!=null) {
-      WorkflowImpl workflow = workflows.get(query.getWorkflowId());
+      Workflow workflow = workflows.get(query.getWorkflowId());
       if (workflow!=null) {
         result.add(workflow);
       }
@@ -85,19 +85,12 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     return result;
   }
   
-  protected void filterByName(List<WorkflowImpl> result, String name) {
+  protected void filterByName(List<Workflow> result, String name) {
     for (int i=result.size()-1; i>=0; i--) {
-      if (!name.equals(result.get(i).name)) {
+      if (!name.equals(result.get(i).getName())) {
         result.remove(i);
       }
     }
-  }
-
-  protected boolean matchesProcessDefinitionCriteria(WorkflowImpl process, WorkflowQuery query) {
-    if (query.getWorkflowName()!=null && !query.getWorkflowName().equals(process.name)) {
-      return false;
-    }
-    return true;
   }
 
   @Override
@@ -105,27 +98,27 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     if (workflowName==null) {
       return null;
     }
-    WorkflowImpl latestWorkflow = null;
+    Workflow latestWorkflow = null;
     LocalDateTime latestDeployTime = null;
-    for (WorkflowImpl workflow: workflows.values()) {
-      if ( workflowName.equals(workflow.name)
-           && (latestDeployTime==null || latestDeployTime.isAfter(workflow.deployedTime)) ) {
+    for (Workflow workflow: workflows.values()) {
+      if ( workflowName.equals(workflow.getName())
+           && (latestDeployTime==null || latestDeployTime.isAfter(workflow.getDeployedTime())) ) {
         latestWorkflow = workflow;
-        latestDeployTime = workflow.deployedTime;
+        latestDeployTime = workflow.getDeployedTime();
       }
     }
-    return latestWorkflow!=null ? latestWorkflow.id : null;
+    return latestWorkflow!=null ? latestWorkflow.getId() : null;
   }
 
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
-    for (WorkflowImpl workflow: findWorkflows(query)) {
-      workflows.remove(workflow.id);
+    for (Workflow workflow: findWorkflows(query)) {
+      workflows.remove(workflow.getId());
     }
   }
 
   @Override
-  public WorkflowImpl loadWorkflowById(String workflowId) {
+  public Workflow loadWorkflowById(String workflowId) {
     return workflows.get(workflowId);
   }
 }

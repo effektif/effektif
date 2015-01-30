@@ -33,9 +33,9 @@ public class ScriptTest extends WorkflowTest {
       .variable("n", new TextType())
       .variable("m", new TextType())
       .activity("s", new ScriptTask()
-        .variableMapping("name", "n")
-        .variableMapping("message", "m")
-        .script("message = 'Hello ' + name;"));
+        .script("message = 'Hello ' + name;")
+        .scriptMapping("name", "n")
+        .scriptMapping("message", "m"));
 
     workflow = deploy(workflow);
     

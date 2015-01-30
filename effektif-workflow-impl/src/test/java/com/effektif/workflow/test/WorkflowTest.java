@@ -205,15 +205,15 @@ public class WorkflowTest {
       }
     }
 
-    List<WorkflowImpl> workflows = workflowStore.findWorkflows(new WorkflowQuery());
+    List<Workflow> workflows = workflowStore.findWorkflows(new WorkflowQuery());
     if (workflows != null && !workflows.isEmpty()) {
       int i = 0;
       cleanLog.append("\n### workflows ######################################################## \n");
-      for (WorkflowImpl workflow : workflows) {
+      for (Workflow workflow : workflows) {
         cleanLog.append("--- Deleted workflow ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(workflow.toWorkflow()));
+        cleanLog.append(jsonService.objectToJsonStringPretty(workflow));
         cleanLog.append("\n");
         i++;
       }

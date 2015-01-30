@@ -13,35 +13,22 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.script;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.script.CompiledScript;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
-public class Script {
+public class ScriptImpl {
 
-  public String language;
+  public ScriptService scriptService;
   public Object compiledScript;
-
-  /** maps script variable names to process variable definition names */ 
+  /** maps script variable names to workflow variable ids */ 
   public Map<String, String> mappings;
-
-  public Script language(String language) {
-    this.language = language;
-    return this;
-  }
-
-  public Script compiledScript(CompiledScript compiledScript) {
-    this.compiledScript = compiledScript;
-    return this;
-  }
+  public DataType expectedResultType;
+  public boolean readOnly;
   
-  public Script scriptToProcessMapping(String scriptVariableName, String variableDefinitionId) {
-    if (mappings==null) {
-      mappings = new HashMap<>();
-    }
-    mappings.put(scriptVariableName, variableDefinitionId);
-    return this;
+  public ScriptResult evaluate(ScopeInstanceImpl scopeInstance) {
+    return scriptService.evaluate(scopeInstance, this);
   }
 }

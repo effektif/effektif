@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.configuration;
 
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.types.BindingTypeImpl;
+import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.data.types.MapTypeImpl;
@@ -31,6 +32,7 @@ public class DefaultDataTypeService extends DataTypeService {
   public void brew(Brewery brewery) {
     super.brew(brewery);
     registerDataType(new BindingTypeImpl());
+    registerDataType(new BooleanTypeImpl());
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());
     registerDataType(new ListTypeImpl());

@@ -36,6 +36,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.script.ExpressionService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
@@ -164,7 +165,7 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Class<T> expectedValueType, boolean required, Activity activityApi, String fieldName) {
     String activityId = activityApi.getId();
     if (binding==null) {
       if (required) {
@@ -172,20 +173,26 @@ public class WorkflowParser {
       }
       return null;
     }
-    BindingImpl bindingImpl = new BindingImpl(bindingValueType);
+    BindingImpl bindingImpl = new BindingImpl(configuration);
     int values = 0;
     if (binding.getValue()!=null) {
       bindingImpl.typedValue = parseTypedValue(binding.getTypedValue());
       values++;
     }
     if (binding.getVariableId()!=null) {
+      // TODO check if the variable exists and add an error if not
       bindingImpl.variableId = binding.getVariableId();
+      values++;
+    }
+    if (binding.getFields()!=null) {
+      // TODO check if the fields exist and add errors if not
+      bindingImpl.fields = binding.getFields(); 
       values++;
     }
     if (binding.getExpression()!=null) {
       ExpressionService expressionService = configuration.get(ExpressionService.class);
       try {
-        bindingImpl.expression = expressionService.compile(binding.getExpression());
+        bindingImpl.expression = expressionService.compile(binding.getExpression(), this);
       } catch (Exception e) {
         addError("Expression for input '%s' couldn't be compiled: %s", fieldName+".expression", e.getMessage());
       }

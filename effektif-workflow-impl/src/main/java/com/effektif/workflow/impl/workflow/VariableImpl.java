@@ -33,6 +33,8 @@ public class VariableImpl {
     this.id = variableApi.getId();
     if (id==null || "".equals(id)) {
       parser.addError("Variable has no id");
+    } else if (id.contains(".")) {
+      parser.addError("Variable '%s' has a dot in the name", id);
     }
     this.parent = parent;
     DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);

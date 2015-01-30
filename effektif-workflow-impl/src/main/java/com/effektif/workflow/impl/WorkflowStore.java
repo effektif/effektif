@@ -30,16 +30,15 @@ public interface WorkflowStore {
   /** creates a (globally) unique id to be used for a new workflow being deployed */
   String generateWorkflowId();
 
-  void insertWorkflow(WorkflowImpl workflowImpl);
+  void insertWorkflow(Workflow workflowImpl);
 
   /** loads the api workflow representation from the store */
-  List<WorkflowImpl> findWorkflows(WorkflowQuery query);
+  List<Workflow> findWorkflows(WorkflowQuery query);
 
   void deleteWorkflows(WorkflowQuery workflowQuery);
 
   String findLatestWorkflowIdByName(String workflowName);
 
   /** loads the executable workflow */
-  WorkflowImpl loadWorkflowById(String workflowId);
-
+  Workflow loadWorkflowById(String workflowId);
 }

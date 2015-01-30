@@ -18,12 +18,10 @@ import java.util.Map;
 
 import javax.script.CompiledScript;
 
-import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.script.Script;
+import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -82,7 +80,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   protected boolean meetsCondition(TransitionImpl outgoingTransition, ActivityInstanceImpl activityInstance) {
-    Script script = outgoingTransition.conditionScript;
+    ScriptImpl script = outgoingTransition.conditionScript;
     if (script!=null) {
       ScriptResult scriptResult = evaluateCondition(activityInstance, outgoingTransition, script, scriptService);
       if (Boolean.TRUE.equals(scriptResult.getResult())) {
@@ -92,7 +90,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
     return false;
   }
 
-  protected ScriptResult evaluateCondition(ActivityInstanceImpl activityInstance, TransitionImpl outgoingTransition, Script script, ScriptService scriptService) {
+  protected ScriptResult evaluateCondition(ActivityInstanceImpl activityInstance, TransitionImpl outgoingTransition, ScriptImpl script, ScriptService scriptService) {
     return scriptService.evaluate(activityInstance, script);
   }
   

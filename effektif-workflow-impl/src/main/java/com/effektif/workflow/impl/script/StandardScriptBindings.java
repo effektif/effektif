@@ -33,13 +33,13 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
-public class ScriptBindings implements Bindings {
+public class StandardScriptBindings implements Bindings {
   
-  public static final Logger log = LoggerFactory.getLogger(ScriptBindings.class);
+  public static final Logger log = LoggerFactory.getLogger(StandardScriptBindings.class);
   
   static final Map<String, Set<String>> TRANSIENT_KEYS = new HashMap<>();
   static {
-    TRANSIENT_KEYS.put(ScriptServiceImpl.JAVASCRIPT, new HashSet<String>(Arrays.asList("context", "print", "println", "Function")));
+    TRANSIENT_KEYS.put(StandardScriptService.JAVASCRIPT, new HashSet<String>(Arrays.asList("context", "print", "println", "Function")));
   }
   protected boolean isTransient(Object key) {
     Set<String> namesToIgnore = TRANSIENT_KEYS.get(language);
@@ -57,9 +57,9 @@ public class ScriptBindings implements Bindings {
   protected Console console;
   protected Map<Object,Object> transientValues;
 
-  public ScriptBindings(Script script, ScopeInstanceImpl scopeInstance, Writer logWriter) {
+  public StandardScriptBindings(ScriptImpl script, ScopeInstanceImpl scopeInstance, Writer logWriter) {
     this.scriptToProcessMappings = script.mappings;
-    this.language = script.language;
+    this.language = ((StandardScriptService)script.scriptService).language;
     this.scopeInstance = scopeInstance;
     this.console = new Console(logWriter);
     this.transientValues = new HashMap<>();

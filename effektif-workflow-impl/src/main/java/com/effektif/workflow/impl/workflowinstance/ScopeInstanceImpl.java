@@ -32,12 +32,13 @@ import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.ExpressionService;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.data.types.AnyDataTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
+import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
+import com.effektif.workflow.impl.script.ExpressionService;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -191,18 +192,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     if (binding==null) {
       return null;
     }
-    if (binding.typedValue!=null) {
-      return binding.typedValue;
-    }
-    if (binding.variableId!=null) {
-      return getTypedValue(binding.variableId);
-    }
-    if (binding.expression!=null) {
-      ExpressionService expressionService = getConfiguration().get(ExpressionService.class);
-      Object value = expressionService.execute(binding.expression, this);
-      return new TypedValueImpl(null, value);
-    }
-    return null;
+    return binding.getTypedValue(this);
   }
 
   public Object getValue(String variableId) {
@@ -216,9 +206,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public TypedValueImpl getTypedValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
     if (variableInstance!=null) {
-      DataType type = variableInstance.variable!=null ? variableInstance.variable.type : variableInstance.type;
-      Object value = variableInstance.getValue();
-      return new TypedValueImpl(type, value);
+      return variableInstance.getTypedValue();
     }
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }

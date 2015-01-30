@@ -13,6 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.types.TypeHelper;
@@ -27,12 +31,39 @@ public class Binding<T> {
   protected TypedValue typedValue;
 
   /** reference to the variable that will contain the input value.  
-   * This is mutually exclusive with value and expression */
+   * This is mutually exclusive with value */
   protected String variableId;
 
-  /** expression that will produce the input value.  
-   * This is mutually exclusive with variableId and value */
-  protected String expression;
+  /** the fields that should be dereferenced in the fetched variableId.  
+   * This an optional value if a variableId is specified. */
+  protected List<String> fields;
+
+  /** result of resolving the expression will be provided as the value.
+   * Can be used for template strings or conversion functions. */
+  protected Expression expression;
+  
+  /** for bindings that expect a list, a list of nested bindings can be 
+   * specified.  All the results will be flatened and added to the collection.
+   * This is mutually exclusive with the other fields. */
+  protected List<Binding<?>> bindings;
+
+  public List<Binding<?>> getBindings() {
+    return this.bindings;
+  }
+  public void setBindings(List<Binding<?>> bindings) {
+    this.bindings = bindings;
+  }
+  public Binding bindings(List<Binding<?>> bindings) {
+    this.bindings = bindings;
+    return this;
+  }
+  public Binding binding(Binding<?> binding) {
+    if (bindings==null) {
+      bindings = new ArrayList<>();
+    }
+    bindings.add(binding);
+    return this;
+  }
 
   public Object getValue() {
     return typedValue!=null ? typedValue.getValue() : null;
@@ -77,14 +108,50 @@ public class Binding<T> {
     return this;
   }
 
-  public String getExpression() {
+  public List<String> getFields() {
+    return this.fields;
+  }
+  public void setField(List<String> fields) {
+    this.fields = fields;
+  }
+  /** .-separated notation that starts with the variableId and then 
+   * specifies the fields to be dereferenced 
+   * eg "myVariableId.variableField.nestedField" */
+  public Binding variableField(String variableFieldExpression) {
+    if (variableFieldExpression==null) {
+      return this;
+    }
+    StringTokenizer tokenizer = new StringTokenizer(variableFieldExpression, ".");
+    if (!tokenizer.hasMoreTokens()) {
+      return this;
+    }
+    this.variableId = tokenizer.nextToken();
+    while (tokenizer.hasMoreTokens()) {
+      if (fields == null) {
+        fields = new ArrayList<>();
+      }
+      fields.add(tokenizer.nextToken());
+    }
+    return this;
+  }
+  
+  public void setFields(List<String> fields) {
+    this.fields = fields;
+  }
+
+  public Expression getExpression() {
     return this.expression;
   }
-  public void setExpression(String expression) {
+  public void setExpression(Expression expression) {
     this.expression = expression;
   }
-  public Binding expression(String expression) {
+  public Binding expression(Expression expression) {
     this.expression = expression;
+    return this;
+  }
+  public Binding expression(String expression) {
+    this.expression = new Expression()
+      .script(expression);
     return this;
   }
 }

@@ -13,13 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.script;
 
+import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 public interface ScriptService {
   
-  Script compile(String scriptText);
-  
-  ScriptResult evaluate(ScopeInstanceImpl scopeInstance, Script compiledScript);
+  ScriptImpl compile(Script script, WorkflowParser parser);
+
+  ScriptResult evaluate(ScopeInstanceImpl scopeInstance, ScriptImpl compiledScript);
   
 }

@@ -19,14 +19,14 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
-import com.effektif.workflow.impl.ExpressionServiceImpl;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JacksonJsonService;
-import com.effektif.workflow.impl.script.ScriptServiceImpl;
+import com.effektif.workflow.impl.script.ExpressionServiceImpl;
+import com.effektif.workflow.impl.script.StandardScriptService;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -80,7 +80,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
 
   protected void registerDefaultScriptService() {
-    brewery.ingredient(new ScriptServiceImpl());
+    brewery.ingredient(new StandardScriptService());
   }
 
   protected void registerDefaultJsonService() {

@@ -11,17 +11,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
+package com.effektif.workflow.impl.script;
 
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-/**
- * @author Tom Baeyens
- */
-public interface ExpressionService {
-
-  Object compile(String expression);
+public class JSON {
   
-  Object execute(Object compiledExpression, ScopeInstanceImpl scopeInstance);
+  ObjectMapper objectMapper = new ObjectMapper();
+
+  public String stringify(Object object) {
+    if (object==null) {
+      return "null";
+    }
+    try {
+      return objectMapper.writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+      try {
+        return object.toString();
+      } catch (Exception e1) {
+        return "sorry but your object is not stringifyable";
+      }
+    }
+  }
 }

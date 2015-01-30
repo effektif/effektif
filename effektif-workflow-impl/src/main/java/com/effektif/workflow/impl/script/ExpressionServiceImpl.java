@@ -11,12 +11,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
+package com.effektif.workflow.impl.script;
 
+import com.effektif.workflow.api.workflow.Expression;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.script.Script;
-import com.effektif.workflow.impl.script.ScriptService;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -25,21 +26,26 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 public class ExpressionServiceImpl implements ExpressionService, Brewable {
   
-  protected ScriptService scriptService;
-
+  ScriptService scriptService;
+  DataTypeService dataTypeService;
+  
   @Override
   public void brew(Brewery brewery) {
     this.scriptService = brewery.get(ScriptService.class);
+    this.dataTypeService = brewery.get(DataTypeService.class);
   }
 
-  public Object compile(String expression) {
+  public ScriptImpl compile(Expression expression, WorkflowParser parser) {
     if (expression==null) {
       return null;
     }
-    return scriptService.compile(expression);
+    ScriptImpl scriptImpl = scriptService.compile(expression, parser);
+    scriptImpl.readOnly = true;
+    scriptImpl.expectedResultType = dataTypeService.createDataType(expression.getType());
+    return scriptImpl;
   }
 
   public Object execute(Object compiledscript, ScopeInstanceImpl scopeInstance) {
-    return scriptService.evaluate(scopeInstance, (Script)compiledscript);
+    return scriptService.evaluate(scopeInstance, (ScriptImpl)compiledscript);
   }
 }

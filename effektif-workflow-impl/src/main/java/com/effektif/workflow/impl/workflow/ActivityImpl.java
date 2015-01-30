@@ -38,23 +38,25 @@ public class ActivityImpl extends ScopeImpl {
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
   
-  public Activity serialize() {
-    Activity activity = (Activity) activityType.serialize();
-    activity.setId(id);
-    if (defaultTransition!=null) {
-      activity.setDefaultTransitionId(defaultTransition.id);
-    }
-    if (multiInstance!=null) {
-      activity.setMultiInstance(multiInstance.serialize());
-    }
-    serialize(activity);
-    return activity;
-  }
+//  public Activity serialize() {
+//    Activity activity = (Activity) activityType.serialize();
+//    activity.setId(id);
+//    if (defaultTransition!=null) {
+//      activity.setDefaultTransitionId(defaultTransition.id);
+//    }
+//    if (multiInstance!=null) {
+//      activity.setMultiInstance(multiInstance.serialize());
+//    }
+//    serialize(activity);
+//    return activity;
+//  }
 
   public void parse(Activity activityApi, Scope scopeApi, WorkflowParser workflowParser, ScopeImpl parent) {
     super.parse(activityApi, workflowParser, parent);
     if (id==null || "".equals(id)) {
       workflowParser.addError("Activity has no id");
+    } else if (id.contains(".")) {
+      workflowParser.addError("Activity '%s' has a dot in the name", id);
     }
 
     ActivityTypeService activityTypeService = workflowParser.getConfiguration(ActivityTypeService.class);

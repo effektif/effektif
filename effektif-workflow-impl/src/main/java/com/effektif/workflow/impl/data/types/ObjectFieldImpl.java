@@ -13,36 +13,35 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.data.types;
 
-import java.lang.reflect.Field;
+import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 public class ObjectFieldImpl {
 
   protected String name;
   protected DataType type;
-  protected Field field;
   
   public ObjectFieldImpl(String name) {
     this.name = name;
   }
 
   public ObjectFieldImpl(Class< ? > objectClass, ObjectField fieldApi, Configuration configuration) {
-    try {
-      this.name = fieldApi.getName();
-      Type fieldType = fieldApi.getType();
-      DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-      this.type = dataTypeService.createDataType(fieldType);
-      this.field = objectClass.getDeclaredField(name);
-      this.field.setAccessible(true);
-    } catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {
-      throw new RuntimeException(e);
-    }
+    this.name = fieldApi.getName();
+    Type fieldType = fieldApi.getType();
+    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+    this.type = dataTypeService.createDataType(fieldType);
+  }
+  
+  public void dereferenceValue(TypedValueImpl typedValue) {
+    Map<String,Object> map = (Map<String, Object>) typedValue.value;
+    typedValue.value = map.get(name);
   }
 
   public String getName() {
