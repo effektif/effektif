@@ -22,7 +22,7 @@ import javax.script.CompiledScript;
 public class Script {
 
   public String language;
-  public CompiledScript compiledScript;
+  public Object compiledScript;
 
   /** maps script variable names to process variable definition names */ 
   public Map<String, String> mappings;

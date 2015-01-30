@@ -20,8 +20,8 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 public interface JobController {
   
-  /** allows process jobs to get the locked process instance */
-  WorkflowInstanceImpl getProcessInstance();
+  /** allows process jobs to get the locked workflow instance */
+  WorkflowInstanceImpl getWorkflowInstance();
 
   void rescheduleFromNow(int delayInMillis);
   

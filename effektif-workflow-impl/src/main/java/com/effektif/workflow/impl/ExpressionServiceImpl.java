@@ -40,6 +40,6 @@ public class ExpressionServiceImpl implements ExpressionService, Brewable {
   }
 
   public Object execute(Object compiledscript, ScopeInstanceImpl scopeInstance) {
-    return scriptService.evaluateScript(scopeInstance, (Script)compiledscript);
+    return scriptService.evaluate(scopeInstance, (Script)compiledscript);
   }
 }

@@ -27,9 +27,10 @@ import org.slf4j.Logger;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
+import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -115,6 +116,12 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
     }
     WorkflowInstanceImpl workflowInstance = workflowInstances.get(0);
     workflowInstanceId = workflowInstance.id;
+    lockWorkflowInstance(workflowInstance);
+    return workflowInstance;
+  }
+
+  public synchronized void lockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
+    String workflowInstanceId = workflowInstance.getId();
     if (lockedWorkflowInstanceIds.contains(workflowInstanceId)) {
       throw new RuntimeException("Process instance "+workflowInstanceId+" is already locked");
     }
@@ -126,6 +133,22 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
     if (log.isDebugEnabled()) { 
       log.debug("Locked process instance "+workflowInstanceId);
     }
-    return workflowInstance;
+  }
+
+  @Override
+  public WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue() {
+    Iterator<WorkflowInstanceImpl> iterator = this.workflowInstances.values().iterator();
+    while (iterator.hasNext()) {
+      WorkflowInstanceImpl workflowInstance = iterator.next();
+      if (workflowInstance.jobs!=null) {
+        for (Job job: workflowInstance.jobs) {
+          if (job.isDue()) {
+            lockWorkflowInstance(workflowInstance);
+            return workflowInstance;
+          }
+        }
+      }
+    }
+    return null;
   }
 }

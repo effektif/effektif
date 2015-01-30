@@ -39,9 +39,14 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.WorkflowInstanceStore;
+import com.effektif.workflow.impl.WorkflowStore;
+import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
-import com.effektif.workflow.impl.job.JobService;
+import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */
@@ -54,7 +59,6 @@ public class WorkflowTest {
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   protected TaskService taskService = null;
-  protected JobService jobService = null;
   
   @Before
   public void initializeWorkflowEngine() {
@@ -65,7 +69,6 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
-      jobService = configuration.get(JobService.class);
     }
   }
   
@@ -137,6 +140,9 @@ public class WorkflowTest {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
     JsonService jsonService = configuration.get(JsonService.class);
+    WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
+    WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
+    JobStore jobStore = configuration.get(JobStore.class);
     TaskService taskService = configuration.get(TaskService.class);
 
     StringBuilder cleanLog = new StringBuilder();
@@ -157,12 +163,26 @@ public class WorkflowTest {
 //      }
 //    }
 
+    List<Job> jobs = jobStore.findJobs(new JobQuery());
+    if (jobs != null && !jobs.isEmpty()) {
+      int i = 0;
+      cleanLog.append("\n### jobs ######################################################## \n");
+      for (Job job : jobs) {
+        cleanLog.append("--- Job ");
+        cleanLog.append(i);
+        cleanLog.append(" ---\n");
+        cleanLog.append(jsonService.objectToJsonStringPretty(job));
+        cleanLog.append("\n");
+        i++;
+      }
+    }
+
     List<Task> tasks = taskService.findTasks(new TaskQuery());
     if (tasks != null && !tasks.isEmpty()) {
       int i = 0;
       cleanLog.append("\n### tasks ######################################################## \n");
       for (Task task : tasks) {
-        cleanLog.append("--- Deleted task ");
+        cleanLog.append("--- Task ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
         cleanLog.append(jsonService.objectToJsonStringPretty(task));
@@ -171,28 +191,29 @@ public class WorkflowTest {
       }
     }
 
-    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery());
+    List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery());
     if (workflowInstances != null && !workflowInstances.isEmpty()) {
       int i = 0;
       cleanLog.append("\n\n### workflowInstances ################################################ \n");
-      for (WorkflowInstance workflowInstance : workflowInstances) {
-        cleanLog.append("--- Deleted workflow instance ");
+      for (WorkflowInstanceImpl workflowInstance : workflowInstances) {
+        cleanLog.append("--- Workflow instance ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(workflowInstance));
+        cleanLog.append(jsonService.objectToJsonStringPretty(workflowInstance.toWorkflowInstance()));
         cleanLog.append("\n");
         i++;
       }
     }
-    List< ? extends Workflow> workflows = workflowEngine.findWorkflows(new WorkflowQuery());
+
+    List<WorkflowImpl> workflows = workflowStore.findWorkflows(new WorkflowQuery());
     if (workflows != null && !workflows.isEmpty()) {
       int i = 0;
       cleanLog.append("\n### workflows ######################################################## \n");
-      for (Workflow workflow : workflows) {
+      for (WorkflowImpl workflow : workflows) {
         cleanLog.append("--- Deleted workflow ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(workflow));
+        cleanLog.append(jsonService.objectToJsonStringPretty(workflow.toWorkflow()));
         cleanLog.append("\n");
         i++;
       }
@@ -201,9 +222,15 @@ public class WorkflowTest {
   }
   
   protected void deleteWorkflowEngineContents() {
-    workflowEngine.deleteWorkflows(new WorkflowQuery());
-    workflowEngine.deleteWorkflowInstances(new WorkflowInstanceQuery());
+    WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
+    WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
+    JobStore jobStore = configuration.get(JobStore.class);
+    TaskService taskService = configuration.get(TaskService.class);
+
+    workflowStore.deleteWorkflows(new WorkflowQuery());
+    workflowInstanceStore.deleteWorkflowInstances(new WorkflowInstanceQuery());
     taskService.deleteTasks(new TaskQuery());
-    jobService.deleteJobs(new JobQuery());
+    jobStore.deleteJobs(new JobQuery());
+    jobStore.deleteArchivedJobs(new JobQuery());
   }
 }

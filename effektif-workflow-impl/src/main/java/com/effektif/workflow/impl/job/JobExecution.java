@@ -16,7 +16,7 @@ public class JobExecution implements JobController {
   @JsonIgnore
   public Job job;
   @JsonIgnore
-  public WorkflowInstanceImpl processInstance;
+  public WorkflowInstanceImpl workflowInstance;
   public Boolean error;
   public String logs;
   public LocalDateTime time;
@@ -25,9 +25,13 @@ public class JobExecution implements JobController {
   public JobExecution() {
   }
 
-  public JobExecution(Job job, WorkflowInstanceImpl processInstance) {
+  public JobExecution(Job job) {
+    this(job, null);
+  }
+  
+  public JobExecution(Job job, WorkflowInstanceImpl workflowInstance) {
     this.job = job;
-    this.processInstance = processInstance;
+    this.workflowInstance = workflowInstance;
     this.time = Time.now();
   }
 
@@ -43,7 +47,7 @@ public class JobExecution implements JobController {
     logs = (logs!=null ? logs : "") + msg + "\n";
   }
 
-  public WorkflowInstanceImpl getProcessInstance() {
-    return processInstance;
+  public WorkflowInstanceImpl getWorkflowInstance() {
+    return workflowInstance;
   }
 }

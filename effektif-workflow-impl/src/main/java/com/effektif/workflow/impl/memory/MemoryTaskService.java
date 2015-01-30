@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.command.RequestContext;

@@ -26,6 +26,8 @@ public class BindingImpl<T> {
   public String expressionText;
   public Object expression;
   
+  TODO List<BindingImpl> bindings;
+  
   public BindingImpl(Class< ? > expectedValueType) {
     this.expectedValueType = expectedValueType;
   }

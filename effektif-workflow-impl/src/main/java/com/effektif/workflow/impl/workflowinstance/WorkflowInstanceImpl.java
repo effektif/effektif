@@ -36,6 +36,7 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.types.CallImpl;
+import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -54,6 +55,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Boolean isAsync;
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
+  public List<Job> jobs;
 
   public WorkflowInstanceImpl() {
   }
@@ -332,5 +334,23 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       getUpdates().isNextVariableInstanceIdChanged = true;
     }
     return Long.toString(nextVariableInstanceId++);
+  }
+  
+  public void addJob(Job job) {
+    if (jobs==null) {
+      jobs = new ArrayList<>();
+    }
+    jobs.add(job);
+    if (updates!=null) {
+      getUpdates().isJobsChanged = true;
+    }
+  }
+  public void removeJob(Job job) {
+    if (jobs!=null) {
+      jobs.remove(job);
+    }
+    if (updates!=null) {
+      getUpdates().isJobsChanged = true;
+    }
   }
 }

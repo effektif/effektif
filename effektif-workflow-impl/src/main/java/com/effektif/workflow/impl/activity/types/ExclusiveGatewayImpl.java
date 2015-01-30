@@ -93,7 +93,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   protected ScriptResult evaluateCondition(ActivityInstanceImpl activityInstance, TransitionImpl outgoingTransition, Script script, ScriptService scriptService) {
-    return scriptService.evaluateScript(activityInstance, script);
+    return scriptService.evaluate(activityInstance, script);
   }
   
   @Override

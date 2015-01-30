@@ -62,7 +62,7 @@ assertEquals(1, tasks.size());
 
 ## Developer Documentation
 
-* Building the sources
+* [Building the sources](https://github.com/effektif/effektif-oss/wiki/Building-the-sources)
 * Working with MongoDB
 * Architecture
 * How to contribute

@@ -64,17 +64,17 @@ public class ScriptServiceImpl implements ScriptService, Brewable {
 
   @Override
   public ScriptResult evaluateScript(ScopeInstanceImpl scopeInstance, Script script) {
-    ScriptResult scriptOutput = new ScriptResult();
+    ScriptResult scriptResult = new ScriptResult();
     try {
       StringWriter logWriter = new StringWriter();
       ScriptContextImpl scriptContext = new ScriptContextImpl(scopeInstance, script, logWriter);
       Object result = script.compiledScript.eval(scriptContext);
-      scriptOutput.setResult(result);
-      scriptOutput.setLogs(logWriter.toString());
+      scriptResult.setResult(result);
+      scriptResult.setLogs(logWriter.toString());
     } catch (ScriptException e) {
       e.printStackTrace();
-      scriptOutput.setException(e);
+      scriptResult.setException(e);
     }
-    return scriptOutput;
+    return scriptResult;
   }
 }

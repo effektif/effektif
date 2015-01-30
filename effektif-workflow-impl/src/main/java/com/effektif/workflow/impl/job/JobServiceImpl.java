@@ -6,10 +6,14 @@ package com.effektif.workflow.impl.job;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -19,12 +23,12 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
-public abstract class JobServiceImpl implements JobService, Brewable {
+public class JobServiceImpl implements JobService, Brewable {
   
-  // private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
-  protected WorkflowInstanceStore workflowInstanceStore;
   protected JobStore jobStore;
+  protected WorkflowInstanceStore workflowInstanceStore;
   protected ExecutorService executor;
 
   // configuration 
@@ -41,6 +45,7 @@ public abstract class JobServiceImpl implements JobService, Brewable {
   public void brew(Brewery brewery) {
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.executor = brewery.get(ExecutorService.class);
+    this.jobStore = brewery.get(JobStore.class);
   }
 
   public void setListener(JobServiceListener listener) {
@@ -58,14 +63,14 @@ public abstract class JobServiceImpl implements JobService, Brewable {
       keepDoing(new Runnable() {
         @Override
         public void run() {
-          checkProcessJobs();
+          checkWorkflowInstanceJobs();
         }
       }, 100, checkInterval);
 
       keepDoing(new Runnable() {
         @Override
         public void run() {
-          checkOtherJobs();
+          checkJobs();
         }
       }, 500, checkInterval);
 
@@ -97,30 +102,48 @@ public abstract class JobServiceImpl implements JobService, Brewable {
     return isRunning;
   }
 
-  public void checkProcessJobs() {
-    Iterator<String> processInstanceIds = jobStore.getWorkflowInstanceIdsToLockForJobs();
-    while (isRunning 
-           && processInstanceIds!=null 
-           && processInstanceIds.hasNext()) {
-      String workflowInstanceId = processInstanceIds.next();
-      WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, null);
-      boolean keepGoing = true;
-      while (isRunning && keepGoing) {
-        Job job = jobStore.lockNextWorkflowJob(workflowInstanceId);
-        if (job != null) {
-          executor.execute(new ExecuteJob(job, lockedProcessInstance));
-        } else {
-          keepGoing = false;
-        }
-      }
-      workflowInstanceStore.flushAndUnlock(lockedProcessInstance);
-    }
-  }
-  
-  public void checkOtherJobs() {
+  public void checkWorkflowInstanceJobs() {
     boolean keepGoing = true;
     while (isRunning && keepGoing) {
-      Job job = jobStore.lockNextOtherJob();
+      WorkflowInstanceImpl lockedProcessInstance = workflowInstanceStore.lockWorkflowInstanceWithJobsDue();
+      if (lockedProcessInstance!=null) {
+        executor.execute(new ExecuteWorkflowInstanceJobs(lockedProcessInstance));
+      } else {
+        keepGoing = false;
+      }
+    }
+  }
+
+  class ExecuteWorkflowInstanceJobs implements Runnable {
+    JobServiceImpl jobService;
+    WorkflowInstanceImpl workflowInstance;
+    public ExecuteWorkflowInstanceJobs(WorkflowInstanceImpl workflowInstance) {
+      this.workflowInstance = workflowInstance;
+    }
+    @Override
+    public void run() {
+      log.debug("Executing jobs for workflow instance "+workflowInstance.id);
+      Iterator<Job> jobsIterator = workflowInstance.jobs.iterator();
+      for (Job job: new ArrayList<>(workflowInstance.jobs)) {
+        if (job.isDue()) {
+          executeJob(new JobExecution(job, workflowInstance));
+          if (job.isDone()||job.isDead()) {
+            workflowInstance.removeJob(job);
+            jobStore.saveArchivedJob(job);
+          }
+          if (jobsIterator.hasNext()) {
+            workflowInstanceStore.flush(workflowInstance);
+          }
+        }
+      }
+      workflowInstanceStore.flushAndUnlock(workflowInstance);
+    }
+  }
+
+  public void checkJobs() {
+    boolean keepGoing = true;
+    while (isRunning && keepGoing) {
+      Job job = jobStore.lockNextJob();
       if (job != null) {
         executor.execute(new ExecuteJob(job));
       } else {
@@ -130,24 +153,25 @@ public abstract class JobServiceImpl implements JobService, Brewable {
   }
   
   class ExecuteJob implements Runnable {
-    JobServiceImpl jobService;
     Job job;
-    WorkflowInstanceImpl processInstance;
     public ExecuteJob(Job job) {
       this.job = job;
     }
-    public ExecuteJob(Job job, WorkflowInstanceImpl processInstance) {
-      this.job = job;
-      this.processInstance = processInstance;
-    }
     @Override
     public void run() {
-      executeJob(job, processInstance);
+      executeJob(new JobExecution(job));
+      if (job.isDone()||job.isDead()) {
+        jobStore.deleteJobById(job.id);
+        jobStore.saveArchivedJob(job);
+      } else {
+        jobStore.saveJob(job);
+      }
     }
   }
   
-  public void executeJob(Job job, WorkflowInstanceImpl processInstance) {
-    JobExecution jobExecution = new JobExecution(job, processInstance);
+  public void executeJob(JobExecution jobExecution) {
+    Job job = jobExecution.job; 
+    log.debug("Executing job "+job.id);
     job.duedate = null;
     job.lock = null;
     JobType jobType = job.jobType;
@@ -198,8 +222,11 @@ public abstract class JobServiceImpl implements JobService, Brewable {
       if (job.executions.size()>maxJobExecutions) {
         job.executions.remove(0);
       }
-      saveJob(job);
     }
   }
 
+  @Override
+  public void saveJob(Job job) {
+    jobStore.saveJob(job);
+  }
 }

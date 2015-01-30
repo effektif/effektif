@@ -16,14 +16,10 @@ package com.effektif.workflow.impl.script;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
-
 public interface ScriptService {
   
-  /** default language is JavaScript */
   Script compile(String scriptText);
   
-  Script compile(String scriptText, String language);
-  
-  ScriptResult evaluateScript(ScopeInstanceImpl scopeInstance, Script script);
+  ScriptResult evaluate(ScopeInstanceImpl scopeInstance, Script compiledScript);
   
 }

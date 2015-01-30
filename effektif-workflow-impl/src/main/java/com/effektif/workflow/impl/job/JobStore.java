@@ -13,29 +13,22 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.job;
 
-import java.util.Iterator;
 import java.util.List;
 
 
 public interface JobStore {
 
   void saveJob(Job job);
-  
   List<Job> findJobs(JobQuery jobQuery);
-  
-  void deleteJobs(JobQuery query);
+  void deleteJobById(String jobId);
+  void deleteJobs(JobQuery jobQuery);
 
-  /** returns the ids of process instance that have jobs requiring
-   * a process instance lock. When a job requires a process instance lock, 
-   * it has to specify {@link Job#workflowInstanceId} and set {@link Job#lockWorkflowInstance} to true.
-   * This method is allowed to return null. */
-  Iterator<String> getWorkflowInstanceIdsToLockForJobs();
-
-  /** locks a job having the given processInstanceId and retrieves it from the store */
-  Job lockNextWorkflowJob(String processInstanceId);
+  void saveArchivedJob(Job job);
+  List<Job> findArchivedJobs(JobQuery jobQuery);
+  void deleteArchivedJobs(JobQuery jobQuery);
 
   /** locks a job not having a {@link Job#lockWorkflowInstance} specified  
    * and retrieves it from the store */
-  Job lockNextOtherJob();
+  Job lockNextJob();
 
 }

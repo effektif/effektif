@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.implementation;
+package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,15 +21,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hamcrest.core.StringStartsWith;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
@@ -49,11 +46,9 @@ public class JobServiceTest extends WorkflowTest {
 
   @Before
   public void initialize() {
-    // super.initializeWorkflowEngine();
     this.jobService = configuration.get(JobService.class);
-
     JobServiceImpl jobServiceImpl = (JobServiceImpl) jobService;
-    // let's skip starting any threads
+    // this prevents the job service from starting any threads
     jobServiceImpl.isRunning = true;
   }
 
@@ -80,32 +75,32 @@ public class JobServiceTest extends WorkflowTest {
     Time.now = null;
   }
   
-  @Test
-  public void testProcessJobOK() throws Exception {
-    // quickest way to get a processInstanceId
-    Workflow workflow = new Workflow()
-      .activity("t", new UserTask());
-    workflow = deploy(workflow);
-    String workflowInstanceId = start(workflow).getId();
-    
-    jobService.saveJob(new Job()
-      .jobType(new TestJob())
-      .duedate(Time.now())
-      .processInstanceId(workflowInstanceId));
-    
-    assertEquals(0, TestJob.jobExecutions.size());
-    checkOtherJobs(); 
-    assertEquals(0, TestJob.jobExecutions.size());
-    checkProcessJobs(); // only this one should execute the job
-    assertEquals(1, TestJob.jobExecutions.size());
-    checkOtherJobs();
-    assertEquals(1, TestJob.jobExecutions.size());
-    checkProcessJobs();
-    assertEquals(1, TestJob.jobExecutions.size());
-    
-    JobExecution jobExecution = TestJob.jobExecutions.get(0);
-    assertNull(jobExecution.error);
-  }
+//  @Test
+//  public void testWorkfowJobOK() throws Exception {
+//    // quickest way to get a processInstanceId
+//    Workflow workflow = new Workflow()
+//      .activity("t", new UserTask());
+//    workflow = deploy(workflow);
+//    String workflowInstanceId = start(workflow).getId();
+//    
+//    jobService.scheduleJob(new Job()
+//      .jobType(new TestJob())
+//      .duedate(Time.now())
+//      .processInstanceId(workflowInstanceId));
+//    
+//    assertEquals(0, TestJob.jobExecutions.size());
+//    checkOtherJobs(); 
+//    assertEquals(0, TestJob.jobExecutions.size());
+//    checkProcessJobs(); // only this one should execute the job
+//    assertEquals(1, TestJob.jobExecutions.size());
+//    checkOtherJobs();
+//    assertEquals(1, TestJob.jobExecutions.size());
+//    checkProcessJobs();
+//    assertEquals(1, TestJob.jobExecutions.size());
+//    
+//    JobExecution jobExecution = TestJob.jobExecutions.get(0);
+//    assertNull(jobExecution.error);
+//  }
 
 //  @Test
 //  public void testRealProcessJobOK() throws Exception {
@@ -139,20 +134,19 @@ public class JobServiceTest extends WorkflowTest {
 //    assertNull(jobExecution.error);
 //  }
 
-
   @Test
-  public void testOtherJobOK() throws Exception {
+  public void testJobOK() throws Exception {
     jobService.saveJob(new Job()
       .jobType(new TestJob())
       .duedate(Time.now()));
     
-    checkProcessJobs();
+    checkWorkflowInstanceJobs();
     assertEquals(0, TestJob.jobExecutions.size());
-    checkOtherJobs();  // only this one should execute the job
+    checkJobs();  // only this one should execute the job
     assertEquals(1, TestJob.jobExecutions.size());
-    checkOtherJobs();
+    checkJobs();
     assertEquals(1, TestJob.jobExecutions.size());
-    checkProcessJobs();
+    checkWorkflowInstanceJobs();
     assertEquals(1, TestJob.jobExecutions.size());
 
     JobExecution jobExecution = TestJob.jobExecutions.get(0);
@@ -160,7 +154,7 @@ public class JobServiceTest extends WorkflowTest {
   }
 
   @Test
-  public void testOtherJobFailAndRecover() throws Exception {
+  public void testJobFailAndRecover() throws Exception {
     jobService.saveJob(new Job()
       .jobType(new TestJob())
       .duedate(Time.now()));
@@ -168,7 +162,7 @@ public class JobServiceTest extends WorkflowTest {
     TestJob.throwException = true;
     
     assertEquals(0, TestJob.jobExecutions.size());
-    checkOtherJobs();
+    checkJobs();
     assertEquals(1, TestJob.jobExecutions.size());
     
     assertTrue(TestJob.jobExecutions.get(0).error);
@@ -178,7 +172,7 @@ public class JobServiceTest extends WorkflowTest {
     Time.now = new LocalDateTime().plusMinutes(10);
     TestJob.throwException = false;
     
-    checkOtherJobs();
+    checkJobs();
     assertEquals(2, TestJob.jobExecutions.size());
     
     assertNull(TestJob.jobExecutions.get(1).error);
@@ -186,14 +180,14 @@ public class JobServiceTest extends WorkflowTest {
   }
   
   @Test
-  public void testOtherJobFailTillDead() throws Exception {
+  public void testJobFailTillDead() throws Exception {
     jobService.saveJob(new Job()
       .jobType(new TestJob())
       .duedate(Time.now()));
     
     TestJob.throwException = true;
     
-    checkOtherJobs();
+    checkJobs();
     assertEquals(1, TestJob.jobExecutions.size());
     JobExecution jobExecution = TestJob.jobExecutions.get(0);
     assertTrue(jobExecution.error);
@@ -203,7 +197,7 @@ public class JobServiceTest extends WorkflowTest {
     // the first retry rescheduled in 3 seconds
     Time.now = new LocalDateTime().plusSeconds(4);
 
-    checkOtherJobs();
+    checkJobs();
     assertEquals(2, TestJob.jobExecutions.size());
     jobExecution = TestJob.jobExecutions.get(1);
     assertTrue(jobExecution.error);
@@ -213,7 +207,7 @@ public class JobServiceTest extends WorkflowTest {
     // the second retry rescheduled in an hour seconds
     Time.now = new LocalDateTime().plusHours(2);
 
-    checkOtherJobs();
+    checkJobs();
     assertEquals(3, TestJob.jobExecutions.size());
     jobExecution = TestJob.jobExecutions.get(2);
     assertTrue(jobExecution.error);
@@ -223,7 +217,7 @@ public class JobServiceTest extends WorkflowTest {
     // the second retry rescheduled in an hour seconds
     Time.now = new LocalDateTime().plusDays(2);
 
-    checkOtherJobs();
+    checkJobs();
     assertEquals(4, TestJob.jobExecutions.size());
     jobExecution = TestJob.jobExecutions.get(3);
     assertTrue(jobExecution.error);
@@ -245,16 +239,15 @@ public class JobServiceTest extends WorkflowTest {
       .jobType(new TestJob())
       .duedate(Time.now()));
 
-    checkOtherJobs();
+    checkJobs();
     assertEquals(1, TestJob.jobExecutions.size());
   }
 
-
-  public void checkProcessJobs() {
-    ((JobServiceImpl)jobService).checkProcessJobs();
+  public void checkWorkflowInstanceJobs() {
+    ((JobServiceImpl)jobService).checkWorkflowInstanceJobs();
   }
 
-  public void checkOtherJobs() {
-    ((JobServiceImpl)jobService).checkOtherJobs();
+  public void checkJobs() {
+    ((JobServiceImpl)jobService).checkJobs();
   }
 }

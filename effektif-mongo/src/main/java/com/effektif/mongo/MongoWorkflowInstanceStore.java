@@ -29,8 +29,9 @@ import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -60,6 +61,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   protected WriteConcern writeConcernInsertWorkflowInstance;
   protected WriteConcern writeConcernFlushUpdates;
   protected boolean storeWorkflowIdsAsStrings;
+  protected MongoJobStore mongoJobsStore;
   
   interface ScopeInstanceFields {
     String _ID = "_id";
@@ -82,6 +84,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     String CALLER_ACTIVITY_INSTANCE_ID = "callerActivityInstanceId";
     String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
     String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
+    String JOBS = "jobs";
   }
   
   interface ActivityInstanceFields extends ScopeInstanceFields {
@@ -119,6 +122,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     this.writeConcernInsertWorkflowInstance = mongoConfiguration.getWriteConcernInsertWorkflowInstance(this.dbCollection);
     this.writeConcernFlushUpdates = mongoConfiguration.getWriteConcernFlushUpdates(this.dbCollection);
     this.storeWorkflowIdsAsStrings = mongoConfiguration.getStoreWorkflowIdsAsString();
+    this.mongoJobsStore = brewery.get(MongoJobStore.class);
   }
   
   @Override
@@ -151,8 +155,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     BasicDBObject update = new BasicDBObject();
 
     if (updates.isEndChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Workflow instance ended");
+      if (log.isDebugEnabled()) log.debug("  Workflow instance ended");
       sets.append(WorkflowInstanceFields.END, workflowInstance.end.toDate());
       sets.append(WorkflowInstanceFields.DURATION, workflowInstance.duration);
     }
@@ -162,8 +165,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     // We do archive the ended (and joined) activity instances into a separate collection 
     // that doesn't have to be loaded.
     if (updates.isActivityInstancesChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Activity instances changed");
+      if (log.isDebugEnabled()) log.debug("  Activity instances changed");
       List<BasicDBObject> activityInstances = new ArrayList<>();
       List<BasicDBObject> archivedActivityInstances = new ArrayList<>();
       collectActivities(workflowInstance, activityInstances, archivedActivityInstances);
@@ -172,22 +174,18 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         update.append("$push", new BasicDBObject(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, archivedActivityInstances));
       }
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  No activity instances changed");
+      if (log.isDebugEnabled()) log.debug("  No activity instances changed");
     }
     
     if (updates.isVariableInstancesChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Variable instances changed");
+      if (log.isDebugEnabled()) log.debug("  Variable instances changed");
       writeVariables(sets, workflowInstance);
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  No variable instances changed");
+      if (log.isDebugEnabled()) log.debug("  No variable instances changed");
     }
 
     if (updates.isWorkChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Work changed");
+      if (log.isDebugEnabled()) log.debug("  Work changed");
       List<String> work = writeWork(workflowInstance.work);
       if (work!=null) {
         sets.put(WorkflowInstanceFields.WORK, work);
@@ -195,13 +193,11 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         unsets.put(WorkflowInstanceFields.WORK, 1);
       }
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  No work changed");
+      if (log.isDebugEnabled()) log.debug("  No work changed");
     }
 
     if (updates.isAsyncWorkChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Aync work changed");
+      if (log.isDebugEnabled()) log.debug("  Aync work changed");
       List<String> workAsync = writeWork(workflowInstance.workAsync);
       if (workAsync!=null) {
         sets.put(WorkflowInstanceFields.WORK_ASYNC, workAsync);
@@ -209,47 +205,52 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         unsets.put(WorkflowInstanceFields.WORK_ASYNC, 1);
       }
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  No async work changed");
+      if (log.isDebugEnabled()) log.debug("  No async work changed");
     }
 
     if (updates.isNextActivityInstanceIdChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Next activity instance changed");
+      if (log.isDebugEnabled()) log.debug("  Next activity instance changed");
       sets.put(WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
     }
 
     if (updates.isNextVariableInstanceIdChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Next variable instance changed");
+      if (log.isDebugEnabled()) log.debug("  Next variable instance changed");
       sets.put(WorkflowInstanceFields.NEXT_VARIABLE_INSTANCE_ID, workflowInstance.nextVariableInstanceId);
     }
 
     if (updates.isLockChanged) {
-      if (log.isDebugEnabled())
-        log.debug("  Lock changed");
+      if (log.isDebugEnabled()) log.debug("  Lock changed");
       // a lock is only removed 
       unsets.put(WorkflowInstanceFields.LOCK, 1);
+    }
+    
+    if (updates.isJobsChanged) {
+      if (log.isDebugEnabled()) log.debug("  Jobs changed");
+      List<BasicDBObject> dbJobs = writeJobs(workflowInstance.jobs);
+      if (dbJobs!=null) {
+        sets.put(WorkflowInstanceFields.JOBS, dbJobs);
+      } else {
+        unsets.put(WorkflowInstanceFields.JOBS, 1);
+      }
+    } else {
+      if (log.isDebugEnabled()) log.debug("  No jobs changed");
     }
 
     if (!sets.isEmpty()) {
       update.append("$set", sets);
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  No sets");
+      if (log.isDebugEnabled()) log.debug("  No sets");
     }
     if (!unsets.isEmpty()) {
       update.append("$unset", unsets);
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  No unsets");
+      if (log.isDebugEnabled()) log.debug("  No unsets");
     }
     
     if (!update.isEmpty()) {
       update(query, update, false, false, writeConcernFlushUpdates);
     } else {
-      if (log.isDebugEnabled())
-        log.debug("  Nothing to flush");
+      if (log.isDebugEnabled()) log.debug("  Nothing to flush");
     }
     
     // reset the update tracking as all changes have been saved
@@ -304,24 +305,13 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId) {
     Exceptions.checkNotNullParameter(workflowInstanceId, "workflowInstanceId");
 
-    DBObject query = BasicDBObjectBuilder.start()
-      .add(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId))
-      .push(WorkflowInstanceFields.LOCK)
-        .add("$exists", false)
-      .pop()
-      .get();
+    DBObject query = createLockQuery();
+    query.put(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId));
     if (activityInstanceId!=null) {
       query.put(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, activityInstanceId);
     }
     
-    DBObject update = BasicDBObjectBuilder.start()
-      .push("$set")
-        .push(WorkflowInstanceFields.LOCK)
-          .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
-          .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
-        .pop()
-      .pop()
-      .get();
+    DBObject update = createLockUpdate();
     
     DBObject retrieveFields = new BasicDBObject()
           .append(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, false);
@@ -334,6 +324,30 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     WorkflowInstanceImpl workflowInstance = readWorkflowInstance(dbWorkflowInstance);
     workflowInstance.trackUpdates(false);
     return workflowInstance;
+  }
+
+  public DBObject createLockQuery() {
+    return BasicDBObjectBuilder.start()
+      .push(WorkflowInstanceFields.LOCK)
+        .add("$exists", false)
+      .pop()
+      .get();
+  }
+
+  public DBObject createLockUpdate() {
+    return BasicDBObjectBuilder.start()
+      .push("$set")
+        .push(WorkflowInstanceFields.LOCK)
+          .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
+          .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
+        .pop()
+      .pop()
+      .get();
+  }
+
+  @Override
+  public WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue() {
+    return null;
   }
   
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
@@ -362,6 +376,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     }
     writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.WORK, writeWork(workflowInstance.work));
     writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.WORK_ASYNC, writeWork(workflowInstance.workAsync));
+    writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.JOBS, writeJobs(workflowInstance.jobs));
     return dbWorkflowInstance;
   }
   
@@ -410,6 +425,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     workflowInstance.end = readTime(dbWorkflowInstance, WorkflowInstanceFields.END);
     workflowInstance.duration = readLong(dbWorkflowInstance, WorkflowInstanceFields.DURATION);
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(WorkflowInstanceFields.LOCK));
+    workflowInstance.jobs = readJobs(readList(dbWorkflowInstance, WorkflowInstanceFields.JOBS));
 
     Map<Object, ActivityInstanceImpl> allActivityInstances = new LinkedHashMap<>();
     Map<ActivityInstanceImpl, String> allActivityIds = new HashMap<>();
@@ -580,5 +596,29 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
         writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
       }
     }
+  }
+
+  protected List<BasicDBObject> writeJobs(List<Job> jobs) {
+    if (jobs==null || jobs.isEmpty()) {
+      return null;
+    }
+    List<BasicDBObject> dbJobs = new ArrayList<BasicDBObject>();
+    for (Job job: jobs) {
+      BasicDBObject dbJob = mongoJobsStore.writeJob(job);
+      dbJobs.add(dbJob);
+    }
+    return dbJobs;
+  }
+
+  protected List<Job> readJobs(List<BasicDBObject> dbJobs) {
+    if (dbJobs==null || dbJobs.isEmpty()) {
+      return null;
+    }
+    List<Job> jobs = new ArrayList<>();
+    for (BasicDBObject dbJob: dbJobs) {
+      Job job = mongoJobsStore.readJob(dbJob);
+      jobs.add(job);
+    }
+    return jobs;
   }
 }

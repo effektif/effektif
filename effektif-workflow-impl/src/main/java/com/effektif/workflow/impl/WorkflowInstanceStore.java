@@ -27,6 +27,8 @@ public interface WorkflowInstanceStore {
 
   WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId);
 
+  WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
+
   void flush(WorkflowInstanceImpl workflowInstance);
 
   void flushAndUnlock(WorkflowInstanceImpl workflowInstance);
@@ -34,4 +36,5 @@ public interface WorkflowInstanceStore {
   List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
   void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
+
 }

@@ -46,6 +46,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected WriteConcern writeConcernFlushUpdates;
   protected WriteConcern writeConcernJobs;
   protected boolean storeWorkflowIdsAsStrings = false;
+  protected String jobsArchivedCollectionName;
 
   public MongoConfiguration() {
     brewery.ingredient(this);
@@ -54,7 +55,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
     brewery.ingredient(new MemoryTaskService());
-    brewery.ingredient(new MongoJobs());
+    brewery.ingredient(new MongoJobStore());
   }
   
   public MongoConfiguration server(String host) {
@@ -146,6 +147,11 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.storeWorkflowIdsAsStrings = true;
     return this;
   }
+  
+  public MongoConfiguration jobsArchivedCollectionName(String jobsArchivedCollectionName) {
+    this.jobsArchivedCollectionName = jobsArchivedCollectionName;
+    return this;
+  }
 
   public void setServerAddresses(List<ServerAddress> serverAddresses) {
     this.serverAddresses = serverAddresses;
@@ -205,6 +211,13 @@ public class MongoConfiguration extends DefaultConfiguration {
   
   public void setJobsCollectionName(String jobsCollectionName) {
     this.jobsCollectionName = jobsCollectionName;
+  }
+  
+  public String getJobsArchivedCollectionName() {
+    return this.jobsArchivedCollectionName;
+  }
+  public void setJobsArchivedCollectionName(String jobsArchivedCollectionName) {
+    this.jobsArchivedCollectionName = jobsArchivedCollectionName;
   }
 
   public boolean isPretty() {

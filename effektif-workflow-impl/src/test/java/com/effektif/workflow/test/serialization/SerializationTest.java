@@ -25,7 +25,7 @@ public class SerializationTest {
   public void testSerialization() throws InitializationError {
     TestSuiteHelper.run(new SerializingWorkflowEngineConfiguration()
       // use the next line if you only want to run 1 test
-       , ScriptTest.class, "testScript"
+      //  , ScriptTest.class, "testScript"
       );
   }
 }

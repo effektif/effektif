@@ -37,7 +37,17 @@ public class Job {
   public String activityInstanceId;
   public String taskId;
 
-  
+  public boolean isDue() {
+    return duedate==null || duedate.compareTo(Time.now())<=0;
+  }
+
+  public boolean isDone() {
+    return done!=null;
+  }
+
+  public boolean isDead() {
+    return Boolean.TRUE.equals(dead);
+  }
 
   /** setting the id means the job service will ensure there is 
    * exactly 1 such job in the system. */

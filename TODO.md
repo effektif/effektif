@@ -1,3 +1,9 @@
+# Contributions
+
+Scala fluent workflow builder 
+HttpServiceTask
+NodeJS adapter
+
 # Tasks
 
 - [ ] check workflow date persistence (deployedTime)
@@ -5,11 +11,13 @@
 - [ ] reintroduce automatic descriptor scanning of activity types
 - [ ] In the data types, InvalidValueException vs ParseContext
 - [ ] the taken outgoing transition have to be recorded
-- [ ] improve ActivityType conversion method naming: toActivity and parse.  either serialize and deserialize or toActivity and fromActivity or setActivity & getActivity... 
 - [ ] add timers to scopes and scope instances
 - [ ] evaluate outgoing transition conditions (in ActivityInstanceImpl.onwards)
 - [ ] add libraries to maven central: http://central.sonatype.org/pages/ossrh-guide.html ,  http://maven.apache.org/guides/mini/guide-central-repository-upload.html
 - [ ] Figure out how to secure java script for our own servers:  Check out Rhino's SandboxShutter
+        juel could be the safe option
+        http://stackoverflow.com/questions/2151166/how-to-lock-down-or-sandbox-jdks-built-in-javascript-interpreter-to-run-untru 
+        http://blog.datenwerke.net/p/the-java-sandbox.html
 - [ ] Test if the script engine is thread safe. CompiledScript seems to be tied to a ScriptEngine. It should be investigated if concurrent script execution can overwrite each other's context.
 
 # In progress

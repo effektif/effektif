@@ -14,121 +14,97 @@
 package com.effektif.workflow.impl.memory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
-import com.effektif.workflow.impl.configuration.Brewable;
-import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
-import com.effektif.workflow.impl.util.Time;
 
 
-public class MemoryJobStore implements JobStore, Brewable {
+public class MemoryJobStore implements JobStore {
   
-  protected Set<String> workflowInstanceIds;
-  protected LinkedList<Job> jobs;
-  protected List<Job> jobsDone;
-  protected Map<String,Job> jobsById;
+  protected Map<String,Job> jobs = new LinkedHashMap<>();
+  protected List<Job> archivedJobs = new ArrayList<>();
 
   @Override
-  public void brew(Brewery brewery) {
-    this.workflowInstanceIds = new HashSet<>();
-    this.jobs = new LinkedList<>();
-    this.jobsDone = new ArrayList<>();
-    this.jobsById = new HashMap<>();
-  }
-
-  @Override
-  public synchronized Iterator<String> getWorkflowInstanceIdsToLockForJobs() {
-    return workflowInstanceIds.iterator();
-  }
-
-  @Override
-  public synchronized Job lockNextWorkflowJob(String workflowInstanceId) {
-    return lockJob(true);
-  }
-
-  @Override
-  public synchronized Job lockNextOtherJob() {
-    return lockJob(false);
-  }
-
-  public synchronized Job lockJob(boolean mustHaveWorkflowInstance) {
-    Iterator<Job> jobIterator = jobs.iterator();
-    while (jobIterator.hasNext()) {
-      Job job = jobIterator.next();
-      if ( ( job.duedate==null || duedateHasPast(job) )
-           && ( (mustHaveWorkflowInstance && job.workflowInstanceId!=null)
-                || (!mustHaveWorkflowInstance && job.workflowInstanceId==null) )
-         ) {
-        jobIterator.remove();
+  public synchronized Job lockNextJob() {
+    for (Job job: jobs.values()) {
+      if (job.isDue() && !job.isDone()) {
+        jobs.remove(job.id);
         return job;
       }
     }
     return null;
   }
 
-  public boolean duedateHasPast(Job job) {
-    return job.duedate==null || job.duedate.compareTo(Time.now())<=0;
-  }
-
   @Override
   public synchronized void saveJob(Job job) {
-    if (job.done==null) {
-      jobs.add(job);
-      if (job.key!=null) {
-        Job oldJob = jobsById.put(job.key, job);
-        if (oldJob!=null) {
-          jobs.remove(oldJob);
+    if (job.key!=null) {
+      for (Job existingJob: jobs.values()) {
+        if (job.key.equals(existingJob.key)) {
+          job.id = existingJob.id;
         }
       }
-      if (job.workflowInstanceId != null) {
-        workflowInstanceIds.add(job.workflowInstanceId);
-      }
-    } else {
-      jobsDone.add(job);
     }
+    if (job.id==null) {
+      job.id = UUID.randomUUID().toString();
+    }
+    jobs.put(job.id, job);
   }
 
   @Override
-  public List<Job> findJobs(JobQuery jobQuery) {
-    return jobs;
+  public List<Job> findJobs(JobQuery query) {
+    return findJobs(jobs.values(), query);
+  }
+
+  protected List<Job> findJobs(Collection<Job> jobs, JobQuery query) {
+    List<Job> result = new ArrayList<>();
+    for (Job job: jobs) {
+      if (meetsCriteria(job, query)) {
+        result.add(job);
+      }
+    }
+    return result;
   }
 
   @Override
   public void deleteJobs(JobQuery query) {
-    String jobId = query.getJobId();
-    if (jobId!=null) {
-      Job job = jobsById.get(jobId);
-      if (job!=null && meetsCriteria(job, query)) {
-        jobsById.remove(jobId);
-        jobs.remove(job);
-        jobsDone.remove(job);
-      }
-    } else {
-      deleteJobs(jobs.iterator(), query);
-      deleteJobs(jobsDone.iterator(), query);
-    }
+    deleteJobs(jobs.values(), query);
   }
 
-  protected void deleteJobs(Iterator<Job> iterator, JobQuery query) {
-    while(iterator.hasNext()) {
-      Job job = iterator.next();
+  protected void deleteJobs(Collection<Job> jobs, JobQuery query) {
+    for (Job job: new ArrayList<>(jobs)) {
       if (meetsCriteria(job, query)) {
-        jobsById.remove(job.getId());
-        jobs.remove(job);
+        jobs.remove(job.getId());
       }
     }
   }
 
   protected boolean meetsCriteria(Job job, JobQuery query) {
     return query.getJobId()!=null && query.getJobId().equals(job.id);
+  }
+
+  @Override
+  public void deleteJobById(String jobId) {
+    jobs.remove(jobId);
+  }
+
+  @Override
+  public void saveArchivedJob(Job job) {
+    archivedJobs.add(job);
+  }
+
+  @Override
+  public List<Job> findArchivedJobs(JobQuery query) {
+    return findJobs(archivedJobs, query);
+  }
+
+  @Override
+  public void deleteArchivedJobs(JobQuery query) {
+    deleteJobs(archivedJobs, query);
   }
 }

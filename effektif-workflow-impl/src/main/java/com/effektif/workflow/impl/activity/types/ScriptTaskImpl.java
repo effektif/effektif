@@ -50,7 +50,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     if (script!=null) {
-      scriptService.evaluateScript(activityInstance, script);
+      scriptService.evaluate(activityInstance, script);
     }
     activityInstance.onwards();
   }
