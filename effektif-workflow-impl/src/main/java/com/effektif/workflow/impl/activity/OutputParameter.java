@@ -11,15 +11,34 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
+package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.api.types.Type;
 
 
-public interface ActivityAdapter {
+public class OutputParameter extends Parameter {
 
-  ActivityDescriptor getDescriptor();
+  @Override
+  public OutputParameter key(String key) {
+    super.key(key);
+    return this;
+  }
 
-  void execute(ActivityContext request);
+  @Override
+  public OutputParameter type(Type type) {
+    super.type(type);
+    return this;
+  }
 
+  @Override
+  public OutputParameter label(String label) {
+    super.label(label);
+    return this;
+  }
+
+  @Override
+  public OutputParameter description(String description) {
+    super.description(description);
+    return this;
+  }
 }

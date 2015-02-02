@@ -55,4 +55,9 @@ public class MemoryAdapterService extends AbstractAdapterService {
   public AdapterService createAdapterService(RequestContext requestContext) {
     return new ContextualAdapterService(this, requestContext);
   }
+
+  @Override
+  public Adapter findAdapterById(String adapterId) {
+    return adapters.get(adapterId);
+  }
 }

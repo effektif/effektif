@@ -13,75 +13,44 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.command.Start;
-import com.effektif.workflow.api.command.TypedValue;
-import com.effektif.workflow.api.types.ObjectType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
-public class CallImpl extends AbstractActivityType<Call> {
+public class CallImpl extends AbstractBindableActivityImpl<Call> {
+  
+  public static final InputParameter<String> SUBWORKFLOW_ID = new InputParameter<>()
+    .type(new TextType())
+    .key("subWorkflowIdBinding");
+
+  public static final InputParameter<String> SUBWORKFLOW_NAME = new InputParameter<>()
+    .type(new TextType())
+    .key("subWorkflowNameBinding");
 
   // TODO Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   BindingImpl<String> subWorkflowIdBinding;
   BindingImpl<String> subWorkflowNameBinding;
-  protected Map<String,String> inputMappings; 
-  protected Map<String,TypedValue> inputMappingValues; 
-  protected Map<String,String> outputMappings; 
 
   public CallImpl() {
     super(Call.class);
   }
 
   @Override
-  public ObjectType getDescriptor() {
-    return null;
-//    return new JavaBeanType(Call.class)
-//      .description("Invoke another workflow")
-//      .field(new ObjectField("subWorkflowIdBinding")
-//        .type(new BindingType(new TextType()))
-//        .label("Sub worfklow id"))
-//      .field(new ObjectField("subWorkflowNameBinding")
-//        .type(new BindingType(new TextType()))
-//        .label("Sub worfklow name"))
-//      .field(new ObjectField("inputMappings")
-//        .label("Input mappings")
-//        .type(new ListType(new JavaBeanType(Mapping.class)
-//          .field(new ObjectField("sourceBinding")
-//            .type(new BindingType())
-//            .label("Item in this workflow"))
-//          .field(new ObjectField("destinationVariableId")
-//            .label("Variable in the sub workflow")
-//            .type(new VariableReferenceType())))))
-//      .field(new ObjectField("outputMappings")
-//        .label("Output mappings")
-//        .type(new ListType(new JavaBeanType(Mapping.class)
-//          .field(new ObjectField("sourceBinding")
-//            .label("Item in the sub workflow")
-//            .type(new BindingType()))
-//          .field(new ObjectField("destinationVariableId")
-//            .label("Variable in this workflow")
-//            .type(new VariableReferenceType())))));
-  }
-
-  @Override
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
     super.parse(activityImpl, call, parser);
-    this.subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), String.class, false, call, "subWorkflowIdBinding");
-    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), String.class, false, call, "subWorkflowNameBinding");
-    this.inputMappings = call.getInputMappings();
-    this.inputMappingValues = call.getInputMappingValues();
-    this.outputMappings = call.getOutputMappings();
+    this.subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), call, SUBWORKFLOW_ID);
+    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), call, SUBWORKFLOW_NAME);
   }
 
   @Override
@@ -107,17 +76,11 @@ public class CallImpl extends AbstractActivityType<Call> {
       Start start = new Start()
         .workflowId(subWorkflowId);
       
-      if (inputMappings!=null) {
-        for (String subWorkflowVariableId: inputMappings.keySet()) {
-          String variableId = inputMappings.get(subWorkflowVariableId);
-          Object value = activityInstance.getValue(variableId);
-          start.variableValue(subWorkflowVariableId, value);
-        }
-      }
-      if (inputMappingValues!=null) {
-        for (String subWorkflowVariableId: inputMappingValues.keySet()) {
-          TypedValue typedValue = inputMappingValues.get(subWorkflowVariableId);
-          start.variableValue(subWorkflowVariableId, typedValue.getValue());
+      if (inputBindings!=null) {
+        for (String subWorkflowKey: inputBindings.keySet()) {
+          BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowKey);
+          Object value = activityInstance.getValue(subWorkflowBinding);
+          start.variableValue(subWorkflowKey, value);
         }
       }
       
@@ -134,11 +97,11 @@ public class CallImpl extends AbstractActivityType<Call> {
   }
   
   public void calledProcessInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
-    if (outputMappings!=null) {
-      for (String variableId: outputMappings.keySet()) {
-        String subWorkflowVariableId = outputMappings.get(variableId);
-        Object value = calledProcessInstance.getValue(subWorkflowVariableId);
-        activityInstance.setVariableValue(variableId, value);
+    if (outputBindings!=null) {
+      for (String variableId: outputBindings.keySet()) {
+        String subWorkflowVariableId = outputBindings.get(variableId);
+        TypedValueImpl typedValue = calledProcessInstance.getTypedValue(subWorkflowVariableId);
+        activityInstance.setVariableValue(variableId, typedValue);
       }
     }
   }

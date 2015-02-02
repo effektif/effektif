@@ -13,9 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -23,8 +21,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("userTask")
 public class UserTask extends NoneTask {
   
-  protected Binding nameBinding;
-  protected List<Binding> candidateIdBindings;
+  protected Binding<String> nameBinding;
+  protected Binding<UserReference> assigneeBinding;
+  protected Binding<UserReference> candidatesBinding;
   
   public UserTask() {
   }
@@ -49,28 +48,46 @@ public class UserTask extends NoneTask {
   }
 
   /** adds a candidate id value to the list */
-  public UserTask candidateId(String candidateId) {
-    addCandidateId(new Binding().value(candidateId));
+  public UserTask assigneeUserId(String assigneeUserId) {
+    this.assigneeBinding = new Binding().value(new UserReference().id(assigneeUserId));
     return this;
   }
 
   /** adds a candidate id variable to the list */
-  public UserTask candidateIdVariableId(String candidateIdVariableId) {
-    addCandidateId(new Binding().variableId(candidateIdVariableId));
+  public UserTask assigneeVariableId(String assigneeVariableId) {
+    this.assigneeBinding = new Binding().variableId(assigneeVariableId);
     return this;
   }
 
   /** adds a candidate id expression to the list */
-  public UserTask candidateIdExpression(String candidateIdExpression) {
-    addCandidateId(new Binding().expression(candidateIdExpression));
+  public UserTask assigneeExpression(String assigneeExpression) {
+    this.assigneeBinding = new Binding().expression(assigneeExpression);
     return this;
   }
 
-  protected void addCandidateId(Binding binding) {
-    if (candidateIdBindings==null) {
-      candidateIdBindings = new ArrayList<>();
+  /** adds a candidate id value to the list */
+  public UserTask candidateUserId(String assigneeUserId) {
+    addCandidateBinding(new Binding().value(new UserReference().id(assigneeUserId)));
+    return this;
+  }
+
+  /** adds a candidate id variable to the list */
+  public UserTask candidateVariableId(String assigneeVariableId) {
+    addCandidateBinding(new Binding().variableId(assigneeVariableId));
+    return this;
+  }
+
+  /** adds a candidate id expression to the list */
+  public UserTask candidateExpression(String assigneeExpression) {
+    addCandidateBinding(new Binding().expression(assigneeExpression));
+    return this;
+  }
+
+  protected void addCandidateBinding(Binding<UserReference> binding) {
+    if (candidatesBinding==null) {
+      candidatesBinding = new Binding<UserReference>();
     }
-    candidateIdBindings.add(binding);
+    candidatesBinding.binding(binding);
   }
   
   public Binding getNameBinding() {
@@ -81,11 +98,19 @@ public class UserTask extends NoneTask {
     this.nameBinding = nameBinding;
   }
   
-  public List<Binding> getCandidateIdBindings() {
-    return candidateIdBindings;
+  public Binding<UserReference> getCandidatesBinding() {
+    return candidatesBinding;
   }
   
-  public void setCandidateIdBindings(List<Binding> candidateIdBindings) {
-    this.candidateIdBindings = candidateIdBindings;
+  public void setCandidatesBinding(Binding<UserReference> assigneeReferenceBindings) {
+    this.candidatesBinding = assigneeReferenceBindings;
+  }
+  
+  public Binding<UserReference> getAssigneeBinding() {
+    return assigneeBinding;
+  }
+  
+  public void setAssigneeBinding(Binding<UserReference> assigneeBinding) {
+    this.assigneeBinding = assigneeBinding;
   }
 }

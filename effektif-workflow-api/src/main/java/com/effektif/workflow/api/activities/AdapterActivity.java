@@ -13,11 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -27,13 +25,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /** delegates to an activity that is running on an external adapter server */
 @JsonTypeName("adapterActivity")
-public class AdapterActivity extends Activity {
+public class AdapterActivity extends AbstractBindableActivity {
 
   protected String adapterId;
   protected String activityKey;
-  protected Map<String,String> inputMappings; 
-  protected Map<String,TypedValue> inputMappingValues; 
-  protected Map<String,String> outputMappings; 
 
   public String getAdapterId() {
     return this.adapterId;
@@ -57,67 +52,46 @@ public class AdapterActivity extends Activity {
     return this;
   }
   
-  /** copies the variable from this workflow to the adapter activity when it is invoked */
-  public AdapterActivity inputMapping(String adapterKey, String variableId) {
-    if (inputMappings==null) {
-      inputMappings = new HashMap<>();
-    }
-    inputMappings.put(adapterKey, variableId);
+  @Override
+  public AdapterActivity inputValue(String adapterKey, Object value) {
+    super.inputValue(adapterKey, value);
     return this;
   }
 
-  /** copies the static value to the adapter activity when it is invoked,
-   * This method uses reflection and the data type service to find the type form the value. */
-  public AdapterActivity inputMappingValue(String adapterKey, Object value) {
-    inputMappingValue(adapterKey, new TypedValue().value(value));
+  @Override
+  public AdapterActivity inputValue(String adapterKey, TypedValue typedValue) {
+    super.inputValue(adapterKey, typedValue);
     return this;
   }
 
-  /** copies the static typed value to the adapter activity when it is invoked */
-  public AdapterActivity inputMappingValue(String adapterKey, TypedValue typedValue) {
-    if (inputMappingValues==null) {
-      inputMappingValues = new HashMap<>();
-    }
-    inputMappingValues.put(adapterKey, typedValue);
+  @Override
+  public AdapterActivity inputVariable(String adapterKey, String variableId) {
+    super.inputVariable(adapterKey, variableId);
     return this;
   }
 
-  /** copies the adapter output value into a variable of this workflow when the activity is finished */
-  public AdapterActivity outputMapping(String variableId, String adapterKey) {
-    if (outputMappings==null) {
-      outputMappings = new HashMap<>();
-    }
-    outputMappings.put(variableId, adapterKey);
+  @Override
+  public AdapterActivity inputField(String adapterKey, String variableField) {
+    super.inputField(adapterKey, variableField);
     return this;
   }
-  
-  public Map<String, String> getInputMappings() {
-    return inputMappings;
+
+  @Override
+  public AdapterActivity inputExpression(String adapterKey, String variableField) {
+    super.inputExpression(adapterKey, variableField);
+    return this;
   }
 
-  
-  public void setInputMappings(Map<String, String> inputMappings) {
-    this.inputMappings = inputMappings;
+  @Override
+  public AdapterActivity inputBinding(String adapterKey, Binding binding) {
+    super.inputBinding(adapterKey, binding);
+    return this;
   }
 
-  
-  public Map<String, String> getOutputMappings() {
-    return outputMappings;
-  }
-
-  
-  public void setOutputMappings(Map<String, String> outputMappings) {
-    this.outputMappings = outputMappings;
-  }
-
-  
-  public Map<String, TypedValue> getInputMappingValues() {
-    return inputMappingValues;
-  }
-
-  
-  public void setInputMappingValues(Map<String, TypedValue> inputMappingValues) {
-    this.inputMappingValues = inputMappingValues;
+  @Override
+  public AdapterActivity outputBinding(String variableId, String adapterKey) {
+    super.outputBinding(variableId, adapterKey);
+    return this;
   }
 
   @Override

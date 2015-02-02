@@ -43,6 +43,11 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public TypeGenerator getTypeGenerator() {
     return null;
   }
+  
+  @Override
+  public Object convert(Object value, DataType type) {
+    return value;
+  }
 
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {

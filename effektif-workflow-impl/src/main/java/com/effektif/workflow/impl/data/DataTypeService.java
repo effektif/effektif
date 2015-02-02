@@ -47,6 +47,7 @@ public class DataTypeService implements Brewable {
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
   protected Map<Class<? extends Type>, TypeGenerator> typeGenerators = new HashMap<>();
   
+  
   @Override
   public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
@@ -130,6 +131,9 @@ public class DataTypeService implements Brewable {
   }
 
   public DataType createDataType(Type type) {
+    if (type==null) {
+      return null;
+    }
     DataType singleton = singletons.get(type.getClass());
     if (singleton!=null) {
       return singleton;

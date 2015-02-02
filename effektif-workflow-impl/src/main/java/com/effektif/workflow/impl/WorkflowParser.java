@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,8 @@ import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -165,29 +168,73 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Class<T> expectedValueType, boolean required, Activity activityApi, String fieldName) {
-    String activityId = activityApi.getId();
-    if (binding==null) {
-      if (required) {
-        addWarning("Configuration '%s' in activity '%s' not specified, but is a required list of bindings", fieldName, activityId);
-      }
+  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi) {
+    return parseInputBindings(inputBindings, activityApi, null);
+  }
+
+  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, ActivityDescriptor activityDescriptor) {
+    if (inputBindings==null || inputBindings.isEmpty()) {
       return null;
     }
-    BindingImpl bindingImpl = new BindingImpl(configuration);
+    Map<String,BindingImpl> inputBindingsImpl = null;
+    Map<String, InputParameter> inputParameters = activityDescriptor!=null ? activityDescriptor.getInputParameters() : null;
+    for (Map.Entry<String, Binding> entry: inputBindings.entrySet()) {
+      String key = entry.getKey();
+      Binding inputBinding = entry.getValue();
+      InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
+      pushContext("inputBindings."+key);
+
+      if (activityDescriptor!=null && inputParameter==null) {
+        addWarning("Unexpected input binding '%s' in activity '%s'", key, activityApi.getId());
+      }
+      BindingImpl<?> bindingImpl = parseBinding(inputBinding, activityApi, inputParameter, key);
+      if (bindingImpl!=null) {
+        if (inputBindingsImpl==null) {
+          inputBindingsImpl = new HashMap<>();
+        }
+        inputBindingsImpl.put(key, bindingImpl);
+      }
+      popContext();
+    }
+    return inputBindingsImpl;
+  }
+  
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Activity activityApi, InputParameter inputParameter) {
+    return parseBinding(binding, activityApi, inputParameter, inputParameter.getKey());
+  }
+
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Activity activityApi, InputParameter inputParameter, String key) {
+    BindingImpl<T> bindingImpl = parseBinding(binding, activityApi, key);
     int values = 0;
+    if (bindingImpl!=null) {
+      if (bindingImpl.typedValue!=null) values++;
+      if (bindingImpl.variableId!=null) values++;
+      if (bindingImpl.expression!=null) values++;
+      if (bindingImpl.bindings!=null) values++;
+    }
+    if (inputParameter!=null && inputParameter.isRequired() && values==0) {
+      addError("Binding '%s' in activity '%s' required and not specified", key, activityApi.getId());
+    } else if (values>1) {
+      addWarning("Multiple values specified for '%s' for binding '%s'", key, activityApi.getId());
+    }
+    return bindingImpl;
+  }
+
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Activity activityApi, String fieldName) {
+    if (binding==null) {
+      return null;
+    }
+    BindingImpl<T> bindingImpl = new BindingImpl<>(configuration);
     if (binding.getValue()!=null) {
       bindingImpl.typedValue = parseTypedValue(binding.getTypedValue());
-      values++;
     }
     if (binding.getVariableId()!=null) {
       // TODO check if the variable exists and add an error if not
       bindingImpl.variableId = binding.getVariableId();
-      values++;
     }
     if (binding.getFields()!=null) {
       // TODO check if the fields exist and add errors if not
       bindingImpl.fields = binding.getFields(); 
-      values++;
     }
     if (binding.getExpression()!=null) {
       ExpressionService expressionService = configuration.get(ExpressionService.class);
@@ -196,12 +243,14 @@ public class WorkflowParser {
       } catch (Exception e) {
         addError("Expression for input '%s' couldn't be compiled: %s", fieldName+".expression", e.getMessage());
       }
-      values++;
     }
-    if (values==0) {
-      addError("No value specified in binding '%s' for activity '%s'", fieldName, activityId);
-    } else if (values>1) {
-      addError("Multiple values specified for '%s' for activity '%s'", fieldName, activityId);
+    List<Binding<T>> bindings = binding.getBindings();
+    if (bindings!=null && !bindings.isEmpty()) {
+      bindingImpl.bindings = new ArrayList<>();
+      for (Binding<T> elementBinding: bindings) {
+        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, activityApi, fieldName);
+        bindingImpl.bindings.add(elementBindingImpl);
+      }
     }
     return bindingImpl;
   }
@@ -214,22 +263,6 @@ public class WorkflowParser {
     DataType type = dataTypeService.createDataType(typedValue.getType());
     return new TypedValueImpl(type, typedValue.getValue());
   }
-
-  public <T> List<BindingImpl<T>> parseBindings(List<Binding> bindings, Class<T> bindingValueType, boolean required, Activity activityApi, String fieldName) {
-    String activityId = activityApi.getId();
-    if (bindings==null || bindings.isEmpty()) {
-      if (required) {
-        addWarning("Configuration '%s' in activity '%s' %s. A list of bindings is required", fieldName, activityId, bindings==null ? "not specified" : "an empty list");
-      }
-      return null;
-    }
-    List<BindingImpl<T>> bindingImpls = new ArrayList<>(bindings.size());
-    for (Binding binding: bindings) {
-      bindingImpls.add(parseBinding(binding, bindingValueType, false, activityApi, fieldName));
-    }
-    return bindingImpls;
-  }
-  
 
   public void addError(String message, Object... messageArgs) {
     ValidationContext currentContext = contextStack.peek();

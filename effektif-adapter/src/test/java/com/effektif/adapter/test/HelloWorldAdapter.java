@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.adapter.ActivityAdapter;
 import com.effektif.adapter.ActivityContext;
-import com.effektif.workflow.impl.adapter.ActivityDescriptor;
+import com.effektif.workflow.impl.activity.ActivityDescriptor;
 
 
 public class HelloWorldAdapter implements ActivityAdapter {

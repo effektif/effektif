@@ -13,13 +13,10 @@
  * limitations under the License. */
 package com.effektif.adapter;
 
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.api.task.Task;
 
 
-public interface ActivityAdapter {
+public interface AssignmentAdapter {
 
-  ActivityDescriptor getDescriptor();
-
-  void execute(ActivityContext request);
-
+  void assign(Task task);
 }

@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -22,9 +24,10 @@ import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.command.Message;
 import com.effektif.workflow.api.command.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -72,45 +75,18 @@ public class CallTest extends WorkflowTest {
   }
 
   @Test
-  public void testCallActivityInputMappingVariable() {
+  public void testCallActivityInputValue() {
     Workflow subWorkflow = new Workflow()
-      .variable("performer", new TextType())
+      .variable("performer", new UserReferenceType())
       .activity("subtask", new UserTask()
-        .candidateIdVariableId("performer")
-      );
-    
-    subWorkflow = deploy(subWorkflow);
-    
-    Workflow superWorkflow = new Workflow()
-      .variable("guineapig", new TextType())
-      .activity(new Call("call")
-        .inputMapping("performer", "guineapig")
-        .subWorkflowId(subWorkflow.getId()));
-    
-    superWorkflow = deploy(superWorkflow);
-    
-    workflowEngine.startWorkflowInstance(new Start()
-      .workflowId(superWorkflow.getId())
-      .variableValue("guineapig", "johndoe")
-    );
-    
-    Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssigneeId());
-  }
-
-  @Test
-  public void testCallActivityInputMappingValue() {
-    Workflow subWorkflow = new Workflow()
-      .variable("performer", new TextType())
-      .activity("subtask", new UserTask()
-        .candidateIdVariableId("performer")
+        .assigneeVariableId("performer")
       );
     
     subWorkflow = deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
       .activity(new Call("call")
-        .inputMappingValue("performer", "johndoe")
+        .inputValue("performer", new UserReference().id("johndoe"))
         .subWorkflowId(subWorkflow.getId()));
     
     superWorkflow = deploy(superWorkflow);
@@ -118,6 +94,34 @@ public class CallTest extends WorkflowTest {
     start(superWorkflow);
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssigneeId());
+    assertEquals("johndoe", task.getAssignee().getId());
   }
+
+  @Test
+  public void testCallActivityInputBindingVariable() {
+    Workflow subWorkflow = new Workflow()
+      .variable("performer", new UserReferenceType())
+      .activity("subtask", new UserTask()
+        .assigneeVariableId("performer")
+      );
+    
+    subWorkflow = deploy(subWorkflow);
+    
+    Workflow superWorkflow = new Workflow()
+      .variable("guineapig", new UserReferenceType())
+      .activity(new Call("call")
+        .inputVariable("performer", "guineapig")
+        .subWorkflowId(subWorkflow.getId()));
+    
+    superWorkflow = deploy(superWorkflow);
+    
+    workflowEngine.startWorkflowInstance(new Start()
+      .workflowId(superWorkflow.getId())
+      .variableValue("guineapig", new UserReference().id("johndoe"))
+    );
+
+    Task task = taskService.findTasks(new TaskQuery()).get(0);
+    assertEquals("johndoe", task.getAssignee().getId());
+  }
+
 }

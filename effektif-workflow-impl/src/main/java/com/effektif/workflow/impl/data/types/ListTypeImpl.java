@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl.data.types;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
@@ -24,13 +25,15 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeGenerator;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.util.Lists;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
 public class ListTypeImpl extends AbstractDataType<ListType> {
   
-  protected DataType elementDataType;
+  public DataType elementType;
   
   /** constructor for json & persistence, dataType is a required field. */
   public ListTypeImpl() {
@@ -41,7 +44,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   public ListTypeImpl(DataType elementDataType) {
     super(ListType.class);
     this.valueClass = List.class;
-    this.elementDataType = elementDataType;
+    this.elementType = elementDataType;
   }
 
   public ListTypeImpl(ListType listType, Configuration configuration) {
@@ -50,10 +53,42 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     Type elementType = listType.getElementType();
     if (elementType!=null) {
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-      this.elementDataType = dataTypeService.createDataType(elementType);
+      this.elementType = dataTypeService.createDataType(elementType);
     }
   }
   
+  @Override
+  public Object convert(Object value, DataType valueType) {
+    if (value==null) {
+      return value;
+    }
+    DataType elementValueType = null;
+    if (! (value instanceof Collection)) {
+      value = Lists.of(value);
+      elementValueType = valueType;
+    } else if (valueType instanceof ListTypeImpl) {
+      elementValueType = ((ListTypeImpl) valueType).elementType; 
+    }
+    Collection<Object> collection = (Collection<Object>) value;
+    if (!requiresConversion(collection)) {
+      return collection;
+    }
+    List<Object> convertedCollection = new ArrayList<>(collection.size());
+    for (Object element: collection) {
+      convertedCollection.add(elementType.convert(element, elementValueType));
+    }
+    return convertedCollection;
+  }
+
+  protected boolean requiresConversion(Collection<Object> collection) {
+    for (Object element: collection) {
+      if (element!=null && elementType.convert(element, null)!=element) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public TypeGenerator getTypeGenerator() {
     return new TypeGenerator<ListType>() {
@@ -83,7 +118,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     @SuppressWarnings("unchecked")
     java.util.List<Object> list = (java.util.List<Object>) internalValue;
     for (Object element: list) {
-      elementDataType.validateInternalValue(element);
+      elementType.validateInternalValue(element);
     }
   }
 
@@ -99,7 +134,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     java.util.List<Object> list = (java.util.List<Object>) jsonValue;
     for (int i=0; i<list.size(); i++) {
       Object elementJsonValue = list.get(i);
-      Object elementInternalValue = elementDataType.convertJsonToInternalValue(elementJsonValue);
+      Object elementInternalValue = elementType.convertJsonToInternalValue(elementJsonValue);
       list.set(i, elementInternalValue);
     }
     return list;
@@ -114,7 +149,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     java.util.List<Object> internalValues = (java.util.List<Object>) internalValue;
     java.util.List<Object> jsonValues = new ArrayList<>(internalValues.size());
     for (Object elementInternalValue: internalValues) {
-      Object elementJsonValue = elementDataType.convertInternalToJsonValue(elementInternalValue);
+      Object elementJsonValue = elementType.convertInternalToJsonValue(elementInternalValue);
       jsonValues.add(elementJsonValue);
     }
     return jsonValues;

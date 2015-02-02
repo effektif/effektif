@@ -13,12 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
+import com.effektif.workflow.impl.data.DataType;
 
 
 
 public class UserReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
+  
+  public static final UserReferenceTypeImpl INSTANCE = new UserReferenceTypeImpl();
 
   public UserReferenceTypeImpl() {
     super(UserReferenceType.class);
@@ -29,4 +33,18 @@ public class UserReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
     return true;
   }
 
+  @Override
+  public Object convert(Object value, DataType valueType) {
+    if (value instanceof UserReference) {
+      return value;
+    }
+    if (value instanceof String
+         && ( ( valueType==null
+                || valueType instanceof TextTypeImpl) 
+            )
+       ){
+      return new UserReference().id((String)value);
+    } 
+    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+UserReference.class.getName());
+  }
 }

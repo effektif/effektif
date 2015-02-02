@@ -191,7 +191,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public String toString() {
-    String activityDefinitionType = activity.activityType.getApiClass().getSimpleName();
+    String activityDefinitionType = activity.activityType.getActivityApiClass().getSimpleName();
     return "("+(activity.id!=null?activity.id+"|":"")+id+"|"+activityDefinitionType+")";
   }
   

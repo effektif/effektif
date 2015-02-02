@@ -11,10 +11,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.adapter;
+package com.effektif.workflow.impl.activity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
@@ -23,13 +23,11 @@ import com.effektif.workflow.api.types.Type;
 public class ActivityDescriptor {
 
   protected String activityKey;
-  protected List<Parameter> inputParameters;
-  protected List<Parameter> outputParameters;
+  protected String label;
+  protected String description;
 
-  public ActivityDescriptor activityKey(String activityKey) {
-    this.activityKey = activityKey;
-    return this;
-  }
+  protected Map<String,InputParameter> inputParameters;
+  protected Map<String,OutputParameter> outputParameters;
 
   public ActivityDescriptor inputParameterString(String inputParameterKey, String inputParameterLabel) {
     inputParameter(inputParameterKey, inputParameterLabel, new TextType());
@@ -37,14 +35,19 @@ public class ActivityDescriptor {
   }
 
   public ActivityDescriptor inputParameter(String inputParameterKey, String inputParameterLabel, Type type) {
-    if (inputParameters==null) {
-      inputParameters = new ArrayList<>();
-    }
-    inputParameters.add(new Parameter()
+    inputParameter(new InputParameter()
       .key(inputParameterKey)
       .label(inputParameterLabel)
       .type(type)
     );
+    return this;
+  }
+
+  public ActivityDescriptor inputParameter(InputParameter parameter) {
+    if (inputParameters==null) {
+      inputParameters = new HashMap<>();
+    }
+    inputParameters.put(parameter.key, parameter);
     return this;
   }
 
@@ -54,14 +57,19 @@ public class ActivityDescriptor {
   }
 
   public ActivityDescriptor outputParameter(String outputParameterKey, String outputParameterLabel, Type type) {
-    if (outputParameters==null) {
-      outputParameters = new ArrayList<>();
-    }
-    outputParameters.add(new Parameter()
+    outputParameter(new OutputParameter()
       .key(outputParameterKey)
       .label(outputParameterLabel)
       .type(type)
     );
+    return this;
+  }
+  
+  public ActivityDescriptor outputParameter(OutputParameter outputParameter) {
+    if (outputParameters==null) {
+      outputParameters = new HashMap<>();
+    }
+    outputParameters.put(outputParameter.key, outputParameter);
     return this;
   }
 
@@ -71,19 +79,49 @@ public class ActivityDescriptor {
   public void setActivityKey(String activityKey) {
     this.activityKey = activityKey;
   }
-  
-  public List<Parameter> getInputParameters() {
-    return this.inputParameters;
+  public ActivityDescriptor activityKey(String activityKey) {
+    this.activityKey = activityKey;
+    return this;
   }
-  public void setInputParameters(List<Parameter> inputParameters) {
+
+  public String getLabel() {
+    return this.label;
+  }
+  public void setLabel(String label) {
+    this.label = label;
+  }
+  public ActivityDescriptor label(String label) {
+    this.label = label;
+    return this;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  public ActivityDescriptor description(String description) {
+    this.description = description;
+    return this;
+  }
+  
+  public Map<String, InputParameter> getInputParameters() {
+    return inputParameters;
+  }
+
+  
+  public void setInputParameters(Map<String, InputParameter> inputParameters) {
     this.inputParameters = inputParameters;
   }
+
   
-  public List<Parameter> getOutputParameters() {
-    return this.outputParameters;
+  public Map<String, OutputParameter> getOutputParameters() {
+    return outputParameters;
   }
-  public void setOutputParameters(List<Parameter> outputParameters) {
+
+  
+  public void setOutputParameters(Map<String, OutputParameter> outputParameters) {
     this.outputParameters = outputParameters;
   }
-  
 }

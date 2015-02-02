@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -140,9 +139,9 @@ public class StandardScriptBindings implements Bindings {
       VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
       DataType type = variableInstance.type;
       Object value = type.convertScriptValueToInternal(scriptValue, language);
-      variableInstance.setValue(value);
+      variableInstance.setTypedValue(new TypedValueImpl(type, value));
     } else {
-      scopeInstance.createVariableInstanceByValue(scriptValue);
+      scopeInstance.createVariableInstance(new TypedValueImpl(null, scriptValue));
     }
     return null;
   }

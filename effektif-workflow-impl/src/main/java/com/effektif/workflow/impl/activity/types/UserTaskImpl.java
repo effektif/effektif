@@ -17,19 +17,37 @@ import java.util.List;
 
 import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 public class UserTaskImpl extends AbstractActivityType<UserTask> {
+  
+  public static final InputParameter<String> NAME = new InputParameter<>()
+          .key("name")
+          .type(new TextType());
+
+  public static final InputParameter<List<UserReference>> ASSIGNEE = new InputParameter<>()
+          .key("assignee")
+          .type(new UserReferenceType());
+
+  public static final InputParameter<List<UserReference>> CANDIDATES = new InputParameter<>()
+          .key("candidates")
+          .type(new ListType(new UserReferenceType()));
 
   protected TaskService taskService;
   protected BindingImpl<String> nameBinding;
-  protected List<BindingImpl<String>> candidateIdBindings;
+  protected BindingImpl<UserReference> assigneeBinding;
+  protected BindingImpl<UserReference> candidatesBinding;
 
   public UserTaskImpl() {
     super(UserTask.class);
@@ -39,8 +57,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
     super.parse(activityImpl, userTaskApi, parser);
     this.taskService = parser.getConfiguration(TaskService.class);
-    this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), String.class, false, userTaskApi, "nameBinding");
-    this.candidateIdBindings = parser.parseBindings(userTaskApi.getCandidateIdBindings(), String.class, false, userTaskApi, "candidateIdBindings");
+    this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), userTaskApi, NAME);
+    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssigneeBinding(), userTaskApi, ASSIGNEE);
+    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidatesBinding(), userTaskApi, CANDIDATES);
   }
 
   @Override
@@ -49,13 +68,18 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     if (taskName==null) {
       taskName = activityInstance.activity.id;
     }
-    List<String> taskCandidateIds = activityInstance.getValuesFlat(candidateIdBindings);
-    String assigneeId = (taskCandidateIds!=null && taskCandidateIds.size()==1 ? taskCandidateIds.get(0) : null);
+    UserReference assignee = activityInstance.getValue(assigneeBinding);
+    List<UserReference> candidates = activityInstance.getValues(candidatesBinding);
+    if ( assignee==null 
+         && candidates!=null
+         && candidates.size()==1 ) {
+      assignee = candidates.get(0);
+    }
     
     Task task = new Task();
     task.setName(taskName);
-    task.setAssigneeId(assigneeId);
-    task.setCandidateIds(taskCandidateIds);
+    task.setAssignee(assignee);
+    task.setCandidates(candidates);
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);

@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.impl.activity.ActivityDescriptor;
+
 
 public class Adapter {
 
@@ -41,6 +43,10 @@ public class Adapter {
     }
   }
   
+  public ActivityDescriptor getDescriptor(String activityKey) {
+    return descriptors!=null ? descriptors.get(activityKey) : null;
+  }
+
   public String getUrl() {
     return this.url;
   }
@@ -109,5 +115,4 @@ public class Adapter {
     this.descriptors = descriptors;
   }
 
-  
 }

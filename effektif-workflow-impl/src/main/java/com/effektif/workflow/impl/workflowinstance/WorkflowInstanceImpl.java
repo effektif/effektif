@@ -19,6 +19,7 @@ import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.S
 import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_INSTANCE;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -36,7 +37,11 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.types.CallImpl;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -120,17 +125,30 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         activityInstance.execute();
         
       } else if (STATE_STARTING_MULTI_CONTAINER.equals(activityInstance.workState)) {
-        List<Object> values = null;
-        if (activity.multiInstance!=null) {
-          values = activityInstance.getValuesFlat(activity.multiInstance.valueBindings);
+        TypedValueImpl typedValueList = null;
+        if (activity.multiInstance!=null && activity.multiInstance.valuesBinding!=null) {
+          typedValueList = activity.multiInstance.valuesBinding.getTypedValue(activityInstance);
         }
-        if (values!=null && !values.isEmpty()) {
+        if ( typedValueList!=null && typedValueList.value!=null) {
+          Collection<Object> values = null;
+          DataType elementType = null;
+          if (typedValueList.type instanceof ListTypeImpl) {
+            elementType = ((ListTypeImpl)typedValueList.type).elementType;
+          } if (typedValueList.type!=null) {
+            elementType = typedValueList.type;
+          }
+          if (typedValueList.value instanceof Collection) {
+            values = (Collection<Object>) typedValueList.value;
+          } else {
+            values = Lists.of(typedValueList.value);
+          }
           if (log.isDebugEnabled())
             log.debug("Starting multi container "+activityInstance);
-          for (Object value: values) {
+          for (Object element: values) {
             ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
-            elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE); 
-            elementActivityInstance.initializeForEachElement(activity.multiInstance.elementVariable, value);
+            elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE);
+            TypedValueImpl elementTypedValue = new TypedValueImpl(elementType, element);
+            elementActivityInstance.initializeForEachElement(activity.multiInstance.elementVariable, elementTypedValue);
           }
         } else {
           if (log.isDebugEnabled())

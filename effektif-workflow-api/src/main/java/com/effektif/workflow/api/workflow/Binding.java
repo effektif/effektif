@@ -45,19 +45,19 @@ public class Binding<T> {
   /** for bindings that expect a list, a list of nested bindings can be 
    * specified.  All the results will be flatened and added to the collection.
    * This is mutually exclusive with the other fields. */
-  protected List<Binding<?>> bindings;
+  protected List<Binding<T>> bindings;
 
-  public List<Binding<?>> getBindings() {
+  public List<Binding<T>> getBindings() {
     return this.bindings;
   }
-  public void setBindings(List<Binding<?>> bindings) {
+  public void setBindings(List<Binding<T>> bindings) {
     this.bindings = bindings;
   }
-  public Binding bindings(List<Binding<?>> bindings) {
+  public Binding bindings(List<Binding<T>> bindings) {
     this.bindings = bindings;
     return this;
   }
-  public Binding binding(Binding<?> binding) {
+  public Binding binding(Binding<T> binding) {
     if (bindings==null) {
       bindings = new ArrayList<>();
     }
@@ -70,14 +70,14 @@ public class Binding<T> {
   }
   
   public Binding value(Object value) {
-    return valueTyped(value, TypeHelper.getTypeByValue(value));
+    return typedValue(value, TypeHelper.getTypeByValue(value));
   }
 
   /** sets a fixed value with the given type.*/
   // The naming is like this for code completion convenience.
   // This way, developers can always start typing 'value' and then 
   // look for that method that allowed them to pass in the type.
-  public Binding valueTyped(Object value, Type type) {
+  public Binding typedValue(Object value, Type type) {
     this.typedValue = new TypedValue()
       .value(value)
       .type(type);

@@ -11,15 +11,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
-
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
+package com.effektif.workflow.impl.datasource;
 
 
-public interface ActivityAdapter {
-
-  ActivityDescriptor getDescriptor();
-
-  void execute(ActivityContext request);
+public class DataSourceService {
 
 }

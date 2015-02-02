@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -22,9 +21,9 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 public interface ActivityType<T> extends Plugin {
   
   /** provides the data structure to the UI how this activity can be configured so that the UI can show a dialog */
-  ObjectType getDescriptor();
+  ActivityDescriptor getDescriptor();
   
-  Class<?> getApiClass();
+  Class<?> getActivityApiClass();
   
   T serialize();
 

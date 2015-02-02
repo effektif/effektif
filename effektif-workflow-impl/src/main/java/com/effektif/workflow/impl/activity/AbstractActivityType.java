@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.activity;
 
 import org.slf4j.Logger;
 
-import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -27,30 +26,30 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
   public static final Logger log = WorkflowEngineImpl.log;
   
   /** the api activity containing the serializable configuration */ 
-  public T configuration;
-  public Class<?> apiClass;
+  public T activityApi;
+  public Class<?> activityApiClass;
   
-  public AbstractActivityType(Class< ? > apiClass) {
-    this.apiClass = apiClass;
+  public AbstractActivityType(Class< ? > activityApiClass) {
+    this.activityApiClass = activityApiClass;
   }
   
-  public Class< ? > getApiClass() {
-    return apiClass;
+  public Class< ? > getActivityApiClass() {
+    return activityApiClass;
   }
 
   @Override
-  public ObjectType getDescriptor() {
+  public ActivityDescriptor getDescriptor() {
     return null;
   }
   
   @Override
   public void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser) {
-    this.configuration = activityApi;
+    this.activityApi = activityApi;
   }
   
   @Override
   public T serialize() {
-    return configuration;
+    return activityApi;
   }
 
   public abstract void execute(ActivityInstanceImpl activityInstance);

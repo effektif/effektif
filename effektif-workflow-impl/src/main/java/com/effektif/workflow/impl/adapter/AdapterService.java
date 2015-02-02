@@ -31,5 +31,7 @@ public interface AdapterService {
   void deleteAdapters(AdapterQuery adapterQuery);
   
   AdapterService createAdapterService(RequestContext requestContext);
+
+  Adapter findAdapterById(String adapterId);
   
 }

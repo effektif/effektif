@@ -1,4 +1,4 @@
-/* Copyright 2014 Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,15 +11,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.data.types;
-
-import com.effektif.workflow.impl.data.AbstractDataType;
+package com.effektif.workflow.impl.datasource;
 
 
-public class AnyDataTypeImpl extends AbstractDataType {
-
-  public AnyDataTypeImpl() {
-    super(null);
-  }
+public class ItemQuery {
 
 }

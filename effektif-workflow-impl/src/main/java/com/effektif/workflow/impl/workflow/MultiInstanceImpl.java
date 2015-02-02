@@ -13,28 +13,34 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.impl.data.types.AnyType;
 
 
 public class MultiInstanceImpl {
+  
+  public static final InputParameter<List<Object>> VALUES = new InputParameter<>()
+    .key("multiInstance.valuesBinding")
+    .type(new ListType(new AnyType()));
 
   public VariableImpl elementVariable;
-  public List<BindingImpl<Object>> valueBindings;
+  public BindingImpl<Object> valuesBinding;
 
   public void parse(Activity activityApi, ScopeImpl parent, WorkflowParser parser) {
     MultiInstance multiInstanceApi = activityApi.getMultiInstance();
-    valueBindings = parser.parseBindings(multiInstanceApi.getValueBindings(), Object.class, false, activityApi, "multiInstance.valueBindings");
+    this.valuesBinding = parser.parseBinding(multiInstanceApi.getValuesBindings(), activityApi, VALUES);
     Variable elementVariableApi = multiInstanceApi.getVariable();
     if (elementVariableApi!=null) {
-      elementVariable = new VariableImpl();
+      this.elementVariable = new VariableImpl();
       parser.pushContext("elementVariable", elementVariableApi, -1);
-      elementVariable.parse(elementVariableApi, parent, parser);
+      this.elementVariable.parse(elementVariableApi, parent, parser);
       parser.popContext();
     } else {
       parser.addError("Multi instance has no elementVariable");
@@ -43,12 +49,5 @@ public class MultiInstanceImpl {
 
   public MultiInstance serialize() {
     return null;
-  }
-
-  public void addValueBinding(BindingImpl binding) {
-    if (valueBindings==null) {
-      valueBindings = new ArrayList<>();
-    }
-    valueBindings.add(binding);
   }
 }

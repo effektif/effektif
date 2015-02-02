@@ -11,15 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
+package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.api.types.Type;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-public interface ActivityAdapter {
-
-  ActivityDescriptor getDescriptor();
-
-  void execute(ActivityContext request);
-
+// kept this type in the impl as i don't know yet if it is a good idea 
+// to expose it
+@JsonTypeName("any")
+public class AnyType extends Type {
 }

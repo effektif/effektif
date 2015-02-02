@@ -13,16 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.effektif.workflow.api.types.Type;
 
 
 public class MultiInstance {
 
   protected Variable variable;
-  protected List<Binding> valueBindings;
+  protected Binding valuesBinding;
 
   public Variable getVariable() {
     return this.variable;
@@ -40,11 +37,11 @@ public class MultiInstance {
       .type(type);
     return this;
   }
-  public List<Binding> getValueBindings() {
-    return this.valueBindings;
+  public Binding getValuesBindings() {
+    return this.valuesBinding;
   }
-  public void setValueBindings(List<Binding> values) {
-    this.valueBindings = values;
+  public void setValueBindings(Binding valuesBinding) {
+    this.valuesBinding = valuesBinding;
   }
   public MultiInstance valuesVariableId(String valuesVariableId) {
     valueBinding(new Binding().variableId(valuesVariableId));
@@ -56,10 +53,10 @@ public class MultiInstance {
   }
   
   public MultiInstance valueBinding(Binding valueBinding) {
-    if (valueBindings==null) {
-      valueBindings = new ArrayList<>();
+    if (valuesBinding==null) {
+      valuesBinding = new Binding();
     }
-    valueBindings.add(valueBinding);
+    valuesBinding.binding(valueBinding);
     return this;
   }
 }

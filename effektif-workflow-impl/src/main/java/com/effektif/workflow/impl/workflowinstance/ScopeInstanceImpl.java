@@ -17,7 +17,6 @@ import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.S
 import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
@@ -33,12 +33,12 @@ import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.data.types.AnyDataTypeImpl;
+import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
-import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.effektif.workflow.impl.script.ExpressionService;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -134,9 +134,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return activityInstance;
   }
   
-  public void initializeForEachElement(VariableImpl elementVariableDefinition, Object value) {
+  public void initializeForEachElement(VariableImpl elementVariableDefinition, TypedValueImpl typedValue) {
     VariableInstanceImpl elementVariableInstance = createVariableInstance(elementVariableDefinition);
-    elementVariableInstance.setValue(value);
+    elementVariableInstance.setTypedValue(typedValue);
   }
 
   public void addActivityInstance(ActivityInstanceImpl activityInstance) {
@@ -182,19 +182,30 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     variableInstances.add(variableInstance);
   }
 
+  /** to be used by activity implementations */
   public <T> T getValue(BindingImpl<T> binding) {
-    TypedValueImpl typedValue = getTypedValue(binding);
-    return (T) (typedValue!=null ? typedValue.value : null);
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> TypedValueImpl getTypedValue(BindingImpl<T> binding) {
     if (binding==null) {
       return null;
     }
-    return binding.getTypedValue(this);
+    TypedValueImpl typedValue = binding.getTypedValue(this);
+    return (T) (typedValue!=null ? typedValue.value : null);
   }
 
+  /** to be used by activity implementations */
+  public <T> List<T> getValues(BindingImpl<T> binding) {
+    if (binding==null) {
+      return null;
+    }
+    TypedValueImpl typedValue = binding.getTypedValue(this);
+    if (typedValue==null || typedValue.value==null) {
+      return null;
+    }
+    if (typedValue.value instanceof List) {
+      return (List<T>) typedValue.value;
+    }
+    return (List<T>) Lists.of(typedValue.value);
+  }
+  
   public Object getValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
     if (variableInstance!=null) {
@@ -210,48 +221,36 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }
-  
-  public <T> List<T> getValues(List<BindingImpl<T>> bindings) {
-    List<T> values = new ArrayList<>();
-    if (bindings!=null) {
-      for (BindingImpl<T> binding: bindings) {
-        values.add(getValue(binding));
-      }
-    }
-    return values;
-  }
-
-  public <T> List<T> getValuesFlat(List<BindingImpl<T>> bindings) {
-    List<?> values = getValues(bindings);
-    List<T> flatValues = new ArrayList<>();
-    if (values!=null) {
-      for (Object value: values) {
-        if (value instanceof Collection) {
-          flatValues.addAll((Collection)value);
-        } else {
-          flatValues.add((T) value);
-        }
-      }
-    }
-    return flatValues;
-  }
 
   /** sets all entries individually, variableValues maps variable ids to values */
   public void setVariableValues(Map<String,TypedValue> variableValues) {
     if (variableValues!=null) {
       for (String variableId: variableValues.keySet()) {
         TypedValue typedValue = variableValues.get(variableId);
-        Object value = typedValue!=null ? typedValue.getValue() : null;
-        setVariableValue(variableId, value);
+        setVariableValue(variableId, typedValue);
       }
     }
   }
 
-  public void setVariableValue(String variableId, Object value) {
+  public void setVariableValue(String variableId, TypedValue typedValue) {
+    TypedValueImpl typedValueImpl = createTypedValueImpl(typedValue, configuration);
+    setVariableValue(variableId, typedValueImpl);
+  }
+  
+  public TypedValueImpl createTypedValueImpl(TypedValue typedValue, Configuration configuration) {
+    if (typedValue==null || typedValue.getValue()==null) {
+      return null;
+    }
+    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+    DataType dataType = dataTypeService.createDataType(typedValue.getType());
+    return new TypedValueImpl(dataType, typedValue.getValue());
+  }
+
+  public void setVariableValue(String variableId, TypedValueImpl typedValue) {
     if (variableInstances!=null) {
       VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableId);
       if (variableInstance!=null) {
-        variableInstance.setValue(value);
+        variableInstance.setTypedValue(typedValue);
         if (updates!=null) {
           updates.isVariableInstancesChanged = true;
           if (parent!=null) { 
@@ -262,23 +261,27 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
     if (parent!=null) {
-      parent.setVariableValue(variableId, value);
+      parent.setVariableValue(variableId, typedValue);
       return;
     }
-    createVariableInstanceByValue(value);
+    createVariableInstance(typedValue);
   }
   
-  public void createVariableInstanceByValue(Object value) {
+  public void createVariableInstance(TypedValueImpl typedValue) {
+    Object value = typedValue.getValue();
+    DataType type = typedValue.type;
     VariableImpl variable = new VariableImpl();
-    if (value instanceof String) {
-      variable.type = new TextTypeImpl();
-    } else if (value instanceof Number) {
-      variable.type = new NumberTypeImpl();
-    } else {
-      variable.type = new AnyDataTypeImpl();
+    if (type==null) {
+      if (value instanceof String) {
+        variable.type = new TextTypeImpl();
+      } else if (value instanceof Number) {
+        variable.type = new NumberTypeImpl();
+      } else {
+        variable.type = new AnyTypeImpl();
+      }
     }
     VariableInstanceImpl variableInstance = createVariableInstance(variable);
-    variableInstance.setValue(value);
+    variableInstance.setTypedValue(typedValue);
   }
   
   public VariableInstanceImpl findVariableInstance(String variableId) {

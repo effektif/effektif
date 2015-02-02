@@ -13,13 +13,14 @@
  * limitations under the License. */
 package com.effektif.adapter;
 
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import java.util.List;
+
+import com.effektif.workflow.impl.datasource.ItemQuery;
+import com.effektif.workflow.impl.datasource.ItemReference;
 
 
-public interface ActivityAdapter {
+public interface DataSourceAdapter {
 
-  ActivityDescriptor getDescriptor();
-
-  void execute(ActivityContext request);
-
+  List<ItemReference> findItems(ItemQuery query);
+  
 }

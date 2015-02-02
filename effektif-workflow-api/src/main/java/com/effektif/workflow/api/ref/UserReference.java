@@ -18,7 +18,7 @@ public class UserReference {
 
   protected String id;
   protected String fullName;
-
+  
   public String getId() {
     return this.id;
   }

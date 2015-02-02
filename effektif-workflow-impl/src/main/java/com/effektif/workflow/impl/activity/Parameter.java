@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.adapter;
+package com.effektif.workflow.impl.activity;
 
 import com.effektif.workflow.api.types.Type;
 
@@ -19,8 +19,20 @@ import com.effektif.workflow.api.types.Type;
 public class Parameter {
 
   protected String key;
-  protected String label;
   protected Type type;
+  protected String label;
+  protected String description;
+
+  public String getDescription() {
+    return this.description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  public Parameter description(String description) {
+    this.description = description;
+    return this;
+  }
 
   public String getKey() {
     return this.key;

@@ -15,14 +15,16 @@ package com.effektif.workflow.api.task;
 
 import java.util.List;
 
+import com.effektif.workflow.api.ref.UserReference;
+
 
 public class Task {
   
   protected String id;
   protected String organizationId;
   protected String name;
-  protected String assigneeId;
-  protected List<String> candidateIds;
+  protected UserReference assignee;
+  protected List<UserReference> candidates;
   
   protected String activityInstanceId;
   protected String workflowInstanceId;
@@ -37,13 +39,13 @@ public class Task {
     return this;
   }
   
-  public Task assigneeId(String assigneeId) {
-    this.assigneeId = assigneeId;
+  public Task assignee(UserReference assignee) {
+    this.assignee = assignee;
     return this;
   }
 
-  public Task candidateIds(List<String> candidateIds) {
-    this.candidateIds = candidateIds;
+  public Task candidates(List<UserReference> candidates) {
+    this.candidates = candidates;
     return this;
   }
 
@@ -64,24 +66,24 @@ public class Task {
   }
 
   
-  public String getAssigneeId() {
-    return assigneeId;
+  public UserReference getAssignee() {
+    return assignee;
   }
 
   
-  public void setAssigneeId(String assigneeId) {
-    this.assigneeId = assigneeId;
+  public void setAssignee(UserReference assignee) {
+    this.assignee = assignee;
   }
 
   
   
-  public List<String> getCandidateIds() {
-    return candidateIds;
+  public List<UserReference> getCandidates() {
+    return candidates;
   }
 
   
-  public void setCandidateIds(List<String> candidateIds) {
-    this.candidateIds = candidateIds;
+  public void setCandidates(List<UserReference> candidates) {
+    this.candidates = candidates;
   }
 
   

@@ -29,6 +29,11 @@ public interface DataType<T extends Type> extends Plugin {
 
   TypeGenerator getTypeGenerator();
 
+  /** typed value could be null, could be of this type or could be another type.
+   * This method should check if conversion is needed and only convert when needed.
+   * @param typedValue is not null and typedValue.value is not null */
+  Object convert(Object value, DataType type);
+
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;
 

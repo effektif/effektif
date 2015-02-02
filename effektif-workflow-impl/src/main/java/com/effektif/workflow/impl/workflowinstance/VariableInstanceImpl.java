@@ -23,8 +23,8 @@ import com.effektif.workflow.impl.workflow.VariableImpl;
 public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public Object value;
-  public VariableImpl variable;
-  public DataType type; // used when variables are created dynamically
+  public VariableImpl variable; // might be null in case variables are created dynamically
+  public DataType type;         // never null (initialized with the variable.type)
   public VariableInstanceUpdates updates;
 
   public VariableInstanceImpl() {
@@ -52,15 +52,19 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public Object getValue() {
     return value;
   }
-  
-  public void setValue(Object value) {
-    this.value = value;
+
+  public void setTypedValue(TypedValueImpl typedValue) {
+    Object newValue = null;
+    if (typedValue!=null && typedValue.value!=null) {
+      newValue = type.convert(typedValue.value, typedValue.type);
+    }
+    this.value = newValue;
     if (updates!=null) {
       updates.isValueChanged = true;
       parent.propagateActivityInstanceChange();
     }
   }
-  
+
   public void trackUpdates(boolean isNew) {
     updates = new VariableInstanceUpdates(isNew);
   }

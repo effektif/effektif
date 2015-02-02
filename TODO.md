@@ -3,9 +3,11 @@
 Scala fluent workflow builder 
 HttpServiceTask
 NodeJS adapter
+Investigate spring configuration?
 
 # Tasks
 
+- [ ] how to migrate case tasks - workflowinstances / how to make sure product runs when case-tasks are absent in embedded usage
 - [ ] check workflow date persistence (deployedTime)
 - [ ] Merge java bean type and object type
 - [ ] reintroduce automatic descriptor scanning of activity types

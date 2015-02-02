@@ -21,4 +21,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public class Type {
 
+  
 }

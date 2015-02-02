@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
@@ -36,7 +35,7 @@ public class ActivityTypeService implements Brewable {
   protected Configuration configuration;
 
   // maps activity api configuration classes to activity type implementation classes
-  protected Map<Class<?>, ObjectType> activityTypeDescriptors = new LinkedHashMap<>();
+  protected Map<Class<?>, ActivityDescriptor> activityTypeDescriptors = new LinkedHashMap<>();
   protected Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
   protected Map<Class<?>, ActivityType> activityTypes = new HashMap<>();
   protected Map<Class<?>, ObjectTypeImpl> activityTypeSerializers = new HashMap<>();
@@ -51,25 +50,16 @@ public class ActivityTypeService implements Brewable {
   }
 
   public void registerActivityType(ActivityType activityType) {
-    Class activityTypeApiClass = activityType.getApiClass();
-    ObjectType descriptor = activityType.getDescriptor();
+    Class activityTypeApiClass = activityType.getActivityApiClass();
+    ActivityDescriptor descriptor = activityType.getDescriptor();
     activityTypeClasses.put(activityTypeApiClass, activityType.getClass());
     activityTypeDescriptors.put(activityTypeApiClass, descriptor);
     activityTypes.put(activityTypeApiClass, activityType);
     
     // log.debug("Registering "+activityTypeApiClass);
     objectMapper.registerSubtypes(activityTypeApiClass);
-    if (descriptor!=null) {
-      ObjectTypeImpl serializer = new ObjectTypeImpl(descriptor, configuration, activityTypeApiClass);
-      activityTypeSerializers.put(activityTypeApiClass, serializer);
-    }
   }
   
-  @Deprecated
-  public void registerJobType(Class<? extends JobType> jobType) {
-    objectMapper.registerSubtypes(jobType);
-  }
-
   public ActivityType instantiateActivityType(Activity activityApi) {
     Exceptions.checkNotNullParameter(activityApi, "apiActivity");
     Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(activityApi.getClass());
@@ -83,10 +73,6 @@ public class ActivityTypeService implements Brewable {
     }
   }
   
-  public ObjectTypeImpl getActivityTypeSerializer(Class<? extends Activity> activityApiClass) {
-    return activityTypeSerializers.get(activityApiClass);
-  }
-
 //  public Type getTypeByValue(Object value) {
 //    if (value==null) {
 //      return null;

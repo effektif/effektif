@@ -72,6 +72,18 @@ public class ContextualAdapterService implements AdapterService {
       RequestContext.unset();
     }
   }
+  
+
+  @Override
+  public Adapter findAdapterById(String adapterId) {
+    try {
+      RequestContext.set(requestContext);
+      return adapterService.findAdapterById(adapterId);
+    } finally {
+      RequestContext.unset();
+    }
+  }
+
 
   @Override
   public void deleteAdapters(AdapterQuery adapterQuery) {

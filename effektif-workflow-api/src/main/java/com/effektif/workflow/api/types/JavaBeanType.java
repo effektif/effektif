@@ -21,6 +21,9 @@ public class JavaBeanType extends ObjectType {
 
   protected Class<?> javaClass;
   
+  public JavaBeanType() {
+  }
+  
   public JavaBeanType(Class javaClass) {
     javaClass(javaClass);
   }

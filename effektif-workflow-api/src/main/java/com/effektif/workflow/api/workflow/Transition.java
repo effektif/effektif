@@ -26,7 +26,7 @@ public class Transition {
   protected String to;
   protected Expression condition;
   protected Map<String,Object> properties;
-  protected boolean isToNext;
+  protected Boolean isToNext;
 
   public String getId() {
     return this.id;
@@ -112,6 +112,6 @@ public class Transition {
     return this;
   }
   public boolean isToNext() {
-    return isToNext;
+    return Boolean.TRUE.equals(isToNext);
   }
 }

@@ -19,25 +19,27 @@ import com.effektif.workflow.api.activities.AdapterActivity;
 import com.effektif.workflow.api.command.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.impl.adapter.ExecuteRequest;
 import com.effektif.workflow.impl.adapter.ExecuteResponse;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
+public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterActivity> {
   
   protected String adapterId;
   protected String activityKey;
-  protected Map<String,String> inputMappings; 
-  protected Map<String,TypedValue> inputMappingValues; 
-  protected Map<String,String> outputMappings; 
+  protected Map<String,BindingImpl> inputBindings; 
+  protected Map<String,String> outputBindings; 
   protected DataTypeService dataTypeService;
   protected AdapterService adapterService;
+  protected ActivityDescriptor descriptor;
 
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
@@ -45,14 +47,17 @@ public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
   
   @Override
   public void parse(ActivityImpl activityImpl, AdapterActivity adapterActivity, WorkflowParser parser) {
-    super.parse(activityImpl, adapterActivity, parser);
     this.adapterId = adapterActivity.getAdapterId();
     this.activityKey = adapterActivity.getActivityKey();
-    this.inputMappings = adapterActivity.getInputMappings();
-    this.inputMappingValues = adapterActivity.getInputMappingValues();
-    this.outputMappings = adapterActivity.getOutputMappings();
     this.dataTypeService = parser.getConfiguration(DataTypeService.class);
     this.adapterService = parser.getConfiguration(AdapterService.class);
+    Adapter adapter = adapterService.findAdapterById(adapterId);
+    this.descriptor = adapter!=null ? adapter.getDescriptor(activityKey) : null;
+    super.parse(activityImpl, adapterActivity, parser);
+  }
+  
+  public ActivityDescriptor getDescriptor() {
+    return descriptor;
   }
 
   @Override
@@ -62,12 +67,12 @@ public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
       .workflowInstanceId(activityInstance.workflowInstance.id)
       .activityKey(activityKey);
 
-    if (inputMappings!=null) {
-      for (String adapterKey: inputMappings.keySet()) {
-        String variableId = inputMappings.get(adapterKey);
+    if (inputBindings!=null) {
+      for (String adapterKey: inputBindings.keySet()) {
+        BindingImpl inputBinding = inputBindings.get(adapterKey);
         Type type = null;
         Object value = null;
-        TypedValueImpl typedValueImpl = activityInstance.getTypedValue(variableId);
+        TypedValueImpl typedValueImpl = inputBinding.getTypedValue(activityInstance);
         if (typedValueImpl!=null) {
           value = typedValueImpl.value;
           if (typedValueImpl.type!=null) {
@@ -83,22 +88,15 @@ public class AdapterActivityImpl extends AbstractActivityType<AdapterActivity> {
         }
       }
     }
-    if (inputMappingValues!=null) {
-      for (String adapterKey: inputMappingValues.keySet()) {
-        TypedValue typedValue = inputMappingValues.get(adapterKey);
-        executeRequest.inputParameter(adapterKey, typedValue);
-      }
-    }
-    
     
     ExecuteResponse executeResponse = adapterService.executeAdapterActivity(adapterId, executeRequest);
     
-    if (outputMappings!=null) {
+    if (outputBindings!=null) {
       Map<String, TypedValue> outputParameterValues = executeResponse.getOutputParameterValues();
-      for (String variableId: outputMappings.keySet()) {
-        String adapterKey = outputMappings.get(variableId);
+      for (String variableId: outputBindings.keySet()) {
+        String adapterKey = outputBindings.get(variableId);
         TypedValue typedValue = outputParameterValues.get(adapterKey);
-        activityInstance.setVariableValue(variableId, typedValue.getValue());
+        activityInstance.setVariableValue(variableId, typedValue);
       }
     }
     

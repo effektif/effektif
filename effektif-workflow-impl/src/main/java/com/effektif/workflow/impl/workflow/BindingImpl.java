@@ -37,7 +37,7 @@ public class BindingImpl<T> {
   public ExpressionService expressionService; 
   public ScriptImpl expression;
   public DataType expressionExpectedType;
-  public List<BindingImpl> bindings;
+  public List<BindingImpl<T>> bindings;
   public DataType bindingsElementType;
   
   public BindingImpl(Configuration configuration) {
@@ -86,4 +86,5 @@ public class BindingImpl<T> {
     }
     return typedValue;
   }
+
 }
