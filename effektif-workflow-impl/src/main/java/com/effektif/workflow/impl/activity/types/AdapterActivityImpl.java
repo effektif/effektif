@@ -35,8 +35,6 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   
   protected String adapterId;
   protected String activityKey;
-  protected Map<String,BindingImpl> inputBindings; 
-  protected Map<String,String> outputBindings; 
   protected DataTypeService dataTypeService;
   protected AdapterService adapterService;
   protected ActivityDescriptor descriptor;
@@ -93,8 +91,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     
     if (outputBindings!=null) {
       Map<String, TypedValue> outputParameterValues = executeResponse.getOutputParameterValues();
-      for (String variableId: outputBindings.keySet()) {
-        String adapterKey = outputBindings.get(variableId);
+      for (String adapterKey: outputBindings.keySet()) {
+        String variableId = outputBindings.get(adapterKey);
         TypedValue typedValue = outputParameterValues.get(adapterKey);
         activityInstance.setVariableValue(variableId, typedValue);
       }

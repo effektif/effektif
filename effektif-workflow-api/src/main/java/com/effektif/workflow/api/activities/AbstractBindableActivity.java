@@ -77,11 +77,11 @@ public class AbstractBindableActivity extends Activity {
   }
 
   /** copies the adapter output value into a variable of this workflow when the activity is finished */
-  public AbstractBindableActivity outputBinding(String variableId, String key) {
+  public AbstractBindableActivity outputBinding(String key, String variableId) {
     if (outputBindings==null) {
       outputBindings = new HashMap<>();
     }
-    outputBindings.put(variableId, key);
+    outputBindings.put(key, variableId);
     return this;
   }
   

@@ -13,13 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.api.command;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.effektif.workflow.api.types.Type;
 
 
-public class Start extends AbstractCommand {
+public class Start {
   
   protected String workflowId;
   protected String workflowName;
+  protected Map<String,TypedValue> variableValues;
+  protected Map<String,TypedValue> triggerValues;
 
   public String getWorkflowId() {
     return this.workflowId;
@@ -42,16 +47,50 @@ public class Start extends AbstractCommand {
     this.workflowName = workflowName;
     return this;
   }
-  
-  @Override
+
+  public Map<String,TypedValue> getVariableValues() {
+    return this.variableValues;
+  }
+
+  public void setVariableValues(Map<String,TypedValue> variableValues) {
+    this.variableValues = variableValues;
+  }
+
   public Start variableValue(String variableId, Object variableValue) {
-    super.variableValue(variableId, variableValue);
+    variableValue(variableId, variableValue, null);
     return this;
   }
 
-  @Override
   public Start variableValue(String variableId, Object variableValue, Type type) {
-    super.variableValue(variableId, variableValue, type);
+    if (variableValues==null) {
+      variableValues = new LinkedHashMap<>();
+    }
+    variableValues.put(variableId, new TypedValue()
+      .value(variableValue)
+      .type(type));
+    return this;
+  }
+
+  public Map<String,TypedValue> getTriggerValues() {
+    return this.triggerValues;
+  }
+
+  public void setTriggerValues(Map<String,TypedValue> triggerValues) {
+    this.triggerValues = triggerValues;
+  }
+
+  public Start triggerValue(String triggerKey, Object triggerValue) {
+    triggerValue(triggerKey, triggerValue, null);
+    return this;
+  }
+
+  public Start triggerValue(String triggerKey, Object triggerValue, Type type) {
+    if (triggerValues==null) {
+      triggerValues = new LinkedHashMap<>();
+    }
+    triggerValues.put(triggerKey, new TypedValue()
+      .value(triggerValue)
+      .type(type));
     return this;
   }
 }

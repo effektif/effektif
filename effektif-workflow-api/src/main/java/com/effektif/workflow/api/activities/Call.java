@@ -102,8 +102,8 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
-  public Call outputBinding(String variableId, String subWorkflowKey) {
-    super.outputBinding(variableId, subWorkflowKey);
+  public Call outputBinding(String subWorkflowKey, String variableId) {
+    super.outputBinding(subWorkflowKey, variableId);
     return this;
   }
 

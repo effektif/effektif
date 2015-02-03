@@ -89,8 +89,8 @@ public class AdapterActivity extends AbstractBindableActivity {
   }
 
   @Override
-  public AdapterActivity outputBinding(String variableId, String adapterKey) {
-    super.outputBinding(variableId, adapterKey);
+  public AdapterActivity outputBinding(String adapterKey, String variableId) {
+    super.outputBinding(adapterKey, variableId);
     return this;
   }
 

@@ -106,6 +106,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowStore.insertWorkflow(workflowApi);
       workflowImpl.version = workflowApi.getVersion();
       
+      if (workflowImpl.trigger!=null) {
+        workflowImpl.trigger.published(workflowImpl);
+      }
+      
       workflowCache.put(workflowImpl);
     } else {
       throw new RuntimeException(parser.issues.getIssueReport());
@@ -152,12 +156,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
-  public WorkflowInstance startWorkflowInstance(Start startCommand, CallerReference callerReference) {
-    String workflowId = startCommand.getWorkflowId();
+  public WorkflowInstance startWorkflowInstance(Start start, CallerReference callerReference) {
+    String workflowId = start.getWorkflowId();
     if (workflowId==null) {
-      if (startCommand.getWorkflowName()!=null) {
-        workflowId = workflowStore.findLatestWorkflowIdByName(startCommand.getWorkflowName());
-        if (workflowId==null) throw new RuntimeException("No workflow found for name '"+startCommand.getWorkflowName()+"'");
+      if (start.getWorkflowName()!=null) {
+        workflowId = workflowStore.findLatestWorkflowIdByName(start.getWorkflowName());
+        if (workflowId==null) throw new RuntimeException("No workflow found for name '"+start.getWorkflowName()+"'");
       } else {
         throw new RuntimeException("No workflow specified");
       }
@@ -170,7 +174,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowInstance.callerWorkflowInstanceId = callerReference.callerWorkflowInstanceId;
       workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
     }
-    workflowInstance.setVariableValues(startCommand.getVariableValues());
+    if (workflow.trigger!=null) {
+      workflow.trigger.applyTriggerValues(workflowInstance, start);
+    }
+    workflowInstance.setVariableValues(start.getVariableValues());
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
     workflowInstance.start = Time.now();
     if (workflow.startActivities!=null) {

@@ -13,13 +13,17 @@
  * limitations under the License. */
 package com.effektif.workflow.api.command;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.effektif.workflow.api.types.Type;
 
 
-public class Message extends AbstractCommand {
+public class Message {
 
   protected String workflowInstanceId;
   protected String activityInstanceId;
+  protected Map<String,TypedValue> variableValues;
 
   public String getWorkflowInstanceId() {
     return this.workflowInstanceId;
@@ -43,15 +47,26 @@ public class Message extends AbstractCommand {
     return this;
   }
 
-  @Override
+  public Map<String,TypedValue> getVariableValues() {
+    return this.variableValues;
+  }
+
+  public void setVariableValues(Map<String,TypedValue> variableValues) {
+    this.variableValues = variableValues;
+  }
+
   public Message variableValue(String variableId, Object variableValue) {
-    super.variableValue(variableId, variableValue);
+    variableValue(variableId, variableValue, null);
     return this;
   }
-  
-  @Override
+
   public Message variableValue(String variableId, Object variableValue, Type type) {
-    super.variableValue(variableId, variableValue, type);
+    if (variableValues==null) {
+      variableValues = new LinkedHashMap<>();
+    }
+    variableValues.put(variableId, new TypedValue()
+      .value(variableValue)
+      .type(type));
     return this;
   }
 }

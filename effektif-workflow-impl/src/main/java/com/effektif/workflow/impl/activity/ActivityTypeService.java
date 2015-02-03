@@ -19,11 +19,12 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
-import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.util.Exceptions;
+import com.effektif.workflow.impl.workflow.TriggerImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -39,6 +40,8 @@ public class ActivityTypeService implements Brewable {
   protected Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
   protected Map<Class<?>, ActivityType> activityTypes = new HashMap<>();
   protected Map<Class<?>, ObjectTypeImpl> activityTypeSerializers = new HashMap<>();
+
+  protected Map<Class<?>, Class<? extends TriggerImpl>> triggerClasses = new HashMap<>();
 
   public ActivityTypeService() {
   }
@@ -59,9 +62,14 @@ public class ActivityTypeService implements Brewable {
     // log.debug("Registering "+activityTypeApiClass);
     objectMapper.registerSubtypes(activityTypeApiClass);
   }
-  
+
+  public void registerTriggerType(TriggerImpl trigger) {
+    Class triggerApiClass = trigger.getTriggerApiClass();
+    triggerClasses.put(triggerApiClass, trigger.getClass());
+  }
+
   public ActivityType instantiateActivityType(Activity activityApi) {
-    Exceptions.checkNotNullParameter(activityApi, "apiActivity");
+    Exceptions.checkNotNullParameter(activityApi, "activityApi");
     Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(activityApi.getClass());
     if (activityTypeClass==null) {
       throw new RuntimeException("No ActivityType defined for "+activityApi.getClass().getName());
@@ -70,6 +78,19 @@ public class ActivityTypeService implements Brewable {
       return activityTypeClass.newInstance();
     } catch (Exception e) {
       throw new RuntimeException("Couldn't instantiate "+activityTypeClass+": "+e.getMessage(), e);
+    }
+  }
+
+  public TriggerImpl instantiateTriggerType(Trigger triggerApi) {
+    Exceptions.checkNotNullParameter(triggerApi, "triggerApi");
+    Class<? extends TriggerImpl> triggerTypeClass = triggerClasses.get(triggerApi.getClass());
+    if (triggerTypeClass==null) {
+      throw new RuntimeException("No trigger type defined for "+triggerApi.getClass().getName());
+    }
+    try {
+      return triggerTypeClass.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException("Couldn't instantiate "+triggerTypeClass+": "+e.getMessage(), e);
     }
   }
   

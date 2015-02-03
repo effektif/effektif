@@ -7,7 +7,15 @@ Investigate spring configuration?
 
 # Tasks
 
+- [ ] Triggers
+- [ ] Data sources
+- [ ] Boundary events
+- [ ] BPMN parser / serializer
+- [ ] Signal events 
+- [ ] Timer / async load testing
+
 - [ ] how to migrate case tasks - workflowinstances / how to make sure product runs when case-tasks are absent in embedded usage
+
 - [ ] check workflow date persistence (deployedTime)
 - [ ] Merge java bean type and object type
 - [ ] reintroduce automatic descriptor scanning of activity types

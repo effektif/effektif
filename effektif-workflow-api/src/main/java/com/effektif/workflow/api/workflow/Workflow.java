@@ -18,7 +18,6 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.types.Type;
 
 
-
 public class Workflow extends Scope {
 
   protected String name;
@@ -28,6 +27,7 @@ public class Workflow extends Scope {
   protected String processId;
   protected Long version;
   protected ParseIssues issues;
+  protected Trigger trigger;
 
   public String getName() {
     return this.name;
@@ -139,6 +139,15 @@ public class Workflow extends Scope {
   public void setIssues(ParseIssues issues) {
     this.issues = issues;
   }
-  
-  
+
+  public Trigger getTrigger() {
+    return this.trigger;
+  }
+  public void setTrigger(Trigger trigger) {
+    this.trigger = trigger;
+  }
+  public Workflow trigger(Trigger trigger) {
+    this.trigger = trigger;
+    return this;
+  }
 }

@@ -17,34 +17,45 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
 
 
 public class WorkflowImpl extends ScopeImpl {
   
+  public WorkflowEngineImpl workflowEngine;
+
   public List<ActivityImpl> startActivities;
   public String organizationId;
   public String name;
   public LocalDateTime deployedTime;
   public String deployedBy;
   public Long version;
-  public WorkflowEngineImpl workflowEngine;
+  public TriggerImpl trigger;
   
   public WorkflowImpl() {
   }
 
-  public void parse(Workflow apiWorkflow, WorkflowParser parser) {
+  public void parse(Workflow workflowApi, WorkflowParser parser) {
     this.workflow = this;
-    super.parse(apiWorkflow, parser, null);
+    super.parse(workflowApi, parser, null);
     this.startActivities = parser.getStartActivities(this);
-    this.organizationId = apiWorkflow.getOrganizationId();
-    this.name = apiWorkflow.getName();
-    this.deployedTime = apiWorkflow.getDeployedTime();
-    this.deployedBy = apiWorkflow.getDeployedBy();
-    this.version = apiWorkflow.getVersion();
+    this.organizationId = workflowApi.getOrganizationId();
+    this.name = workflowApi.getName();
+    this.deployedTime = workflowApi.getDeployedTime();
+    this.deployedBy = workflowApi.getDeployedBy();
+    this.version = workflowApi.getVersion();
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
+    
+    Trigger triggerApi = workflowApi.getTrigger();
+    if (triggerApi!=null) {
+      ActivityTypeService activityTypeService = configuration.get(ActivityTypeService.class);
+      this.trigger = activityTypeService.instantiateTriggerType(triggerApi);
+      this.trigger.parse(this, triggerApi, parser);
+    }
   }
 
   public String toString() {
