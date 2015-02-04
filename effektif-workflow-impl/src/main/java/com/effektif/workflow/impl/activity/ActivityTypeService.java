@@ -20,6 +20,19 @@ import java.util.Map;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.activity.types.AdapterActivityImpl;
+import com.effektif.workflow.impl.activity.types.CallImpl;
+import com.effektif.workflow.impl.activity.types.EmailTaskImpl;
+import com.effektif.workflow.impl.activity.types.EmbeddedSubprocessImpl;
+import com.effektif.workflow.impl.activity.types.EndEventImpl;
+import com.effektif.workflow.impl.activity.types.ExclusiveGatewayImpl;
+import com.effektif.workflow.impl.activity.types.HttpServiceTaskImpl;
+import com.effektif.workflow.impl.activity.types.JavaServiceTaskImpl;
+import com.effektif.workflow.impl.activity.types.NoneTaskImpl;
+import com.effektif.workflow.impl.activity.types.ParallelGatewayImpl;
+import com.effektif.workflow.impl.activity.types.ScriptTaskImpl;
+import com.effektif.workflow.impl.activity.types.StartEventImpl;
+import com.effektif.workflow.impl.activity.types.UserTaskImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
@@ -50,8 +63,22 @@ public class ActivityTypeService implements Brewable {
   public void brew(Brewery brewery) {
     this.objectMapper = brewery.get(ObjectMapper.class);
     this.configuration = brewery.get(Configuration.class);
-  }
 
+    registerActivityType(new AdapterActivityImpl());
+    registerActivityType(new CallImpl());
+    registerActivityType(new EndEventImpl());
+    registerActivityType(new EmailTaskImpl());
+    registerActivityType(new EmbeddedSubprocessImpl());
+    registerActivityType(new ExclusiveGatewayImpl());
+    registerActivityType(new JavaServiceTaskImpl());
+    registerActivityType(new HttpServiceTaskImpl());
+    registerActivityType(new NoneTaskImpl());
+    registerActivityType(new ParallelGatewayImpl());
+    registerActivityType(new ScriptTaskImpl());
+    registerActivityType(new StartEventImpl());
+    registerActivityType(new UserTaskImpl());
+  }
+  
   public void registerActivityType(ActivityType activityType) {
     Class activityTypeApiClass = activityType.getActivityApiClass();
     ActivityDescriptor descriptor = activityType.getDescriptor();

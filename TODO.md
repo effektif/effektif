@@ -9,9 +9,11 @@ Investigate spring configuration?
 
 - [ ] Triggers
 - [ ] Data sources
+- [ ] Store data types
+- [ ] Swimlanes 
 - [ ] Boundary events
 - [ ] BPMN parser / serializer
-- [ ] Signal events 
+- [ ] Signal events
 - [ ] Timer / async load testing
 
 - [ ] how to migrate case tasks - workflowinstances / how to make sure product runs when case-tasks are absent in embedded usage

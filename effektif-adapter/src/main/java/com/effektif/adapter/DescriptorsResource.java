@@ -13,29 +13,31 @@
  * limitations under the License. */
 package com.effektif.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.adapter.AdapterDescriptors;
+import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 
 
-@Path("/activities")
-public class ActivitiesResource {
+@Path("/descriptors")
+public class DescriptorsResource {
   
-  List<ActivityDescriptor> activityDescriptors = new ArrayList<>();
+  AdapterDescriptors adapterDescriptors = new AdapterDescriptors();
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<ActivityDescriptor> getActivityDescriptors() {
-    return activityDescriptors;
+  public AdapterDescriptors getAdapterDescriptors() {
+    return adapterDescriptors;
   }
   
-  public void addActivityAdapter(ActivityAdapter activityAdapter) {
-    activityDescriptors.add(activityAdapter.getDescriptor());
+  public void addActivityDescriptor(ActivityDescriptor activityDescriptor) {
+    adapterDescriptors.addActivityAdapterDescriptor(activityDescriptor);
+  }
+  public void addDataSourceDescriptor(DataSourceDescriptor dataSourceDescriptor) {
+    adapterDescriptors.addDataSourceDescriptor(dataSourceDescriptor);
   }
 }

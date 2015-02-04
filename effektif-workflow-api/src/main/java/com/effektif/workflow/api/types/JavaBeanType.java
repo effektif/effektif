@@ -16,6 +16,7 @@ package com.effektif.workflow.api.types;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/** represents a json object type that internally is parsed to a java bean. */
 @JsonTypeName("javaBean")
 public class JavaBeanType extends ObjectType {
 

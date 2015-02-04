@@ -14,10 +14,12 @@
 package com.effektif.mongo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
@@ -115,8 +117,17 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
 
     Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
     BasicDBObject dbWorkflow = new BasicDBObject();    
-    String workflowId = (String)jsonWorkflow.remove("id");   
-    dbWorkflow.put(FieldsWorkflow._ID, new ObjectId(workflowId));    
+
+    // We use jackson to serialize the Workflow into workflow json
+    // But there are 2 exceptions that jackson doesn't convert as it should, so 
+    // convert those 2 properties first
+
+    // convert id
+    jsonWorkflow.remove("id");
+    writeId(jsonWorkflow, FieldsWorkflow._ID, workflow.getId());
+    // convert deployedTime
+    writeTimeOpt(jsonWorkflow, FieldsWorkflow.DEPLOYED_TIME, workflow.getDeployedTime());
+    
     dbWorkflow.putAll(jsonWorkflow);   
     insert(dbWorkflow, writeConcernInsertWorkflow);
   }
@@ -170,7 +181,18 @@ public class MongoWorkflowStore extends MongoCollection implements WorkflowStore
     DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
-      dbWorkflow.put("id", dbWorkflow.remove(FieldsWorkflow._ID).toString());
+
+      // We use jackson to parse the workflow json into a Workflow
+      // But there are 2 exceptions that jackson doesn't convert as it should, so 
+      // convert those 2 properties first
+      
+      // convert id
+      String workflowId = (String)dbWorkflow.remove(FieldsWorkflow._ID);
+      writeId(dbWorkflow, "id", workflowId);
+      // convert deployed time from date to LocalDateTime
+      LocalDateTime deployedTime = readTime(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME);
+      writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, deployedTime);
+      
       Workflow workflow = jsonService.jsonMapToObject(dbWorkflow, Workflow.class);
       workflows.add(workflow);
     }

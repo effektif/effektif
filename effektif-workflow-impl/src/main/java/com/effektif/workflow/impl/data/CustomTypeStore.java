@@ -11,14 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.types;
+package com.effektif.workflow.impl.data;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import java.util.List;
+
+import com.effektif.workflow.api.types.CustomType;
 
 
-/** over json this behaves as a json object. 
- * in java this represented as a hashmap. */
-@JsonTypeName("object")
-public class MapType extends ObjectType {
+public interface CustomTypeStore {
 
-}
+  void saveCustomType(CustomType customType);
+  
+  List<CustomType> findCustomTypes(CustomTypeQuery query);
+
+  void deleteCustomTypes(CustomTypeQuery query);
+} 

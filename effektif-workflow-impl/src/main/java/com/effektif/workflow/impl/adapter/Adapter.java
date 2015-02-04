@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 
 
 public class Adapter {
@@ -27,24 +28,37 @@ public class Adapter {
   protected String url;
   protected String authorization;
   protected String organizationId;
-  protected Map<String,ActivityDescriptor> descriptors;
+  protected Map<String,ActivityDescriptor> activityDescriptors;
+  protected Map<String,DataSourceDescriptor> dataSourceDescriptors;
 
   // runtime status fields
   protected AdapterStatus status;
   protected List<AdapterLog> logs;
   protected Map<String,Long> executions;
   
-  public void addDescriptor(ActivityDescriptor descriptor) {
-    if (descriptor.getActivityKey()!=null) {
-      if (descriptors == null) {
-        descriptors = new HashMap<>();
+  public void setActivityDescriptors(AdapterDescriptors adapterDescriptors) {
+    if (adapterDescriptors!=null) {
+      if (adapterDescriptors.getActivityDescriptors()!=null) {
+        for (ActivityDescriptor activityDescriptor: adapterDescriptors.getActivityDescriptors()) {
+          if (activityDescriptors == null) {
+            activityDescriptors = new HashMap<>();
+          }
+          activityDescriptors.put(activityDescriptor.getActivityKey(), activityDescriptor);
+        }
       }
-      descriptors.put(descriptor.getActivityKey(), descriptor);
+      if (adapterDescriptors.getDataSourceDescriptors()!=null) {
+        for (DataSourceDescriptor dataSourceDescriptor: adapterDescriptors.getDataSourceDescriptors()) {
+          if (dataSourceDescriptors == null) {
+            dataSourceDescriptors = new HashMap<>();
+          }
+          dataSourceDescriptors.put(dataSourceDescriptor.getDataSourceKey(), dataSourceDescriptor);
+        }
+      }
     }
   }
   
-  public ActivityDescriptor getDescriptor(String activityKey) {
-    return descriptors!=null ? descriptors.get(activityKey) : null;
+  public ActivityDescriptor getActivityDescriptor(String activityKey) {
+    return activityDescriptors!=null ? activityDescriptors.get(activityKey) : null;
   }
 
   public String getUrl() {
@@ -104,15 +118,6 @@ public class Adapter {
   
   public void setLogs(List<AdapterLog> logs) {
     this.logs = logs;
-  }
-
-  public Map<String, ActivityDescriptor> getDescriptors() {
-    return descriptors;
-  }
-
-  
-  public void setDescriptors(Map<String, ActivityDescriptor> descriptors) {
-    this.descriptors = descriptors;
   }
 
 }

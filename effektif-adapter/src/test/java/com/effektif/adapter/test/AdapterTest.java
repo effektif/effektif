@@ -13,54 +13,60 @@
  * limitations under the License. */
 package com.effektif.adapter.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import org.junit.Test;
 
 import com.effektif.adapter.AdapterServer;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.AdapterActivity;
+import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterService;
+import com.effektif.workflow.impl.adapter.FindItemsRequest;
 import com.effektif.workflow.test.TestConfiguration;
 
 
 public class AdapterTest {
 
-//  static {
-//    try {
-//      final InputStream inputStream = RestTest.class.getResourceAsStream("/logging.properties");
-//      LogManager.getLogManager().readConfiguration(inputStream);
-//    } catch (Exception e) {
-//      e.printStackTrace();
-//    }
-//  }
-
   @Test
   public void testAdapter() {
+    // A developer or sysamind boots his own adapter
     int port = 11111;
     AdapterServer adapterServer = new AdapterServer()
       .port(port)
-      .registerActivityAdapter(new HelloWorldAdapter());
+      .registerActivityAdapter(new HelloWorldActivityAdapter())
+      .registerDataSourceAdapter(new ThingsDataSourceAdapter());
     adapterServer.startup();
-    
+
+    // The user opens the settings in the Effektif product and 
+    // adds the adapter by configuring the URL
     TestConfiguration configuration = new TestConfiguration();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
-
     AdapterService adapterService = configuration.get(AdapterService.class);
     Adapter adapter = adapterService.saveAdapter(new Adapter().url("http://localhost:"+port+"/"));
     adapterService.refreshAdapter(adapter.getId());
 
+    // Next, the user is able to start building and executing workflows 
+    // with the new activity 
     Workflow workflow = new Workflow()
       .activity("hello", new AdapterActivity()
         .adapterId(adapter.getId())
         .activityKey("hello")
-        .inputValue(HelloWorldAdapter.NAME, "Walter")
+        .inputValue(HelloWorldActivityAdapter.NAME, "Walter")
       );
     
     workflow = workflowEngine.deployWorkflow(workflow);
-    
     workflowEngine.startWorkflowInstance(workflow);
     
+    List<ItemReference> items = adapterService.findItems(adapter.getId(),
+            new FindItemsRequest()
+              .dataSourceKey("things"));
+    assertEquals(3, items.size());
+      
     adapterServer.shutdown();
   }
 }

@@ -21,8 +21,27 @@ public abstract class ObjectType extends Type {
 
   protected List<ObjectField> fields;
   protected String label;
-  protected String description;
 
+  public List<ObjectField> getFields() {
+    return this.fields;
+  }
+  public void setFields(List<ObjectField> fields) {
+    this.fields = fields;
+  }
+  public ObjectType fields(List<ObjectField> fields) {
+    this.fields = fields;
+    return this;
+  }
+
+  public ObjectType field(ObjectField field) {
+    if (fields==null) {
+      fields = new ArrayList<>();
+    }
+    fields.add(field);
+    return this;
+  }
+
+  protected String description;
   public String getLabel() {
     return this.label;
   }
@@ -42,25 +61,6 @@ public abstract class ObjectType extends Type {
   }
   public ObjectType description(String description) {
     this.description = description;
-    return this;
-  }
-
-  public List<ObjectField> getFields() {
-    return this.fields;
-  }
-  public void setFields(List<ObjectField> fields) {
-    this.fields = fields;
-  }
-  public ObjectType fields(List<ObjectField> fields) {
-    this.fields = fields;
-    return this;
-  }
-
-  public ObjectType field(ObjectField field) {
-    if (fields==null) {
-      fields = new ArrayList<>();
-    }
-    fields.add(field);
     return this;
   }
 }

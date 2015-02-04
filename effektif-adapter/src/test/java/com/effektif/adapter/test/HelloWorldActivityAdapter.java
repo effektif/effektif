@@ -21,9 +21,9 @@ import com.effektif.adapter.ActivityContext;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 
 
-public class HelloWorldAdapter implements ActivityAdapter {
+public class HelloWorldActivityAdapter implements ActivityAdapter {
   
-  private static final Logger log = LoggerFactory.getLogger(HelloWorldAdapter.class);
+  private static final Logger log = LoggerFactory.getLogger(HelloWorldActivityAdapter.class);
 
   public static final String NAME = "name";
   public static final String GREETING = "greeting";

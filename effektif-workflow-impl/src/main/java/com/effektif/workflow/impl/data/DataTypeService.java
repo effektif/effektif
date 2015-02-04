@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
@@ -29,7 +30,16 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.data.types.BindingTypeImpl;
+import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
+import com.effektif.workflow.impl.data.types.MapTypeImpl;
+import com.effektif.workflow.impl.data.types.NumberTypeImpl;
+import com.effektif.workflow.impl.data.types.TextTypeImpl;
+import com.effektif.workflow.impl.data.types.UserReferenceTypeImpl;
+import com.effektif.workflow.impl.data.types.VariableReferenceTypeImpl;
+import com.effektif.workflow.impl.data.types.WorkflowReferenceTypeImpl;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,12 +62,25 @@ public class DataTypeService implements Brewable {
   public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     this.objectMapper = brewery.get(ObjectMapper.class);
+
+    registerDataType(new BindingTypeImpl());
+    registerDataType(new BooleanTypeImpl());
+    registerDataType(new JavaBeanTypeImpl());
+    registerDataType(new NumberTypeImpl());
+    registerDataType(new ListTypeImpl());
+    registerDataType(new MapTypeImpl());
+    registerDataType(new TextTypeImpl());
+    registerDataType(new UserReferenceTypeImpl());
+    registerDataType(new VariableReferenceTypeImpl());
+    registerDataType(new WorkflowReferenceTypeImpl());
+
+    registerJavaBeanType(UserReference.class);
   }
   
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
   }
-
+  
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
     dataTypeClasses.put(apiClass, dataType.getClass());

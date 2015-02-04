@@ -11,9 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.datasource;
+package com.effektif.workflow.impl.data.source;
+
+import java.util.List;
+
+import com.effektif.workflow.api.datasource.DataSource;
+import com.effektif.workflow.api.datasource.DataSourceQuery;
 
 
-public class ItemReference {
+public interface DataSourceService {
+  
+  void saveDataSource(DataSource dataSource);
+  List<DataSource> findDataSources(DataSourceQuery query);
+  void deleteDataSources(DataSourceQuery query);
+  
+  DataSourceImpl getDataSourceImpl(String dataSourceId);
 
 }

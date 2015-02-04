@@ -22,6 +22,8 @@ import com.effektif.workflow.impl.AsynchronousExecutorService;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JacksonJsonService;
@@ -92,11 +94,11 @@ public abstract class DefaultConfiguration implements Configuration {
   }
 
   protected void registerDefaultActivityTypeService() {
-    brewery.ingredient(new DefaultActivityTypeService());
+    brewery.ingredient(new ActivityTypeService());
   }
   
   protected void registerDefaultDataTypeService() {
-    brewery.ingredient(new DefaultDataTypeService());
+    brewery.ingredient(new DataTypeService());
   }
   
   protected void registerDefaultObjectMapper() {

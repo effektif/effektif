@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+/* Copyright 2014 Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,9 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.datasource;
+package com.effektif.workflow.bpmn.xml;
 
 
-public class DataSourceService {
+public class XmlNamespace {
+  
+  public String prefix;
+  public String uri;
+
+  public XmlNamespace() {
+  }
+
+  public XmlNamespace(String prefix, String uri) {
+    this.prefix = ("".equals(prefix) ? null : prefix);
+    this.uri = uri;
+  }
 
 }

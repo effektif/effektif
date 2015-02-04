@@ -11,19 +11,37 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.adapter;
+package com.effektif.adapter.test;
 
 import java.util.List;
 
+import com.effektif.adapter.DataSourceAdapter;
 import com.effektif.workflow.api.datasource.ItemQuery;
 import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
+import com.effektif.workflow.impl.util.Lists;
 
 
-public interface DataSourceAdapter {
-
-  List<ItemReference> findItems(ItemQuery query);
-
-  DataSourceDescriptor getDescriptor();
+public class ThingsDataSourceAdapter implements DataSourceAdapter {
   
+  @Override
+  public List<ItemReference> findItems(ItemQuery query) {
+    return Lists.of(
+      new ItemReference()
+            .id("1")
+            .label("Chair"),
+      new ItemReference()
+            .id("2")
+            .label("Umbrella"),
+      new ItemReference()
+            .id("3")
+            .label("Shoe"));
+  }
+
+  @Override
+  public DataSourceDescriptor getDescriptor() {
+    return new DataSourceDescriptor()
+      .dataSourceKey("things")
+      .label("Thing");
+  }
 }

@@ -43,25 +43,25 @@ public class ActivityContext {
     this.executeResponse = new ExecuteResponse();
   }
 
-  public Object getValue(String parameterId) {
+  public Object getValue(String parameterKey) {
     Map<String, TypedValue> inputParameters = executeRequest.getInputParameters();
-    if (!inputParameters.containsKey(parameterId)) {
-      log.debug("Parameter '"+parameterId+"' not available");
+    if (!inputParameters.containsKey(parameterKey)) {
+      log.debug("Parameter '"+parameterKey+"' not available");
       return null;
     }
-    TypedValue parameter = inputParameters.get(parameterId);
+    TypedValue parameter = inputParameters.get(parameterKey);
     if (parameter==null) {
-      log.debug("Parameter '"+parameterId+"' is not specified");
+      log.debug("Parameter '"+parameterKey+"' is not specified");
       return null;
     }
     Object value = parameter.getValue();
     if (value==null) {
-      log.debug("Parameter '"+parameterId+"' has value null");
+      log.debug("Parameter '"+parameterKey+"' has value null");
       return null;
     }
     Type type = parameter.getType();
     if (type==null) {
-      log.debug("Parameter '"+parameterId+"' doesn't have a type");
+      log.debug("Parameter '"+parameterKey+"' doesn't have a type");
       return null;
     }
     DataType<?> dataType = dataTypeService.createDataType(type);

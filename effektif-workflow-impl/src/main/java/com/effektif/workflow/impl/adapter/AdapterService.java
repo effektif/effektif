@@ -16,22 +16,19 @@ package com.effektif.workflow.impl.adapter;
 import java.util.List;
 
 import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.datasource.ItemReference;
 
 
 public interface AdapterService {
   
   Adapter saveAdapter(Adapter adapter);
-  
-  Adapter refreshAdapter(String adapterId);
-
-  ExecuteResponse executeAdapterActivity(String adapterId, ExecuteRequest executeRequest);
-
   List<Adapter> findAdapters(AdapterQuery adapterQuery);
-
+  Adapter findAdapterById(String adapterId);
   void deleteAdapters(AdapterQuery adapterQuery);
-  
+
   AdapterService createAdapterService(RequestContext requestContext);
 
-  Adapter findAdapterById(String adapterId);
-  
+  Adapter refreshAdapter(String adapterId);
+  ExecuteResponse executeAdapterActivity(String adapterId, ExecuteRequest executeRequest);
+  List<ItemReference> findItems(String adapterId, FindItemsRequest findItemsRequest);
 }

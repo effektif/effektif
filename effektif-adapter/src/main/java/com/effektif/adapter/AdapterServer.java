@@ -26,6 +26,7 @@ import com.effektif.adapter.helpers.DefaultExceptionMapper;
 import com.effektif.adapter.helpers.ObjectMapperResolver;
 import com.effektif.adapter.helpers.RequestLogger;
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 import com.effektif.workflow.impl.json.JsonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,15 +40,17 @@ public class AdapterServer {
   protected ResourceConfig config;
   protected Server server;
   protected JsonService jsonService;
-  protected ActivitiesResource activitiesResource;
+  protected DescriptorsResource descriptorsResource;
   protected ExecuteResource executeResource;
+  protected FindItemsResource findItemsResource;
   
   public AdapterServer() {
     Configuration configuration = new DefaultAdapterConfiguration();
     objectMapper = configuration.get(ObjectMapper.class);
     
-    activitiesResource = new ActivitiesResource();
+    descriptorsResource = new DescriptorsResource();
     executeResource = new ExecuteResource(configuration);
+    findItemsResource = new FindItemsResource();
     
     config = new ResourceConfig();
     config.registerInstances(
@@ -55,8 +58,9 @@ public class AdapterServer {
             new ObjectMapperResolver(objectMapper),
             new RequestLogger(),
             new DefaultExceptionMapper(),
-            activitiesResource,
-            executeResource);
+            descriptorsResource,
+            executeResource,
+            findItemsResource);
   }
   
   public AdapterServer port(Integer port) {
@@ -64,8 +68,14 @@ public class AdapterServer {
     return this;
   }
 
+  public AdapterServer registerDataSourceAdapter(DataSourceAdapter dataSourceAdapter) {
+    descriptorsResource.addDataSourceDescriptor(dataSourceAdapter.getDescriptor());
+    findItemsResource.addDataSourceAdapter(dataSourceAdapter);
+    return this;
+  }
+
   public AdapterServer registerActivityAdapter(ActivityAdapter activityAdapter) {
-    activitiesResource.addActivityAdapter(activityAdapter);
+    descriptorsResource.addActivityDescriptor(activityAdapter.getDescriptor());
     executeResource.addActivityAdapter(activityAdapter);
     return this;
   }

@@ -16,11 +16,13 @@ package com.effektif.workflow.impl;
 import java.util.List;
 
 import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterQuery;
 import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.impl.adapter.ExecuteRequest;
 import com.effektif.workflow.impl.adapter.ExecuteResponse;
+import com.effektif.workflow.impl.adapter.FindItemsRequest;
 
 
 public class ContextualAdapterService implements AdapterService {
@@ -99,5 +101,15 @@ public class ContextualAdapterService implements AdapterService {
   @Override
   public AdapterService createAdapterService(RequestContext requestContext) {
     return new ContextualAdapterService(adapterService, requestContext);
+  }
+
+  @Override
+  public List<ItemReference> findItems(String adapterId, FindItemsRequest findItemsRequest) {
+    try {
+      RequestContext.set(requestContext);
+      return adapterService.findItems(adapterId, findItemsRequest);
+    } finally {
+      RequestContext.unset();
+    }
   }
 }

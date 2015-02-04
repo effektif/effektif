@@ -11,22 +11,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.data.types;
+package com.effektif.workflow.api.datasource;
 
-import java.util.Map;
-
-import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.CustomType;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-public class MapTypeImpl extends ObjectTypeImpl<CustomType> {
+@JsonTypeName("adapter")
+public class AdapterDataSource {
 
-  public MapTypeImpl() {
-    super(CustomType.class);
+  protected String adapterId;
+
+  public String getAdapterId() {
+    return this.adapterId;
   }
-
-  public MapTypeImpl(CustomType typeApi, Configuration configuration) {
-    super(typeApi, configuration, Map.class);
+  public void setAdapterId(String adapterId) {
+    this.adapterId = adapterId;
   }
-
+  public AdapterDataSource adapterId(String adapterId) {
+    this.adapterId = adapterId;
+    return this;
+  }
 }

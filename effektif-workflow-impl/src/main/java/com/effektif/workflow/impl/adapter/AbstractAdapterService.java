@@ -28,6 +28,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.datasource.ItemQuery;
+import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
@@ -35,6 +37,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.util.BadRequestException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionLikeType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
@@ -57,7 +60,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
       try {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         
-        HttpGet request = new HttpGet(adapter.url+"/activities");
+        HttpGet request = new HttpGet(adapter.url+"/descriptors");
         CloseableHttpResponse response = httpClient.execute(request);
         int status = response.getStatusLine().getStatusCode();
         if (200!=status) {
@@ -68,11 +71,9 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         if (httpEntity != null) {
           InputStream inputStream = httpEntity.getContent();
           CollectionLikeType listOfDescriptors = TypeFactory.defaultInstance().constructCollectionType(List.class, ActivityDescriptor.class);
-          List<ActivityDescriptor> adapterDescriptors = objectMapper.readValue(inputStream, listOfDescriptors);
-          for (ActivityDescriptor descriptor: adapterDescriptors) {
-            log.debug("Adding descriptor: "+descriptor.getActivityKey());
-            adapter.addDescriptor(descriptor);
-          }
+          AdapterDescriptors adapterDescriptors = objectMapper.readValue(inputStream, AdapterDescriptors.class);
+          
+          adapter.setActivityDescriptors(adapterDescriptors);
           
           saveAdapter(adapter);
         }
@@ -87,11 +88,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
   public ExecuteResponse executeAdapterActivity(String adapterId, ExecuteRequest executeRequest) {
     ExecuteResponse executeResponse = null;
     Adapter adapter = getAdapter(adapterId);
-    if (adapter==null) {
-      log.error("Adapter '"+adapterId+"' doesn't exist");
-    } else if (adapter.url==null) {
-      log.error("Adapter '"+adapterId+"' doesn't have a url");
-    } else {
+    if (adapter!=null) {
       try {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         
@@ -127,6 +124,50 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
     } 
     return executeResponse;
   }
+  
+
+  @Override
+  public List<ItemReference> findItems(String adapterId, FindItemsRequest findItemsRequest) {
+    List<ItemReference> items = null;
+    Adapter adapter = getAdapter(adapterId);
+    if (adapter!=null) {
+      try {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        
+        HttpPost request = new HttpPost(adapter.url+"/items");
+        String requestEntityJsonString = objectMapper.writeValueAsString(findItemsRequest);
+        request.setEntity(new StringEntity(requestEntityJsonString, ContentType.APPLICATION_JSON));
+        CloseableHttpResponse response = httpClient.execute(request);
+
+        AdapterStatus adapterStatus = null;
+        int status = response.getStatusLine().getStatusCode();
+        if (200!=status) {
+          log.error("findItems of adapter "+adapterId+" failed with http response code "+response.getStatusLine().toString());
+          adapterStatus = AdapterStatus.ERROR;
+        }
+        
+        HttpEntity httpEntity = response.getEntity();
+        if (httpEntity != null) {
+          try {
+            InputStream inputStream = httpEntity.getContent();
+            CollectionType itemReferencesType = TypeFactory.defaultInstance().constructCollectionType(List.class, ItemReference.class);
+            items = objectMapper.readValue(inputStream, itemReferencesType);
+            log.debug("Parsed adapter data source find items");
+          } catch (Exception e) {
+            log.error("Problem while parsing the adapter activity execute response: "+e.getMessage(), e);
+          }
+        }
+        
+//        AdapterLog adapterLog = new AdapterLog(executeRequest, executeResponse);
+//        updateAdapterExecution(adapterStatus, adapterLog);
+
+      } catch (IOException e) {
+        log.error("Problem while connecting to adapter: "+e.getMessage(), e);
+      }
+    } 
+    return items;
+  }
+
 
   public void updateAdapterExecution(AdapterStatus adapterStatus, AdapterLog adapterLog) {
     // TODO
@@ -138,10 +179,9 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
     }
     List<Adapter> adapters = findAdapters(new AdapterQuery().adapterId(adapterId));
     if (adapters.isEmpty()) {
-      throw new BadRequestException("Adapter '");
+      throw new BadRequestException("Adapter '"+adapterId+"' doesn't exist");
     }
-    Adapter adapter = adapters.get(0);
-    return adapter;
+    return adapters.get(0);
   }
 
 }

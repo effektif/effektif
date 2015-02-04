@@ -50,7 +50,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     this.dataTypeService = parser.getConfiguration(DataTypeService.class);
     this.adapterService = parser.getConfiguration(AdapterService.class);
     Adapter adapter = adapterService.findAdapterById(adapterId);
-    this.descriptor = adapter!=null ? adapter.getDescriptor(activityKey) : null;
+    this.descriptor = adapter!=null ? adapter.getActivityDescriptor(activityKey) : null;
+    // super.parse will parse the input bindings based on the descriptor
     super.parse(activityImpl, adapterActivity, parser);
   }
   

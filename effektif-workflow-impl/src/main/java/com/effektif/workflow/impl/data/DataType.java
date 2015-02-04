@@ -42,7 +42,11 @@ public interface DataType<T extends Type> extends Plugin {
 
   Object convertInternalToJsonValue(Object internalValue);
 
+  // Deprecated because I think scripts should use the json format
+  @Deprecated
   Object convertInternalToScriptValue(Object internalValue, String language);
 
+  // Deprecated because I think scripts should use the json format
+  @Deprecated
   Object convertScriptValueToInternal(Object scriptValue, String language);
 }
