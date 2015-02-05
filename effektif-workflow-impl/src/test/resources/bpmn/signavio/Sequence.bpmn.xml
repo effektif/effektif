@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+			xmlns:signavio="http://www.signavio.com" 
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+			exporter="Signavio Process Editor, http://www.signavio.com" 
+			exporterVersion="8.0.2" 
+			expressionLanguage="http://www.w3.org/1999/XPath" 
+			id="sid-9f4469f3-b053-4cc5-bea2-c6e2dd4ce4dc" 
+			targetNamespace="http://www.signavio.com/bpmn20" 
+			typeLanguage="http://www.w3.org/2001/XMLSchema" 
+			xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+   <process id="sid-2569a614-88d7-4ee1-a286-6c3a691a5037" isClosed="false" isExecutable="false" processType="None">
+      <extensionElements>
+         <signavio:signavioDiagramMetaData metaKey="revisionid" metaValue="ad05a86069b54a1cb53bd2dbe6419ae5"/>
+      </extensionElements>
+      <startEvent id="sid-D0220646-DF29-4F6E-BD64-D4CFA7434DFE" name="Start">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="startrisiko" metaValue=""/>
+         </extensionElements>
+         <outgoing>sid-82871B1B-A630-46A4-8B68-599AA6B16B7B</outgoing>
+      </startEvent>
+      <task completionQuantity="1" id="sid-736720ED-BAB9-444A-9502-AFC75954BEC4" isForCompensation="false" name="One" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-82871B1B-A630-46A4-8B68-599AA6B16B7B</incoming>
+         <outgoing>sid-3D87CC0A-688E-4FA4-B2ED-E1A17191D0C2</outgoing>
+      </task>
+      <userTask completionQuantity="1" id="sid-528BED22-F190-4BCA-A0F9-9E9C87A0F028" implementation="webService" isForCompensation="false" name="Two" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-3D87CC0A-688E-4FA4-B2ED-E1A17191D0C2</incoming>
+         <outgoing>sid-E3E86F85-6089-40A7-9E42-302F62D8C032</outgoing>
+      </userTask>
+      <task completionQuantity="1" id="sid-B54C24B0-3D43-4A40-9C6D-403CF39B1786" isForCompensation="false" name="Three" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-E3E86F85-6089-40A7-9E42-302F62D8C032</incoming>
+         <outgoing>sid-9832FB05-C05D-40F7-8E5C-1DD3A4A00019</outgoing>
+      </task>
+      <endEvent id="sid-F5D972D5-29D5-448D-973E-734D7654CF86" name="End">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+         </extensionElements>
+         <incoming>sid-9832FB05-C05D-40F7-8E5C-1DD3A4A00019</incoming>
+      </endEvent>
+      <sequenceFlow id="sid-82871B1B-A630-46A4-8B68-599AA6B16B7B" sourceRef="sid-D0220646-DF29-4F6E-BD64-D4CFA7434DFE" targetRef="sid-736720ED-BAB9-444A-9502-AFC75954BEC4">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bergangsrisiko" metaValue=""/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="sid-3D87CC0A-688E-4FA4-B2ED-E1A17191D0C2" sourceRef="sid-736720ED-BAB9-444A-9502-AFC75954BEC4" targetRef="sid-528BED22-F190-4BCA-A0F9-9E9C87A0F028">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bergangsrisiko" metaValue=""/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="sid-E3E86F85-6089-40A7-9E42-302F62D8C032" sourceRef="sid-528BED22-F190-4BCA-A0F9-9E9C87A0F028" targetRef="sid-B54C24B0-3D43-4A40-9C6D-403CF39B1786">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bergangsrisiko" metaValue=""/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="sid-9832FB05-C05D-40F7-8E5C-1DD3A4A00019" sourceRef="sid-B54C24B0-3D43-4A40-9C6D-403CF39B1786" targetRef="sid-F5D972D5-29D5-448D-973E-734D7654CF86">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bergangsrisiko" metaValue=""/>
+         </extensionElements>
+      </sequenceFlow>
+   </process>
+</definitions>

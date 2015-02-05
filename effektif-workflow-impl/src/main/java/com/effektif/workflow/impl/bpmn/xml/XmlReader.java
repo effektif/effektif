@@ -11,36 +11,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.bpmn.xml;
+package com.effektif.workflow.impl.bpmn.xml;
 
 import java.io.Reader;
+import java.util.Iterator;
 import java.util.Stack;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 
-public class XmlParser {
-
-  public static final String BPMN_NAMESPACE_URI = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+public class XmlReader {
 
   public Reader reader;
   public Stack<XmlElement> elementStack = new Stack<>();
   
   public static XmlElement parseXml(Reader reader) {
-    XmlParser xmlParser = new XmlParser(reader);
-    return xmlParser.parseXml();
+    XmlReader xmlParser = new XmlReader(reader);
+    return xmlParser.readXml();
   }
 
-  XmlParser(Reader reader) {
+  XmlReader(Reader reader) {
     this.reader = reader;
   }
 
-  XmlElement parseXml() {
-    XmlElement rootElement = null;
+  XmlElement readXml() {
+    XmlElement root = null;
     try {
       XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
       XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(reader);
@@ -48,13 +50,13 @@ public class XmlParser {
         XMLEvent xmlEvent = xmlEventReader.nextEvent();
         if (xmlEvent.isStartDocument()){
           StartDocument startDocument = (StartDocument) xmlEvent;
-          System.err.println("start document "+startDocument);      
+          System.err.println("start document "+startDocument.getCharacterEncodingScheme());
           
         } else if (xmlEvent.isStartElement()){
           StartElement startElement = (StartElement)xmlEvent;
-          XmlElement xmlElement = new XmlElement(startElement);
+          XmlElement xmlElement = readXmlElement(startElement);
           if (elementStack.isEmpty()) {
-            rootElement = xmlElement;
+            root = xmlElement;
           } else {
             elementStack.peek().addElement(xmlElement);
           }
@@ -62,12 +64,39 @@ public class XmlParser {
         } else if (xmlEvent.isEndElement()){
           elementStack.pop();
         } else if (xmlEvent.isCharacters()){
-          // add the chars to elementStack.peek().text 
+          elementStack.peek().addText(xmlEvent.asCharacters().getData()); 
         }
       }
     } catch (Exception e) {
       throw new RuntimeException("XML parsing error: "+e.getMessage());
     }
-    return rootElement;
+    return root;
+  }
+
+  private XmlElement readXmlElement(StartElement startElement) {
+    XmlElement xmlElement = new XmlElement();
+    xmlElement.name = toString(startElement.getName());
+
+    Iterator namespaces = startElement.getNamespaces();
+    while (namespaces.hasNext()) {
+      xmlElement.addNamespace((Namespace) namespaces.next());
+    }
+    Iterator attributes = startElement.getAttributes();
+    while (attributes.hasNext()) {
+      Attribute attribute = (Attribute) attributes.next();
+      xmlElement.addAttribute(attribute.getName().toString(), attribute.getValue());
+    }
+    return xmlElement;
+  }
+  
+  public static String toString(QName qname) {
+    if (qname==null) {
+      return null;
+    }
+    String prefix = qname.getPrefix();
+    if (prefix!=null && !"".equals(qname.getPrefix())) {
+      return prefix+":"+qname.getLocalPart();
+    }
+    return qname.getLocalPart();
   }
 }

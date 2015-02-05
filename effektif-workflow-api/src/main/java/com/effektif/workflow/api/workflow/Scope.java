@@ -125,4 +125,8 @@ public class Scope {
     this.properties.put(key, value);
     return this;
   }
+  public Object getProperty(String key) {
+    return properties!=null ? properties.get(key) : null;
+  }
+
 }
