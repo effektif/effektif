@@ -27,7 +27,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.impl.adapter.FindItemsRequest;
-import com.effektif.workflow.test.TestConfiguration;
+import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
 public class AdapterTest {

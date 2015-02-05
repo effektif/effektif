@@ -27,7 +27,7 @@ public abstract class AbstractBindableActivityImpl<T extends AbstractBindableAct
   protected Map<String,BindingImpl> inputBindings; 
   protected Map<String,String> outputBindings; 
 
-  public AbstractBindableActivityImpl(Class< ? > activityApiClass) {
+  public AbstractBindableActivityImpl(Class<T> activityApiClass) {
     super(activityApiClass);
   }
   

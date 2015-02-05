@@ -21,7 +21,7 @@ import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.test.TestConfiguration;
+import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
 public class SerializingWorkflowEngineConfiguration implements Configuration {

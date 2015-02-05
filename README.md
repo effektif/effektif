@@ -2,7 +2,7 @@
 
 Effektif is a flexible workflow engine that you can leverage when building your apps.  
 
-* Embeddable in any Java, Scala or JVM app
+* Easy workflow engine to embed in your Java application
 * REST API
 * Pluggable persistence
   * In-memory (no serialization)
@@ -49,9 +49,13 @@ assertEquals("Move open issues", tasks.get(0).getName());
 assertEquals(1, tasks.size());
 ```
 
-## User Documentation
+## Introduction
 
 * Who is behind this project?
+* [Open source versus commercial](https://github.com/effektif/effektif-oss/wiki/Open-source-versus-commercial)
+
+## User Documentation
+
 * [Getting started](https://github.com/effektif/effektif-oss/wiki/Getting-started)
 * [Workflow engine types](https://github.com/effektif/effektif-oss/wiki/Workflow-engine-types)
 * Building workflows

@@ -62,7 +62,10 @@ public class DataTypeService implements Brewable {
   public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     this.objectMapper = brewery.get(ObjectMapper.class);
+    initializeDataTypes();
+  }
 
+  protected void initializeDataTypes() {
     registerDataType(new BindingTypeImpl());
     registerDataType(new BooleanTypeImpl());
     registerDataType(new JavaBeanTypeImpl());
@@ -73,7 +76,6 @@ public class DataTypeService implements Brewable {
     registerDataType(new UserReferenceTypeImpl());
     registerDataType(new VariableReferenceTypeImpl());
     registerDataType(new WorkflowReferenceTypeImpl());
-
     registerJavaBeanType(UserReference.class);
   }
   

@@ -27,6 +27,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 
+/** uses a sax streaming parser to parse xml and 
+ * generate {@link XmlElement our own jsonnable xml dom structure}. */
 public class XmlReader {
 
   public Reader reader;
@@ -50,7 +52,6 @@ public class XmlReader {
         XMLEvent xmlEvent = xmlEventReader.nextEvent();
         if (xmlEvent.isStartDocument()){
           StartDocument startDocument = (StartDocument) xmlEvent;
-          System.err.println("start document "+startDocument.getCharacterEncodingScheme());
           
         } else if (xmlEvent.isStartElement()){
           StartElement startElement = (StartElement)xmlEvent;

@@ -14,36 +14,61 @@
 package com.effektif.workflow.impl.bpmn;
 
 import java.io.Reader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.activity.ActivityType;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 
 
+/** Reads an BPMN XML document and parses it to a Workflow API model.
+ * Not threadsafe, use one BpmnReader object per parse.
+ * 
+ * First the XML is parsed into a XmlElement, which represents the full 
+ * DOM structure of the document.
+ * 
+ * Then the XmlElement structure is parsed.  All information that is 
+ * parsed is removed from the XmlElement DOM structure.
+ * 
+ * The remaining XmlElement structure is the portion in the XML that 
+ * was not parsed and not understood by us.  That portion is stored 
+ * as part of the Workflow objects.
+ * 
+ * When writing these workflows back to XML, the unknown parts are 
+ * merged back into the XML.
+ **/
 public class BpmnReader extends Bpmn {
   
   protected XmlElement xmlRoot;
-  /** maps uri's to prefixes */
+  
+  protected ActivityTypeService activityTypeService;
+  
+  /** maps uri's to prefixes. 
+   * Ideally this should be done in a stack so that each element can add new namespaces.
+   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
+   * The current implementation assumes that all namespaces are defined in the root element */
   protected Map<String,String> prefixes = new HashMap<>();
   
-  public BpmnReader(XmlElement xmlDocument) {
-    this.xmlRoot = xmlDocument;
+  public BpmnReader(ActivityTypeService activityTypeService) {
+    this.activityTypeService = activityTypeService;
   }
 
-  public static Workflow readWorkflow(Reader reader) {
-    XmlElement xmlRoot = XmlReader.parseXml(reader);
-    BpmnReader bpmnParser = new BpmnReader(xmlRoot);
-    return bpmnParser.readDefinitions(xmlRoot);
+  public Workflow readBpmnDocument(Reader reader) {
+    this.xmlRoot = XmlReader.parseXml(reader);
+    return readDefinitions(xmlRoot);
   }
 
-  public Workflow readDefinitions(XmlElement definitionsXml) {
+  protected Workflow readDefinitions(XmlElement definitionsXml) {
     Workflow workflow = null;
     
+    // see #prefixes for more details about the limitations of namespaces
     addPrefixes(definitionsXml);
     
     if (definitionsXml.elements!=null) {
@@ -52,8 +77,7 @@ public class BpmnReader extends Bpmn {
         XmlElement definitionElement = iterator.next();
         if (definitionElement.is(getQName(BPMN_URI, "process")) && workflow == null) {
           iterator.remove();
-          workflow = new Workflow();
-          readProcess(definitionElement, workflow);
+          workflow = readProcess(definitionElement);
         }
       }
     }
@@ -65,34 +89,39 @@ public class BpmnReader extends Bpmn {
     return workflow;
   }
 
-  public Workflow readProcess(XmlElement processElement, Workflow workflow) {
-    readScope(processElement, workflow);
+  protected Workflow readProcess(XmlElement processXml) {
+    Workflow workflow = new Workflow();
+    workflow.id(readBpmnAttribute(processXml, "id"));
+    readActivities(processXml, workflow);
+    setUnparsedBpmn(workflow, processXml);
     return workflow;
   }
 
-  protected void readScope(XmlElement scopeElement, Scope scope) {
-    scope.id(scopeElement.removeAttribute(getQName(BPMN_URI, "id")));
+  public String readBpmnAttribute(XmlElement xmlElement, String name) {
+    return xmlElement.removeAttribute(getQName(BPMN_URI, name));
+  }
+
+  public void readActivities(XmlElement scopeElement, Scope scope) {
+    Collection<ActivityType> activityTypes = activityTypeService.getActivityTypes();
     Iterator<XmlElement> iterator = scopeElement.elements.iterator();
     while (iterator.hasNext()) {
-      XmlElement childElement = iterator.next();
-      if (childElement.is(getQName(BPMN_URI, "startEvent"))) {
+      XmlElement activityXml = iterator.next();
+      
+      Activity activity = null;
+      Iterator<ActivityType> activityTypeIterator = activityTypes.iterator();
+      while (activity==null && activityTypeIterator.hasNext()) {
+        ActivityType activityType = activityTypeIterator.next();
+        activity = activityType.readBpmn(activityXml, this);
+      }
+      if (activity!=null) {
         iterator.remove();
-        scope.activity(readStartEvent(childElement));
+        scope.activity(activity);
+        setUnparsedBpmn(activity, activityXml);
       }
     }
-    scopeElement.name = null;
-    scope.property(KEY_BPMN, scopeElement);
   }
 
-  protected StartEvent readStartEvent(XmlElement startElement) {
-    StartEvent startEvent = new StartEvent();
-    startEvent.id(startElement.removeAttribute(getQName(BPMN_URI, "id")));
-    startElement.name = null;
-    startEvent.property(KEY_BPMN, startElement);
-    return startEvent;
-  }
-
-  public void addPrefixes(XmlElement xmlElement) {
+  protected void addPrefixes(XmlElement xmlElement) {
     Map<String, String> namespaces = xmlElement.namespaces;
     if (namespaces!=null) {
       for (String prefix: namespaces.keySet()) {
@@ -104,5 +133,16 @@ public class BpmnReader extends Bpmn {
   protected String getQName(String namespaceUri, String localName) {
     String prefix = prefixes.get(namespaceUri);
     return "".equals(prefix) ? localName : prefix+":"+prefix;
+  }
+
+  protected void setUnparsedBpmn(Scope scope, XmlElement unparsedBpmn) {
+    unparsedBpmn.name = null;
+    scope.property(KEY_BPMN, unparsedBpmn);
+  }
+
+  public boolean isLocalPart(XmlElement xmlElement, String localPart) {
+    return xmlElement!=null 
+            && xmlElement.name!=null 
+            && xmlElement.name.endsWith(localPart);
   }
 }

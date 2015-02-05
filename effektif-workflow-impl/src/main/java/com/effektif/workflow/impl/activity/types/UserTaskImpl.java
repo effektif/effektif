@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.List;
 
 import com.effektif.workflow.api.TaskService;
+import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
@@ -25,6 +26,8 @@ import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -51,6 +54,12 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
 
   public UserTaskImpl() {
     super(UserTask.class);
+  }
+  
+  @Override
+  public void writeBpmn(UserTask userTask, XmlElement userTaskXml, BpmnWriter bpmnWriter) {
+    bpmnWriter.setBpmnName(userTaskXml, "startEvent");
+    bpmnWriter.writeBpmnAttribute(userTaskXml, "id", userTask.getId());
   }
 
   @Override

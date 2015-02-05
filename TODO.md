@@ -1,12 +1,23 @@
 # Contributions
 
-Scala fluent workflow builder 
-HttpServiceTask
-NodeJS adapter
-Investigate spring configuration?
+- [ ] Load testing
+  - Create a script that produces an executable jar file for the server
+  - Create a script that produces an executable jar file for the test runner
+  - Get the most out of JMeter or Gatling 
+  - Use monitoring tools to learn about memory and bottlenecks
+- [ ] Build an HR module on top
+  - Entities: Job posting, Candidate, Employment contract
+  - Workflows: New job opening, New candidate, Hire, Fire
+- [ ] Build the server (with jersey)
+- [ ] Making the WorkflowEngine available as a bean in a Spring configuration
+- [ ] Finish the BPMN parser
+- [ ] HttpServiceTask
+- [ ] Scala fluent workflow builder 
+- [ ] NodeJS adapter
 
 # Tasks
 
+- [ ] Paging
 - [ ] Triggers
 - [ ] Data sources
 - [ ] Store data types
@@ -54,9 +65,8 @@ Investigate spring configuration?
      - [x] engine level configured data types
      - [x] inline defined and configured data types
      - [x] default types like text, ... 
-     - [ ] reference type
-  - [ ] data sources
-     - [ ] user defined object types (without beans) 
+  - [x] data sources
+     - [x] user defined object types (without beans) 
   - [ ] script functions
 - [x] activity in / output parameters
   - [x] static value 
@@ -66,7 +76,7 @@ Investigate spring configuration?
   - [x] easy to understand activity instance model
   - [x] support for BPMN default semantics
   - [x] synchonous and asynchronoux execution of activities
-  - [ ] activity worker pattern
+  - [x] activity worker pattern / adapters
 - [x] pluggable persistence architecture 
 - [x] transient execution context variables
 - [x] mongodb persistence
@@ -96,7 +106,6 @@ Investigate spring configuration?
 - [ ] Data flow (only start an activity when the input data becomes available)
 - [ ] Static persistable process variables
 - [ ] Derived variables
-- [ ] Paging
   // TODO check this paging http://sammaye.wordpress.com/2012/05/25/mongodb-paging-using-ranged-queries-avoiding-skip/
   // http://books.google.be/books?id=uGUKiNkKRJ0C&pg=PA70&lpg=PA70&dq=queries+without+skip&source=bl&ots=h8jzOjeRrh&sig=g-rfrn5aTofQ3VSv_cEbo6jaG58&hl=nl&sa=X&ei=cQVxVP-lD8nwaLj0gIgD&redir_esc=y#v=onepage&q=queries%20without%20skip&f=false
   // Avoiding Large Skips Using skip for a small number of documents is fine. Fora large number of results, 

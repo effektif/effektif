@@ -13,12 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity;
 
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public interface ActivityType<T> extends Plugin {
+public interface ActivityType<T extends Activity> extends Plugin {
   
   /** provides the data structure to the UI how this activity can be configured so that the UI can show a dialog */
   ActivityDescriptor getDescriptor();
@@ -26,6 +30,14 @@ public interface ActivityType<T> extends Plugin {
   Class<?> getActivityApiClass();
   
   T serialize();
+  
+  /** first checks if the activityXml element matches this type and if 
+   * it matches, it returns the parsed API activity.
+   * Returns null if the activityElement doesn't match 
+   * @param bpmnReader */
+  T readBpmn(XmlElement activityXml, BpmnReader bpmnReader);
+
+  void writeBpmn(T activity, XmlElement activityXml, BpmnWriter bpmnWriter);
 
   /** called when the process is being validated or deployed.
    * Note that configuration values in the activityApi object could be the target java beans classes, 

@@ -22,6 +22,9 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 
 
+/** serializes {@link XmlElement our own jsonnable xml dom structure} 
+ * to XML text. */
+// TODO consider refactoring from stringwriter to sax streaming or nio if that makes sense.
 public class XmlWriter {
 
   public OutputStream out;

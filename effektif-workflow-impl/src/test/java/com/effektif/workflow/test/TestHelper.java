@@ -25,9 +25,7 @@ import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
-/**
- * @author Walter White
- */
+
 public class TestHelper {
   
   public static void assertTextPresent(String expected, String actual) {
@@ -85,32 +83,4 @@ public class TestHelper {
       }
     }
   }
-
-//  public static String getActivityInstanceId(WorkflowInstance workflowInstance, String activityDefinitionId) {
-//    ActivityInstance activityInstance = workflowInstance.findActivityInstanceByActivityId(activityDefinitionId);
-//    Assert.assertNotNull("No open activity instance found "+activityDefinitionId+" not found", activityInstance);
-//    return activityInstance.getId();
-//  }
-//
-//  public static WorkflowInstance endTask(WorkflowEngine workflowEngine, WorkflowInstance workflowInstance, String activityDefinitionId) {
-//    return workflowEngine.newMessage()
-//      .activityInstanceId(getActivityInstanceId(workflowInstance, activityDefinitionId))
-//      .send();
-//  }
-//  
-//  public static void mongoDeleteAllCollections(WorkflowEngine workflowEngine) {
-//    MongoWorkflowEngine mongoWorkflowEngine = (MongoWorkflowEngine) workflowEngine;
-//    mongoDeleteAllDocumentsInCollection(mongoWorkflowEngine, MongoWorkflowStore.class);
-//    mongoDeleteAllDocumentsInCollection(mongoWorkflowEngine, MongoWorkflowInstanceStore.class);
-//    mongoDeleteAllDocumentsInCollection(mongoWorkflowEngine, MongoJobs.class);
-//  }
-//
-//  public static void mongoDeleteAllDocumentsInCollection(MongoWorkflowEngine processEngine, Class<? extends MongoCollection> mongoCollectionClass) {
-//    MongoCollection mongoCollection = processEngine.getServiceRegistry().getService(mongoCollectionClass);
-//    DBCollection dbCollection = mongoCollection.getDbCollection();
-//    DBCursor documents = dbCollection.find();
-//    while (documents.hasNext()) {
-//      dbCollection.remove(documents.next());
-//    }
-//  }
 }

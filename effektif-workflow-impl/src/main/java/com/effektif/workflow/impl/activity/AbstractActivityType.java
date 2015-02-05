@@ -15,13 +15,17 @@ package com.effektif.workflow.impl.activity;
 
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-public abstract class AbstractActivityType<T> implements ActivityType<T> {
+public abstract class AbstractActivityType<T extends Activity> implements ActivityType<T> {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
@@ -29,12 +33,21 @@ public abstract class AbstractActivityType<T> implements ActivityType<T> {
   public T activityApi;
   public Class<?> activityApiClass;
   
-  public AbstractActivityType(Class< ? > activityApiClass) {
+  public AbstractActivityType(Class<T> activityApiClass) {
     this.activityApiClass = activityApiClass;
   }
   
   public Class< ? > getActivityApiClass() {
     return activityApiClass;
+  }
+  
+  @Override
+  public T readBpmn(XmlElement activityXml, BpmnReader bpmnReader) {
+    return null;
+  }
+  
+  @Override
+  public void writeBpmn(T activity, XmlElement activityXml, BpmnWriter bpmnWriter) {
   }
 
   @Override

@@ -45,6 +45,7 @@ import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 

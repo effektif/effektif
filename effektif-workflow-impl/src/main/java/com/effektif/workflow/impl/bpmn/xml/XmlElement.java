@@ -20,7 +20,8 @@ import java.util.Map;
 
 import javax.xml.stream.events.Namespace;
 
-
+/** xml dom structure that is jsonnable with jackson
+ * so that it can be serialized to/from json for rest service and db persistence. */
 public class XmlElement {
 
   public String name;

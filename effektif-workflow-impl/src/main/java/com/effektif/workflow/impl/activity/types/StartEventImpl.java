@@ -15,6 +15,9 @@ package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -22,6 +25,22 @@ public class StartEventImpl extends AbstractActivityType<StartEvent> {
 
   public StartEventImpl() {
     super(StartEvent.class);
+  }
+  
+  @Override
+  public StartEvent readBpmn(XmlElement activityXml, BpmnReader bpmnReader) {
+    if (!bpmnReader.isLocalPart(activityXml, "startEvent")) {
+      return null;
+    }
+    StartEvent startEvent = new StartEvent();
+    startEvent.id(bpmnReader.readBpmnAttribute(activityXml, "id"));
+    return startEvent;
+  }
+
+  @Override
+  public void writeBpmn(StartEvent startEvent, XmlElement startEventXml, BpmnWriter bpmnWriter) {
+    bpmnWriter.setBpmnName(startEventXml, "startEvent");
+    bpmnWriter.writeBpmnAttribute(startEventXml, "id", startEvent.getId());
   }
 
   @Override
@@ -33,4 +52,5 @@ public class StartEventImpl extends AbstractActivityType<StartEvent> {
   public boolean isFlushSkippable() {
     return true;
   }
+
 }

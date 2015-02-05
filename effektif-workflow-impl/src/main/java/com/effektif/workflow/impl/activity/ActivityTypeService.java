@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.activity;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class ActivityTypeService implements Brewable {
   // maps activity api configuration classes to activity type implementation classes
   protected Map<Class<?>, ActivityDescriptor> activityTypeDescriptors = new LinkedHashMap<>();
   protected Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
-  protected Map<Class<?>, ActivityType> activityTypes = new HashMap<>();
+  protected Map<Class<?>, ActivityType> activityTypes = new LinkedHashMap<>();
   protected Map<Class<?>, ObjectTypeImpl> activityTypeSerializers = new HashMap<>();
 
   protected Map<Class<?>, Class<? extends TriggerImpl>> triggerClasses = new HashMap<>();
@@ -63,20 +64,23 @@ public class ActivityTypeService implements Brewable {
   public void brew(Brewery brewery) {
     this.objectMapper = brewery.get(ObjectMapper.class);
     this.configuration = brewery.get(Configuration.class);
+    initializeActivityTypes();
+  }
 
-    registerActivityType(new AdapterActivityImpl());
-    registerActivityType(new CallImpl());
+  protected void initializeActivityTypes() {
+    registerActivityType(new UserTaskImpl());
+    registerActivityType(new ParallelGatewayImpl());
+    registerActivityType(new ExclusiveGatewayImpl());
+    registerActivityType(new StartEventImpl());
     registerActivityType(new EndEventImpl());
     registerActivityType(new EmailTaskImpl());
+    registerActivityType(new ScriptTaskImpl());
+    registerActivityType(new AdapterActivityImpl());
+    registerActivityType(new CallImpl());
     registerActivityType(new EmbeddedSubprocessImpl());
-    registerActivityType(new ExclusiveGatewayImpl());
     registerActivityType(new JavaServiceTaskImpl());
     registerActivityType(new HttpServiceTaskImpl());
     registerActivityType(new NoneTaskImpl());
-    registerActivityType(new ParallelGatewayImpl());
-    registerActivityType(new ScriptTaskImpl());
-    registerActivityType(new StartEventImpl());
-    registerActivityType(new UserTaskImpl());
   }
   
   public void registerActivityType(ActivityType activityType) {
@@ -120,6 +124,15 @@ public class ActivityTypeService implements Brewable {
       throw new RuntimeException("Couldn't instantiate "+triggerTypeClass+": "+e.getMessage(), e);
     }
   }
+
+  public Collection<ActivityType> getActivityTypes() {
+    return activityTypes.values();
+  }
+
+  public ActivityType<Activity> getActivityType(Class<? extends Activity> activityType) {
+    return activityTypes.get(activityType);
+  }
+  
   
 //  public Type getTypeByValue(Object value) {
 //    if (value==null) {
