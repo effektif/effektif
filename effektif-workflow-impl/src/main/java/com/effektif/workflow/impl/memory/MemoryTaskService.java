@@ -19,10 +19,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.TaskService;
-import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.ContextualTaskService;
 
 

@@ -33,7 +33,7 @@ public class MultipleStartActivitiesTest extends WorkflowTest {
         .transitionTo("three"))
       .activity(new UserTask("three"));
     
-    workflow = deploy(workflow);
+    deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
     
     assertOpen(workflowInstance, "one", "two");

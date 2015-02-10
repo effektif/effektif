@@ -15,6 +15,7 @@ package com.effektif.workflow.api.task;
 
 import java.util.List;
 
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.ref.UserReference;
 
 
@@ -25,7 +26,8 @@ public class Task {
   protected String name;
   protected UserReference assignee;
   protected List<UserReference> candidates;
-  
+  protected FormInstance formInstance;
+
   protected String activityInstanceId;
   protected String workflowInstanceId;
   protected String workflowId;
@@ -84,6 +86,19 @@ public class Task {
   
   public void setCandidates(List<UserReference> candidates) {
     this.candidates = candidates;
+  }
+
+  public FormInstance getFormInstance() {
+    return this.formInstance;
+  }
+
+  public void setFormInstance(FormInstance formInstance) {
+    this.formInstance = formInstance;
+  }
+  
+  public Task formInstance(FormInstance formInstance) {
+    this.formInstance = formInstance;
+    return this;
   }
 
   

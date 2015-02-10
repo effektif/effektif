@@ -11,18 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.command;
+package com.effektif.workflow.api.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Workflow;
 
 
 public class Start {
   
   protected String workflowId;
-  protected String workflowName;
+  protected String workflowSource;
   protected Map<String,TypedValue> variableValues;
   protected Map<String,TypedValue> triggerValues;
 
@@ -32,19 +33,25 @@ public class Start {
   public void setWorkflowId(String workflowId) {
     this.workflowId = workflowId;
   }
+
+  /** use this specific workflow version. 
+   * If you want to use the latest version of a certain workflow, use {@link #workflowSource(String)} */ 
   public Start workflowId(String workflowId) {
     this.workflowId = workflowId;
     return this;
   }
   
-  public String getWorkflowName() {
-    return this.workflowName;
+  public String getWorkflowSource() {
+    return this.workflowSource;
   }
-  public void setWorkflowName(String workflowName) {
-    this.workflowName = workflowName;
+  public void setWorkflowSource(String workflowSource) {
+    this.workflowSource = workflowSource;
   }
-  public Start workflowName(String workflowName) {
-    this.workflowName = workflowName;
+  
+  /** use the lastest version of the workflow for the given source.
+   * @see Workflow#source(String) */
+  public Start workflowSource(String workflowSource) {
+    this.workflowSource = workflowSource;
     return this;
   }
 

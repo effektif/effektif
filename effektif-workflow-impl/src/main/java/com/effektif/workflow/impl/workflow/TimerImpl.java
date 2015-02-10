@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -23,17 +21,13 @@ import com.effektif.workflow.impl.job.JobType;
 
 public class TimerImpl {
   
-  public String id;
   public ScopeImpl parent;
   public Configuration configuration;
   public WorkflowImpl workflow;
   public JobType jobType;
-  public Map<String,Object> properties;
 
   public void parse(Timer timerApi, ScopeImpl parent, WorkflowParser parser) {
-    this.id = timerApi.getId();
     this.configuration = parser.configuration;
-    this.properties = timerApi.getProperties();
     if (parent!=null) {
       this.parent = parent;
       this.workflow = parent.workflow;
@@ -42,8 +36,6 @@ public class TimerImpl {
 
   public Timer serialize() {
     Timer timer = new Timer();
-    timer.setId(id);
-    timer.setProperties(properties);
     // TODO jobType
     return timer;
   }

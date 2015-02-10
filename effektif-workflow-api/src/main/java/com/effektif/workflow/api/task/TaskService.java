@@ -11,13 +11,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api;
+package com.effektif.workflow.api.task;
 
 import java.util.List;
 
-import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
+import com.effektif.workflow.api.model.RequestContext;
 
 
 public interface TaskService {

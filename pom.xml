@@ -66,6 +66,7 @@
           <source>1.7</source>
           <target>1.7</target>
           <compilerArguments>
+            <!-- This is to get the Rhino internal classes compiled -->
             <bootclasspath>${java.home}/lib/rt.jar</bootclasspath>
           </compilerArguments>
         </configuration>

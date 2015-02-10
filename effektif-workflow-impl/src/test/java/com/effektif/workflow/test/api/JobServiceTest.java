@@ -80,7 +80,7 @@ public class JobServiceTest extends WorkflowTest {
 //    // quickest way to get a processInstanceId
 //    Workflow workflow = new Workflow()
 //      .activity("t", new UserTask());
-//    workflow = deploy(workflow);
+//    deploy(workflow);
 //    String workflowInstanceId = start(workflow).getId();
 //    
 //    jobService.scheduleJob(new Job()

@@ -42,30 +42,6 @@ public abstract class ScopeImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
   
-//  public void serialize(Scope scope) {
-//    scope.setId(id);
-//    if (activities!=null) {
-//      for (ActivityImpl activity: activities.values()) {
-//        scope.activity(activity.serialize());
-//      }
-//    }
-//    if (variables!=null) {
-//      for (VariableImpl variable: variables.values()) {
-//        scope.variable(variable.serialize());
-//      }
-//    }
-//    if (transitions!=null) {
-//      for (TransitionImpl transition: transitions) {
-//        scope.transition(transition.serialize());
-//      }
-//    }
-//    if (timers!=null) {
-//      for (TimerImpl timer: timers) {
-//        scope.timer(timer.serialize());
-//      }
-//    }
-//  } 
-
   public void parse(Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
     this.id = scopeApi.getId();
     this.configuration = parser.configuration;
@@ -76,15 +52,10 @@ public abstract class ScopeImpl {
     
     List<Variable> variableApi = scopeApi.getVariables();
     if (variableApi!=null) {
-      Set<String> variableIds = new HashSet<>();
       int i = 0;
       for (Variable apiVariable: variableApi) {
         VariableImpl variableImpl = new VariableImpl();
         parser.pushContext("variables", apiVariable, i);
-        if (variableIds.contains(apiVariable.getId())) {
-          parser.addError("Duplicate variable id %s. Variables ids have to be unique in their scope.", variableImpl.id);
-        }
-        variableIds.add(apiVariable.getId());
         variableImpl.parse(apiVariable, this, parser);
         addVariable(variableImpl);
         parser.popContext();
@@ -108,7 +79,6 @@ public abstract class ScopeImpl {
     Map<String, ActivityImpl> activitiesByDefaultTransitionId = new HashMap<>();
     List<Activity> activitiesApi = scopeApi.getActivities();
     if (activitiesApi!=null) {
-      Set<String> activityIds = new HashSet<>();
       int i = 0;
       for (Activity activityApi: activitiesApi) {
         ActivityImpl activityImpl = new ActivityImpl();
@@ -118,9 +88,6 @@ public abstract class ScopeImpl {
         }
         activityImpl.parse(activityApi, scopeApi, parser, this);
         addActivity(activityImpl);
-        if (activityIds.contains(activityImpl.id)) {
-          parser.addError("Duplicate activity id '%s'. Activity ids have to be unique in their scope.", activityImpl.id);
-        }
         parser.popContext();
         i++;
       }

@@ -26,6 +26,8 @@ import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import com.effektif.workflow.api.xml.XmlElement;
+
 
 /** uses a sax streaming parser to parse xml and 
  * generate {@link XmlElement our own jsonnable xml dom structure}. */
@@ -80,7 +82,8 @@ public class XmlReader {
 
     Iterator namespaces = startElement.getNamespaces();
     while (namespaces.hasNext()) {
-      xmlElement.addNamespace((Namespace) namespaces.next());
+      Namespace namespace = (Namespace) namespaces.next();
+      xmlElement.addNamespace(namespace.getPrefix(), namespace.getNamespaceURI());
     }
     Iterator attributes = startElement.getAttributes();
     while (attributes.hasNext()) {

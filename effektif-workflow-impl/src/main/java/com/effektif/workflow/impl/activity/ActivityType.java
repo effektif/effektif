@@ -14,10 +14,10 @@
 package com.effektif.workflow.impl.activity;
 
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
@@ -56,9 +56,6 @@ public interface ActivityType<T extends Activity> extends Plugin {
 
   /** called when an external signal is invoked on this activity instance through the process engine api */
   void message(ActivityInstanceImpl activityInstance);
-
-  /** called when a nested activity instance is ended */
-  void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance);
 
   boolean saveTransitionsTaken();
 

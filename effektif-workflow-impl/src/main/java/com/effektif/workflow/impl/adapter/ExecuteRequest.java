@@ -16,7 +16,7 @@ package com.effektif.workflow.impl.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 
 
 public class ExecuteRequest {

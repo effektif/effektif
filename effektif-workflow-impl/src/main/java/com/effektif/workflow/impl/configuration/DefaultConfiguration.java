@@ -16,11 +16,12 @@ package com.effektif.workflow.impl.configuration;
 import javax.script.ScriptEngineManager;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
+import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -36,7 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /** Configurations to build a workflow engine. */
 public abstract class DefaultConfiguration implements Configuration {
   
-  protected String id;
   protected Brewery brewery;
   
   public DefaultConfiguration() {
@@ -113,24 +113,11 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new ScriptEngineManager());
   }
 
-  public DefaultConfiguration id(String id) {
-    this.id = id;
-    return this;
-  }
-  
   public DefaultConfiguration synchronous() {
     brewery.ingredient(new SynchronousExecutorService());
     return this;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-  
-  public String getId() {
-    return id;
-  }
-  
   public Brewery getRegistry() {
     return brewery;
   }

@@ -19,34 +19,9 @@ import java.util.Map;
 
 public class Timer {
 
-  protected String id;
-  protected String type;
   protected String duedate;
   protected String repeat;
-  protected Map<String,Object> properties;
 
-  public String getId() {
-    return this.id;
-  }
-  public void setId(String id) {
-    this.id = id;
-  }
-  public Timer id(String id) {
-    this.id = id;
-    return this;
-  }
-
-  public String getType() {
-    return this.type;
-  }
-  public void setType(String type) {
-    this.type = type;
-  }
-  public Timer type(String type) {
-    this.type = type;
-    return this;
-  }
-  
   public String getDuedate() {
     return this.duedate;
   }
@@ -66,20 +41,6 @@ public class Timer {
   }
   public Timer repeat(String repeat) {
     this.repeat = repeat;
-    return this;
-  }
-
-  public Map<String,Object> getProperties() {
-    return this.properties;
-  }
-  public void setProperties(Map<String,Object> properties) {
-    this.properties = properties;
-  }
-  public Timer property(String key,Object value) {
-    if (properties==null) {
-      properties = new HashMap<>();
-    }
-    this.properties.put(key, value);
     return this;
   }
 }

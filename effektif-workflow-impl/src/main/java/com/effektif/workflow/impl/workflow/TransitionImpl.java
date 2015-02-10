@@ -44,6 +44,13 @@ public class TransitionImpl {
 
   public void parse(Transition transitionApi, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
     this.id = transitionApi.getId();
+    if (id!=null) {
+      if (parser.transitionIds.contains(id)) {
+        parser.addError("Duplicate transition id '%s'", id);
+      } else {
+        parser.transitionIds.add(id);
+      }
+    }
     this.configuration = parser.configuration;
     if (parent!=null) {
       this.parent = parent;

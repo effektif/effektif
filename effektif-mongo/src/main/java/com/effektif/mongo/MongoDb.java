@@ -11,35 +11,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.command;
+package com.effektif.mongo;
 
-import com.effektif.workflow.api.types.Type;
+import com.mongodb.DB;
 
 
-public class TypedValue {
+public class MongoDb {
 
-  protected Object value;
-  protected Type type;
-
-  public Object getValue() {
-    return this.value;
+  protected DB db;
+  protected boolean isPretty;
+  
+  public MongoCollection createCollection(String collectionName) {
+    return new MongoCollection(db.getCollection(collectionName), isPretty);
   }
-  public void setValue(Object value) {
-    this.value = value;
+
+  public DB getDb() {
+    return this.db;
   }
-  public TypedValue value(Object value) {
-    this.value = value;
-    return this;
+  public void setDb(DB db) {
+    this.db = db;
   }
   
-  public Type getType() {
-    return this.type;
+  public boolean isPretty() {
+    return this.isPretty;
   }
-  public void setType(Type type) {
-    this.type = type;
-  }
-  public TypedValue type(Type type) {
-    this.type = type;
-    return this;
+  public void setPretty(boolean isPretty) {
+    this.isPretty = isPretty;
   }
 }

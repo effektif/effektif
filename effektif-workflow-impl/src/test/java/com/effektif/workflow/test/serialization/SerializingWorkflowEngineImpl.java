@@ -17,11 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.Message;
-import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonService;
@@ -37,20 +39,20 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   }
 
   @Override
-  public Workflow deployWorkflow(Workflow workflow) {
+  public Deployment deployWorkflow(Workflow workflow) {
     log.debug("deployWorkflow");
     workflow = wireize("  -workflow->", workflow, Workflow.class);
-    workflow = workflowEngine.deployWorkflow(workflow);
-    return wireize("  <-workflow-", workflow, Workflow.class);
+    ParseIssues parseIssues = workflowEngine.deployWorkflow(workflow);
+    return wireize("  <-deployment-", parseIssues, Deployment.class);
   }
 
-  @Override
-  public Workflow validateWorkflow(Workflow workflow) {
-    log.debug("validateWorkflow");
-    workflow = wireize("  -workflow->", workflow, Workflow.class);
-    workflow = workflowEngine.validateWorkflow(workflow);
-    return wireize("  <-workflow-", workflow, Workflow.class);
-  }
+//  @Override
+//  public Workflow validateWorkflow(Workflow workflow) {
+//    log.debug("validateWorkflow");
+//    workflow = wireize("  -workflow->", workflow, Workflow.class);
+//    workflow = workflowEngine.validateWorkflow(workflow);
+//    return wireize("  <-workflow-", workflow, Workflow.class);
+//  }
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
@@ -72,12 +74,6 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
     log.debug("deleteWorkflow");
     query = wireize("  -query->", query, WorkflowQuery.class);
     workflowEngine.deleteWorkflows(query);
-  }
-
-  @Override
-  public WorkflowInstance startWorkflowInstance(Workflow workflow) {
-    String workflowId = workflow.getId();
-    return startWorkflowInstance(new Start().workflowId(workflowId));
   }
 
   @Override

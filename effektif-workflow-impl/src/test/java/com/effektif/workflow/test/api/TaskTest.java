@@ -30,7 +30,7 @@ public class TaskTest extends WorkflowTest {
     Workflow workflow = new Workflow()
       .activity(new UserTask("Task one"));
     
-    workflow = deploy(workflow);
+    deploy(workflow);
     
     start(workflow);
     

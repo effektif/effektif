@@ -71,7 +71,7 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
       
       if ( siblingActivityInstance!=activityInstance
            && siblingActivityInstance.getActivity()==activityInstance.getActivity()
-           && activityInstance.isJoining(siblingActivityInstance) ) {
+           && siblingActivityInstance.isJoining() ) {
         otherJoiningActivityInstances.add(siblingActivityInstance);
       }
     }

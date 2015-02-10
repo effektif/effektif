@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -24,7 +25,8 @@ public class UserTask extends NoneTask {
   protected Binding<String> nameBinding;
   protected Binding<UserReference> assigneeBinding;
   protected Binding<UserReference> candidatesBinding;
-  
+  protected Form form;
+
   public UserTask() {
   }
 
@@ -112,5 +114,16 @@ public class UserTask extends NoneTask {
   
   public void setAssigneeBinding(Binding<UserReference> assigneeBinding) {
     this.assigneeBinding = assigneeBinding;
+  }
+
+  public Form getForm() {
+    return this.form;
+  }
+  public void setForm(Form form) {
+    this.form = form;
+  }
+  public UserTask form(Form form) {
+    this.form = form;
+    return this;
   }
 }

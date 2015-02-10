@@ -130,8 +130,8 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     setWorkState(STATE_JOINING);
   }
   
-  public boolean isJoining(ActivityInstanceImpl activityInstance) {
-    return STATE_JOINING.equals(activityInstance.workState);
+  public boolean isJoining() {
+    return STATE_JOINING.equals(workState);
   }
   
   public void removeJoining(ActivityInstanceImpl activityInstance) {
@@ -169,11 +169,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     }
   }
 
-  @Override
-  public void ended(ActivityInstanceImpl nestedEndedActivityInstance) {
-    activity.activityType.ended(this, nestedEndedActivityInstance);
-  }
-  
   @Override
   public ActivityInstanceImpl findActivityInstance(String activityInstanceId) {
     if (activityInstanceId.equals(this.id)) {

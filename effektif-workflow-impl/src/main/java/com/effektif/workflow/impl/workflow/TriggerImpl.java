@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.Map;
 
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;

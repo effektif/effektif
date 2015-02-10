@@ -30,7 +30,6 @@ import com.effektif.workflow.impl.configuration.Brewery;
 
 public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
-  protected Map<String, Long> nextVersionByName;
   protected Map<String, Workflow> workflows;
 
   public MemoryWorkflowStore() {
@@ -39,7 +38,6 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   @Override
   public void brew(Brewery brewery) {
     this.workflows = new ConcurrentHashMap<>();
-    this.nextVersionByName = new ConcurrentHashMap<>();
   }
   
   @Override
@@ -50,17 +48,6 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   @Override
   public void insertWorkflow(Workflow workflow) {
     workflows.put(workflow.getId(), workflow);
-
-    String workflowName = workflow.getName();
-    if (workflowName!=null) {
-      Long nextVersion = nextVersionByName.get(workflowName);
-      if (nextVersion==null) {
-        nextVersion = 1l;
-      }
-      workflow.setVersion(nextVersion);
-      nextVersion++;
-      nextVersionByName.put(workflowName, nextVersion);
-    }
   }
 
   @Override
@@ -87,7 +74,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   
   protected void filterByName(List<Workflow> result, String name) {
     for (int i=result.size()-1; i>=0; i--) {
-      if (!name.equals(result.get(i).getName())) {
+      if (!name.equals(result.get(i).getSource())) {
         result.remove(i);
       }
     }
@@ -101,7 +88,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     Workflow latestWorkflow = null;
     LocalDateTime latestDeployTime = null;
     for (Workflow workflow: workflows.values()) {
-      if ( workflowName.equals(workflow.getName())
+      if ( workflowName.equals(workflow.getSource())
            && (latestDeployTime==null || latestDeployTime.isAfter(workflow.getDeployedTime())) ) {
         latestWorkflow = workflow;
         latestDeployTime = workflow.getDeployedTime();

@@ -15,10 +15,10 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
-import com.effektif.workflow.api.TaskService;
-import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
+import com.effektif.workflow.api.task.TaskService;
 
 
 public class ContextualTaskService implements TaskService {

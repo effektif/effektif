@@ -15,9 +15,10 @@ package com.effektif.workflow.api;
 
 import java.util.List;
 
-import com.effektif.workflow.api.command.Message;
-import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -26,42 +27,23 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 /** Main interface to the workflow engine. 
  * 
- * Obtain an in memory workflow engine like this:
- * <pre>
- * WorkflowEngine workflowEngine = new MemoryWorkflowEngineConfiguration()
- *   .buildWorkflowEngine();
- * </pre>
- * 
- * Or get a mongodb workflow engine like this:
- * <pre>
- * MongoWorkflowEngineConfiguration cfg = ...
- * WorkflowEngine workflowEngine = new MongoWorkflowEngine(cfg);
- * </pre>
- */
+ * See <a href="https://github.com/effektif/effektif-oss/wiki/Workflow-engine-types">Workflow engine types</a>
+ * for how to obtain a WorkflowEngine object. */
 public interface WorkflowEngine {
 
   /** Validates and deploys if there are no errors. */
-  Workflow deployWorkflow(Workflow workflow);
+  Deployment deployWorkflow(Workflow workflow);
   
-  /** Only validates the given workflow and reports any issues in the response {@link Workflow#getIssues()}. */
-  Workflow validateWorkflow(Workflow workflow);
-
   List<Workflow> findWorkflows(WorkflowQuery workflowQuery);
 
   void deleteWorkflows(WorkflowQuery workflowQuery);
-
-  /** starts a new workflow instance for the specified deployed workflow.
-   * This is a convenience method. Only the {@link Workflow#getId() id} is used 
-   * of the given workflow. The given workflow has to be deployed before otherwise
-   * a RuntimeException is raised.*/
-  WorkflowInstance startWorkflowInstance(Workflow workflow);
 
   /** starts a new workflow instance with the data specified in the Start object. */
   WorkflowInstance startWorkflowInstance(Start start);
 
   /** Sends a {@link Message message} to an activity instance, most likely this is invoked 
    * to end the specified activity instance and move workflow execution forward from there. */
-  WorkflowInstance sendMessage(Message messageCommand);
+  WorkflowInstance sendMessage(Message message);
 
   List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query);
   

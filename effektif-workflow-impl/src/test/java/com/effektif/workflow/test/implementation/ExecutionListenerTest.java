@@ -91,16 +91,16 @@ public class ExecutionListenerTest extends WorkflowTest {
 
   @Test
   public void testBasicEvents() {
-    Workflow w = new Workflow()
+    Workflow workflow = new Workflow()
       .activity(new StartEvent("s")
         .transitionTo("t"))
       .activity(new NoneTask("t")
         .transitionTo("e"))
       .activity(new EndEvent("e"));
 
-    w = deploy(w);
+    deploy(workflow);
 
-    start(w);
+    start(workflow);
 
     int i = 0;
     assertEquals("start s", listener.getEvents().get(i++));
@@ -118,7 +118,7 @@ public class ExecutionListenerTest extends WorkflowTest {
     //           /- a -\
     //  s - g1 -X       X- g2 - e
     //           \- b -/
-    Workflow w = new Workflow()
+    Workflow workflow = new Workflow()
       .activity(new NoneTask("s")
         .transitionTo("g1"))
       .activity(new ParallelGateway("g1")
@@ -132,8 +132,9 @@ public class ExecutionListenerTest extends WorkflowTest {
         .transitionTo("e"))
       .activity(new EndEvent("e"));
 
-    w = deploy(w);
-    start(w);
+    deploy(workflow);
+    
+    start(workflow);
 
     int i = 0;
     assertEquals("start s", listener.getEvents().get(i++));
@@ -163,7 +164,7 @@ public class ExecutionListenerTest extends WorkflowTest {
     //           /- - -\
     //  s - g1 -X       X- g2 - e
     //           \- b -/
-    Workflow w = new Workflow()
+    Workflow workflow = new Workflow()
       .activity(new StartEvent("s")
         .transitionTo("g1"))
       .activity(new ParallelGateway("g1")
@@ -175,8 +176,8 @@ public class ExecutionListenerTest extends WorkflowTest {
         .transitionTo("e"))
       .activity(new EndEvent("e"));
 
-    w = deploy(w);
-    start(w);
+    deploy(workflow);
+    start(workflow);
 
     int i = 0;
     assertEquals("start s", listener.getEvents().get(i++));

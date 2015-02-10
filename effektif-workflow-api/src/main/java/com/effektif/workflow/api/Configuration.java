@@ -13,9 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.api;
 
+import com.effektif.workflow.api.task.TaskService;
+
 
 public interface Configuration {
-
+  
   WorkflowEngine getWorkflowEngine();
   
   TaskService getTaskService();

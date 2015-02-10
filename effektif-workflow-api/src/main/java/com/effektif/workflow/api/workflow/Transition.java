@@ -13,27 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.effektif.workflow.api.types.BooleanType;
 
 
-public class Transition {
+public class Transition extends Element {
 
-  protected String id;
   protected String from;
   protected String to;
   protected Expression condition;
-  protected Map<String,Object> properties;
   protected Boolean isToNext;
 
-  public String getId() {
-    return this.id;
-  }
-  public void setId(String id) {
-    this.id = id;
-  }
   public Transition id(String id) {
     this.id = id;
     return this;
@@ -97,21 +86,33 @@ public class Transition {
     return this;
   }
 
-  public Map<String,Object> getProperties() {
-    return this.properties;
-  }
-  public void setProperties(Map<String,Object> properties) {
-    this.properties = properties;
-  }
-  
-  public Transition property(String key,Object value) {
-    if (properties==null) {
-      properties = new HashMap<>();
-    }
-    this.properties.put(key, value);
-    return this;
-  }
   public boolean isToNext() {
     return Boolean.TRUE.equals(isToNext);
   }
+
+  @Override
+  public Transition name(String name) {
+    super.name(name);
+    return this;
+  }
+
+  @Override
+  public Transition description(String description) {
+    super.description(description);
+    return this;
+  }
+
+  @Override
+  public Transition property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public Transition propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
+  
+  
 }

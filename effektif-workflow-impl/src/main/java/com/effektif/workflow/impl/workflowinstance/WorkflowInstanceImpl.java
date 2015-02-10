@@ -54,7 +54,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
-  public String organizationId;
   public String callerWorkflowInstanceId;
   public String callerActivityInstanceId;
   public Boolean isAsync;
@@ -68,7 +67,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, String workflowInstanceId) {
     this.id = workflowInstanceId;
     this.configuration = configuration;
-    this.organizationId = workflow.organizationId;
     this.workflow = workflow;
     this.scope = workflow;
     this.workflowInstance = this;
@@ -142,8 +140,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
           } else {
             values = Lists.of(typedValueList.value);
           }
-          if (log.isDebugEnabled())
-            log.debug("Starting multi container "+activityInstance);
+          if (log.isDebugEnabled()) {
+            log.debug("Starting multi instance container "+activityInstance);
+          }
           for (Object element: values) {
             ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
             elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE);
@@ -151,15 +150,17 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
             elementActivityInstance.initializeForEachElement(activity.multiInstance.elementVariable, elementTypedValue);
           }
         } else {
-          if (log.isDebugEnabled())
-            log.debug("Skipping empty multi container "+activityInstance);
+          if (log.isDebugEnabled()) {
+            log.debug("Skipping empty multi instance container "+activityInstance);
+          }
           activityInstance.onwards();
         }
   
       } else if (STATE_NOTIFYING.equals(activityInstance.workState)) {
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
           log.debug("Notifying parent of "+activityInstance);
-        activityInstance.parent.ended(activityInstance);
+        }
+        activityInstance.parent.activityInstanceEnded(activityInstance);
         activityInstance.workState = null;
       }
     }
@@ -263,13 +264,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return work!=null && !work.isEmpty();
   }
 
-  @Override
-  public void ended(ActivityInstanceImpl activityInstance) {
-    if (!hasOpenActivityInstances()) {
-      end();
-    }
-  }
-  
   public void end() {
     if (this.end==null) {
       if (hasOpenActivityInstances()) {
@@ -283,7 +277,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public String toString() {
-    return "("+(workflow.name!=null?workflow.name+"|":"")+(id!=null ? id.toString() : Integer.toString(System.identityHashCode(this)))+")";
+    return "("+(workflow.source!=null?workflow.source+"|":"")+(id!=null ? id.toString() : Integer.toString(System.identityHashCode(this)))+")";
   }
 
   public void removeLock() {

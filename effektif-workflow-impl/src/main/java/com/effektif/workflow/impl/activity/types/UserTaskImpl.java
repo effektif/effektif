@@ -15,19 +15,19 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.UserReferenceType;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -92,7 +92,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
-    task.setWorkflowName(activityInstance.workflow.name);
+    task.setWorkflowName(activityInstance.workflow.source);
     taskService.saveTask(task);
   }
 }

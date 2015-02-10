@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -29,11 +30,9 @@ public class WorkflowImpl extends ScopeImpl {
   public WorkflowEngineImpl workflowEngine;
 
   public List<ActivityImpl> startActivities;
-  public String organizationId;
-  public String name;
+  public String source;
   public LocalDateTime deployedTime;
-  public String deployedBy;
-  public Long version;
+  public UserReference deployedBy;
   public TriggerImpl trigger;
   
   public WorkflowImpl() {
@@ -43,11 +42,9 @@ public class WorkflowImpl extends ScopeImpl {
     this.workflow = this;
     super.parse(workflowApi, parser, null);
     this.startActivities = parser.getStartActivities(this);
-    this.organizationId = workflowApi.getOrganizationId();
-    this.name = workflowApi.getName();
+    this.source = workflowApi.getSource();
     this.deployedTime = workflowApi.getDeployedTime();
     this.deployedBy = workflowApi.getDeployedBy();
-    this.version = workflowApi.getVersion();
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
     
     Trigger triggerApi = workflowApi.getTrigger();
@@ -61,15 +58,4 @@ public class WorkflowImpl extends ScopeImpl {
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
   }
-
-//  public Workflow toWorkflow() {
-//    Workflow workflow = new Workflow();
-//    workflow.setOrganizationId(organizationId);
-//    workflow.setName(name);
-//    workflow.setDeployedTime(deployedTime);
-//    workflow.setDeployedBy(deployedBy);
-//    workflow.setVersion(version);
-//    super.serialize(workflow);
-//    return workflow;
-//  }
 }

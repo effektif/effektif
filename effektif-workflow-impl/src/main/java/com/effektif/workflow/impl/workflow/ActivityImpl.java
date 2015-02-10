@@ -37,41 +37,32 @@ public class ActivityImpl extends ScopeImpl {
   public MultiInstanceImpl multiInstance;
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
-  
-//  public Activity serialize() {
-//    Activity activity = (Activity) activityType.serialize();
-//    activity.setId(id);
-//    if (defaultTransition!=null) {
-//      activity.setDefaultTransitionId(defaultTransition.id);
-//    }
-//    if (multiInstance!=null) {
-//      activity.setMultiInstance(multiInstance.serialize());
-//    }
-//    serialize(activity);
-//    return activity;
-//  }
 
-  public void parse(Activity activityApi, Scope scopeApi, WorkflowParser workflowParser, ScopeImpl parent) {
-    super.parse(activityApi, workflowParser, parent);
+  public void parse(Activity activityApi, Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
+    super.parse(activityApi, parser, parent);
     if (id==null || "".equals(id)) {
-      workflowParser.addError("Activity has no id");
+      parser.addError("Activity has no id");
     } else if (id.contains(".")) {
-      workflowParser.addError("Activity '%s' has a dot in the name", id);
+      parser.addError("Activity '%s' has a dot in the name", id);
+    } else if (parser.activityIds.contains(id)) {
+      parser.addError("Duplicate activity id '%s'", id);
+    } else {
+      parser.activityIds.add(id);
     }
 
-    ActivityTypeService activityTypeService = workflowParser.getConfiguration(ActivityTypeService.class);
+    ActivityTypeService activityTypeService = parser.getConfiguration(ActivityTypeService.class);
     this.activityType = activityTypeService.instantiateActivityType(activityApi);
     // some activity types need to validate incoming and outgoing transitions, 
     // that's why they are NOT parsed here, but after the transitions.
     if (this.activityType==null) {
-      workflowParser.addError("Activity '%s' has no activityType configured", id);
+      parser.addError("Activity '%s' has no activityType configured", id);
     }
 
     if (activityApi.getMultiInstance()!=null) {
       this.multiInstance = new MultiInstanceImpl();
-      workflowParser.pushContext(multiInstance);
-      this.multiInstance.parse(activityApi, this, workflowParser);
-      workflowParser.popContext();
+      parser.pushContext("multiInstance", multiInstance, null);
+      this.multiInstance.parse(activityApi, this, parser);
+      parser.popContext();
     }
     
     if (activityApi.getOutgoingTransitions()!=null) {

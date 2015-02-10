@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.adapter.ExecuteRequest;
 import com.effektif.workflow.impl.adapter.ExecuteResponse;

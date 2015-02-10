@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -28,13 +28,13 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testExclusiveGateway() {
-    Workflow w = new Workflow()
+    Workflow workflow = new Workflow()
       .variable("v", new NumberType());
     
-    w = deploy(w);
+    deploy(workflow);
 
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
-      .workflowId(w.getId())
+      .workflowId(workflow.getId())
       .variableValue("v", 5));
     
     assertEquals(5, workflowInstance.getVariableValue("v"));

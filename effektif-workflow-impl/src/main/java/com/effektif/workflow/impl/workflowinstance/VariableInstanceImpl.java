@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflowinstance;
 
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;

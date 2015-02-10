@@ -100,16 +100,16 @@ public class LoopMonitoringTest extends WorkflowTest {
 
   @Test
   public void testBasicEvents() {
-    Workflow w = new Workflow()
+    Workflow workflow = new Workflow()
       .activity(new StartEvent("start")
         .transitionToNext())
       .activity(new NoneTask("groundhog")
         .transitionTo("groundhog"));
 
-    w = deploy(w);
+    deploy(workflow);
 
     try {
-      start(w);
+      start(workflow);
       fail("Expected exception from infinite loop monitoring");
     } catch (RuntimeException e) {
       assertEquals("Infinite loop suspected", e.getMessage());

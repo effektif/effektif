@@ -20,9 +20,9 @@ import java.util.Map;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
-import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

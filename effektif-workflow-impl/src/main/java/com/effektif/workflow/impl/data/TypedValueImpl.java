@@ -14,7 +14,7 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 
 
 public class TypedValueImpl {

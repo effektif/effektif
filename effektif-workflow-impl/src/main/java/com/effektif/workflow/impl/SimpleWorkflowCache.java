@@ -13,48 +13,32 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
 /** caches executable workflows */
 public class SimpleWorkflowCache implements WorkflowCache {
   
-  protected Map<Object, WorkflowImpl> workflows = new ConcurrentHashMap<Object, WorkflowImpl>();
+  protected Map<String, WorkflowImpl> workflows = new ConcurrentHashMap<String, WorkflowImpl>();
 
   @Override
   public WorkflowImpl get(String workflowId) {
-    RequestContext requestContext = RequestContext.current();
-    String organizationId = requestContext!=null ? requestContext.getOrganizationId() : null;
-    return workflows.get(getKey(workflowId, organizationId));
-  }
-
-  protected Object getKey(String workflowId, String organizationId) {
-    Exceptions.checkNotNullParameter(workflowId, "workflowId");
-    List<String> key = new ArrayList<>();
-    key.add(workflowId);
-    if (organizationId!=null) {
-      key.add(organizationId);
-    }
-    return key;
+    return workflows.get(workflowId);
   }
 
   @Override
   public void put(WorkflowImpl workflow) {
-    workflows.put(getKey(workflow.id, workflow.organizationId), workflow);
+    workflows.put(workflow.id, workflow);
   }
   
-  public Map<Object, WorkflowImpl> getWorkflows() {
+  public Map<String, WorkflowImpl> getWorkflows() {
     return workflows;
   }
   
-  public void setWorkflows(Map<Object, WorkflowImpl> workflows) {
+  public void setWorkflows(Map<String, WorkflowImpl> workflows) {
     this.workflows = workflows;
   }
 }

@@ -15,8 +15,8 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.api.datasource.ItemReference;
+import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterQuery;
 import com.effektif.workflow.impl.adapter.AdapterService;

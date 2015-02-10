@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import static com.effektif.mongo.MongoHelper.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -25,7 +27,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -46,22 +48,19 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
 
 
-public class MongoWorkflowInstanceStore extends MongoCollection implements WorkflowInstanceStore, Brewable {
+public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
   
   public static final Logger log = WorkflowEngineImpl.log;
 
   protected Configuration configuration;
   protected WorkflowEngineImpl workflowEngine;
-  protected WriteConcern writeConcernInsertWorkflowInstance;
-  protected WriteConcern writeConcernFlushUpdates;
-  protected boolean storeWorkflowIdsAsStrings;
+  protected MongoCollection workflowInstancesCollection;
   protected MongoJobStore mongoJobsStore;
+  protected boolean storeWorkflowIdsAsStrings;
   
   interface ScopeInstanceFields {
     String _ID = "_id";
@@ -71,7 +70,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
   
   interface WorkflowInstanceFields extends ScopeInstanceFields {
-    String ORGANIZATION_ID = "organizationId";
     String WORKFLOW_ID = "workflowId";
     String ACTIVITY_INSTANCES = "activities";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
@@ -85,6 +83,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
     String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
     String JOBS = "jobs";
+    String PROPERTIES = null;
   }
   
   interface ActivityInstanceFields extends ScopeInstanceFields {
@@ -107,20 +106,12 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
 
   @Override
-  public String generateWorkflowId() {
-    return new ObjectId().toString();
-  }
-
-  @Override
   public void brew(Brewery brewery) {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
-    DB db = brewery.get(DB.class);
+    MongoDb mongoDb = brewery.get(MongoDb.class);
     this.configuration = brewery.get(MongoConfiguration.class);
     this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
-    this.dbCollection = db.getCollection(mongoConfiguration.workflowInstancesCollectionName);
-    this.isPretty = mongoConfiguration.isPretty;
-    this.writeConcernInsertWorkflowInstance = mongoConfiguration.getWriteConcernInsertWorkflowInstance(this.dbCollection);
-    this.writeConcernFlushUpdates = mongoConfiguration.getWriteConcernFlushUpdates(this.dbCollection);
+    this.workflowInstancesCollection = mongoDb.createCollection(mongoConfiguration.workflowInstancesCollectionName);
     this.storeWorkflowIdsAsStrings = mongoConfiguration.getStoreWorkflowIdsAsString();
     this.mongoJobsStore = brewery.get(MongoJobStore.class);
   }
@@ -133,7 +124,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   @Override
   public void insertWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbWorkflowInstance = writeWorkflowInstance(workflowInstance);
-    insert(dbWorkflowInstance, writeConcernInsertWorkflowInstance);
+    workflowInstancesCollection.insert("insert-workflow-instance", dbWorkflowInstance);
     workflowInstance.trackUpdates(false);
   }
 
@@ -248,7 +239,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     }
     
     if (!update.isEmpty()) {
-      update(query, update, false, false, writeConcernFlushUpdates);
+      workflowInstancesCollection.update("flush-workflow-instance", query, update, false, false);
     } else {
       if (log.isDebugEnabled()) log.debug("  Nothing to flush");
     }
@@ -266,7 +257,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   @Override
   public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
     BasicDBObject query = buildQuery(workflowInstanceQuery);
-    DBCursor workflowInstanceCursor = find(query);
+    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instances", query);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
     while (workflowInstanceCursor.hasNext()) {
       BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
@@ -279,15 +270,11 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
     BasicDBObject query = buildQuery(workflowInstanceQuery);
-    remove(query);
+    workflowInstancesCollection.remove("delete-workflow-instances", query);
   }
 
   protected BasicDBObject buildQuery(WorkflowInstanceQuery workflowInstanceQuery) {
     BasicDBObject query = new BasicDBObject();
-    RequestContext requestContext = RequestContext.current();
-    if (hasOrganizationId(requestContext)) {
-      query.append(WorkflowInstanceFields.ORGANIZATION_ID, requestContext.getOrganizationId());
-    }
     if (workflowInstanceQuery.getWorkflowInstanceId()!=null) {
       query.append(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceQuery.getWorkflowInstanceId()));
     }
@@ -298,7 +285,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   }
   
   public void saveWorkflowInstance(BasicDBObject dbWorkflowInstance) {
-    save(dbWorkflowInstance, writeConcernInsertWorkflowInstance);
+    workflowInstancesCollection.save("save-workfow-instance", dbWorkflowInstance);
   }
   
   @Override
@@ -316,7 +303,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     DBObject retrieveFields = new BasicDBObject()
           .append(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, false);
     
-    BasicDBObject dbWorkflowInstance = findAndModify(query, update, retrieveFields);
+    BasicDBObject dbWorkflowInstance = workflowInstancesCollection.findAndModify("lock-workflow-instance", query, update, retrieveFields);
     if (dbWorkflowInstance==null) {
       return null;
     }
@@ -353,7 +340,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbWorkflowInstance = new BasicDBObject();
     writeId(dbWorkflowInstance, WorkflowInstanceFields._ID, workflowInstance.id);
-    writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID, workflowInstance.organizationId);
     if (storeWorkflowIdsAsStrings) {
       writeString(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
     } else {
@@ -377,6 +363,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.WORK, writeWork(workflowInstance.work));
     writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.WORK_ASYNC, writeWork(workflowInstance.workAsync));
     writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.JOBS, writeJobs(workflowInstance.jobs));
+    writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.PROPERTIES, workflowInstance.properties);
     return dbWorkflowInstance;
   }
   
@@ -416,7 +403,6 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     workflowInstance.workflowInstance = workflowInstance;
     workflowInstance.scope = workflow;
     workflowInstance.configuration = configuration;
-    workflowInstance.organizationId = readString(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
     workflowInstance.callerWorkflowInstanceId = readString(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID);
     workflowInstance.callerActivityInstanceId = readString(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID);
     workflowInstance.nextActivityInstanceId = readLong(dbWorkflowInstance, WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID);
@@ -452,7 +438,7 @@ public class MongoWorkflowInstanceStore extends MongoCollection implements Workf
     workflowInstance.variableInstances = readVariableInstances(dbWorkflowInstance, workflowInstance);
     workflowInstance.work = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK, workflowInstance);
     workflowInstance.workAsync = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK_ASYNC, workflowInstance);
-    
+    workflowInstance.properties = readObjectMap(dbWorkflowInstance, WorkflowInstanceFields.PROPERTIES);
     return workflowInstance;
   }
 

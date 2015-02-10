@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ScriptTask;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -37,7 +37,7 @@ public class ScriptTest extends WorkflowTest {
         .scriptMapping("name", "n")
         .scriptMapping("message", "m"));
 
-    workflow = deploy(workflow);
+    deploy(workflow);
     
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(workflow.getId())

@@ -14,9 +14,9 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 

@@ -18,8 +18,10 @@ import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.S
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -27,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -75,8 +77,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public abstract void setEnd(LocalDateTime end); 
   
-  public abstract void ended(ActivityInstanceImpl activityInstance);
-
   public abstract boolean isWorkflowInstance();
   
   protected void toScopeInstance(ScopeInstance scopeInstanceApi) {
@@ -408,5 +408,36 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
     return false;
+  }
+
+  public void activityInstanceEnded(ActivityInstanceImpl endedActivityInstance) {
+    if (!hasOpenActivityInstances()) {
+      // We also check if there are still joining activities.
+      // If so, they need to be fired.
+      // We ensure that we fire each activity max once, 
+      // even  if there could be multiple joining activity instances in the activity
+      List<ActivityInstanceImpl> joiningActivityInstances = null;
+      if (activityInstances!=null) {
+        for (ActivityInstanceImpl activityInstance: activityInstances) {
+          if (activityInstance.isJoining()) {
+            if (joiningActivityInstances==null) {
+              joiningActivityInstances = new ArrayList<>();
+            }
+            joiningActivityInstances.add(activityInstance);
+          }
+        }
+      }
+      if (joiningActivityInstances!=null && !joiningActivityInstances.isEmpty()) {
+        Set<ActivityImpl> onwardedActivities = new HashSet<>();  
+        for (ActivityInstanceImpl joiningActivityInstance: joiningActivityInstances) {
+          if (!onwardedActivities.contains(joiningActivityInstance.activity)) {
+            onwardedActivities.add(joiningActivityInstance.activity);
+            joiningActivityInstance.onwards();
+          }
+        }
+      } else {
+        end();
+      }
+    }
   }
 }

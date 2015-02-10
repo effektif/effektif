@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;

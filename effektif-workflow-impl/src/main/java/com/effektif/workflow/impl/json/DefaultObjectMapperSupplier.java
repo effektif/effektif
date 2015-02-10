@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.json;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
 import com.effektif.workflow.impl.data.DataTypeService;

@@ -16,11 +16,11 @@ package com.effektif.workflow.impl.activity;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.bpmn.xml.XmlElement;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
@@ -72,6 +72,7 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   }
   
   public void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance) {
+    
     if (!activityInstance.hasOpenActivityInstances()) {
       activityInstance.end();
     }

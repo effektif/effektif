@@ -16,7 +16,7 @@ package com.effektif.workflow.test.api;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -39,7 +39,7 @@ public class MultiInstanceTest extends WorkflowTest {
           .valuesVariableId("reviewers")
           .variable("reviewer", new UserReferenceType())));
     
-    workflow = deploy(workflow);
+    deploy(workflow);
     
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(workflow.getId())

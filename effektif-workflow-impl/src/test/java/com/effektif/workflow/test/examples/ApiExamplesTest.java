@@ -20,12 +20,13 @@ import java.util.List;
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
@@ -42,7 +43,7 @@ public class ApiExamplesTest {
     
     // Create a workflow
     Workflow workflow = new Workflow()
-      .name("Release")
+      .source("Release")
       .activity("Move open issues", new UserTask()
         .transitionToNext())
       .activity("Check continuous integration", new UserTask()
@@ -53,10 +54,12 @@ public class ApiExamplesTest {
         .bodyText("Enjoy!"));
     
     // Deploy the workflow to the engine
-    workflow = workflowEngine.deployWorkflow(workflow);
+    workflowEngine
+      .deployWorkflow(workflow)
+      .checkNoErrorsAndNoWarnings();
     
     // Start a new workflow instance
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(workflow);
+    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start().workflowId(workflow.getId()));
     
     List<Task> tasks = taskService.findTasks(new TaskQuery());
     assertEquals("Move open issues", tasks.get(0).getName());

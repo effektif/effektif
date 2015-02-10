@@ -15,24 +15,23 @@ package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.activity.InputParameter;
@@ -42,7 +41,6 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.script.ExpressionService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -60,23 +58,48 @@ public class WorkflowParser {
   public WorkflowImpl workflow;
   public LinkedList<String> path;
   public ParseIssues issues;
-  public Stack<ValidationContext> contextStack;
+  public Stack<ParseContext> contextStack;
+  public Set<String> activityIds = new HashSet<>();
+  public Set<String> variableIds = new HashSet<>();
+  public Set<String> transitionIds = new HashSet<>();
   
-  private class ValidationContext {
-    ValidationContext pathElement(String pathElement) {
-      this.pathElement = pathElement;
-      return this;
-    }
-    ValidationContext position(Map<String, Object> properties) {
-      if (properties!=null) {
-        this.line = (Long) properties.get(PROPERTY_LINE);
-        this.column = (Long) properties.get(PROPERTY_COLUMN);
+  private class ParseContext {
+    ParseContext(String property, Object element, Integer index) {
+      this.property = property;
+      this.element = element;
+      
+      String indexText = null;
+      if (element instanceof Element) {
+        indexText = ((Element)element).getId();
       }
-      return this;
+      if (indexText==null && index!=null) {
+        indexText = Integer.toString(index);
+      }
     }
-    String pathElement;
-    Long line;
-    Long column;
+    Object element;
+    String property;
+    String index;
+    public String toString() {
+      if (index!=null) {
+        return property+"["+index+"]";
+      } else {
+        return property;
+      }
+    }
+    public Long getLine() {
+      if (element instanceof Element) {
+        Number line = (Number) ((Element)element).getProperty(PROPERTY_LINE);
+        return line!=null ? line.longValue() : null;
+      }
+      return null;
+    }
+    public Long getColumn() {
+      if (element instanceof Element) {
+        Number column = (Number) ((Element)element).getProperty(PROPERTY_COLUMN);
+        return column!=null ? column.longValue() : null;
+      }
+      return null;
+    }
   }
 
   /** parses the content of workflowApi into workflowImpl and 
@@ -85,13 +108,10 @@ public class WorkflowParser {
    * By returning the parser itself you can access the  */
   public static WorkflowParser parse(Configuration configuration, Workflow workflowApi) {
     WorkflowParser parse = new WorkflowParser(configuration);
-    parse.pushContext(workflowApi);
+    parse.pushContext("workflow", workflowApi, null);
     parse.workflow = new WorkflowImpl();
     parse.workflow.parse(workflowApi, parse);
     parse.popContext();
-    if (!parse.issues.isEmpty()) {
-      workflowApi.setIssues(parse.issues);
-    }
     return parse;
   }
 
@@ -101,47 +121,9 @@ public class WorkflowParser {
     this.contextStack = new Stack<>();
     this.issues = new ParseIssues();
   }
-  
-  public void pushContext(Workflow workflow) {
-    pushContext()
-            .pathElement("workflow")
-            .position(workflow.getProperties());
-  }
 
-  public void pushContext(String propertyName, Scope scope, int index) {
-    pushContext(propertyName, scope.getId(), index, scope.getProperties());
-  }
-
-  public void pushContext(String propertyName, Variable variable, int index) {
-    pushContext(propertyName, variable.getId(), index, variable.getProperties());
-  }
-
-  public void pushContext(String propertyName, Timer timer, int index) {
-    pushContext(propertyName, timer.getId(), index, timer.getProperties());
-  }
-
-  public void pushContext(String propertyName, Transition transition, int index) {
-    pushContext(propertyName, transition.getId(), index, transition.getProperties());
-  }
-
-  public void pushContext(String propertyName, String id, int index, Map<String, Object> properties) {
-    pushContext()
-            .pathElement("."+propertyName+"["+(id!=null ? id : "")+(index!=-1 ? "|"+index: "")+"]")
-            .position(properties);
-  }
-
-  public void pushContext(MultiInstanceImpl multiInstance) {
-    pushContext().pathElement(".multiInstance");
-  }
-
-  public void pushContext(String key) {
-    pushContext().pathElement("."+key);
-  }
-
-  ValidationContext pushContext() {
-    ValidationContext validationContext = new ValidationContext();
-    this.contextStack.push(validationContext);
-    return validationContext;
+  public void pushContext(String property, Object element, Integer index) {
+    this.contextStack.push(new ParseContext(property, element, index));
   }
   
   public void popContext() {
@@ -150,8 +132,14 @@ public class WorkflowParser {
   
   protected String getPathText() {
     StringBuilder pathText = new StringBuilder();
-    for (ValidationContext validationContext: contextStack) {
-      pathText.append(validationContext.pathElement);
+    String dot = null;
+    for (ParseContext validationContext: contextStack) {
+      if (dot==null) {
+        dot = ".";
+      } else {
+        pathText.append(dot);
+      }
+      pathText.append(validationContext.toString());
     }
     return pathText.toString();
   }
@@ -182,7 +170,7 @@ public class WorkflowParser {
       String key = entry.getKey();
       Binding inputBinding = entry.getValue();
       InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
-      pushContext("inputBindings."+key);
+      pushContext("inputBindings["+key+"]", inputParameter, null);
 
       if (activityDescriptor!=null && inputParameter==null) {
         addWarning("Unexpected input binding '%s' in activity '%s'", key, activityApi.getId());
@@ -265,13 +253,13 @@ public class WorkflowParser {
   }
 
   public void addError(String message, Object... messageArgs) {
-    ValidationContext currentContext = contextStack.peek();
-    issues.addIssue(IssueType.error, getPathText(), currentContext.line, currentContext.column, message, messageArgs);
+    ParseContext currentContext = contextStack.peek();
+    issues.addIssue(IssueType.error, getPathText(), currentContext.getLine(), currentContext.getColumn(), message, messageArgs);
   }
 
   public void addWarning(String message, Object... messageArgs) {
-    ValidationContext currentContext = contextStack.peek();
-    issues.addIssue(IssueType.warning, getPathText(), currentContext.line, currentContext.column, message, messageArgs);
+    ParseContext currentContext = contextStack.peek();
+    issues.addIssue(IssueType.warning, getPathText(), currentContext.getLine(), currentContext.getColumn(), message, messageArgs);
   }
   
   public ParseIssues getIssues() {

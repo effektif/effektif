@@ -5,6 +5,7 @@
   - Create a script that produces an executable jar file for the test runner
   - Get the most out of JMeter or Gatling 
   - Use monitoring tools to learn about memory and bottlenecks
+- [ ] 
 - [ ] Build an HR module on top
   - Entities: Job posting, Candidate, Employment contract
   - Workflows: New job opening, New candidate, Hire, Fire
@@ -14,6 +15,12 @@
 - [ ] HttpServiceTask
 - [ ] Scala fluent workflow builder 
 - [ ] NodeJS adapter
+
+[06/02/15 09:31:26] Peter Hilton: -[ ] New trigger types
+[06/02/15 09:31:33] Peter Hilton:   - Camel component
+[06/02/15 09:31:42] Tom Baeyens: - [ ] Trello task service
+[06/02/15 09:33:19] Tom Baeyens: IFTTT trigger
+[06/02/15 09:40:27] Tom Baeyens: cloud triggers
 
 # Tasks
 

@@ -14,8 +14,8 @@
 package com.effektif.workflow.test.serialization;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.job.JobService;

@@ -35,6 +35,10 @@ public class VariableImpl {
       parser.addError("Variable has no id");
     } else if (id.contains(".")) {
       parser.addError("Variable '%s' has a dot in the name", id);
+    } else if (parser.variableIds.contains(id)) {
+      parser.addError("Duplicate variable id '%s'", id);
+    } else {
+      parser.variableIds.add(id);
     }
     this.parent = parent;
     DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);

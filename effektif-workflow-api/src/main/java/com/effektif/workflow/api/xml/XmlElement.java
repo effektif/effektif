@@ -11,17 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.bpmn.xml;
+package com.effektif.workflow.api.xml;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.stream.events.Namespace;
+import com.effektif.workflow.api.workflow.Scope;
 
 /** xml dom structure that is jsonnable with jackson
- * so that it can be serialized to/from json for rest service and db persistence. */
+ * so that it can be serialized to/from json for rest service and db persistence. 
+ * @see {@link Scope#get}# */
 public class XmlElement {
 
   public String name;
@@ -43,10 +44,6 @@ public class XmlElement {
       namespaces = new LinkedHashMap<>();
     }
     namespaces.put(prefix, namespaceUri);
-  }
-
-  void addNamespace(Namespace namespace) {
-    addNamespace(namespace.getPrefix(), namespace.getNamespaceURI());
   }
 
   public void addAttribute(String name, String value) {

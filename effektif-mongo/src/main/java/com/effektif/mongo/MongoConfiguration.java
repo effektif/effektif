@@ -17,16 +17,15 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.WriteConcern;
 
 
 public class MongoConfiguration extends DefaultConfiguration {
@@ -41,12 +40,9 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String jobsCollectionName = "jobs";
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
-  protected WriteConcern writeConcernInsertWorkflow;
-  protected WriteConcern writeConcernInsertWorkflowInstance;
-  protected WriteConcern writeConcernFlushUpdates;
-  protected WriteConcern writeConcernJobs;
   protected boolean storeWorkflowIdsAsStrings = false;
   protected String jobsArchivedCollectionName;
+  protected Class<? extends Workflow> workflowClass = Workflow.class;
 
   public MongoConfiguration() {
     brewery.ingredient(this);
@@ -56,6 +52,16 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoWorkflowInstanceStore());
     brewery.ingredient(new MemoryTaskService());
     brewery.ingredient(new MongoJobStore());
+  }
+  
+  public MongoConfiguration db(DB db) {
+    brewery.ingredient(db);
+    return this;
+  }
+  
+  public MongoConfiguration mongoClient(MongoClient mongoClient) {
+    brewery.ingredient(mongoClient);
+    return this;
   }
   
   public MongoConfiguration server(String host) {
@@ -97,26 +103,6 @@ public class MongoConfiguration extends DefaultConfiguration {
     return this;
   }
   
-  public MongoConfiguration writeConcernInsertProcessDefinition(WriteConcern writeConcernInsertProcessDefinition) {
-    this.writeConcernInsertWorkflow = writeConcernInsertProcessDefinition;
-    return this;
-  }
-
-  public MongoConfiguration writeConcernInsertProcessInstance(WriteConcern writeConcernInsertProcessInstance) {
-    this.writeConcernInsertWorkflowInstance = writeConcernInsertProcessInstance;
-    return this;
-  }
-
-  public MongoConfiguration writeConcernFlushUpdates(WriteConcern writeConcernFlushUpdates) {
-    this.writeConcernFlushUpdates = writeConcernFlushUpdates;
-    return this;
-  }
-  
-  public MongoConfiguration writeConcernJobs(WriteConcern writeConcernJobs) {
-    this.writeConcernJobs = writeConcernJobs;
-    return this;
-  }
-  
   public MongoConfiguration workflowInstancesCollectionName(String processInstancesCollectionName) {
     this.workflowInstancesCollectionName = processInstancesCollectionName;
     return this;
@@ -137,12 +123,6 @@ public class MongoConfiguration extends DefaultConfiguration {
     return this;
   }
   
-  @Override
-  public MongoConfiguration id(String id) {
-    super.id(id);
-    return this;
-  }
-  
   public MongoConfiguration storeWorkflowIdsAsStrings() {
     this.storeWorkflowIdsAsStrings = true;
     return this;
@@ -153,6 +133,19 @@ public class MongoConfiguration extends DefaultConfiguration {
     return this;
   }
 
+  @Override
+  public MongoConfiguration synchronous() {
+    super.synchronous();
+    return this;
+  }
+
+  public MongoConfiguration databaseName(String databaseName) {
+    this.databaseName = databaseName;
+    return this;
+  }
+
+  // getters and setters //////////////////////////////////////////////////
+  
   public void setServerAddresses(List<ServerAddress> serverAddresses) {
     this.serverAddresses = serverAddresses;
   }
@@ -172,39 +165,23 @@ public class MongoConfiguration extends DefaultConfiguration {
   public void setCredentials(List<MongoCredential> credentials) {
     this.credentials = credentials;
   }
-
-  public void setWriteConcernInsertWorkflow(WriteConcern writeConcernInsertProcessDefinition) {
-    this.writeConcernInsertWorkflow = writeConcernInsertProcessDefinition;
-  }
-  
-  public void setWriteConcernInsertWorkflowInstance(WriteConcern writeConcernInsertWorkflowInstance) {
-    this.writeConcernInsertWorkflowInstance = writeConcernInsertWorkflowInstance;
-  }
-  
-  public void setWriteConcernJobs(WriteConcern writeConcernJobs) {
-    this.writeConcernJobs = writeConcernJobs;
-  }
-
-  public void setWriteConcernFlushUpdates(WriteConcern writeConcernFlushUpdates) {
-    this.writeConcernFlushUpdates = writeConcernFlushUpdates;
-  }
   
   public String getWorkflowInstancesCollectionName() {
     return workflowInstancesCollectionName;
   }
   
-  public void setWorkflowInstancesCollectionName(String processInstancesCollectionName) {
-    this.workflowInstancesCollectionName = processInstancesCollectionName;
+  public void setWorkflowInstancesCollectionName(String workflowInstancesCollectionName) {
+    this.workflowInstancesCollectionName = workflowInstancesCollectionName;
   }
  
   public String getWorkflowsCollectionName() {
     return workflowsCollectionName;
   }
 
-  public void setWorkflowsCollectionName(String processDefinitionsCollectionName) {
-    this.workflowsCollectionName = processDefinitionsCollectionName;
+  public void setWorkflowsCollectionName(String workflowsCollectionName) {
+    this.workflowsCollectionName = workflowsCollectionName;
   }
-  
+
   public String getJobsCollectionName() {
     return jobsCollectionName;
   }
@@ -243,35 +220,11 @@ public class MongoConfiguration extends DefaultConfiguration {
   public MongoClientOptions.Builder getOptionBuilder() {
     return optionBuilder;
   }
-  
-  public WriteConcern getWriteConcernInsertWorkflow(DBCollection dbCollection) {
-    return getWriteConcern(dbCollection, writeConcernInsertWorkflow);
-  }
-  
-  public WriteConcern getWriteConcernInsertWorkflowInstance(DBCollection dbCollection) {
-    return getWriteConcern(dbCollection, writeConcernInsertWorkflowInstance);
-  }
-  
-  public WriteConcern getWriteConcernJobs(DBCollection dbCollection) {
-    return getWriteConcern(dbCollection, writeConcernJobs);
-  }
 
-  public WriteConcern getWriteConcernFlushUpdates(DBCollection dbCollection) {
-    return getWriteConcern(dbCollection, writeConcernFlushUpdates);
+  public Class<? extends Workflow> getWorkflowClass() {
+    return this.workflowClass;
   }
-  
-  public static WriteConcern getWriteConcern(DBCollection dbCollection, WriteConcern configuredWriteConcern) {
-    return configuredWriteConcern!=null ? configuredWriteConcern : dbCollection.getWriteConcern();
-  }
-
-  @Override
-  public MongoConfiguration synchronous() {
-    super.synchronous();
-    return this;
-  }
-
-  public MongoConfiguration databaseName(String databaseName) {
-    this.databaseName = databaseName;
-    return this;
+  public void setWorkflowClass(Class<? extends Workflow> workflowClass) {
+    this.workflowClass = workflowClass;
   }
 }

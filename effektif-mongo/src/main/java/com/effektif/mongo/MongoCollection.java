@@ -13,16 +13,10 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
-import com.effektif.workflow.api.command.RequestContext;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -36,210 +30,126 @@ public class MongoCollection {
   
   public static final Logger log = WorkflowEngineImpl.log;
   
-  protected DBCollection dbCollection;
-  protected boolean isPretty; 
-  
-  public String generateWorkflowId() {
-    return new ObjectId().toString();
+  public DBCollection dbCollection;
+  public boolean isPretty;
+  public WriteConcern defaultWriteConcern;
+  public Map<String,WriteConcern> writeConcerns;
+
+  public MongoCollection(DBCollection dbCollection, boolean isPretty) {
+    this.dbCollection = dbCollection;
+    this.isPretty = isPretty;
   }
 
-  public void writeId(Map<String,Object> o, String fieldName, String value) {
-    o.put(fieldName, new ObjectId(value));
-  }
-
-  public void writeIdOpt(Map<String,Object> o, String fieldName, String value) {
-    if (value!=null) {
-      o.put(fieldName, new ObjectId(value));
+  public WriteResult insert(String description, BasicDBObject o) {
+    if (log.isDebugEnabled())  {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" o="+toString(o));
     }
-  }
-
-  public void writeString(Map<String,Object> o, String fieldName, Object value) {
-    writeObject(o, fieldName, value);
-  }
-
-  public void writeStringOpt(Map<String,Object> o, String fieldName, String value) {
-    writeObjectOpt(o, fieldName, value);
-  }
-
-  public void writeLongOpt(Map<String,Object> o, String fieldName, Long value) {
-    writeObjectOpt(o, fieldName, value);
-  }
-
-  public void writeBooleanOpt(Map<String,Object> o, String fieldName, Object value) {
-    writeObjectOpt(o, fieldName, value);
-  }
-
-  public void writeObject(Map<String,Object> o, String fieldName, Object value) {
-    o.put(fieldName, value);
-  }
-
-  public void writeObjectOpt(Map<String,Object> o, String fieldName, Object value) {
-    if (value!=null) {
-      o.put(fieldName, value);
+    WriteResult writeResult = dbCollection.insert(o, getWriteConcern(description));
+    if (log.isDebugEnabled())  {
+      log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
     }
-  }
-  
-  public void writeTimeOpt(Map<String,Object> o, String fieldName, LocalDateTime value) {
-    if (value!=null) {
-      o.put(fieldName, value.toDate());
-    }
-  }
-
-  public void writeListElementOpt(Map<String,Object> o, String fieldName, Object element) {
-    if (element!=null) {
-      @SuppressWarnings("unchecked")
-      List<Object> list = (List<Object>) o.get(fieldName);
-      if (list == null) {
-        list = new ArrayList<>();
-        o.put(fieldName, list);
-      }
-      list.add(element);
-    }
-  }
-  
-  @SuppressWarnings("unchecked")
-  protected List<BasicDBObject> readList(BasicDBObject dbScope, String fieldName) {
-    return (List<BasicDBObject>) dbScope.get(fieldName);
-  }
-
-  protected Object readObject(BasicDBObject dbObject, String fieldName) {
-    return dbObject.get(fieldName);
-  }
-
-  protected BasicDBObject readBasicDBObject(BasicDBObject dbObject, String fieldName) {
-    return (BasicDBObject) dbObject.get(fieldName);
-  }
-
-  protected String readId(BasicDBObject dbObject, String fieldName) {
-    Object value = dbObject.get(fieldName);
-    return value!=null ? value.toString() : null;
-  }
-
-  @SuppressWarnings("unchecked")
-  protected Map<String, Object> readObjectMap(BasicDBObject dbObject, String fieldName) {
-    return (Map<String,Object>) dbObject.get(fieldName);
-  }
-
-  protected String readString(BasicDBObject dbObject, String fieldName) {
-    return (String) dbObject.get(fieldName);
-  }
-
-  protected Long readLong(BasicDBObject dbObject, String fieldName) {
-    Object object = dbObject.get(fieldName);
-    if (object==null) {
-      return null;
-    }
-    if (object instanceof Long) {
-      return (Long) object;
-    }
-    return ((Number) object).longValue();
-  }
-
-  protected Boolean readBoolean(BasicDBObject dbObject, String fieldName) {
-    return (Boolean) dbObject.get(fieldName);
-  }
-
-  protected LocalDateTime readTime(BasicDBObject dbObject, String fieldName) {
-    Object object = dbObject.get(fieldName);
-    if (object==null) {
-      return null;
-    }
-    if (object instanceof Date) {
-      return new LocalDateTime((Date)object);
-    }
-    throw new RuntimeException("date conversion problem: "+object+" ("+object.getClass().getName()+")");
-  }
-
-  protected WriteResult insert(BasicDBObject dbObject, WriteConcern writeConcern) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> insert "+toString(dbObject));
-    WriteResult writeResult = dbCollection.insert(dbObject, writeConcern);
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
     return writeResult;
   }
   
-  protected WriteResult save(BasicDBObject dbObject, WriteConcern writeConcern) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> save "+toString(dbObject));
-    WriteResult writeResult = dbCollection.save(dbObject, writeConcern);
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
-    return writeResult;
-  }
-  
-  protected WriteResult update(DBObject query, DBObject update, boolean upsert, boolean multi, WriteConcern writeConcern) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> update q="+toString(query)+" u="+toString(update));
-    WriteResult writeResult = dbCollection.update(query, update, upsert, multi, writeConcern);
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
+  public WriteResult save(String description, BasicDBObject dbObject) {
+    if (log.isDebugEnabled()) {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" "+toString(dbObject));
+    }
+    WriteResult writeResult = dbCollection.save(dbObject, getWriteConcern(description));
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
+    }
     return writeResult;
   }
 
-  protected BasicDBObject findAndModify(DBObject query, DBObject update) {
-    return findAndModify(query, update, null);
+  public WriteResult update(String description, DBObject query, DBObject update) {
+    return update(description, query, update, false, false);
   }
 
-  protected BasicDBObject findAndModify(DBObject query, DBObject update, DBObject fields) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> findAndModify q="+toString(query)+" u="+toString(update));
+  public WriteResult update(String description, DBObject query, DBObject update, boolean upsert, boolean multi) {
+    if (log.isDebugEnabled()) {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+" u="+toString(update));
+    }
+    WriteResult writeResult = dbCollection.update(query, update, upsert, multi, getWriteConcern(description));
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
+    }
+    return writeResult;
+  }
+
+  public BasicDBObject findAndModify(String description, DBObject query, DBObject update) {
+    return findAndModify(description, query, update, null);
+  }
+
+  public BasicDBObject findAndModify(String description, DBObject query, DBObject update, DBObject fields) {
+    if (log.isDebugEnabled()) {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+" u="+toString(update));
+    }
     BasicDBObject dbObject = (BasicDBObject) dbCollection.findAndModify( query, fields, null, false, update, true, false );
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("<-"+dbCollection.getName()+"-- "+(dbObject!=null ? toString(dbObject) : "null"));
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+dbCollection.getName()+"-- "+(dbObject!=null ? toString(dbObject) : "null"));
+    }
     return dbObject;
   }
 
-  protected BasicDBObject findOne(DBObject query) {
-    return findOne(query, null);
+  public BasicDBObject findOne(String description, DBObject query) {
+    return findOne(description, query, null);
   }
 
-  protected BasicDBObject findOne(DBObject query, DBObject fields) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> findOne q="+toString(query));
+  public BasicDBObject findOne(String description, DBObject query, DBObject fields) {
+    if (log.isDebugEnabled()) {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query));
+    }
     BasicDBObject dbObject = (BasicDBObject) dbCollection.findOne(query, fields);
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("<-"+dbCollection.getName()+"-- "+toString(dbObject));
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+dbCollection.getName()+"-- "+toString(dbObject));
+    }
     return dbObject;
   }
 
-  protected DBCursor find(DBObject query) {
-    return find(query, null);
+  public DBCursor find(String description, DBObject query) {
+    return find(description, query, null);
   }
 
-  protected DBCursor find(DBObject query, DBObject fields) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> find q="+toString(query)+(fields!=null ? " f="+toString(fields) :""));
+  public DBCursor find(String description, DBObject query, DBObject fields) {
+    if (log.isDebugEnabled()) {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+(fields!=null ? " f="+toString(fields) :""));
+    }
     return new LoggingCursor(this, dbCollection.find(query, fields));
   }
   
-  protected WriteResult remove(DBObject query) {
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("--"+dbCollection.getName()+"-> remove q="+toString(query));
+  public WriteResult remove(String description, DBObject query) {
+    if (log.isDebugEnabled()) { 
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query));
+    }
     WriteResult writeResult = dbCollection.remove(query);
-    if (log.isDebugEnabled()) if (log.isDebugEnabled())
-   log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
+    }
     return writeResult;
   }
 
-  protected String toString(Object o) {
+  public String toString(Object o) {
     return isPretty ? PrettyPrinter.toJsonPrettyPrint(o) : o.toString();
   }
 
-  protected WriteConcern getWriteConcern(WriteConcern writeConcern) {
+  public WriteConcern getWriteConcern(WriteConcern writeConcern) {
     return writeConcern!=null ? writeConcern : dbCollection.getWriteConcern();
   }
 
   public DBCollection getDbCollection() {
     return dbCollection;
   }
-
   
   public boolean isPretty() {
     return isPretty;
   }
   
-  protected static boolean hasOrganizationId(RequestContext requestContext) {
-    return requestContext!=null ? requestContext.getOrganizationId()!=null : false;
+  public WriteConcern getWriteConcern(String description) {
+    if (writeConcerns==null) {
+      return dbCollection.getWriteConcern();
+    }
+    WriteConcern writeConcern = writeConcerns.get(description);
+    return writeConcern!=null ? writeConcern : dbCollection.getWriteConcern();
   }
 }

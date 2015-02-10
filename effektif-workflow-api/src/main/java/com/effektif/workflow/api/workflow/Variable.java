@@ -13,17 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.effektif.workflow.api.types.Type;
 
 
-public class Variable {
+public class Variable extends Element {
   
-  protected String id;
   protected Type type;
-  protected Map<String,Object> properties;
 
   public Variable() {
   }
@@ -31,17 +26,6 @@ public class Variable {
   public Variable(String id, Type type) {
     this.id = id;
     this.type = type;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-  public void setId(String id) {
-    this.id = id;
-  }
-  public Variable id(String id) {
-    this.id = id;
-    return this;
   }
 
   public Type getType() {
@@ -55,18 +39,33 @@ public class Variable {
     return this;
   }
 
-  public Map<String,Object> getProperties() {
-    return this.properties;
+  @Override
+  public Variable id(String id) {
+    super.id(id);
+    return this;
   }
-  public void setProperties(Map<String,Object> properties) {
-    this.properties = properties;
+
+  @Override
+  public Variable name(String name) {
+    super.name(name);
+    return this;
   }
-  
-  public Variable property(String key,Object value) {
-    if (properties==null) {
-      properties = new HashMap<>();
-    }
-    this.properties.put(key, value);
+
+  @Override
+  public Variable description(String description) {
+    super.description(description);
+    return this;
+  }
+
+  @Override
+  public Variable property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public Variable propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
     return this;
   }
 }

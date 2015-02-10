@@ -29,7 +29,6 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
@@ -52,7 +51,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   public void brew(Brewery brewery) {
     this.workflowInstances = new ConcurrentHashMap<>();
     this.lockedWorkflowInstanceIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-    this.workflowEngineId = brewery.get(WorkflowEngineConfiguration.class).getId();
+    this.workflowEngineId = brewery.get(WorkflowEngineImpl.class).id;
   }
   
   @Override

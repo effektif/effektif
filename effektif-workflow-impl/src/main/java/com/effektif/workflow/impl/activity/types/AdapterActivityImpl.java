@@ -16,7 +16,7 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.AdapterActivity;
-import com.effektif.workflow.api.command.TypedValue;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;

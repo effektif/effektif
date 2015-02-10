@@ -13,6 +13,21 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import static com.effektif.mongo.MongoHelper.readBasicDBObject;
+import static com.effektif.mongo.MongoHelper.readBoolean;
+import static com.effektif.mongo.MongoHelper.readId;
+import static com.effektif.mongo.MongoHelper.readList;
+import static com.effektif.mongo.MongoHelper.readLong;
+import static com.effektif.mongo.MongoHelper.readObjectMap;
+import static com.effektif.mongo.MongoHelper.readString;
+import static com.effektif.mongo.MongoHelper.readTime;
+import static com.effektif.mongo.MongoHelper.writeBooleanOpt;
+import static com.effektif.mongo.MongoHelper.writeIdOpt;
+import static com.effektif.mongo.MongoHelper.writeLongOpt;
+import static com.effektif.mongo.MongoHelper.writeObjectOpt;
+import static com.effektif.mongo.MongoHelper.writeStringOpt;
+import static com.effektif.mongo.MongoHelper.writeTimeOpt;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -22,7 +37,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
@@ -35,13 +50,11 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
 
 
-public class MongoJobStore extends MongoCollection implements JobStore, Brewable {
+public class MongoJobStore implements JobStore, Brewable {
   
   interface JobFields {
     public String _id = "_id";
@@ -69,28 +82,25 @@ public class MongoJobStore extends MongoCollection implements JobStore, Brewable
   }
 
   protected JsonService jsonService;
-  protected WriteConcern writeConcernJobs;
   protected String lockOwner;
-  protected MongoCollection archivedJobs;
+  protected MongoCollection jobsCollection;
+  protected MongoCollection archivedJobsCollection;
   
   @Override
   public void brew(Brewery brewery) {
-    DB db = brewery.get(DB.class);
+    MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
-    this.dbCollection = db.getCollection(mongoConfiguration.getJobsCollectionName());
-    this.isPretty = mongoConfiguration.isPretty();
-    this.archivedJobs = new MongoCollection();
-    this.archivedJobs.dbCollection = db.getCollection(mongoConfiguration.getJobsArchivedCollectionName());
-    this.archivedJobs.isPretty =mongoConfiguration.isPretty; 
+    this.jobsCollection = mongoDb.createCollection(mongoConfiguration.getJobsCollectionName());
+    this.archivedJobsCollection = mongoDb.createCollection(mongoConfiguration.getJobsArchivedCollectionName());
   }
   
   public void saveJob(Job job) {
     BasicDBObject dbJob = writeJob(job);
     if (job.key!=null) {
       BasicDBObject query = new BasicDBObject(JobFields.key, job.key);
-      update(query, dbJob, true, false, writeConcernJobs);
+      jobsCollection.update("insert-job-with-key", query, dbJob, true, false);
     } else {
-      save(dbJob, writeConcernJobs);
+      jobsCollection.save("save-job", dbJob);
     }
   }
   
@@ -100,7 +110,7 @@ public class MongoJobStore extends MongoCollection implements JobStore, Brewable
       .get();
     filterOrganization(query, JobFields.organizationId);
     DBObject retrieveFields = new BasicDBObject(JobFields.workflowInstanceId, true);
-    DBCursor jobsDueHavingProcessInstance = find(query, retrieveFields);
+    DBCursor jobsDueHavingProcessInstance = jobsCollection.find("jobs-having-process-instance", query, retrieveFields);
     List<String> processInstanceIds = new ArrayList<>();
     while (jobsDueHavingProcessInstance.hasNext()) {
       DBObject partialJob = jobsDueHavingProcessInstance.next();
@@ -127,7 +137,7 @@ public class MongoJobStore extends MongoCollection implements JobStore, Brewable
     DBObject update = BasicDBObjectBuilder.start()
       .push("$set").append(JobFields.lock, dbLock).pop()
       .get();
-    BasicDBObject dbJob = findAndModify(query, update);
+    BasicDBObject dbJob = jobsCollection.findAndModify("lock-next-job", query, update);
     if (dbJob!=null) {
       return readJob(dbJob);
     }
@@ -238,17 +248,17 @@ public class MongoJobStore extends MongoCollection implements JobStore, Brewable
 
   @Override
   public void deleteJobs(JobQuery query) {
-    remove(buildQuery(query));
+    jobsCollection.remove("delete-jobs", buildQuery(query));
   }
 
   public List<Job> findJobs(JobQuery jobQuery) {
-    return findJobs(this, jobQuery);
+    return findJobs(jobsCollection, jobQuery);
   }
 
   protected List<Job> findJobs(MongoCollection collection, JobQuery jobQuery) {
     List<Job> jobs = new ArrayList<Job>();
     BasicDBObject query = buildQuery(jobQuery);
-    DBCursor jobCursor = collection.find(query);
+    DBCursor jobCursor = collection.find("find-jobs", query);
     while (jobCursor.hasNext()) {
       BasicDBObject dbJob = (BasicDBObject) jobCursor.next();
       Job job = readJob(dbJob);
@@ -276,22 +286,22 @@ public class MongoJobStore extends MongoCollection implements JobStore, Brewable
   @Override
   public void deleteJobById(String jobId) {
     BasicDBObject dbQuery = buildQuery(new JobQuery().jobId(jobId));
-    remove(dbQuery);
+    jobsCollection.remove("delete-job", dbQuery);
   }
 
   @Override
   public void saveArchivedJob(Job job) {
     BasicDBObject dbJob = writeJob(job);
-    archivedJobs.save(dbJob, writeConcernJobs);
+    archivedJobsCollection.save("save-archived-job", dbJob);
   }
 
   @Override
   public List<Job> findArchivedJobs(JobQuery query) {
-    return findJobs(archivedJobs, query);
+    return findJobs(archivedJobsCollection, query);
   }
 
   @Override
   public void deleteArchivedJobs(JobQuery query) {
-    archivedJobs.remove(buildQuery(query));
+    archivedJobsCollection.remove("delete-archived-jobs", buildQuery(query));
   }
 }

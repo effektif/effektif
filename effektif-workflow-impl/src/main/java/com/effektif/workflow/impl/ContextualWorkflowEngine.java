@@ -16,9 +16,10 @@ package com.effektif.workflow.impl;
 import java.util.List;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.Message;
-import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -36,7 +37,7 @@ public class ContextualWorkflowEngine implements WorkflowEngine {
   }
 
   @Override
-  public Workflow deployWorkflow(Workflow workflow) {
+  public Deployment deployWorkflow(Workflow workflow) {
     try {
       RequestContext.set(requestContext);
       return workflowEngine.deployWorkflow(workflow);
@@ -45,15 +46,15 @@ public class ContextualWorkflowEngine implements WorkflowEngine {
     }
   }
 
-  @Override
-  public Workflow validateWorkflow(Workflow workflow) {
-    try {
-      RequestContext.set(requestContext);
-    } finally {
-      RequestContext.unset();
-    }
-    return workflowEngine.validateWorkflow(workflow);
-  }
+//  @Override
+//  public Workflow validateWorkflow(Workflow workflow) {
+//    try {
+//      RequestContext.set(requestContext);
+//    } finally {
+//      RequestContext.unset();
+//    }
+//    return workflowEngine.validateWorkflow(workflow);
+//  }
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
@@ -118,11 +119,5 @@ public class ContextualWorkflowEngine implements WorkflowEngine {
   @Override
   public WorkflowEngine createWorkflowEngine(RequestContext requestContext) {
     return new ContextualWorkflowEngine(workflowEngine, requestContext);
-  }
-
-  @Override
-  public WorkflowInstance startWorkflowInstance(Workflow workflow) {
-    String workflowId = workflow.getId();
-    return startWorkflowInstance(new Start().workflowId(workflowId));
   }
 }

@@ -21,8 +21,8 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.command.Message;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
@@ -41,13 +41,13 @@ public class CallTest extends WorkflowTest {
     Workflow subWorkflow = new Workflow()
       .activity(new UserTask("subtask"));
     
-    subWorkflow = deploy(subWorkflow);
+    deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
       .activity(new Call("call")
         .subWorkflowId(subWorkflow.getId()));
 
-    superWorkflow = deploy(superWorkflow);
+    deploy(superWorkflow);
 
     WorkflowInstance superInstance = start(superWorkflow);
 
@@ -82,14 +82,14 @@ public class CallTest extends WorkflowTest {
         .assigneeVariableId("performer")
       );
     
-    subWorkflow = deploy(subWorkflow);
+    deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
       .activity(new Call("call")
         .inputValue("performer", new UserReference().id("johndoe"))
         .subWorkflowId(subWorkflow.getId()));
     
-    superWorkflow = deploy(superWorkflow);
+    deploy(superWorkflow);
     
     start(superWorkflow);
     
@@ -105,7 +105,7 @@ public class CallTest extends WorkflowTest {
         .assigneeVariableId("performer")
       );
     
-    subWorkflow = deploy(subWorkflow);
+    deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
       .variable("guineapig", new UserReferenceType())
@@ -113,7 +113,7 @@ public class CallTest extends WorkflowTest {
         .inputVariable("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
     
-    superWorkflow = deploy(superWorkflow);
+    deploy(superWorkflow);
     
     workflowEngine.startWorkflowInstance(new Start()
       .workflowId(superWorkflow.getId())

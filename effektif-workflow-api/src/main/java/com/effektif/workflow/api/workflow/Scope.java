@@ -14,21 +14,18 @@
 package com.effektif.workflow.api.workflow;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.effektif.workflow.api.types.Type;
 
 
-public class Scope {
+public class Scope extends Element {
 
   protected String id;
   protected List<Activity> activities;
   protected List<Transition> transitions;
   protected List<Variable> variables;
   protected List<Timer> timers;
-  protected Map<String,Object> properties;
 
   public String getId() {
     return this.id;
@@ -111,22 +108,4 @@ public class Scope {
     this.timers.add(timer);
     return this;
   }
-  
-  public Map<String,Object> getProperties() {
-    return this.properties;
-  }
-  public void setProperties(Map<String,Object> properties) {
-    this.properties = properties;
-  }
-  public Scope property(String key,Object value) {
-    if (properties==null) {
-      properties = new HashMap<>();
-    }
-    this.properties.put(key, value);
-    return this;
-  }
-  public Object getProperty(String key) {
-    return properties!=null ? properties.get(key) : null;
-  }
-
 }

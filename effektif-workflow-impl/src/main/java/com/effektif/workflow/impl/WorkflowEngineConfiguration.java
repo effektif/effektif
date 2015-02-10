@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.configuration;
+package com.effektif.workflow.impl;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
@@ -21,20 +21,20 @@ import java.util.UUID;
 
 public class WorkflowEngineConfiguration {
 
-  protected String id;
+  protected String workflowEngineId;
 
-  public String getId() {
-    if (id==null) {
-      id = createDefaultId();
+  public void setWorkflowEngineId(String id) {
+    this.workflowEngineId = id;
+  }
+  
+  public String getWorkflowEngineId() {
+    if (workflowEngineId==null) {
+      workflowEngineId = createDefaultWorkflowEngineId();
     }
-    return id; 
+    return workflowEngineId;
   }
   
-  public void setId(String id) {
-    this.id = id;
-  }
-  
-  protected static String createDefaultId() {
+  public static String createDefaultWorkflowEngineId() {
     String id = null;
     try {
       id = InetAddress.getLocalHost().getHostAddress();
@@ -52,5 +52,5 @@ public class WorkflowEngineConfiguration {
     }
     return id;
   }
-  
+
 }

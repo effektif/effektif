@@ -46,7 +46,7 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
         .transitionTo("end"))
       .activity(new EndEvent("end"));
   
-    workflow = deploy(workflow);
+    deploy(workflow);
     
     WorkflowInstance workflowInstance = start(workflow);
 

@@ -16,10 +16,10 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.TaskService;
-import com.effektif.workflow.api.command.RequestContext;
+import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.ContextualTaskService;
 import com.effektif.workflow.impl.json.JsonService;
 

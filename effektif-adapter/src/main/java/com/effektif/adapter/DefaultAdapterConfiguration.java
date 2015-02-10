@@ -14,8 +14,8 @@
 package com.effektif.adapter;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;

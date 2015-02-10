@@ -27,14 +27,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.TaskService;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.Message;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
+import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
@@ -46,7 +47,6 @@ import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
@@ -81,8 +81,10 @@ public class WorkflowTest {
     }
   }
 
-  public Workflow deploy(Workflow workflow) {
-    return workflowEngine.deployWorkflow(workflow);
+  public Deployment deploy(Workflow workflow) {
+    Deployment deployment = workflowEngine.deployWorkflow(workflow);
+    workflow.setId(deployment.getWorkflowId());
+    return deployment;
   }
 
   public WorkflowInstance start(Workflow workflow) {

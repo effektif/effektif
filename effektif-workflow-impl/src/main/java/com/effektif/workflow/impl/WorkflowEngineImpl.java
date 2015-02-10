@@ -21,9 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.command.Message;
-import com.effektif.workflow.api.command.RequestContext;
-import com.effektif.workflow.api.command.Start;
+import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -32,7 +33,6 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.activity.types.CallerReference;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Time;
@@ -54,13 +54,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowInstanceStore workflowInstanceStore;
   public JsonService jsonService;
   public Brewery brewery;
-  protected Configuration configuration;
+  public Configuration configuration;
   public List<WorkflowExecutionListener> workflowExecutionListeners;
   
   @Override
   public void brew(Brewery brewery) {
-    WorkflowEngineConfiguration workflowEngineConfiguration = brewery.get(WorkflowEngineConfiguration.class);
-    this.id = workflowEngineConfiguration.getId();
+    this.id = brewery.get(WorkflowEngineConfiguration.class).getWorkflowEngineId();
     this.configuration = brewery.get(Configuration.class);
     this.jsonService = brewery.get(JsonService.class);
     this.executorService = brewery.get(ExecutorService.class);
@@ -85,16 +84,13 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   /// Workflow methods ////////////////////////////////////////////////////////////
   
   @Override
-  public Workflow deployWorkflow(Workflow workflowApi) {
+  public Deployment deployWorkflow(Workflow workflowApi) {
     if (log.isDebugEnabled()) {
       log.debug("Deploying workflow");
     }
-    RequestContext requestContext = RequestContext.current();
-    if (requestContext!=null) {
-      workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
-      workflowApi.organizationId(requestContext.getOrganizationId());
-    }
+    
     WorkflowParser parser = WorkflowParser.parse(configuration, workflowApi);
+
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
       String workflowId; 
@@ -102,36 +98,18 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         workflowId = workflowStore.generateWorkflowId();
         workflowApi.setId(workflowId);
       }
+      workflowApi.setDeployedTime(Time.now());
       workflowImpl.id = workflowApi.getId();
       workflowStore.insertWorkflow(workflowApi);
-      workflowImpl.version = workflowApi.getVersion();
-      
       if (workflowImpl.trigger!=null) {
         workflowImpl.trigger.published(workflowImpl);
       }
-      
       workflowCache.put(workflowImpl);
-    } else {
-      throw new RuntimeException(parser.issues.getIssueReport());
     }
-    return workflowApi;
+    
+    return new Deployment(workflowApi.getId(), parser.getIssues());
   }
   
- 
-  @Override
-  public Workflow validateWorkflow(Workflow workflowApi) {
-    if (log.isDebugEnabled()) {
-      log.debug("Validating workflow");
-    }
-    RequestContext requestContext = RequestContext.current();
-    if (requestContext!=null) {
-      workflowApi.deployedBy(requestContext.getAuthenticatedUserId());
-      workflowApi.organizationId(requestContext.getOrganizationId());
-    }
-    WorkflowParser.parse(configuration, workflowApi);
-    return workflowApi;
-  }
-
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
     return workflowStore.findWorkflows(workflowQuery);
@@ -142,15 +120,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowStore.deleteWorkflows(workflowQuery);
   }
 
-  @Override
-  public WorkflowInstance startWorkflowInstance(Workflow workflow) {
-    String workflowId = workflow.getId();
-    if (workflowId==null) {
-      throw new RuntimeException("Please ensure that the given workflow is deployed first");
-    }
-    return startWorkflowInstance(new Start().workflowId(workflowId), null);
-  }
-
   public WorkflowInstance startWorkflowInstance(Start startCommand) {
     return startWorkflowInstance(startCommand, null);
   }
@@ -159,9 +128,9 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowInstance startWorkflowInstance(Start start, CallerReference callerReference) {
     String workflowId = start.getWorkflowId();
     if (workflowId==null) {
-      if (start.getWorkflowName()!=null) {
-        workflowId = workflowStore.findLatestWorkflowIdByName(start.getWorkflowName());
-        if (workflowId==null) throw new RuntimeException("No workflow found for name '"+start.getWorkflowName()+"'");
+      if (start.getWorkflowSource()!=null) {
+        workflowId = workflowStore.findLatestWorkflowIdByName(start.getWorkflowSource());
+        if (workflowId==null) throw new RuntimeException("No workflow found for name '"+start.getWorkflowSource()+"'");
       } else {
         throw new RuntimeException("No workflow specified");
       }
@@ -335,4 +304,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
     }
   }
+  
+  
 }
