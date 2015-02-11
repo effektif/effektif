@@ -28,15 +28,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.datasource.ItemQuery;
 import com.effektif.workflow.api.datasource.ItemReference;
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.util.BadRequestException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionLikeType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -64,17 +60,14 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         CloseableHttpResponse response = httpClient.execute(request);
         int status = response.getStatusLine().getStatusCode();
         if (200!=status) {
-          throw new BadRequestException("Adapter didn't get it and answered "+status);
+          throw new RuntimeException("Adapter didn't get it and answered "+status);
         }
 
         HttpEntity httpEntity = response.getEntity();
         if (httpEntity != null) {
           InputStream inputStream = httpEntity.getContent();
-          CollectionLikeType listOfDescriptors = TypeFactory.defaultInstance().constructCollectionType(List.class, ActivityDescriptor.class);
           AdapterDescriptors adapterDescriptors = objectMapper.readValue(inputStream, AdapterDescriptors.class);
-          
           adapter.setActivityDescriptors(adapterDescriptors);
-          
           saveAdapter(adapter);
         }
         
@@ -175,11 +168,11 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
 
   public Adapter getAdapter(String adapterId) {
     if (adapterId==null || "".equals(adapterId)) {
-      throw new BadRequestException("Adapter id may not be null or an empty string");
+      throw new RuntimeException("Adapter id may not be null or an empty string");
     }
     List<Adapter> adapters = findAdapters(new AdapterQuery().adapterId(adapterId));
     if (adapters.isEmpty()) {
-      throw new BadRequestException("Adapter '"+adapterId+"' doesn't exist");
+      throw new RuntimeException("Adapter '"+adapterId+"' doesn't exist");
     }
     return adapters.get(0);
   }

@@ -39,6 +39,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.workflow.TriggerImpl;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -49,8 +50,9 @@ public class ActivityTypeService implements Brewable {
   protected ObjectMapper objectMapper;
   protected Configuration configuration;
 
+  // maps json type names to activity descriptors
+  protected Map<String, ActivityDescriptor> activityTypeDescriptors = new LinkedHashMap<>();
   // maps activity api configuration classes to activity type implementation classes
-  protected Map<Class<?>, ActivityDescriptor> activityTypeDescriptors = new LinkedHashMap<>();
   protected Map<Class<?>, Class<? extends ActivityType>> activityTypeClasses = new HashMap<>();
   protected Map<Class<?>, ActivityType> activityTypes = new LinkedHashMap<>();
   protected Map<Class<?>, ObjectTypeImpl> activityTypeSerializers = new HashMap<>();
@@ -84,14 +86,23 @@ public class ActivityTypeService implements Brewable {
   }
   
   public void registerActivityType(ActivityType activityType) {
-    Class activityTypeApiClass = activityType.getActivityApiClass();
+    Class<? extends Activity> activityTypeApiClass = activityType.getActivityApiClass();
     ActivityDescriptor descriptor = activityType.getDescriptor();
     activityTypeClasses.put(activityTypeApiClass, activityType.getClass());
-    activityTypeDescriptors.put(activityTypeApiClass, descriptor);
     activityTypes.put(activityTypeApiClass, activityType);
+    
+    JsonTypeName jsonTypeName = activityTypeApiClass.getAnnotation(JsonTypeName.class);
+    if (jsonTypeName==null) {
+      throw new RuntimeException("Please add @JsonTypeName annotation to "+activityTypeApiClass);
+    }
+    activityTypeDescriptors.put(jsonTypeName.value(), descriptor);
     
     // log.debug("Registering "+activityTypeApiClass);
     objectMapper.registerSubtypes(activityTypeApiClass);
+  }
+  
+  public ActivityDescriptor getActivityDescriptor(String jsonTypeName) {
+    return activityTypeDescriptors.get(jsonTypeName);
   }
 
   public void registerTriggerType(TriggerImpl trigger) {

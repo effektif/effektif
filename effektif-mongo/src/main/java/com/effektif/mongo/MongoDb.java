@@ -13,13 +13,21 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.mongodb.DB;
 
 
-public class MongoDb {
+public class MongoDb implements Brewable {
 
   protected DB db;
   protected boolean isPretty;
+  
+  @Override
+  public void brew(Brewery brewery) {
+    this.db = brewery.get(DB.class);
+    this.isPretty = brewery.get(MongoConfiguration.class).isPretty;
+  }
   
   public MongoCollection createCollection(String collectionName) {
     return new MongoCollection(db.getCollection(collectionName), isPretty);

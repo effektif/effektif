@@ -18,8 +18,10 @@ import java.util.List;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+@JsonTypeName("email")
 public class EmailTask extends Activity {
 
   protected List<Binding> toBindings;

@@ -38,16 +38,17 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
   protected String jobsCollectionName = "jobs";
+  protected String jobsArchivedCollectionName = "jobsArchived";
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
-  protected String jobsArchivedCollectionName;
   protected Class<? extends Workflow> workflowClass = Workflow.class;
 
   public MongoConfiguration() {
     brewery.ingredient(this);
     brewery.supplier(new MongoClientFactory(), MongoClient.class);
     brewery.supplier(new MongoDbFactory(), DB.class);
+    brewery.ingredient(new MongoDb());
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
     brewery.ingredient(new MemoryTaskService());

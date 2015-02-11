@@ -15,6 +15,7 @@ package com.effektif.mongo;
 
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -42,11 +43,11 @@ public class MongoCollection {
 
   public WriteResult insert(String description, BasicDBObject o) {
     if (log.isDebugEnabled())  {
-      log.debug("--"+dbCollection.getName()+"-> "+description+" o="+toString(o));
+      log.debug("--"+description+"-> o="+toString(o));
     }
     WriteResult writeResult = dbCollection.insert(o, getWriteConcern(description));
     if (log.isDebugEnabled())  {
-      log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
+      log.debug("<-"+description+"-- "+writeResult);
     }
     return writeResult;
   }
@@ -60,6 +61,10 @@ public class MongoCollection {
       log.debug("<-"+dbCollection.getName()+"-- "+writeResult);
     }
     return writeResult;
+  }
+
+  public void updateById(String description, ObjectId id, DBObject dbObject) {
+    update(description, new BasicDBObject("_id", id), dbObject, false, false);
   }
 
   public WriteResult update(String description, DBObject query, DBObject update) {

@@ -89,7 +89,6 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     this.workflowClass = mongoConfiguration.getWorkflowClass();
   }
   
-
   public static BasicDBObject workflowApiToMongo(Workflow workflow, JsonService jsonService) {
     Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
     BasicDBObject dbWorkflow = new BasicDBObject();    
@@ -105,7 +104,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     return dbWorkflow;
   }
   
-  public static Workflow mongoToWorkflowApi(BasicDBObject dbWorkflow, JsonService jsonService, Class<? extends Workflow> workflowClass) {
+  public static <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, JsonService jsonService, Class<T> workflowClass) {
     // We use jackson to parse the workflow json into a Workflow
     // But there are 2 exceptions that jackson doesn't convert as it should, so 
     // convert those 2 properties first
@@ -117,7 +116,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     LocalDateTime deployedTime = readTime(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME);
     writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, deployedTime);
     
-    Workflow workflow = jsonService.jsonMapToObject(dbWorkflow, workflowClass);
+    T workflow = jsonService.jsonMapToObject(dbWorkflow, workflowClass);
     return workflow;
   }
   

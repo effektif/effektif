@@ -40,8 +40,10 @@ public class ActivityImpl extends ScopeImpl {
 
   public void parse(Activity activityApi, Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
     super.parse(activityApi, parser, parent);
-    if (id==null || "".equals(id)) {
+    if (id==null) {
       parser.addError("Activity has no id");
+    } else if ("".equals(id)) {
+      parser.addError("Activity has a empty string as name", id);
     } else if (id.contains(".")) {
       parser.addError("Activity '%s' has a dot in the name", id);
     } else if (parser.activityIds.contains(id)) {
