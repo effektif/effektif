@@ -44,6 +44,7 @@ import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
@@ -124,8 +125,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         
       } else if (STATE_STARTING_MULTI_CONTAINER.equals(activityInstance.workState)) {
         TypedValueImpl typedValueList = null;
-        if (activity.multiInstance!=null && activity.multiInstance.valuesBinding!=null) {
-          typedValueList = activity.multiInstance.valuesBinding.getTypedValue(activityInstance);
+        MultiInstanceImpl multiInstance = activityType.getMultiInstance();
+        if (multiInstance!=null && multiInstance.valuesBinding!=null) {
+          typedValueList = multiInstance.valuesBinding.getTypedValue(activityInstance);
         }
         if ( typedValueList!=null && typedValueList.value!=null) {
           Collection<Object> values = null;
@@ -147,7 +149,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
             ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
             elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE);
             TypedValueImpl elementTypedValue = new TypedValueImpl(elementType, element);
-            elementActivityInstance.initializeForEachElement(activity.multiInstance.elementVariable, elementTypedValue);
+            elementActivityInstance.initializeForEachElement(multiInstance.elementVariable, elementTypedValue);
           }
         } else {
           if (log.isDebugEnabled()) {

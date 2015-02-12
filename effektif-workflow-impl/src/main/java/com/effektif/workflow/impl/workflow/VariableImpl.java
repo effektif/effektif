@@ -29,7 +29,7 @@ public class VariableImpl {
   public DataType type;
   public Object initialValue;
 
-  public void parse(Variable variableApi, ScopeImpl parent, WorkflowParser parser) {
+  public void parse(Variable variableApi, WorkflowParser parser, ScopeImpl parent) {
     this.id = variableApi.getId();
     if (id==null || "".equals(id)) {
       parser.addError("Variable has no id");
@@ -46,7 +46,7 @@ public class VariableImpl {
     if (typeApi!=null) {
       this.type = dataTypeService.createDataType(typeApi);
     } else {
-      parser.addError("Variable '%s' %s does not have a type", id, parent.isWorkflow() ? "in the workflow" : "in activity '"+parent.id+"'");
+      parser.addError("Variable '%s' does not have a type", id);
     }
   }
 

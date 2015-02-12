@@ -132,7 +132,20 @@ public class Element {
     }
     this.properties.put(key, value);
   }
-  
+  /** only sets the property if the value is not null */
+  public void setPropertyOpt(String key,Object value) {
+    if (value==null) {
+      return;
+    }
+    setProperty(key, value);
+  }
+  public Object removeProperty(String key) {
+    return properties!=null ? properties.remove(key) : null;
+  }
+
   protected void checkPropertyKey(String key) {
+    if (key==null || INVALID_PROPERTY_KEYS.contains(key)) {
+      throw new RuntimeException("Invalid property '"+key+"'");
+    }
   }
 }

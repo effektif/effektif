@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
@@ -61,14 +60,15 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     bpmnWriter.setBpmnName(userTaskXml, "startEvent");
     bpmnWriter.writeBpmnAttribute(userTaskXml, "id", userTask.getId());
   }
-
+  
   @Override
   public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
     super.parse(activityImpl, userTaskApi, parser);
+    this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.taskService = parser.getConfiguration(TaskService.class);
-    this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), userTaskApi, NAME);
-    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssigneeBinding(), userTaskApi, ASSIGNEE);
-    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidatesBinding(), userTaskApi, CANDIDATES);
+    this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), NAME);
+    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssigneeBinding(), ASSIGNEE);
+    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidatesBinding(), CANDIDATES);
   }
 
   @Override

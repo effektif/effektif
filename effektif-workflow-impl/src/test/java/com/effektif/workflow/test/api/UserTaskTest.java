@@ -23,17 +23,18 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.test.WorkflowTest;
 
 
-public class TaskTest extends WorkflowTest {
+public class UserTaskTest extends WorkflowTest {
 
   @Test
   public void testTask() throws Exception {
     Workflow workflow = new Workflow()
-      .activity(new UserTask("Task one"));
+      .activity("1", new UserTask());
     
     deploy(workflow);
     
     start(workflow);
     
-    assertEquals("Task one", taskService.findTasks(new TaskQuery()).get(0).getName());
+    assertEquals("1", taskService.findTasks(new TaskQuery()).get(0).getName());
   }
+
 }

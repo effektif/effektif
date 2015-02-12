@@ -22,6 +22,7 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -32,7 +33,8 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   /** the api activity containing the serializable configuration */ 
   public T activityApi;
   public Class<?> activityApiClass;
-  
+  public MultiInstanceImpl multiInstance;
+
   public AbstractActivityType(Class<T> activityApiClass) {
     this.activityApiClass = activityApiClass;
   }
@@ -86,6 +88,11 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   @Override
   public boolean isFlushSkippable() {
     return false;
+  }
+  
+  @Override
+  public MultiInstanceImpl getMultiInstance() {
+    return multiInstance;
   }
 
   @Override

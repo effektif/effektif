@@ -91,7 +91,7 @@ public class BpmnReader extends Bpmn {
 
   protected Workflow readProcess(XmlElement processXml) {
     Workflow workflow = new Workflow();
-    workflow.id(readBpmnAttribute(processXml, "id"));
+    workflow.property("bpmnId", readBpmnAttribute(processXml, "id"));
     readActivities(processXml, workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;
@@ -137,7 +137,7 @@ public class BpmnReader extends Bpmn {
 
   protected void setUnparsedBpmn(Scope scope, XmlElement unparsedBpmn) {
     unparsedBpmn.name = null;
-    scope.property(KEY_BPMN, unparsedBpmn);
+    scope.setBpmn(unparsedBpmn);
   }
 
   public boolean isLocalPart(XmlElement xmlElement, String localPart) {

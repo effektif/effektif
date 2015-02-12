@@ -56,7 +56,7 @@ public abstract class ScopeImpl {
       for (Variable apiVariable: variableApi) {
         VariableImpl variableImpl = new VariableImpl();
         parser.pushContext("variables", apiVariable, i);
-        variableImpl.parse(apiVariable, this, parser);
+        variableImpl.parse(apiVariable, parser, this);
         addVariable(variableImpl);
         parser.popContext();
         i++;

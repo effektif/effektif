@@ -449,7 +449,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         ActivityImpl activity = scope.findActivityByIdLocal(activityId);
         activityInstance.activity = activity;
         activityInstance.scope = activity;
-        ScopeImpl nestedScope = activity.multiInstance==null ? activity : activity.parent;
+        ScopeImpl nestedScope = activity.isMultiInstance() ? activity.parent : activity;
         resolveActivityReferences(activityInstance, nestedScope, allActivityIds);
       }
     }

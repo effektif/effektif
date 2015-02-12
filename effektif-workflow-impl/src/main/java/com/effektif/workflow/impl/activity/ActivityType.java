@@ -19,6 +19,7 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -58,5 +59,7 @@ public interface ActivityType<T extends Activity> extends Plugin {
   void message(ActivityInstanceImpl activityInstance);
 
   boolean saveTransitionsTaken();
+
+  MultiInstanceImpl getMultiInstance();
 
 }

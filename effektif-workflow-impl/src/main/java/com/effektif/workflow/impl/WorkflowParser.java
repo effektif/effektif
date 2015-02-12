@@ -30,10 +30,13 @@ import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Element;
+import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.activity.ActivityType;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -41,6 +44,7 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.script.ExpressionService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -107,12 +111,12 @@ public class WorkflowParser {
    * Use one parser for each parse.
    * By returning the parser itself you can access the  */
   public static WorkflowParser parse(Configuration configuration, Workflow workflowApi) {
-    WorkflowParser parse = new WorkflowParser(configuration);
-    parse.pushContext("workflow", workflowApi, null);
-    parse.workflow = new WorkflowImpl();
-    parse.workflow.parse(workflowApi, parse);
-    parse.popContext();
-    return parse;
+    WorkflowParser parser = new WorkflowParser(configuration);
+    parser.pushContext("workflow", workflowApi, null);
+    parser.workflow = new WorkflowImpl();
+    parser.workflow.parse(workflowApi, parser);
+    parser.popContext();
+    return parser;
   }
 
   public WorkflowParser(Configuration configuration) {
@@ -175,7 +179,7 @@ public class WorkflowParser {
       if (activityDescriptor!=null && inputParameter==null) {
         addWarning("Unexpected input binding '%s' in activity '%s'", key, activityApi.getId());
       }
-      BindingImpl<?> bindingImpl = parseBinding(inputBinding, activityApi, inputParameter, key);
+      BindingImpl<?> bindingImpl = parseBinding(inputBinding, inputParameter, key);
       if (bindingImpl!=null) {
         if (inputBindingsImpl==null) {
           inputBindingsImpl = new HashMap<>();
@@ -187,12 +191,12 @@ public class WorkflowParser {
     return inputBindingsImpl;
   }
   
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Activity activityApi, InputParameter inputParameter) {
-    return parseBinding(binding, activityApi, inputParameter, inputParameter.getKey());
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter) {
+    return parseBinding(binding, inputParameter, inputParameter.getKey());
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Activity activityApi, InputParameter inputParameter, String key) {
-    BindingImpl<T> bindingImpl = parseBinding(binding, activityApi, key);
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter, String key) {
+    BindingImpl<T> bindingImpl = parseBinding(binding, key);
     int values = 0;
     if (bindingImpl!=null) {
       if (bindingImpl.typedValue!=null) values++;
@@ -201,14 +205,14 @@ public class WorkflowParser {
       if (bindingImpl.bindings!=null) values++;
     }
     if (inputParameter!=null && inputParameter.isRequired() && values==0) {
-      addError("Binding '%s' in activity '%s' required and not specified", key, activityApi.getId());
+      addError("Binding '%s' required and not specified", key);
     } else if (values>1) {
-      addWarning("Multiple values specified for '%s' for binding '%s'", key, activityApi.getId());
+      addWarning("Multiple values specified for binding '%s'", key);
     }
     return bindingImpl;
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Activity activityApi, String fieldName) {
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String fieldName) {
     if (binding==null) {
       return null;
     }
@@ -236,7 +240,7 @@ public class WorkflowParser {
     if (bindings!=null && !bindings.isEmpty()) {
       bindingImpl.bindings = new ArrayList<>();
       for (Binding<T> elementBinding: bindings) {
-        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, activityApi, fieldName);
+        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, fieldName);
         bindingImpl.bindings.add(elementBindingImpl);
       }
     }
@@ -302,5 +306,16 @@ public class WorkflowParser {
       this.addWarning("No start activities in %s", scope.id);
     }
     return startActivities;
+  }
+
+  public MultiInstanceImpl parseMultiInstance(MultiInstance multiInstance) {
+    if (multiInstance==null) {
+      return null;
+    }
+    MultiInstanceImpl multiInstanceImpl = new MultiInstanceImpl();
+    pushContext("multiInstance", multiInstance, null);
+    multiInstanceImpl.parse(multiInstance, this);
+    popContext();
+    return multiInstanceImpl;
   }
 }

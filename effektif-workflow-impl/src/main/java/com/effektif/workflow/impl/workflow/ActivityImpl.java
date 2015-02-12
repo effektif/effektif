@@ -34,7 +34,6 @@ public class ActivityImpl extends ScopeImpl {
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
-  public MultiInstanceImpl multiInstance;
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
@@ -60,13 +59,6 @@ public class ActivityImpl extends ScopeImpl {
       parser.addError("Activity '%s' has no activityType configured", id);
     }
 
-    if (activityApi.getMultiInstance()!=null) {
-      this.multiInstance = new MultiInstanceImpl();
-      parser.pushContext("multiInstance", multiInstance, null);
-      this.multiInstance.parse(activityApi, this, parser);
-      parser.popContext();
-    }
-    
     if (activityApi.getOutgoingTransitions()!=null) {
       for (Transition transition: activityApi.getOutgoingTransitions()) {
         transition.from(activityApi.getId());
@@ -74,22 +66,10 @@ public class ActivityImpl extends ScopeImpl {
       }
       activityApi.setOutgoingTransitions(null);
     }
-    
-    clean(activityApi);
   }
   
-  protected void clean(Activity activityApi) {
-    activityApi.setId(null);
-    activityApi.setDefaultTransitionId(null);
-    activityApi.setMultiInstance(null);
-    activityApi.setActivities(null);
-    activityApi.setTransitions(null);
-    activityApi.setVariables(null);
-    activityApi.setTimers(null);
-  }
-
   public boolean isMultiInstance() {
-    return multiInstance != null; 
+    return activityType.getMultiInstance() != null; 
   }
 
   /// other methods ////////////////////////////

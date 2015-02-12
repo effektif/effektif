@@ -19,9 +19,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -32,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JacksonJsonService implements JsonService, Brewable {
   
-  private static final Logger log = LoggerFactory.getLogger(JacksonJsonService.class);
+  // private static final Logger log = LoggerFactory.getLogger(JacksonJsonService.class);
   
   protected JsonFactory jsonFactory;
   protected ObjectMapper objectMapper;
@@ -98,7 +95,6 @@ public class JacksonJsonService implements JsonService, Brewable {
   }
 
   protected <T> T jsonToObject(JsonParser jsonParser, Class<T> type) throws IOException {
-    log.debug("using objectmapper "+System.identityHashCode(objectMapper));
     T object = objectMapper
       .reader(type)
       .readValue(jsonParser);

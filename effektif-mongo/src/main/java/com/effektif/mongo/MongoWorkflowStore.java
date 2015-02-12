@@ -89,29 +89,36 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     this.workflowClass = mongoConfiguration.getWorkflowClass();
   }
   
-  public static BasicDBObject workflowApiToMongo(Workflow workflow, JsonService jsonService) {
-    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
-    BasicDBObject dbWorkflow = new BasicDBObject();    
-
+  public BasicDBObject workflowApiToMongo(Workflow workflow) {
     // We use jackson to serialize the Workflow into workflow json
-    // But there are 2 exceptions that jackson doesn't convert as it should, so 
-    // convert those 2 properties first
+    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
+    
+    // But there are 2 exceptions that jackson doesn't convert as it should 
+    BasicDBObject dbWorkflow = new BasicDBObject(); 
 
-    // convert id
+    // here we remove the id and below we set the _id field on the dbWorkflow 
     jsonWorkflow.remove("id");
-    writeId(jsonWorkflow, FieldsWorkflow._ID, workflow.getId());
+    // here we remove the deployedTime and below we set deployedTiem on the dbWorkflow 
+    jsonWorkflow.remove(FieldsWorkflow.DEPLOYED_TIME);
+
     dbWorkflow.putAll(jsonWorkflow);
+
+    // convert the id
+    writeId(dbWorkflow, FieldsWorkflow._ID, workflow.getId());
+    // convert the deployedTime
+    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, workflow.getDeployedTime());
+
     return dbWorkflow;
   }
   
-  public static <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, JsonService jsonService, Class<T> workflowClass) {
+  public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
     // We use jackson to parse the workflow json into a Workflow
-    // But there are 2 exceptions that jackson doesn't convert as it should, so 
-    // convert those 2 properties first
+    // But there are 2 exceptions that jackson doesn't convert as it should
     
     // convert id
-    String workflowId = (String)dbWorkflow.remove(FieldsWorkflow._ID);
-    writeId(dbWorkflow, "id", workflowId);
+    ObjectId workflowId = (ObjectId)dbWorkflow.remove(FieldsWorkflow._ID);
+    dbWorkflow.put("id", workflowId.toString());
+    
     // convert deployed time from date to LocalDateTime
     LocalDateTime deployedTime = readTime(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME);
     writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, deployedTime);
@@ -127,8 +134,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 
   @Override
   public void insertWorkflow(Workflow workflow) {
-    BasicDBObject dbWorkflow = workflowApiToMongo(workflow, jsonService);
-    
+    BasicDBObject dbWorkflow = workflowApiToMongo(workflow);
     workflowsCollection.insert("insert-workflow", dbWorkflow);
   }
 
@@ -138,7 +144,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
-      Workflow workflow = mongoToWorkflowApi(dbWorkflow, jsonService, workflowClass);
+      Workflow workflow = mongoToWorkflowApi(dbWorkflow, workflowClass);
       workflows.add(workflow);
     }
     return workflows;

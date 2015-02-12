@@ -49,8 +49,8 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
   @Override
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
     super.parse(activityImpl, call, parser);
-    this.subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), call, SUBWORKFLOW_ID);
-    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), call, SUBWORKFLOW_NAME);
+    this.subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), SUBWORKFLOW_ID);
+    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), SUBWORKFLOW_NAME);
   }
 
   @Override
