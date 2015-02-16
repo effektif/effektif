@@ -15,10 +15,14 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -52,7 +56,16 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
     super.parse(activityImpl, call, parser);
     this.subWorkflowIdBinding = parser.parseBinding(call.getSubWorkflowIdBinding(), SUBWORKFLOW_ID);
-    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowNameBinding(), SUBWORKFLOW_NAME);
+    this.subWorkflowNameBinding = parser.parseBinding(call.getSubWorkflowSourceBinding(), SUBWORKFLOW_NAME);
+    
+    WorkflowQuery workflowQuery = TODO compose workflow query based on subWorkflowIdBinding and subWorkflowNameBinding;
+    Workflow workflow = parser.configuration.getWorkflowEngine().findWorkflows(workflowQuery );
+
+    Map<String,InputParameter> inputParameters = new HashMap<>();
+    TODO compose inputParameters based on workflow variables 
+    
+    this.inputBindings = parser.parseInputBindings(activityApi.getInputBindings(), activityApi, getDescriptor());
+    this.outputBindings = activityApi.getOutputBindings();
   }
 
   @Override
@@ -66,7 +79,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     } else if (subWorkflowNameBinding!=null) {
       String subProcessName = activityInstance.getValue(subWorkflowNameBinding);
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
-      subWorkflowId = workflowStore.findLatestWorkflowIdByName(subProcessName);
+      subWorkflowId = workflowStore.findLatestWorkflowIdBySource(subProcessName);
       if (subWorkflowId==null) {
         throw new RuntimeException("Couldn't find sub workflow by name: "+subProcessName);
       }

@@ -15,11 +15,10 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoHelper.readTime;
-import static com.effektif.mongo.MongoHelper.writeId;
-import static com.effektif.mongo.MongoHelper.writeTimeOpt;
+import static com.effektif.mongo.MongoHelper.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +99,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 
     // here we remove the id and below we set the _id field on the dbWorkflow 
     jsonWorkflow.remove("id");
+    jsonWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
     // here we remove the deployedTime and below we set deployedTiem on the dbWorkflow 
     jsonWorkflow.remove(FieldsWorkflow.DEPLOYED_TIME);
 
@@ -107,6 +107,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 
     // convert the id
     writeId(dbWorkflow, FieldsWorkflow._ID, workflow.getId());
+    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, workflow.getOrganizationId());
     // convert the deployedTime
     writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, workflow.getDeployedTime());
 
@@ -115,17 +116,24 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   
   public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
     // We use jackson to parse the workflow json into a Workflow
-    // But there are 2 exceptions that jackson doesn't convert as it should
+    // But there are 3 exceptions that jackson doesn't convert as it should
     
     // convert id
-    ObjectId workflowId = (ObjectId)dbWorkflow.remove(FieldsWorkflow._ID);
-    dbWorkflow.put("id", workflowId.toString());
-    
-    // convert deployed time from date to LocalDateTime
-    LocalDateTime deployedTime = readTime(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME);
-    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, deployedTime);
+    ObjectId workflowId = (ObjectId) dbWorkflow.remove(FieldsWorkflow._ID);
+    ObjectId organizationId = (ObjectId) dbWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
+    Date deployedTime = (Date) dbWorkflow.remove(FieldsWorkflow.DEPLOYED_TIME);
     
     T workflow = jsonService.jsonMapToObject(dbWorkflow, workflowClass);
+
+    if (workflowId!=null) {
+      workflow.id(workflowId.toString());
+    }
+    if (organizationId!=null) {
+      workflow.organizationId(organizationId.toString());
+    }
+    if (deployedTime!=null) {
+      workflow.deployedTime(new LocalDateTime(deployedTime));
+    }
     return workflow;
   }
   
@@ -166,7 +174,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public String findLatestWorkflowIdByName(String workflowName) {
+  public String findLatestWorkflowIdBySource(String workflowName) {
     Exceptions.checkNotNullParameter(workflowName, "workflowName");
     BasicDBObject dbQuery = new BasicDBObject();
     dbQuery.append(FieldsWorkflow.NAME, workflowName);

@@ -15,19 +15,20 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.GroupReference;
+import com.effektif.workflow.api.types.GroupReferenceType;
 import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataType;
 
 
 
-public class UserReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
+public class GroupReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
   
-  public static final UserReferenceTypeImpl INSTANCE = new UserReferenceTypeImpl();
+  public static final GroupReferenceTypeImpl INSTANCE = new GroupReferenceTypeImpl();
 
-  public UserReferenceTypeImpl() {
-    super(UserReferenceType.class, UserReference.class);
+  public GroupReferenceTypeImpl() {
+    super(GroupReferenceType.class, GroupReference.class);
   }
   
   @Override
@@ -37,7 +38,7 @@ public class UserReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
   
   @Override
   public Object convert(Object value, DataType valueType) {
-    if (value instanceof UserReference) {
+    if (value instanceof GroupReference) {
       return value;
     }
     if (value instanceof String
@@ -45,8 +46,8 @@ public class UserReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
                 || valueType instanceof TextTypeImpl) 
             )
        ){
-      return new UserReference().id((String)value);
+      return new GroupReference().id((String)value);
     } 
-    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+UserReference.class.getName());
+    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+GroupReference.class.getName());
   }
 }

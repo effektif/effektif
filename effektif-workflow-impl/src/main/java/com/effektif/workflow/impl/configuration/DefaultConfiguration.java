@@ -29,7 +29,7 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
-import com.effektif.workflow.impl.json.JacksonJsonService;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.script.ExpressionServiceImpl;
 import com.effektif.workflow.impl.script.StandardScriptService;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -88,7 +88,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
 
   protected void registerDefaultJsonService() {
-    brewery.ingredient(new JacksonJsonService());
+    brewery.ingredient(new JsonService());
   }
   
   protected void registerDefaultJobService() {

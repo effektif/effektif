@@ -18,7 +18,7 @@ package com.effektif.workflow.api.activities;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 
@@ -43,8 +43,10 @@ public class AbstractBindableActivity extends Activity {
   }
   
   /** copies the static typed value to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputValue(String key, TypedValue typedValue) {
-    inputBinding(key, new Binding().typedValue(typedValue));
+  public AbstractBindableActivity inputValue(String key, Object value, Type type) {
+    inputBinding(key, new Binding()
+      .value(value)
+      .type(type));
     return this;
   }
 

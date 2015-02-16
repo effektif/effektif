@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -61,8 +62,8 @@ public class AdapterActivity extends AbstractBindableActivity {
   }
 
   @Override
-  public AdapterActivity inputValue(String adapterKey, TypedValue typedValue) {
-    super.inputValue(adapterKey, typedValue);
+  public AdapterActivity inputValue(String adapterKey, Object value, Type type) {
+    super.inputValue(adapterKey, value, type);
     return this;
   }
 

@@ -15,14 +15,15 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.types.Type;
 
 
 public class VariableInstance {
 
   protected String id;
   protected String variableId;
-  protected TypedValue typedValue;
+  protected Object value;
+  protected Type type;
 
   public String getId() {
     return this.id;
@@ -38,14 +39,17 @@ public class VariableInstance {
     this.variableId = variableId;
   }
 
-  public TypedValue getTypedValue() {
-    return this.typedValue;
+  public Object getValue() {
+    return this.value;
   }
-  public void setTypedValue(TypedValue typedValue) {
-    this.typedValue = typedValue;
+  public void setValue(Object value) {
+    this.value = value;
   }
   
-  public Object getValue() {
-    return typedValue!=null ? typedValue.getValue() : null;
+  public Type getType() {
+    return this.type;
+  }
+  public void setType(Type type) {
+    this.type = type;
   }
 }

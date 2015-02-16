@@ -29,6 +29,9 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.SerializedMessage;
+import com.effektif.workflow.impl.json.SerializedStart;
+import com.effektif.workflow.impl.json.SerializedWorkflow;
 
 
 public class SerializingWorkflowEngineImpl extends AbstractSerializingService implements WorkflowEngine {
@@ -43,23 +46,15 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public Deployment deployWorkflow(Workflow workflow) {
     log.debug("deployWorkflow");
-    workflow = wireize("  -workflow->", workflow, Workflow.class);
+    workflow = wireize(" >>workflow>>", workflow, SerializedWorkflow.class);
     ParseIssues parseIssues = workflowEngine.deployWorkflow(workflow);
     return wireize("  <-deployment-", parseIssues, Deployment.class);
   }
 
-//  @Override
-//  public Workflow validateWorkflow(Workflow workflow) {
-//    log.debug("validateWorkflow");
-//    workflow = wireize("  -workflow->", workflow, Workflow.class);
-//    workflow = workflowEngine.validateWorkflow(workflow);
-//    return wireize("  <-workflow-", workflow, Workflow.class);
-//  }
-
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
     log.debug("findWorkflow");
-    query = wireize("  -query->", query, WorkflowQuery.class);
+    query = wireize(" >>query>>", query, WorkflowQuery.class);
     List<Workflow> workflows = workflowEngine.findWorkflows(query);
     if (workflows==null) {
       return null;
@@ -74,14 +69,14 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
     log.debug("deleteWorkflow");
-    query = wireize("  -query->", query, WorkflowQuery.class);
+    query = wireize(" >>query>>", query, WorkflowQuery.class);
     workflowEngine.deleteWorkflows(query);
   }
 
   @Override
   public WorkflowInstance startWorkflowInstance(Start start) {
     log.debug("startWorkflow");
-    start = wireize("  -start->", start, Start.class);
+    start = wireize(" >>start>>", start, SerializedStart.class);
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
     return wireize("  <-workflowInstance-", workflowInstance, WorkflowInstance.class);
   }
@@ -89,7 +84,7 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public WorkflowInstance sendMessage(Message message) {
     log.debug("sendMessage");
-    message = wireize("  -message->", message, Message.class);
+    message = wireize(" >>message>>", message, SerializedMessage.class);
     WorkflowInstance workflowInstance = workflowEngine.sendMessage(message);
     return wireize("  <-workflowInstance-", workflowInstance, WorkflowInstance.class);
   }
@@ -97,7 +92,7 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
     log.debug("findWorkflowInstances");
-    query = wireize("  -query->", query, WorkflowInstanceQuery.class);
+    query = wireize(" >>query>>", query, WorkflowInstanceQuery.class);
     List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(query);
     if (workflowInstances==null) {
       return null;
@@ -112,7 +107,7 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query) {
     log.debug("deleteWorkflowInstances");
-    query = wireize("  -query->", query, WorkflowInstanceQuery.class);
+    query = wireize(" >>query>>", query, WorkflowInstanceQuery.class);
     workflowEngine.deleteWorkflowInstances(query);
   }
 

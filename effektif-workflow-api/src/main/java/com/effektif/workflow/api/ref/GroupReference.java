@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.types;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+package com.effektif.workflow.api.ref;
 
 
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="id")
-public class Type {
+public class GroupReference {
 
+  protected String id;
+  
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public GroupReference id(String id) {
+    this.id = id;
+    return this;
+  }
   
 }

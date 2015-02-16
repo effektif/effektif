@@ -18,6 +18,7 @@ package com.effektif.workflow.api.activities;
 import java.util.Map;
 
 import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -31,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class Call extends AbstractBindableActivity {
 
   protected Binding<String> subWorkflowIdBinding; 
-  protected Binding<String> subWorkflowNameBinding; 
+  protected Binding<String> subWorkflowSourceBinding; 
   
   public Call() {
   }
@@ -46,7 +47,7 @@ public class Call extends AbstractBindableActivity {
   }
 
   public Call subWorkflowName(String subWorkflowName) {
-    this.subWorkflowNameBinding = new Binding().value(subWorkflowName);
+    this.subWorkflowSourceBinding = new Binding().value(subWorkflowName);
     return this;
   }
   
@@ -54,16 +55,16 @@ public class Call extends AbstractBindableActivity {
     return subWorkflowIdBinding;
   }
   
-  public Binding<String> getSubWorkflowNameBinding() {
-    return subWorkflowNameBinding;
+  public Binding<String> getSubWorkflowSourceBinding() {
+    return subWorkflowSourceBinding;
   }
 
   public void setSubWorkflowIdBinding(Binding<String> subWorkflowIdBinding) {
     this.subWorkflowIdBinding = subWorkflowIdBinding;
   }
   
-  public void setSubWorkflowNameBinding(Binding<String> subWorkflowNameBinding) {
-    this.subWorkflowNameBinding = subWorkflowNameBinding;
+  public void setSubWorkflowSourceBinding(Binding<String> subWorkflowNameBinding) {
+    this.subWorkflowSourceBinding = subWorkflowNameBinding;
   }
   
 
@@ -74,8 +75,8 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
-  public Call inputValue(String subWorkflowKey, TypedValue typedValue) {
-    super.inputValue(subWorkflowKey, typedValue);
+  public Call inputValue(String subWorkflowKey, Object value, Type type) {
+    super.inputValue(subWorkflowKey, value, type);
     return this;
   }
 

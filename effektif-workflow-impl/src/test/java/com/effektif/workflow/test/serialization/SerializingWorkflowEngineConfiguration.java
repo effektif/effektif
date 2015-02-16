@@ -63,6 +63,6 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     } else if (TaskService.class.isAssignableFrom(type)) {
       return (T) taskService;
     }
-    throw new RuntimeException("damn.. i didn't expect you needed "+type);
+    throw new RuntimeException("damn.. i didn't expect "+type+" to be looked up from the serializing configuration");
   }
 }

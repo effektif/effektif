@@ -17,6 +17,7 @@ package com.effektif.adapter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,8 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.adapter.helpers.BadRequestException;
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.adapter.ExecuteRequest;
 import com.effektif.workflow.impl.adapter.ExecuteResponse;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
 
 
 @Path("/execute")
@@ -40,6 +46,7 @@ public class ExecuteResource {
   protected Configuration configuration;
   /** maps activity keys to activity adapters */
   protected Map<String, ActivityAdapter> activityAdapters = new HashMap<>();
+  protected Map<String, Map<String,DataType>> inputParameterDataTypes = new ConcurrentHashMap<>();
   
   public ExecuteResource(Configuration configuration) {
     this.configuration = configuration;
@@ -53,9 +60,47 @@ public class ExecuteResource {
     if (activityAdapter==null) {
       throw new BadRequestException("No activity found for key "+activityKey);
     }
+    
+    deserializeExecuteRequest(executeRequest, activityKey, activityAdapter);
+    
     ActivityContext activityContext = new ActivityContext(configuration, executeRequest);
     activityAdapter.execute(activityContext);
     return activityContext.getExecuteResponse();
+  }
+
+  private void deserializeExecuteRequest(ExecuteRequest executeRequest, String activityKey, ActivityAdapter activityAdapter) {
+    Map<String, Object> inputParameters = executeRequest.getInputParameters();
+    if (inputParameters==null) {
+      return;
+    }
+    Map<String,DataType> dataTypes = inputParameterDataTypes.get(activityKey);
+    if (dataTypes==null) {
+      dataTypes = createInputParameterDataTypes(activityAdapter.getDescriptor());
+      inputParameterDataTypes.put(activityKey, dataTypes);
+    }
+    for (String inputParameterKey: inputParameters.keySet()) {
+      Object inputParameterValue = inputParameters.get(inputParameterKey);
+      if (inputParameterValue!=null) {
+        DataType parameterDataType = dataTypes.get(inputParameterKey);
+        Object deserializedParameterValue = parameterDataType.convertJsonToInternalValue(inputParameterValue);
+        inputParameters.put(inputParameterKey, deserializedParameterValue);
+      }
+    }
+  }
+
+  private Map<String, DataType> createInputParameterDataTypes(ActivityDescriptor descriptor) {
+    Map<String, DataType> dataTypes = new HashMap<>();
+    Map<String, InputParameter> inputParameters = descriptor!=null ? descriptor.getInputParameters() : null;
+    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+    if (inputParameters!=null) {
+      for (String parameterKey: inputParameters.keySet()) {
+        InputParameter inputParameter = inputParameters.get(parameterKey);
+        Type type = inputParameter.getType();
+        DataType dataType = dataTypeService.createDataType(type);
+        dataTypes.put(parameterKey, dataType);
+      }
+    }
+    return dataTypes;
   }
 
   public void addActivityAdapter(ActivityAdapter activityAdapter) {
@@ -63,5 +108,4 @@ public class ExecuteResource {
     log.debug("Adding activity '"+activityKey+"' --> "+activityAdapter);
     activityAdapters.put(activityKey, activityAdapter);
   }
-
 }

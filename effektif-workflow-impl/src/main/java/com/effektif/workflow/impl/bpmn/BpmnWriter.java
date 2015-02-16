@@ -90,7 +90,7 @@ public class BpmnWriter extends Bpmn {
   protected XmlElement writeWorkflow(Workflow workflow) {
     XmlElement processElement = getXmlElement(workflow.getProperty(KEY_BPMN));
     setBpmnName(processElement, "process");
-    writeBpmnAttribute(processElement, "id", (String) workflow.getProperty("bpmnId"));
+    writeBpmnAttribute(processElement, "id", workflow.getSource());
     writeActivities(workflow, processElement);
     return processElement;
   }

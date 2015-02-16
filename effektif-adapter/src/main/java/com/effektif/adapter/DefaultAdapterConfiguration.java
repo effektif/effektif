@@ -21,7 +21,7 @@ import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
-import com.effektif.workflow.impl.json.JacksonJsonService;
+import com.effektif.workflow.impl.json.JsonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -34,7 +34,7 @@ public class DefaultAdapterConfiguration implements Configuration {
     brewery.ingredient(this);
     brewery.supplier(new DefaultObjectMapperSupplier(), ObjectMapper.class);
     brewery.ingredient(new DataTypeService());
-    brewery.ingredient(new JacksonJsonService());
+    brewery.ingredient(new JsonService());
   }
 
   @Override

@@ -28,6 +28,11 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     this.apiClass = apiClass;
   }
   
+  public AbstractDataType(Class<? extends Type> apiClass, Class< ? > valueClass) {
+    this.apiClass = apiClass;
+    this.valueClass = valueClass;
+  }
+  
   @Override
   public boolean isStatic() {
     return false;

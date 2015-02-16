@@ -29,7 +29,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -72,6 +71,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
   
   interface WorkflowInstanceFields extends ScopeInstanceFields {
+    String ORGANIZATION_ID = "organizationId";
     String WORKFLOW_ID = "workflowId";
     String ACTIVITY_INSTANCES = "activities";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
@@ -342,6 +342,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbWorkflowInstance = new BasicDBObject();
     writeId(dbWorkflowInstance, WorkflowInstanceFields._ID, workflowInstance.id);
+    writeIdOpt(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID, workflowInstance.organizationId);
     if (storeWorkflowIdsAsStrings) {
       writeString(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
     } else {
@@ -383,6 +384,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   public WorkflowInstanceImpl readWorkflowInstance(BasicDBObject dbWorkflowInstance) {
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
     workflowInstance.id = readId(dbWorkflowInstance, WorkflowInstanceFields._ID);
+    workflowInstance.organizationId = readId(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
     
     String workflowId = null;
     // workflowId is ObjectId in the MongoConfiguration

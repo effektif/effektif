@@ -93,7 +93,7 @@ public class BpmnReader extends Bpmn {
 
   protected Workflow readProcess(XmlElement processXml) {
     Workflow workflow = new Workflow();
-    workflow.property("bpmnId", readBpmnAttribute(processXml, "id"));
+    workflow.source(readBpmnAttribute(processXml, "id"));
     readActivities(processXml, workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;

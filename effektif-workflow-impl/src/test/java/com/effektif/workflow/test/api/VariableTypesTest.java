@@ -15,12 +15,14 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.NumberType;
+import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
@@ -29,7 +31,7 @@ import com.effektif.workflow.test.WorkflowTest;
 public class VariableTypesTest extends WorkflowTest {
 
   @Test
-  public void testExclusiveGateway() {
+  public void testNumberType() {
     Workflow workflow = new Workflow()
       .variable("v", new NumberType());
     
@@ -40,6 +42,20 @@ public class VariableTypesTest extends WorkflowTest {
       .variableValue("v", 5));
     
     assertEquals(5, workflowInstance.getVariableValue("v"));
+  }
+
+  @Test
+  public void testUserReferenceType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new UserReferenceType());
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
+      .workflowId(workflow.getId())
+      .variableValue("v", new UserReference().id("u2")));
+    
+    assertEquals(UserReference.class, workflowInstance.getVariableValue("v").getClass());
   }
 
 }

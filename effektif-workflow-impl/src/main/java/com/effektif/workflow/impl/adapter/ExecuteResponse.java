@@ -24,14 +24,14 @@ import com.effektif.workflow.api.model.TypedValue;
 public class ExecuteResponse {
 
   protected boolean onwards;
-  protected Map<String,TypedValue> outputParameterValues;
+  protected Map<String,Object> outputParameterValues;
 
   
-  public Map<String, TypedValue> getOutputParameterValues() {
+  public Map<String, Object> getOutputParameterValues() {
     return outputParameterValues;
   }
   
-  public void setOutputParameterValues(Map<String, TypedValue> outputParameterValues) {
+  public void setOutputParameterValues(Map<String, Object> outputParameterValues) {
     this.outputParameterValues = outputParameterValues;
   }
 

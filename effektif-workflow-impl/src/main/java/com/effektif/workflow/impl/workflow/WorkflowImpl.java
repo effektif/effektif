@@ -31,6 +31,7 @@ public class WorkflowImpl extends ScopeImpl {
   
   public WorkflowEngineImpl workflowEngine;
 
+  public String organizationId;
   public List<ActivityImpl> startActivities;
   public String source;
   public LocalDateTime deployedTime;
@@ -42,6 +43,7 @@ public class WorkflowImpl extends ScopeImpl {
 
   public void parse(Workflow workflowApi, WorkflowParser parser) {
     this.workflow = this;
+    this.organizationId = workflowApi.getOrganizationId();
     super.parse(workflowApi, parser, null);
     this.startActivities = parser.getStartActivities(this);
     this.source = workflowApi.getSource();

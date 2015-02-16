@@ -19,23 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.types.TypeHelper;
 
 
 /** Describes how the value is obtained 
  * for an activity input parameter. */
 public class Binding<T> {
 
-  /** the fixed input value.  
-   * This is mutually exclusive with variableId and expression */
-  protected TypedValue typedValue;
+  protected T value;
+  protected Type type;
 
   /** reference to the variable that will contain the input value.  
    * This is mutually exclusive with value */
   protected String variableId;
-
   /** the fields that should be dereferenced in the fetched variableId.  
    * This an optional value if a variableId is specified. */
   protected List<String> fields;
@@ -48,6 +44,41 @@ public class Binding<T> {
    * specified.  All the results will be flatened and added to the collection.
    * This is mutually exclusive with the other fields. */
   protected List<Binding<T>> bindings;
+
+
+  /** the fixed value.  
+   * When serializing and deserializing, the type for this value will be automatically initialized.
+   * This value is mutually exclusive with variableId and expression */
+  public T getValue() {
+    return this.value;
+  }
+  /** the fixed value.  
+   * When serializing and deserializing, the type for this value will be automatically initialized.
+   * This value is mutually exclusive with variableId and expression */
+  public void setValue(T value) {
+    this.value = value;
+  }
+  /** the fixed value.  
+   * When serializing and deserializing, the type for this value will be automatically initialized.
+   * This value is mutually exclusive with variableId and expression */
+  public Binding value(T value) {
+    this.value = value;
+    return this;
+  }
+  
+  /** the type of {@link #getValue()} */
+  public Type getType() {
+    return this.type;
+  }
+  /** the type of {@link #getValue()} */
+  public void setType(Type type) {
+    this.type = type;
+  }
+  /** the type of {@link #getValue()} */
+  public Binding type(Type type) {
+    this.type = type;
+    return this;
+  }
 
   public List<Binding<T>> getBindings() {
     return this.bindings;
@@ -65,38 +96,6 @@ public class Binding<T> {
     }
     bindings.add(binding);
     return this;
-  }
-
-  public Object getValue() {
-    return typedValue!=null ? typedValue.getValue() : null;
-  }
-  
-  public Binding value(Object value) {
-    return typedValue(value, TypeHelper.getTypeByValue(value));
-  }
-
-  /** sets a fixed value with the given type.*/
-  // The naming is like this for code completion convenience.
-  // This way, developers can always start typing 'value' and then 
-  // look for that method that allowed them to pass in the type.
-  public Binding typedValue(Object value, Type type) {
-    this.typedValue = new TypedValue()
-      .value(value)
-      .type(type);
-    return this;
-  }
-
-  public Binding typedValue(TypedValue typedValue) {
-    this.typedValue = typedValue;
-    return this;
-  }
-  
-  public TypedValue getTypedValue() {
-    return typedValue;
-  }
-  
-  public void setTypedValue(TypedValue typedValue) {
-    this.typedValue = typedValue;
   }
 
   public String getVariableId() {

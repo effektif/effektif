@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Element;
@@ -37,12 +38,11 @@ import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
-import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.json.SerializedWorkflow;
 import com.effektif.workflow.impl.script.ExpressionService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -68,6 +68,7 @@ public class WorkflowParser {
   public Set<String> activityIds = new HashSet<>();
   public Set<String> variableIds = new HashSet<>();
   public Set<String> transitionIds = new HashSet<>();
+  public boolean isSerialized;
   
   private class ParseContext {
     ParseContext(String property, Object element, Integer index) {
@@ -116,6 +117,7 @@ public class WorkflowParser {
     WorkflowParser parser = new WorkflowParser(configuration);
     parser.pushContext("workflow", workflowApi, null);
     parser.workflow = new WorkflowImpl();
+    parser.isSerialized = workflowApi instanceof SerializedWorkflow;
     parser.workflow.parse(workflowApi, parser);
     parser.popContext();
     return parser;
@@ -162,26 +164,23 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi) {
-    return parseInputBindings(inputBindings, activityApi, null);
-  }
-
-  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, ActivityDescriptor activityDescriptor) {
+  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, Map<String, InputParameter> inputParameters) {
     if (inputBindings==null || inputBindings.isEmpty()) {
       return null;
     }
     Map<String,BindingImpl> inputBindingsImpl = null;
-    Map<String, InputParameter> inputParameters = activityDescriptor!=null ? activityDescriptor.getInputParameters() : null;
     for (Map.Entry<String, Binding> entry: inputBindings.entrySet()) {
       String key = entry.getKey();
       Binding inputBinding = entry.getValue();
       InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
       pushContext("inputBindings["+key+"]", inputParameter, null);
-
-      if (activityDescriptor!=null && inputParameter==null) {
+      if (inputParameter==null) {
         addWarning("Unexpected input binding '%s' in activity '%s'", key, activityApi.getId());
       }
-      BindingImpl<?> bindingImpl = parseBinding(inputBinding, inputParameter, key);
+      Type type = inputParameter.getType();
+      boolean isRequired = inputParameter!=null && inputParameter.isRequired();
+      String bindingName = key;
+      BindingImpl<?> bindingImpl = parseBinding(inputBinding, type, isRequired, bindingName);
       if (bindingImpl!=null) {
         if (inputBindingsImpl==null) {
           inputBindingsImpl = new HashMap<>();
@@ -192,35 +191,36 @@ public class WorkflowParser {
     }
     return inputBindingsImpl;
   }
-  
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter) {
-    return parseBinding(binding, inputParameter, inputParameter.getKey());
-  }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter, String key) {
-    BindingImpl<T> bindingImpl = parseBinding(binding, key);
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type, boolean isRequired, String bindingName) {
+    BindingImpl<T> bindingImpl = parseBinding(binding, type);
     int values = 0;
     if (bindingImpl!=null) {
-      if (bindingImpl.typedValue!=null) values++;
+      if (bindingImpl.value!=null) values++;
       if (bindingImpl.variableId!=null) values++;
       if (bindingImpl.expression!=null) values++;
       if (bindingImpl.bindings!=null) values++;
     }
-    if (inputParameter!=null && inputParameter.isRequired() && values==0) {
-      addError("Binding '%s' required and not specified", key);
+    if (isRequired && values==0) {
+      addError("Binding '%s' required and not specified", bindingName);
     } else if (values>1) {
-      addWarning("Multiple values specified for binding '%s'", key);
+      addWarning("Multiple values specified for binding '%s'", bindingName);
     }
     return bindingImpl;
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String fieldName) {
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type) {
     if (binding==null) {
       return null;
     }
     BindingImpl<T> bindingImpl = new BindingImpl<>(configuration);
     if (binding.getValue()!=null) {
-      bindingImpl.typedValue = parseTypedValue(binding.getTypedValue());
+      bindingImpl.value = binding.getValue();
+      if (isSerialized) {
+        DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+        DataType dataType = dataTypeService.createDataType(type);
+        bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
+      }
     }
     if (binding.getVariableId()!=null) {
       // TODO check if the variable exists and add an error if not
@@ -235,14 +235,14 @@ public class WorkflowParser {
       try {
         bindingImpl.expression = expressionService.compile(binding.getExpression(), this);
       } catch (Exception e) {
-        addError("Expression for input '%s' couldn't be compiled: %s", fieldName+".expression", e.getMessage());
+        addError("Expression '%s' couldn't be compiled: %s", binding.getExpression(), e.getMessage());
       }
     }
     List<Binding<T>> bindings = binding.getBindings();
     if (bindings!=null && !bindings.isEmpty()) {
       bindingImpl.bindings = new ArrayList<>();
       for (Binding<T> elementBinding: bindings) {
-        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, fieldName);
+        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, type);
         bindingImpl.bindings.add(elementBindingImpl);
       }
     }

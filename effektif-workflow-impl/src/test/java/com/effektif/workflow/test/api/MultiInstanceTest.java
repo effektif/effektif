@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -45,7 +46,10 @@ public class MultiInstanceTest extends WorkflowTest {
     
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(workflow.getId())
-      .variableValue("reviewers", Lists.of("John", "Jack", "Mary")));
+      .variableValue("reviewers", Lists.of(
+              new UserReference().id("John"),
+              new UserReference().id("Jack"), 
+              new UserReference().id("Mary"))));
 
     // TODO make it so that the parent activity 
     // instance doesn't have a name and doesn't have the empty variable declaration

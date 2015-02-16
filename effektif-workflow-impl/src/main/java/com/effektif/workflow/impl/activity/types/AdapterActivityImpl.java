@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.AdapterActivity;
@@ -22,10 +23,13 @@ import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.impl.activity.OutputParameter;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterService;
 import com.effektif.workflow.impl.adapter.ExecuteRequest;
 import com.effektif.workflow.impl.adapter.ExecuteResponse;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -40,6 +44,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   protected DataTypeService dataTypeService;
   protected AdapterService adapterService;
   protected ActivityDescriptor descriptor;
+  protected Map<String,DataType> outputParameterDataTypes;
 
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
@@ -47,14 +52,33 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   
   @Override
   public void parse(ActivityImpl activityImpl, AdapterActivity adapterActivity, WorkflowParser parser) {
+    super.parse(activityImpl, adapterActivity, parser);
     this.adapterId = adapterActivity.getAdapterId();
     this.activityKey = adapterActivity.getActivityKey();
     this.dataTypeService = parser.getConfiguration(DataTypeService.class);
     this.adapterService = parser.getConfiguration(AdapterService.class);
+    Map<String, InputParameter> inputParameters = null;
     Adapter adapter = adapterService.findAdapterById(adapterId);
     this.descriptor = adapter!=null ? adapter.getActivityDescriptor(activityKey) : null;
-    // super.parse will parse the input bindings based on the descriptor
-    super.parse(activityImpl, adapterActivity, parser);
+    if (descriptor!=null) {
+      Map<String, OutputParameter> outputParameters = descriptor.getOutputParameters();
+      if (outputParameters!=null) {
+        this.outputParameterDataTypes = new HashMap<>();
+        DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
+        for (String outputParameterKey: outputParameters.keySet()) {
+          // IDEA if there there is a difference between the parameter type and the 
+          //      configured variable type (@see this.outputBindings),
+          //      then we could coerse (=apply a conversion) 
+          OutputParameter outputParameter = outputParameters.get(outputParameterKey);
+          Type type = outputParameter.getType();
+          DataType dataType = dataTypeService.createDataType(type);
+          outputParameterDataTypes.put(outputParameterKey, dataType);
+        }
+      }
+      inputParameters = descriptor.getInputParameters();
+    }
+    this.inputBindings = parser.parseInputBindings(activityApi.getInputBindings(), activityApi, inputParameters);
+    this.outputBindings = activityApi.getOutputBindings();
   }
   
   public ActivityDescriptor getDescriptor() {
@@ -71,21 +95,9 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     if (inputBindings!=null) {
       for (String adapterKey: inputBindings.keySet()) {
         BindingImpl inputBinding = inputBindings.get(adapterKey);
-        Type type = null;
-        Object value = null;
-        TypedValueImpl typedValueImpl = inputBinding.getTypedValue(activityInstance);
-        if (typedValueImpl!=null) {
-          value = typedValueImpl.value;
-          if (typedValueImpl.type!=null) {
-            type = typedValueImpl.type.serialize();
-          } else if (value!=null) {
-            type = dataTypeService.getTypeByValue(value);
-          }
-        }
+        Object value = inputBinding.getValue(activityInstance);
         if (value!=null) {
-          executeRequest.inputParameter(adapterKey, new TypedValue()
-            .type(type)
-            .value(value));
+          executeRequest.inputParameter(adapterKey, value);
         }
       }
     }
@@ -93,11 +105,13 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     ExecuteResponse executeResponse = adapterService.executeAdapterActivity(adapterId, executeRequest);
     
     if (outputBindings!=null) {
-      Map<String, TypedValue> outputParameterValues = executeResponse.getOutputParameterValues();
-      for (String adapterKey: outputBindings.keySet()) {
-        String variableId = outputBindings.get(adapterKey);
-        TypedValue typedValue = outputParameterValues.get(adapterKey);
-        activityInstance.setVariableValue(variableId, typedValue);
+      Map<String, Object> outputParameterValues = executeResponse.getOutputParameterValues();
+      for (String outputParameterKey: outputBindings.keySet()) {
+        String variableId = outputBindings.get(outputParameterKey);
+        Object value = outputParameterValues.get(outputParameterKey);
+        DataType dataType = outputParameterDataTypes.get(outputParameterKey);
+        Object deserializedValue = dataType.convertJsonToInternalValue(value);
+        activityInstance.setVariableValue(variableId, deserializedValue);
       }
     }
     

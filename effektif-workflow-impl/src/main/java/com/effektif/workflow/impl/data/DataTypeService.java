@@ -58,6 +58,7 @@ public class DataTypeService implements Brewable {
   protected Map<Class<? extends Type>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
   protected Map<Class<? extends Type>, TypeGenerator> typeGenerators = new HashMap<>();
+  protected Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
   
   
   @Override
@@ -78,7 +79,6 @@ public class DataTypeService implements Brewable {
     registerDataType(new UserReferenceTypeImpl());
     registerDataType(new VariableReferenceTypeImpl());
     registerDataType(new WorkflowReferenceTypeImpl());
-    registerJavaBeanType(UserReference.class);
   }
   
   public void setObjectMapper(ObjectMapper objectMapper) {
@@ -97,6 +97,11 @@ public class DataTypeService implements Brewable {
     } else {
       Constructor<?> constructor = findDataTypeConstructor(dataType.getClass());
       dataTypeConstructors.put(apiClass, constructor);
+    }
+    Class valueClass = dataType.getValueClass();
+    if (valueClass!=null) {
+      dataTypesByValueClass.put(valueClass, dataType);
+      objectMapper.registerSubtypes(valueClass);
     }
     objectMapper.registerSubtypes(apiClass);
   }
@@ -128,6 +133,10 @@ public class DataTypeService implements Brewable {
     JavaBeanTypeImpl javaBeanType = new JavaBeanTypeImpl(javaBeanClass);
     javaBeanTypes.put(javaBeanClass, javaBeanType);
     registerDataType(javaBeanType);
+  }
+  
+  public DataType getDataTypeByValue(Object value) {
+    throw new RuntimeException("implement me");
   }
 
   public Type getTypeByValue(Object value) {

@@ -21,11 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.TypedValue;
-import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.adapter.ExecuteRequest;
 import com.effektif.workflow.impl.adapter.ExecuteResponse;
-import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 
@@ -46,31 +43,18 @@ public class ActivityContext {
   }
 
   public Object getValue(String parameterKey) {
-    Map<String, TypedValue> inputParameters = executeRequest.getInputParameters();
+    Map<String, Object> inputParameters = executeRequest.getInputParameters();
     if (!inputParameters.containsKey(parameterKey)) {
       log.debug("Parameter '"+parameterKey+"' not available");
       return null;
     }
-    TypedValue parameter = inputParameters.get(parameterKey);
-    if (parameter==null) {
-      log.debug("Parameter '"+parameterKey+"' is not specified");
-      return null;
-    }
-    Object value = parameter.getValue();
+    Object value = inputParameters.get(parameterKey);
     if (value==null) {
       log.debug("Parameter '"+parameterKey+"' has value null");
       return null;
     }
-    Type type = parameter.getType();
-    if (type==null) {
-      log.debug("Parameter '"+parameterKey+"' doesn't have a type");
-      return null;
-    }
-    DataType<?> dataType = dataTypeService.createDataType(type);
-    value = dataType.convertJsonToInternalValue(value);
     return value;
   }
-
 
   public ExecuteResponse getExecuteResponse() {
     return this.executeResponse;

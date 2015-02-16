@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
@@ -108,7 +109,7 @@ public class StandardScriptBindings implements Bindings {
     TypedValueImpl typedValue = getTypedValue(scriptVariableName);
     DataType type = typedValue.getType();
     Object value = typedValue.getValue();
-    return type.convertInternalToScriptValue(value, language);
+    return type.convertInternalToJsonValue(value);
   }
   
   protected String getVariableId(String scriptVariableName) {
@@ -129,21 +130,17 @@ public class StandardScriptBindings implements Bindings {
   @Override
   public Object put(String scriptVariableName, Object scriptValue) {
     if (isTransient(scriptVariableName)) {
-      // if (log.isDebugEnabled()) log.debug("ScriptBindings.put("+scriptVariableName+","+scriptValue+") TRANSIENT");
       return transientValues.put(scriptVariableName, scriptValue);
     } 
     if (log.isDebugEnabled()) log.debug("ScriptBindings.put("+scriptVariableName+","+scriptValue+")");
-    if (isTransient(scriptVariableName)){
-      return null;
-    }
     String variableId = getVariableId(scriptVariableName);
     if (variableId!=null) {
       VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
-      DataType type = variableInstance.type;
-      Object value = type.convertScriptValueToInternal(scriptValue, language);
-      variableInstance.setTypedValue(new TypedValueImpl(type, value));
-    } else {
-      scopeInstance.createVariableInstance(new TypedValueImpl(null, scriptValue));
+      if (variableInstance==null) {
+        throw new RuntimeException("Variable "+variableId+" is not defined (script variable name '"+scriptVariableName+"')");
+      }
+      Object value = variableInstance.type.convertJsonToInternalValue(scriptValue);
+      scopeInstance.setVariableValue(variableInstance, value);
     }
     return null;
   }

@@ -17,6 +17,7 @@ package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +38,12 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.SerializedMessage;
+import com.effektif.workflow.impl.json.SerializedStart;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -131,8 +135,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     String workflowId = start.getWorkflowId();
     if (workflowId==null) {
       if (start.getWorkflowSource()!=null) {
-        workflowId = workflowStore.findLatestWorkflowIdByName(start.getWorkflowSource());
-        if (workflowId==null) throw new RuntimeException("No workflow found for name '"+start.getWorkflowSource()+"'");
+        workflowId = workflowStore.findLatestWorkflowIdBySource(start.getWorkflowSource());
+        if (workflowId==null) throw new RuntimeException("No workflow found for source '"+start.getWorkflowSource()+"'");
       } else {
         throw new RuntimeException("No workflow specified");
       }
@@ -145,10 +149,15 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowInstance.callerWorkflowInstanceId = callerReference.callerWorkflowInstanceId;
       workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
     }
+    
+    if (start instanceof SerializedStart) {
+      jsonService.deserializeStart(start, workflow);
+    }
     if (workflow.trigger!=null) {
       workflow.trigger.applyTriggerValues(workflowInstance, start);
     }
     workflowInstance.setVariableValues(start.getVariableValues());
+    
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
     workflowInstance.start = Time.now();
     if (workflow.startActivities!=null) {
@@ -170,6 +179,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   @Override
   public WorkflowInstance sendMessage(Message message) {
     WorkflowInstanceImpl workflowInstance = lockProcessInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
+    
+    if (message instanceof SerializedMessage) {
+      jsonService.deserializeMessage(message, workflowInstance.workflow);
+    }
+    
     workflowInstance.setVariableValues(message.getVariableValues());
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(message.getActivityInstanceId());
     if (activityInstance.isEnded()) {

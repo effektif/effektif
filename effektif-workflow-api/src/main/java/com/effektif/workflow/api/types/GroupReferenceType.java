@@ -15,13 +15,10 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="id")
-public class Type {
+@JsonTypeName("groupRef")
+public class GroupReferenceType extends Type {
 
-  
 }

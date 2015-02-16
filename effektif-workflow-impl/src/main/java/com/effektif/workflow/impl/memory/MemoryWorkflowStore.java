@@ -83,7 +83,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public String findLatestWorkflowIdByName(String workflowName) {
+  public String findLatestWorkflowIdBySource(String workflowName) {
     if (workflowName==null) {
       return null;
     }

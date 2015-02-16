@@ -38,14 +38,14 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   @Override
   public void saveTask(Task task) {
     log.debug("saveTask");
-    task = wireize("  -task->", task, Task.class);
+    task = wireize("  >>task>>", task, Task.class);
     taskService.saveTask(task);
   }
 
   @Override
   public List<Task> findTasks(TaskQuery query) {
     log.debug("findTasks");
-    query = wireize("  -query->", query, TaskQuery.class);
+    query = wireize("  >>query>>", query, TaskQuery.class);
     List<Task> tasks = taskService.findTasks(query);
     if (tasks==null) {
       return null;
@@ -60,7 +60,7 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   @Override
   public void deleteTasks(TaskQuery query) {
     log.debug("deleteTasks");
-    query = wireize("  -query->", query, TaskQuery.class);
+    query = wireize("  >>query>>", query, TaskQuery.class);
     taskService.deleteTasks(query);
   }
 

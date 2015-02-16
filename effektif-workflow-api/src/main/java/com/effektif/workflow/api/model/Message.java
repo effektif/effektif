@@ -18,14 +18,12 @@ package com.effektif.workflow.api.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.types.Type;
-
 
 public class Message {
 
   protected String workflowInstanceId;
   protected String activityInstanceId;
-  protected Map<String,TypedValue> variableValues;
+  protected Map<String,Object> variableValues;
 
   public String getWorkflowInstanceId() {
     return this.workflowInstanceId;
@@ -49,26 +47,19 @@ public class Message {
     return this;
   }
 
-  public Map<String,TypedValue> getVariableValues() {
+  public Map<String,Object> getVariableValues() {
     return this.variableValues;
   }
 
-  public void setVariableValues(Map<String,TypedValue> variableValues) {
+  public void setVariableValues(Map<String,Object> variableValues) {
     this.variableValues = variableValues;
   }
 
   public Message variableValue(String variableId, Object variableValue) {
-    variableValue(variableId, variableValue, null);
-    return this;
-  }
-
-  public Message variableValue(String variableId, Object variableValue, Type type) {
     if (variableValues==null) {
       variableValues = new LinkedHashMap<>();
     }
-    variableValues.put(variableId, new TypedValue()
-      .value(variableValue)
-      .type(type));
+    variableValues.put(variableId, variableValue);
     return this;
   }
 }

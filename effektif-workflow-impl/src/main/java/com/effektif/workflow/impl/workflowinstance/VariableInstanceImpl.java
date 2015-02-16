@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -40,14 +39,8 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setVariableId(variable.id);
-    TypedValue typedValue = new TypedValue()
-      .value(value);
-    if (variable.type!=null) {
-      typedValue.type(variable.type.serialize());
-    } else {
-      typedValue.type(type.serialize());
-    }
-    variableInstance.setTypedValue(typedValue);
+    variableInstance.setValue(type.convertInternalToJsonValue(value));
+    variableInstance.setType(type.serialize());
     return variableInstance;
   }
 
@@ -55,12 +48,8 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     return value;
   }
 
-  public void setTypedValue(TypedValueImpl typedValue) {
-    Object newValue = null;
-    if (typedValue!=null && typedValue.value!=null) {
-      newValue = type.convert(typedValue.value, typedValue.type);
-    }
-    this.value = newValue;
+  public void setValue(Object value) {
+    this.value = value;
     if (updates!=null) {
       updates.isValueChanged = true;
       parent.propagateActivityInstanceChange();

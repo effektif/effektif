@@ -30,13 +30,17 @@ public class UserTaskTest extends WorkflowTest {
   @Test
   public void testTask() throws Exception {
     Workflow workflow = new Workflow()
-      .activity("1", new UserTask());
+      .activity("1", new UserTask()
+        .name("release")
+        .assigneeUserId("jackblack")
+        .candidateUserId("johndoe")
+      );
     
     deploy(workflow);
     
     start(workflow);
     
-    assertEquals("1", taskService.findTasks(new TaskQuery()).get(0).getName());
+    assertEquals("release", taskService.findTasks(new TaskQuery()).get(0).getName());
   }
 
 }

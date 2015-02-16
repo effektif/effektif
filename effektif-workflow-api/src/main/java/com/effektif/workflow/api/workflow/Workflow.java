@@ -18,6 +18,9 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.acl.Access;
+import com.effektif.workflow.api.acl.AccessControlList;
+import com.effektif.workflow.api.acl.AccessIdentity;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.xml.XmlElement;
@@ -43,6 +46,9 @@ public class Workflow extends Scope {
 
   protected Trigger trigger;
   protected XmlElement bpmnDefinitions;
+  
+  protected AccessControlList acl;
+  protected String organizationId;
 
   /** refers to the authoring form of this workflow.
    * @see #source(String) */
@@ -109,37 +115,76 @@ public class Workflow extends Scope {
   public void setBpmnDefinitions(XmlElement bpmnDefinitions) {
     this.bpmnDefinitions = bpmnDefinitions;
   }
+  
+  /** the access control list specifies which actions are permitted by whom.
+   * If not specified, all is allowed. */
+  public AccessControlList getAcl() {
+    return this.acl;
+  }
+  /** the access control list specifies which actions are permitted by whom.
+   * If not specified, all is allowed. */
+  public void setAcl(AccessControlList acl) {
+    this.acl = acl;
+  }
+  /** the access control list specifies which actions are permitted by whom.
+   * If not specified, all is allowed. */
+  public Workflow acl(AccessControlList acl) {
+    this.acl = acl;
+    return this;
+  }
 
+  /** optional organization (aka tenant or workspace) identification */
+  public String getOrganizationId() {
+    return this.organizationId;
+  }
+  /** optional organization (aka tenant or workspace) identification */
+  public void setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
+  }
+  /** optional organization (aka tenant or workspace) identification */
+  public Workflow organizationId(String organizationId) {
+    this.organizationId = organizationId;
+    return this;
+  }
+
+  /** add an activity to the workflow */
   @Override
   public Workflow activity(Activity activity) {
     super.activity(activity);
     return this;
   }
+  /** add an activity to the workflow */
   @Override
   public Workflow activity(String id, Activity activity) {
     super.activity(id, activity);
     return this;
   }
+  /** add a transition to this workflow where the id is specified in the transition */
   @Override
   public Workflow transition(Transition transition) {
     super.transition(transition);
     return this;
   }
+  /** add a transition to this workflow and set the given id. */
   @Override
   public Workflow transition(String id, Transition transition) {
     super.transition(id, transition);
     return this;
   }
+  /** add a variable to this workflow and set the given id. */
   @Override
   public Workflow variable(String id, Type type) {
     super.variable(id, type);
     return this;
   }
+  /** add a timer to this workflow. */
   @Override
   public Workflow timer(Timer timer) {
     super.timer(timer);
     return this;
   }
+  /** sets the id of this workflow.
+   * The id is not really used during execution. */
   @Override
   public Workflow id(String id) {
     super.id(id);
@@ -169,4 +214,5 @@ public class Workflow extends Scope {
     super.propertyOpt(key, value);
     return this;
   }
+
 }

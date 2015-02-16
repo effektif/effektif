@@ -1,30 +1,29 @@
 # Contributions
 
+- [ ] Cloud adapters
+  - Google Drive activity: Add a line to a Google spreadsheet
+  - Google Drive activity: Create Google document from template
+  - Google Drive trigger: file is added to a Google Drive folder
+  - Dropbox activity: Upload file to dropbox
+  - Dropbox trigger: file is added to a Google Drive folder
+  - Slack activity: Send message to chat
+  - Slack trigger: Start a workflow on a chat command
+
 - [ ] Load testing
   - Create a script that produces an executable jar file for the server
   - Create a script that produces an executable jar file for the test runner
   - Get the most out of JMeter or Gatling 
   - Use monitoring tools to learn about memory and bottlenecks
-- [ ] 
-- [ ] Build an HR module on top
-  - Entities: Job posting, Candidate, Employment contract
-  - Workflows: New job opening, New candidate, Hire, Fire
-- [ ] Build the server (with jersey)
-- [ ] Making the WorkflowEngine available as a bean in a Spring configuration
-- [ ] Finish the BPMN parser
-- [ ] HttpServiceTask
-- [ ] Scala fluent workflow builder 
-- [ ] NodeJS adapter
 
-[06/02/15 09:31:26] Peter Hilton: -[ ] New trigger types
-[06/02/15 09:31:33] Peter Hilton:   - Camel component
-[06/02/15 09:31:42] Tom Baeyens: - [ ] Trello task service
-[06/02/15 09:33:19] Tom Baeyens: IFTTT trigger
-[06/02/15 09:40:27] Tom Baeyens: cloud triggers
+- [ ] Scala language driver: fluent workflow builder 
+- [ ] NodeJS language driver: Adapter skeleton
+- [ ] Making the WorkflowEngine available as a bean in a Spring configuration
+- [ ] Camel adapter component
 
 # Tasks
 
-- [ ] Paging
+- [ ] Should we keep scope.activity(Activity) or only allow scope.activity(String,Activity) to be consistent with variables ? 
+- [ ] Paging ? 
 - [ ] Triggers
 - [ ] Data sources
 - [ ] Store data types

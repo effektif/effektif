@@ -39,7 +39,7 @@ public interface WorkflowStore {
 
   void deleteWorkflows(WorkflowQuery workflowQuery);
 
-  String findLatestWorkflowIdByName(String workflowName);
+  String findLatestWorkflowIdBySource(String workflowName);
 
   /** loads the executable workflow */
   Workflow loadWorkflowById(String workflowId);

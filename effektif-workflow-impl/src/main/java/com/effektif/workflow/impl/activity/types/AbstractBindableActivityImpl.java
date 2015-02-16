@@ -33,10 +33,4 @@ public abstract class AbstractBindableActivityImpl<T extends AbstractBindableAct
     super(activityApiClass);
   }
   
-  @Override
-  public void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser) {
-    super.parse(activityImpl, activityApi, parser);
-    this.inputBindings = parser.parseInputBindings(activityApi.getInputBindings(), activityApi, getDescriptor());
-    this.outputBindings = activityApi.getOutputBindings();
-  }
 }

@@ -68,9 +68,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     super.parse(activityImpl, userTaskApi, parser);
     this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.taskService = parser.getConfiguration(TaskService.class);
-    this.nameBinding = parser.parseBinding(userTaskApi.getNameBinding(), NAME);
-    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssigneeBinding(), ASSIGNEE);
-    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidatesBinding(), CANDIDATES);
+    this.nameBinding = parser.parseBinding(userTaskApi.getTaskName(), NAME);
+    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssignee(), ASSIGNEE);
+    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidates(), CANDIDATES);
   }
 
   @Override

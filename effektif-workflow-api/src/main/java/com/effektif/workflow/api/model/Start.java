@@ -18,7 +18,6 @@ package com.effektif.workflow.api.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -26,9 +25,9 @@ public class Start {
   
   protected String workflowId;
   protected String workflowSource;
-  protected Map<String,TypedValue> variableValues;
-  protected Map<String,TypedValue> triggerValues;
-
+  protected Map<String,Object> variableValues;
+  protected Map<String,Object> triggerValues;
+  
   public String getWorkflowId() {
     return this.workflowId;
   }
@@ -57,49 +56,35 @@ public class Start {
     return this;
   }
 
-  public Map<String,TypedValue> getVariableValues() {
+  public Map<String,Object> getVariableValues() {
     return this.variableValues;
   }
 
-  public void setVariableValues(Map<String,TypedValue> variableValues) {
+  public void setVariableValues(Map<String,Object> variableValues) {
     this.variableValues = variableValues;
   }
 
-  public Start variableValue(String variableId, Object variableValue) {
-    variableValue(variableId, variableValue, null);
-    return this;
-  }
-
-  public Start variableValue(String variableId, Object variableValue, Type type) {
+  public Start variableValue(String variableId, Object value) {
     if (variableValues==null) {
       variableValues = new LinkedHashMap<>();
     }
-    variableValues.put(variableId, new TypedValue()
-      .value(variableValue)
-      .type(type));
+    variableValues.put(variableId, value);
     return this;
   }
 
-  public Map<String,TypedValue> getTriggerValues() {
+  public Map<String,Object> getTriggerValues() {
     return this.triggerValues;
   }
 
-  public void setTriggerValues(Map<String,TypedValue> triggerValues) {
+  public void setTriggerValues(Map<String,Object> triggerValues) {
     this.triggerValues = triggerValues;
   }
 
-  public Start triggerValue(String triggerKey, Object triggerValue) {
-    triggerValue(triggerKey, triggerValue, null);
-    return this;
-  }
-
-  public Start triggerValue(String triggerKey, Object triggerValue, Type type) {
+  public Start triggerValue(String triggerKey, Object value) {
     if (triggerValues==null) {
       triggerValues = new LinkedHashMap<>();
     }
-    triggerValues.put(triggerKey, new TypedValue()
-      .value(triggerValue)
-      .type(type));
+    triggerValues.put(triggerKey, value);
     return this;
   }
 }

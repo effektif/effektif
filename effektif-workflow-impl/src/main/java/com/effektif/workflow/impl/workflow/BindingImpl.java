@@ -23,70 +23,71 @@ import java.util.List;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.script.ExpressionService;
 import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
 public class BindingImpl<T> {
 
-  public TypedValueImpl typedValue;
+  public DataType dataType;
+
+  public T value;
   public String variableId;
   public List<String> fields;
   public ExpressionService expressionService; 
   public ScriptImpl expression;
-  public DataType expressionExpectedType;
   public List<BindingImpl<T>> bindings;
-  public DataType bindingsElementType;
   
   public BindingImpl(Configuration configuration) {
     this.expressionService = configuration.get(ExpressionService.class);
   }
   
-  public TypedValueImpl getTypedValue(ScopeInstanceImpl scopeInstance) {
-    TypedValueImpl typedValue = null;
-    if (this.typedValue!=null) {
-      typedValue = this.typedValue;
+  public T getValue(ScopeInstanceImpl scopeInstance) {
+    // IDEA : you might want to coerse value returned to this.dataType (ensure initialized properly)
+    if (this.value!=null) {
+      return value;
     
     } else if (this.variableId!=null) {
-      typedValue = scopeInstance.getTypedValue(this.variableId);
-      if (this.fields!=null) {
-        for (String field: this.fields) {
-          ObjectTypeImpl<?> objectType = (ObjectTypeImpl< ? >) typedValue.type; 
-          objectType.dereference(typedValue, field);
-        }
+      VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(this.variableId);
+      if (this.fields==null) {
+        return (T) variableInstance.getValue();
       }
+      
+      TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
+      for (String field: this.fields) {
+        ObjectTypeImpl<?> objectType = (ObjectTypeImpl< ? >) typedValue.type; 
+        objectType.dereference(typedValue, field);
+      }
+      return (T) typedValue.value;
       
     } else if (this.expression!=null) {
       ScriptResult scriptResult = expression.evaluate(scopeInstance);
-      Object result = scriptResult.getResult();
-      if (expressionExpectedType!=null) {
-        // TODO result = expressionExpectedType.shoehorn(result);
-        typedValue = new TypedValueImpl(expressionExpectedType, result);
-      }
+      Object value = scriptResult.getResult();
+      return (T) value;
       
     } else if (this.bindings!=null) {
       List<Object> values = new ArrayList<>();
       for (BindingImpl binding: this.bindings) {
-        TypedValueImpl elementValue = binding.getTypedValue(scopeInstance);
-        if (elementValue!=null && elementValue.value!=null) {
-          if (Collection.class.isAssignableFrom(elementValue.value.getClass())) {
-            Iterator iterator = ((Collection)elementValue.value).iterator();
+        Object elementValue = binding.getValue(scopeInstance);
+        if (elementValue!=null ) {
+          if (Collection.class.isAssignableFrom(elementValue.getClass())) {
+            Iterator iterator = ((Collection)elementValue).iterator();
             while (iterator.hasNext()) {
               values.add(iterator.next());
             }
           } else {
-            values.add(elementValue.value);
+            values.add(elementValue);
           }
         }
       }
-      ListTypeImpl type = new ListTypeImpl(bindingsElementType);
-      return new TypedValueImpl(type, values);
+      return (T) values;
     }
-    return typedValue;
+    
+    return null;
   }
 
 }

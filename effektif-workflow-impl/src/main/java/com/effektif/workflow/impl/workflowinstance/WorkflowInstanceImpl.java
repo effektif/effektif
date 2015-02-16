@@ -15,10 +15,7 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_NOTIFYING;
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING;
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_INSTANCE;
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +36,7 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.types.CallImpl;
-import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
@@ -54,6 +49,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
+  public String organizationId;
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
@@ -69,6 +65,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, String workflowInstanceId) {
     this.id = workflowInstanceId;
+    this.organizationId = workflow.organizationId;
     this.configuration = configuration;
     this.workflow = workflow;
     this.scope = workflow;
@@ -81,12 +78,13 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
   
   public WorkflowInstance toWorkflowInstance() {
-    WorkflowInstance w = new WorkflowInstance();
-    w.setWorkflowId(workflow.id);
-    w.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
-    w.setCallerActivityInstanceId(callerActivityInstanceId);
-    toScopeInstance(w);
-    return w;
+    WorkflowInstance workflowInstance = new WorkflowInstance();
+    workflowInstance.setOrganizationId(organizationId);
+    workflowInstance.setWorkflowId(workflow.id);
+    workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
+    workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);
+    toScopeInstance(workflowInstance);
+    return workflowInstance;
   }
   
   public static List<WorkflowInstance> toWorkflowInstances(List<WorkflowInstanceImpl> workflowInstances) {
@@ -126,32 +124,26 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         activityInstance.execute();
         
       } else if (STATE_STARTING_MULTI_CONTAINER.equals(activityInstance.workState)) {
-        TypedValueImpl typedValueList = null;
+        Collection<Object> values = null;
         MultiInstanceImpl multiInstance = activityType.getMultiInstance();
         if (multiInstance!=null && multiInstance.valuesBinding!=null) {
-          typedValueList = multiInstance.valuesBinding.getTypedValue(activityInstance);
+          Object value = multiInstance.valuesBinding.getValue(activityInstance);
+          if (value!=null) {
+            if (value instanceof Collection) {
+              values = (Collection<Object>) value;
+            } else {
+              values = Lists.of(value);
+            }
+          }
         }
-        if ( typedValueList!=null && typedValueList.value!=null) {
-          Collection<Object> values = null;
-          DataType elementType = null;
-          if (typedValueList.type instanceof ListTypeImpl) {
-            elementType = ((ListTypeImpl)typedValueList.type).elementType;
-          } if (typedValueList.type!=null) {
-            elementType = typedValueList.type;
-          }
-          if (typedValueList.value instanceof Collection) {
-            values = (Collection<Object>) typedValueList.value;
-          } else {
-            values = Lists.of(typedValueList.value);
-          }
+        if (values!=null) {
           if (log.isDebugEnabled()) {
             log.debug("Starting multi instance container "+activityInstance);
           }
           for (Object element: values) {
             ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
             elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE);
-            TypedValueImpl elementTypedValue = new TypedValueImpl(elementType, element);
-            elementActivityInstance.initializeForEachElement(multiInstance.elementVariable, elementTypedValue);
+            elementActivityInstance.initializeForEachElement(multiInstance.elementVariable, element);
           }
         } else {
           if (log.isDebugEnabled()) {
