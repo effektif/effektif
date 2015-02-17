@@ -41,7 +41,7 @@ public class VariableTypesTest extends WorkflowTest {
       .workflowId(workflow.getId())
       .variableValue("v", 5));
     
-    assertEquals(5, workflowInstance.getVariableValue("v"));
+    assertEquals(new Long(5), workflowInstance.getVariableValueLong("v"));
   }
 
   @Test

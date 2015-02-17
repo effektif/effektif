@@ -27,7 +27,6 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeGenerator;
-import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.util.Lists;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -37,22 +36,14 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   
   public DataType elementType;
   
-  /** constructor for json & persistence, dataType is a required field. */
   public ListTypeImpl() {
-    super(ListType.class);
-    this.valueClass = List.class;
+    super(new ListType(), List.class);
   }
 
-  public ListTypeImpl(DataType elementDataType) {
-    super(ListType.class);
+  public ListTypeImpl(ListType listTypeApi, Configuration configuration) {
+    super(listTypeApi, List.class);
     this.valueClass = List.class;
-    this.elementType = elementDataType;
-  }
-
-  public ListTypeImpl(ListType listType, Configuration configuration) {
-    super(ListType.class);
-    this.valueClass = List.class;
-    Type elementType = listType.getElementType();
+    Type elementType = listTypeApi.getElementType();
     if (elementType!=null) {
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);
       this.elementType = dataTypeService.createDataType(elementType);

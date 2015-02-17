@@ -15,38 +15,34 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.UserReferenceType;
-import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.DataType;
 
 
 
-public class UserReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
-  
-  public static final UserReferenceTypeImpl INSTANCE = new UserReferenceTypeImpl();
+public class UserReferenceTypeImpl extends JavaBeanTypeImpl<UserReferenceType> {
 
-  public UserReferenceTypeImpl() {
-    super(UserReferenceType.class, UserReference.class);
+  public UserReferenceTypeImpl(Configuration configuration) {
+    this(new UserReferenceType(), configuration);
+    // TODO initialize the fields
+  }
+
+  public UserReferenceTypeImpl(UserReferenceType type, Configuration configuration) {
+    super(type, configuration);
   }
   
-  @Override
-  public boolean isStatic() {
-    return true;
-  }
-  
-  @Override
-  public Object convert(Object value, DataType valueType) {
-    if (value instanceof UserReference) {
-      return value;
-    }
-    if (value instanceof String
-         && ( ( valueType==null
-                || valueType instanceof TextTypeImpl) 
-            )
-       ){
-      return new UserReference().id((String)value);
-    } 
-    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+UserReference.class.getName());
-  }
+//  @Override
+//  public Object convert(Object value, DataType valueType) {
+//    if (value instanceof UserReference) {
+//      return value;
+//    }
+//    if (value instanceof String
+//         && ( ( valueType==null
+//                || valueType instanceof TextTypeImpl) 
+//            )
+//       ){
+//      return new UserReference().id((String)value);
+//    } 
+//    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+UserReference.class.getName());
+//  }
 }

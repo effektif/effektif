@@ -28,9 +28,8 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   protected List<String> options;
   
   public ChoiceTypeImpl(ChoiceType choiceApi, DataTypeService dataTypeService) {
-    super(ChoiceType.class);
+    super(choiceApi, String.class);
     this.options = choiceApi.getOptions();
-    this.valueClass = String.class;
   }
   
   @Override

@@ -15,10 +15,14 @@
  */
 package com.effektif.workflow.api.types;
 
+import com.effektif.workflow.api.ref.UserReference;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("userRef")
-public class UserReferenceType extends Type {
+public class UserReferenceType extends JavaBeanType {
 
+  public UserReferenceType() {
+    super(UserReference.class);
+  }
 }

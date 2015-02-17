@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
@@ -32,16 +31,13 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.types.BindingTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
+import com.effektif.workflow.impl.data.types.CustomTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
-import com.effektif.workflow.impl.data.types.MapTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
 import com.effektif.workflow.impl.data.types.UserReferenceTypeImpl;
-import com.effektif.workflow.impl.data.types.VariableReferenceTypeImpl;
-import com.effektif.workflow.impl.data.types.WorkflowReferenceTypeImpl;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +49,7 @@ public class DataTypeService implements Brewable {
   protected Configuration configuration;
   protected ObjectMapper objectMapper;
   
-  protected Map<Class<? extends Type>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
+  // protected Map<Class<? extends Type>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
   protected Map<Class<? extends Type>,DataType> singletons = new ConcurrentHashMap<>();
   protected Map<Class<? extends Type>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
@@ -69,16 +65,13 @@ public class DataTypeService implements Brewable {
   }
 
   protected void initializeDataTypes() {
-    registerDataType(new BindingTypeImpl());
     registerDataType(new BooleanTypeImpl());
+    registerDataType(new CustomTypeImpl());
     registerDataType(new JavaBeanTypeImpl());
     registerDataType(new NumberTypeImpl());
     registerDataType(new ListTypeImpl());
-    registerDataType(new MapTypeImpl());
     registerDataType(new TextTypeImpl());
-    registerDataType(new UserReferenceTypeImpl());
-    registerDataType(new VariableReferenceTypeImpl());
-    registerDataType(new WorkflowReferenceTypeImpl());
+    registerDataType(new UserReferenceTypeImpl(configuration));
   }
   
   public void setObjectMapper(ObjectMapper objectMapper) {
@@ -87,7 +80,7 @@ public class DataTypeService implements Brewable {
   
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
-    dataTypeClasses.put(apiClass, dataType.getClass());
+    // dataTypeClasses.put(apiClass, dataType.getClass());
     TypeGenerator typeGenerator = dataType.getTypeGenerator();
     if (typeGenerator!=null) {
       typeGenerators.put(apiClass, typeGenerator);
@@ -105,6 +98,8 @@ public class DataTypeService implements Brewable {
     }
     objectMapper.registerSubtypes(apiClass);
   }
+  
+  
   
   public JavaType createJavaType(Type type) {
     if (type==null) {
@@ -130,9 +125,10 @@ public class DataTypeService implements Brewable {
   }
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {
-    JavaBeanTypeImpl javaBeanType = new JavaBeanTypeImpl(javaBeanClass);
-    javaBeanTypes.put(javaBeanClass, javaBeanType);
-    registerDataType(javaBeanType);
+    JavaBeanType javaBeanTypeApi = new JavaBeanType().javaClass(javaBeanClass);
+    JavaBeanTypeImpl javaBeanTypeImpl = new JavaBeanTypeImpl(javaBeanTypeApi, configuration);
+    javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
+    registerDataType(javaBeanTypeImpl);
   }
   
   public DataType getDataTypeByValue(Object value) {

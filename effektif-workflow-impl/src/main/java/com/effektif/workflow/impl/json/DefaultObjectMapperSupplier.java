@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.json;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.TypedValue;
-import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -60,8 +60,8 @@ public class DefaultObjectMapperSupplier implements Supplier {
       public JsonDeserializer< ? > modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer< ? > deserializer) {
         if (beanDesc.getBeanClass() == TypedValue.class) {
           return new TypedValueDeserializer(deserializer, dataTypeService, objectMapper);
-//        } else if (beanDesc.getBeanClass() == Binding.class) {
-//          return new BindingDeserializer(deserializer, dataTypeService, objectMapper);
+        } else if (beanDesc.getBeanClass() == VariableInstance.class) {
+          return new VariableInstanceDeserializer(deserializer, dataTypeService, objectMapper);
         }
         return deserializer;
       }
@@ -71,8 +71,6 @@ public class DefaultObjectMapperSupplier implements Supplier {
       public JsonSerializer< ? > modifySerializer(SerializationConfig config, BeanDescription beanDesc, JsonSerializer< ? > serializer) {
         if (beanDesc.getBeanClass() == TypedValue.class) {
           return new TypedValueSerializer(serializer, dataTypeService);
-//        } else if (beanDesc.getBeanClass() == Binding.class) {
-//          return new BindingSerializer(serializer, dataTypeService);
         }
         return serializer;
       }

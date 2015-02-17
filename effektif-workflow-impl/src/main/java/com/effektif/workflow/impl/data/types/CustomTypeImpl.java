@@ -21,14 +21,24 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.CustomType;
 
 
-public class MapTypeImpl extends ObjectTypeImpl<CustomType> {
+public class CustomTypeImpl extends ObjectTypeImpl<CustomType> {
 
-  public MapTypeImpl() {
-    super(CustomType.class);
+  public CustomTypeImpl() {
+    super(new CustomType(), Map.class, null);
+  }
+  
+  public CustomTypeImpl(CustomType typeApi, Configuration configuration) {
+    super(typeApi, Map.class, configuration);
   }
 
-  public MapTypeImpl(CustomType typeApi, Configuration configuration) {
-    super(typeApi, configuration, Map.class);
+  protected void initializeFields(Configuration configuration) {
+//    List<ObjectField> fieldsApi = typeApi.getFields();
+//    if (fieldsApi!=null) {
+//      for (ObjectField fieldApi: fieldsApi) {
+//        ObjectFieldImpl fieldImpl = createField(configuration, valueClass, fieldApi);
+//        field(fieldImpl);
+//      }
+//    }
   }
 
 }

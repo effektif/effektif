@@ -15,20 +15,23 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.ref.GroupReference;
 import com.effektif.workflow.api.types.GroupReferenceType;
-import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataType;
 
 
 
-public class GroupReferenceTypeImpl extends AbstractDataType<UserReferenceType> {
+public class GroupReferenceTypeImpl extends AbstractDataType<GroupReferenceType> {
   
-  public static final GroupReferenceTypeImpl INSTANCE = new GroupReferenceTypeImpl();
+  public GroupReferenceTypeImpl(Configuration configuration) {
+    this(new GroupReferenceType(), configuration);
+    // TODO initialize the fields
+  }
 
-  public GroupReferenceTypeImpl() {
-    super(GroupReferenceType.class, GroupReference.class);
+  public GroupReferenceTypeImpl(GroupReferenceType groupReferenceTypeApi, Configuration configuration) {
+    super(groupReferenceTypeApi, GroupReference.class);
   }
   
   @Override

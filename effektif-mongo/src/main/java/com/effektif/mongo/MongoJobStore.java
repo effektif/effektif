@@ -15,20 +15,7 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoHelper.readBasicDBObject;
-import static com.effektif.mongo.MongoHelper.readBoolean;
-import static com.effektif.mongo.MongoHelper.readId;
-import static com.effektif.mongo.MongoHelper.readList;
-import static com.effektif.mongo.MongoHelper.readLong;
-import static com.effektif.mongo.MongoHelper.readObjectMap;
-import static com.effektif.mongo.MongoHelper.readString;
-import static com.effektif.mongo.MongoHelper.readTime;
-import static com.effektif.mongo.MongoHelper.writeBooleanOpt;
-import static com.effektif.mongo.MongoHelper.writeIdOpt;
-import static com.effektif.mongo.MongoHelper.writeLongOpt;
-import static com.effektif.mongo.MongoHelper.writeObjectOpt;
-import static com.effektif.mongo.MongoHelper.writeStringOpt;
-import static com.effektif.mongo.MongoHelper.writeTimeOpt;
+import static com.effektif.mongo.MongoHelper.*;
 
 import java.util.ArrayList;
 import java.util.Date;

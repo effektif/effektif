@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -25,6 +28,9 @@ public class CustomType extends ObjectType {
   protected String id;
   protected String key;
   protected String organizationId;
+  protected String label;
+  protected String description;
+  protected List<ObjectField> fields;
 
   public String getOrganizationId() {
     return this.organizationId;
@@ -59,19 +65,44 @@ public class CustomType extends ObjectType {
     return this;
   }
 
-  @Override
-  public CustomType field(ObjectField field) {
-    super.field(field);
-    return this;
+  public String getLabel() {
+    return this.label;
   }
-  @Override
+  public void setLabel(String label) {
+    this.label = label;
+  }
   public CustomType label(String label) {
-    super.label(label);
+    this.label = label;
     return this;
   }
-  @Override
+
+  public String getDescription() {
+    return this.description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
   public CustomType description(String description) {
-    super.description(description);
+    this.description = description;
+    return this;
+  }
+
+  public List<ObjectField> getFields() {
+    return this.fields;
+  }
+  public void setFields(List<ObjectField> fields) {
+    this.fields = fields;
+  }
+  public ObjectType fields(List<ObjectField> fields) {
+    this.fields = fields;
+    return this;
+  }
+
+  public ObjectType field(ObjectField field) {
+    if (fields==null) {
+      fields = new ArrayList<>();
+    }
+    fields.add(field);
     return this;
   }
 }

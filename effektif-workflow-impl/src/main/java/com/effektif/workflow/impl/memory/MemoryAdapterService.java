@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.effektif.workflow.api.datasource.ItemQuery;
 import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.impl.ContextualAdapterService;
 import com.effektif.workflow.impl.adapter.AbstractAdapterService;

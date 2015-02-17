@@ -23,8 +23,7 @@ import com.effektif.workflow.impl.data.InvalidValueException;
 public class NumberTypeImpl extends AbstractDataType {
 
   public NumberTypeImpl() {
-    super(NumberType.class);
-    this.valueClass = Number.class;
+    super(NumberType.INSTANCE, Number.class);
   }
   
   @Override

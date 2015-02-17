@@ -25,7 +25,7 @@ public class WorkflowQuery {
   
   protected String organizationId;
   protected String workflowId;
-  protected String workflowName;
+  protected String workflowSource;
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
@@ -52,14 +52,14 @@ public class WorkflowQuery {
     return this;
   }
   
-  public String getWorkflowName() {
-    return this.workflowName;
+  public String getWorkflowSource() {
+    return this.workflowSource;
   }
-  public void setWorkflowName(String workflowName) {
-    this.workflowName = workflowName;
+  public void setWorkflowSource(String workflowSource) {
+    this.workflowSource = workflowSource;
   }
-  public WorkflowQuery workflowName(String workflowName) {
-    this.workflowName = workflowName;
+  public WorkflowQuery workflowSource(String workflowSource) {
+    this.workflowSource = workflowSource;
     return this;
   }
 

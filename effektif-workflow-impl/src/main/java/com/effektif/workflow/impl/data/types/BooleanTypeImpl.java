@@ -16,21 +16,14 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.types.BooleanType;
-import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
 
-public class BooleanTypeImpl extends AbstractDataType<TextType> {
+public class BooleanTypeImpl extends AbstractDataType<BooleanType> {
 
   public BooleanTypeImpl() {
-    super(BooleanType.class);
-    this.valueClass = Boolean.class;
-  }
-  
-  protected BooleanTypeImpl(Class apiClass) {
-    super(apiClass);
-    this.valueClass = Boolean.class;
+    super(BooleanType.INSTANCE, Boolean.class);
   }
   
   @Override

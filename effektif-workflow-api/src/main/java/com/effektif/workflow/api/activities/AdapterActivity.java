@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.activities;
 
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;

@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.types.CustomType;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 

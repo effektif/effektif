@@ -15,9 +15,6 @@
  */
 package com.effektif.workflow.api.activities;
 
-import java.util.Map;
-
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -31,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends AbstractBindableActivity {
 
-  protected Binding<String> subWorkflowIdBinding; 
-  protected Binding<String> subWorkflowSourceBinding; 
+  protected String subWorkflowId; 
+  protected String subWorkflowSource; 
   
   public Call() {
   }
@@ -42,29 +39,29 @@ public class Call extends AbstractBindableActivity {
   }
 
   public Call subWorkflowId(String subWorkflowId) {
-    this.subWorkflowIdBinding = new Binding().value(subWorkflowId);
+    this.subWorkflowId = subWorkflowId;
     return this;
   }
 
-  public Call subWorkflowName(String subWorkflowName) {
-    this.subWorkflowSourceBinding = new Binding().value(subWorkflowName);
+  public Call subWorkflowName(String subWorkflowSource) {
+    this.subWorkflowSource = subWorkflowSource;
     return this;
   }
   
-  public Binding<String> getSubWorkflowIdBinding() {
-    return subWorkflowIdBinding;
+  public String getSubWorkflowId() {
+    return subWorkflowId;
   }
   
-  public Binding<String> getSubWorkflowSourceBinding() {
-    return subWorkflowSourceBinding;
+  public String getSubWorkflowSource() {
+    return subWorkflowSource;
   }
 
-  public void setSubWorkflowIdBinding(Binding<String> subWorkflowIdBinding) {
-    this.subWorkflowIdBinding = subWorkflowIdBinding;
+  public void setSubWorkflowId(String subWorkflowId) {
+    this.subWorkflowId = subWorkflowId;
   }
   
-  public void setSubWorkflowSourceBinding(Binding<String> subWorkflowNameBinding) {
-    this.subWorkflowSourceBinding = subWorkflowNameBinding;
+  public void setSubWorkflowSource(String subWorkflowSource) {
+    this.subWorkflowSource = subWorkflowSource;
   }
   
 

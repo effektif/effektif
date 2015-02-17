@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.workflow;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.script.ScriptImpl;

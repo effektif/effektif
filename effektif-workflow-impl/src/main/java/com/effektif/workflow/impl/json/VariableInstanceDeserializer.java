@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.json;
 
 import java.io.IOException;
 
-import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
-public class BindingDeserializer extends StdDeserializer<Binding> implements ResolvableDeserializer {
+public class VariableInstanceDeserializer extends StdDeserializer<VariableInstance> implements ResolvableDeserializer {
 
   private static final long serialVersionUID = 1L;
   
@@ -38,24 +38,24 @@ public class BindingDeserializer extends StdDeserializer<Binding> implements Res
   protected DataTypeService dataTypeService;
   protected JsonDeserializer<?> defaultDeserializer;
 
-  public BindingDeserializer(JsonDeserializer<?> defaultDeserializer, DataTypeService dataTypeService, ObjectMapper objectMapper) {
-    super(Binding.class);
+  public VariableInstanceDeserializer(JsonDeserializer<?> defaultDeserializer, DataTypeService dataTypeService, ObjectMapper objectMapper) {
+    super(VariableInstance.class);
     this.objectMapper = objectMapper;
     this.dataTypeService = dataTypeService;
     this.defaultDeserializer = defaultDeserializer;
   }
   
   @Override
-  public Binding deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    Binding binding = (Binding) defaultDeserializer.deserialize(jp, ctxt);
-    if (binding.getType()!=null && binding.getValue()!=null) {
-      JavaType javaType = dataTypeService.createJavaType(binding.getType());
+  public VariableInstance deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    VariableInstance variableInstance = (VariableInstance) defaultDeserializer.deserialize(jp, ctxt);
+    if (variableInstance.getType()!=null && variableInstance.getValue()!=null) {
+      JavaType javaType = dataTypeService.createJavaType(variableInstance.getType());
       if (javaType!=null) {
-        Object deserializedValue = objectMapper.convertValue(binding.getValue(), javaType);
-        binding.setValue(deserializedValue);
+        Object deserializedValue = objectMapper.convertValue(variableInstance.getValue(), javaType);
+        variableInstance.setValue(deserializedValue);
       }
     }
-    return binding;
+    return variableInstance;
   }
 
   // for some reason you have to implement ResolvableDeserializer when modifying BeanDeserializer

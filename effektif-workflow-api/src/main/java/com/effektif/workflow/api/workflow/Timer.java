@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class Timer {

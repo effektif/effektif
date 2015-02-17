@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runners.model.InitializationError;
 
 import com.effektif.workflow.test.TestSuiteHelper;
-import com.effektif.workflow.test.api.UserTaskTest;
 
 public class SerializationTest {
   
@@ -27,7 +26,7 @@ public class SerializationTest {
   public void testSerialization() throws InitializationError {
     TestSuiteHelper.run(new SerializingWorkflowEngineConfiguration()
       // use the next line if you only want to run 1 test
-      //   , UserTaskTest.class, "testTask"
+      // , VariableTypesTest.class, "testNumberType"
       );
   }
 }

@@ -19,8 +19,6 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.api.types.ObjectField;
-import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeGenerator;
@@ -29,29 +27,17 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
-public class JavaBeanTypeImpl extends ObjectTypeImpl<JavaBeanType> {
+public class JavaBeanTypeImpl<T extends JavaBeanType> extends ObjectTypeImpl<T> {
   
   public JsonService jsonService;
   
   public JavaBeanTypeImpl() {
-    super(JavaBeanType.class);
+    super((T) new JavaBeanType(), null, null);
   }
   
-  public JavaBeanTypeImpl(Class<?> javaBeanClass) {
-    super(JavaBeanType.class);
-    this.valueClass = javaBeanClass;
-  }
-
-  public JavaBeanTypeImpl(JavaBeanType javaBeanTypeApi, Configuration configuration) {
-    super(JavaBeanType.class);
-
-    this.valueClass = javaBeanTypeApi.getJavaClass();
+  public JavaBeanTypeImpl(T typeApi, Configuration configuration) {
+    super(typeApi, typeApi.getJavaClass(), configuration);
     this.jsonService = configuration.get(JsonService.class);
-  }
-  
-  
-  protected ObjectFieldImpl createField(Configuration configuration, Class< ? > valueClass, ObjectField fieldApi) {
-    return new JavaBeanFieldImpl(valueClass, fieldApi, configuration);
   }
 
   @Override

@@ -16,11 +16,9 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -30,14 +28,12 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -164,36 +160,26 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, Map<String, InputParameter> inputParameters) {
-    if (inputBindings==null || inputBindings.isEmpty()) {
-      return null;
-    }
-    Map<String,BindingImpl> inputBindingsImpl = null;
-    for (Map.Entry<String, Binding> entry: inputBindings.entrySet()) {
-      String key = entry.getKey();
-      Binding inputBinding = entry.getValue();
-      InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
-      pushContext("inputBindings["+key+"]", inputParameter, null);
-      if (inputParameter==null) {
-        addWarning("Unexpected input binding '%s' in activity '%s'", key, activityApi.getId());
-      }
-      Type type = inputParameter.getType();
-      boolean isRequired = inputParameter!=null && inputParameter.isRequired();
-      String bindingName = key;
-      BindingImpl<?> bindingImpl = parseBinding(inputBinding, type, isRequired, bindingName);
-      if (bindingImpl!=null) {
-        if (inputBindingsImpl==null) {
-          inputBindingsImpl = new HashMap<>();
-        }
-        inputBindingsImpl.put(key, bindingImpl);
-      }
-      popContext();
-    }
-    return inputBindingsImpl;
+//  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, Map<String, InputParameter> inputParameters) {
+//    return parseInputBindings(inputBindings, activityApi, inputParameters, false);
+//  }
+//  
+//  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, Map<String, InputParameter> inputParameters, boolean deserialize) {
+//  }
+
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter) {
+    return parseBinding(binding, inputParameter, false);
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type, boolean isRequired, String bindingName) {
-    BindingImpl<T> bindingImpl = parseBinding(binding, type);
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter, boolean deserialize) {
+    Type type = inputParameter.getType();
+    boolean isRequired = inputParameter!=null && inputParameter.isRequired();
+    String bindingName = inputParameter.getKey();
+    return parseBinding(binding, type, isRequired, bindingName, deserialize);
+  }
+
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type, boolean isRequired, String bindingName, boolean deserialize) {
+    BindingImpl<T> bindingImpl = parseBinding(binding, type, deserialize);
     int values = 0;
     if (bindingImpl!=null) {
       if (bindingImpl.value!=null) values++;
@@ -209,14 +195,14 @@ public class WorkflowParser {
     return bindingImpl;
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type) {
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type, boolean deserialize) {
     if (binding==null) {
       return null;
     }
     BindingImpl<T> bindingImpl = new BindingImpl<>(configuration);
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
-      if (isSerialized) {
+      if (deserialize && isSerialized) {
         DataTypeService dataTypeService = configuration.get(DataTypeService.class);
         DataType dataType = dataTypeService.createDataType(type);
         bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
@@ -242,7 +228,7 @@ public class WorkflowParser {
     if (bindings!=null && !bindings.isEmpty()) {
       bindingImpl.bindings = new ArrayList<>();
       for (Binding<T> elementBinding: bindings) {
-        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, type);
+        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, type, deserialize);
         bindingImpl.bindings.add(elementBindingImpl);
       }
     }

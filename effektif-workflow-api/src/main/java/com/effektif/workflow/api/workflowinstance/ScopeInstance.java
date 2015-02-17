@@ -119,4 +119,26 @@ public class ScopeInstance {
     }
     return null;
   }
+  
+  public Long getVariableValueLong(String variableId) {
+    Object value = getVariableValue(variableId);
+    if (value==null) {
+      return null;
+    }
+    if (value instanceof Number) {
+      return ((Number)value).longValue();
+    }
+    throw new RuntimeException("Value is not a number: "+value+" ("+value.getClass().getName()+")");
+  }
+
+  public Double getVariableValueDouble(String variableId) {
+    Object value = getVariableValue(variableId);
+    if (value==null) {
+      return null;
+    }
+    if (value instanceof Number) {
+      return ((Number)value).doubleValue();
+    }
+    throw new RuntimeException("Value is not a double: "+value+" ("+value.getClass().getName()+")");
+  }
 }

@@ -39,7 +39,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setVariableId(variable.id);
-    variableInstance.setValue(type.convertInternalToJsonValue(value));
+    variableInstance.setValue(value);
     variableInstance.setType(type.serialize());
     return variableInstance;
   }

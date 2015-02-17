@@ -18,9 +18,7 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.AbstractBindableActivity;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 
 

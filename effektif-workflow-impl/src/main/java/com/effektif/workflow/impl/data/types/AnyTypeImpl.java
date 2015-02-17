@@ -21,7 +21,6 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 public class AnyTypeImpl extends AbstractDataType {
 
   public AnyTypeImpl() {
-    super(null);
+    super(AnyType.INSTANCE, Object.class);
   }
-
 }

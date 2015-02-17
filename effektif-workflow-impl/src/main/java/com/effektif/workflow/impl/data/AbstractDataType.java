@@ -20,16 +20,13 @@ import com.effektif.workflow.api.types.Type;
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
-  protected T serializable;
+  private T typeApi;
   protected Class<? extends Type> apiClass;
   protected Class<?> valueClass;
   
-  public AbstractDataType(Class<? extends Type> apiClass) {
-    this.apiClass = apiClass;
-  }
-  
-  public AbstractDataType(Class<? extends Type> apiClass, Class< ? > valueClass) {
-    this.apiClass = apiClass;
+  public AbstractDataType(T typeApi, Class< ? > valueClass) {
+    this.typeApi = typeApi;
+    this.apiClass = typeApi.getClass();
     this.valueClass = valueClass;
   }
   
@@ -41,15 +38,24 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public Class<? extends Type> getApiClass() {
     return apiClass;
   }
-  
-  public T serialize() {
-    return serializable;
+
+  @Override
+  public Class< ? > getValueClass() {
+    return valueClass;
   }
   
   @Override
-  public TypeGenerator getTypeGenerator() {
-    return null;
+  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+    return jsonValue;
   }
+
+  public Object convertInternalToJsonValue(Object internalValue) {
+    return internalValue;
+  }
+
+  public void validateInternalValue(Object internalValue) throws InvalidValueException {
+  }
+
   
   @Override
   public Object convert(Object value, DataType type) {
@@ -57,17 +63,10 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   }
 
   @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return jsonValue;
+  public TypeGenerator getTypeGenerator() {
+    return null;
   }
-
-  public void validateInternalValue(Object internalValue) throws InvalidValueException {
-  }
-
-  public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue;
-  }
-
+  
   public Object convertInternalToScriptValue(Object internalValue, String language) {
     return internalValue;
   }
@@ -77,7 +76,7 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   }
 
   @Override
-  public Class< ? > getValueClass() {
-    return valueClass;
+  public T serialize() {
+    return typeApi;
   }
 }

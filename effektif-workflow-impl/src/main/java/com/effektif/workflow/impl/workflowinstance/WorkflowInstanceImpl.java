@@ -36,7 +36,6 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.types.CallImpl;
-import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;

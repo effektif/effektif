@@ -15,9 +15,7 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -87,7 +85,7 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .activity(new Call("call")
+      .activity("call", new Call()
         .inputValue("performer", new UserReference().id("johndoe"))
         .subWorkflowId(subWorkflow.getId()));
     

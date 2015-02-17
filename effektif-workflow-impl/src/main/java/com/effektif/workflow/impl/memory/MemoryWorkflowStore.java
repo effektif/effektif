@@ -63,8 +63,8 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     } else {
       result = new ArrayList<>(workflows.values());
     }
-    if (query.getWorkflowName()!=null && !result.isEmpty()) {
-      filterByName(result, query.getWorkflowName());
+    if (query.getWorkflowSource()!=null && !result.isEmpty()) {
+      filterByName(result, query.getWorkflowSource());
     }
     if (query.getLimit()!=null) {
       while (result.size()>query.getLimit()) {

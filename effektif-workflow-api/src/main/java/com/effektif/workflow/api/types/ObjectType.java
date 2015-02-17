@@ -15,54 +15,7 @@
  */
 package com.effektif.workflow.api.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public abstract class ObjectType extends Type {
 
-  protected List<ObjectField> fields;
-  protected String label;
-
-  public List<ObjectField> getFields() {
-    return this.fields;
-  }
-  public void setFields(List<ObjectField> fields) {
-    this.fields = fields;
-  }
-  public ObjectType fields(List<ObjectField> fields) {
-    this.fields = fields;
-    return this;
-  }
-
-  public ObjectType field(ObjectField field) {
-    if (fields==null) {
-      fields = new ArrayList<>();
-    }
-    fields.add(field);
-    return this;
-  }
-
-  protected String description;
-  public String getLabel() {
-    return this.label;
-  }
-  public void setLabel(String label) {
-    this.label = label;
-  }
-  public ObjectType label(String label) {
-    this.label = label;
-    return this;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-  public void setDescription(String description) {
-    this.description = description;
-  }
-  public ObjectType description(String description) {
-    this.description = description;
-    return this;
-  }
 }

@@ -208,8 +208,8 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     if (MongoHelper.hasOrganizationId(requestContext)) {
       dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
     }
-    if (query.getWorkflowName()!=null) {
-      dbQuery.append(FieldsWorkflow.NAME, query.getWorkflowName());
+    if (query.getWorkflowSource()!=null) {
+      dbQuery.append(FieldsWorkflow.NAME, query.getWorkflowSource());
     }
     return dbQuery;
   }

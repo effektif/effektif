@@ -15,67 +15,31 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectField;
-import com.effektif.workflow.api.types.ObjectType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.json.JsonService;
 
 
-public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
+public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
   
-  protected Map<String, ObjectFieldImpl> fields;
   protected JsonService jsonService;
+  public Map<String,ObjectFieldImpl> fields;
 
-  public ObjectTypeImpl(Class<? extends Type> apiClass) {
-    super(apiClass);
+  public ObjectTypeImpl(T typeApi, Class<?> valueClass, Configuration configuration) {
+    super(typeApi, valueClass);
+    initializeFields(configuration);
   }
 
-  public ObjectTypeImpl(ObjectType typeApi, Configuration configuration) {
-    this(typeApi, configuration, null);
-  }
-
-  public ObjectTypeImpl(ObjectType typeApi,Configuration configuration, Class<?> valueClass) {
-    super(typeApi.getClass());
-    this.valueClass = valueClass;
-    List<ObjectField> fieldsApi = typeApi.getFields();
-    if (fieldsApi!=null) {
-      for (ObjectField fieldApi: fieldsApi) {
-        ObjectFieldImpl fieldImpl = createField(configuration, valueClass, fieldApi);
-        field(fieldImpl);
-      }
-    }
+  protected void initializeFields(Configuration configuration) {
   }
 
   protected ObjectFieldImpl createField(Configuration configuration, Class< ? > valueClass, ObjectField fieldApi) {
     return new ObjectFieldImpl(valueClass, fieldApi, configuration);
-  }
-
-
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return null;
-  }
-
-  
-  public ObjectTypeImpl field(ObjectFieldImpl field) {
-    if (this.fields==null) {
-      this.fields = new LinkedHashMap<>();
-    }
-    this.fields.put(field.name, field);
-    return this;
-  }
-
-  @Override
-  public Class< ? > getValueClass() {
-    return valueClass;
   }
 
   public void dereference(TypedValueImpl typedValue, String fieldName) {
@@ -91,4 +55,5 @@ public class ObjectTypeImpl<T extends ObjectType> extends AbstractDataType<T> {
     typedValue.type = field.type;
     field.dereferenceValue(typedValue);
   }
+
 }

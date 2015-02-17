@@ -23,4 +23,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 // to expose it
 @JsonTypeName("any")
 public class AnyType extends Type {
+  
+  public static final AnyType INSTANCE = new AnyType();
 }

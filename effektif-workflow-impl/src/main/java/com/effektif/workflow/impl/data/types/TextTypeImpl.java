@@ -23,13 +23,7 @@ import com.effektif.workflow.impl.data.InvalidValueException;
 public class TextTypeImpl extends AbstractDataType<TextType> {
 
   public TextTypeImpl() {
-    super(TextType.class);
-    this.valueClass = String.class;
-  }
-  
-  protected TextTypeImpl(Class apiClass) {
-    super(apiClass);
-    this.valueClass = String.class;
+    super(TextType.INSTANCE, String.class);
   }
   
   @Override
