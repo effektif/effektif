@@ -17,11 +17,8 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
-
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
@@ -31,25 +28,22 @@ public class WorkflowImpl extends ScopeImpl {
   
   public WorkflowEngineImpl workflowEngine;
 
+  public String sourceWorkflowId;
   public String organizationId;
   public List<ActivityImpl> startActivities;
-  public String source;
-  public LocalDateTime deployedTime;
-  public UserReference deployedBy;
   public TriggerImpl trigger;
   
   public WorkflowImpl() {
   }
 
-  public void parse(Workflow workflowApi, WorkflowParser parser) {
+  public void parse(AbstractWorkflow workflowApi, WorkflowParser parser) {
     this.workflow = this;
     this.organizationId = workflowApi.getOrganizationId();
     super.parse(workflowApi, parser, null);
     this.startActivities = parser.getStartActivities(this);
-    this.source = workflowApi.getSource();
-    this.deployedTime = workflowApi.getDeployedTime();
-    this.deployedBy = workflowApi.getDeployedBy();
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
+    this.sourceWorkflowId = workflowApi.getSourceWorkflowId();
+    
     
     Trigger triggerApi = workflowApi.getTrigger();
     if (triggerApi!=null) {

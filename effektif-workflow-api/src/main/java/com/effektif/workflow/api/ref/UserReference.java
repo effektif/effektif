@@ -19,7 +19,12 @@ package com.effektif.workflow.api.ref;
 public class UserReference {
 
   protected String id;
-  protected String fullName;
+  
+  public UserReference() {
+  }
+  public UserReference(String id) {
+    this.id = id;
+  }
   
   public String getId() {
     return this.id;
@@ -29,17 +34,6 @@ public class UserReference {
   }
   public UserReference id(String id) {
     this.id = id;
-    return this;
-  }
-  
-  public String getFullName() {
-    return this.fullName;
-  }
-  public void setFullName(String fullName) {
-    this.fullName = fullName;
-  }
-  public UserReference fullName(String fullName) {
-    this.fullName = fullName;
     return this;
   }
 }

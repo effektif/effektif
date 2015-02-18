@@ -21,7 +21,6 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.xml.XmlElement;
 
 
 /** An executable workflow in API format to deploy 
@@ -36,39 +35,38 @@ import com.effektif.workflow.api.xml.XmlElement;
  *   <li>DB format</li>
  * </ul>
  * */
-public class Workflow extends Scope {
-
-  protected String source;
+public class Workflow extends AbstractWorkflow {
+  
+  protected String sourceWorkflowId;
   protected LocalDateTime deployedTime;
   protected UserReference deployedBy;
 
-  protected Trigger trigger;
-  protected XmlElement bpmnDefinitions;
-  
-  protected AccessControlList acl;
-  protected String organizationId;
-
-  /** refers to the authoring form of this workflow.
-   * @see #source(String) */
-  public String getSource() {
-    return this.source;
+  /** refers to the id in the source (or authoring) form of this workflow.
+   * @see #sourceWorkflowId(String) */
+  public String getSourceWorkflowId() {
+    return this.sourceWorkflowId;
   }
   
-  /** refers to the authoring form of this workflow.
-   * @see #source(String) */
-  public void setSource(String source) {
-    this.source = source;
+  /** refers to the id in the source (or authoring) form of this workflow.
+   * @see #sourceWorkflowId(String) */
+  public void setSourceWorkflowId(String source) {
+    this.sourceWorkflowId = source;
   }
 
-  /** refers to the authoring form of this workflow.
-   * This field is important if you want to deploy new versions of a 
-   * workflow and start workflow instances in the latest version.
-   * Eg this can reference the BPMN file.  Such a file evolves and 
-   * can be deployed multiple times.  Each time a workflow is published 
-   * with the same source, that means it's a new version. 
-   * @see #getVersion() */
-  public Workflow source(String source) {
-    this.source = source;
+  /** refers to the id in the source (or authoring) form of this workflow.
+   * Authoring and source mean that there is some file or form that gets edited 
+   * and changes.  Then a snapshot of this sourceform gets deployed as an executable workflow.
+   * Workflows are authored in some editor.  Either a file editor or the Effektif product editor.
+   * The 3 sources where a workflow could be created are:
+   * 1) The Java API.  You could deploy a workflow with the same value {@link #sourceWorkflowId(String)} 
+   * multiple times.
+   * 2) A BPMN-file.  When parsing a BPMN-file, then the sourceWorkflowId is set to the 
+   * id attribute of the process element.
+   * 3) The Effektif product editor.  In that case, the workflows you see in the tool 
+   * are in fact editor workflows.  You'll find the editor workflow id as the sourceWorkflowId 
+   * in the deployed processes.*/
+  public Workflow sourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
     return this;
   }
   
@@ -91,57 +89,6 @@ public class Workflow extends Scope {
   }
   public Workflow deployedBy(UserReference deployedBy) {
     this.deployedBy = deployedBy;
-    return this;
-  }
-  
-  public Trigger getTrigger() {
-    return this.trigger;
-  }
-  public void setTrigger(Trigger trigger) {
-    this.trigger = trigger;
-  }
-  public Workflow trigger(Trigger trigger) {
-    this.trigger = trigger;
-    return this;
-  }
-  
-  /** stores the non-parsed BPMN portion of the definitions element */
-  public XmlElement getBpmnDefinitions() {
-    return this.bpmnDefinitions;
-  }
-  /** stores the non-parsed BPMN portion of the definitions element */
-  public void setBpmnDefinitions(XmlElement bpmnDefinitions) {
-    this.bpmnDefinitions = bpmnDefinitions;
-  }
-  
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public AccessControlList getAcl() {
-    return this.acl;
-  }
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public void setAcl(AccessControlList acl) {
-    this.acl = acl;
-  }
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public Workflow acl(AccessControlList acl) {
-    this.acl = acl;
-    return this;
-  }
-
-  /** optional organization (aka tenant or workspace) identification */
-  public String getOrganizationId() {
-    return this.organizationId;
-  }
-  /** optional organization (aka tenant or workspace) identification */
-  public void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
-  }
-  /** optional organization (aka tenant or workspace) identification */
-  public Workflow organizationId(String organizationId) {
-    this.organizationId = organizationId;
     return this;
   }
 
@@ -213,4 +160,23 @@ public class Workflow extends Scope {
     return this;
   }
 
+  @Override
+  public Workflow trigger(Trigger trigger) {
+    super.trigger(trigger);
+    return this;
+  }
+
+  @Override
+  public Workflow acl(AccessControlList acl) {
+    super.acl(acl);
+    return this;
+  }
+
+  @Override
+  public Workflow organizationId(String organizationId) {
+    super.organizationId(organizationId);
+    return this;
+  }
+
+  
 }

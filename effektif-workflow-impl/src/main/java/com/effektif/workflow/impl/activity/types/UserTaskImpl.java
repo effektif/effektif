@@ -94,7 +94,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
-    task.setWorkflowName(activityInstance.workflow.source);
+    task.setWorkflowName(activityInstance.workflow.sourceWorkflowId);
     taskService.saveTask(task);
   }
 }

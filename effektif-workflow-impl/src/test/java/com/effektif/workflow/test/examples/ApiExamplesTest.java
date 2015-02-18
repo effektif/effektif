@@ -45,7 +45,7 @@ public class ApiExamplesTest {
     
     // Create a workflow
     Workflow workflow = new Workflow()
-      .source("Release")
+      .sourceWorkflowId("Release")
       .activity("Move open issues", new UserTask()
         .transitionToNext())
       .activity("Check continuous integration", new UserTask()

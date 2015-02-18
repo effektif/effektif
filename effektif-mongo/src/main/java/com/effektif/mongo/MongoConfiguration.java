@@ -44,7 +44,6 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
-  protected Class<? extends Workflow> workflowClass = Workflow.class;
 
   public MongoConfiguration() {
     brewery.ingredient(this);
@@ -222,12 +221,5 @@ public class MongoConfiguration extends DefaultConfiguration {
 
   public MongoClientOptions.Builder getOptionBuilder() {
     return optionBuilder;
-  }
-
-  public Class<? extends Workflow> getWorkflowClass() {
-    return this.workflowClass;
-  }
-  public void setWorkflowClass(Class<? extends Workflow> workflowClass) {
-    this.workflowClass = workflowClass;
   }
 }

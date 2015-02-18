@@ -28,12 +28,12 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
-import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -109,7 +109,7 @@ public class WorkflowParser {
    * adds any parse issues to workflowApi.
    * Use one parser for each parse.
    * By returning the parser itself you can access the  */
-  public static WorkflowParser parse(Configuration configuration, Workflow workflowApi) {
+  public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi) {
     WorkflowParser parser = new WorkflowParser(configuration);
     parser.pushContext("workflow", workflowApi, null);
     parser.workflow = new WorkflowImpl();

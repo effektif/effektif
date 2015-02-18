@@ -24,7 +24,8 @@ import com.effektif.workflow.api.workflow.Workflow;
 public class Start {
   
   protected String workflowId;
-  protected String workflowSource;
+  protected String sourceWorkflowId;
+  protected String businessKey;
   protected Map<String,Object> variableValues;
   protected Map<String,Object> triggerValues;
   
@@ -42,17 +43,17 @@ public class Start {
     return this;
   }
   
-  public String getWorkflowSource() {
-    return this.workflowSource;
+  public String getSourceWorkflowId() {
+    return this.sourceWorkflowId;
   }
-  public void setWorkflowSource(String workflowSource) {
-    this.workflowSource = workflowSource;
+  public void setSourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
   }
   
   /** use the lastest version of the workflow for the given source.
-   * @see Workflow#source(String) */
-  public Start workflowSource(String workflowSource) {
-    this.workflowSource = workflowSource;
+   * @see Workflow#sourceWorkflowId(String) */
+  public Start sourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
     return this;
   }
 
@@ -85,6 +86,19 @@ public class Start {
       triggerValues = new LinkedHashMap<>();
     }
     triggerValues.put(triggerKey, value);
+    return this;
+  }
+  
+  public String getBusinessKey() {
+    return this.businessKey;
+  }
+  public void setBusinessKey(String businessKey) {
+    this.businessKey = businessKey;
+  }
+  /** optional user-defined unique id (unique in the scope of one workflow) 
+   * @see Message# */
+  public Start businessKey(String businessKey) {
+    this.businessKey = businessKey;
     return this;
   }
 }

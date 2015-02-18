@@ -76,7 +76,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   
   protected void filterByName(List<Workflow> result, String name) {
     for (int i=result.size()-1; i>=0; i--) {
-      if (!name.equals(result.get(i).getSource())) {
+      if (!name.equals(result.get(i).getSourceWorkflowId())) {
         result.remove(i);
       }
     }
@@ -90,7 +90,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     Workflow latestWorkflow = null;
     LocalDateTime latestDeployTime = null;
     for (Workflow workflow: workflows.values()) {
-      if ( workflowName.equals(workflow.getSource())
+      if ( workflowName.equals(workflow.getSourceWorkflowId())
            && (latestDeployTime==null || latestDeployTime.isAfter(workflow.getDeployedTime())) ) {
         latestWorkflow = workflow;
         latestDeployTime = workflow.getDeployedTime();

@@ -22,6 +22,8 @@ import java.util.Map;
 public class Message {
 
   protected String workflowInstanceId;
+  protected String sourceWorkflowId;
+  protected String businessKey;
   protected String activityInstanceId;
   protected Map<String,Object> variableValues;
 
@@ -60,6 +62,34 @@ public class Message {
       variableValues = new LinkedHashMap<>();
     }
     variableValues.put(variableId, variableValue);
+    return this;
+  }
+
+  public String getSourceWorkflowId() {
+    return this.sourceWorkflowId;
+  }
+  public void setSourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
+  }
+  /** combination of a sourceWorkflowId and a businessKey  
+   * is an alternative way to identifying a workflowinstance
+   * as opposed to using {@link #workflowInstanceId(String) } */
+  public Message sourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
+    return this;
+  }
+  
+  public String getBusinessKey() {
+    return this.businessKey;
+  }
+  public void setBusinessKey(String businessKey) {
+    this.businessKey = businessKey;
+  }
+  /** combination of a sourceWorkflowId and a businessKey  
+   * is an alternative way to identifying a workflowinstance
+   * as opposed to using {@link #workflowInstanceId(String) } */
+  public Message businessKey(String businessKey) {
+    this.businessKey = businessKey;
     return this;
   }
 }
