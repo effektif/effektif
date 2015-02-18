@@ -59,20 +59,21 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   protected ScriptService scriptService;
   protected Class<? extends Workflow> workflowClass;
   
-  interface FieldsWorkflow {
+  public interface FieldsWorkflow {
     String _ID = "_id";
     String NAME = "name";
     String ORGANIZATION_ID = "organizationId";
     String DEPLOYED_TIME = "deployedTime";
   }
 
-  interface FieldsWorkflowVersions {
+  public interface FieldsWorkflowVersions {
     String _ID = "_id";
     String WORKFLOW_NAME = "workflowName";
     String VERSION_IDS = "versionIds";
     String LOCK = "lock";
   }
-  interface FieldsWorkflowVersionsLock {
+  
+  public interface FieldsWorkflowVersionsLock {
     String OWNER = "owner";
     String TIME = "time";
   }

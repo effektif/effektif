@@ -20,7 +20,13 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.ref.GroupReference;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.RelativeTime;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -31,110 +37,15 @@ public class UserTask extends NoneTask {
   protected Binding<UserReference> assignee;
   protected Binding<UserReference> candidates;
   protected Binding<GroupReference> candidateGroups;
-  
   protected Binding<RelativeTime> duedate;
-
-  public Binding<RelativeTime> getDuedate() {
-    return this.duedate;
-  }
-  public void setDuedate(Binding<RelativeTime> duedate) {
-    this.duedate = duedate;
-  }
-  public UserTask duedate(Binding<RelativeTime> duedate) {
-    this.duedate = duedate;
-    return this;
-  }
-  
-  protected Binding<RelativeTime> escalate;
-
-  public Binding<RelativeTime> getEscalate() {
-    return this.escalate;
-  }
-  public void setEscalate(Binding<RelativeTime> escalate) {
-    this.escalate = escalate;
-  }
-  public UserTask escalate(Binding<RelativeTime> escalate) {
-    this.escalate = escalate;
-    return this;
-  }
-  
-  protected Binding<UserReference> escalateTo;
-
-  public Binding<UserReference> getExcalateTo() {
-    return this.escalateTo;
-  }
-  public void setExcalateTo(Binding<UserReference> escalateTo) {
-    this.escalateTo = escalateTo;
-  }
-  public UserTask escalateTo(Binding<UserReference> escalateTo) {
-    this.escalateTo = escalateTo;
-    return this;
-  }
-  
-  protected Binding<RelativeTime> reminder;
-
-  public Binding<RelativeTime> getReminder() {
-    return this.reminder;
-  }
-  public void setReminder(Binding<RelativeTime> reminder) {
-    this.reminder = reminder;
-  }
-  public UserTask reminder(Binding<RelativeTime> reminder) {
-    this.reminder = reminder;
-    return this;
-  }
-  
-  protected Binding<RelativeTime> reminderRepeat;
-
-  public Binding<RelativeTime> getReminderRepeat() {
-    return this.reminderRepeat;
-  }
-  public void setReminderRepeat(Binding<RelativeTime> reminderRepeat) {
-    this.reminderRepeat = reminderRepeat;
-  }
-  public UserTask reminderRepeat(Binding<RelativeTime> reminderRepeat) {
-    this.reminderRepeat = reminderRepeat;
-    return this;
-  }
-  
-  
-
   protected Form form;
   protected AccessControlList acl;
+  protected Binding<RelativeTime> escalate;
+  protected Binding<UserReference> escalateTo;
+  protected Binding<RelativeTime> reminder;
+  protected Binding<RelativeTime> reminderRepeat;
 
-//  
-//  public static final String DB_form = "f";
-//  @Embedded(DB_form)
-//  public Form form;
-//  public UserTask form(Form form) {
-//    this.form = form;
-//    return this;
-//  }
-//
-//  public static final String DB_reminder = "rmd";
-//  @Embedded(DB_reminder)
-//  public RelativeTime reminder;
-//  public UserTask reminder(RelativeTime reminder) {
-//    this.reminder = reminder;
-//    return this;
-//  }
-//
-//  public static final String DB_reminderRepeat = "rmdrpt";
-//  @Embedded(DB_reminderRepeat)
-//  public RelativeTime reminderRepeat;
-//  public UserTask reminderRepeat(RelativeTime reminderRepeat) {
-//    this.reminderRepeat = reminderRepeat;
-//    return this;
-//  }
-//  
-//  public static final String DB_roleId = "r";
-//  @Property(DB_roleId)
-//  public ObjectId roleId;
-//  public UserTask roleId(ObjectId roleId) {
-//    this.roleId = roleId;
-//    return this;
-//  }
-  
+
   public UserTask() {
   }
 
@@ -252,4 +163,149 @@ public class UserTask extends NoneTask {
     return this;
   }
 
+
+  public Binding<RelativeTime> getDuedate() {
+    return this.duedate;
+  }
+  public void setDuedate(Binding<RelativeTime> duedate) {
+    this.duedate = duedate;
+  }
+  public UserTask duedate(Binding<RelativeTime> duedate) {
+    this.duedate = duedate;
+    return this;
+  }
+
+  public Binding<RelativeTime> getEscalate() {
+    return this.escalate;
+  }
+  public void setEscalate(Binding<RelativeTime> escalate) {
+    this.escalate = escalate;
+  }
+  public UserTask escalate(Binding<RelativeTime> escalate) {
+    this.escalate = escalate;
+    return this;
+  }
+  
+  public Binding<UserReference> getExcalateTo() {
+    return this.escalateTo;
+  }
+  public void setExcalateTo(Binding<UserReference> escalateTo) {
+    this.escalateTo = escalateTo;
+  }
+  public UserTask escalateTo(Binding<UserReference> escalateTo) {
+    this.escalateTo = escalateTo;
+    return this;
+  }
+  
+  public Binding<RelativeTime> getReminder() {
+    return this.reminder;
+  }
+  public void setReminder(Binding<RelativeTime> reminder) {
+    this.reminder = reminder;
+  }
+  public UserTask reminder(Binding<RelativeTime> reminder) {
+    this.reminder = reminder;
+    return this;
+  }
+  
+  public Binding<RelativeTime> getReminderRepeat() {
+    return this.reminderRepeat;
+  }
+  public void setReminderRepeat(Binding<RelativeTime> reminderRepeat) {
+    this.reminderRepeat = reminderRepeat;
+  }
+  public UserTask reminderRepeat(Binding<RelativeTime> reminderRepeat) {
+    this.reminderRepeat = reminderRepeat;
+    return this;
+  }
+
+  @Override
+  public UserTask defaultTransitionId(String defaultTransitionId) {
+    super.defaultTransitionId(defaultTransitionId);
+    return this;
+  }
+
+  @Override
+  public UserTask multiInstance(MultiInstance multiInstance) {
+    super.multiInstance(multiInstance);
+    return this;
+  }
+
+  @Override
+  public UserTask transitionTo(String toActivityId) {
+    super.transitionTo(toActivityId);
+    return this;
+  }
+
+  @Override
+  public UserTask transitionToNext() {
+    super.transitionToNext();
+    return this;
+  }
+
+  @Override
+  public UserTask transitionTo(Transition transition) {
+    super.transitionTo(transition);
+    return this;
+  }
+
+  @Override
+  public UserTask activity(Activity activity) {
+    super.activity(activity);
+    return this;
+  }
+
+  @Override
+  public UserTask activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+
+  @Override
+  public UserTask transition(Transition transition) {
+    super.transition(transition);
+    return this;
+  }
+
+  @Override
+  public UserTask transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+
+  @Override
+  public UserTask variable(Variable variable) {
+    super.variable(variable);
+    return this;
+  }
+
+  @Override
+  public UserTask timer(Timer timer) {
+    super.timer(timer);
+    return this;
+  }
+
+  @Override
+  public UserTask id(String id) {
+    super.id(id);
+    return this;
+  }
+
+  @Override
+  public UserTask property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public UserTask variable(String id, Type type) {
+    super.variable(id, type);
+    return this;
+  }
+
+  @Override
+  public UserTask propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
 }

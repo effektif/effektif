@@ -38,7 +38,9 @@ public class BpmnTest {
 
   @Test
   public void testBpmnParsingAndSerialization() throws Exception {
-    scan(new File("src/test/resources"));
+    String dir = BpmnTest.class.getProtectionDomain().getCodeSource().getLocation().toString();
+    dir = dir.substring(5);
+    scan(new File(dir));
   }
 
   private void scan(File directory) throws Exception {
