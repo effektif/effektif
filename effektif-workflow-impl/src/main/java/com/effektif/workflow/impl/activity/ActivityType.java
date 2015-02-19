@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.activity;
 
+import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;

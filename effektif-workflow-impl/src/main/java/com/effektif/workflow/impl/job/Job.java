@@ -45,8 +45,8 @@ public class Job {
   public Boolean dead;
 
   public String organizationId;
-  public String processId;
-  public String processDefinitionId;
+  public String sourceWorkflowId;
+  public String workflowId;
   public String workflowInstanceId;
   public String activityInstanceId;
   public String taskId;
@@ -95,18 +95,18 @@ public class Job {
     return this;
   }
   
-  public Job processId(String processId) {
-    this.processId = processId;
+  public Job sourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
     return this;
   }
   
-  public Job processDefinitionId(String processDefinitionId) {
-    this.processDefinitionId = processDefinitionId;
+  public Job workflowId(String workflowId) {
+    this.workflowId = workflowId;
     return this;
   }
   
-  public Job processInstanceId(String processInstanceId) {
-    this.workflowInstanceId = processInstanceId;
+  public Job workflowInstanceId(String workflowInstanceId) {
+    this.workflowInstanceId = workflowInstanceId;
     return this;
   }
   
@@ -192,13 +192,13 @@ public class Job {
   }
 
   
-  public String getProcessId() {
-    return processId;
+  public String getSourceWorkflowId() {
+    return sourceWorkflowId;
   }
 
   
-  public String getProcessDefinitionId() {
-    return processDefinitionId;
+  public String getWorkflowId() {
+    return workflowId;
   }
 
   

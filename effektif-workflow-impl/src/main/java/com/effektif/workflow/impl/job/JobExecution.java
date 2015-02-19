@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.job;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,18 +36,20 @@ public class JobExecution implements JobController {
   public String logs;
   public LocalDateTime time;
   public Long duration;
+  public Configuration configuration;
 
   public JobExecution() {
   }
 
-  public JobExecution(Job job) {
-    this(job, null);
+  public JobExecution(Job job, Configuration configuration) {
+    this(job, configuration, null);
   }
   
-  public JobExecution(Job job, WorkflowInstanceImpl workflowInstance) {
+  public JobExecution(Job job, Configuration configuration, WorkflowInstanceImpl workflowInstance) {
     this.job = job;
     this.workflowInstance = workflowInstance;
     this.time = Time.now();
+    this.configuration = configuration;
   }
 
   public void rescheduleFromNow(int delayInMillis) {
@@ -64,4 +67,16 @@ public class JobExecution implements JobController {
   public WorkflowInstanceImpl getWorkflowInstance() {
     return workflowInstance;
   }
+
+  
+  public Job getJob() {
+    return job;
+  }
+
+  @Override
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+  
+  
 }

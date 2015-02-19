@@ -153,9 +153,9 @@ public class MongoJobStore implements JobStore, Brewable {
     job.retries = readLong(dbJob, JobFields.retries);
     job.retryDelay = readLong(dbJob, JobFields.retryDelay);
     job.organizationId = readId(dbJob, JobFields.organizationId);
-    job.processId = readId(dbJob, JobFields.processId);
+    job.sourceWorkflowId = readId(dbJob, JobFields.processId);
     job.taskId = readId(dbJob, JobFields.taskId);
-    job.processDefinitionId = readId(dbJob, JobFields.workflowId);
+    job.workflowId = readId(dbJob, JobFields.workflowId);
     job.workflowInstanceId = readId(dbJob, JobFields.workflowInstanceId);
     job.activityInstanceId = readId(dbJob, JobFields.activityInstanceId);
     readExecutions(job, readList(dbJob, JobFields.executions));
@@ -197,10 +197,10 @@ public class MongoJobStore implements JobStore, Brewable {
     writeLongOpt(dbJob, JobFields.retries, job.retries);
     writeLongOpt(dbJob, JobFields.retryDelay, job.retryDelay);
     writeIdOpt(dbJob, JobFields.organizationId, job.organizationId);
-    writeIdOpt(dbJob, JobFields.processId, job.processId);
+    writeIdOpt(dbJob, JobFields.processId, job.sourceWorkflowId);
     writeIdOpt(dbJob, JobFields.activityInstanceId, job.activityInstanceId);
     writeIdOpt(dbJob, JobFields.workflowInstanceId, job.workflowInstanceId);
-    writeIdOpt(dbJob, JobFields.workflowId, job.processDefinitionId);
+    writeIdOpt(dbJob, JobFields.workflowId, job.workflowId);
     writeIdOpt(dbJob, JobFields.taskId, job.taskId);
     writeExecutions(dbJob, job.executions);
     writeLock(dbJob, job.lock);

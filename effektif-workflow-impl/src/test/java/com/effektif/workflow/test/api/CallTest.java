@@ -89,7 +89,7 @@ public class CallTest extends WorkflowTest {
     
     Workflow superWorkflow = new Workflow()
       .activity("call", new Call()
-        .inputValue("performer", new UserReference().id("johndoe"))
+        .inputValue("performer", new UserReference("johndoe"))
         .subWorkflowId(subWorkflow.getId()));
     
     deploy(superWorkflow);
@@ -120,7 +120,7 @@ public class CallTest extends WorkflowTest {
     
     workflowEngine.startWorkflowInstance(new Start()
       .workflowId(superWorkflow.getId())
-      .variableValue("guineapig", new UserReference().id("johndoe"))
+      .variableValue("guineapig", new UserReference("johndoe"))
     );
 
     Task task = taskService.findTasks(new TaskQuery()).get(0);

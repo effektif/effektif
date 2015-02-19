@@ -56,7 +56,7 @@ public class VariableTypesTest extends WorkflowTest {
 
     WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
       .workflowId(workflow.getId())
-      .variableValue("v", new UserReference().id("u2")));
+      .variableValue("v", new UserReference("u2")));
     
     assertEquals(UserReference.class, workflowInstance.getVariableValue("v").getClass());
   }

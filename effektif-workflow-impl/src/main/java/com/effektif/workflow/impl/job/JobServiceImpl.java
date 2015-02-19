@@ -26,6 +26,7 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.configuration.Brewable;
@@ -41,6 +42,7 @@ public class JobServiceImpl implements JobService, Brewable {
   
   private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
+  protected Configuration configuration;
   protected JobStore jobStore;
   protected WorkflowInstanceStore workflowInstanceStore;
   protected ExecutorService executor;
@@ -57,6 +59,7 @@ public class JobServiceImpl implements JobService, Brewable {
 
   @Override
   public void brew(Brewery brewery) {
+    this.configuration = brewery.get(Configuration.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.executor = brewery.get(ExecutorService.class);
     this.jobStore = brewery.get(JobStore.class);
@@ -140,7 +143,7 @@ public class JobServiceImpl implements JobService, Brewable {
       Iterator<Job> jobsIterator = workflowInstance.jobs.iterator();
       for (Job job: new ArrayList<>(workflowInstance.jobs)) {
         if (job.isDue()) {
-          executeJob(new JobExecution(job, workflowInstance));
+          executeJob(new JobExecution(job, configuration, workflowInstance));
           if (job.isDone()||job.isDead()) {
             workflowInstance.removeJob(job);
             jobStore.saveArchivedJob(job);
@@ -173,7 +176,7 @@ public class JobServiceImpl implements JobService, Brewable {
     }
     @Override
     public void run() {
-      executeJob(new JobExecution(job));
+      executeJob(new JobExecution(job, configuration));
       if (job.isDone()||job.isDead()) {
         jobStore.deleteJobById(job.id);
         jobStore.saveArchivedJob(job);

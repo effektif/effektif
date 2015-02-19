@@ -25,7 +25,7 @@ public class AbstractWorkflow extends Scope {
   protected Trigger trigger;
   protected XmlElement bpmnDefinitions;
   
-  protected AccessControlList acl;
+  protected AccessControlList access;
   protected String organizationId;
   
   public String getSourceWorkflowId() {
@@ -54,19 +54,13 @@ public class AbstractWorkflow extends Scope {
   
   /** the access control list specifies which actions are permitted by whom.
    * If not specified, all is allowed. */
-  public AccessControlList getAcl() {
-    return this.acl;
+  public AccessControlList getAccess() {
+    return this.access;
   }
   /** the access control list specifies which actions are permitted by whom.
    * If not specified, all is allowed. */
-  public void setAcl(AccessControlList acl) {
-    this.acl = acl;
-  }
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public AbstractWorkflow acl(AccessControlList acl) {
-    this.acl = acl;
-    return this;
+  public void setAccess(AccessControlList access) {
+    this.access = access;
   }
 
   /** optional organization (aka tenant or workspace) identification */

@@ -22,39 +22,18 @@ package com.effektif.workflow.api.ref;
 public class VariableReference {
 
   protected String id;
-  protected String label;
-  protected String typeLabel;
+  
+  public VariableReference() {
+  }
+  
+  public VariableReference(String id) {
+    this.id = id;
+  }
 
   public String getId() {
     return this.id;
   }
   public void setId(String id) {
     this.id = id;
-  }
-  public VariableReference id(String id) {
-    this.id = id;
-    return this;
-  }
-  
-  public String getLabel() {
-    return this.label;
-  }
-  public void setLabel(String label) {
-    this.label = label;
-  }
-  public VariableReference label(String label) {
-    this.label = label;
-    return this;
-  }
-
-  public String getTypeLabel() {
-    return this.typeLabel;
-  }
-  public void setTypeLabel(String typeLabel) {
-    this.typeLabel = typeLabel;
-  }
-  public VariableReference typeLabel(String typeLabel) {
-    this.typeLabel = typeLabel;
-    return this;
   }
 }

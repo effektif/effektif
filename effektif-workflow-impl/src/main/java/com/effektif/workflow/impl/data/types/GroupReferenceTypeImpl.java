@@ -52,7 +52,7 @@ public class GroupReferenceTypeImpl extends AbstractDataType<GroupReferenceType>
                 || valueType instanceof TextTypeImpl) 
             )
        ){
-      return new GroupReference().id((String)value);
+      return new GroupReference((String)value);
     } 
     throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+GroupReference.class.getName());
   }

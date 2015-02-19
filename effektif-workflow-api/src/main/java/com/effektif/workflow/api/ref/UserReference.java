@@ -25,6 +25,7 @@ public class UserReference {
   
   public UserReference() {
   }
+  
   public UserReference(String id) {
     this.id = id;
   }
@@ -34,9 +35,5 @@ public class UserReference {
   }
   public void setId(String id) {
     this.id = id;
-  }
-  public UserReference id(String id) {
-    this.id = id;
-    return this;
   }
 }

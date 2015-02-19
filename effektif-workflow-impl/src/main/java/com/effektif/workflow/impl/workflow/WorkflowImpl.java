@@ -59,4 +59,29 @@ public class WorkflowImpl extends ScopeImpl {
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
   }
+
+  
+  public WorkflowEngineImpl getWorkflowEngine() {
+    return workflowEngine;
+  }
+
+  
+  public String getSourceWorkflowId() {
+    return sourceWorkflowId;
+  }
+
+  
+  public String getOrganizationId() {
+    return organizationId;
+  }
+
+  
+  public List<ActivityImpl> getStartActivities() {
+    return startActivities;
+  }
+
+  
+  public TriggerImpl getTrigger() {
+    return trigger;
+  }
 }

@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.form.FormInstance;
+import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.ref.GroupReference;
 import com.effektif.workflow.api.ref.UserReference;
 
@@ -31,14 +31,25 @@ public class Task {
   
   protected String id;
   protected String organizationId;
-  protected UserReference createdBy;
   protected String name;
   protected String description;
+  
+  protected AccessControlList access;
+
+  public AccessControlList getAccess() {
+    return this.access;
+  }
+  public void setAccess(AccessControlList access) {
+    this.access = access;
+  }
+  
+  // creator, people that add comments and people assigned to tasks are participants
+  protected UserReference createdBy;
+  protected List<UserReference> participants;
   protected UserReference assignee;
   protected List<UserReference> candidates;
-  protected FormInstance formInstance;
-  protected List<GroupReference> candidateGroupRefs;
-  protected List<UserReference> participantRefs;
+  protected List<GroupReference> candidateGroups;
+
   protected String caseId;
   protected String parentId;
   protected List<String> subtaskIds;
@@ -48,6 +59,8 @@ public class Task {
   protected Boolean canceled;
   protected Boolean completed;
 
+  // fields related to the workflow
+  
   protected String activityId;
   protected String activityInstanceId;
   // used to be endsActivityInstance (REST), eai (DB)
@@ -56,12 +69,18 @@ public class Task {
   //    initial value: eai == true 
   //    when completed: co==true & eai == null (absent)
   protected Boolean activityNotify;
+  protected Boolean hasWorkflowForm;
   protected String workflowInstanceId;
   protected String sourceWorkflowId;
   protected String workflowId;
 
   public Task() {
   }
+  
+  public boolean isCase() {
+    return this.id!=null && this.id.equals(this.caseId);
+  }
+
 
   public Task name(String name) {
     this.name = name;
@@ -112,20 +131,7 @@ public class Task {
     this.candidates = candidates;
   }
 
-  public FormInstance getFormInstance() {
-    return this.formInstance;
-  }
 
-  public void setFormInstance(FormInstance formInstance) {
-    this.formInstance = formInstance;
-  }
-  
-  public Task formInstance(FormInstance formInstance) {
-    this.formInstance = formInstance;
-    return this;
-  }
-
-  
   public String getActivityInstanceId() {
     return activityInstanceId;
   }
@@ -202,11 +208,11 @@ public class Task {
     this.activityId = activityId;
   }
 
-  public List<GroupReference> getCandidateGroupRefs() {
-    return this.candidateGroupRefs;
+  public List<GroupReference> getCandidateGroups() {
+    return this.candidateGroups;
   }
-  public void setCandidateGroupRefs(List<GroupReference> candidateGroupRefs) {
-    this.candidateGroupRefs = candidateGroupRefs;
+  public void setCandidateGroups(List<GroupReference> candidateGroups) {
+    this.candidateGroups = candidateGroups;
   }
   
   public Boolean getCanceled() {
@@ -255,6 +261,13 @@ public class Task {
     this.activityNotify = activityNotify;
   }
   
+  public Boolean hasWorkflowForm() {
+    return this.hasWorkflowForm;
+  }
+  public void setWorkflowForm(Boolean hasWorkflowForm) {
+    this.hasWorkflowForm = hasWorkflowForm;
+  }
+  
   public LocalDateTime getLastUpdated() {
     return this.lastUpdated;
   }
@@ -262,11 +275,11 @@ public class Task {
     this.lastUpdated = lastUpdated;
   }
 
-  public List<UserReference> getParticipantRefs() {
-    return this.participantRefs;
+  public List<UserReference> getParticipants() {
+    return this.participants;
   }
-  public void setParticipantRefs(List<UserReference> participantRefs) {
-    this.participantRefs = participantRefs;
+  public void setParticipants(List<UserReference> participants) {
+    this.participants = participants;
   }
   
   public String getSourceWorkflowId() {

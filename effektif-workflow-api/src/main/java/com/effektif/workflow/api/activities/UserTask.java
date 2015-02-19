@@ -40,14 +40,14 @@ public class UserTask extends NoneTask {
   protected Binding<UserReference> assignee;
   protected Binding<UserReference> candidates;
   protected Binding<GroupReference> candidateGroups;
-  protected Binding<RelativeTime> duedate;
+  protected RelativeTime duedate;
   protected Form form;
-  protected AccessControlList acl;
-  protected Binding<RelativeTime> escalate;
+  protected AccessControlList access;
+  protected RelativeTime escalate;
   protected Binding<UserReference> escalateTo;
-  protected Binding<RelativeTime> reminder;
-  protected Binding<RelativeTime> reminderRepeat;
-
+  
+  protected RelativeTime reminder;
+  protected RelativeTime reminderRepeat;
 
   public UserTask() {
   }
@@ -73,7 +73,7 @@ public class UserTask extends NoneTask {
 
   /** adds a candidate id value to the list */
   public UserTask assigneeUserId(String assigneeUserId) {
-    this.assignee = new Binding().value(new UserReference().id(assigneeUserId));
+    this.assignee = new Binding().value(new UserReference(assigneeUserId));
     return this;
   }
 
@@ -91,7 +91,7 @@ public class UserTask extends NoneTask {
 
   /** adds a candidate id value to the list */
   public UserTask candidateUserId(String assigneeUserId) {
-    addCandidateBinding(new Binding().value(new UserReference().id(assigneeUserId)));
+    addCandidateBinding(new Binding().value(new UserReference(assigneeUserId)));
     return this;
   }
 
@@ -151,73 +151,66 @@ public class UserTask extends NoneTask {
   
   /** the access control list specifies which actions are permitted by whom.
    * If not specified, all is allowed. */
-  public AccessControlList getAcl() {
-    return this.acl;
+  public AccessControlList getAccess() {
+    return this.access;
   }
   /** the access control list specifies which actions are permitted by whom.
    * If not specified, all is allowed. */
-  public void setAcl(AccessControlList acl) {
-    this.acl = acl;
-  }
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public UserTask acl(AccessControlList acl) {
-    this.acl = acl;
-    return this;
+  public void setAccess(AccessControlList access) {
+    this.access = access;
   }
 
-
-  public Binding<RelativeTime> getDuedate() {
+  public RelativeTime getDuedate() {
     return this.duedate;
   }
-  public void setDuedate(Binding<RelativeTime> duedate) {
+  public void setDuedate(RelativeTime duedate) {
     this.duedate = duedate;
   }
-  public UserTask duedate(Binding<RelativeTime> duedate) {
+  public UserTask duedate(RelativeTime duedate) {
     this.duedate = duedate;
     return this;
   }
 
-  public Binding<RelativeTime> getEscalate() {
+  public RelativeTime getEscalate() {
     return this.escalate;
   }
-  public void setEscalate(Binding<RelativeTime> escalate) {
+  public void setEscalate(RelativeTime escalate) {
     this.escalate = escalate;
   }
-  public UserTask escalate(Binding<RelativeTime> escalate) {
+  public UserTask escalate(RelativeTime escalate) {
     this.escalate = escalate;
     return this;
   }
+
   
-  public Binding<UserReference> getExcalateTo() {
+  public Binding<UserReference> getEscalateTo() {
     return this.escalateTo;
   }
-  public void setExcalateTo(Binding<UserReference> escalateTo) {
+  public void setEscalateTo(Binding<UserReference> escalateTo) {
     this.escalateTo = escalateTo;
   }
   public UserTask escalateTo(Binding<UserReference> escalateTo) {
     this.escalateTo = escalateTo;
     return this;
   }
-  
-  public Binding<RelativeTime> getReminder() {
+  public RelativeTime getReminder() {
     return this.reminder;
   }
-  public void setReminder(Binding<RelativeTime> reminder) {
+  public void setReminder(RelativeTime reminder) {
     this.reminder = reminder;
   }
-  public UserTask reminder(Binding<RelativeTime> reminder) {
+  public UserTask reminder(RelativeTime reminder) {
     this.reminder = reminder;
     return this;
   }
-  
-  public Binding<RelativeTime> getReminderRepeat() {
+
+  public RelativeTime getReminderRepeat() {
     return this.reminderRepeat;
   }
-  public void setReminderRepeat(Binding<RelativeTime> reminderRepeat) {
+  public void setReminderRepeat(RelativeTime reminderRepeat) {
     this.reminderRepeat = reminderRepeat;
   }
-  public UserTask reminderRepeat(Binding<RelativeTime> reminderRepeat) {
+  public UserTask reminderRepeat(RelativeTime reminderRepeat) {
     this.reminderRepeat = reminderRepeat;
     return this;
   }

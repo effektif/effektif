@@ -17,13 +17,18 @@ package com.effektif.workflow.impl.job;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 public interface JobController {
   
+  Configuration getConfiguration();
+  
   /** allows process jobs to get the locked workflow instance */
   WorkflowInstanceImpl getWorkflowInstance();
+  
+  Job getJob();
 
   void rescheduleFromNow(int delayInMillis);
   

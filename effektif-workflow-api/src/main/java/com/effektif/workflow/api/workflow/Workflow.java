@@ -18,7 +18,6 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.Type;
 
@@ -169,16 +168,8 @@ public class Workflow extends AbstractWorkflow {
   }
 
   @Override
-  public Workflow acl(AccessControlList acl) {
-    super.acl(acl);
-    return this;
-  }
-
-  @Override
   public Workflow organizationId(String organizationId) {
     super.organizationId(organizationId);
     return this;
   }
-
-  
 }

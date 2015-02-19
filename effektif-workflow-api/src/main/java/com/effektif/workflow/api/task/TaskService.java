@@ -28,7 +28,7 @@ public interface TaskService {
   void saveTask(Task task);
 
   List<Task> findTasks(TaskQuery taskQuery);
-
+  
   void deleteTasks(TaskQuery taskQuery);
 
   /** Creates a derived task service and applies the request context to all 

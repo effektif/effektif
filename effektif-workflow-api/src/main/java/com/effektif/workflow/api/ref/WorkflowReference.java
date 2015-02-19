@@ -22,39 +22,18 @@ package com.effektif.workflow.api.ref;
 public class WorkflowReference {
   
   protected String id;
-  protected String name;
-  protected String label;
+  
+  public WorkflowReference() {
+  }
+  
+  public WorkflowReference(String id) {
+    this.id = id;
+  }
 
   public String getId() {
     return this.id;
   }
   public void setId(String id) {
     this.id = id;
-  }
-  public WorkflowReference id(String id) {
-    this.id = id;
-    return this;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-  public void setName(String name) {
-    this.name = name;
-  }
-  public WorkflowReference name(String name) {
-    this.name = name;
-    return this;
-  }
-  
-  public String getLabel() {
-    return this.label;
-  }
-  public void setLabel(String label) {
-    this.label = label;
-  }
-  public WorkflowReference label(String label) {
-    this.label = label;
-    return this;
   }
 }

@@ -17,18 +17,25 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.task.RelativeTime;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.UserReferenceType;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.job.JobService;
+import com.effektif.workflow.impl.job.types.EscalateTaskJobType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -51,10 +58,16 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
           .key("candidates")
           .type(new ListType(new UserReferenceType()));
 
+  public static final InputParameter<List<UserReference>> ESCALATE_TO = new InputParameter<>()
+          .key("escalateTo")
+          .type(new UserReferenceType());
+
   protected TaskService taskService;
+  protected JobService jobService;
   protected BindingImpl<String> nameBinding;
   protected BindingImpl<UserReference> assigneeBinding;
   protected BindingImpl<UserReference> candidatesBinding;
+  protected BindingImpl<UserReference> escalateTo;
 
   public UserTaskImpl() {
     super(UserTask.class);
@@ -74,6 +87,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     this.nameBinding = parser.parseBinding(userTaskApi.getTaskName(), NAME);
     this.assigneeBinding = parser.parseBinding(userTaskApi.getAssignee(), ASSIGNEE);
     this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidates(), CANDIDATES);
+    this.escalateTo = parser.parseBinding(userTaskApi.getEscalateTo(), ESCALATE_TO);
   }
 
   @Override
@@ -94,10 +108,31 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setName(taskName);
     task.setAssignee(assignee);
     task.setCandidates(candidates);
+    
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
+
     taskService.saveTask(task);
+
+    RelativeTime escalate = activityApi.getEscalate();
+    Binding<UserReference> escalateTo = activityApi.getEscalateTo();
+    if (escalate!=null && escalateTo!=null) {
+      LocalDateTime escalationTime = escalate.resolve();
+      jobService.saveJob(new Job()        
+        .duedate(escalationTime)
+        .taskId(task.getId())
+        .activityInstanceId(activityInstance.getId())
+        .workflowInstanceId(activityInstance.getWorkflowInstance().getId())
+        .workflowId(activityInstance.getWorkflowInstance().getWorkflow().getId())
+        .sourceWorkflowId(activityInstance.getWorkflowInstance().getWorkflow().getSourceWorkflowId())
+        .jobType(new EscalateTaskJobType())
+        );
+    }
+  }
+  
+  public BindingImpl<UserReference> getEscalateTo() {
+    return escalateTo;
   }
 }

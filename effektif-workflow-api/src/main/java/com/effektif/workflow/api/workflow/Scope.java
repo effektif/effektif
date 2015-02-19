@@ -26,22 +26,10 @@ import com.effektif.workflow.api.types.Type;
  */
 public class Scope extends Element {
 
-  protected String id;
   protected List<Activity> activities;
   protected List<Transition> transitions;
   protected List<Variable> variables;
   protected List<Timer> timers;
-
-  public String getId() {
-    return this.id;
-  }
-  public void setId(String id) {
-    this.id = id;
-  }
-  public Scope id(String id) {
-    this.id = id;
-    return this;
-  }
 
   public List<Activity> getActivities() {
     return this.activities;

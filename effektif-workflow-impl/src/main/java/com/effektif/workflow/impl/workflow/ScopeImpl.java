@@ -232,4 +232,46 @@ public abstract class ScopeImpl {
     }
     return null;
   }
+
+  
+  public String getId() {
+    return id;
+  }
+
+  
+  public ScopeImpl getParent() {
+    return parent;
+  }
+
+  
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+
+  
+  public WorkflowImpl getWorkflow() {
+    return workflow;
+  }
+
+  
+  public Map<String, ActivityImpl> getActivities() {
+    return activities;
+  }
+
+  
+  public Map<String, VariableImpl> getVariables() {
+    return variables;
+  }
+
+  
+  public List<TimerImpl> getTimers() {
+    return timers;
+  }
+
+  
+  public List<TransitionImpl> getTransitions() {
+    return transitions;
+  }
+  
+  
 }

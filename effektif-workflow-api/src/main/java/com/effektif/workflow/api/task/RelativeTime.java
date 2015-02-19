@@ -104,11 +104,15 @@ public class RelativeTime {
     return !(isUnitSeconds() || isUnitMinutes() || isUnitHours());
   }
   
-  public static LocalDateTime get(RelativeTime relativeTime) {
-    return get(relativeTime, new LocalDateTime());
+  public LocalDateTime resolve() {
+    return resolve(this);
+  }
+
+  public static LocalDateTime resolve(RelativeTime relativeTime) {
+    return resolve(relativeTime, new LocalDateTime());
   }
   
-  public static LocalDateTime get(RelativeTime relativeTime, LocalDateTime base) {
+  public static LocalDateTime resolve(RelativeTime relativeTime, LocalDateTime base) {
     if (relativeTime==null || relativeTime.time==null || relativeTime.unit==null) {
       return null;
     }

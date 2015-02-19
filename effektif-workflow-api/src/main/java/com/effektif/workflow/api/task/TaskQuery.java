@@ -22,4 +22,16 @@ package com.effektif.workflow.api.task;
  */
 public class TaskQuery {
 
+  protected String taskId;
+
+  public String getTaskId() {
+    return this.taskId;
+  }
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
+  public TaskQuery taskId(String taskId) {
+    this.taskId = taskId;
+    return this;
+  }
 }

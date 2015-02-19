@@ -23,15 +23,16 @@ public class GroupReference {
 
   protected String id;
   
+  public GroupReference() {
+  }
+  public GroupReference(String id) {
+    this.id = id;
+  }
+
   public String getId() {
     return this.id;
   }
   public void setId(String id) {
     this.id = id;
   }
-  public GroupReference id(String id) {
-    this.id = id;
-    return this;
-  }
-  
 }
