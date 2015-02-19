@@ -15,14 +15,23 @@
  */
 package com.effektif.workflow.api.task;
 
+import com.effektif.workflow.api.query.OrderDirection;
+import com.effektif.workflow.api.query.Query;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TaskQuery {
+public class TaskQuery extends Query {
 
   protected String taskId;
+
+  public boolean meetsCriteria(Task task) {
+    if (taskId!=null && !taskId.equals(task.getId())) {
+      return false;
+    }
+    return true;
+  }
 
   public String getTaskId() {
     return this.taskId;
@@ -32,6 +41,24 @@ public class TaskQuery {
   }
   public TaskQuery taskId(String taskId) {
     this.taskId = taskId;
+    return this;
+  }
+
+  @Override
+  public TaskQuery skip(Integer skip) {
+    super.skip(skip);
+    return this;
+  }
+
+  @Override
+  public TaskQuery limit(Integer limit) {
+    super.limit(limit);
+    return this;
+  }
+
+  @Override
+  public TaskQuery orderBy(String field, OrderDirection direction) {
+    super.orderBy(field, direction);
     return this;
   }
 }

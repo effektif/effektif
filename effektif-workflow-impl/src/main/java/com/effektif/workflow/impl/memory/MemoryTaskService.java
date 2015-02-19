@@ -21,26 +21,31 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
-import com.effektif.workflow.impl.ContextualTaskService;
+import com.effektif.workflow.impl.NotificationService;
+import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MemoryTaskService implements TaskService {
+public class MemoryTaskService implements TaskService, Brewable {
   
   protected int nextId = 1;
-  protected Map<Object, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<Object,Task>());
+  protected Map<String, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<String,Task>());
+  protected NotificationService notificationService;
 
-  public MemoryTaskService() {
+  @Override
+  public void brew(Brewery brewery) {
+    this.notificationService = brewery.getOpt(NotificationService.class);
   }
 
   @Override
-  public void saveTask(Task task) {
+  public void insertTask(Task task) {
     if (task.getId()==null) {
       String taskId = Integer.toString(nextId++);
       task.setId(taskId);
@@ -50,6 +55,12 @@ public class MemoryTaskService implements TaskService {
 
   @Override
   public List<Task> findTasks(TaskQuery taskQuery) {
+    List<Task> result = new ArrayList<>();
+    for (Task task: tasks.values()) {
+      if (taskQuery.meetsCriteria(task)) {
+        result.add(task);
+      }
+    }
     return new ArrayList<>(tasks.values());
   }
 
@@ -59,7 +70,19 @@ public class MemoryTaskService implements TaskService {
   }
 
   @Override
-  public TaskService createTaskService(RequestContext requestContext) {
-    return new ContextualTaskService(this, requestContext);
+  public void assignTask(String taskId, UserReference assignee) {
+    Task task = tasks.get(taskId);
+    if (task!=null) {
+      UserReference original = task.getAssignee();
+      task.assignee(assignee);
+      if (notificationService!=null) {
+        String assigneeId = assignee!=null ? assignee.getId() : null;  
+        if (assigneeId!=null) {
+          if (original==null || !assigneeId.equals(original.getId())) {
+            notificationService.notifyTaskAssigned(task, original, assignee);
+          }
+        }
+      }
+    }
   }
 }

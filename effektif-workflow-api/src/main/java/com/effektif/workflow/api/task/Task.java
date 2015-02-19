@@ -215,15 +215,15 @@ public class Task {
     this.candidateGroups = candidateGroups;
   }
   
-  public Boolean getCanceled() {
-    return this.canceled;
+  public Boolean isCanceled() {
+    return Boolean.TRUE.equals(this.canceled);
   }
   public void setCanceled(Boolean canceled) {
     this.canceled = canceled;
   }
   
   public Boolean isCompleted() {
-    return this.completed;
+    return Boolean.TRUE.equals(this.completed);
   }
   public void setCompleted(Boolean completed) {
     this.completed = completed;

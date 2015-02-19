@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
@@ -97,7 +96,7 @@ public class MongoJobStore implements JobStore, Brewable {
     DBObject query = buildLockNextJobQuery()
       .push(JobFields.workflowInstanceId).append("$exists", true).pop()
       .get();
-    filterOrganization(query, JobFields.organizationId);
+    // TODO use MongoQuery filterOrganization(query, JobFields.organizationId);
     DBObject retrieveFields = new BasicDBObject(JobFields.workflowInstanceId, true);
     DBCursor jobsDueHavingProcessInstance = jobsCollection.find("jobs-having-process-instance", query, retrieveFields);
     List<String> processInstanceIds = new ArrayList<>();
@@ -114,7 +113,7 @@ public class MongoJobStore implements JobStore, Brewable {
     DBObject query = buildLockNextJobQuery()
       .push(JobFields.workflowInstanceId).append("$exists", false).pop()
       .get();
-    filterOrganization(query, JobFields.organizationId);
+    // TODO use MongoQuery filterOrganization(query, JobFields.organizationId);
     return lockNextJob(query);
   }
 
@@ -258,18 +257,11 @@ public class MongoJobStore implements JobStore, Brewable {
 
   public BasicDBObject buildQuery(JobQuery jobQuery) {
     BasicDBObject dbQuery = new BasicDBObject();
-    filterOrganization(dbQuery, JobFields.organizationId);
+    // TODO use MongoQuery filterOrganization(dbQuery, JobFields.organizationId);
     if (jobQuery.getJobId()!=null) {
       dbQuery.append(JobFields._id, new ObjectId(jobQuery.getJobId()));
     }
     return dbQuery;
-  }
-
-  protected void filterOrganization(DBObject dbQuery, String fieldName) {
-    RequestContext requestContext = RequestContext.current();
-    if (requestContext!=null) {
-      dbQuery.put(fieldName, requestContext.getOrganizationId());
-    }
   }
 
   @Override

@@ -19,7 +19,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.memory.MemoryTaskService;
 import com.effektif.workflow.impl.util.Lists;
@@ -39,6 +38,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected List<MongoCredential> credentials;
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
+  protected String tasksCollectionName = "tasks";
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
   protected boolean isPretty;
@@ -184,6 +184,14 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.workflowsCollectionName = workflowsCollectionName;
   }
 
+  public String getTasksCollectionName() {
+    return tasksCollectionName;
+  }
+
+  public void setTasksCollectionName(String tasksCollectionName) {
+    this.tasksCollectionName = tasksCollectionName;
+  }
+
   public String getJobsCollectionName() {
     return jobsCollectionName;
   }
@@ -222,4 +230,6 @@ public class MongoConfiguration extends DefaultConfiguration {
   public MongoClientOptions.Builder getOptionBuilder() {
     return optionBuilder;
   }
+  
+  
 }

@@ -23,8 +23,10 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.query.OrderBy;
+import com.effektif.workflow.api.query.OrderDirection;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 
 public abstract class MongoHelper {
@@ -134,9 +136,5 @@ public abstract class MongoHelper {
       return new LocalDateTime((Date)object);
     }
     throw new RuntimeException("date conversion problem: "+object+" ("+object.getClass().getName()+")");
-  }
-
-  protected static boolean hasOrganizationId(RequestContext requestContext) {
-    return requestContext!=null ? requestContext.getOrganizationId()!=null : false;
   }
 }

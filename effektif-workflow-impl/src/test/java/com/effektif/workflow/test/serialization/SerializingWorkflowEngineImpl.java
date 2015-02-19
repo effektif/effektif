@@ -21,7 +21,6 @@ import java.util.List;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -112,10 +111,5 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
     log.debug("deleteWorkflowInstances");
     query = wireize(" >>query>>", query, WorkflowInstanceQuery.class);
     workflowEngine.deleteWorkflowInstances(query);
-  }
-
-  @Override
-  public WorkflowEngine createWorkflowEngine(RequestContext requestContext) {
-    throw new RuntimeException("please implement");
   }
 }

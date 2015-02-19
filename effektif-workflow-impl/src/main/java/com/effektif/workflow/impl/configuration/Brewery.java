@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
@@ -47,7 +48,39 @@ public class Brewery {
     return (T) get(type.getName());
   }
 
+  /** get and do not throw an exception of the object is not found */
+  public <T> T getOpt(Class<T> type) {
+    Exceptions.checkNotNullParameter(type, "type");
+    return (T) getOpt(type.getName());
+  }
+
+  /** get and do not throw an exception of the object is not found */
   public synchronized Object get(String name) {
+    Object o = getOpt(name);
+    if (o!=null) {
+      return o;
+    }
+    // log.debug("\n\n"+contents);
+    String contents = "brews\n";
+    for (String n: brews.keySet()) {
+      contents += "  "+n+"\n";
+    }
+    contents += "ingredients\n";
+    for (String n: ingredients.keySet()) {
+      contents += "  "+n+"\n";
+    }
+    contents += "suppliers\n";
+    for (String n: suppliers.keySet()) {
+      contents += "  "+n+"\n";
+    }
+    contents += "aliasses\n";
+    for (String n: aliases.keySet()) {
+      contents += "  "+n+"-->"+aliases.get(n)+"\n";
+    }
+    throw new RuntimeException(name+" is not in registry: \n"+contents);
+  }
+
+  public synchronized Object getOpt(String name) {
     // log.debug("getting("+name+")");
     if (aliases.containsKey(name)) {
       name = aliases.get(name);
@@ -70,24 +103,7 @@ public class Brewery {
       // log.debug("returning supplied("+name+") "+System.identityHashCode(o));
       return o;
     }
-    String contents = "brews\n";
-    for (String n: brews.keySet()) {
-      contents += "  "+n+"\n";
-    }
-    contents += "ingredients\n";
-    for (String n: ingredients.keySet()) {
-      contents += "  "+n+"\n";
-    }
-    contents += "suppliers\n";
-    for (String n: suppliers.keySet()) {
-      contents += "  "+n+"\n";
-    }
-    contents += "aliasses\n";
-    for (String n: aliases.keySet()) {
-      contents += "  "+n+"-->"+aliases.get(n)+"\n";
-    }
-    // log.debug("\n\n"+contents);
-    throw new RuntimeException(name+" is not in registry: \n"+contents);
+    return null;
   }
 
   public void brew(Object o) {

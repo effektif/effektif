@@ -63,7 +63,6 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
           .type(new UserReferenceType());
 
   protected TaskService taskService;
-  protected JobService jobService;
   protected BindingImpl<String> nameBinding;
   protected BindingImpl<UserReference> assigneeBinding;
   protected BindingImpl<UserReference> candidatesBinding;
@@ -82,8 +81,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   @Override
   public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
     super.parse(activityImpl, userTaskApi, parser);
-    this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.taskService = parser.getConfiguration(TaskService.class);
+    this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.nameBinding = parser.parseBinding(userTaskApi.getTaskName(), NAME);
     this.assigneeBinding = parser.parseBinding(userTaskApi.getAssignee(), ASSIGNEE);
     this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidates(), CANDIDATES);
@@ -114,21 +113,20 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
 
-    taskService.saveTask(task);
+    taskService.insertTask(task);
 
     RelativeTime escalate = activityApi.getEscalate();
     Binding<UserReference> escalateTo = activityApi.getEscalateTo();
     if (escalate!=null && escalateTo!=null) {
       LocalDateTime escalationTime = escalate.resolve();
-      jobService.saveJob(new Job()        
+      activityInstance.getWorkflowInstance().addJob(new Job()        
         .duedate(escalationTime)
+        .jobType(new EscalateTaskJobType())
         .taskId(task.getId())
         .activityInstanceId(activityInstance.getId())
         .workflowInstanceId(activityInstance.getWorkflowInstance().getId())
         .workflowId(activityInstance.getWorkflowInstance().getWorkflow().getId())
-        .sourceWorkflowId(activityInstance.getWorkflowInstance().getWorkflow().getSourceWorkflowId())
-        .jobType(new EscalateTaskJobType())
-        );
+        .sourceWorkflowId(activityInstance.getWorkflowInstance().getWorkflow().getSourceWorkflowId()));
     }
   }
   

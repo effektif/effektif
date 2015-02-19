@@ -30,29 +30,18 @@ import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.job.JobExecution;
-import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.util.Time;
-import com.effektif.workflow.test.WorkflowTest;
+import com.effektif.workflow.test.JobWorkflowTest;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-public class JobServiceTest extends WorkflowTest {
+public class JobServiceTest extends JobWorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(JobServiceTest.class);
-
-  protected JobService jobService;
-
-  @Before
-  public void initialize() {
-    this.jobService = configuration.get(JobService.class);
-    JobServiceImpl jobServiceImpl = (JobServiceImpl) jobService;
-    // this prevents the job service from starting any threads
-    jobServiceImpl.isRunning = true;
-  }
 
   @JsonTypeName("tst")
   public static class TestJob extends AbstractJobType {
@@ -76,7 +65,7 @@ public class JobServiceTest extends WorkflowTest {
     TestJob.throwException = false;
     Time.now = null;
   }
-  
+
 //  @Test
 //  public void testWorkfowJobOK() throws Exception {
 //    // quickest way to get a processInstanceId
@@ -243,13 +232,5 @@ public class JobServiceTest extends WorkflowTest {
 
     checkJobs();
     assertEquals(1, TestJob.jobExecutions.size());
-  }
-
-  public void checkWorkflowInstanceJobs() {
-    ((JobServiceImpl)jobService).checkWorkflowInstanceJobs();
-  }
-
-  public void checkJobs() {
-    ((JobServiceImpl)jobService).checkJobs();
   }
 }

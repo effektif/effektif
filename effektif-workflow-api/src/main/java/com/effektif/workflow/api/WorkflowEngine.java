@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -53,10 +52,4 @@ public interface WorkflowEngine {
   List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query);
   
   void deleteWorkflowInstances(WorkflowInstanceQuery query);
-
-  /** Creates a derived workflow engine and applies the request context to all 
-   * methods invoked on the returned workflow engine.  Most commonly used to  
-   * set the authenticated user invoking the operations on the returned
-   * workflow engine.*/
-  WorkflowEngine createWorkflowEngine(RequestContext requestContext);
 }

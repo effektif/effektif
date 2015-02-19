@@ -20,12 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.effektif.workflow.api.model.RequestContext;
-import com.effektif.workflow.impl.ContextualAdapterService;
 import com.effektif.workflow.impl.adapter.AbstractAdapterService;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterQuery;
-import com.effektif.workflow.impl.adapter.AdapterService;
 
 
 /**
@@ -54,11 +51,6 @@ public class MemoryAdapterService extends AbstractAdapterService {
   @Override
   public void deleteAdapters(AdapterQuery adapterQuery) {
     adapters.clear();
-  }
-
-  @Override
-  public AdapterService createAdapterService(RequestContext requestContext) {
-    return new ContextualAdapterService(this, requestContext);
   }
 
   @Override

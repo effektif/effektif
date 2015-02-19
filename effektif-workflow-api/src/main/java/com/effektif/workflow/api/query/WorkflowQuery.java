@@ -15,23 +15,18 @@
  */
 package com.effektif.workflow.api.query;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * @author Tom Baeyens
  */
-public class WorkflowQuery {
+public class WorkflowQuery extends Query {
   
   public static final String FIELD_DEPLOY_TIME = "deployTime";
   
   protected String organizationId;
   protected String workflowId;
   protected String workflowSource;
-  protected Integer skip;
-  protected Integer limit;
-  protected List<OrderBy> orderBy;
   
   public String getOrganizationId() {
     return this.organizationId;
@@ -66,47 +61,26 @@ public class WorkflowQuery {
     return this;
   }
 
-  public Integer getSkip() {
-    return this.skip;
-  }
-  public void setSkip(Integer skip) {
-    this.skip = skip;
-  }
-  public WorkflowQuery skip(Integer skip) {
-    this.skip = skip;
-    return this;
-  }
-  
-  public Integer getLimit() {
-    return this.limit;
-  }
-  public void setLimit(Integer limit) {
-    this.limit = limit;
-  }
-  public WorkflowQuery limit(Integer limit) {
-    this.limit = limit;
-    return this;
-  }
-
-  public List<OrderBy> getOrderBy() {
-    return orderBy;
-  }
-  
-  public void setOrderBy(List<OrderBy> orderBy) {
-    this.orderBy = orderBy;
-  }
-  
   public WorkflowQuery orderByDeployTime(OrderDirection direction) {
     orderBy(FIELD_DEPLOY_TIME, direction);
     return this;
   }
-  
-  public void orderBy(String field, OrderDirection direction) {
-    if (orderBy==null) {
-      orderBy = new ArrayList<>();
-    }
-    orderBy.add(new OrderBy()
-      .field(field)
-      .direction(direction));
+
+  @Override
+  public WorkflowQuery skip(Integer skip) {
+    super.skip(skip);
+    return this;
   }
+  @Override
+  public WorkflowQuery limit(Integer limit) {
+    super.limit(limit);
+    return this;
+  }
+  @Override
+  public WorkflowQuery orderBy(String field, OrderDirection direction) {
+    super.orderBy(field, direction);
+    return this;
+  }
+  
+  
 }

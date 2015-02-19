@@ -27,11 +27,11 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.acl.Authorization;
+import com.effektif.workflow.api.acl.Authorizations;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -184,10 +184,11 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     Exceptions.checkNotNullParameter(workflowName, "workflowName");
     BasicDBObject dbQuery = new BasicDBObject();
     dbQuery.append(FieldsWorkflow.NAME, workflowName);
-    RequestContext requestContext = RequestContext.current();
-    if (MongoHelper.hasOrganizationId(requestContext)) {
-      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
-    }
+    Authorization authorization = Authorizations.current();
+// TODO change to MongoQuery
+//    if (MongoHelper.hasOrganizationId(authorization)) {
+//      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, authorization.getOrganizationId());
+//    }
     BasicDBObject dbFields = new BasicDBObject(FieldsWorkflow._ID, 1);
     BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", dbQuery, dbFields);
     return dbWorkflow!=null ? dbWorkflow.get("_id").toString() : null;
@@ -207,13 +208,13 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 
   protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query) {
     BasicDBObject dbQuery = new BasicDBObject();
-    RequestContext requestContext = RequestContext.current();
     if (query.getWorkflowId()!=null) {
       dbQuery.append(FieldsWorkflow._ID, new ObjectId(query.getWorkflowId()));
     }
-    if (MongoHelper.hasOrganizationId(requestContext)) {
-      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, requestContext.getOrganizationId());
-    }
+// TODO change to MongoQuery
+//  if (MongoHelper.hasOrganizationId(authorization)) {
+//    dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, authorization.getOrganizationId());
+//  }
     if (query.getWorkflowSource()!=null) {
       dbQuery.append(FieldsWorkflow.NAME, query.getWorkflowSource());
     }

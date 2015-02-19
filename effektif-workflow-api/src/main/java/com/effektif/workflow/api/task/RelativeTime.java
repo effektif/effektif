@@ -30,9 +30,9 @@ import org.joda.time.Years;
  * @author Tom Baeyens
  */
 public class RelativeTime {
-
+  
   protected String before;
-  protected Long time;
+  protected Integer time;
 
   public String getBefore() {
     return this.before;
@@ -46,14 +46,14 @@ public class RelativeTime {
     return this;
   }
   
-  public Long getTime() {
+  public Integer getTime() {
     return this.time;
   }
-  public void setTime(Long time) {
+  public void setTime(Integer time) {
     this.time = time;
   }
 
-  public RelativeTime time(Long time) {
+  public RelativeTime time(Integer time) {
     this.time = time;
     return this;
   }
@@ -63,6 +63,48 @@ public class RelativeTime {
   public RelativeTime unit(String unit) {
     this.unit = unit;
     return this;
+  }
+
+  public static RelativeTime seconds(int seconds) {
+    return new RelativeTime() 
+      .time(seconds)
+      .unit("seconds");
+  }
+
+  public static RelativeTime minutes(int minutes) {
+    return new RelativeTime() 
+      .time(minutes)
+      .unit("minutes");
+  }
+
+  public static RelativeTime hours(int hours) {
+    return new RelativeTime() 
+      .time(hours)
+      .unit("hours");
+  }
+
+  public static RelativeTime days(int days) {
+    return new RelativeTime() 
+      .time(days)
+      .unit("days");
+  }
+
+  public static RelativeTime weeks(int weeks) {
+    return new RelativeTime() 
+      .time(weeks)
+      .unit("weeks");
+  }
+
+  public static RelativeTime months(int months) {
+    return new RelativeTime() 
+      .time(months)
+      .unit("months");
+  }
+
+  public static RelativeTime years(int years) {
+    return new RelativeTime() 
+      .time(years)
+      .unit("years");
   }
 
   protected boolean isUnitSeconds() {
@@ -117,7 +159,7 @@ public class RelativeTime {
       return null;
     }
 
-    int time = ((Long)relativeTime.time).intValue();
+    int time = relativeTime.time;
     if (relativeTime.before!=null) {
       time = -time;
     }

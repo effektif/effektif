@@ -18,11 +18,10 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.model.RequestContext;
+import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
-import com.effektif.workflow.impl.ContextualTaskService;
 import com.effektif.workflow.impl.json.JsonService;
 
 
@@ -39,10 +38,10 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   }
 
   @Override
-  public void saveTask(Task task) {
+  public void insertTask(Task task) {
     log.debug("saveTask");
     task = wireize("  >>task>>", task, Task.class);
-    taskService.saveTask(task);
+    taskService.insertTask(task);
   }
 
   @Override
@@ -55,9 +54,16 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
     }
     List<Task> wireizedTasks = new ArrayList<>(tasks.size());
     for (Task task: tasks) {
-      wireizedTasks.add(wireize("  <-task-", task, Task.class));
+      wireizedTasks.add(wireize("  <<task<<", task, Task.class));
     }
     return tasks;
+  }
+
+  @Override
+  public void assignTask(String taskId, UserReference assignee) {
+    log.debug("assignTask");
+    assignee = wireize("  >>assignee>>", assignee, UserReference.class);
+    taskService.assignTask(taskId, assignee);
   }
 
   @Override
@@ -65,10 +71,5 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
     log.debug("deleteTasks");
     query = wireize("  >>query>>", query, TaskQuery.class);
     taskService.deleteTasks(query);
-  }
-
-  @Override
-  public TaskService createTaskService(RequestContext requestContext) {
-    return new ContextualTaskService(this, requestContext);
   }
 }

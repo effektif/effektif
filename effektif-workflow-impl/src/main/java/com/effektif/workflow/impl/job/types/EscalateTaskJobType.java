@@ -49,7 +49,7 @@ public class EscalateTaskJobType extends AbstractJobType {
       BindingImpl<UserReference> escalateTo = userTaskImpl.getEscalateTo();
       UserReference escalateToReference = activityInstance.getValue(escalateTo);
       task.assignee(escalateToReference);
-      taskService.saveTask(task);
+      taskService.assignTask(taskId, escalateToReference);
     }
   }
 

@@ -181,7 +181,6 @@ public class UserTask extends NoneTask {
     this.escalate = escalate;
     return this;
   }
-
   
   public Binding<UserReference> getEscalateTo() {
     return this.escalateTo;
@@ -193,6 +192,11 @@ public class UserTask extends NoneTask {
     this.escalateTo = escalateTo;
     return this;
   }
+  public UserTask escalateToUserId(String escalateToUserId) {
+    escalateTo(new Binding<UserReference>().value(new UserReference(escalateToUserId)));
+    return this;
+  }
+  
   public RelativeTime getReminder() {
     return this.reminder;
   }
@@ -310,6 +314,4 @@ public class UserTask extends NoneTask {
     super.description(description);
     return this;
   }
-  
-  
 }

@@ -38,7 +38,7 @@ public class MemoryJobStore implements JobStore {
   @Override
   public synchronized Job lockNextJob() {
     for (Job job: jobs.values()) {
-      if (job.isDue() && !job.isDone()) {
+      if (job.isDue() && !job.isDone() && job.getWorkflowInstanceId()==null) {
         jobs.remove(job.id);
         return job;
       }

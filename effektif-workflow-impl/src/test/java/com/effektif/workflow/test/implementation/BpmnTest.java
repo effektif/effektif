@@ -82,6 +82,8 @@ public class BpmnTest {
     }
   }
 
+  
+  
   @Test
   public void testBpmnSerializationFromNewWorkflow() throws Exception {
     TestConfiguration testConfiguration = new TestConfiguration();

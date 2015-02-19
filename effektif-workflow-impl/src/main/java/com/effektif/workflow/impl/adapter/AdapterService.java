@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.adapter;
 import java.util.List;
 
 import com.effektif.workflow.api.datasource.ItemReference;
-import com.effektif.workflow.api.model.RequestContext;
 
 
 public interface AdapterService {
@@ -27,8 +26,6 @@ public interface AdapterService {
   List<Adapter> findAdapters(AdapterQuery adapterQuery);
   Adapter findAdapterById(String adapterId);
   void deleteAdapters(AdapterQuery adapterQuery);
-
-  AdapterService createAdapterService(RequestContext requestContext);
 
   Adapter refreshAdapter(String adapterId);
   ExecuteResponse executeAdapterActivity(String adapterId, ExecuteRequest executeRequest);

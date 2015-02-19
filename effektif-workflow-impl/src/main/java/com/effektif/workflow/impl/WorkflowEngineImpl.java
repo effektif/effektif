@@ -25,7 +25,6 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.RequestContext;
 import com.effektif.workflow.api.model.Start;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -267,11 +266,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   
   public WorkflowInstanceStore getWorkflowInstanceStore() {
     return workflowInstanceStore;
-  }
-
-  @Override
-  public WorkflowEngine createWorkflowEngine(RequestContext requestContext) {
-    return new ContextualWorkflowEngine(this, requestContext);
   }
 
   public void addWorkflowExecutionListener(WorkflowExecutionListener workflowExecutionListener) {

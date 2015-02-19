@@ -207,6 +207,7 @@ public class JobServiceImpl implements JobService, Brewable {
         }
         
       } catch (Throwable exception) {
+        log.error("Job failed: "+exception.getMessage(), exception);
         StringWriter stackTraceCollector = new StringWriter();
         exception.printStackTrace(new PrintWriter(stackTraceCollector));
         jobExecution.log(stackTraceCollector.toString());
