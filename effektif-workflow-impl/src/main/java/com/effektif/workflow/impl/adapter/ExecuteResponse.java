@@ -21,6 +21,9 @@ import java.util.Map;
 import com.effektif.workflow.api.model.TypedValue;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ExecuteResponse {
 
   protected boolean onwards;

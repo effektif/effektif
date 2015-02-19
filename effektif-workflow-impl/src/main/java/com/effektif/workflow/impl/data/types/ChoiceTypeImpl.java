@@ -23,6 +23,9 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   
   protected List<String> options;

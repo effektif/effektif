@@ -27,6 +27,9 @@ import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MemoryJobStore implements JobStore {
   
   protected Map<String,Job> jobs = new LinkedHashMap<>();

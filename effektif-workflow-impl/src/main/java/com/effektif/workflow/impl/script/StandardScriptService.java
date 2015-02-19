@@ -29,6 +29,9 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class StandardScriptService implements ScriptService, Brewable {
 
   public static final String JAVASCRIPT = "JavaScript";

@@ -36,6 +36,9 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterActivity> {
   
   protected String adapterId;

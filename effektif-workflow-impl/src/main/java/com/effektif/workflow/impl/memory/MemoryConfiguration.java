@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.memory;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MemoryConfiguration extends DefaultConfiguration {
 
   public MemoryConfiguration() {

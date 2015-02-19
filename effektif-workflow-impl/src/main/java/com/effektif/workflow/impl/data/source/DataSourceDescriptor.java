@@ -21,6 +21,9 @@ import java.util.Map;
 import com.effektif.workflow.api.types.CustomType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class DataSourceDescriptor {
 
   protected String dataSourceKey;

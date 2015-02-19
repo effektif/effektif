@@ -18,6 +18,12 @@ package com.effektif.workflow.api;
 import com.effektif.workflow.api.task.TaskService;
 
 
+/** Instantiate one of the implementing classes like 
+ * MemoryConfiguration or a MongoConfiguration 
+ * to get started configuring your workflow engine.
+ * 
+ * @author Tom Baeyens
+ */
 public interface Configuration {
   
   WorkflowEngine getWorkflowEngine();

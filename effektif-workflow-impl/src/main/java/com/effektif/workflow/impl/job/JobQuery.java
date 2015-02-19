@@ -17,6 +17,9 @@ package com.effektif.workflow.impl.job;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JobQuery {
 
   protected String jobId;

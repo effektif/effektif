@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.data.types;
 import com.effektif.workflow.impl.data.AbstractDataType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AnyTypeImpl extends AbstractDataType {
 
   public AnyTypeImpl() {

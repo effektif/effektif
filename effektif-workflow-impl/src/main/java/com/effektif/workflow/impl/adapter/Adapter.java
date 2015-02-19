@@ -23,6 +23,9 @@ import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Adapter {
 
   // configuration fields

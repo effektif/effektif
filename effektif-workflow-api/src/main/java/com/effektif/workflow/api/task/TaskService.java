@@ -20,6 +20,9 @@ import java.util.List;
 import com.effektif.workflow.api.model.RequestContext;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public interface TaskService {
 
   void saveTask(Task task);

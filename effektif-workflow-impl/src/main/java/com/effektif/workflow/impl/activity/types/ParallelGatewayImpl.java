@@ -26,6 +26,9 @@ import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
   
   int nbrOfIncomingTransitions = -1;

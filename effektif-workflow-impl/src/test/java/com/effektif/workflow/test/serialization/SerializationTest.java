@@ -20,6 +20,9 @@ import org.junit.runners.model.InitializationError;
 
 import com.effektif.workflow.test.TestSuiteHelper;
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializationTest {
   
   @Test

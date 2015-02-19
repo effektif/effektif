@@ -17,6 +17,9 @@ package com.effektif.workflow.impl.workflowinstance;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ScopeInstanceUpdates {
 
   public boolean isNew;

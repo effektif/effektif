@@ -22,6 +22,9 @@ import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class EndEventImpl extends AbstractActivityType<EndEvent> {
 
   public EndEventImpl() {

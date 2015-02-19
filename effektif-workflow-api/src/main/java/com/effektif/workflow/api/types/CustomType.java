@@ -21,7 +21,11 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** represents a json object type that internally is parsed to a hash map. */
+/** 
+ * represents a json object type that internally is parsed to a hash map. 
+ * 
+ * @author Tom Baeyens
+ */
 @JsonTypeName("custom")
 public class CustomType extends ObjectType {
 

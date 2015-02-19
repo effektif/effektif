@@ -22,6 +22,9 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class VariableImpl {
   
   public WorkflowImpl workflow;  

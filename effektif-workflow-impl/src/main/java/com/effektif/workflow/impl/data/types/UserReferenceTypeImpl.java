@@ -20,6 +20,9 @@ import com.effektif.workflow.api.types.UserReferenceType;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class UserReferenceTypeImpl extends JavaBeanTypeImpl<UserReferenceType> {
 
   public UserReferenceTypeImpl(Configuration configuration) {

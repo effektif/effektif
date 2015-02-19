@@ -20,6 +20,9 @@ import java.util.Map;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Expression extends Script {
 
   protected Type type;

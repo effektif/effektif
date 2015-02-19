@@ -37,6 +37,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class DefaultObjectMapperSupplier implements Supplier {
 
   @Override

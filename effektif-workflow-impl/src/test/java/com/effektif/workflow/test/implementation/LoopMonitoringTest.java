@@ -35,6 +35,9 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class LoopMonitoringTest extends WorkflowTest {
   
   private class LoopMonitor {

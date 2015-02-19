@@ -34,6 +34,9 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class UserTaskImpl extends AbstractActivityType<UserTask> {
   
   public static final InputParameter<String> NAME = new InputParameter<>()
@@ -94,7 +97,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
-    task.setWorkflowName(activityInstance.workflow.sourceWorkflowId);
+    task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
     taskService.saveTask(task);
   }
 }

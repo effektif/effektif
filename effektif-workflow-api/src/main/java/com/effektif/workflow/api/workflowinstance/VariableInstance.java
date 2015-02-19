@@ -18,6 +18,9 @@ package com.effektif.workflow.api.workflowinstance;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class VariableInstance {
 
   protected String id;

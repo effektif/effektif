@@ -27,6 +27,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
   static DateTimeFormatter formatter = ISODateTimeFormat.dateTime();

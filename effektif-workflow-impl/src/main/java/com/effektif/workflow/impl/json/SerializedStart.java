@@ -16,5 +16,8 @@ package com.effektif.workflow.impl.json;
 import com.effektif.workflow.api.model.Start;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializedStart extends Start {
 }

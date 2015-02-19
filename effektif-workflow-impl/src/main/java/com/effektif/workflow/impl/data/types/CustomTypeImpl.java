@@ -21,6 +21,9 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.CustomType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class CustomTypeImpl extends ObjectTypeImpl<CustomType> {
 
   public CustomTypeImpl() {

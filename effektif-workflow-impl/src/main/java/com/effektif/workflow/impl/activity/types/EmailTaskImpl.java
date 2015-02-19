@@ -20,6 +20,9 @@ import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class EmailTaskImpl extends AbstractActivityType {
 
   public EmailTaskImpl() {

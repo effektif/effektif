@@ -34,6 +34,9 @@ import com.effektif.workflow.impl.json.SerializedStart;
 import com.effektif.workflow.impl.json.SerializedWorkflow;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializingWorkflowEngineImpl extends AbstractSerializingService implements WorkflowEngine {
   
   WorkflowEngine workflowEngine;

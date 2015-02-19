@@ -18,6 +18,9 @@ package com.effektif.workflow.api.form;
 import java.util.List;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Form {
 
   protected String description;

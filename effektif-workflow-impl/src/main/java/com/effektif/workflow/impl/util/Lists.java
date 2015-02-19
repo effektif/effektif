@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Lists {
 
   @SafeVarargs

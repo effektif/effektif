@@ -34,6 +34,9 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JobServiceImpl implements JobService, Brewable {
   
   private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);

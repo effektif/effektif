@@ -16,8 +16,12 @@ package com.effektif.workflow.api.acl;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** refers to anyone, inside or outside the organization. 
- * Used to allow everyone to start a workflow that has access control. */
+/** 
+ * refers to anyone, inside or outside the organization. 
+ * Used to allow everyone to start a workflow that has access control. 
+ * 
+ * @author Tom Baeyens
+ */
 @JsonTypeName("public")
 public class PublicIdentity extends AccessIdentity {
 

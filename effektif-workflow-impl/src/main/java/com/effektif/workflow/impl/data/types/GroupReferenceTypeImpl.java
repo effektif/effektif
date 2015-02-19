@@ -23,6 +23,9 @@ import com.effektif.workflow.impl.data.DataType;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class GroupReferenceTypeImpl extends AbstractDataType<GroupReferenceType> {
   
   public GroupReferenceTypeImpl(Configuration configuration) {

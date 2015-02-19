@@ -17,6 +17,9 @@ package com.effektif.workflow.api.task;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TaskQuery {
 
 }

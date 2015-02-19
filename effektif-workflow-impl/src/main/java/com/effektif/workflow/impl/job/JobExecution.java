@@ -22,6 +22,9 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JobExecution implements JobController {
   
   @JsonIgnore

@@ -16,6 +16,9 @@
 package com.effektif.workflow.api.datasource;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ItemReference {
 
   protected String id;

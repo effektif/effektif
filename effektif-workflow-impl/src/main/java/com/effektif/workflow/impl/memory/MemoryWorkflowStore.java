@@ -30,6 +30,9 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
   protected Map<String, Workflow> workflows;

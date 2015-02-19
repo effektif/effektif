@@ -16,6 +16,9 @@
 package com.effektif.workflow.api.ref;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class UserReference {
 
   protected String id;

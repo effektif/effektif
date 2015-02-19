@@ -27,6 +27,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
   private static final long serialVersionUID = 1L;

@@ -38,6 +38,9 @@ import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
   
   private static final Logger log = WorkflowEngineImpl.log;

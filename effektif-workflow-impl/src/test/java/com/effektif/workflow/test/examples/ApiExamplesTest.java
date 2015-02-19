@@ -34,6 +34,9 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ApiExamplesTest {
 
   @Test

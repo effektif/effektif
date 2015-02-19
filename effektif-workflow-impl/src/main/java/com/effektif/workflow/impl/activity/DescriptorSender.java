@@ -23,6 +23,9 @@ import com.effektif.workflow.impl.util.Exceptions;
 
 
 @Deprecated
+/**
+ * @author Tom Baeyens
+ */
 public class DescriptorSender {
   
   public static final Logger log = LoggerFactory.getLogger(DescriptorSender.class);

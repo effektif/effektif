@@ -16,6 +16,9 @@
 package com.effektif.workflow.impl.data;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class CustomTypeQuery {
 
 }

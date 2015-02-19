@@ -26,6 +26,9 @@ import com.effektif.workflow.impl.ContextualTaskService;
 import com.effektif.workflow.impl.json.JsonService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializingTaskServiceImpl extends AbstractSerializingService implements TaskService {
   
   protected TaskService taskService;

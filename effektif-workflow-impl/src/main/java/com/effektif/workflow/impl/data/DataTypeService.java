@@ -42,6 +42,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class DataTypeService implements Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);

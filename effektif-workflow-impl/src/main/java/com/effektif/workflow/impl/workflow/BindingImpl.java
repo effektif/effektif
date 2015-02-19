@@ -31,6 +31,9 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class BindingImpl<T> {
 
   public DataType dataType;

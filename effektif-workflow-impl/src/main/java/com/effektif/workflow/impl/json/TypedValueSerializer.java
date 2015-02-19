@@ -29,6 +29,9 @@ import com.fasterxml.jackson.databind.ser.ResolvableSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TypedValueSerializer extends StdSerializer<TypedValue> implements ResolvableSerializer {
 
   protected DataTypeService dataTypeService;

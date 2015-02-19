@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.adapter;
 import com.effektif.workflow.api.datasource.ItemQuery;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class FindItemsRequest {
 
   protected String dataSourceKey;

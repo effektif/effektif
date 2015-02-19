@@ -31,6 +31,9 @@ import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway> {
 
   ScriptService scriptService;

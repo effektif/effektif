@@ -18,6 +18,9 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Variable extends Element {
   
   protected Type type;

@@ -21,6 +21,9 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ScriptImpl {
 
   public ScriptService scriptService;

@@ -34,7 +34,9 @@ import com.effektif.workflow.api.types.Type;
  *   <li>BPMN XML</li>
  *   <li>DB format</li>
  * </ul>
- * */
+ * 
+ * @author Tom Baeyens
+ */
 public class Workflow extends AbstractWorkflow {
   
   protected String sourceWorkflowId;

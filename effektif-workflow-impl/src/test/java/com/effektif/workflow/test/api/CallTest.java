@@ -34,6 +34,9 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class CallTest extends WorkflowTest {
   
   @Test

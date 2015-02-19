@@ -24,7 +24,11 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-/* invokes another workflow and ends when the other workflow instance completes */ 
+/** 
+ * invokes another workflow and ends when the other workflow instance completes
+ *  
+ * @author Tom Baeyens
+ */ 
 @JsonTypeName("call")
 public class Call extends AbstractBindableActivity {
 

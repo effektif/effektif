@@ -28,6 +28,9 @@ import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TestHelper {
   
   public static void assertTextPresent(String expected, String actual) {

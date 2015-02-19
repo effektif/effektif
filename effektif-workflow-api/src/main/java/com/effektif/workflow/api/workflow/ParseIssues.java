@@ -22,6 +22,9 @@ import java.util.Locale;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ParseIssues {
 
   protected List<ParseIssue> issues;

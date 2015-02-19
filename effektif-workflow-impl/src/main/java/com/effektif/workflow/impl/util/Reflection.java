@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Reflection {
   
   public static List<Field> getNonStaticFieldsRecursive(Class< ? > type) {

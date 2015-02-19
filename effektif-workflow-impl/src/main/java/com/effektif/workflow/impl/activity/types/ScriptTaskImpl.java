@@ -26,6 +26,9 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;

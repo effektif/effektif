@@ -23,6 +23,9 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Job {
   
   // private static final Logger log = LoggerFactory.getLogger(Job.class);

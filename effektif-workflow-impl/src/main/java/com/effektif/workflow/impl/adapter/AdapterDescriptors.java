@@ -22,6 +22,9 @@ import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AdapterDescriptors {
 
   protected List<ActivityDescriptor> activityDescriptors = new ArrayList<>();

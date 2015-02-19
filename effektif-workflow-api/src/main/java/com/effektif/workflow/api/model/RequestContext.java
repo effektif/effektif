@@ -18,6 +18,9 @@ package com.effektif.workflow.api.model;
 import java.util.Map;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class RequestContext {
   
   protected static ThreadLocal<RequestContext> current = new ThreadLocal<>();

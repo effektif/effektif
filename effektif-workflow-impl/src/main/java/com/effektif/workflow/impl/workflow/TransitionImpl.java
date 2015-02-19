@@ -24,6 +24,9 @@ import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TransitionImpl {
 
   public String id;

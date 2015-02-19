@@ -28,6 +28,9 @@ import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.ContextualTaskService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MemoryTaskService implements TaskService {
   
   protected int nextId = 1;

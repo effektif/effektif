@@ -18,7 +18,11 @@ package com.effektif.workflow.api.activities;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** Invokes a java method. */
+/** 
+ * invokes a java method.
+ *  
+ * @author Tom Baeyens
+ */
 @JsonTypeName("javaServiceTask")
 public class JavaServiceTask extends ServiceTask {
 

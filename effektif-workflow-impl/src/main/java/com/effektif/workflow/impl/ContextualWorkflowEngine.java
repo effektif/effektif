@@ -28,6 +28,9 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ContextualWorkflowEngine implements WorkflowEngine {
 
   WorkflowEngineImpl workflowEngine;

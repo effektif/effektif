@@ -32,6 +32,9 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ActivityInstanceImpl extends ScopeInstanceImpl {
   
   public static final String STATE_STARTING = "starting"; 

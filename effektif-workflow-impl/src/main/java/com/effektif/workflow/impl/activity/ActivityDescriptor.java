@@ -22,6 +22,9 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ActivityDescriptor {
 
   protected String activityKey;

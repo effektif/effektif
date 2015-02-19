@@ -22,6 +22,9 @@ import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JavaBeanFieldImpl extends ObjectFieldImpl {
 
   protected Field field;

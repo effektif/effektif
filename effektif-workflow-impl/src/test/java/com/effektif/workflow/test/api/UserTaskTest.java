@@ -25,6 +25,9 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.test.WorkflowTest;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class UserTaskTest extends WorkflowTest {
 
   @Test

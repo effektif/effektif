@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("choice")
 public class ChoiceType extends TextType {
 

@@ -16,6 +16,9 @@ package com.effektif.workflow.impl.json;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializedWorkflow extends Workflow {
 
 }

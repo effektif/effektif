@@ -20,6 +20,9 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TimerInstanceImpl extends BaseInstanceImpl {
   
   protected LocalDateTime duedate;

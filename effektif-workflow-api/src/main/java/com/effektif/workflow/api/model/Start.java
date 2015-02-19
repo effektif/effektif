@@ -21,6 +21,9 @@ import java.util.Map;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Start {
   
   protected String workflowId;

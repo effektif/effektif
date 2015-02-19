@@ -17,24 +17,49 @@ package com.effektif.workflow.api.task;
 
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.form.FormInstance;
+import com.effektif.workflow.api.ref.GroupReference;
 import com.effektif.workflow.api.ref.UserReference;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Task {
   
   protected String id;
   protected String organizationId;
+  protected UserReference createdBy;
   protected String name;
+  protected String description;
   protected UserReference assignee;
   protected List<UserReference> candidates;
   protected FormInstance formInstance;
+  protected List<GroupReference> candidateGroupRefs;
+  protected List<UserReference> participantRefs;
+  protected String caseId;
+  protected String parentId;
+  protected List<String> subtaskIds;
+  protected LocalDateTime duedate;
+  protected LocalDateTime lastUpdated;
+  // cancelled==true ==> completed==true 
+  protected Boolean canceled;
+  protected Boolean completed;
 
+  protected String activityId;
   protected String activityInstanceId;
+  // used to be endsActivityInstance (REST), eai (DB)
+  // case ==> eai==null (absent)
+  // task created by UserTask 
+  //    initial value: eai == true 
+  //    when completed: co==true & eai == null (absent)
+  protected Boolean activityNotify;
   protected String workflowInstanceId;
+  protected String sourceWorkflowId;
   protected String workflowId;
-  protected String workflowName;
-  
+
   public Task() {
   }
 
@@ -73,13 +98,10 @@ public class Task {
   public UserReference getAssignee() {
     return assignee;
   }
-
   
   public void setAssignee(UserReference assignee) {
     this.assignee = assignee;
   }
-
-  
   
   public List<UserReference> getCandidates() {
     return candidates;
@@ -143,13 +165,115 @@ public class Task {
     this.workflowId = workflowId;
   }
 
+  /** the parent task.
+   * Inverse relation of the {@link #getSubtaskIds()} */
+  public String getParentId() {
+    return this.parentId;
+  }
+  /** @see #getParentId() */
+  public void setParentId(String parentId) {
+    this.parentId = parentId;
+  }
   
-  public String getWorkflowName() {
-    return workflowName;
+  /** id references to the subtasks.
+   * Inverse relation of the {@link #getParentId()} */
+  public List<String> getSubtaskIds() {
+    return this.subtaskIds;
+  }
+  /** @see #getSubtaskIds() */
+  public void setSubtaskIds(List<String> subtaskIds) {
+    this.subtaskIds = subtaskIds;
+  }
+  
+  /** id reference to the root task in the task 
+   * {@link #getParentId() parent} - {@link #getSubtaskIds() child} relation */
+  public String getCaseId() {
+    return this.caseId;
+  }
+  /** @see #getCaseId() */
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
   }
 
-  
-  public void setWorkflowName(String workflowName) {
-    this.workflowName = workflowName;
+  public String getActivityId() {
+    return this.activityId;
   }
+  public void setActivityId(String activityId) {
+    this.activityId = activityId;
+  }
+
+  public List<GroupReference> getCandidateGroupRefs() {
+    return this.candidateGroupRefs;
+  }
+  public void setCandidateGroupRefs(List<GroupReference> candidateGroupRefs) {
+    this.candidateGroupRefs = candidateGroupRefs;
+  }
+  
+  public Boolean getCanceled() {
+    return this.canceled;
+  }
+  public void setCanceled(Boolean canceled) {
+    this.canceled = canceled;
+  }
+  
+  public Boolean isCompleted() {
+    return this.completed;
+  }
+  public void setCompleted(Boolean completed) {
+    this.completed = completed;
+  }
+  
+  public UserReference getCreatedBy() {
+    return this.createdBy;
+  }
+  public void setCreatedBy(UserReference createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public LocalDateTime getDuedate() {
+    return this.duedate;
+  }
+  public void setDuedate(LocalDateTime duedate) {
+    this.duedate = duedate;
+  }
+  public Task duedate(LocalDateTime duedate) {
+    this.duedate = duedate;
+    return this;
+  }
+
+  public Boolean getActivityNotify() {
+    return this.activityNotify;
+  }
+  public void setActivityNotify(Boolean activityNotify) {
+    this.activityNotify = activityNotify;
+  }
+  
+  public LocalDateTime getLastUpdated() {
+    return this.lastUpdated;
+  }
+  public void setLastUpdated(LocalDateTime lastUpdated) {
+    this.lastUpdated = lastUpdated;
+  }
+
+  public List<UserReference> getParticipantRefs() {
+    return this.participantRefs;
+  }
+  public void setParticipantRefs(List<UserReference> participantRefs) {
+    this.participantRefs = participantRefs;
+  }
+  
+  public String getSourceWorkflowId() {
+    return this.sourceWorkflowId;
+  }
+  public void setSourceWorkflowId(String sourceWorkflowId) {
+    this.sourceWorkflowId = sourceWorkflowId;
+  }
+  
 }

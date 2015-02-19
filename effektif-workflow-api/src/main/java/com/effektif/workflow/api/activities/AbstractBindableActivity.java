@@ -23,6 +23,9 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AbstractBindableActivity extends Activity {
 
   protected Map<String,Binding> inputBindings; 

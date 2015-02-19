@@ -24,6 +24,9 @@ import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TriggerImpl<T extends Trigger> {
   
   public Map<String,String> outputBindings;

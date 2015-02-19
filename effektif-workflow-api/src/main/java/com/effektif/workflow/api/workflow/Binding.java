@@ -22,8 +22,12 @@ import java.util.StringTokenizer;
 import com.effektif.workflow.api.types.Type;
 
 
-/** Describes how the value is obtained 
- * for an activity input parameter. */
+/** 
+ * Describes how the value is obtained 
+ * for an activity input parameter. 
+ * 
+ * @author Tom Baeyens
+ */
 public class Binding<T> {
 
   protected T value;

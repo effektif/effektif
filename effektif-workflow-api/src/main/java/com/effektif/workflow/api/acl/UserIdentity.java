@@ -16,7 +16,11 @@ package com.effektif.workflow.api.acl;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** refers to an individual user. */
+/** 
+ * refers to an individual user. 
+ * 
+ * @author Tom Baeyens
+ */
 @JsonTypeName("user")
 public class UserIdentity extends AccessIdentity {
 

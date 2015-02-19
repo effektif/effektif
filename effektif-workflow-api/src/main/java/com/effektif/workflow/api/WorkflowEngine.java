@@ -30,7 +30,10 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 /** Main interface to the workflow engine. 
  * 
  * See <a href="https://github.com/effektif/effektif-oss/wiki/Workflow-engine-types">Workflow engine types</a>
- * for how to obtain a WorkflowEngine object. */
+ * for how to obtain a WorkflowEngine object. 
+ * 
+ * @author Tom Baeyens
+ */
 public interface WorkflowEngine {
 
   /** Validates and deploys if there are no errors. */

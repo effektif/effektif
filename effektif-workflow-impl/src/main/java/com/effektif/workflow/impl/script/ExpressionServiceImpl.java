@@ -26,6 +26,9 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
+/**
+ * @author Tom Baeyens
+ */
 public class ExpressionServiceImpl implements ExpressionService, Brewable {
   
   ScriptService scriptService;

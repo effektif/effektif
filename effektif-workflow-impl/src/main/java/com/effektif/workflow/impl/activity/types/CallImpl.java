@@ -37,6 +37,9 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
+/**
+ * @author Tom Baeyens
+ */
 public class CallImpl extends AbstractBindableActivityImpl<Call> {
   
   // IDEA Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends

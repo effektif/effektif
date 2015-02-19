@@ -47,6 +47,9 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
+/**
+ * @author Tom Baeyens
+ */
 public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);

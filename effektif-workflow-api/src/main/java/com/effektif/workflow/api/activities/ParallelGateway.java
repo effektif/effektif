@@ -19,6 +19,9 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("parallelGateway")
 public class ParallelGateway extends Activity {
 

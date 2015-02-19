@@ -34,6 +34,9 @@ import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+/**
+ * @author Tom Baeyens
+ */
 public class BpmnTest {
 
   @Test

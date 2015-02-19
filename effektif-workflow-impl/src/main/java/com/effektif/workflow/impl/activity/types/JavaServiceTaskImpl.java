@@ -20,6 +20,9 @@ import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
 
   public JavaServiceTaskImpl() {

@@ -25,6 +25,9 @@ import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.data.types.AnyType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MultiInstanceImpl {
   
   public static final InputParameter<List<Object>> VALUES = new InputParameter<>()

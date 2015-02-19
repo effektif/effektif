@@ -26,7 +26,11 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 
-/** common data fields for any object in a {@link Workflow}. */
+/** 
+ * common data fields for any object in a {@link Workflow}. 
+ * 
+ * @author Tom Baeyens
+ */
 public class Element {
   
   public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(

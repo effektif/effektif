@@ -21,6 +21,9 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class WorkflowEngineConfiguration {
 
   protected String workflowEngineId;

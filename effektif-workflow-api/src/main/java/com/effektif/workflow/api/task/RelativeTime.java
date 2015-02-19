@@ -26,6 +26,9 @@ import org.joda.time.Weeks;
 import org.joda.time.Years;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class RelativeTime {
 
   protected String before;

@@ -18,6 +18,9 @@ package com.effektif.workflow.api.types;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("text")
 public class TextType extends Type {
 

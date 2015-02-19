@@ -23,6 +23,9 @@ import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class StartEventImpl extends AbstractActivityType<StartEvent> {
 
   public StartEventImpl() {

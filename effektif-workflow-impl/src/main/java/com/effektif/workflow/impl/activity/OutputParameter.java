@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.activity;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class OutputParameter extends Parameter {
 
   @Override

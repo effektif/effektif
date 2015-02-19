@@ -29,6 +29,9 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class RhinoSandboxedScriptService extends RhinoScriptService implements ScriptService, Brewable {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoSandboxedScriptService.class);
@@ -75,7 +78,10 @@ public class RhinoSandboxedScriptService extends RhinoScriptService implements S
   ///////////////////////////////////////////////////
 
   
-  public class SandboxContextFactory extends ContextFactory {
+  /**
+ * @author Tom Baeyens
+ */
+public class SandboxContextFactory extends ContextFactory {
     @Override
     protected Context makeContext() {
       Context context = super.makeContext();
@@ -96,7 +102,10 @@ public class RhinoSandboxedScriptService extends RhinoScriptService implements S
     }
   }
   
-  public class SandboxClassShutter implements ClassShutter {
+  /**
+ * @author Tom Baeyens
+ */
+public class SandboxClassShutter implements ClassShutter {
     public boolean visibleToScripts(String className) {
       if (className.startsWith("com.effektif.workflow.impl.script")) {
         return true;

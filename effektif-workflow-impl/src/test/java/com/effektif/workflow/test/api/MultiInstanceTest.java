@@ -30,6 +30,9 @@ import com.effektif.workflow.test.TestHelper;
 import com.effektif.workflow.test.WorkflowTest;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MultiInstanceTest extends WorkflowTest {
   
   @Test

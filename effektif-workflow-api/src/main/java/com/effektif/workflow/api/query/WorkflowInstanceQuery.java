@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class WorkflowInstanceQuery {
 
   public static final String FIELD_START = "start";

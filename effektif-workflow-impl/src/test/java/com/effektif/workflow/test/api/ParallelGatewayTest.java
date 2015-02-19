@@ -32,6 +32,9 @@ import com.effektif.workflow.test.WorkflowTest;
 /**
  * @author Walter White
  */
+/**
+ * @author Tom Baeyens
+ */
 public class ParallelGatewayTest extends WorkflowTest {
   
   @Test

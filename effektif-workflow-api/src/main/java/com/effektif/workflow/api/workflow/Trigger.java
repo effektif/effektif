@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Trigger {
 
   protected Map<String,String> outputBindings;

@@ -18,6 +18,9 @@ package com.effektif.workflow.api.form;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class FormField {
 
   protected String key;

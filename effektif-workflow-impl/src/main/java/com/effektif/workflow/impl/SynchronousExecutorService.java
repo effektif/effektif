@@ -18,6 +18,9 @@ package com.effektif.workflow.impl;
 import org.slf4j.Logger;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SynchronousExecutorService implements ExecutorService {
   
   private static final Logger log = WorkflowEngineImpl.log;

@@ -18,6 +18,9 @@ package com.effektif.workflow.api.model;
 import com.effektif.workflow.api.workflow.ParseIssues;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Deployment extends ParseIssues {
 
   protected String workflowId;

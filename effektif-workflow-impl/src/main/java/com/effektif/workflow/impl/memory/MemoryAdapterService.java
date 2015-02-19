@@ -28,6 +28,9 @@ import com.effektif.workflow.impl.adapter.AdapterQuery;
 import com.effektif.workflow.impl.adapter.AdapterService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class MemoryAdapterService extends AbstractAdapterService {
 
   int nextId = 1;

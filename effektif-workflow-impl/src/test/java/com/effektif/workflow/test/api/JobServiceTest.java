@@ -37,6 +37,9 @@ import com.effektif.workflow.test.WorkflowTest;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JobServiceTest extends WorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(JobServiceTest.class);

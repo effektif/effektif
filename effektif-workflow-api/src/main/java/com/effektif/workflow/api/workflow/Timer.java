@@ -17,6 +17,9 @@ package com.effektif.workflow.api.workflow;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Timer {
 
   protected String duedate;

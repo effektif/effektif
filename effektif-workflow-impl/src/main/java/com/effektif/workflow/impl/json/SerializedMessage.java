@@ -16,6 +16,9 @@ package com.effektif.workflow.impl.json;
 import com.effektif.workflow.api.model.Message;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializedMessage extends Message {
 
 }

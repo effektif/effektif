@@ -19,6 +19,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TypeHelper {
 
   public static Type getTypeByValue(Object value) {

@@ -44,6 +44,9 @@ import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);

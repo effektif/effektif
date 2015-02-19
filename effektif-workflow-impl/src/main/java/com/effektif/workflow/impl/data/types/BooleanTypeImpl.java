@@ -20,6 +20,9 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class BooleanTypeImpl extends AbstractDataType<BooleanType> {
 
   public BooleanTypeImpl() {

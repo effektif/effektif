@@ -34,6 +34,9 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class StandardScriptBindings implements Bindings {
   
   public static final Logger log = LoggerFactory.getLogger(StandardScriptBindings.class);

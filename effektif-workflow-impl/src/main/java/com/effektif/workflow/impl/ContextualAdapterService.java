@@ -27,6 +27,9 @@ import com.effektif.workflow.impl.adapter.ExecuteResponse;
 import com.effektif.workflow.impl.adapter.FindItemsRequest;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ContextualAdapterService implements AdapterService {
   
   AdapterService adapterService;

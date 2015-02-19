@@ -19,6 +19,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Message {
 
   protected String workflowInstanceId;

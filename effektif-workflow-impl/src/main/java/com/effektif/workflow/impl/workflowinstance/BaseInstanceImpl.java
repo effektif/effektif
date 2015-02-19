@@ -19,6 +19,9 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class BaseInstanceImpl {
 
   public String id;

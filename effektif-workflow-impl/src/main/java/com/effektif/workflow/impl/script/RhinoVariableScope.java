@@ -41,6 +41,9 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class RhinoVariableScope implements Scriptable {
   
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);
@@ -172,7 +175,10 @@ public class RhinoVariableScope implements Scriptable {
     return null;
   }
 
-  public class DirtyCheckingNativeArray extends NativeArray {
+  /**
+ * @author Tom Baeyens
+ */
+public class DirtyCheckingNativeArray extends NativeArray {
     String name;
     public DirtyCheckingNativeArray(Collection collection, String name) {
       super(collection.size());
@@ -268,7 +274,10 @@ public class RhinoVariableScope implements Scriptable {
     
   }
 
-  public class DirtyCheckingNativeObject extends NativeObject {
+  /**
+ * @author Tom Baeyens
+ */
+public class DirtyCheckingNativeObject extends NativeObject {
     String name;
     public DirtyCheckingNativeObject(Map<String,Object> map, String name) {
       this.name = name;

@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 
-/** specifies which actions are permitted by whom. */
+/** 
+ * specifies which actions are permitted by whom.
+ *  
+ * @author Tom Baeyens 
+ */
 public class AccessControlList {
   
   protected Map<String,List<AccessIdentity>> permissions;

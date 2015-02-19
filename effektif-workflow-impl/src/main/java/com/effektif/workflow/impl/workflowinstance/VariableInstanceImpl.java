@@ -21,6 +21,9 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public Object value;

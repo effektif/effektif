@@ -19,6 +19,9 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Time {
   
   public static LocalDateTime now = null;

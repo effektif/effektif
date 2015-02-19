@@ -26,6 +26,9 @@ import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ActivityImpl extends ScopeImpl {
   
   public ActivityType activityType;

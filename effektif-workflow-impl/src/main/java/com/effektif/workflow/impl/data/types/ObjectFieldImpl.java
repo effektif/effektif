@@ -25,6 +25,9 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ObjectFieldImpl {
 
   protected String name;

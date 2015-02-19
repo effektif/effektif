@@ -33,6 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JsonService implements Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(JsonService.class);

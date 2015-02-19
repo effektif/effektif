@@ -23,6 +23,9 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("email")
 public class EmailTask extends Activity {
 

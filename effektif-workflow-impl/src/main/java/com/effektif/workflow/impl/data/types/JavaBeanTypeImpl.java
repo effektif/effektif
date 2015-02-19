@@ -27,6 +27,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class JavaBeanTypeImpl<T extends JavaBeanType> extends ObjectTypeImpl<T> {
   
   public JsonService jsonService;

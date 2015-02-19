@@ -21,6 +21,9 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ScriptResult {
 
   protected Object result;

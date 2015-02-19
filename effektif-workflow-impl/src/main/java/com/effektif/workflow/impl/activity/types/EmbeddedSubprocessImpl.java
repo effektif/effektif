@@ -24,6 +24,9 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubprocess> {
 
   protected List<ActivityImpl> startActivities;

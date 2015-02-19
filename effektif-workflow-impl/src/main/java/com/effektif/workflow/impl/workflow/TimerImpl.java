@@ -21,6 +21,9 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.JobType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TimerImpl {
   
   public ScopeImpl parent;

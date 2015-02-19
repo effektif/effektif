@@ -19,6 +19,9 @@ import com.effektif.workflow.api.ref.UserReference;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("userRef")
 public class UserReferenceType extends JavaBeanType {
 

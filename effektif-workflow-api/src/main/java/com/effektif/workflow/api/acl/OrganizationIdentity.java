@@ -16,7 +16,11 @@ package com.effektif.workflow.api.acl;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** refers to everyone in the same organization. */
+/** 
+ * refers to everyone in the same organization. 
+ * 
+ * @author Tom Baeyens
+ */
 @JsonTypeName("organization")
 public class OrganizationIdentity extends AccessIdentity {
 

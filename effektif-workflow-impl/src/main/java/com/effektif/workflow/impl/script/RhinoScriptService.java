@@ -33,6 +33,9 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class RhinoScriptService implements ScriptService, Brewable {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);

@@ -16,7 +16,11 @@ package com.effektif.workflow.api.acl;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** refers to a group of users. */
+/** 
+ * refers to a group of users. 
+ * 
+ * @author Tom Baeyens 
+ */
 @JsonTypeName("group")
 public class GroupIdentity extends AccessIdentity {
 

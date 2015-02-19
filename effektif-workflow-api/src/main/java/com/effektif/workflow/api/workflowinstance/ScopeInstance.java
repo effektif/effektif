@@ -20,6 +20,9 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ScopeInstance {
   
   protected String id;

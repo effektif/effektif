@@ -16,6 +16,9 @@
 package com.effektif.workflow.api.types;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ObjectField {
   
   protected String label;

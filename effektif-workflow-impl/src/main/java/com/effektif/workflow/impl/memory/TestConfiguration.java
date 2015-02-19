@@ -17,6 +17,9 @@ package com.effektif.workflow.impl.memory;
 
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TestConfiguration extends MemoryConfiguration {
 
   @Override

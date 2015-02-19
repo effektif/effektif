@@ -28,6 +28,9 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AsynchronousExecutorService implements ExecutorService, Brewable {
   
   private static final Logger log = WorkflowEngineImpl.log;

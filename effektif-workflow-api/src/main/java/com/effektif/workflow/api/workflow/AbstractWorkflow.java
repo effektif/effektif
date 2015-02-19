@@ -17,6 +17,9 @@ import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.xml.XmlElement;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AbstractWorkflow extends Scope {
 
   protected Trigger trigger;

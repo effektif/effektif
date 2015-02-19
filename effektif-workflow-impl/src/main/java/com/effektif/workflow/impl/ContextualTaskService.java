@@ -23,6 +23,9 @@ import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ContextualTaskService implements TaskService {
   
   TaskService taskService;

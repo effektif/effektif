@@ -19,6 +19,9 @@ import com.effektif.workflow.api.workflow.Script;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("scriptTask")
 public class ScriptTask extends NoneTask {
 

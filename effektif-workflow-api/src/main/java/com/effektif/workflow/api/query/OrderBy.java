@@ -16,6 +16,9 @@
 package com.effektif.workflow.api.query;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class OrderBy {
   
   protected String field;

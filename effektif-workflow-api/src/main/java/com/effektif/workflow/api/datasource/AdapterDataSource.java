@@ -18,6 +18,9 @@ package com.effektif.workflow.api.datasource;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonTypeName("adapter")
 public class AdapterDataSource {
 

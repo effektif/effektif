@@ -19,6 +19,9 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.workflow.Trigger;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class FormTrigger extends Trigger {
   
   protected Form form;

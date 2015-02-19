@@ -45,6 +45,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ActivityTypeService implements Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);

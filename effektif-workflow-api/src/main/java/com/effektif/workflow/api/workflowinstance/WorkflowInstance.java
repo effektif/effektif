@@ -18,6 +18,9 @@ package com.effektif.workflow.api.workflowinstance;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
+/**
+ * @author Tom Baeyens
+ */
 @JsonPropertyOrder({"id", "organizationId", "workflowId", "start", "end", "duration", "activityInstances", "variableInstances", "timerInstances"})
 public class WorkflowInstance extends ScopeInstance {
 

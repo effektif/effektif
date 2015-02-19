@@ -16,6 +16,9 @@
 package com.effektif.workflow.impl.adapter;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AdapterQuery {
 
   protected String adapterId;

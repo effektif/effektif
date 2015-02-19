@@ -21,6 +21,9 @@ import java.util.List;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Scope extends Element {
 
   protected String id;

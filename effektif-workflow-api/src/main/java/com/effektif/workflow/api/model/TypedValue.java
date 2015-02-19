@@ -18,6 +18,9 @@ package com.effektif.workflow.api.model;
 import com.effektif.workflow.api.types.Type;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TypedValue {
 
   protected Object value;

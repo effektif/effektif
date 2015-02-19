@@ -18,6 +18,9 @@ package com.effektif.workflow.api.workflow;
 import java.util.Locale;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ParseIssue {
   
   IssueType type;

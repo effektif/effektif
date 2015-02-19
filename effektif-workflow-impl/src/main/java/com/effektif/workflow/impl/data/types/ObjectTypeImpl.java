@@ -25,6 +25,9 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.json.JsonService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
   
   protected JsonService jsonService;

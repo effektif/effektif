@@ -18,6 +18,9 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.types.BooleanType;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Transition extends Element {
 
   protected String from;

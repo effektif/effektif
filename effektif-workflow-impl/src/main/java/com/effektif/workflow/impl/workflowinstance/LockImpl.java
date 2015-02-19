@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.workflowinstance;
 import org.joda.time.LocalDateTime;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class LockImpl {
 
   public LocalDateTime time;

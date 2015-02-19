@@ -16,6 +16,9 @@
 package com.effektif.workflow.impl.workflowinstance;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class VariableInstanceUpdates {
 
   public boolean isNew;

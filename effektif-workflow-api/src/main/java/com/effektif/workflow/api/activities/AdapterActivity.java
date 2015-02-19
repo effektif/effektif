@@ -25,7 +25,11 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** delegates to an activity that is running on an external adapter server */
+/** 
+ * delegates to an activity that is running on an external adapter server 
+ * 
+ * @author Tom Baeyens
+ */
 @JsonTypeName("adapterActivity")
 public class AdapterActivity extends AbstractBindableActivity {
 

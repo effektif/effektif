@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.impl.json.JsonService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class AbstractSerializingService {
   
   protected static final Logger log = LoggerFactory.getLogger(SerializationTest.class+".JSON");

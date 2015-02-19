@@ -30,6 +30,9 @@ import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class VariableInstanceDeserializer extends StdDeserializer<VariableInstance> implements ResolvableDeserializer {
 
   private static final long serialVersionUID = 1L;

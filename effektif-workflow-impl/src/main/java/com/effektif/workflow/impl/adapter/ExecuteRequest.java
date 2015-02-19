@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class ExecuteRequest {
   
   // private static final Logger log = LoggerFactory.getLogger(ExecuteRequest.class);

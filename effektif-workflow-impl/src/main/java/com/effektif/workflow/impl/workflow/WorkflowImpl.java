@@ -24,6 +24,9 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class WorkflowImpl extends ScopeImpl {
   
   public WorkflowEngineImpl workflowEngine;

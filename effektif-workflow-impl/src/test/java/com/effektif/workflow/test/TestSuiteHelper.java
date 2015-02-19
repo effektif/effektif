@@ -35,6 +35,9 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.test.serialization.SerializingWorkflowEngineConfiguration;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class TestSuiteHelper {
   
   private static final Logger log = LoggerFactory.getLogger(TestSuiteHelper.class);

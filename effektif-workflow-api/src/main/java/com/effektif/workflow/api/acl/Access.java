@@ -14,6 +14,9 @@
 package com.effektif.workflow.api.acl;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Access {
 
   public static final String EDIT = "edit";

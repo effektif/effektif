@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class Console {
 
   Writer writer;

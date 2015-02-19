@@ -26,6 +26,9 @@ import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public class SerializingWorkflowEngineConfiguration implements Configuration {
 
   WorkflowEngine workflowEngine;
