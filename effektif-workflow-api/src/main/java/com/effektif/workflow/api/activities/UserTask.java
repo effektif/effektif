@@ -23,6 +23,7 @@ import com.effektif.workflow.api.task.RelativeTime;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -308,4 +309,12 @@ public class UserTask extends NoneTask {
     super.propertyOpt(key, value);
     return this;
   }
+
+  @Override
+  public UserTask description(String description) {
+    super.description(description);
+    return this;
+  }
+  
+  
 }
