@@ -88,7 +88,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
         parser.pushContext("inputBindings["+key+"]", inputParameter, null);
         if (inputParameter==null) {
-          parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activityApi.getId());
+          parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activity.getId());
         }
         BindingImpl<?> bindingImpl = parser.parseBinding(inputBinding, inputParameter, true);
         if (bindingImpl!=null) {
@@ -101,7 +101,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
       }
     }
 
-    this.outputBindings = activityApi.getOutputBindings();
+    this.outputBindings = activity.getOutputBindings();
   }
   
   public ActivityDescriptor getDescriptor() {

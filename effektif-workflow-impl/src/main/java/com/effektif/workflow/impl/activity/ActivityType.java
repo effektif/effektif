@@ -33,7 +33,7 @@ public interface ActivityType<T extends Activity> extends Plugin {
   
   Class<?> getActivityApiClass();
   
-  T serialize();
+  T getActivity();
   
   /** first checks if the activityXml element matches this type and if 
    * it matches, it returns the parsed API activity.

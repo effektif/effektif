@@ -16,7 +16,12 @@
 package com.effektif.workflow.impl.job;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public interface JobService {
 
   void saveJob(Job job);
+  
+  
 }

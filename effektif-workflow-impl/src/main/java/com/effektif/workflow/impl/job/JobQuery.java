@@ -34,4 +34,11 @@ public class JobQuery {
     this.jobId = jobId;
     return this;
   }
+  
+  public boolean meetsCriteria(Job job) {
+    if (jobId!=null && !jobId.equals(job.id)) {
+      return false;
+    }
+    return true;
+  }
 }

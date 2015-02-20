@@ -69,7 +69,7 @@ public class MemoryJobStore implements JobStore {
   protected List<Job> findJobs(Collection<Job> jobs, JobQuery query) {
     List<Job> result = new ArrayList<>();
     for (Job job: jobs) {
-      if (meetsCriteria(job, query)) {
+      if (query.meetsCriteria(job)) {
         result.add(job);
       }
     }
@@ -78,19 +78,11 @@ public class MemoryJobStore implements JobStore {
 
   @Override
   public void deleteJobs(JobQuery query) {
-    deleteJobs(jobs.values(), query);
-  }
-
-  protected void deleteJobs(Collection<Job> jobs, JobQuery query) {
-    for (Job job: new ArrayList<>(jobs)) {
-      if (meetsCriteria(job, query)) {
+    for (Job job: new ArrayList<>(jobs.values())) {
+      if (query.meetsCriteria(job)) {
         jobs.remove(job.getId());
       }
     }
-  }
-
-  protected boolean meetsCriteria(Job job, JobQuery query) {
-    return query.getJobId()!=null && query.getJobId().equals(job.id);
   }
 
   @Override
@@ -110,6 +102,10 @@ public class MemoryJobStore implements JobStore {
 
   @Override
   public void deleteArchivedJobs(JobQuery query) {
-    deleteJobs(archivedJobs, query);
+    for (Job job: new ArrayList<>(archivedJobs)) {
+      if (query.meetsCriteria(job)) {
+        archivedJobs.remove(job);
+      }
+    }
   }
 }

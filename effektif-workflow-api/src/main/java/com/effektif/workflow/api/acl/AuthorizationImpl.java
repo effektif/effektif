@@ -26,7 +26,7 @@ public class AuthorizationImpl implements Authorization {
   protected String actorId;
   protected List<String> groupIds;
   
-  public String getActorId() {
+  public String getAuthorizedActorId() {
     return this.actorId;
   }
   public void setActorId(String actorId) {
@@ -37,7 +37,7 @@ public class AuthorizationImpl implements Authorization {
     return this;
   }
   
-  public String getOrganizationId() {
+  public String getAuthorizedOrganizationId() {
     return this.organizationId;
   }
   public void setOrganizationId(String organizationId) {
@@ -48,7 +48,7 @@ public class AuthorizationImpl implements Authorization {
     return this;
   }
   
-  public List<String> getGroupIds() {
+  public List<String> getAuthorizedGroupIds() {
     return this.groupIds;
   }
   public void setGroupIds(List<String> groupIds) {

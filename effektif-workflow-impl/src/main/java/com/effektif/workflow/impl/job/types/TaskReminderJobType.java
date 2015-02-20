@@ -15,41 +15,33 @@ package com.effektif.workflow.impl.job.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
-import com.effektif.workflow.impl.activity.types.UserTaskImpl;
+import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
-import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-public class EscalateTaskJobType extends AbstractJobType {
+@JsonTypeName("taskReminder")
+public class TaskReminderJobType extends AbstractJobType {
 
   @Override
   public void execute(JobController jobController) {
-    WorkflowInstanceImpl workflowInstance = jobController.getWorkflowInstance();
     Job job = jobController.getJob();
     String taskId = job.getTaskId();
     
     TaskService taskService = jobController.getConfiguration().getTaskService();
-
     Task task = getTask(taskService, taskId);
+    
     if (task!=null && !task.isCompleted()) {
-      String activityInstanceId = job.getActivityInstanceId();
-      ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
-      UserTaskImpl userTaskImpl = (UserTaskImpl) activityInstance.getActivity().getActivityType();
-      BindingImpl<UserReference> escalateTo = userTaskImpl.getEscalateTo();
-      UserReference escalateToReference = activityInstance.getValue(escalateTo);
-      task.assignee(escalateToReference);
-      taskService.assignTask(taskId, escalateToReference);
+      NotificationService notificationService = jobController.getConfiguration().get(NotificationService.class);
+      notificationService.notifyTaskReminder(task);
     }
   }
 

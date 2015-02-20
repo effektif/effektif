@@ -19,8 +19,6 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 
-import com.effektif.workflow.api.acl.Access;
-import com.effektif.workflow.api.acl.AccessIdentity;
 import com.effektif.workflow.api.acl.Authorization;
 import com.effektif.workflow.api.acl.Authorizations;
 import com.mongodb.BasicDBList;
@@ -54,9 +52,9 @@ public class MongoQuery {
   public MongoQuery access(String... actions) {
     Authorization authorization = Authorizations.current();
     if (authorization!=null) {
-      String organizationId = authorization.getOrganizationId();
-      String actorId = authorization.getActorId();
-      List<String> groupIds = authorization.getGroupIds();
+      String organizationId = authorization.getAuthorizedOrganizationId();
+      String actorId = authorization.getAuthorizedActorId();
+      List<String> groupIds = authorization.getAuthorizedGroupIds();
       Set<String> identityIds = new HashSet<>();
       if (organizationId != null) {
         identityIds.add(organizationId);

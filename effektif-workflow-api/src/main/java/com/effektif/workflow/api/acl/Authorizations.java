@@ -21,8 +21,8 @@ public class Authorizations {
 
   protected static ThreadLocal<Authorization> current = new ThreadLocal<>();
 
-  public static void set(Authorization requestContext) {
-    current.set(requestContext);
+  public static void set(Authorization authorization) {
+    current.set(authorization);
   }
 
   public static void unset() {

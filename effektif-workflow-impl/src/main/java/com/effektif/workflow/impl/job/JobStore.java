@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.job;
 import java.util.List;
 
 
+/**
+ * @author Tom Baeyens
+ */
 public interface JobStore {
 
   void saveJob(Job job);

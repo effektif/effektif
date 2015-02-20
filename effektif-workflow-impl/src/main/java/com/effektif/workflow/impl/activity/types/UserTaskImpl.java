@@ -22,8 +22,8 @@ import com.effektif.workflow.impl.bpmn.BpmnReader;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.ref.UserReference;
-import com.effektif.workflow.api.task.RelativeTime;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.types.ListType;
@@ -37,7 +37,8 @@ import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobService;
-import com.effektif.workflow.impl.job.types.EscalateTaskJobType;
+import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
+import com.effektif.workflow.impl.job.types.TaskReminderJobType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -119,26 +120,36 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setName(taskName);
     task.setAssignee(assignee);
     task.setCandidates(candidates);
-    
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
+    
+    if (activity.getDuedate()!=null) {
+      task.setDuedate(activity.getDuedate().resolve());
+    }
 
     taskService.insertTask(task);
 
-    RelativeTime escalate = activityApi.getEscalate();
-    Binding<UserReference> escalateTo = activityApi.getEscalateTo();
+    RelativeTime escalate = activity.getEscalate();
+    Binding<UserReference> escalateTo = activity.getEscalateTo();
     if (escalate!=null && escalateTo!=null) {
-      LocalDateTime escalationTime = escalate.resolve();
+      LocalDateTime escalateTime = escalate.resolve();
       activityInstance.getWorkflowInstance().addJob(new Job()        
-        .duedate(escalationTime)
-        .jobType(new EscalateTaskJobType())
+        .duedate(escalateTime)
+        .jobType(new TaskEscalateJobType())
         .taskId(task.getId())
-        .activityInstanceId(activityInstance.getId())
-        .workflowInstanceId(activityInstance.getWorkflowInstance().getId())
-        .workflowId(activityInstance.getWorkflowInstance().getWorkflow().getId())
-        .sourceWorkflowId(activityInstance.getWorkflowInstance().getWorkflow().getSourceWorkflowId()));
+        .activityInstance(activityInstance));
+    }
+    
+    RelativeTime reminder = activity.getReminder();
+    if (reminder!=null) {
+      LocalDateTime reminderTime = reminder.resolve();
+      activityInstance.getWorkflowInstance().addJob(new Job()        
+        .duedate(reminderTime)
+        .jobType(new TaskReminderJobType())
+        .taskId(task.getId())
+        .activityInstance(activityInstance));
     }
   }
   

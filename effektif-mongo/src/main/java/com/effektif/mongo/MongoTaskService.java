@@ -25,7 +25,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
-import com.effektif.workflow.api.acl.Authorizations;
+import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.ref.UserReference;
@@ -70,8 +70,9 @@ public class MongoTaskService implements TaskService, Brewable {
 
   @Override
   public void assignTask(String taskId, UserReference assignee) {
-//    BasicDBObject query = new MongoQuery()
-//      .access();
+    BasicDBObject query = new MongoQuery()
+      .access(Access.EDIT)
+      .get();
   }
 
   @Override

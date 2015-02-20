@@ -37,5 +37,10 @@ public interface JobType {
    * will be 1 the first time. */
   int getRetryDelayInSeconds(long retry);
 
+  /** invoked when a job is due.
+   * RuntimeException's will cause the JobService to retry as 
+   * configured with {@link #getMaxRetries()} and {@link #getRetryDelayInSeconds(long)}.
+   * So execute should NOT call {@link JobController#rescheduleFor(org.joda.time.LocalDateTime) reschedule}
+   * methods for retry. */ 
   void execute(JobController jobController);
 }

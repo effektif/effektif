@@ -15,11 +15,14 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.test.WorkflowTest;
@@ -32,18 +35,29 @@ public class UserTaskTest extends WorkflowTest {
 
   @Test
   public void testTask() throws Exception {
+    long duedateEarliest = new LocalDateTime().plusMinutes(5).toDate().getTime();
+    
     Workflow workflow = new Workflow()
       .activity("1", new UserTask()
         .name("release")
-        .assigneeUserId("jackblack")
-        .candidateUserId("johndoe")
-      );
+        .assigneeUserId("johndoe")
+        .candidateUserId("joesmoe")
+        .candidateUserId("jackblack")
+        .duedate(RelativeTime.minutes(5)));
     
     deploy(workflow);
     
     start(workflow);
     
-    assertEquals("release", taskService.findTasks(new TaskQuery()).get(0).getName());
+    Task task = taskService.findTasks(new TaskQuery()).get(0);
+    assertEquals("release", task.getName());
+    assertEquals("johndoe", task.getAssignee().getId());
+    assertEquals("joesmoe", task.getCandidates().get(0).getId());
+    assertEquals("jackblack", task.getCandidates().get(1).getId());
+    assertEquals("jackblack", task.getCandidates().get(1).getId());
+    assertTrue(duedateEarliest<=task.getDuedate().toDate().getTime());
+    long duedateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
+    assertTrue(task.getDuedate().toDate().getTime()<=duedateLatest);
   }
 
 }

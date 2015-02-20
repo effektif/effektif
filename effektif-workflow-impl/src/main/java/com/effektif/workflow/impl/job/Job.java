@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.impl.util.Time;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 
 
@@ -62,14 +63,23 @@ public class Job {
   public boolean isDead() {
     return Boolean.TRUE.equals(dead);
   }
-
+  
   /** setting the id means the job service will ensure there is 
    * exactly 1 such job in the system. */
   public Job key(String key) {
     this.key = key;
     return this;
   }
-  
+
+  /** convenience method to set all activity instance related properties in one go */
+  public Job activityInstance(ActivityInstanceImpl activityInstance) {
+    activityInstanceId(activityInstance.getId());
+    workflowInstanceId(activityInstance.getWorkflowInstance().getId());
+    workflowId(activityInstance.getWorkflowInstance().getWorkflow().getId());
+    sourceWorkflowId(activityInstance.getWorkflowInstance().getWorkflow().getSourceWorkflowId());
+    return this;
+  }
+
   public Job activityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
     return this;

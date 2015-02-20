@@ -24,4 +24,6 @@ public interface NotificationService {
 
   void notifyTaskAssigned(Task task, UserReference original, UserReference newAssignee);
 
+  void notifyTaskReminder(Task task);
+
 }

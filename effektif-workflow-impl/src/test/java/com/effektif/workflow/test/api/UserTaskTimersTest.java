@@ -21,10 +21,11 @@ import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.task.RelativeTime;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.test.JobWorkflowTest;
 
@@ -32,10 +33,10 @@ import com.effektif.workflow.test.JobWorkflowTest;
 /**
  * @author Tom Baeyens
  */
-public class UserTaskEscalateTest extends JobWorkflowTest {
+public class UserTaskTimersTest extends JobWorkflowTest {
   
   @Test
-  public void testTask() throws Exception {
+  public void testTaskEscalation() throws Exception {
     Workflow workflow = new Workflow()
       .activity("1", new UserTask()
         .name("t")
@@ -54,6 +55,9 @@ public class UserTaskEscalateTest extends JobWorkflowTest {
     checkWorkflowInstanceJobs();
     
     assertEquals("joesmoe", getTasks().get(0).getAssignee().getId());
+
+    assertEquals(0, jobStore.findJobs(new JobQuery()).size());
+    assertEquals(1, jobStore.findArchivedJobs(new JobQuery()).size());
   }
 
   public List<Task> getTasks() {

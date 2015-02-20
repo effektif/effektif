@@ -17,9 +17,9 @@ package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.ref.GroupReference;
 import com.effektif.workflow.api.ref.UserReference;
-import com.effektif.workflow.api.task.RelativeTime;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;

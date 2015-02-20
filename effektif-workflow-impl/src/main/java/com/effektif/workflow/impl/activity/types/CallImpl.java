@@ -92,7 +92,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
       }
       
       // IDEA improve error message by validating the keys to be proper subworkflow variable ids
-      this.outputBindings = activityApi.getOutputBindings();
+      this.outputBindings = activity.getOutputBindings();
     }
   }
 

@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface Authorization {
   
-  String getOrganizationId();
-  String getActorId();
-  List<String> getGroupIds();
+  String getAuthorizedOrganizationId();
+  String getAuthorizedActorId();
+  List<String> getAuthorizedGroupIds();
 }

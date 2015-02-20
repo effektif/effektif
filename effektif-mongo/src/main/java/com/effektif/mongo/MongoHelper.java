@@ -23,10 +23,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.query.OrderBy;
-import com.effektif.workflow.api.query.OrderDirection;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 
 public abstract class MongoHelper {

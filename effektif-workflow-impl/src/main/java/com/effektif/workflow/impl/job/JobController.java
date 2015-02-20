@@ -21,17 +21,28 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
+/** 
+ * Provides access to relevant job information and 
+ * methods to rescheduling the job to JobType implementations.
+ * Retry in case of exceptions is handled by the JobService itself. 
+ * 
+ * @author Tom Baeyens
+ */
 public interface JobController {
   
   Configuration getConfiguration();
   
-  /** allows process jobs to get the locked workflow instance */
+  /** allows job types to get the locked workflow instance */
   WorkflowInstanceImpl getWorkflowInstance();
   
   Job getJob();
 
+  /** can be used if the job wants to repeat this job on a later date.
+   * JobType impls should NOT perform their own retry, the JobService takes care of that. */
   void rescheduleFromNow(int delayInMillis);
   
+  /** can be used if the job wants to repeat this job on a later date.
+   * JobType impls should NOT perform their own retry, the JobService takes care of that. */
   void rescheduleFor(LocalDateTime duedate);
   
   void log(String msg);

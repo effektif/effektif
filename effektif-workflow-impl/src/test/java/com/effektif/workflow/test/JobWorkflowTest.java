@@ -17,6 +17,7 @@ import org.junit.Before;
 
 import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
+import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.util.Time;
 
 
@@ -26,12 +27,14 @@ import com.effektif.workflow.impl.util.Time;
 public class JobWorkflowTest extends WorkflowTest {
 
   protected JobService jobService;
+  protected JobStore jobStore;
   
   @Before
   public void initialize() {
     this.jobService = configuration.get(JobService.class);
     // this prevents the job service from starting any threads
     ((JobServiceImpl)jobService).isRunning = true;
+    this.jobStore = configuration.get(JobStore.class);
 
     Time.now = null;
   }
