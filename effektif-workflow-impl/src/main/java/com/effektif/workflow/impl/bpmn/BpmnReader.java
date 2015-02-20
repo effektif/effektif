@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
@@ -95,7 +96,7 @@ public class BpmnReader extends Bpmn {
     Workflow workflow = new Workflow();
     workflow.sourceWorkflowId(readBpmnAttribute(processXml, "id"));
     workflow.setName(readBpmnAttribute(processXml, "name"));
-    readActivities(processXml, workflow);
+    readScope(processXml, workflow);
     // TODO readTransitions
     setUnparsedBpmn(workflow, processXml);
     return workflow;
@@ -105,22 +106,35 @@ public class BpmnReader extends Bpmn {
     return xmlElement.removeAttribute(getQName(BPMN_URI, name));
   }
 
-  public void readActivities(XmlElement scopeElement, Scope scope) {
+  public void readScope(XmlElement scopeElement, Scope scope) {
     Collection<ActivityType> activityTypes = activityTypeService.getActivityTypes();
     Iterator<XmlElement> iterator = scopeElement.elements.iterator();
     while (iterator.hasNext()) {
-      XmlElement activityXml = iterator.next();
-      
-      Activity activity = null;
-      Iterator<ActivityType> activityTypeIterator = activityTypes.iterator();
-      while (activity==null && activityTypeIterator.hasNext()) {
-        ActivityType activityType = activityTypeIterator.next();
-        activity = activityType.readBpmn(activityXml, this);
-      }
-      if (activity!=null) {
+      XmlElement scopeXmlElement = iterator.next();
+
+      // if it's a sequenceFlow
+      if (scopeElement.is(getQName(BPMN_URI, "sequenceFlow"))) {
+        Transition transition = new Transition();
+        // TODO parse the scopeElement into a transition
+        
+        scope.transition(transition);
+        // remove the sequenceFlow as it is parsed in the model
         iterator.remove();
-        scope.activity(activity);
-        setUnparsedBpmn(activity, activityXml);
+        
+      } else {
+        // check if the xml element can be parsed as one of the activity types
+        Activity activity = null;
+        Iterator<ActivityType> activityTypeIterator = activityTypes.iterator();
+        while (activity==null && activityTypeIterator.hasNext()) {
+          ActivityType activityType = activityTypeIterator.next();
+          activity = activityType.readBpmn(scopeXmlElement, this);
+        }
+        if (activity!=null) {
+          scope.activity(activity);
+          setUnparsedBpmn(activity, scopeXmlElement);
+          // remove the activity xml element as it is parsed in the model
+          iterator.remove();
+        }
       }
     }
   }
