@@ -17,6 +17,8 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
@@ -71,7 +73,17 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public UserTaskImpl() {
     super(UserTask.class);
   }
-  
+
+  @Override
+  public UserTask readBpmn(XmlElement activityXml, BpmnReader bpmnReader) {
+    if (!bpmnReader.isLocalPart(activityXml, "userTask")) {
+      return null;
+    }
+    UserTask task = new UserTask();
+    task.id(bpmnReader.readBpmnAttribute(activityXml, "id"));
+    return task;
+  }
+
   @Override
   public void writeBpmn(UserTask userTask, XmlElement userTaskXml, BpmnWriter bpmnWriter) {
     bpmnWriter.setBpmnName(userTaskXml, "startEvent");

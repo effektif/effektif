@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions id="definitions"
+	targetNamespace="http://activiti.org/bpmn20" 
+  xmlns:activiti="http://activiti.org/bpmn"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+  xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" 
+	xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+	
+	<process id="vacationRequest" name="Vacation request">
+	
+		<startEvent id="theStart"/>
+
+		<sequenceFlow id="flow1" sourceRef="theStart" targetRef="approveRequest"/>
+
+		<userTask id="approveRequest" name="Approve vacation request"/>
+
+		<sequenceFlow id="flow1" sourceRef="approveRequest" targetRef="theEnd"/>
+
+		<endEvent id="theEnd"/>
+
+	</process>
+
+</definitions>
