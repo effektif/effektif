@@ -17,8 +17,6 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
@@ -31,12 +29,13 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.UserReferenceType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
+import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.job.Job;
-import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
 import com.effektif.workflow.impl.job.types.TaskReminderJobType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -65,7 +64,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
           .key("escalateTo")
           .type(new UserReferenceType());
 
-  protected TaskService taskService;
+  protected TaskStore taskStore;
   protected BindingImpl<String> nameBinding;
   protected BindingImpl<UserReference> assigneeBinding;
   protected BindingImpl<UserReference> candidatesBinding;
@@ -94,7 +93,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   @Override
   public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
     super.parse(activityImpl, userTaskApi, parser);
-    this.taskService = parser.getConfiguration(TaskService.class);
+    this.taskStore = parser.getConfiguration(TaskStore.class);
     this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.nameBinding = parser.parseBinding(userTaskApi.getTaskName(), NAME);
     this.assigneeBinding = parser.parseBinding(userTaskApi.getAssignee(), ASSIGNEE);
@@ -129,7 +128,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
       task.setDuedate(activity.getDuedate().resolve());
     }
 
-    taskService.insertTask(task);
+    taskStore.insertTask(task);
 
     RelativeTime escalate = activity.getEscalate();
     Binding<UserReference> escalateTo = activity.getEscalateTo();

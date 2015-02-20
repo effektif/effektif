@@ -24,8 +24,8 @@ import java.util.Map;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.NotificationService;
+import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 
@@ -33,7 +33,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
 /**
  * @author Tom Baeyens
  */
-public class MemoryTaskService implements TaskService, Brewable {
+public class MemoryTaskStore implements TaskStore, Brewable {
   
   protected int nextId = 1;
   protected Map<String, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<String,Task>());

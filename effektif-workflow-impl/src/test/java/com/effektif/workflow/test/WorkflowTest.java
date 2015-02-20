@@ -41,6 +41,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.job.Job;
@@ -147,7 +148,7 @@ public class WorkflowTest {
     WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
-    TaskService taskService = configuration.get(TaskService.class);
+    TaskStore taskStore = configuration.get(TaskStore.class);
 
     StringBuilder cleanLog = new StringBuilder();
     cleanLog.append("Workflow engine contents\n");
@@ -181,7 +182,7 @@ public class WorkflowTest {
       }
     }
 
-    List<Task> tasks = taskService.findTasks(new TaskQuery());
+    List<Task> tasks = taskStore.findTasks(new TaskQuery());
     if (tasks != null && !tasks.isEmpty()) {
       int i = 0;
       cleanLog.append("\n### tasks ######################################################## \n");
@@ -229,11 +230,11 @@ public class WorkflowTest {
     WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
-    TaskService taskService = configuration.get(TaskService.class);
+    TaskStore taskStore = configuration.get(TaskStore.class);
 
     workflowStore.deleteWorkflows(new WorkflowQuery());
     workflowInstanceStore.deleteWorkflowInstances(new WorkflowInstanceQuery());
-    taskService.deleteTasks(new TaskQuery());
+    taskStore.deleteTasks(new TaskQuery());
     jobStore.deleteJobs(new JobQuery());
     jobStore.deleteArchivedJobs(new JobQuery());
   }

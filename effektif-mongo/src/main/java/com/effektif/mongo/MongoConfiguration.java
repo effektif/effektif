@@ -51,7 +51,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoDb());
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
-    brewery.ingredient(new MongoTaskService());
+    brewery.ingredient(new MongoTaskStore());
     brewery.ingredient(new MongoJobStore());
   }
   

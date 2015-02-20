@@ -18,6 +18,7 @@ package com.effektif.workflow.test.serialization;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.job.JobService;
@@ -59,7 +60,8 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
         || WorkflowStore.class.isAssignableFrom(type)
         || WorkflowInstanceStore.class.isAssignableFrom(type)
         || JobStore.class.isAssignableFrom(type)
-        || JobService.class.isAssignableFrom(type)) {
+        || JobService.class.isAssignableFrom(type)
+        || TaskStore.class.isAssignableFrom(type)) {
       return configuration.get(type);
     } else if (WorkflowEngine.class.isAssignableFrom(type)) {
       return (T) workflowEngine;

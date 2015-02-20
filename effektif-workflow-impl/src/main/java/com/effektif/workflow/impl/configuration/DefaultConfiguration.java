@@ -23,6 +23,7 @@ import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
+import com.effektif.workflow.impl.TaskServiceImpl;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
@@ -54,6 +55,7 @@ public abstract class DefaultConfiguration implements Configuration {
     registerDefaultObjectMapper();
     registerDefaultScriptManager();
     registerDefaultScriptService();
+    registerDefaultTaskService();
     registerDefaultWorkflowCache();
     registerDefaultWorkflowEngine();
   }
@@ -115,12 +117,16 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new ScriptEngineManager());
   }
 
+  protected void registerDefaultTaskService() {
+    brewery.ingredient(new TaskServiceImpl());
+  }
+
   public DefaultConfiguration synchronous() {
     brewery.ingredient(new SynchronousExecutorService());
     return this;
   }
 
-  public Brewery getRegistry() {
+  public Brewery getBrewery() {
     return brewery;
   }
 
