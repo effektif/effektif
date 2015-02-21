@@ -25,12 +25,20 @@ import com.effektif.workflow.api.task.TaskQuery;
  */
 public interface TaskStore {
 
+  String generateTaskId();
+
   void insertTask(Task task);
 
-  void assignTask(String taskId, UserReference assignee);
+  /** @return the task with the new assignee if it exists */
+  Task assignTask(String taskId, UserReference assignee);
 
   List<Task> findTasks(TaskQuery taskQuery);
   
   void deleteTasks(TaskQuery taskQuery);
 
+  /** adds the subtaskId to the parent and returns the parent task.
+   * If authentication is set (see AuthenticationThreadLocal) then 
+   * the operation will only be performed if the authenticated user has 
+   * EDIT access on the parent task. */
+  Task addSubtask(String parentId, String subtaskId);
 }

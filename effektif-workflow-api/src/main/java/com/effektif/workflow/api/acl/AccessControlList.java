@@ -19,38 +19,78 @@ import java.util.List;
 import java.util.Map;
 
 
-/** 
- * specifies which actions are permitted by whom.
+/** Specifies which actions are permitted by whom on a given entity.
  *  
  * @author Tom Baeyens 
  */
 public class AccessControlList {
   
-  protected Map<String,List<AccessIdentity>> permissions;
+  protected Map<String,List<AccessIdentity>> identitiesByAction;
 
-  public Map<String,List<AccessIdentity>> getPermissions() {
-    return this.permissions;
+  public Map<String,List<AccessIdentity>> getIdentitiesByAction() {
+    return this.identitiesByAction;
   }
-  public void setPermissions(Map<String,List<AccessIdentity>> permissions) {
-    this.permissions = permissions;
+  public void setIdentitiesByAction(Map<String,List<AccessIdentity>> identitiesByAction) {
+    this.identitiesByAction = identitiesByAction;
   }
-  public AccessControlList permissions(Map<String,List<AccessIdentity>> permissions) {
-    this.permissions = permissions;
+  
+  public AccessControlList permissions(Map<String,List<AccessIdentity>> identitiesByAction) {
+    this.identitiesByAction = identitiesByAction;
     return this;
   }
-  /** gives the identity permission for 'action'. 
+  /** grants the identity permission for 'action'.
+   * Only adds the permission if it is not already included. 
    * @param for action values, see {@link Access} */
-  public AccessControlList permission(String action, AccessIdentity identity) {
-    if (permissions==null) {
-      permissions = new HashMap<>();
+  public AccessControlList permission(AccessIdentity identity, String action) {
+    if (identitiesByAction==null) {
+      identitiesByAction = new HashMap<>();
     }
-    List<AccessIdentity> identities = permissions.get(action);
+    List<AccessIdentity> identities = identitiesByAction.get(action);
     if (identities==null) {
       identities = new ArrayList<>();
-      permissions.put(action, identities);
+      identitiesByAction.put(action, identities);
     }
-    identities.add(identity);
+    if (!identities.contains(identity)) {
+      identities.add(identity);
+    }
     return this;
   }
   
+  public boolean hasPermission(Authentication authentication, String action) {
+    if (authentication==null) {
+      return false;
+    }
+    List<AccessIdentity> identitiesHavingAction = identitiesByAction.get(action);
+    if (identitiesHavingAction!=null) {
+      String userId = authentication.getUserId();
+      if (userId!=null && identitiesHavingAction.contains(new UserIdentity(userId))) {
+        return true;
+      }
+      String organizationId = authentication.getOrganizationId();
+      if (organizationId!=null && identitiesHavingAction.contains(new OrganizationIdentity(organizationId))) {
+        return true;
+      }
+      List<String> groupIds = authentication.getGroupIds();
+      if (groupIds!=null) {
+        for (String groupId: groupIds) {
+          if (identitiesHavingAction.contains(new GroupIdentity(groupId))) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+  
+  
+  public List<AccessIdentity> getIdentities(String action) {
+    return identitiesByAction.get(action);
+  }
+  
+  public void setIdentities(String action, List<AccessIdentity> identities) {
+    if (identitiesByAction==null) {
+      identitiesByAction = new HashMap<>();
+    }
+    identitiesByAction.put(action, identities);
+  }
 }

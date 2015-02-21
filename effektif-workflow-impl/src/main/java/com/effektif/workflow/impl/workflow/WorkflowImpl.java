@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.List;
 
+import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -35,6 +36,7 @@ public class WorkflowImpl extends ScopeImpl {
   public String organizationId;
   public List<ActivityImpl> startActivities;
   public TriggerImpl trigger;
+  public AccessControlList access;
   
   public WorkflowImpl() {
   }
@@ -46,7 +48,7 @@ public class WorkflowImpl extends ScopeImpl {
     this.startActivities = parser.getStartActivities(this);
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
     this.sourceWorkflowId = workflowApi.getSourceWorkflowId();
-    
+    this.access = workflowApi.getAccess();
     
     Trigger triggerApi = workflowApi.getTrigger();
     if (triggerApi!=null) {
@@ -83,5 +85,10 @@ public class WorkflowImpl extends ScopeImpl {
   
   public TriggerImpl getTrigger() {
     return trigger;
+  }
+
+  
+  public AccessControlList getAccess() {
+    return access;
   }
 }

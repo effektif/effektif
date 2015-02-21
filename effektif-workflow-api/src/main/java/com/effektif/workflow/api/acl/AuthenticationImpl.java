@@ -17,44 +17,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
+/** Default implementation to provide authentication information.
+ * 
  * @author Tom Baeyens
  */
-public class AuthorizationImpl implements Authorization {
+public class AuthenticationImpl implements Authentication {
 
   protected String organizationId;
-  protected String actorId;
+  protected String userId;
   protected List<String> groupIds;
   
-  public String getAuthorizedActorId() {
-    return this.actorId;
+  public String getUserId() {
+    return this.userId;
   }
-  public void setActorId(String actorId) {
-    this.actorId = actorId;
+  public void setUserId(String userId) {
+    this.userId = userId;
   }
-  public AuthorizationImpl actorId(String actorId) {
-    this.actorId = actorId;
+  public AuthenticationImpl actorId(String userId) {
+    this.userId = userId;
     return this;
   }
   
-  public String getAuthorizedOrganizationId() {
+  public String getOrganizationId() {
     return this.organizationId;
   }
   public void setOrganizationId(String organizationId) {
     this.organizationId = organizationId;
   }
-  public AuthorizationImpl organizationId(String organizationId) {
+  public AuthenticationImpl organizationId(String organizationId) {
     this.organizationId = organizationId;
     return this;
   }
   
-  public List<String> getAuthorizedGroupIds() {
+  public List<String> getGroupIds() {
     return this.groupIds;
   }
   public void setGroupIds(List<String> groupIds) {
     this.groupIds = groupIds;
   }
-  public AuthorizationImpl groupId(String groupId) {
+  public AuthenticationImpl groupId(String groupId) {
     if (groupIds==null) {
       groupIds = new ArrayList<>();
     }

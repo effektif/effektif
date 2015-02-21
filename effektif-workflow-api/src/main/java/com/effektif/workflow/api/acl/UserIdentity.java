@@ -24,4 +24,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("user")
 public class UserIdentity extends AccessIdentity {
 
+  public UserIdentity() {
+    super();
+  }
+
+  public UserIdentity(String id) {
+    super(id);
+  }
 }

@@ -51,6 +51,8 @@ public class TaskEscalateJobType extends AbstractJobType {
       BindingImpl<UserReference> escalateTo = userTaskImpl.getEscalateTo();
       UserReference escalateToReference = activityInstance.getValue(escalateTo);
       task.assignee(escalateToReference);
+      // The next method requires that authentication is NOT set (AuthenticationThreadLocal) 
+      // The TaskStore will apply authentication to the query if it is specified.
       taskService.assignTask(taskId, escalateToReference);
     }
   }

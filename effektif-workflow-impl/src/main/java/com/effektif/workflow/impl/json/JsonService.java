@@ -22,7 +22,7 @@ import java.io.Writer;
 import java.util.Map;
 
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.workflow.VariableImpl;
@@ -111,14 +111,13 @@ public class JsonService implements Brewable {
   
   
   
-  public void deserializeStart(Start start, WorkflowImpl workflow) {
-    deserializeVariableValues(start.getVariableValues(), workflow);
-    Map<String, Object> triggerValues = start.getTriggerValues();
-    if (triggerValues!=null &&  workflow.trigger!=null && workflow.trigger.outputBindings!=null) {
-      Map<String,String> outputBindings = workflow.trigger.outputBindings;
+  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
+    Map<String, Object> triggerValues = triggerInstance.getData();
+    if (triggerValues!=null) {
+      Map<String,String> triggerOutputBindings = workflow.trigger!=null ? workflow.trigger.outputBindings : null;
       for (String triggerKey: triggerValues.keySet()) {
         Object jsonValue = triggerValues.get(triggerKey);
-        String variableId = outputBindings.get(triggerKey);
+        String variableId = triggerOutputBindings!=null ? triggerOutputBindings.get(triggerKey) : triggerKey;
         VariableImpl variable = workflow.findVariableByIdLocal(variableId);
         if (variable!=null && variable.type!=null) {
           Object value = variable.type.convertJsonToInternalValue(jsonValue);
@@ -129,7 +128,7 @@ public class JsonService implements Brewable {
   }
   
   public void deserializeMessage(Message message, WorkflowImpl workflow) {
-    deserializeVariableValues(message.getVariableValues(), workflow);
+    deserializeVariableValues(message.getData(), workflow);
   }
 
   protected void deserializeVariableValues(Map<String,Object> variableValues, WorkflowImpl workflow) {

@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.Map;
 
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
@@ -46,6 +46,6 @@ public class TriggerImpl<T extends Trigger> {
   public void published(WorkflowImpl workflow) {
   }
 
-  public void applyTriggerValues(WorkflowInstanceImpl workflowInstance, Start start) {
+  public void applyTriggerValues(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
   }
 }

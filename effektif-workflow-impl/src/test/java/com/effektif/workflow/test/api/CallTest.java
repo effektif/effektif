@@ -22,7 +22,7 @@ import org.junit.Test;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.task.Task;
@@ -65,7 +65,7 @@ public class CallTest extends WorkflowTest {
     
     ActivityInstance subtaskInstance = subInstance.findOpenActivityInstance("subtask");
     
-    subInstance = workflowEngine.sendMessage(new Message()
+    subInstance = workflowEngine.send(new Message()
       .workflowInstanceId(subInstance.getId())
       .activityInstanceId(subtaskInstance.getId()));
     
@@ -118,9 +118,9 @@ public class CallTest extends WorkflowTest {
     
     deploy(superWorkflow);
     
-    workflowEngine.startWorkflowInstance(new Start()
+    workflowEngine.start(new TriggerInstance()
       .workflowId(superWorkflow.getId())
-      .variableValue("guineapig", new UserReference("johndoe"))
+      .data("guineapig", new UserReference("johndoe"))
     );
 
     Task task = taskService.findTasks(new TaskQuery()).get(0);

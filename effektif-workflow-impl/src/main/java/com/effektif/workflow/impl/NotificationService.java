@@ -13,8 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.task.NewTask;
 import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 
 /**
@@ -22,8 +23,12 @@ import com.effektif.workflow.api.task.Task;
  */
 public interface NotificationService {
 
-  void notifyTaskAssigned(Task task, UserReference original, UserReference newAssignee);
+  void notifyTaskCreated(Task task);
+
+  void notifyTaskAssigned(Task task);
 
   void notifyTaskReminder(Task task);
+
+  void taskCreated(Task task, NewTask newTask, WorkflowInstance workflowInstance);
 
 }

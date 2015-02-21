@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.ref.UserReference;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.UserReferenceType;
@@ -40,9 +40,9 @@ public class VariableTypesTest extends WorkflowTest {
     
     deploy(workflow);
 
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .variableValue("v", 5));
+      .data("v", 5));
     
     assertEquals(new Long(5), workflowInstance.getVariableValueLong("v"));
   }
@@ -54,9 +54,9 @@ public class VariableTypesTest extends WorkflowTest {
     
     deploy(workflow);
 
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start()
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .variableValue("v", new UserReference("u2")));
+      .data("v", new UserReference("u2")));
     
     assertEquals(UserReference.class, workflowInstance.getVariableValue("v").getClass());
   }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.task.NewTask;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -38,10 +39,18 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   }
 
   @Override
-  public void insertTask(Task task) {
+  public void createTask(NewTask task) {
     log.debug("saveTask");
-    task = wireize("  >>task>>", task, Task.class);
-    taskService.insertTask(task);
+    task = wireize("  >>task>>", task, NewTask.class);
+    taskService.createTask(task);
+  }
+
+  @Override
+  public Task findTaskById(String taskId) {
+    log.debug("  >>taskId>> "+taskId);
+    Task task = taskService.findTaskById(taskId);
+    task = wireize("  <<task<<", task, Task.class);
+    return task;
   }
 
   @Override

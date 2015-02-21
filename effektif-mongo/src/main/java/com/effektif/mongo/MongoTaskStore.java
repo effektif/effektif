@@ -52,6 +52,12 @@ public class MongoTaskStore implements TaskStore, Brewable {
     String _ID = "_id";
     String NAME = "name";
     String ORGANIZATION_ID = "organizationId";
+    String ASSIGNEE = "assignee";
+    String SUBTASK_IDS = "subtaskIds";
+  }
+
+  public interface FieldsUserReference {
+    String ID = "id";
   }
 
   @Override
@@ -63,24 +69,56 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
 
   @Override
+  public String generateTaskId() {
+    return new ObjectId().toString();
+  }
+
+  @Override
   public void insertTask(Task task) {
     BasicDBObject dbTask = taskToMongo(task);
     tasksCollection.insert("insert-task", dbTask);
   }
 
   @Override
-  public void assignTask(String taskId, UserReference assignee) {
+  public Task assignTask(String taskId, UserReference assignee) {
     BasicDBObject query = new MongoQuery()
+      ._id(taskId)
       .access(Access.EDIT)
       .get();
+    BasicDBObject dbAssignee = new BasicDBObject(FieldsUserReference.ID, assignee.getId());
+    BasicDBObject update = new MongoUpdate()
+      .set(FieldsTask.ASSIGNEE, dbAssignee)
+      .get();
+    BasicDBObject dbTask = tasksCollection.findAndModify("assign-task", query, update);
+    return mongoToTask(dbTask);
+  }
+  
+  @Override
+  public Task addSubtask(String parentId, String subtaskId) {
+    BasicDBObject query = new MongoQuery()
+      ._id(parentId)
+      .access(Access.EDIT)
+      .get();
+    BasicDBObject update = new MongoUpdate()
+      .push(FieldsTask.SUBTASK_IDS, subtaskId)
+      .get();
+    BasicDBObject dbTask = tasksCollection.findAndModify("add-subtask", query, update);
+    return mongoToTask(dbTask);
   }
 
   @Override
   public List<Task> findTasks(TaskQuery query) {
     List<Task> tasks = new ArrayList<>();
-    DBCursor cursor = createTaskDbCursor(query);
-    while (cursor.hasNext()) {
-      BasicDBObject dbTask = (BasicDBObject) cursor.next();
+    BasicDBObject dbQuery = createTaskQuery(query, Access.VIEW).get();
+    DBCursor dbCursor = tasksCollection.find("find-tasks", dbQuery);
+    if (query.getLimit()!=null) {
+      dbCursor.limit(query.getLimit());
+    }
+    if (query.getOrderBy()!=null) {
+      dbCursor.sort(writeOrderBy(query.getOrderBy()));
+    }
+    while (dbCursor.hasNext()) {
+      BasicDBObject dbTask = (BasicDBObject) dbCursor.next();
       Task task = mongoToTask(dbTask);
       tasks.add(task);
     }
@@ -89,7 +127,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
 
   @Override
   public void deleteTasks(TaskQuery query) {
-    BasicDBObject dbQuery = createTaskDbQuery(query);
+    BasicDBObject dbQuery = createTaskQuery(query, Access.EDIT).get();
     tasksCollection.remove("delete-tasks", dbQuery);
   }
 
@@ -117,32 +155,16 @@ public class MongoTaskStore implements TaskStore, Brewable {
     return task;
   }
   
-  public String generateTaskId() {
-    return new ObjectId().toString();
-  }
-
-  public DBCursor createTaskDbCursor(TaskQuery query) {
-    BasicDBObject dbQuery = createTaskDbQuery(query);
-    DBCursor dbCursor = tasksCollection.find("find-tasks", dbQuery);
-    if (query.getLimit()!=null) {
-      dbCursor.limit(query.getLimit());
+  /** builds the query and ensures VIEW access */
+  protected MongoQuery createTaskQuery(TaskQuery query, String... accessActions) {
+    MongoQuery mongoQuery = new MongoQuery();
+    if (accessActions!=null) {
+      mongoQuery.access(accessActions);
     }
-    if (query.getOrderBy()!=null) {
-      dbCursor.sort(writeOrderBy(query.getOrderBy()));
-    }
-    return dbCursor;
-  }
-
-  protected BasicDBObject createTaskDbQuery(TaskQuery query) {
-    BasicDBObject dbQuery = new BasicDBObject();
     if (query.getTaskId()!=null) {
-      dbQuery.append(FieldsTask._ID, new ObjectId(query.getTaskId()));
+      mongoQuery.equal(FieldsTask._ID, new ObjectId(query.getTaskId()));
     }
-// TODO change to MongoQuery
-//  if (MongoHelper.hasOrganizationId(authorization)) {
-//    dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, authorization.getOrganizationId());
-//  }
-    return dbQuery;
+    return mongoQuery;
   }
 
   public DBObject writeOrderBy(List<OrderBy> orderBy) {

@@ -22,7 +22,7 @@ import java.util.Map;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Variable;
@@ -115,21 +115,21 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     }
     
     if (actualSubWorkflowId!=null) {
-      Start start = new Start()
+      TriggerInstance triggerInstance = new TriggerInstance()
         .workflowId(actualSubWorkflowId);
       
       if (inputBindings!=null) {
         for (String subWorkflowKey: inputBindings.keySet()) {
           BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowKey);
           Object value = activityInstance.getValue(subWorkflowBinding);
-          start.variableValue(subWorkflowKey, value);
+          triggerInstance.data(subWorkflowKey, value);
         }
       }
       
       CallerReference callerReference = new CallerReference(activityInstance.workflowInstance.id, activityInstance.id);
   
       WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-      WorkflowInstance calledProcessInstance = workflowEngine.startWorkflowInstance(start, callerReference);
+      WorkflowInstance calledProcessInstance = workflowEngine.startWorkflowInstance(triggerInstance, callerReference);
       activityInstanceImpl.setCalledWorkflowInstanceId(calledProcessInstance.getId());
       
     } else {

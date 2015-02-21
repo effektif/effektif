@@ -25,7 +25,7 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -64,7 +64,7 @@ public class ApiExamplesTest {
       .checkNoErrorsAndNoWarnings();
     
     // Start a new workflow instance
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(new Start().workflowId(workflow.getId()));
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance().workflowId(workflow.getId()));
     
     List<Task> tasks = taskService.findTasks(new TaskQuery());
     assertEquals("Move open issues", tasks.get(0).getName());

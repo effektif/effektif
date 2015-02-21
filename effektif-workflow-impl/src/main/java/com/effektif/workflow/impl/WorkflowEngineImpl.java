@@ -25,7 +25,7 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -37,7 +37,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.json.SerializedMessage;
-import com.effektif.workflow.impl.json.SerializedStart;
+import com.effektif.workflow.impl.json.SerializedTriggerInstance;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
@@ -126,22 +126,13 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowStore.deleteWorkflows(workflowQuery);
   }
 
-  public WorkflowInstance startWorkflowInstance(Start startCommand) {
+  public WorkflowInstance start(TriggerInstance startCommand) {
     return startWorkflowInstance(startCommand, null);
   }
 
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
-  public WorkflowInstance startWorkflowInstance(Start start, CallerReference callerReference) {
-    String workflowId = start.getWorkflowId();
-    if (workflowId==null) {
-      if (start.getSourceWorkflowId()!=null) {
-        workflowId = workflowStore.findLatestWorkflowIdBySource(start.getSourceWorkflowId());
-        if (workflowId==null) throw new RuntimeException("No workflow found for source '"+start.getSourceWorkflowId()+"'");
-      } else {
-        throw new RuntimeException("No workflow specified");
-      }
-    }
-
+  public WorkflowInstance startWorkflowInstance(TriggerInstance triggerInstance, CallerReference callerReference) {
+    String workflowId = getLatestWorkflowId(triggerInstance);
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
     String workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(configuration, workflow, workflowInstanceId);
@@ -150,13 +141,14 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
     }
     
-    if (start instanceof SerializedStart) {
-      jsonService.deserializeStart(start, workflow);
+    if (triggerInstance instanceof SerializedTriggerInstance) {
+      jsonService.deserializeTriggerInstance(triggerInstance, workflow);
     }
     if (workflow.trigger!=null) {
-      workflow.trigger.applyTriggerValues(workflowInstance, start);
+      workflow.trigger.applyTriggerValues(workflowInstance, triggerInstance);
+    } else {
+      workflowInstance.setVariableValues(triggerInstance.getData());
     }
-    workflowInstance.setVariableValues(start.getVariableValues());
     
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
     workflowInstance.start = Time.now();
@@ -175,16 +167,29 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowInstance.executeWork();
     return workflowInstance.toWorkflowInstance();
   }
+
+  public String getLatestWorkflowId(TriggerInstance triggerInstance) {
+    String workflowId = triggerInstance.getWorkflowId();
+    if (workflowId==null) {
+      if (triggerInstance.getSourceWorkflowId()!=null) {
+        workflowId = workflowStore.findLatestWorkflowIdBySource(triggerInstance.getSourceWorkflowId());
+        if (workflowId==null) throw new RuntimeException("No workflow found for source '"+triggerInstance.getSourceWorkflowId()+"'");
+      } else {
+        throw new RuntimeException("No workflow specified");
+      }
+    }
+    return workflowId;
+  }
   
   @Override
-  public WorkflowInstance sendMessage(Message message) {
+  public WorkflowInstance send(Message message) {
     WorkflowInstanceImpl workflowInstance = lockProcessInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
     
     if (message instanceof SerializedMessage) {
       jsonService.deserializeMessage(message, workflowInstance.workflow);
     }
     
-    workflowInstance.setVariableValues(message.getVariableValues());
+    workflowInstance.setVariableValues(message.getData());
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(message.getActivityInstanceId());
     if (activityInstance.isEnded()) {
       throw new RuntimeException("Activity instance "+activityInstance+" is already ended");

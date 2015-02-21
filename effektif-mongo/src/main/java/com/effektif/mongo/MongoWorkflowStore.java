@@ -27,8 +27,8 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.acl.Authorization;
-import com.effektif.workflow.api.acl.Authorizations;
+import com.effektif.workflow.api.acl.Authentication;
+import com.effektif.workflow.api.acl.AuthenticationThreadLocal;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -184,7 +184,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     Exceptions.checkNotNullParameter(workflowName, "workflowName");
     BasicDBObject dbQuery = new BasicDBObject();
     dbQuery.append(FieldsWorkflow.NAME, workflowName);
-    Authorization authorization = Authorizations.current();
+    Authentication authentication = AuthenticationThreadLocal.current();
 // TODO change to MongoQuery
 //    if (MongoHelper.hasOrganizationId(authorization)) {
 //      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, authorization.getOrganizationId());

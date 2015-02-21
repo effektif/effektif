@@ -28,7 +28,7 @@ public class Message {
   protected String sourceWorkflowId;
   protected String businessKey;
   protected String activityInstanceId;
-  protected Map<String,Object> variableValues;
+  protected Map<String,Object> data;
 
   public String getWorkflowInstanceId() {
     return this.workflowInstanceId;
@@ -52,19 +52,22 @@ public class Message {
     return this;
   }
 
-  public Map<String,Object> getVariableValues() {
-    return this.variableValues;
+  public Map<String,Object> getData() {
+    return this.data;
   }
 
-  public void setVariableValues(Map<String,Object> variableValues) {
-    this.variableValues = variableValues;
+  public void setData(Map<String,Object> data) {
+    this.data = data;
   }
 
-  public Message variableValue(String variableId, Object variableValue) {
-    if (variableValues==null) {
-      variableValues = new LinkedHashMap<>();
+  /** this data is passed to the activity, usually 
+   * this activities apply the data as variable values, 
+   * but you have to check the activity documentation. */
+  public Message data(String key, Object value) {
+    if (data==null) {
+      data = new LinkedHashMap<>();
     }
-    variableValues.put(variableId, variableValue);
+    data.put(key, value);
     return this;
   }
 

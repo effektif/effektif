@@ -24,4 +24,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("organization")
 public class OrganizationIdentity extends AccessIdentity {
 
+  public OrganizationIdentity() {
+    super();
+  }
+
+  public OrganizationIdentity(String id) {
+    super(id);
+  }
+
 }

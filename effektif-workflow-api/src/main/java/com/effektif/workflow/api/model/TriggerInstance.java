@@ -24,13 +24,12 @@ import com.effektif.workflow.api.workflow.Workflow;
 /**
  * @author Tom Baeyens
  */
-public class Start {
+public class TriggerInstance {
   
   protected String workflowId;
   protected String sourceWorkflowId;
   protected String businessKey;
-  protected Map<String,Object> variableValues;
-  protected Map<String,Object> triggerValues;
+  protected Map<String,Object> data;
   
   public String getWorkflowId() {
     return this.workflowId;
@@ -41,7 +40,7 @@ public class Start {
 
   /** use this specific workflow version. 
    * If you want to use the latest version of a certain workflow, use {@link #workflowSource(String)} */ 
-  public Start workflowId(String workflowId) {
+  public TriggerInstance workflowId(String workflowId) {
     this.workflowId = workflowId;
     return this;
   }
@@ -55,40 +54,28 @@ public class Start {
   
   /** use the lastest version of the workflow for the given source.
    * @see Workflow#sourceWorkflowId(String) */
-  public Start sourceWorkflowId(String sourceWorkflowId) {
+  public TriggerInstance sourceWorkflowId(String sourceWorkflowId) {
     this.sourceWorkflowId = sourceWorkflowId;
     return this;
   }
 
-  public Map<String,Object> getVariableValues() {
-    return this.variableValues;
+  public Map<String,Object> getData() {
+    return this.data;
   }
 
-  public void setVariableValues(Map<String,Object> variableValues) {
-    this.variableValues = variableValues;
+  /** @see #data(String, Object) */
+  public void setData(Map<String,Object> data) {
+    this.data = data;
   }
 
-  public Start variableValue(String variableId, Object value) {
-    if (variableValues==null) {
-      variableValues = new LinkedHashMap<>();
+  /** this data is passed to the trigger or is set as variable values.
+   * In case there is no trigger specified, the data keys have to 
+   * represent the variable ids. */
+  public TriggerInstance data(String key, Object value) {
+    if (data==null) {
+      data = new LinkedHashMap<>();
     }
-    variableValues.put(variableId, value);
-    return this;
-  }
-
-  public Map<String,Object> getTriggerValues() {
-    return this.triggerValues;
-  }
-
-  public void setTriggerValues(Map<String,Object> triggerValues) {
-    this.triggerValues = triggerValues;
-  }
-
-  public Start triggerValue(String triggerKey, Object value) {
-    if (triggerValues==null) {
-      triggerValues = new LinkedHashMap<>();
-    }
-    triggerValues.put(triggerKey, value);
+    data.put(key, value);
     return this;
   }
   
@@ -100,7 +87,7 @@ public class Start {
   }
   /** optional user-defined unique id (unique in the scope of one workflow) 
    * @see Message# */
-  public Start businessKey(String businessKey) {
+  public TriggerInstance businessKey(String businessKey) {
     this.businessKey = businessKey;
     return this;
   }

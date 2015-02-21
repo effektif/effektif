@@ -14,27 +14,28 @@
 package com.effektif.workflow.api.acl;
 
 
-/**
+/** Stores the current authentication information per thread.
+ * 
  * @author Tom Baeyens
  */
-public class Authorizations {
+public class AuthenticationThreadLocal {
 
-  protected static ThreadLocal<Authorization> current = new ThreadLocal<>();
+  protected static ThreadLocal<Authentication> current = new ThreadLocal<>();
 
-  public static void set(Authorization authorization) {
-    current.set(authorization);
+  public static void set(Authentication authentication) {
+    current.set(authentication);
   }
 
   public static void unset() {
     current.remove();
   }
   
-  public static Authorization current() {
+  public static Authentication current() {
     return current.get();
   }
 
-  public static Authorization authenticate(String authenticatedUserId, String organizationId) {
-    AuthorizationImpl authorization = new AuthorizationImpl()
+  public static Authentication authenticate(String authenticatedUserId, String organizationId) {
+    AuthenticationImpl authorization = new AuthenticationImpl()
       .actorId(authenticatedUserId)
       .organizationId(organizationId);
     set(authorization);

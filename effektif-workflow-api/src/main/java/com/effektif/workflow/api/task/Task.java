@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
@@ -191,6 +192,14 @@ public class Task {
     this.subtaskIds = subtaskIds;
   }
   
+  public void addSubtaskId(String subtaskId) {
+    if (subtaskIds==null) {
+      subtaskIds = new ArrayList<>();
+    }
+    subtaskIds.add(subtaskId);
+  }
+
+  
   /** id reference to the root task in the task 
    * {@link #getParentId() parent} - {@link #getSubtaskIds() child} relation */
   public String getCaseId() {
@@ -288,5 +297,4 @@ public class Task {
   public void setSourceWorkflowId(String sourceWorkflowId) {
     this.sourceWorkflowId = sourceWorkflowId;
   }
-  
 }

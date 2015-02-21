@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -42,12 +42,12 @@ public interface WorkflowEngine {
 
   void deleteWorkflows(WorkflowQuery workflowQuery);
 
-  /** starts a new workflow instance with the data specified in the Start object. */
-  WorkflowInstance startWorkflowInstance(Start start);
+  /** starts a new workflow instance with the data specified in the trigger instance. */
+  WorkflowInstance start(TriggerInstance triggerInstance);
 
   /** Sends a {@link Message message} to an activity instance, most likely this is invoked 
    * to end the specified activity instance and move workflow execution forward from there. */
-  WorkflowInstance sendMessage(Message message);
+  WorkflowInstance send(Message message);
 
   List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query);
   

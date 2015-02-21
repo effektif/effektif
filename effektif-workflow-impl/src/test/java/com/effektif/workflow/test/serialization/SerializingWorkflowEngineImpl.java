@@ -21,7 +21,7 @@ import java.util.List;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ParseIssues;
@@ -29,7 +29,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.json.SerializedMessage;
-import com.effektif.workflow.impl.json.SerializedStart;
+import com.effektif.workflow.impl.json.SerializedTriggerInstance;
 import com.effektif.workflow.impl.json.SerializedWorkflow;
 
 
@@ -76,18 +76,18 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   }
 
   @Override
-  public WorkflowInstance startWorkflowInstance(Start start) {
+  public WorkflowInstance start(TriggerInstance triggerInstance) {
     log.debug("startWorkflow");
-    start = wireize(" >>start>>", start, SerializedStart.class);
-    WorkflowInstance workflowInstance = workflowEngine.startWorkflowInstance(start);
+    triggerInstance = wireize(" >>start>>", triggerInstance, SerializedTriggerInstance.class);
+    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance);
     return wireize("  <-workflowInstance-", workflowInstance, WorkflowInstance.class);
   }
 
   @Override
-  public WorkflowInstance sendMessage(Message message) {
+  public WorkflowInstance send(Message message) {
     log.debug("sendMessage");
     message = wireize(" >>message>>", message, SerializedMessage.class);
-    WorkflowInstance workflowInstance = workflowEngine.sendMessage(message);
+    WorkflowInstance workflowInstance = workflowEngine.send(message);
     return wireize("  <-workflowInstance-", workflowInstance, WorkflowInstance.class);
   }
 

@@ -13,22 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.api.acl;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import java.util.List;
 
 
-/** 
- * refers to a group of users. 
+/** Interface to pass authentication information into the engine.
  * 
- * @author Tom Baeyens 
+ * To pass an Authentication into the engine, you have to associate 
+ * it with the current thread using {@link AuthenticationThreadLocal#set(Authentication)}.
+ * 
+ * All subsequent calls made by that thread will use the given Authentication.
+ * 
+ * @author Tom Baeyens
  */
-@JsonTypeName("group")
-public class GroupIdentity extends AccessIdentity {
-
-  public GroupIdentity() {
-    super();
-  }
-
-  public GroupIdentity(String id) {
-    super(id);
-  }
+public interface Authentication {
+  
+  String getOrganizationId();
+  String getUserId();
+  List<String> getGroupIds();
 }

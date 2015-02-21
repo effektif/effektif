@@ -25,7 +25,7 @@ import com.effektif.adapter.AdapterServer;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.AdapterActivity;
 import com.effektif.workflow.api.datasource.ItemReference;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.adapter.Adapter;
 import com.effektif.workflow.impl.adapter.AdapterService;
@@ -65,7 +65,7 @@ public class AdapterTest {
     workflowEngine
       .deployWorkflow(workflow)
       .checkNoErrors();
-    workflowEngine.startWorkflowInstance(new Start().workflowId(workflow.getId()));
+    workflowEngine.start(new TriggerInstance().workflowId(workflow.getId()));
     
     List<ItemReference> items = adapterService.findItems(adapter.getId(),
             new FindItemsRequest()

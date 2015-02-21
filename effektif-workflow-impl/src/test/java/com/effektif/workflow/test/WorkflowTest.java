@@ -31,7 +31,7 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.task.Task;
@@ -90,12 +90,12 @@ public class WorkflowTest {
   }
 
   public WorkflowInstance start(Workflow workflow) {
-    return workflowEngine.startWorkflowInstance(new Start()
+    return workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId()));
   }
   
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {
-    return workflowEngine.sendMessage(new Message()
+    return workflowEngine.send(new Message()
       .workflowInstanceId(workflowInstance.getId())
       .activityInstanceId(activityInstanceId));
   }
@@ -136,7 +136,7 @@ public class WorkflowTest {
   public WorkflowInstance endTask(WorkflowInstance workflowInstance, String activityId) {
     ActivityInstance activityInstance = workflowInstance.findOpenActivityInstance(activityId);
     assertNotNull("Activity '"+activityId+"' not in workflow instance", activityInstance);
-    return workflowEngine.sendMessage(new Message()
+    return workflowEngine.send(new Message()
       .workflowInstanceId(workflowInstance.getId())
       .activityInstanceId(activityInstance.getId()));
   }

@@ -16,13 +16,15 @@ package com.effektif.workflow.api.acl;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** 
+/** TODO check if this can be removed
+ * 
  * refers to anyone, inside or outside the organization. 
  * Used to allow everyone to start a workflow that has access control. 
  * 
  * @author Tom Baeyens
  */
 @JsonTypeName("public")
+@Deprecated 
 public class PublicIdentity extends AccessIdentity {
 
 }

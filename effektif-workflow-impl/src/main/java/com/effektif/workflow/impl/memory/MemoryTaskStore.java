@@ -33,16 +33,10 @@ import com.effektif.workflow.impl.configuration.Brewery;
 /**
  * @author Tom Baeyens
  */
-public class MemoryTaskStore implements TaskStore, Brewable {
+public class MemoryTaskStore implements TaskStore {
   
   protected int nextId = 1;
   protected Map<String, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<String,Task>());
-  protected NotificationService notificationService;
-
-  @Override
-  public void brew(Brewery brewery) {
-    this.notificationService = brewery.getOpt(NotificationService.class);
-  }
 
   @Override
   public void insertTask(Task task) {
@@ -70,19 +64,25 @@ public class MemoryTaskStore implements TaskStore, Brewable {
   }
 
   @Override
-  public void assignTask(String taskId, UserReference assignee) {
+  public Task assignTask(String taskId, UserReference assignee) {
     Task task = tasks.get(taskId);
     if (task!=null) {
-      UserReference original = task.getAssignee();
       task.assignee(assignee);
-      if (notificationService!=null) {
-        String assigneeId = assignee!=null ? assignee.getId() : null;  
-        if (assigneeId!=null) {
-          if (original==null || !assigneeId.equals(original.getId())) {
-            notificationService.notifyTaskAssigned(task, original, assignee);
-          }
-        }
-      }
     }
+    return task;
+  }
+
+  @Override
+  public String generateTaskId() {
+    return Integer.toString(nextId++);
+  }
+
+  @Override
+  public Task addSubtask(String parentId, String subtaskId) {
+    Task task = tasks.get(parentId);
+    if (task!=null) {
+      task.addSubtaskId(subtaskId);
+    }
+    return task;
   }
 }

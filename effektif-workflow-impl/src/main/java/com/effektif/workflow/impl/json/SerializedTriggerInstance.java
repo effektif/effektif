@@ -13,11 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import com.effektif.workflow.api.model.Start;
+import com.effektif.workflow.api.model.TriggerInstance;
 
 
 /**
  * @author Tom Baeyens
  */
-public class SerializedStart extends Start {
+public class SerializedTriggerInstance extends TriggerInstance {
 }

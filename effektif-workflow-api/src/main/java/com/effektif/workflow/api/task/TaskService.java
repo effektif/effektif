@@ -25,10 +25,11 @@ import com.effektif.workflow.api.ref.UserReference;
  */
 public interface TaskService {
 
-  void insertTask(Task task);
+  void createTask(NewTask newTask);
 
   void assignTask(String taskId, UserReference assignee);
 
+  Task findTaskById(String taskId);
   List<Task> findTasks(TaskQuery taskQuery);
   
   void deleteTasks(TaskQuery taskQuery);
