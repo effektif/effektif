@@ -21,12 +21,11 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.UserReferenceType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.TaskStore;
@@ -52,23 +51,23 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
           .key("name")
           .type(new TextType());
 
-  public static final InputParameter<List<UserReference>> ASSIGNEE = new InputParameter<>()
+  public static final InputParameter<List<UserId>> ASSIGNEE = new InputParameter<>()
           .key("assignee")
-          .type(new UserReferenceType());
+          .type(new UserIdType());
 
-  public static final InputParameter<List<UserReference>> CANDIDATES = new InputParameter<>()
+  public static final InputParameter<List<UserId>> CANDIDATES = new InputParameter<>()
           .key("candidates")
-          .type(new ListType(new UserReferenceType()));
+          .type(new ListType(new UserIdType()));
 
-  public static final InputParameter<List<UserReference>> ESCALATE_TO = new InputParameter<>()
+  public static final InputParameter<List<UserId>> ESCALATE_TO = new InputParameter<>()
           .key("escalateTo")
-          .type(new UserReferenceType());
+          .type(new UserIdType());
 
   protected TaskStore taskStore;
   protected BindingImpl<String> nameBinding;
-  protected BindingImpl<UserReference> assigneeBinding;
-  protected BindingImpl<UserReference> candidatesBinding;
-  protected BindingImpl<UserReference> escalateTo;
+  protected BindingImpl<UserId> assigneeBinding;
+  protected BindingImpl<UserId> candidatesBinding;
+  protected BindingImpl<UserId> escalateTo;
 
   public UserTaskImpl() {
     super(UserTask.class);
@@ -107,8 +106,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     if (taskName==null) {
       taskName = activityInstance.activity.id;
     }
-    UserReference assignee = activityInstance.getValue(assigneeBinding);
-    List<UserReference> candidates = activityInstance.getValues(candidatesBinding);
+    UserId assignee = activityInstance.getValue(assigneeBinding);
+    List<UserId> candidates = activityInstance.getValues(candidatesBinding);
     if ( assignee==null 
          && candidates!=null
          && candidates.size()==1 ) {
@@ -116,6 +115,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     }
     
     Task task = new Task();
+    task.setId(activityInstance.getId());
     task.setName(taskName);
     task.setAssignee(assignee);
     task.setCandidates(candidates);
@@ -124,14 +124,26 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
     
-    if (activity.getDuedate()!=null) {
-      task.setDuedate(activity.getDuedate().resolve());
+    String parentTaskId = activityInstance.parent.findTaskIdRecursive();
+    if (parentTaskId!=null) {
+      Task parentTask = taskStore.addSubtask(parentTaskId, task);
+      task.setCaseId(parentTask.getCaseId());
+      task.setParentId(parentTaskId);
     }
-
+    // in theory, the taskId should be set on the activity instance
+    // but as long as we don't support nested task creation in the process, 
+    // this fills up the db and we don't use it.  so leaving it out for now.
+    // activityInstance.setTaskId(task.getId());
+    
+    RelativeTime duedate = activity.getDuedate();
+    if (duedate!=null) {
+      task.setDuedate(duedate.resolve());
+    }
+    
     taskStore.insertTask(task);
 
     RelativeTime escalate = activity.getEscalate();
-    Binding<UserReference> escalateTo = activity.getEscalateTo();
+    Binding<UserId> escalateTo = activity.getEscalateTo();
     if (escalate!=null && escalateTo!=null) {
       LocalDateTime escalateTime = escalate.resolve();
       activityInstance.getWorkflowInstance().addJob(new Job()        
@@ -152,7 +164,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     }
   }
   
-  public BindingImpl<UserReference> getEscalateTo() {
+  public BindingImpl<UserId> getEscalateTo() {
     return escalateTo;
   }
 }

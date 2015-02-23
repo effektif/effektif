@@ -87,6 +87,19 @@ public class AccessControlList {
     return identitiesByAction.get(action);
   }
   
+  /** overwrites the access on the task for the action with the given identities if identities!=null. */
+  public static void setAccessIdentities(AccessControlledObject accessControlled, String action, List<AccessIdentity> identities) {
+    if (identities==null) {
+      return;
+    }
+    AccessControlList access = accessControlled.getAccess();
+    if (access==null) {
+      access = new AccessControlList();
+      accessControlled.setAccess(access);
+    }
+    access.setIdentities(action, identities);
+  }
+
   public void setIdentities(String action, List<AccessIdentity> identities) {
     if (identitiesByAction==null) {
       identitiesByAction = new HashMap<>();

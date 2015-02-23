@@ -80,12 +80,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String UPDATES = "updates";
     String WORK = "work";
     String WORK_ASYNC = "workAsync";
+    String TASK_ID = "taskId";
     String CALLER_WORKFLOW_INSTANCE_ID = "callerWorkflowInstanceId";
     String CALLER_ACTIVITY_INSTANCE_ID = "callerActivityInstanceId";
     String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
     String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
     String JOBS = "jobs";
-    String PROPERTIES = null;
+    String PROPERTIES = "properties";
   }
   
   interface ActivityInstanceFields extends ScopeInstanceFields {
@@ -348,6 +349,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     } else {
       writeId(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
     }
+    writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.TASK_ID, workflowInstance.taskId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID, workflowInstance.callerWorkflowInstanceId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID, workflowInstance.callerActivityInstanceId);
     writeLongOpt(dbWorkflowInstance, WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);

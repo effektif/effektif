@@ -20,7 +20,7 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 
 import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.AuthenticationThreadLocal;
+import com.effektif.workflow.api.acl.Authentications;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
@@ -39,13 +39,24 @@ public class MongoQuery {
     return this;
   }
 
-  public MongoQuery organizationId(ObjectId organizationId) {
-    query.append("organizationId", organizationId);
+  public MongoQuery organizationId() {
+    Authentication authentication = Authentications.current();
+    if (authentication!=null) {
+      String organizationId = authentication.getOrganizationId();
+      query.append("organizationId", new ObjectId(organizationId));
+    }
     return this;
   }
   
   public MongoQuery equal(String fieldName, Object dbValue) {
     query.put(fieldName, dbValue);
+    return this;
+  }
+
+  public MongoQuery equalOpt(String fieldName, Object dbValue) {
+    if (dbValue!=null) {
+      query.put(fieldName, dbValue);
+    }
     return this;
   }
 
@@ -55,7 +66,7 @@ public class MongoQuery {
   }
 
   public MongoQuery access(String... actions) {
-    Authentication authentication = AuthenticationThreadLocal.current();
+    Authentication authentication = Authentications.current();
     if (authentication!=null) {
       String organizationId = authentication.getOrganizationId();
       String actorId = authentication.getUserId();
@@ -79,6 +90,18 @@ public class MongoQuery {
       }
       query.append("$or", or);
     }
+    return this;
+  }
+  
+  public MongoQuery or(BasicDBObject... orClauses) {
+    if (orClauses==null || orClauses.length==0) {
+      return this;
+    }
+    BasicDBList or = new BasicDBList();
+    for (BasicDBObject orClause: orClauses) {
+      or.add(orClause);
+    }
+    query.append("$or", or);
     return this;
   }
   

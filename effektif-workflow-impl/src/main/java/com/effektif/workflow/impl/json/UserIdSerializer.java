@@ -13,25 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.task;
+package com.effektif.workflow.impl.json;
 
-import java.util.List;
+import java.io.IOException;
 
 import com.effektif.workflow.api.ref.UserId;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface TaskService {
+public class UserIdSerializer extends StdSerializer<UserId> {
 
-  Task createTask(Task task);
-
-  void assignTask(String taskId, UserId assignee);
-
-  Task findTaskById(String taskId);
-  List<Task> findTasks(TaskQuery taskQuery);
+  protected UserIdSerializer() {
+    super(UserId.class);
+  }
   
-  void deleteTasks(TaskQuery taskQuery);
-
+  @Override
+  public void serialize(UserId value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonGenerationException {
+    if (value!=null) {
+      jgen.writeString(value.getId());
+    } else {
+      jgen.writeNull();
+    }
+  }
 }

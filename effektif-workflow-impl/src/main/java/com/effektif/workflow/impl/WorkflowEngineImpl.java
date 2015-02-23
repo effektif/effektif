@@ -126,24 +126,29 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowStore.deleteWorkflows(workflowQuery);
   }
 
-  public WorkflowInstance start(TriggerInstance startCommand) {
-    return startWorkflowInstance(startCommand, null);
-  }
-
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
-  public WorkflowInstance startWorkflowInstance(TriggerInstance triggerInstance, CallerReference callerReference) {
+  public WorkflowInstance start(TriggerInstance triggerInstance) {
     String workflowId = getLatestWorkflowId(triggerInstance);
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
+
+    LockImpl lock = new LockImpl();
+    lock.setTime(Time.now());
+    lock.setOwner(getId());
+
     String workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
+    
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(configuration, workflow, workflowInstanceId);
-    if (callerReference!=null) {
-      workflowInstance.callerWorkflowInstanceId = callerReference.callerWorkflowInstanceId;
-      workflowInstance.callerActivityInstanceId = callerReference.callerActivityInstanceId;
-    }
+    
+    workflowInstance.taskId = triggerInstance.getCaseId();
+    workflowInstance.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
+    workflowInstance.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
+    workflowInstance.start = Time.now();
+    workflowInstance.lock = lock;
     
     if (triggerInstance instanceof SerializedTriggerInstance) {
       jsonService.deserializeTriggerInstance(triggerInstance, workflow);
     }
+    
     if (workflow.trigger!=null) {
       workflow.trigger.applyTriggerValues(workflowInstance, triggerInstance);
     } else {
@@ -151,7 +156,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
     
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
-    workflowInstance.start = Time.now();
+    
     if (workflow.startActivities!=null) {
       for (ActivityImpl startActivityDefinition: workflow.startActivities) {
         workflowInstance.execute(startActivityDefinition);
@@ -159,10 +164,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     } else {
       workflowInstance.end();
     }
-    LockImpl lock = new LockImpl();
-    lock.setTime(Time.now());
-    lock.setOwner(getId());
-    workflowInstance.setLock(lock);
+    
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);
     workflowInstance.executeWork();
     return workflowInstance.toWorkflowInstance();

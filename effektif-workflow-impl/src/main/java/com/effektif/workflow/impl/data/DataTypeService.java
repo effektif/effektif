@@ -37,7 +37,7 @@ import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.effektif.workflow.impl.data.types.UserReferenceTypeImpl;
+import com.effektif.workflow.impl.data.types.UserIdTypeImpl;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -74,7 +74,7 @@ public class DataTypeService implements Brewable {
     registerDataType(new NumberTypeImpl());
     registerDataType(new ListTypeImpl());
     registerDataType(new TextTypeImpl());
-    registerDataType(new UserReferenceTypeImpl(configuration));
+    registerDataType(new UserIdTypeImpl(configuration));
   }
   
   public void setObjectMapper(ObjectMapper objectMapper) {

@@ -18,7 +18,7 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -40,7 +40,7 @@ public class Workflow extends AbstractWorkflow {
   
   protected String sourceWorkflowId;
   protected LocalDateTime deployedTime;
-  protected UserReference deployedBy;
+  protected UserId deployedBy;
 
   /** refers to the id in the source (or authoring) form of this workflow.
    * @see #sourceWorkflowId(String) */
@@ -82,13 +82,13 @@ public class Workflow extends AbstractWorkflow {
     return this;
   }
   
-  public UserReference getDeployedBy() {
+  public UserId getDeployedBy() {
     return this.deployedBy;
   }
-  public void setDeployedBy(UserReference deployedBy) {
+  public void setDeployedBy(UserId deployedBy) {
     this.deployedBy = deployedBy;
   }
-  public Workflow deployedBy(UserReference deployedBy) {
+  public Workflow deployedBy(UserId deployedBy) {
     this.deployedBy = deployedBy;
     return this;
   }

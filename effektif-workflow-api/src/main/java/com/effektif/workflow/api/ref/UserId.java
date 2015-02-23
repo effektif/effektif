@@ -19,14 +19,14 @@ package com.effektif.workflow.api.ref;
 /**
  * @author Tom Baeyens
  */
-public class UserReference {
+public class UserId {
 
   protected String id;
   
-  public UserReference() {
+  public UserId() {
   }
   
-  public UserReference(String id) {
+  public UserId(String id) {
     this.id = id;
   }
   
@@ -53,7 +53,7 @@ public class UserReference {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    UserReference other = (UserReference) obj;
+    UserId other = (UserId) obj;
     if (id == null) {
       if (other.id != null)
         return false;

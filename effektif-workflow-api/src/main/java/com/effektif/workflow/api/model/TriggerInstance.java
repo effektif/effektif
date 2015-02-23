@@ -26,11 +26,15 @@ import com.effektif.workflow.api.workflow.Workflow;
  */
 public class TriggerInstance {
   
+  protected String workflowInstanceId;
   protected String workflowId;
   protected String sourceWorkflowId;
   protected String businessKey;
   protected Map<String,Object> data;
-  
+  protected String caseId;
+  protected String callerWorkflowInstanceId;
+  protected String callerActivityInstanceId;
+
   public String getWorkflowId() {
     return this.workflowId;
   }
@@ -90,5 +94,53 @@ public class TriggerInstance {
   public TriggerInstance businessKey(String businessKey) {
     this.businessKey = businessKey;
     return this;
+  }
+
+  /** optional id that is passed.
+   * Please be aware that worklfowInstanceIds are normally assigned by 
+   * the (persistence implementation in the) engine.
+   * You can provide your own here but please be aware that it 
+   * might have to be compatible with the persistence implementation.
+   */
+  public String getWorkflowInstanceId() {
+    return this.workflowInstanceId;
+  }
+  public void setWorkflowInstanceId(String workflowInstanceId) {
+    this.workflowInstanceId = workflowInstanceId;
+  }
+
+  /** references the top-level-task (aka case) that is related to the 
+   * created workflow instance. */
+  public String getCaseId() {
+    return this.caseId;
+  }
+  /** references the top-level-task (aka case) that is related to the 
+   * created workflow instance. */
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
+  }
+  
+  /** used by the call activity to establish the link between the calling activity instance 
+   * and the called workflow instance */
+  public String getCallerWorkflowInstanceId() {
+    return callerWorkflowInstanceId;
+  }
+  
+  /** used by the call activity to establish the link between the calling activity instance 
+   * and the called workflow instance */
+  public void setCallerWorkflowInstanceId(String callerWorkflowInstanceId) {
+    this.callerWorkflowInstanceId = callerWorkflowInstanceId;
+  }
+  
+  /** used by the call activity to establish the link between the calling activity instance 
+   * and the called workflow instance */
+  public String getCallerActivityInstanceId() {
+    return callerActivityInstanceId;
+  }
+
+  /** used by the call activity to establish the link between the calling activity instance 
+   * and the called workflow instance */
+  public void setCallerActivityInstanceId(String callerActivityInstanceId) {
+    this.callerActivityInstanceId = callerActivityInstanceId;
   }
 }

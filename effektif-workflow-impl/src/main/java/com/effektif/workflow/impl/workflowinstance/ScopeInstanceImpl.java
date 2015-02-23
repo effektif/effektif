@@ -60,6 +60,11 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public List<TimerInstanceImpl> timerInstances;
   public Map<String,Object> properties;
 
+  // for now only the workflowInstance will have a taskId.
+  // This implementation sketches the idea how to expand the implementation to support nested subtask creation.
+  // See UserTaskImpl for a note describing why taskId's are not set for user task activity instances. */
+  public String taskId;
+
   // As long as the workflow instance is not saved, the updates collection is null.
   // That means it's not yet necessary to collect the updates. 
   public ScopeInstanceUpdates updates;
@@ -82,6 +87,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     scopeInstanceApi.setStart(start);
     scopeInstanceApi.setEnd(end);
     scopeInstanceApi.setDuration(duration);
+    scopeInstanceApi.setTaskId(taskId);
     if (activityInstances!=null && !activityInstances.isEmpty()) {
       List<ActivityInstance> activityInstanceApis = new ArrayList<>();
       for (ActivityInstanceImpl activityInstanceImpl: this.activityInstances) {
@@ -420,5 +426,18 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         end();
       }
     }
+  }
+
+  /** for now only the workflowInstance will have a taskId.
+   * This implementation sketches the idea how to expand the implementation to support nested subtask creation.
+   * See UserTaskImpl for a note describing why taskId's are not set for user task activity instances. */
+  public String findTaskIdRecursive() {
+    if (taskId!=null) {
+      return taskId;
+    }
+    if (parent!=null) {
+      return parent.findTaskIdRecursive();
+    }
+    return null;
   }
 }

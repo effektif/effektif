@@ -15,7 +15,7 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 
@@ -30,7 +30,7 @@ public interface TaskStore {
   void insertTask(Task task);
 
   /** @return the task with the new assignee if it exists */
-  Task assignTask(String taskId, UserReference assignee);
+  Task assignTask(String taskId, UserId assignee);
 
   List<Task> findTasks(TaskQuery taskQuery);
   
@@ -40,5 +40,5 @@ public interface TaskStore {
    * If authentication is set (see AuthenticationThreadLocal) then 
    * the operation will only be performed if the authenticated user has 
    * EDIT access on the parent task. */
-  Task addSubtask(String parentId, String subtaskId);
+  Task addSubtask(String parentId, Task subtask);
 }

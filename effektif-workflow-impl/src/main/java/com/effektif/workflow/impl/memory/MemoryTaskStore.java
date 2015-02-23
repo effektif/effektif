@@ -21,13 +21,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.TaskStore;
-import com.effektif.workflow.impl.configuration.Brewable;
-import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.util.Time;
 
 
 /**
@@ -44,6 +42,7 @@ public class MemoryTaskStore implements TaskStore {
       String taskId = Integer.toString(nextId++);
       task.setId(taskId);
     }
+    task.setLastUpdated(Time.now());
     tasks.put(task.getId(), task);
   }
 
@@ -64,10 +63,11 @@ public class MemoryTaskStore implements TaskStore {
   }
 
   @Override
-  public Task assignTask(String taskId, UserReference assignee) {
+  public Task assignTask(String taskId, UserId assignee) {
     Task task = tasks.get(taskId);
     if (task!=null) {
       task.assignee(assignee);
+      task.setLastUpdated(Time.now());
     }
     return task;
   }
@@ -78,11 +78,16 @@ public class MemoryTaskStore implements TaskStore {
   }
 
   @Override
-  public Task addSubtask(String parentId, String subtaskId) {
-    Task task = tasks.get(parentId);
-    if (task!=null) {
-      task.addSubtaskId(subtaskId);
+  public Task addSubtask(String parentId, Task subtask) {
+    Task parentTask = tasks.get(parentId);
+    if (parentTask!=null) {
+      parentTask.addSubtaskId(subtask.getId());
+      parentTask.setLastUpdated(Time.now());
     }
-    return task;
+    return parentTask;
+  }
+
+  public Task findTaskById(String taskId) {
+    return tasks.get(taskId);
   }
 }

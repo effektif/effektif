@@ -16,22 +16,33 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.UserReferenceType;
+import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.types.UserIdType;
+import com.effektif.workflow.impl.data.InvalidValueException;
 
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserReferenceTypeImpl extends JavaBeanTypeImpl<UserReferenceType> {
+public class UserIdTypeImpl extends JavaBeanTypeImpl<UserIdType> {
 
-  public UserReferenceTypeImpl(Configuration configuration) {
-    this(new UserReferenceType(), configuration);
-    // TODO initialize the fields
+  public UserIdTypeImpl(Configuration configuration) {
+    this(new UserIdType(), configuration);
   }
 
-  public UserReferenceTypeImpl(UserReferenceType type, Configuration configuration) {
+  public UserIdTypeImpl(UserIdType type, Configuration configuration) {
     super(type, configuration);
+  }
+
+  @Override
+  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+    return jsonValue!=null ? new UserId((String)jsonValue) : null;
+  }
+
+  @Override
+  public Object convertInternalToJsonValue(Object internalValue) {
+    return internalValue!=null ? ((UserId)internalValue).getId() : null;
   }
   
 //  @Override

@@ -89,15 +89,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return workflowInstance;
   }
   
-  public static List<WorkflowInstance> toWorkflowInstances(List<WorkflowInstanceImpl> workflowInstances) {
-    if (workflowInstances==null) {
+  public static List<WorkflowInstance> toWorkflowInstances(List<WorkflowInstanceImpl> workflowInstanceImpls) {
+    if (workflowInstanceImpls==null) {
       return null;
     }
-    List<WorkflowInstance> w = new ArrayList<>();
-    for (WorkflowInstanceImpl workflowInstance: workflowInstances) {
-      w.add(workflowInstance.toWorkflowInstance());
+    List<WorkflowInstance> workflowInstances = new ArrayList<>();
+    for (WorkflowInstanceImpl workflowInstance: workflowInstanceImpls) {
+      workflowInstances.add(workflowInstance.toWorkflowInstance());
     }
-    return w;
+    return workflowInstances;
   }
   
   public void executeWork() {

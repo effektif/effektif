@@ -19,7 +19,7 @@ import java.util.List;
 /** Interface to pass authentication information into the engine.
  * 
  * To pass an Authentication into the engine, you have to associate 
- * it with the current thread using {@link AuthenticationThreadLocal#set(Authentication)}.
+ * it with the current thread using {@link Authentications#set(Authentication)}.
  * 
  * All subsequent calls made by that thread will use the given Authentication.
  * 

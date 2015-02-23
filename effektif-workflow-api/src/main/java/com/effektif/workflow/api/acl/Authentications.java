@@ -18,7 +18,7 @@ package com.effektif.workflow.api.acl;
  * 
  * @author Tom Baeyens
  */
-public class AuthenticationThreadLocal {
+public class Authentications {
 
   protected static ThreadLocal<Authentication> current = new ThreadLocal<>();
 

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.AuthenticationThreadLocal;
+import com.effektif.workflow.api.acl.Authentications;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -182,13 +182,10 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   @Override
   public String findLatestWorkflowIdBySource(String workflowName) {
     Exceptions.checkNotNullParameter(workflowName, "workflowName");
-    BasicDBObject dbQuery = new BasicDBObject();
-    dbQuery.append(FieldsWorkflow.NAME, workflowName);
-    Authentication authentication = AuthenticationThreadLocal.current();
-// TODO change to MongoQuery
-//    if (MongoHelper.hasOrganizationId(authorization)) {
-//      dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, authorization.getOrganizationId());
-//    }
+    BasicDBObject dbQuery = new MongoQuery()
+      .organizationId()
+      .equal(FieldsWorkflow.NAME, workflowName)
+      .get();
     BasicDBObject dbFields = new BasicDBObject(FieldsWorkflow._ID, 1);
     BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", dbQuery, dbFields);
     return dbWorkflow!=null ? dbWorkflow.get("_id").toString() : null;

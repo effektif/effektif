@@ -16,7 +16,7 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.ref.GroupReference;
+import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.types.GroupReferenceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataType;
@@ -34,7 +34,7 @@ public class GroupReferenceTypeImpl extends AbstractDataType<GroupReferenceType>
   }
 
   public GroupReferenceTypeImpl(GroupReferenceType groupReferenceTypeApi, Configuration configuration) {
-    super(groupReferenceTypeApi, GroupReference.class);
+    super(groupReferenceTypeApi, GroupId.class);
   }
   
   @Override
@@ -44,7 +44,7 @@ public class GroupReferenceTypeImpl extends AbstractDataType<GroupReferenceType>
   
   @Override
   public Object convert(Object value, DataType valueType) {
-    if (value instanceof GroupReference) {
+    if (value instanceof GroupId) {
       return value;
     }
     if (value instanceof String
@@ -52,8 +52,8 @@ public class GroupReferenceTypeImpl extends AbstractDataType<GroupReferenceType>
                 || valueType instanceof TextTypeImpl) 
             )
        ){
-      return new GroupReference((String)value);
+      return new GroupId((String)value);
     } 
-    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+GroupReference.class.getName());
+    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+GroupId.class.getName());
   }
 }

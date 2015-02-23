@@ -18,8 +18,7 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.ref.UserReference;
-import com.effektif.workflow.api.task.NewTask;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -39,10 +38,12 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   }
 
   @Override
-  public void createTask(NewTask task) {
+  public Task createTask(Task task) {
     log.debug("saveTask");
-    task = wireize("  >>task>>", task, NewTask.class);
-    taskService.createTask(task);
+    task = wireize("  >>task>>", task, Task.class);
+    task = taskService.createTask(task);
+    task = wireize("  <<task<<", task, Task.class);
+    return task;
   }
 
   @Override
@@ -69,9 +70,9 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   }
 
   @Override
-  public void assignTask(String taskId, UserReference assignee) {
+  public void assignTask(String taskId, UserId assignee) {
     log.debug("assignTask");
-    assignee = wireize("  >>assignee>>", assignee, UserReference.class);
+    assignee = wireize("  >>assignee>>", assignee, UserId.class);
     taskService.assignTask(taskId, assignee);
   }
 

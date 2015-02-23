@@ -24,10 +24,10 @@ import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.types.UserReferenceType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -80,7 +80,7 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testCallActivityInputValue() {
     Workflow subWorkflow = new Workflow()
-      .variable("performer", new UserReferenceType())
+      .variable("performer", new UserIdType())
       .activity("subtask", new UserTask()
         .assigneeVariableId("performer")
       );
@@ -89,7 +89,7 @@ public class CallTest extends WorkflowTest {
     
     Workflow superWorkflow = new Workflow()
       .activity("call", new Call()
-        .inputValue("performer", new UserReference("johndoe"))
+        .inputValue("performer", new UserId("johndoe"))
         .subWorkflowId(subWorkflow.getId()));
     
     deploy(superWorkflow);
@@ -103,7 +103,7 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testCallActivityInputBindingVariable() {
     Workflow subWorkflow = new Workflow()
-      .variable("performer", new UserReferenceType())
+      .variable("performer", new UserIdType())
       .activity("subtask", new UserTask()
         .assigneeVariableId("performer")
       );
@@ -111,7 +111,7 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .variable("guineapig", new UserReferenceType())
+      .variable("guineapig", new UserIdType())
       .activity(new Call("call")
         .inputVariable("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
@@ -120,7 +120,7 @@ public class CallTest extends WorkflowTest {
     
     workflowEngine.start(new TriggerInstance()
       .workflowId(superWorkflow.getId())
-      .data("guineapig", new UserReference("johndoe"))
+      .data("guineapig", new UserId("johndoe"))
     );
 
     Task task = taskService.findTasks(new TaskQuery()).get(0);

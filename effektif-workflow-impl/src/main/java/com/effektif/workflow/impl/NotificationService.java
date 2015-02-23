@@ -13,9 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.api.task.NewTask;
 import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 
 /**
@@ -29,6 +27,6 @@ public interface NotificationService {
 
   void notifyTaskReminder(Task task);
 
-  void taskCreated(Task task, NewTask newTask, WorkflowInstance workflowInstance);
+  void taskCreated(Task task);
 
 }

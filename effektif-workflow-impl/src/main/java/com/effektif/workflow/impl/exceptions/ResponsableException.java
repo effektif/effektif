@@ -33,4 +33,8 @@ public abstract class ResponsableException extends RuntimeException {
   }
   
   public abstract int getStatusCode();
+
+  public String getJsonBody() {
+    return "{\"message\":\""+getMessage()+"\"}";
+  }
 }

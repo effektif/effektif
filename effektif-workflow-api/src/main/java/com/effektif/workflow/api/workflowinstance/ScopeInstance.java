@@ -26,19 +26,64 @@ import org.joda.time.LocalDateTime;
 public class ScopeInstance {
   
   protected String id;
-
   protected LocalDateTime start;
-
   protected LocalDateTime end;
-
   protected Long duration;
-
   protected List<ActivityInstance> activityInstances;
-
   protected List<VariableInstance> variableInstances;
-
   protected List<TimerInstance> timerInstances;
+  protected String taskId;
   
+  public ActivityInstance findOpenActivityInstance(String activityId) {
+    if (activityId!=null && activityInstances!=null) {
+      for (ActivityInstance activityInstance: activityInstances) {
+        ActivityInstance theOne = activityInstance.findOpenActivityInstance(activityId);
+        if (theOne!=null) {
+          return theOne;
+        }
+      }
+    }
+    return null;
+  }
+  
+  public Object getVariableValue(String variableId) {
+    if (variableId==null) {
+      return null;
+    }
+    if (variableInstances!=null) {
+      for (VariableInstance variableInstance: variableInstances) {
+        if (variableId.equals(variableInstance.getVariableId())) {
+          return variableInstance.getValue();
+        }
+      }
+    }
+    return null;
+  }
+  
+  public Long getVariableValueLong(String variableId) {
+    Object value = getVariableValue(variableId);
+    if (value==null) {
+      return null;
+    }
+    if (value instanceof Number) {
+      return ((Number)value).longValue();
+    }
+    throw new RuntimeException("Value is not a number: "+value+" ("+value.getClass().getName()+")");
+  }
+
+  public Double getVariableValueDouble(String variableId) {
+    Object value = getVariableValue(variableId);
+    if (value==null) {
+      return null;
+    }
+    if (value instanceof Number) {
+      return ((Number)value).doubleValue();
+    }
+    throw new RuntimeException("Value is not a double: "+value+" ("+value.getClass().getName()+")");
+  }
+
+
+
   public String getId() {
     return id;
   }
@@ -97,51 +142,10 @@ public class ScopeInstance {
     this.timerInstances = timerInstances;
   }
   
-  public ActivityInstance findOpenActivityInstance(String activityId) {
-    if (activityId!=null && activityInstances!=null) {
-      for (ActivityInstance activityInstance: activityInstances) {
-        ActivityInstance theOne = activityInstance.findOpenActivityInstance(activityId);
-        if (theOne!=null) {
-          return theOne;
-        }
-      }
-    }
-    return null;
+  public String getTaskId() {
+    return this.taskId;
   }
-  
-  public Object getVariableValue(String variableId) {
-    if (variableId==null) {
-      return null;
-    }
-    if (variableInstances!=null) {
-      for (VariableInstance variableInstance: variableInstances) {
-        if (variableId.equals(variableInstance.getVariableId())) {
-          return variableInstance.getValue();
-        }
-      }
-    }
-    return null;
-  }
-  
-  public Long getVariableValueLong(String variableId) {
-    Object value = getVariableValue(variableId);
-    if (value==null) {
-      return null;
-    }
-    if (value instanceof Number) {
-      return ((Number)value).longValue();
-    }
-    throw new RuntimeException("Value is not a number: "+value+" ("+value.getClass().getName()+")");
-  }
-
-  public Double getVariableValueDouble(String variableId) {
-    Object value = getVariableValue(variableId);
-    if (value==null) {
-      return null;
-    }
-    if (value instanceof Number) {
-      return ((Number)value).doubleValue();
-    }
-    throw new RuntimeException("Value is not a double: "+value+" ("+value.getClass().getName()+")");
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
   }
 }

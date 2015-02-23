@@ -41,7 +41,7 @@ public abstract class ScopeImpl {
   public Map<String, VariableImpl> variables;
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
-  
+
   public void parse(Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
     this.id = scopeApi.getId();
     this.configuration = parser.configuration;
@@ -272,6 +272,4 @@ public abstract class ScopeImpl {
   public List<TransitionImpl> getTransitions() {
     return transitions;
   }
-  
-  
 }

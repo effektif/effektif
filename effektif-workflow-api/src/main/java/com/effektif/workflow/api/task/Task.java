@@ -16,42 +16,46 @@
 package com.effektif.workflow.api.task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.acl.AccessControlList;
-import com.effektif.workflow.api.ref.GroupReference;
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.acl.AccessControlledObject;
+import com.effektif.workflow.api.ref.GroupId;
+import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.workflow.Extensible;
 
 
 /**
  * @author Tom Baeyens
  */
-public class Task {
+public class Task extends Extensible implements AccessControlledObject {
+  
+  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
+          "id", "organizationId", "name", "description", "access", "createdBy",
+          "participants", "assignee", "candidates", "candidateGroups", "caseId",
+          "parentId", "subtaskIds", "duedate", "lastUpdated", "canceled", "completed",
+          "activityId", "activityInstanceId", "activityNotify", "hasWorkflowForm", 
+          "workflowInstanceId", "sourceWorkflowId", "workflowId", "properties"));
   
   protected String id;
   protected String organizationId;
   protected String name;
   protected String description;
-  
   protected AccessControlList access;
 
-  public AccessControlList getAccess() {
-    return this.access;
-  }
-  public void setAccess(AccessControlList access) {
-    this.access = access;
-  }
-  
   // creator, people that add comments and people assigned to tasks are participants
-  protected UserReference createdBy;
-  protected List<UserReference> participants;
-  protected UserReference assignee;
-  protected List<UserReference> candidates;
-  protected List<GroupReference> candidateGroups;
+  protected UserId createdBy;
+  protected List<UserId> participants;
+  protected UserId assignee;
+  protected List<UserId> candidates;
+  protected List<GroupId> candidateGroups;
 
-  protected String caseId;
+  protected String caseId; // id of the root task in the task parent-child relationship
   protected String parentId;
   protected List<String> subtaskIds;
   protected LocalDateTime duedate;
@@ -74,8 +78,36 @@ public class Task {
   protected String workflowInstanceId;
   protected String sourceWorkflowId;
   protected String workflowId;
-
+  
   public Task() {
+  }
+  
+  /** shallow copy constructor */
+  public Task(Task other) {
+    this.id = other.id;
+    this.organizationId = other.organizationId;
+    this.name = other.name;
+    this.description = other.description;
+    this.access = other.access;
+    this.createdBy = other.createdBy;
+    this.participants= other.participants;
+    this.assignee = other.assignee;
+    this.candidates = other.candidates;
+    this.candidateGroups = other.candidateGroups;
+    this.caseId = other.caseId;
+    this.parentId = other.parentId;
+    this.subtaskIds = other.subtaskIds;
+    this.duedate = other.duedate;
+    this.lastUpdated = other.lastUpdated;
+    this.canceled = other.canceled;
+    this.completed = other.completed;
+    this.activityId = other.activityId;
+    this.activityInstanceId = other.activityInstanceId;
+    this.activityNotify = other.activityNotify;
+    this.hasWorkflowForm = other.hasWorkflowForm;
+    this.workflowInstanceId = other.workflowInstanceId;
+    this.sourceWorkflowId = other.sourceWorkflowId;
+    this.workflowId = other.workflowId;
   }
   
   public boolean isCase() {
@@ -88,12 +120,12 @@ public class Task {
     return this;
   }
   
-  public Task assignee(UserReference assignee) {
+  public Task assignee(UserId assignee) {
     this.assignee = assignee;
     return this;
   }
 
-  public Task candidates(List<UserReference> candidates) {
+  public Task candidates(List<UserId> candidates) {
     this.candidates = candidates;
     return this;
   }
@@ -115,20 +147,20 @@ public class Task {
   }
 
   
-  public UserReference getAssignee() {
+  public UserId getAssignee() {
     return assignee;
   }
   
-  public void setAssignee(UserReference assignee) {
+  public void setAssignee(UserId assignee) {
     this.assignee = assignee;
   }
   
-  public List<UserReference> getCandidates() {
+  public List<UserId> getCandidates() {
     return candidates;
   }
 
   
-  public void setCandidates(List<UserReference> candidates) {
+  public void setCandidates(List<UserId> candidates) {
     this.candidates = candidates;
   }
 
@@ -217,10 +249,10 @@ public class Task {
     this.activityId = activityId;
   }
 
-  public List<GroupReference> getCandidateGroups() {
+  public List<GroupId> getCandidateGroups() {
     return this.candidateGroups;
   }
-  public void setCandidateGroups(List<GroupReference> candidateGroups) {
+  public void setCandidateGroups(List<GroupId> candidateGroups) {
     this.candidateGroups = candidateGroups;
   }
   
@@ -238,10 +270,10 @@ public class Task {
     this.completed = completed;
   }
   
-  public UserReference getCreatedBy() {
+  public UserId getCreatedBy() {
     return this.createdBy;
   }
-  public void setCreatedBy(UserReference createdBy) {
+  public void setCreatedBy(UserId createdBy) {
     this.createdBy = createdBy;
   }
 
@@ -284,10 +316,10 @@ public class Task {
     this.lastUpdated = lastUpdated;
   }
 
-  public List<UserReference> getParticipants() {
+  public List<UserId> getParticipants() {
     return this.participants;
   }
-  public void setParticipants(List<UserReference> participants) {
+  public void setParticipants(List<UserId> participants) {
     this.participants = participants;
   }
   
@@ -297,4 +329,31 @@ public class Task {
   public void setSourceWorkflowId(String sourceWorkflowId) {
     this.sourceWorkflowId = sourceWorkflowId;
   }
+
+
+  @Override
+  public Task property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public Task propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
+
+  protected void checkPropertyKey(String key) {
+    if (key==null || INVALID_PROPERTY_KEYS.contains(key)) {
+      throw new RuntimeException("Invalid property '"+key+"'");
+    }
+  }
+
+  public AccessControlList getAccess() {
+    return this.access;
+  }
+  public void setAccess(AccessControlList access) {
+    this.access = access;
+  }
+  
 }

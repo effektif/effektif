@@ -18,8 +18,8 @@ package com.effektif.workflow.api.activities;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.ref.GroupReference;
-import com.effektif.workflow.api.ref.UserReference;
+import com.effektif.workflow.api.ref.GroupId;
+import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -37,14 +37,14 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class UserTask extends NoneTask {
   
   protected Binding<String> taskName;
-  protected Binding<UserReference> assignee;
-  protected Binding<UserReference> candidates;
-  protected Binding<GroupReference> candidateGroups;
+  protected Binding<UserId> assignee;
+  protected Binding<UserId> candidates;
+  protected Binding<GroupId> candidateGroups;
   protected RelativeTime duedate;
   protected Form form;
   protected AccessControlList access;
   protected RelativeTime escalate;
-  protected Binding<UserReference> escalateTo;
+  protected Binding<UserId> escalateTo;
   
   protected RelativeTime reminder;
   protected RelativeTime reminderRepeat;
@@ -73,7 +73,7 @@ public class UserTask extends NoneTask {
 
   /** adds a candidate id value to the list */
   public UserTask assigneeUserId(String assigneeUserId) {
-    this.assignee = new Binding().value(new UserReference(assigneeUserId));
+    this.assignee = new Binding().value(new UserId(assigneeUserId));
     return this;
   }
 
@@ -91,7 +91,7 @@ public class UserTask extends NoneTask {
 
   /** adds a candidate id value to the list */
   public UserTask candidateUserId(String assigneeUserId) {
-    addCandidateBinding(new Binding().value(new UserReference(assigneeUserId)));
+    addCandidateBinding(new Binding().value(new UserId(assigneeUserId)));
     return this;
   }
 
@@ -107,9 +107,9 @@ public class UserTask extends NoneTask {
     return this;
   }
 
-  protected void addCandidateBinding(Binding<UserReference> binding) {
+  protected void addCandidateBinding(Binding<UserId> binding) {
     if (candidates==null) {
-      candidates = new Binding<UserReference>();
+      candidates = new Binding<UserId>();
     }
     candidates.binding(binding);
   }
@@ -122,19 +122,19 @@ public class UserTask extends NoneTask {
     this.taskName = nameBinding;
   }
   
-  public Binding<UserReference> getCandidates() {
+  public Binding<UserId> getCandidates() {
     return candidates;
   }
   
-  public void setCandidates(Binding<UserReference> candidates) {
+  public void setCandidates(Binding<UserId> candidates) {
     this.candidates = candidates;
   }
   
-  public Binding<UserReference> getAssignee() {
+  public Binding<UserId> getAssignee() {
     return assignee;
   }
   
-  public void setAssignee(Binding<UserReference> assignee) {
+  public void setAssignee(Binding<UserId> assignee) {
     this.assignee = assignee;
   }
   
@@ -182,18 +182,18 @@ public class UserTask extends NoneTask {
     return this;
   }
   
-  public Binding<UserReference> getEscalateTo() {
+  public Binding<UserId> getEscalateTo() {
     return this.escalateTo;
   }
-  public void setEscalateTo(Binding<UserReference> escalateTo) {
+  public void setEscalateTo(Binding<UserId> escalateTo) {
     this.escalateTo = escalateTo;
   }
-  public UserTask escalateTo(Binding<UserReference> escalateTo) {
+  public UserTask escalateTo(Binding<UserId> escalateTo) {
     this.escalateTo = escalateTo;
     return this;
   }
   public UserTask escalateToUserId(String escalateToUserId) {
-    escalateTo(new Binding<UserReference>().value(new UserReference(escalateToUserId)));
+    escalateTo(new Binding<UserId>().value(new UserId(escalateToUserId)));
     return this;
   }
   

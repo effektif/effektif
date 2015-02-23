@@ -118,6 +118,9 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
       TriggerInstance triggerInstance = new TriggerInstance()
         .workflowId(actualSubWorkflowId);
       
+      triggerInstance.setCallerWorkflowInstanceId(activityInstance.workflowInstance.id);
+      triggerInstance.setCallerActivityInstanceId(activityInstance.id);
+      
       if (inputBindings!=null) {
         for (String subWorkflowKey: inputBindings.keySet()) {
           BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowKey);
@@ -126,10 +129,8 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
         }
       }
       
-      CallerReference callerReference = new CallerReference(activityInstance.workflowInstance.id, activityInstance.id);
-  
       WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-      WorkflowInstance calledProcessInstance = workflowEngine.startWorkflowInstance(triggerInstance, callerReference);
+      WorkflowInstance calledProcessInstance = workflowEngine.start(triggerInstance);
       activityInstanceImpl.setCalledWorkflowInstanceId(calledProcessInstance.getId());
       
     } else {
