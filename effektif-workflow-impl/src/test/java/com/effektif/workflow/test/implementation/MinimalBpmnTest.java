@@ -15,9 +15,7 @@
  */
 package com.effektif.workflow.test.implementation;
 
-import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.activities.*;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -96,17 +94,30 @@ public class MinimalBpmnTest extends TestCase {
     BpmnReader reader = new BpmnReader(activityTypeService);
     Workflow workflow = reader.readBpmnDocument(new StringReader(bpmnXmlString));
 
+    // Check parsed model…
     checkProcessModel(workflow);
     checkStartEvent(findActivity(workflow, StartEvent.class, "theStart"));
-    checkUserTask(findActivity(workflow, UserTask.class, "approveRequest"));
+
+    checkEmailTask(findActivity(workflow, EmailTask.class, "emailNotification"));
+    checkJavaServiceTask(findActivity(workflow, JavaServiceTask.class, "lookupAllowance"));
+    checkHttpServiceTask(findActivity(workflow, HttpServiceTask.class, "publishVacation"));
+    checkScriptTask(findActivity(workflow, ScriptTask.class, "checkAllowance"));
     checkTransition(findTransition(workflow, "flow1"));
+    checkUserTask(findActivity(workflow, UserTask.class, "approveRequest"));
+
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
-    // Inspect the XML output for correctness. TODO Automate this check.
+    // Check XML generated from model…
     BpmnWriter writer = new BpmnWriter(activityTypeService);
-    System.out.println("--- GENERATED BPMN " + " ------------------------------------------ ");
     String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService);
+
+    // Inspect the XML output for correctness.
+    System.out.println("--- GENERATED BPMN ------------------------------------------ ");
     System.out.println(generatedBpmnDocument);
+    System.out.println("------------------------------------------------------------- ");
+
+    // Validate generated XML.
+    // TODO Automate the XML correctness check with assertions on the parsed XML.
     validateBpmnXml(generatedBpmnDocument);
   }
 
@@ -116,6 +127,14 @@ public class MinimalBpmnTest extends TestCase {
   }
 
   private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
+
+  private void checkEmailTask(EmailTask task) { assertNotNull("EmailTask should exist", task); }
+
+  private void checkHttpServiceTask(HttpServiceTask task) { assertNotNull("HttpServiceTask should exist", task); }
+
+  private void checkJavaServiceTask(JavaServiceTask task) { assertNotNull("JavaServiceTask should exist", task); }
+
+  private void checkScriptTask(ScriptTask task) { assertNotNull("ScriptTask should exist", task); }
 
   private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
 

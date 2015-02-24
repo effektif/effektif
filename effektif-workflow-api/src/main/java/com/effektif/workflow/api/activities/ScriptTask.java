@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A script task - code that will be executed by the process engine.
+ *
+ * BPMN XML: {@code <scriptTask id="checkAllowance"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("scriptTask")

@@ -16,17 +16,44 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 /**
+ * A service task implemented in Java.
+ *
+ * BPMN XML: {@code <serviceTask id="sendMail" effektif:type="java">}
+ *
  * @author Tom Baeyens
  */
 public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
 
+  private static final String BPMN_ELEMENT_NAME = "serviceTask";
+
   public JavaServiceTaskImpl() {
     super(JavaServiceTask.class);
+  }
+
+  @Override
+  public JavaServiceTask readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME) || !reader.hasBpmnType(xml, "java")) {
+      return null;
+    }
+    JavaServiceTask task = new JavaServiceTask();
+    task.id(reader.readBpmnAttribute(xml, "id"));
+    return task;
+  }
+
+  @Override
+  public void writeBpmn(JavaServiceTask task, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", task.getId());
+    xml.addAttribute("effektif:type", "java");
   }
 
   @Override

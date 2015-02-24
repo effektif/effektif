@@ -16,7 +16,11 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -25,8 +29,27 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class HttpServiceTaskImpl extends AbstractActivityType<HttpServiceTask> {
 
+  private static final String BPMN_ELEMENT_NAME = "serviceTask";
+
   public HttpServiceTaskImpl() {
     super(HttpServiceTask.class);
+  }
+
+  @Override
+  public HttpServiceTask readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME) || !reader.hasBpmnType(xml, "http")) {
+      return null;
+    }
+    HttpServiceTask task = new HttpServiceTask();
+    task.id(reader.readBpmnAttribute(xml, "id"));
+    return task;
+  }
+
+  @Override
+  public void writeBpmn(HttpServiceTask task, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", task.getId());
+    xml.addAttribute("effektif:type", "http");
   }
 
   @Override

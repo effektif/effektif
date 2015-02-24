@@ -115,7 +115,6 @@ public class BpmnReader extends Bpmn {
 
       // Check if the XML element can be parsed as a sequenceFlow.
       if (childElement.is(getQName(BPMN_URI, "sequenceFlow"))) {
-        System.out.println("getQName = sequenceFlow");
         Transition transition = new TransitionImpl().readBpmn(childElement, this);
         scope.transition(transition);
         // Remove the sequenceFlow as it has been parsed in the model.
@@ -146,6 +145,18 @@ public class BpmnReader extends Bpmn {
         prefixes.put(namespaces.get(prefix), prefix);
       }
     }
+  }
+
+  /**
+   * Returns true iff the given XML element’s <code>effektif:type</code> attribute value is the given Effektif type.
+   */
+  public boolean hasBpmnType(XmlElement xml, String type) {
+    if (type == null) {
+      throw new IllegalArgumentException("type must not be null");
+    }
+    String attributeName = String.format("{%s}type", Bpmn.EFFEKTIF_URI);
+    String xmlType = xml.attributes.get(attributeName);
+    return type.equals(xmlType);
   }
 
   protected String getQName(String namespaceUri, String localName) {
