@@ -28,24 +28,26 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class StartEventImpl extends AbstractActivityType<StartEvent> {
 
+  private static final String BPMN_ELEMENT_NAME = "startEvent";
+
   public StartEventImpl() {
     super(StartEvent.class);
   }
   
   @Override
-  public StartEvent readBpmn(XmlElement activityXml, BpmnReader bpmnReader) {
-    if (!bpmnReader.isLocalPart(activityXml, "startEvent")) {
+  public StartEvent readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
       return null;
     }
-    StartEvent startEvent = new StartEvent();
-    startEvent.id(bpmnReader.readBpmnAttribute(activityXml, "id"));
-    return startEvent;
+    StartEvent event = new StartEvent();
+    event.id(reader.readBpmnAttribute(xml, "id"));
+    return event;
   }
 
   @Override
-  public void writeBpmn(StartEvent startEvent, XmlElement startEventXml, BpmnWriter bpmnWriter) {
-    bpmnWriter.setBpmnName(startEventXml, "startEvent");
-    bpmnWriter.writeBpmnAttribute(startEventXml, "id", startEvent.getId());
+  public void writeBpmn(StartEvent event, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", event.getId());
   }
 
   @Override
