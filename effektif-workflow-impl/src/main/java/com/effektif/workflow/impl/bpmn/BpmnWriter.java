@@ -29,10 +29,10 @@ import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-/** Parsers BPMN XML from 
+/** Parses BPMN XML from
  * {@link XmlElement our own jsonnable xml dom structure}
  * to {@link Workflow}.
- * Not threadsafe, use one BpmnReader object per serialization. */
+ * Not thread safe, use one BpmnReader object per serialization. */
 public class BpmnWriter extends Bpmn {
   
   protected ActivityTypeService activityTypeService;

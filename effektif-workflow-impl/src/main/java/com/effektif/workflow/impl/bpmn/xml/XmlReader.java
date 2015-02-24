@@ -31,8 +31,8 @@ import javax.xml.stream.events.XMLEvent;
 import com.effektif.workflow.api.xml.XmlElement;
 
 
-/** uses a sax streaming parser to parse xml and 
- * generate {@link XmlElement our own jsonnable xml dom structure}. */
+/** Uses a SAX streaming parser to parse XML and
+ * generate {@link XmlElement our own JSONnable XML DOM structure}. */
 public class XmlReader {
 
   public Reader reader;

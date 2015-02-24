@@ -28,7 +28,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -93,7 +102,9 @@ public class MinimalBpmnTest extends TestCase {
     // Inspect the XML output for correctness. TODO Automate this check.
     BpmnWriter writer = new BpmnWriter(activityTypeService);
     System.out.println("--- GENERATED BPMN " + " ------------------------------------------ ");
-    System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService));
+    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService);
+    System.out.println(generatedBpmnDocument);
+    validateBpmnXml(generatedBpmnDocument);
   }
 
   private void checkProcessModel(Workflow workflow) {
@@ -127,4 +138,19 @@ public class MinimalBpmnTest extends TestCase {
     return null;
   }
 
+  /**
+   * Performs XML schema validation on the generated XML using the BPMN 2.0 schema.
+   */
+  private void validateBpmnXml(String bpmnDocument) throws IOException {
+    File schemaFile = new File(testResources, "bpmn/xsd/BPMN20.xsd");
+    Source xml = new StreamSource(new StringReader(bpmnDocument));
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    try {
+      Schema schema = schemaFactory.newSchema(schemaFile);
+      Validator validator = schema.newValidator();
+      validator.validate(xml);
+    } catch (SAXException e) {
+      fail("BPMN XML validation error: " + e.getMessage());
+    }
+  }
 }
