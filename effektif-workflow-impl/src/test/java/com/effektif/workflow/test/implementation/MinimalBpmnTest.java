@@ -99,8 +99,9 @@ public class MinimalBpmnTest extends TestCase {
     checkStartEvent(findActivity(workflow, StartEvent.class, "theStart"));
 
     checkEmailTask(findActivity(workflow, EmailTask.class, "emailNotification"));
-    checkJavaServiceTask(findActivity(workflow, JavaServiceTask.class, "lookupAllowance"));
     checkHttpServiceTask(findActivity(workflow, HttpServiceTask.class, "publishVacation"));
+    checkJavaServiceTask(findActivity(workflow, JavaServiceTask.class, "lookupAllowance"));
+    checkNoneTask(findActivity(workflow, NoneTask.class, "evaluateCase"));
     checkScriptTask(findActivity(workflow, ScriptTask.class, "checkAllowance"));
     checkTransition(findTransition(workflow, "theStart1"));
     checkUserTask(findActivity(workflow, UserTask.class, "approveRequest"));
@@ -147,6 +148,8 @@ public class MinimalBpmnTest extends TestCase {
   private void checkHttpServiceTask(HttpServiceTask task) { assertNotNull("HttpServiceTask should exist", task); }
 
   private void checkJavaServiceTask(JavaServiceTask task) { assertNotNull("JavaServiceTask should exist", task); }
+
+  private void checkNoneTask(NoneTask task) { assertNotNull("NoneTask should exist", task); }
 
   private void checkParallelGateway(ParallelGateway gateway) { assertNotNull("ParallelGateway should exist", gateway); }
 

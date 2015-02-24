@@ -47,8 +47,10 @@
 			<sequenceFlow id="publishVacation1" sourceRef="publishVacation" targetRef="notificationJoin"/>
 
 		<parallelGateway id="notificationJoin" gatewayDirection="Converging"/>
-		<sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="theEnd"/>
+		<sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="evaluateCase"/>
 
+		<task id="evaluateCase"/>
+		<sequenceFlow id="evaluateCase1" sourceRef="evaluateCase" targetRef="theEnd"/>
 
 		<endEvent id="theEnd"/>
 

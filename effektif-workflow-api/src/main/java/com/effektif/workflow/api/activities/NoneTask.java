@@ -20,8 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** 
- * this task doesn't do anything, it just continues (aka noop, pass-through). 
- * 
+ * This task doesn't do anything, it just continues (aka noop, pass-through).
+ *
+ * BPMN XML: {@code <task id="evaluateCase"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("noneTask")
