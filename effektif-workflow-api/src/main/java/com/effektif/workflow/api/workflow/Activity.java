@@ -23,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
-/**
+/** Base class containing the configuration data for 
+ * specific activity types.
+ * 
  * @author Tom Baeyens
  */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")

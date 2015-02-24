@@ -19,8 +19,7 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** 
- * this task doesn't do anything, it just continues (aka noop, pass-through). 
+/** Does nothing and continues immediately (aka noop, pass-through). 
  * 
  * @author Tom Baeyens
  */

@@ -37,6 +37,7 @@ public class WorkflowImpl extends ScopeImpl {
   public List<ActivityImpl> startActivities;
   public TriggerImpl trigger;
   public AccessControlList access;
+  public String caseNameTemplate;
   
   public WorkflowImpl() {
   }
@@ -49,6 +50,7 @@ public class WorkflowImpl extends ScopeImpl {
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
     this.sourceWorkflowId = workflowApi.getSourceWorkflowId();
     this.access = workflowApi.getAccess();
+    this.caseNameTemplate = workflowApi.getCaseNameTemplate();
     
     Trigger triggerApi = workflowApi.getTrigger();
     if (triggerApi!=null) {

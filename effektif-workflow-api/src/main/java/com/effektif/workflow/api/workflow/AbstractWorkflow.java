@@ -28,6 +28,8 @@ public class AbstractWorkflow extends Scope {
   protected AccessControlList access;
   protected String organizationId;
   
+  protected String caseNameTemplate;
+
   public String getSourceWorkflowId() {
     return id;
   }
@@ -75,5 +77,13 @@ public class AbstractWorkflow extends Scope {
   public AbstractWorkflow organizationId(String organizationId) {
     this.organizationId = organizationId;
     return this;
+  }
+
+  /** optional template to initialize the name of cases */
+  public String getCaseNameTemplate() {
+    return this.caseNameTemplate;
+  }
+  public void setCaseNameTemplate(String caseNameTemplate) {
+    this.caseNameTemplate = caseNameTemplate;
   }
 }

@@ -440,4 +440,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     return null;
   }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
+  
+  public String getTaskId() {
+    return taskId;
+  }
 }

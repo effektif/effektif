@@ -30,24 +30,26 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
+/** A task for a user to complete.
+ * 
+ * This could be an approval o
+ * 
  * @author Tom Baeyens
  */
 @JsonTypeName("userTask")
 public class UserTask extends NoneTask {
   
-  protected Binding<String> taskName;
-  protected Binding<UserId> assignee;
-  protected Binding<UserId> candidates;
-  protected Binding<GroupId> candidateGroups;
-  protected RelativeTime duedate;
-  protected Form form;
   protected AccessControlList access;
-  protected RelativeTime escalate;
-  protected Binding<UserId> escalateTo;
-  
+  protected Binding<String> taskName;
+  protected Binding<UserId> assigneeId;
+  protected Binding<UserId> candidateIds;
+  protected Binding<GroupId> candidateGroupIds;
+  protected Form form;
+  protected RelativeTime duedate;
   protected RelativeTime reminder;
   protected RelativeTime reminderRepeat;
+  protected RelativeTime escalate;
+  protected Binding<UserId> escalateToId;
 
   public UserTask() {
   }
@@ -73,45 +75,45 @@ public class UserTask extends NoneTask {
 
   /** adds a candidate id value to the list */
   public UserTask assigneeUserId(String assigneeUserId) {
-    this.assignee = new Binding().value(new UserId(assigneeUserId));
+    this.assigneeId = new Binding().value(new UserId(assigneeUserId));
     return this;
   }
 
   /** adds a candidate id variable to the list */
   public UserTask assigneeVariableId(String assigneeVariableId) {
-    this.assignee = new Binding().variableId(assigneeVariableId);
+    this.assigneeId = new Binding().variableId(assigneeVariableId);
     return this;
   }
 
   /** adds a candidate id expression to the list */
   public UserTask assigneeExpression(String assigneeExpression) {
-    this.assignee = new Binding().expression(assigneeExpression);
+    this.assigneeId = new Binding().expression(assigneeExpression);
     return this;
   }
 
   /** adds a candidate id value to the list */
-  public UserTask candidateUserId(String assigneeUserId) {
-    addCandidateBinding(new Binding().value(new UserId(assigneeUserId)));
+  public UserTask candidateUserId(String candidateUserId) {
+    addCandidateBinding(new Binding().value(new UserId(candidateUserId)));
     return this;
   }
 
   /** adds a candidate id variable to the list */
-  public UserTask candidateVariableId(String assigneeVariableId) {
-    addCandidateBinding(new Binding().variableId(assigneeVariableId));
+  public UserTask candidateVariableId(String candidateVariableId) {
+    addCandidateBinding(new Binding().variableId(candidateVariableId));
     return this;
   }
 
   /** adds a candidate id expression to the list */
-  public UserTask candidateExpression(String assigneeExpression) {
-    addCandidateBinding(new Binding().expression(assigneeExpression));
+  public UserTask candidateExpression(String candidateExpression) {
+    addCandidateBinding(new Binding().expression(candidateExpression));
     return this;
   }
 
   protected void addCandidateBinding(Binding<UserId> binding) {
-    if (candidates==null) {
-      candidates = new Binding<UserId>();
+    if (candidateIds==null) {
+      candidateIds = new Binding<UserId>();
     }
-    candidates.binding(binding);
+    candidateIds.binding(binding);
   }
   
   public Binding<String> getTaskName() {
@@ -122,20 +124,20 @@ public class UserTask extends NoneTask {
     this.taskName = nameBinding;
   }
   
-  public Binding<UserId> getCandidates() {
-    return candidates;
+  public Binding<UserId> getCandidateIds() {
+    return candidateIds;
   }
   
-  public void setCandidates(Binding<UserId> candidates) {
-    this.candidates = candidates;
+  public void setCandidateIds(Binding<UserId> candidates) {
+    this.candidateIds = candidates;
   }
   
-  public Binding<UserId> getAssignee() {
-    return assignee;
+  public Binding<UserId> getAssigneeId() {
+    return assigneeId;
   }
   
-  public void setAssignee(Binding<UserId> assignee) {
-    this.assignee = assignee;
+  public void setAssigneeId(Binding<UserId> assignee) {
+    this.assigneeId = assignee;
   }
   
   public Form getForm() {
@@ -182,14 +184,14 @@ public class UserTask extends NoneTask {
     return this;
   }
   
-  public Binding<UserId> getEscalateTo() {
-    return this.escalateTo;
+  public Binding<UserId> getEscalateToId() {
+    return this.escalateToId;
   }
-  public void setEscalateTo(Binding<UserId> escalateTo) {
-    this.escalateTo = escalateTo;
+  public void setEscalateToId(Binding<UserId> escalateTo) {
+    this.escalateToId = escalateTo;
   }
   public UserTask escalateTo(Binding<UserId> escalateTo) {
-    this.escalateTo = escalateTo;
+    this.escalateToId = escalateTo;
     return this;
   }
   public UserTask escalateToUserId(String escalateToUserId) {

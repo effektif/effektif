@@ -95,9 +95,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     this.taskStore = parser.getConfiguration(TaskStore.class);
     this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.nameBinding = parser.parseBinding(userTaskApi.getTaskName(), NAME);
-    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssignee(), ASSIGNEE);
-    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidates(), CANDIDATES);
-    this.escalateTo = parser.parseBinding(userTaskApi.getEscalateTo(), ESCALATE_TO);
+    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssigneeId(), ASSIGNEE);
+    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidateIds(), CANDIDATES);
+    this.escalateTo = parser.parseBinding(userTaskApi.getEscalateToId(), ESCALATE_TO);
   }
 
   @Override
@@ -114,8 +114,11 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
       assignee = candidates.get(0);
     }
     
+    String taskId = taskStore.generateTaskId();
+    activityInstance.setTaskId(taskId);
+    
     Task task = new Task();
-    task.setId(activityInstance.getId());
+    task.setId(taskId);
     task.setName(taskName);
     task.setAssignee(assignee);
     task.setCandidates(candidates);
@@ -130,10 +133,6 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
       task.setCaseId(parentTask.getCaseId());
       task.setParentId(parentTaskId);
     }
-    // in theory, the taskId should be set on the activity instance
-    // but as long as we don't support nested task creation in the process, 
-    // this fills up the db and we don't use it.  so leaving it out for now.
-    // activityInstance.setTaskId(task.getId());
     
     RelativeTime duedate = activity.getDuedate();
     if (duedate!=null) {
@@ -143,7 +142,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     taskStore.insertTask(task);
 
     RelativeTime escalate = activity.getEscalate();
-    Binding<UserId> escalateTo = activity.getEscalateTo();
+    Binding<UserId> escalateTo = activity.getEscalateToId();
     if (escalate!=null && escalateTo!=null) {
       LocalDateTime escalateTime = escalate.resolve();
       activityInstance.getWorkflowInstance().addJob(new Job()        

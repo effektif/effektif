@@ -128,6 +128,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
   public WorkflowInstance start(TriggerInstance triggerInstance) {
+    WorkflowInstanceImpl workflowInstance = startInitialize(triggerInstance);
+    return startExecute(workflowInstance);
+  }
+
+  /** first part of starting a new workflow instance: creating the workflow instance and applying the trigger data */
+  protected WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance) {
     String workflowId = getLatestWorkflowId(triggerInstance);
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
 
@@ -154,7 +160,13 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     } else {
       workflowInstance.setVariableValues(triggerInstance.getData());
     }
-    
+
+    return null;
+  }
+
+  /** second part of starting a new workflow instance: executing the start actvities */
+  protected WorkflowInstance startExecute(WorkflowInstanceImpl workflowInstance) {
+    WorkflowImpl workflow = workflowInstance.workflow;
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
     
     if (workflow.startActivities!=null) {
