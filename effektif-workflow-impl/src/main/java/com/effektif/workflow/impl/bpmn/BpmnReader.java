@@ -98,7 +98,6 @@ public class BpmnReader extends Bpmn {
     workflow.sourceWorkflowId(readBpmnAttribute(processXml, "id"));
     workflow.setName(readBpmnAttribute(processXml, "name"));
     readScope(processXml, workflow);
-    // TODO readTransitions
     setUnparsedBpmn(workflow, processXml);
     return workflow;
   }
@@ -129,6 +128,7 @@ public class BpmnReader extends Bpmn {
           activity = activityType.readBpmn(childElement, this);
         }
         if (activity!=null) {
+          activity.setName(readBpmnAttribute(childElement, "name"));
           scope.activity(activity);
           setUnparsedBpmn(activity, childElement);
           // Remove the activity XML element as it has been parsed in the model.

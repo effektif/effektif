@@ -103,7 +103,7 @@ public class MinimalBpmnTest extends TestCase {
     checkJavaServiceTask(findActivity(workflow, JavaServiceTask.class, "lookupAllowance"));
     checkNoneTask(findActivity(workflow, NoneTask.class, "evaluateCase"));
     checkScriptTask(findActivity(workflow, ScriptTask.class, "checkAllowance"));
-    checkTransition(findTransition(workflow, "theStart1"));
+    checkTransition(findTransition(workflow, "approvalFork1"));
     checkUserTask(findActivity(workflow, UserTask.class, "approveRequest"));
 
     checkExclusiveGateway(findActivity(workflow, ExclusiveGateway.class, "approvalFork"));
@@ -133,7 +133,9 @@ public class MinimalBpmnTest extends TestCase {
     assertEquals("Workflow should have the right name", "Vacation request", workflow.getName());
   }
 
-  private void checkCall(Call task) { assertNotNull("Call should exist", task); }
+  private void checkCall(Call task) {
+    assertNotNull("Call should exist", task);
+  }
 
   private void checkEmailTask(EmailTask task) { assertNotNull("EmailTask should exist", task); }
 
@@ -157,9 +159,17 @@ public class MinimalBpmnTest extends TestCase {
 
   private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
 
-  private void checkTransition(Transition transition) { assertNotNull("Transition should exist", transition); }
+  private void checkTransition(Transition transition) {
+    assertNotNull("Transition should exist", transition);
+    assertEquals("Transition name", "Allowance available", transition.getName());
+    assertEquals("Transition from", "approvalFork", transition.getFrom());
+    assertEquals("Transition to", "approveRequest", transition.getTo());
+  }
 
-  private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
+  private void checkUserTask(UserTask task) {
+    assertNotNull("UserTask should exist", task);
+    assertEquals("UserTask should have the right name", "Approve vacation request", task.getName());
+  }
 
   /**
    * Returns the workflow activity with the given ID, with the specified type.

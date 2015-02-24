@@ -9,10 +9,10 @@
 	
 	<process id="vacationRequest" name="Vacation request">
 	
-		<startEvent id="theStart"/>
+		<startEvent id="theStart" name="vacation requested"/>
 		<sequenceFlow id="theStart1" sourceRef="theStart" targetRef="lookupAllowance"/>
 
-		<serviceTask id="lookupAllowance" effektif:type="java"/>
+		<serviceTask id="lookupAllowance" effektif:type="java" name="Look-up allowance"/>
 		<sequenceFlow id="lookupAllowance1" sourceRef="lookupAllowance" targetRef="checkAllowance"/>
 
 		<scriptTask id="checkAllowance"/>
@@ -20,7 +20,7 @@
 
 
 		<exclusiveGateway id="approvalFork" gatewayDirection="Diverging"/>
-		<sequenceFlow id="approvalFork1" sourceRef="approvalFork" targetRef="approveRequest"/>
+		<sequenceFlow id="approvalFork1" sourceRef="approvalFork" targetRef="approveRequest" name="Allowance available"/>
 		<sequenceFlow id="approvalFork2" sourceRef="approvalFork" targetRef="investigateRequest"/>
 		<sequenceFlow id="approvalFork3" sourceRef="approvalFork" targetRef="increaseVacationAllowance"/>
 

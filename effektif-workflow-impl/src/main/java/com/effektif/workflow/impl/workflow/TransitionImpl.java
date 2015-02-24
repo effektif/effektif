@@ -56,13 +56,20 @@ public class TransitionImpl implements BpmnModel<Transition> {
     if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
       return null;
     }
-    return new Transition().id(reader.readBpmnAttribute(xml, "id"));
+    Transition transition = new Transition();
+    transition.id(reader.readBpmnAttribute(xml, "id"));
+    transition.setName(reader.readBpmnAttribute(xml, "name"));
+    transition.setFrom(reader.readBpmnAttribute(xml, "sourceRef"));
+    transition.setTo(reader.readBpmnAttribute(xml, "targetRef"));
+    return transition;
   }
 
   @Override
   public void writeBpmn(Transition transition, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", transition.getId());
+    writer.writeBpmnAttribute(xml, "sourceRef", transition.getFrom());
+    writer.writeBpmnAttribute(xml, "targetRef", transition.getTo());
   }
 
   public void parse(Transition transitionApi, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
