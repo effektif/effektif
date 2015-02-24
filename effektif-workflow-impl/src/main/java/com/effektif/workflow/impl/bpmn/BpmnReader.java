@@ -150,18 +150,17 @@ public class BpmnReader extends Bpmn {
   /**
    * Returns true iff the given XML element’s <code>effektif:type</code> attribute value is the given Effektif type.
    */
-  public boolean hasBpmnType(XmlElement xml, String type) {
+  public boolean hasServiceTaskType(XmlElement xml, ServiceTaskType type) {
     if (type == null) {
       throw new IllegalArgumentException("type must not be null");
     }
-    String attributeName = String.format("{%s}type", Bpmn.EFFEKTIF_URI);
-    String xmlType = xml.attributes.get(attributeName);
-    return type.equals(xmlType);
+    String typeAttributeValue = xml.attributes.get(getQName(Bpmn.EFFEKTIF_URI, "type"));
+    return type.hasValue(typeAttributeValue);
   }
 
   protected String getQName(String namespaceUri, String localName) {
     String prefix = prefixes.get(namespaceUri);
-    return "".equals(prefix) ? localName : prefix+":"+prefix;
+    return "".equals(prefix) ? localName : prefix+":"+localName;
   }
 
   protected void setUnparsedBpmn(Scope scope, XmlElement unparsedBpmn) {

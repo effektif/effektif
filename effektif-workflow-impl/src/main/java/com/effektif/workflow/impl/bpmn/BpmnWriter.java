@@ -143,7 +143,18 @@ public class BpmnWriter extends Bpmn {
     return bpmnPrefix==null || "".equals(bpmnPrefix) ? localPart : bpmnPrefix+":"+localPart;
   }
 
+  public String getEffektifQName(String localPart) {
+    return effektifPrefix==null || "".equals(effektifPrefix) ? localPart : effektifPrefix+":"+localPart;
+  }
+
   public void setBpmnName(XmlElement xmlElement, String localPart) {
     xmlElement.name = getBpmnQName(localPart);
+  }
+
+  /**
+   * Writes the given service task type as an <code>effektif:type</code> attribute.
+   */
+  public void writeEffektifType(XmlElement xml, ServiceTaskType type) {
+    xml.addAttribute(getEffektifQName("type"), type.value());
   }
 }

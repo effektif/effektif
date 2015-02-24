@@ -16,11 +16,11 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.bpmn.ServiceTaskType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -37,7 +37,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
 
   @Override
   public EmailTask readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME) || !reader.hasBpmnType(xml, "email")) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME) || !reader.hasServiceTaskType(xml, ServiceTaskType.EMAIL)) {
       return null;
     }
     EmailTask task = new EmailTask();
@@ -49,7 +49,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   public void writeBpmn(EmailTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    xml.addAttribute("effektif:type", "email");
+    writer.writeEffektifType(xml, ServiceTaskType.EMAIL);
   }
 
   @Override

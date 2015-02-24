@@ -90,7 +90,7 @@ public class XmlReader {
     Iterator attributes = startElement.getAttributes();
     while (attributes.hasNext()) {
       Attribute attribute = (Attribute) attributes.next();
-      xmlElement.addAttribute(attribute.getName().toString(), attribute.getValue());
+      xmlElement.addAttribute(toString(attribute.getName()), attribute.getValue());
     }
     return xmlElement;
   }
