@@ -108,6 +108,8 @@ public class MinimalBpmnTest extends TestCase {
     checkExclusiveGateway(findActivity(workflow, ExclusiveGateway.class, "approvalFork"));
     checkParallelGateway(findActivity(workflow, ParallelGateway.class, "notificationFork"));
 
+    checkCall(findActivity(workflow, Call.class, "investigateRequest"));
+
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
     // Check XML generated from model…
@@ -129,9 +131,13 @@ public class MinimalBpmnTest extends TestCase {
     assertEquals("Workflow should have the right name", "Vacation request", workflow.getName());
   }
 
-  private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
+  private void checkCall(Call task) { assertNotNull("Call should exist", task); }
 
   private void checkEmailTask(EmailTask task) { assertNotNull("EmailTask should exist", task); }
+
+  private void checkEndEvent(EndEvent endEvent) {
+    assertNotNull("EndEvent should exist", endEvent);
+  }
 
   private void checkExclusiveGateway(ExclusiveGateway gateway) { assertNotNull("ExclusiveGateway should exist", gateway); }
 
@@ -143,13 +149,11 @@ public class MinimalBpmnTest extends TestCase {
 
   private void checkScriptTask(ScriptTask task) { assertNotNull("ScriptTask should exist", task); }
 
-  private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
+  private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
 
   private void checkTransition(Transition transition) { assertNotNull("Transition should exist", transition); }
 
-  private void checkEndEvent(EndEvent endEvent) {
-    assertNotNull("EndEvent should exist", endEvent);
-  }
+  private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
 
   /**
    * Returns the workflow activity with the given ID, with the specified type.

@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A parallel gateway, used to fork and join sequence flows for executing tasks in parallel.
+ *
+ * BPMN XML: {@code <parallelGateway id="fork"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("parallelGateway")

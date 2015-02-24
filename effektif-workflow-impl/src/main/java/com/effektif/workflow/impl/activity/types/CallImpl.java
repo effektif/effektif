@@ -15,10 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.Call;
@@ -28,26 +24,51 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.WorkflowStore;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Tom Baeyens
  */
 public class CallImpl extends AbstractBindableActivityImpl<Call> {
-  
+
+  private static final String BPMN_ELEMENT_NAME = "callActivity";
+
   // IDEA Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   protected String subWorkflowId;
   protected String subWorkflowSource;
 
   public CallImpl() {
     super(Call.class);
+  }
+
+  @Override
+  public Call readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+      return null;
+    }
+    Call activity = new Call();
+    activity.id(reader.readBpmnAttribute(xml, "id"));
+    return activity;
+  }
+
+  @Override
+  public void writeBpmn(Call activity, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", activity.getId());
   }
 
   @Override

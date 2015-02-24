@@ -15,12 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.script.CompiledScript;
-
-import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -33,6 +27,10 @@ import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import javax.script.CompiledScript;
+import java.util.List;
+import java.util.Map;
 
 
 /**
