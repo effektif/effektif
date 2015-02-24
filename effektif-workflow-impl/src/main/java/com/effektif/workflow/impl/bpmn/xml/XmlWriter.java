@@ -73,18 +73,18 @@ public class XmlWriter {
       writeIndentation(writer, indentation);
       writer.write('<');
       writer.write(xmlElement.name);
-      writer.write(' ');
       if (xmlElement.attributes!=null) {
         for (String attributeName: xmlElement.attributes.keySet()) {
+          writer.write(' ');
           writer.write(attributeName);
           writer.write("=\"");
           writer.write(xmlElement.attributes.get(attributeName));
           writer.write("\"");
-          writer.write(' ');
         }
       }
       if (xmlElement.namespaces!=null) {
         for (String prefix: xmlElement.namespaces.keySet()) {
+          writer.write(' ');
           if ("".equals(prefix)) {
             writer.write("xmlns");
           } else {
@@ -94,7 +94,6 @@ public class XmlWriter {
           writer.write("=\"");
           writer.write(xmlElement.namespaces.get(prefix));
           writer.write("\"");
-          writer.write(' ');
         }
       }
       
