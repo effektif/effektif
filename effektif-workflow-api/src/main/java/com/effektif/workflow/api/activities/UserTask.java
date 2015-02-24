@@ -31,6 +31,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A user task, also known as a human task.
+ *
+ * BPMN XML: {@code <userTask id="approveRequest" name="Approve vacation request"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("userTask")

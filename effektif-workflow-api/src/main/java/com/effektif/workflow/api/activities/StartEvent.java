@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A start event.
+ *
+ * BPMN XML: {@code <startEvent id="theStart"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("startEvent")
