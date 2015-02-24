@@ -49,6 +49,11 @@ import java.nio.file.Paths;
  *
  * public checkStartEventXml(XmlNode xmlDom) {
  * assertEquals("sstartid", xmlDom.getValue("id");
+ *
+ * - add each of the remaining activity types
+ * - how to parse each sequenceFlow and add a Transition to the Workflow
+ * - adding the unparsed BPMN to the output in the right place
+ * - automate the check on the generated XML (checkXxxXml) *
  */
 public class MinimalBpmnTest extends TestCase {
 
