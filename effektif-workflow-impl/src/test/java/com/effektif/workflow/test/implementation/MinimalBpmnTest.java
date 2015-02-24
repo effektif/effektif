@@ -109,6 +109,7 @@ public class MinimalBpmnTest extends TestCase {
     checkParallelGateway(findActivity(workflow, ParallelGateway.class, "notificationFork"));
 
     checkCall(findActivity(workflow, Call.class, "investigateRequest"));
+    checkEmbeddedSubprocess(findActivity(workflow, EmbeddedSubprocess.class, "increaseVacationAllowance"));
 
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
@@ -134,6 +135,8 @@ public class MinimalBpmnTest extends TestCase {
   private void checkCall(Call task) { assertNotNull("Call should exist", task); }
 
   private void checkEmailTask(EmailTask task) { assertNotNull("EmailTask should exist", task); }
+
+  private void checkEmbeddedSubprocess(EmbeddedSubprocess activity) { assertNotNull("EmbeddedSubprocess should exist", activity); }
 
   private void checkEndEvent(EndEvent endEvent) {
     assertNotNull("EndEvent should exist", endEvent);

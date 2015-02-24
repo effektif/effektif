@@ -22,12 +22,16 @@
 		<exclusiveGateway id="approvalFork" gatewayDirection="Diverging"/>
 		<sequenceFlow id="approvalFork1" sourceRef="approvalFork" targetRef="approveRequest"/>
 		<sequenceFlow id="approvalFork2" sourceRef="approvalFork" targetRef="investigateRequest"/>
+		<sequenceFlow id="approvalFork3" sourceRef="approvalFork" targetRef="increaseVacationAllowance"/>
 
 			<userTask id="approveRequest" name="Approve vacation request"/>
-			<sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="notificationFork"/>
+			<sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
 
 			<callActivity id="investigateRequest"/>
-			<sequenceFlow id="investigateRequest1" sourceRef="investigateRequest" targetRef="notificationFork"/>
+			<sequenceFlow id="investigateRequest1" sourceRef="investigateRequest" targetRef="approvalJoin"/>
+
+			<subProcess id="increaseVacationAllowance"/>
+			<sequenceFlow id="increaseVacationAllowance1" sourceRef="increaseVacationAllowance" targetRef="approvalJoin"/>
 
 		<exclusiveGateway id="approvalJoin" gatewayDirection="Converging"/>
 
