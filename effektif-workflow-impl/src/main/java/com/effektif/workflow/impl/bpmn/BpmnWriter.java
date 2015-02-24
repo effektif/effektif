@@ -95,6 +95,7 @@ public class BpmnWriter extends Bpmn {
       sourceWorkflowId = workflow.getId();
     }
     writeBpmnAttribute(processElement, "id", sourceWorkflowId);
+    writeBpmnAttribute(processElement, "name", workflow.getName());
     writeActivities(workflow, processElement);
     return processElement;
   }
@@ -115,7 +116,7 @@ public class BpmnWriter extends Bpmn {
       for (int i=activities.size()-1; i>=0; i--) {
         Activity activity = activities.get(i);
         ActivityType<Activity> activityType = activityTypeService.getActivityType(activity.getClass());
-        XmlElement activityXml = getXmlElement(activity.getProperty(KEY_BPMN));
+        XmlElement activityXml = getXmlElement(activity.getBpmn());
         activityType.writeBpmn(activity, activityXml, this);
         scopeElement.addElementFirst(activityXml);
       }
@@ -136,7 +137,7 @@ public class BpmnWriter extends Bpmn {
       return objectMapper.convertValue(source, XmlElement.class);
     }
 
-    throw new RuntimeException("Unknown bpmn source: "+source);
+    throw new RuntimeException("Unknown BPMN source: "+source);
   }
 
   public String getBpmnQName(String localPart) {
