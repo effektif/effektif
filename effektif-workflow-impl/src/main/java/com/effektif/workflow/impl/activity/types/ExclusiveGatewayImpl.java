@@ -21,8 +21,12 @@ import java.util.Map;
 import javax.script.CompiledScript;
 
 import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
@@ -36,12 +40,30 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway> {
 
+  private static final String BPMN_ELEMENT_NAME = "exclusiveGateway";
+
   ScriptService scriptService;
   CompiledScript transitionIdExpression;
   Map<String,CompiledScript> transitionExpressions;
   
   public ExclusiveGatewayImpl() {
     super(ExclusiveGateway.class);
+  }
+
+  @Override
+  public ExclusiveGateway readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+      return null;
+    }
+    ExclusiveGateway gateway = new ExclusiveGateway();
+    gateway.id(reader.readBpmnAttribute(xml, "id"));
+    return gateway;
+  }
+
+  @Override
+  public void writeBpmn(ExclusiveGateway gateway, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", gateway.getId());
   }
 
   @Override
