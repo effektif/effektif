@@ -19,7 +19,10 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptService;
 
@@ -27,7 +30,9 @@ import com.effektif.workflow.impl.script.ScriptService;
 /**
  * @author Tom Baeyens
  */
-public class TransitionImpl {
+public class TransitionImpl implements BpmnModel<Transition> {
+
+  private static final String BPMN_ELEMENT_NAME = "sequenceFlow";
 
   public String id;
   public ScopeImpl parent;
@@ -45,6 +50,20 @@ public class TransitionImpl {
 //    transition.setCondition(conditionScript);
 //    return transition;
 //  }
+
+  @Override
+  public Transition readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+      return null;
+    }
+    return new Transition().id(reader.readBpmnAttribute(xml, "id"));
+  }
+
+  @Override
+  public void writeBpmn(Transition transition, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", transition.getId());
+  }
 
   public void parse(Transition transitionApi, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
     this.id = transitionApi.getId();

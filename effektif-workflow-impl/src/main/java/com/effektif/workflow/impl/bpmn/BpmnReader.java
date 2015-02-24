@@ -29,6 +29,7 @@ import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
+import com.effektif.workflow.impl.workflow.TransitionImpl;
 
 
 /** Reads an BPMN XML document and parses it to a Workflow API model.
@@ -113,10 +114,9 @@ public class BpmnReader extends Bpmn {
       XmlElement scopeXmlElement = iterator.next();
 
       // if it's a sequenceFlow
-      if (scopeElement.is(getQName(BPMN_URI, "sequenceFlow"))) {
-        Transition transition = new Transition();
-        // TODO parse the scopeElement into a transition
-        
+      if (scopeXmlElement.is(getQName(BPMN_URI, "sequenceFlow"))) {
+        System.out.println("getQName = sequenceFlow");
+        Transition transition = new TransitionImpl().readBpmn(scopeXmlElement, this);
         scope.transition(transition);
         // remove the sequenceFlow as it is parsed in the model
         iterator.remove();

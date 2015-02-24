@@ -19,6 +19,7 @@ import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
@@ -44,6 +45,7 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * @author Peter Hilton
@@ -97,6 +99,7 @@ public class MinimalBpmnTest extends TestCase {
     checkProcessModel(workflow);
     checkStartEvent(findActivity(workflow, StartEvent.class, "theStart"));
     checkUserTask(findActivity(workflow, UserTask.class, "approveRequest"));
+    checkTransition(findTransition(workflow, "flow1"));
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
     // Inspect the XML output for correctness. TODO Automate this check.
@@ -112,13 +115,11 @@ public class MinimalBpmnTest extends TestCase {
     assertEquals("Workflow should have the right name", "Vacation request", workflow.getName());
   }
 
-  private void checkStartEvent(StartEvent startEvent) {
-    assertNotNull("StartEvent should exist", startEvent);
-  }
+  private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
 
-  private void checkUserTask(UserTask task) {
-    assertNotNull("UserTask should exist", task);
-  }
+  private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
+
+  private void checkTransition(Transition transition) { assertNotNull("Transition should exist", transition); }
 
   private void checkEndEvent(EndEvent endEvent) {
     assertNotNull("EndEvent should exist", endEvent);
@@ -130,9 +131,23 @@ public class MinimalBpmnTest extends TestCase {
    */
   private <T extends Activity> T findActivity(Workflow workflow, Class<T> activityType, String activityId) {
     for (Activity activity : workflow.getActivities()) {
-      System.out.println("activity is " + activity.getClass());
       if (activity.getClass().equals(activityType) && activity.getId().equals(activityId)) {
         return (T) activity;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the workflow transition with the given ID, or null if the ID isn’t found.
+   */
+  private Transition findTransition(Workflow workflow, String transitionId) {
+    List<Transition> transitions = workflow.getTransitions();
+    if (transitions != null) {
+      for (Transition transition : transitions) {
+        if (transition.getId() != null && transition.getId().equals(transitionId)) {
+          return transition;
+        }
       }
     }
     return null;
