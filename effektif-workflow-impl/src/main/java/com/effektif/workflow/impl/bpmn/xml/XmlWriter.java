@@ -56,7 +56,7 @@ public class XmlWriter {
 
   public void writeDocument(XmlElement xmlElement) {
     try {
-      writer.write("<?xml version=\"1.0\" encoding=\""+encoding+"\" ?>\"\n");
+      writer.write("<?xml version=\"1.0\" encoding=\""+encoding+"\"?>\n");
       write(xmlElement);
     } catch (IOException e) {
       throw new RuntimeException(e);

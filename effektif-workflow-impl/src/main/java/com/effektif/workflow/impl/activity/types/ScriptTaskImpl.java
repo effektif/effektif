@@ -18,8 +18,12 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -31,12 +35,30 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
+  private static final String BPMN_ELEMENT_NAME = "scriptTask";
+
   protected ScriptService scriptService;
   public Map<String, String> mappings;
   public ScriptImpl script;
   
   public ScriptTaskImpl() {
     super(ScriptTask.class);
+  }
+
+  @Override
+  public ScriptTask readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+      return null;
+    }
+    ScriptTask task = new ScriptTask();
+    task.id(reader.readBpmnAttribute(xml, "id"));
+    return task;
+  }
+
+  @Override
+  public void writeBpmn(ScriptTask task, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", task.getId());
   }
 
   @Override

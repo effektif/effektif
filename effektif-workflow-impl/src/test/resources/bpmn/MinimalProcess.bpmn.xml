@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <definitions id="definitions"
-	targetNamespace="http://activiti.org/bpmn20" 
-  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
   xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
   xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" 
-	xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+  xmlns:effektif="effektif.com:1"
+  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  targetNamespace="http://example.com/bpmn">
 	
 	<process id="vacationRequest" name="Vacation request">
 	
 		<startEvent id="theStart"/>
+		<sequenceFlow id="flow1" sourceRef="theStart" targetRef="lookupAllowance"/>
 
-		<sequenceFlow id="flow1" sourceRef="theStart" targetRef="approveRequest"/>
+		<serviceTask id="lookupAllowance" effektif:type="java"/>
+		<sequenceFlow id="flow2" sourceRef="lookupAllowance" targetRef="checkAllowance"/>
+
+		<scriptTask id="checkAllowance"/>
+		<sequenceFlow id="flow3" sourceRef="checkAllowance" targetRef="approveRequest"/>
 
 		<userTask id="approveRequest" name="Approve vacation request"/>
+		<sequenceFlow id="flow4" sourceRef="approveRequest" targetRef="emailNotification"/>
 
-		<sequenceFlow id="flow1" sourceRef="approveRequest" targetRef="theEnd"/>
+		<serviceTask id="emailNotification" effektif:type="email"/>
+		<sequenceFlow id="flow5" sourceRef="emailNotification" targetRef="publishVacation"/>
+
+		<serviceTask id="publishVacation" effektif:type="http"/>
+		<sequenceFlow id="flow6" sourceRef="publishVacation" targetRef="theEnd"/>
 
 		<endEvent id="theEnd"/>
 

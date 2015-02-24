@@ -19,6 +19,10 @@ import com.effektif.workflow.api.types.BooleanType;
 
 
 /**
+ * A sequence flow that connects two activities in a workflow.
+ *
+ * BPMN XML: {@code <sequenceFlow id="flow1" sourceRef="theStart" targetRef="approveRequest"/>}
+ *
  * @author Tom Baeyens
  */
 public class Transition extends Element {

@@ -33,7 +33,14 @@ import com.effektif.workflow.api.types.Type;
  *   <li>BPMN XML</li>
  *   <li>DB format</li>
  * </ul>
- * 
+ *
+ * BPMN XML:
+ * <pre>{@code
+ * <process id="vacationRequest" name="Vacation request">
+ *   <!-- activities -->
+ * </process>
+ * }</pre>
+ *
  * @author Tom Baeyens
  */
 public class Workflow extends AbstractWorkflow {

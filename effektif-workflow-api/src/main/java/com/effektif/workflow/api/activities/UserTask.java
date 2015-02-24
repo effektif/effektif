@@ -30,10 +30,12 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** A task for a user to complete.
- * 
- * This could be an approval o
- * 
+/**
+ * A user task, also known as a human task.  
+ * Tasks can be assigned and optionally have a form to complete.
+ *
+ * BPMN XML: {@code <userTask id="approveRequest" name="Approve vacation request"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("userTask")

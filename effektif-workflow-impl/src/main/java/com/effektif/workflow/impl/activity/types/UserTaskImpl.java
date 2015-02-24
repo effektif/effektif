@@ -63,6 +63,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
           .key("escalateTo")
           .type(new UserIdType());
 
+  private static final String BPMN_ELEMENT_NAME = "userTask";
+
   protected TaskStore taskStore;
   protected BindingImpl<String> nameBinding;
   protected BindingImpl<UserId> assigneeBinding;
@@ -74,19 +76,19 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   }
 
   @Override
-  public UserTask readBpmn(XmlElement activityXml, BpmnReader bpmnReader) {
-    if (!bpmnReader.isLocalPart(activityXml, "userTask")) {
+  public UserTask readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
       return null;
     }
     UserTask task = new UserTask();
-    task.id(bpmnReader.readBpmnAttribute(activityXml, "id"));
+    task.id(reader.readBpmnAttribute(xml, "id"));
     return task;
   }
 
   @Override
-  public void writeBpmn(UserTask userTask, XmlElement userTaskXml, BpmnWriter bpmnWriter) {
-    bpmnWriter.setBpmnName(userTaskXml, "startEvent");
-    bpmnWriter.writeBpmnAttribute(userTaskXml, "id", userTask.getId());
+  public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", task.getId());
   }
   
   @Override
