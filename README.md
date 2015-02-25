@@ -8,20 +8,25 @@ A workflow is based on a diagram (eg BPMN or nodes and edges) and specify an exe
 
 ## Why I build Effektif ?
 
-Workflows interact more and more with cloud services over REST APIs.  
-Those services don't participate in a transaction. The engine needs to 
-save it's state before each activity is being executed.  
+Workflows interact more and more with cloud services or micro services 
+over REST APIs. Those services don't participate in a transaction. The engine 
+needs to save it's state before each activity is being executed.  
 
 Secondly, support for pluggable persistence.  For starters our cloud 
 hosted solution we want to use MongoDB for horizontal scalability.  
-It's the first engine that separates the persistence aspects from the 
-core engine.      
+Our engine is unique becaues it separates the persistence from the 
+core engine. Advanced users can even plug in their own persistence.
+
+Third, the internals are a lot simpler.  Effektif tracks the runtime state of 
+workflows using nested activity instances.  This is a lot easier to understand 
+and it fits better in a document database compared to a token-based approach. 
 
 # Feature highlights
+
+* Create workflows in Java, BPMN or with our online workflow builder (coming soon). 
+* Keep track of user tasks and other wait states
+* Easy configuration of reminders, escalations and other persistent timers 
 * Intuitive Java API & REST API
-* Pluggable persistence (eg in-memory & horizontally scalable NoSQL persistence)
-* Microservice architecture
-* Designed for the cloud
 * Apache 2.0 license
 
 ## Example
