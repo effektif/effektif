@@ -33,6 +33,7 @@ import com.effektif.workflow.impl.activity.types.HttpServiceTaskImpl;
 import com.effektif.workflow.impl.activity.types.JavaServiceTaskImpl;
 import com.effektif.workflow.impl.activity.types.NoneTaskImpl;
 import com.effektif.workflow.impl.activity.types.ParallelGatewayImpl;
+import com.effektif.workflow.impl.activity.types.ReceiveTaskImpl;
 import com.effektif.workflow.impl.activity.types.ScriptTaskImpl;
 import com.effektif.workflow.impl.activity.types.StartEventImpl;
 import com.effektif.workflow.impl.activity.types.UserTaskImpl;
@@ -88,6 +89,7 @@ public class ActivityTypeService implements Brewable {
     registerActivityType(new JavaServiceTaskImpl());
     registerActivityType(new HttpServiceTaskImpl());
     registerActivityType(new NoneTaskImpl());
+    registerActivityType(new ReceiveTaskImpl());
   }
   
   public void registerActivityType(ActivityType activityType) {

@@ -119,6 +119,14 @@ public class Binding<T> {
   public void setField(List<String> fields) {
     this.fields = fields;
   }
+  public Binding field(String field) {
+    if (fields==null) {
+      fields = new ArrayList<>();
+    }
+    fields.add(field);
+    return this;
+  }
+
   /** .-separated notation that starts with the variableId and then 
    * specifies the fields to be dereferenced 
    * eg "myVariableId.variableField.nestedField" */

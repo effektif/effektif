@@ -55,25 +55,28 @@ public class TaskServiceImpl implements TaskService, Brewable {
     Authentication authentication = Authentications.current();
     String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
     String actorId = authentication!=null ? authentication.getUserId() : null;
-    
-    UserId actorUserReference = actorId!=null ? new UserId(actorId) : null;
-    String taskId = taskStore.generateTaskId();
+    UserId actorUserId = actorId!=null ? new UserId(actorId) : null;
+
+    String taskId = task.getId();
+    if (taskId==null) {
+      taskId = taskStore.generateTaskId();
+    }
     
     task.setId(taskId);
     task.setOrganizationId(organizationId);
-    task.setCreatedBy(actorUserReference);
+    task.setCreatedBy(actorUserId);
     
     List<UserId> participants = task.getParticipants();
-    if (actorUserReference!=null) {
+    if (actorUserId!=null) {
       if (participants==null) {
         participants = new ArrayList<>();
       }
       // we want to add the actor if not already present
       // and we want the creator to be the first in the list
-      if (participants.contains(actorUserReference)) {
-        participants.remove(actorUserReference);
+      if (participants.contains(actorUserId)) {
+        participants.remove(actorUserId);
       }
-      participants.add(0, actorUserReference);
+      participants.add(0, actorUserId);
     }
     task.setParticipants(participants);
 

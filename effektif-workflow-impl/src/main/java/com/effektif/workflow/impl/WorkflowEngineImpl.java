@@ -133,7 +133,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   /** first part of starting a new workflow instance: creating the workflow instance and applying the trigger data */
-  protected WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance) {
+  public WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance) {
     String workflowId = getLatestWorkflowId(triggerInstance);
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
 
@@ -161,11 +161,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowInstance.setVariableValues(triggerInstance.getData());
     }
 
-    return null;
+    return workflowInstance;
   }
 
   /** second part of starting a new workflow instance: executing the start actvities */
-  protected WorkflowInstance startExecute(WorkflowInstanceImpl workflowInstance) {
+  public WorkflowInstance startExecute(WorkflowInstanceImpl workflowInstance) {
     WorkflowImpl workflow = workflowInstance.workflow;
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
     

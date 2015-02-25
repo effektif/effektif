@@ -90,7 +90,7 @@ public class MongoCollection {
 
   public BasicDBObject findAndModify(String description, DBObject query, DBObject update, DBObject fields) {
     if (log.isDebugEnabled()) {
-      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+" u="+toString(update));
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+" u="+toString(update)+" f="+toString(fields));
     }
     BasicDBObject dbObject = (BasicDBObject) dbCollection.findAndModify( query, fields, null, false, update, true, false );
     if (log.isDebugEnabled()) {
@@ -137,7 +137,7 @@ public class MongoCollection {
   }
 
   public String toString(Object o) {
-    return isPretty ? PrettyPrinter.toJsonPrettyPrint(o) : o.toString();
+    return o!=null ? (isPretty ? PrettyPrinter.toJsonPrettyPrint(o) : o.toString()) : "null";
   }
 
   public WriteConcern getWriteConcern(WriteConcern writeConcern) {

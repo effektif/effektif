@@ -121,6 +121,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     
     Task task = new Task();
     task.setId(taskId);
+    task.setCaseId(activityInstance.workflowInstance.taskId);
     task.setName(taskName);
     task.setAssignee(assignee);
     task.setCandidates(candidates);

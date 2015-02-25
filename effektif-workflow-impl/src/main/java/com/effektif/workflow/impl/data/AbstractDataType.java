@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.impl.template.Hints;
 
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
@@ -78,5 +79,10 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   @Override
   public T serialize() {
     return typeApi;
+  }
+
+  @Override
+  public String convertInternalToText(Object value, Hints hints) {
+    return value!=null ? value.toString() : null;
   }
 }

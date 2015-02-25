@@ -55,17 +55,8 @@ public class BindingImpl<T> {
       return value;
     
     } else if (this.variableId!=null) {
-      VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(this.variableId);
-      if (this.fields==null) {
-        return (T) variableInstance.getValue();
-      }
-      
-      TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
-      for (String field: this.fields) {
-        ObjectTypeImpl<?> objectType = (ObjectTypeImpl< ? >) typedValue.type; 
-        objectType.dereference(typedValue, field);
-      }
-      return (T) typedValue.value;
+      TypedValueImpl typedValue = getTypedFieldValue(scopeInstance, variableId, fields);
+      return (T) typedValue.getValue();
       
     } else if (this.expression!=null) {
       ScriptResult scriptResult = expression.evaluate(scopeInstance);
@@ -93,4 +84,16 @@ public class BindingImpl<T> {
     return null;
   }
 
+  public static TypedValueImpl getTypedFieldValue(ScopeInstanceImpl scopeInstance, String variableId, List<String> fields) {
+    VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
+    if (fields==null) {
+      return variableInstance.getTypedValue();
+    }
+    TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
+    for (String field: fields) {
+      ObjectTypeImpl<?> objectType = (ObjectTypeImpl< ? >) typedValue.type; 
+      objectType.dereference(typedValue, field);
+    }
+    return typedValue;
+  }
 }

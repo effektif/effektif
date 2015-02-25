@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.activity.Plugin;
+import com.effektif.workflow.impl.template.Hints;
 
 
 public interface DataType<T extends Type> extends Plugin {
@@ -43,6 +44,8 @@ public interface DataType<T extends Type> extends Plugin {
   Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
 
   Object convertInternalToJsonValue(Object internalValue);
+
+  String convertInternalToText(Object value, Hints hints);
 
   // Deprecated because I think scripts should use the json format
   @Deprecated
