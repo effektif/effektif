@@ -39,4 +39,16 @@ public class Deployment extends ParseIssues {
   public void setWorkflowId(String workflowId) {
     this.workflowId = workflowId;
   }
+
+  @Override
+  public Deployment checkNoErrors() {
+    super.checkNoErrors();
+    return this;
+  }
+
+  @Override
+  public Deployment checkNoErrorsAndNoWarnings() {
+    super.checkNoErrorsAndNoWarnings();
+    return this;
+  }
 }

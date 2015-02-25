@@ -100,7 +100,7 @@
             <artifactId>license-maven-plugin</artifactId>
             <version>2.5</version>
             <configuration>
-              <header>license.header.txt</header>
+              <header>files/license.header.txt</header>
               <encoding>UTF-8</encoding>
               <includes>
                 <include>**/src/**/*.java</include>

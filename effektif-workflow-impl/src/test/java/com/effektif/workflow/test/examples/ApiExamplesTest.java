@@ -59,12 +59,15 @@ public class ApiExamplesTest {
         .bodyText("Enjoy!"));
     
     // Deploy the workflow to the engine
-    workflowEngine
+    String workflowId = workflowEngine
       .deployWorkflow(workflow)
-      .checkNoErrorsAndNoWarnings();
+      .checkNoErrorsAndNoWarnings()
+      .getWorkflowId();
     
     // Start a new workflow instance
-    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance().workflowId(workflow.getId()));
+    TriggerInstance triggerInstance = new TriggerInstance()
+      .workflowId(workflowId);
+    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance);
     
     List<Task> tasks = taskService.findTasks(new TaskQuery());
     assertEquals("Move open issues", tasks.get(0).getName());
