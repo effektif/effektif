@@ -21,11 +21,13 @@ import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
+import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -95,7 +97,9 @@ public class BpmnWriter extends Bpmn {
       sourceWorkflowId = workflow.getId();
     }
     writeBpmnAttribute(processElement, "id", sourceWorkflowId);
+    writeBpmnAttribute(processElement, "name", workflow.getName());
     writeActivities(workflow, processElement);
+    writeTransitions(workflow, processElement);
     return processElement;
   }
 
@@ -109,15 +113,26 @@ public class BpmnWriter extends Bpmn {
     List<Activity> activities = scope.getActivities();
     if (activities!=null) {
       // We loop backwards and then add each activity as the first
-      // This way all the parsed activities will be serialized first 
-      // before the unknown elements and the parsed elements will 
-      // appear in the order as they were parsed. 
+      // This way all the parsed activities will be serialized first
+      // before the unknown elements and the parsed elements will
+      // appear in the order as they were parsed.
       for (int i=activities.size()-1; i>=0; i--) {
         Activity activity = activities.get(i);
         ActivityType<Activity> activityType = activityTypeService.getActivityType(activity.getClass());
-        XmlElement activityXml = getXmlElement(activity.getProperty(KEY_BPMN));
+        XmlElement activityXml = getXmlElement(activity.getBpmn());
         activityType.writeBpmn(activity, activityXml, this);
         scopeElement.addElementFirst(activityXml);
+      }
+    }
+  }
+
+  private void writeTransitions(Workflow workflow, XmlElement processElement) {
+    List<Transition> transitions = workflow.getTransitions();
+    if (transitions != null) {
+      for (Transition transition : transitions) {
+        XmlElement transitionXml = getXmlElement(transition.getBpmn());
+        new TransitionImpl().writeBpmn(transition, transitionXml, this);
+        processElement.addElement(transitionXml);
       }
     }
   }
@@ -136,14 +151,25 @@ public class BpmnWriter extends Bpmn {
       return objectMapper.convertValue(source, XmlElement.class);
     }
 
-    throw new RuntimeException("Unknown bpmn source: "+source);
+    throw new RuntimeException("Unknown BPMN source: "+source);
   }
 
   public String getBpmnQName(String localPart) {
     return bpmnPrefix==null || "".equals(bpmnPrefix) ? localPart : bpmnPrefix+":"+localPart;
   }
 
+  public String getEffektifQName(String localPart) {
+    return effektifPrefix==null || "".equals(effektifPrefix) ? localPart : effektifPrefix+":"+localPart;
+  }
+
   public void setBpmnName(XmlElement xmlElement, String localPart) {
     xmlElement.name = getBpmnQName(localPart);
+  }
+
+  /**
+   * Writes the given service task type as an <code>effektif:type</code> attribute.
+   */
+  public void writeEffektifType(XmlElement xml, ServiceTaskType type) {
+    xml.addAttribute(getEffektifQName("type"), type.value());
   }
 }

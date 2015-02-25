@@ -25,8 +25,10 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /** 
- * invokes another workflow and ends when the other workflow instance completes
- *  
+ * Invokes another workflow and ends when the other workflow instance completes.
+ *
+ * BPMN XML: {@code <callActivity id="investigateRequest"/>}
+ *
  * @author Tom Baeyens
  */ 
 @JsonTypeName("call")

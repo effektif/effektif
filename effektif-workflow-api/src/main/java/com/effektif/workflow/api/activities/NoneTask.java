@@ -19,8 +19,11 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** Does nothing and continues immediately (aka noop, pass-through). 
- * 
+/** 
+ * This task doesn't do anything, it just continues (aka noop, pass-through).
+ *
+ * BPMN XML: {@code <task id="evaluateCase"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("noneTask")

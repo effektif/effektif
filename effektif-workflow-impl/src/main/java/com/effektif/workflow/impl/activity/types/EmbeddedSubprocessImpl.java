@@ -18,8 +18,11 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
@@ -29,10 +32,28 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubprocess> {
 
+  private static final String BPMN_ELEMENT_NAME = "subProcess";
+
   protected List<ActivityImpl> startActivities;
   
   public EmbeddedSubprocessImpl() {
     super(EmbeddedSubprocess.class);
+  }
+
+  @Override
+  public EmbeddedSubprocess readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+      return null;
+    }
+    EmbeddedSubprocess activity = new EmbeddedSubprocess();
+    activity.id(reader.readBpmnAttribute(xml, "id"));
+    return activity;
+  }
+
+  @Override
+  public void writeBpmn(EmbeddedSubprocess activity, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", activity.getId());
   }
 
   @Override

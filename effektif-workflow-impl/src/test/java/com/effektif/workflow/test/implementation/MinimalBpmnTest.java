@@ -99,11 +99,18 @@ public class MinimalBpmnTest extends TestCase {
     checkStartEvent(findActivity(workflow, StartEvent.class, "theStart"));
 
     checkEmailTask(findActivity(workflow, EmailTask.class, "emailNotification"));
-    checkJavaServiceTask(findActivity(workflow, JavaServiceTask.class, "lookupAllowance"));
     checkHttpServiceTask(findActivity(workflow, HttpServiceTask.class, "publishVacation"));
+    checkJavaServiceTask(findActivity(workflow, JavaServiceTask.class, "lookupAllowance"));
+    checkNoneTask(findActivity(workflow, NoneTask.class, "evaluateCase"));
     checkScriptTask(findActivity(workflow, ScriptTask.class, "checkAllowance"));
-    checkTransition(findTransition(workflow, "flow1"));
+    checkTransition(findTransition(workflow, "approvalFork1"));
     checkUserTask(findActivity(workflow, UserTask.class, "approveRequest"));
+
+    checkExclusiveGateway(findActivity(workflow, ExclusiveGateway.class, "approvalFork"));
+    checkParallelGateway(findActivity(workflow, ParallelGateway.class, "notificationFork"));
+
+    checkCall(findActivity(workflow, Call.class, "investigateRequest"));
+    checkEmbeddedSubprocess(findActivity(workflow, EmbeddedSubprocess.class, "increaseVacationAllowance"));
 
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
@@ -126,22 +133,42 @@ public class MinimalBpmnTest extends TestCase {
     assertEquals("Workflow should have the right name", "Vacation request", workflow.getName());
   }
 
-  private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
+  private void checkCall(Call task) {
+    assertNotNull("Call should exist", task);
+  }
 
   private void checkEmailTask(EmailTask task) { assertNotNull("EmailTask should exist", task); }
+
+  private void checkEmbeddedSubprocess(EmbeddedSubprocess activity) { assertNotNull("EmbeddedSubprocess should exist", activity); }
+
+  private void checkEndEvent(EndEvent endEvent) {
+    assertNotNull("EndEvent should exist", endEvent);
+  }
+
+  private void checkExclusiveGateway(ExclusiveGateway gateway) { assertNotNull("ExclusiveGateway should exist", gateway); }
 
   private void checkHttpServiceTask(HttpServiceTask task) { assertNotNull("HttpServiceTask should exist", task); }
 
   private void checkJavaServiceTask(JavaServiceTask task) { assertNotNull("JavaServiceTask should exist", task); }
 
+  private void checkNoneTask(NoneTask task) { assertNotNull("NoneTask should exist", task); }
+
+  private void checkParallelGateway(ParallelGateway gateway) { assertNotNull("ParallelGateway should exist", gateway); }
+
   private void checkScriptTask(ScriptTask task) { assertNotNull("ScriptTask should exist", task); }
 
-  private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
+  private void checkStartEvent(StartEvent startEvent) { assertNotNull("StartEvent should exist", startEvent); }
 
-  private void checkTransition(Transition transition) { assertNotNull("Transition should exist", transition); }
+  private void checkTransition(Transition transition) {
+    assertNotNull("Transition should exist", transition);
+    assertEquals("Transition name", "Allowance available", transition.getName());
+    assertEquals("Transition from", "approvalFork", transition.getFrom());
+    assertEquals("Transition to", "approveRequest", transition.getTo());
+  }
 
-  private void checkEndEvent(EndEvent endEvent) {
-    assertNotNull("EndEvent should exist", endEvent);
+  private void checkUserTask(UserTask task) {
+    assertNotNull("UserTask should exist", task);
+    assertEquals("UserTask should have the right name", "Approve vacation request", task.getName());
   }
 
   /**

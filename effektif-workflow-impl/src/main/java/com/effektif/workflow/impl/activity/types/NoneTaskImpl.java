@@ -16,15 +16,36 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.bpmn.BpmnReader;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-/** this task doesn't do anything, it just continues (aka noop, pass-through). */
+/** this task doesn't do anything, it just continues (aka no-op, pass-through). */
 public class NoneTaskImpl extends AbstractActivityType<NoneTask> {
+
+  private static final String BPMN_ELEMENT_NAME = "task";
 
   public NoneTaskImpl() {
     super(NoneTask.class);
+  }
+
+  @Override
+  public NoneTask readBpmn(XmlElement xml, BpmnReader reader) {
+    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+      return null;
+    }
+    NoneTask task = new NoneTask();
+    task.id(reader.readBpmnAttribute(xml, "id"));
+    return task;
+  }
+
+  @Override
+  public void writeBpmn(NoneTask task, XmlElement xml, BpmnWriter writer) {
+    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    writer.writeBpmnAttribute(xml, "id", task.getId());
   }
 
   @Override
