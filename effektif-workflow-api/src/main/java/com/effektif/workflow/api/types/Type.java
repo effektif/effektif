@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /**
+ * A type used for serialisation, for data such as process variables.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="id")

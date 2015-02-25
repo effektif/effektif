@@ -50,7 +50,7 @@ public class BindingImpl<T> {
   }
   
   public T getValue(ScopeInstanceImpl scopeInstance) {
-    // IDEA : you might want to coerse value returned to this.dataType (ensure initialized properly)
+    // IDEA : you might want to coerce value returned to this.dataType (ensure initialized properly)
     if (this.value!=null) {
       return value;
     

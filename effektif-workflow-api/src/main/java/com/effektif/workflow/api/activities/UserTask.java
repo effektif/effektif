@@ -75,19 +75,19 @@ public class UserTask extends NoneTask {
     return this;
   }
 
-  /** adds a candidate id value to the list */
+  /** Sets the assignee to a user ID value. */
   public UserTask assigneeUserId(String assigneeUserId) {
     this.assigneeId = new Binding().value(new UserId(assigneeUserId));
     return this;
   }
 
-  /** adds a candidate id variable to the list */
+  /** Sets the assignee to a variable value. */
   public UserTask assigneeVariableId(String assigneeVariableId) {
     this.assigneeId = new Binding().variableId(assigneeVariableId);
     return this;
   }
 
-  /** adds a candidate id expression to the list */
+  /** Sets the assignee to an expression. */
   public UserTask assigneeExpression(String assigneeExpression) {
     this.assigneeId = new Binding().expression(assigneeExpression);
     return this;
