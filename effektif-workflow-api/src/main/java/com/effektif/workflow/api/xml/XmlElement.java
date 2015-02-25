@@ -73,6 +73,29 @@ public class XmlElement {
     elements.add(0, xmlElement);
   }
 
+  /**
+   * Returns the first element with the given name, or <code>null</code> if there isn’t one.
+   */
+  public XmlElement findChildElement(String elementName) {
+    for (XmlElement childElement : elements) {
+      if (childElement.is(elementName)) {
+        return childElement;
+      }
+    }
+    return null;
+  }
+  /**
+   * Returns either the first element with the given name, or the result of adding a new element if there wasn’t one.
+   */
+  public XmlElement findOrAddChildElement(String elementName) {
+    XmlElement childElement = findChildElement(elementName);
+    if (childElement == null) {
+      childElement = new XmlElement(elementName);
+      addElement(childElement);
+    }
+    return childElement;
+  }
+
   public boolean is(String name) {
     return name.equals(this.name);
   }

@@ -19,10 +19,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
@@ -171,5 +169,21 @@ public class BpmnWriter extends Bpmn {
    */
   public void writeEffektifType(XmlElement xml, ServiceTaskType type) {
     xml.addAttribute(getEffektifQName("type"), type.value());
+  }
+
+  public void writeUserId(XmlElement xml, String elementName, Binding<UserId> binding) {
+    XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
+    XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
+
+    if (binding.getValue() != null) {
+      XmlElement userIdXml = new XmlElement(getEffektifQName("userId"));
+      userIdXml.addAttribute("value", binding.getValue().getId());
+      bindingXml.addElement(userIdXml);
+    }
+    else {
+      // TODO other binding fields
+    }
+
+    extensionElements.addElement(bindingXml);
   }
 }

@@ -1,59 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <definitions id="definitions"
-  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-  xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
-  xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" 
-  xmlns:effektif="effektif.com:1"
-  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-  targetNamespace="http://example.com/bpmn">
-	
-	<process id="vacationRequest" name="Vacation request">
-	
-		<startEvent id="theStart" name="vacation requested"/>
-		<sequenceFlow id="theStart1" sourceRef="theStart" targetRef="lookupAllowance"/>
+   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+   xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+   xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+   xmlns:effektif="effektif.com:1"
+   xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+   targetNamespace="http://example.com/bpmn">
 
-		<serviceTask id="lookupAllowance" effektif:type="java" name="Look-up allowance"/>
-		<sequenceFlow id="lookupAllowance1" sourceRef="lookupAllowance" targetRef="checkAllowance"/>
+   <process id="vacationRequest" name="Vacation request">
 
-		<scriptTask id="checkAllowance"/>
-		<sequenceFlow id="checkAllowance1" sourceRef="checkAllowance" targetRef="approveRequest"/>
+      <startEvent id="theStart" name="vacation requested"/>
+      <sequenceFlow id="theStart1" sourceRef="theStart" targetRef="lookupAllowance"/>
 
+      <serviceTask id="lookupAllowance" effektif:type="java" name="Look-up allowance"/>
+      <sequenceFlow id="lookupAllowance1" sourceRef="lookupAllowance" targetRef="checkAllowance"/>
 
-		<exclusiveGateway id="approvalFork" gatewayDirection="Diverging"/>
-		<sequenceFlow id="approvalFork1" sourceRef="approvalFork" targetRef="approveRequest" name="Allowance available"/>
-		<sequenceFlow id="approvalFork2" sourceRef="approvalFork" targetRef="investigateRequest"/>
-		<sequenceFlow id="approvalFork3" sourceRef="approvalFork" targetRef="increaseVacationAllowance"/>
-
-			<userTask id="approveRequest" name="Approve vacation request"/>
-			<sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
-
-			<callActivity id="investigateRequest"/>
-			<sequenceFlow id="investigateRequest1" sourceRef="investigateRequest" targetRef="approvalJoin"/>
-
-			<subProcess id="increaseVacationAllowance"/>
-			<sequenceFlow id="increaseVacationAllowance1" sourceRef="increaseVacationAllowance" targetRef="approvalJoin"/>
-
-		<exclusiveGateway id="approvalJoin" gatewayDirection="Converging"/>
+      <scriptTask id="checkAllowance"/>
+      <sequenceFlow id="checkAllowance1" sourceRef="checkAllowance" targetRef="approveRequest"/>
 
 
-		<parallelGateway id="notificationFork" gatewayDirection="Diverging"/>
-		<sequenceFlow id="notificationFork1" sourceRef="notificationFork" targetRef="emailNotification"/>
-		<sequenceFlow id="notificationFork2" sourceRef="notificationFork" targetRef="publishVacation"/>
+      <exclusiveGateway id="approvalFork" gatewayDirection="Diverging"/>
+      <sequenceFlow id="approvalFork1" sourceRef="approvalFork" targetRef="approveRequest" name="Allowance available"/>
+      <sequenceFlow id="approvalFork2" sourceRef="approvalFork" targetRef="investigateRequest"/>
+      <sequenceFlow id="approvalFork3" sourceRef="approvalFork" targetRef="increaseVacationAllowance"/>
 
-			<serviceTask id="emailNotification" effektif:type="email"/>
-			<sequenceFlow id="emailNotification1" sourceRef="emailNotification" targetRef="notificationJoin"/>
+      <userTask id="approveRequest" name="Approve vacation request">
+         <extensionElements>
+            <effektif:assignee>
+               <effektif:userId value="42"/>
+            </effektif:assignee>
+         </extensionElements>
+      </userTask>
+      <sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
 
-			<serviceTask id="publishVacation" effektif:type="http"/>
-			<sequenceFlow id="publishVacation1" sourceRef="publishVacation" targetRef="notificationJoin"/>
+      <callActivity id="investigateRequest"/>
+      <sequenceFlow id="investigateRequest1" sourceRef="investigateRequest" targetRef="approvalJoin"/>
 
-		<parallelGateway id="notificationJoin" gatewayDirection="Converging"/>
-		<sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="evaluateCase"/>
+      <subProcess id="increaseVacationAllowance"/>
+      <sequenceFlow id="increaseVacationAllowance1" sourceRef="increaseVacationAllowance" targetRef="approvalJoin"/>
 
-		<task id="evaluateCase"/>
-		<sequenceFlow id="evaluateCase1" sourceRef="evaluateCase" targetRef="theEnd"/>
+      <exclusiveGateway id="approvalJoin" gatewayDirection="Converging"/>
 
-		<endEvent id="theEnd"/>
 
-	</process>
+      <parallelGateway id="notificationFork" gatewayDirection="Diverging"/>
+      <sequenceFlow id="notificationFork1" sourceRef="notificationFork" targetRef="emailNotification"/>
+      <sequenceFlow id="notificationFork2" sourceRef="notificationFork" targetRef="publishVacation"/>
+
+      <serviceTask id="emailNotification" effektif:type="email"/>
+      <sequenceFlow id="emailNotification1" sourceRef="emailNotification" targetRef="notificationJoin"/>
+
+      <serviceTask id="publishVacation" effektif:type="http"/>
+      <sequenceFlow id="publishVacation1" sourceRef="publishVacation" targetRef="notificationJoin"/>
+
+      <parallelGateway id="notificationJoin" gatewayDirection="Converging"/>
+      <sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="evaluateCase"/>
+
+      <task id="evaluateCase"/>
+      <sequenceFlow id="evaluateCase1" sourceRef="evaluateCase" targetRef="theEnd"/>
+
+      <endEvent id="theEnd"/>
+
+   </process>
 
 </definitions>

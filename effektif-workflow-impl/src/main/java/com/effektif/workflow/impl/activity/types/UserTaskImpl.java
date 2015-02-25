@@ -82,6 +82,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     }
     UserTask task = new UserTask();
     task.id(reader.readBpmnAttribute(xml, "id"));
+    task.assigneeUserId("42");
+    task.setAssigneeId(reader.readUserId(xml, "assignee"));
     return task;
   }
 
@@ -89,6 +91,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
+    writer.writeUserId(xml, "assignee", task.getAssigneeId());
   }
   
   @Override

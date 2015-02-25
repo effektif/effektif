@@ -168,7 +168,8 @@ public class MinimalBpmnTest extends TestCase {
 
   private void checkUserTask(UserTask task) {
     assertNotNull("UserTask should exist", task);
-    assertEquals("UserTask should have the right name", "Approve vacation request", task.getName());
+    assertEquals("UserTask name", "Approve vacation request", task.getName());
+    assertEquals("UserTask assignee", "42", task.getAssigneeId().getValue().getId());
   }
 
   /**
