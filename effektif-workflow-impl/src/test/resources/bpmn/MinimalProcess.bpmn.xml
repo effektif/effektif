@@ -26,9 +26,9 @@
 
       <userTask id="approveRequest" name="Approve vacation request">
          <extensionElements>
-            <effektif:assignee>
-               <effektif:userId value="42"/>
-            </effektif:assignee>
+            <effektif:assignee userId="42"/>
+            <effektif:candidate userId="42"/>
+            <effektif:candidate userId="43"/>
          </extensionElements>
       </userTask>
       <sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>

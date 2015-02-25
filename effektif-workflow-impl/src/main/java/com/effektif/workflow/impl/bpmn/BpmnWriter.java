@@ -171,19 +171,29 @@ public class BpmnWriter extends Bpmn {
     xml.addAttribute(getEffektifQName("type"), type.value());
   }
 
-  public void writeUserId(XmlElement xml, String elementName, Binding<UserId> binding) {
+  public void writeUserIds(XmlElement xml, String elementName, Binding<UserId> binding) {
     XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
-    XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
-
     if (binding.getValue() != null) {
-      XmlElement userIdXml = new XmlElement(getEffektifQName("userId"));
-      userIdXml.addAttribute("value", binding.getValue().getId());
-      bindingXml.addElement(userIdXml);
+      extensionElements.addElement(userIdXml(getEffektifQName(elementName), binding));
+    }
+    else if (binding.getBindings() != null) {
+      for (Binding<UserId> userId : binding.getBindings()) {
+        extensionElements.addElement(userIdXml(getEffektifQName(elementName), userId));
+      }
     }
     else {
       // TODO other binding fields
     }
+  }
 
-    extensionElements.addElement(bindingXml);
+  /**
+   * Returns an XML element for the given user ID binding.
+   */
+  private XmlElement userIdXml(String elementName, Binding<UserId> binding) {
+    XmlElement xml = new XmlElement(elementName);
+    if (binding.getValue() != null) {
+      xml.addAttribute("userId", binding.getValue().getId());
+    }
+    return xml;
   }
 }

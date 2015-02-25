@@ -82,8 +82,16 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     }
     UserTask task = new UserTask();
     task.id(reader.readBpmnAttribute(xml, "id"));
-    task.assigneeUserId("42");
-    task.setAssigneeId(reader.readUserId(xml, "assignee"));
+
+    List<Binding<UserId>> assigneeList = reader.readUserIds(xml, "assignee");
+    if (assigneeList.size() > 0) {
+      task.setAssigneeId(assigneeList.get(0));
+    }
+
+    Binding<UserId> candidates = new Binding<UserId>();
+    candidates.setBindings(reader.readUserIds(xml, "candidate"));
+    task.setCandidateIds(candidates);
+
     return task;
   }
 
@@ -91,7 +99,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeUserId(xml, "assignee", task.getAssigneeId());
+    writer.writeUserIds(xml, "assignee", task.getAssigneeId());
+    writer.writeUserIds(xml, "candidate", task.getCandidateIds());
   }
   
   @Override

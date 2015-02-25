@@ -16,10 +16,7 @@
 package com.effektif.workflow.impl.bpmn;
 
 import java.io.Reader;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.workflow.*;
@@ -176,8 +173,8 @@ public class BpmnReader extends Bpmn {
    * Returns a {@link com.effektif.workflow.api.ref.UserId} from the extension element with the given name.
    * TODO generic Binding type
    */
-  public Binding<UserId> readUserId(XmlElement xml, String elementName) {
-    Binding result = new Binding();
+  public List<Binding<UserId>> readUserIds(XmlElement xml, String elementName) {
+    List<Binding<UserId>> results = new ArrayList<>();
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
     if (extensionElements != null) {
       Iterator<XmlElement> extensions = extensionElements.elements.iterator();
@@ -185,25 +182,18 @@ public class BpmnReader extends Bpmn {
         XmlElement extension = extensions.next();
 
         if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
-          Iterator<XmlElement> bindings = extension.elements.iterator();
-          while (bindings.hasNext()) {
-            XmlElement binding = bindings.next();
 
-            if (binding.is(getQName(EFFEKTIF_URI, "userId"))) {
-              String userId = binding.attributes.get("value");
-              if (userId != null) {
-                result.value(new UserId(userId));
-              }
-              bindings.remove();
-            }
-
-            // TODO other binding fields
+          String userId = extension.attributes.get("userId");
+          if (userId != null) {
+            results.add(new Binding().value(new UserId(userId)));
           }
+
+          // TODO other binding fields
           extensions.remove();
         }
       }
     }
-    return result;
+    return results;
   }
 
 }
