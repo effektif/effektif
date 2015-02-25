@@ -6,7 +6,7 @@ Effektif is a flexible workflow engine that you can embed into your own apps.
 
 A workflow is based on a diagram (like in BPMN or flowcharts) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.
 
-## Why we build Effektif ?
+## Why did we create Effektif ?
 
 Workflows interact more and more with cloud services or micro services 
 over REST APIs. Those services don't participate in a transaction. The engine 
@@ -85,6 +85,10 @@ assertEquals(1, tasks.size());
 * Create your own datasource
 * Run the REST service
 * [Advanced features](https://github.com/effektif/effektif-oss/wiki/Advanced-features)
+
+## Help
+
+* TODO: document forum: stackoverflow or github issues
 
 ## Developer Documentation
 
