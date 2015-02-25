@@ -4,9 +4,9 @@ Effektif is a flexible workflow engine that you can embed into your own apps.
 
 ## What does a workflow engine do?
 
-A workflow is based on a diagram (eg BPMN or nodes and edges) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.
+A workflow is based on a diagram (like in BPMN or flowcharts) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.
 
-## Why I build Effektif ?
+## Why we build Effektif ?
 
 Workflows interact more and more with cloud services or micro services 
 over REST APIs. Those services don't participate in a transaction. The engine 
