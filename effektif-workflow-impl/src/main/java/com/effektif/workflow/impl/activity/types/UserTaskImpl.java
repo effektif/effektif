@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.ref.GroupId;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
@@ -83,14 +84,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     UserTask task = new UserTask();
     task.id(reader.readBpmnAttribute(xml, "id"));
 
-    List<Binding<UserId>> assigneeList = reader.readUserIds(xml, "assignee");
-    if (assigneeList.size() > 0) {
-      task.setAssigneeId(assigneeList.get(0));
-    }
-
-    Binding<UserId> candidates = new Binding<UserId>();
-    candidates.setBindings(reader.readUserIds(xml, "candidate"));
-    task.setCandidateIds(candidates);
+    task.setAssigneeId(reader.readFirstBinding(UserId.class, xml, "assignee"));
+    task.setCandidateIds(reader.readListBinding(UserId.class, xml, "candidate"));
+    task.setCandidateGroupIds(reader.readListBinding(GroupId.class, xml, "candidate"));
 
     return task;
   }
@@ -99,8 +95,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeUserIds(xml, "assignee", task.getAssigneeId());
-    writer.writeUserIds(xml, "candidate", task.getCandidateIds());
+    writer.writeBindings(xml, "assignee", "userId", task.getAssigneeId());
+    writer.writeBindings(xml, "candidate", "userId", task.getCandidateIds());
+    writer.writeBindings(xml, "candidate", "groupId", task.getCandidateGroupIds());
   }
   
   @Override

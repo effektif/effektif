@@ -172,6 +172,7 @@ public class MinimalBpmnTest extends TestCase {
     assertEquals("UserTask assignee", "42", task.getAssigneeId().getValue().getId());
     assertEquals("UserTask candidates size", 2, task.getCandidateIds().getBindings().size());
     assertEquals("UserTask candidate 2 ID", "43", task.getCandidateIds().getBindings().get(1).getValue().getId());
+    assertEquals("UserTask candidate group ID", "44", task.getCandidateGroupIds().getBindings().get(0).getValue().getId());
   }
 
   /**

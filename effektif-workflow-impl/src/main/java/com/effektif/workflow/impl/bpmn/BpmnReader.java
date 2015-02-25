@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.bpmn;
 import java.io.Reader;
 import java.util.*;
 
+import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.api.xml.XmlElement;
@@ -170,11 +171,32 @@ public class BpmnReader extends Bpmn {
   }
 
   /**
-   * Returns a {@link com.effektif.workflow.api.ref.UserId} from the extension element with the given name.
-   * TODO generic Binding type
+   * Returns a binding from the first extension element with the given name.
    */
-  public List<Binding<UserId>> readUserIds(XmlElement xml, String elementName) {
-    List<Binding<UserId>> results = new ArrayList<>();
+  public <T> Binding<T> readFirstBinding(Class<T> bindingType, XmlElement xml, String elementName) {
+    List<Binding<T>> bindings = readBindings(bindingType, xml, elementName);
+    if (bindings.isEmpty()) {
+      return new Binding<T>();
+    }
+    else {
+      return bindings.get(0);
+    }
+  }
+
+  /**
+   * Returns a list-based binding from the extension elements with the given name.
+   */
+  public <T> Binding<T> readListBinding(Class<T> bindingType, XmlElement xml, String elementName) {
+    Binding<T> binding = new Binding<T>();
+    binding.setBindings(readBindings(bindingType, xml, elementName));
+    return binding;
+  }
+
+  /**
+   * Returns a list of bindings from the extension elements with the given name.
+   */
+  private <T> List<Binding<T>> readBindings(Class<T> bindingType, XmlElement xml, String elementName) {
+    List<Binding<T>> results = new ArrayList<>();
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
     if (extensionElements != null) {
       Iterator<XmlElement> extensions = extensionElements.elements.iterator();
@@ -183,13 +205,22 @@ public class BpmnReader extends Bpmn {
 
         if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
 
-          String userId = extension.attributes.get("userId");
-          if (userId != null) {
-            results.add(new Binding().value(new UserId(userId)));
+          if (UserId.class.equals(bindingType)) {
+            String userId = extension.attributes.get("userId");
+            if (userId != null) {
+              results.add(new Binding().value(new UserId(userId)));
+              extensions.remove();
+            }
+          }
+          else if (GroupId.class.equals(bindingType)) {
+            String groupId = extension.attributes.get("groupId");
+            if (groupId != null) {
+              results.add(new Binding().value(new GroupId(groupId)));
+              extensions.remove();
+            }
           }
 
           // TODO other binding fields
-          extensions.remove();
         }
       }
     }

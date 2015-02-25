@@ -133,7 +133,15 @@ public class UserTask extends NoneTask {
   public void setCandidateIds(Binding<UserId> candidates) {
     this.candidateIds = candidates;
   }
-  
+
+  public Binding<GroupId> getCandidateGroupIds() {
+    return candidateGroupIds;
+  }
+
+  public void setCandidateGroupIds(Binding<GroupId> candidates) {
+    this.candidateGroupIds = candidates;
+  }
+
   public Binding<UserId> getAssigneeId() {
     return assigneeId;
   }

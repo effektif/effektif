@@ -61,4 +61,9 @@ public class UserId {
       return false;
     return true;
   }
+
+  @Override
+  public String toString() {
+    return id;
+  }
 }
