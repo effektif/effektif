@@ -77,6 +77,9 @@ public class XmlElement {
    * Returns the first element with the given name, or <code>null</code> if there isn’t one.
    */
   public XmlElement findChildElement(String elementName) {
+    if (elements==null) {
+      return null;
+    }
     for (XmlElement childElement : elements) {
       if (childElement.is(elementName)) {
         return childElement;

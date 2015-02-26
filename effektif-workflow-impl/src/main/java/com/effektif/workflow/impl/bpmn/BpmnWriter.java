@@ -176,6 +176,9 @@ public class BpmnWriter extends Bpmn {
    * e.g. <effektif:assignee userId="42"/>.
    */
   public void writeBindings(XmlElement xml, String elementName, String attributeName, Binding<?> binding) {
+    if (binding==null) {
+      return;
+    }
     XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
     if (binding.getValue() != null) {
       XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
