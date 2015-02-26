@@ -59,4 +59,9 @@ public class GroupId {
       return false;
     return true;
   }
+
+  @Override
+  public String toString() {
+    return id;
+  }
 }
