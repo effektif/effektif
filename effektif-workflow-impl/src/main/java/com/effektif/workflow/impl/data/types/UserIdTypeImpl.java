@@ -18,6 +18,8 @@ package com.effektif.workflow.impl.data.types;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.types.UserIdType;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
 
@@ -59,4 +61,21 @@ public class UserIdTypeImpl extends JavaBeanTypeImpl<UserIdType> {
 //    } 
 //    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+UserReference.class.getName());
 //  }
+
+
+  @Override
+  public Binding readValue(XmlElement xml) {
+    if (xml == null) {
+      throw new IllegalArgumentException("null argument to method");
+    }
+    String value = xml.attributes.get("userId");
+    return value == null ? null : new Binding().value(new UserId(value.toString()));
+  }
+
+  @Override
+  public void writeValue(XmlElement xml, Object value) {
+    if (value != null) {
+      xml.addAttribute("userId", value.toString());
+    }
+  }
 }

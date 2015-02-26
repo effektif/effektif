@@ -17,13 +17,12 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.GroupId;
-import org.joda.time.LocalDateTime;
-
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.types.GroupIdType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.UserIdType;
@@ -42,6 +41,7 @@ import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import org.joda.time.LocalDateTime;
 
 
 /**
@@ -85,9 +85,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     UserTask task = new UserTask();
     task.id(reader.readBpmnAttribute(xml, "id"));
 
-    task.setAssigneeId(reader.readFirstBinding(UserId.class, xml, "assignee"));
-    task.setCandidateIds(reader.readListBinding(UserId.class, xml, "candidate"));
-    task.setCandidateGroupIds(reader.readListBinding(GroupId.class, xml, "candidate"));
+    task.setAssigneeId(reader.readFirstBinding(UserId.class, new UserIdType(), xml, "assignee"));
+    task.setCandidateIds(reader.readListBinding(UserId.class, new UserIdType(), xml, "candidate"));
+    task.setCandidateGroupIds(reader.readListBinding(GroupId.class, new GroupIdType(), xml, "candidate"));
 
     return task;
   }
@@ -96,9 +96,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeBindings(xml, "assignee", "userId", task.getAssigneeId());
-    writer.writeBindings(xml, "candidate", "userId", task.getCandidateIds());
-    writer.writeBindings(xml, "candidate", "groupId", task.getCandidateGroupIds());
+    writer.writeBindings(xml, "assignee", new UserIdType(), task.getAssigneeId());
+    writer.writeBindings(xml, "candidate", new UserIdType(), task.getCandidateIds());
+    writer.writeBindings(xml, "candidate", new GroupIdType(), task.getCandidateGroupIds());
   }
   
   @Override

@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import com.effektif.workflow.api.Configuration;
+import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EndEvent;
@@ -37,7 +39,16 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 /**
  * @author Tom Baeyens
  */
-public class BpmnTest {
+public class BpmnTest extends TestCase {
+
+  private static Configuration configuration;
+
+  @Override
+  public void setUp() throws Exception {
+    if (configuration == null) {
+      configuration = new TestConfiguration();
+    }
+  }
 
   @Test
   public void testBpmnParsingAndSerialization() throws Exception {
@@ -47,10 +58,9 @@ public class BpmnTest {
   }
 
   private void scan(File directory) throws Exception {
-    TestConfiguration testConfiguration = new TestConfiguration();
-    testConfiguration.getWorkflowEngine(); // to ensure initialization of the object mapper
-    ActivityTypeService activityTypeService = testConfiguration.get(ActivityTypeService.class);
-    ObjectMapper objectMapper = testConfiguration.get(ObjectMapper.class);
+    configuration.getWorkflowEngine(); // to ensure initialization of the object mapper
+    ActivityTypeService activityTypeService = configuration.get(ActivityTypeService.class);
+    ObjectMapper objectMapper = configuration.get(ObjectMapper.class);
     
     try {
       for (File file : directory.listFiles()) {
@@ -60,7 +70,7 @@ public class BpmnTest {
           String bpmnXmlString = new String(encoded, StandardCharsets.UTF_8);
           System.err.println("=== SOURCE " + file.getPath()+" ========================================== ");
           System.err.println(bpmnXmlString);
-          BpmnReader bpmnReader = new BpmnReader(activityTypeService);
+          BpmnReader bpmnReader = new BpmnReader(configuration);
           Workflow workflow = bpmnReader.readBpmnDocument(new StringReader(bpmnXmlString));
           
           System.err.println("--- JSON " + file.getPath()+" ------------------------------------------ ");
@@ -70,7 +80,7 @@ public class BpmnTest {
           workflow = objectMapper.readValue(workflowJsonString, Workflow.class);
           
           System.err.println("--- BPMN " + file.getPath()+" ------------------------------------------ ");
-          System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService));
+          System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
           System.err.println();
           System.err.println();
         } else if (file.isDirectory()) {
@@ -97,6 +107,6 @@ public class BpmnTest {
         .transitionTo("e"))
       .activity(new EndEvent("e"));
 
-    System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService));
+    System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
   }
 }

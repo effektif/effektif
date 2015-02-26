@@ -15,7 +15,9 @@
  */
 package com.effektif.workflow.test.implementation;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.*;
+import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -24,10 +26,8 @@ import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -36,7 +36,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -66,6 +65,7 @@ import java.util.List;
  */
 public class MinimalBpmnTest extends TestCase {
 
+  private static Configuration configuration;
   private static ActivityTypeService activityTypeService;
   private static ObjectMapper objectMapper;
   private static File testResources;
@@ -78,11 +78,11 @@ public class MinimalBpmnTest extends TestCase {
 
   @Override
   public void setUp() throws Exception {
-    if (activityTypeService == null || objectMapper == null) {
-      TestConfiguration testConfiguration = new TestConfiguration();
-      testConfiguration.getWorkflowEngine(); // to ensure initialization of the object mapper
-      activityTypeService = testConfiguration.get(ActivityTypeService.class);
-      objectMapper = testConfiguration.get(ObjectMapper.class);
+    if (configuration == null) {
+      configuration = new TestConfiguration();
+      configuration.getWorkflowEngine(); // to ensure initialization of the object mapper
+      activityTypeService = configuration.get(ActivityTypeService.class);
+      objectMapper = configuration.get(ObjectMapper.class);
     }
   }
 
@@ -91,7 +91,7 @@ public class MinimalBpmnTest extends TestCase {
     File bpmn = new File(testResources, "bpmn/MinimalProcess.bpmn.xml");
     byte[] encoded = Files.readAllBytes(Paths.get(bpmn.getPath()));
     String bpmnXmlString = new String(encoded, StandardCharsets.UTF_8);
-    BpmnReader reader = new BpmnReader(activityTypeService);
+    BpmnReader reader = new BpmnReader(configuration);
     Workflow workflow = reader.readBpmnDocument(new StringReader(bpmnXmlString));
 
     // Check parsed model…
@@ -115,8 +115,7 @@ public class MinimalBpmnTest extends TestCase {
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
     // Check XML generated from model…
-    BpmnWriter writer = new BpmnWriter(activityTypeService);
-    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService);
+    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
 
     // Inspect the XML output for correctness.
     System.out.println("--- GENERATED BPMN ------------------------------------------ ");

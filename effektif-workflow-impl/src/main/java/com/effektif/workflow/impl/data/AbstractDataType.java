@@ -16,6 +16,8 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.template.Hints;
 
 
@@ -85,4 +87,10 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public String convertInternalToText(Object value, Hints hints) {
     return value!=null ? value.toString() : null;
   }
+
+  @Override
+  public Binding readValue(XmlElement xml) { return null; }
+
+  @Override
+  public void writeValue(XmlElement xml, Object value) { }
 }

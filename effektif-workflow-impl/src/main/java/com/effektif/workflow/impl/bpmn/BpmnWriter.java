@@ -19,12 +19,19 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.ref.UserId;
-import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,16 +45,18 @@ public class BpmnWriter extends Bpmn {
   protected ActivityTypeService activityTypeService;
   protected String bpmnPrefix;
   protected String effektifPrefix;
-  
+  protected DataTypeService dataTypeService;
+
   /** convenience method */
-  public static String writeBpmnDocumentString(Workflow workflow, ActivityTypeService activityTypeService) {
-    BpmnWriter bpmnWriter = new BpmnWriter(activityTypeService);
+  public static String writeBpmnDocumentString(Workflow workflow, Configuration configuration) {
+    BpmnWriter bpmnWriter = new BpmnWriter(configuration);
     XmlElement bpmnDefinitions = bpmnWriter.writeDefinitions(workflow);
     return XmlWriter.toString(bpmnDefinitions);
   }
 
-  public BpmnWriter(ActivityTypeService activityTypeService) {
-    this.activityTypeService = activityTypeService;
+  public BpmnWriter(Configuration configuration) {
+    activityTypeService = configuration.get(ActivityTypeService.class);
+    dataTypeService = configuration.get(DataTypeService.class);
   }
 
   public void writeBpmnDocument(Workflow workflow, OutputStream out) {
@@ -174,21 +183,23 @@ public class BpmnWriter extends Bpmn {
   /**
    * Writes binding values as extension elements with the given local name and attribute name,
    * e.g. <effektif:assignee userId="42"/>.
+   * TODO other Binding fields, e.g. variableId
    */
-  public void writeBindings(XmlElement xml, String elementName, String attributeName, Binding<?> binding) {
+  public void writeBindings(XmlElement xml, String elementName, Type type, Binding binding) {
+    DataType dataType = dataTypeService.createDataType(type);
     if (binding==null) {
       return;
     }
     XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
     if (binding.getValue() != null) {
       XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
-      bindingXml.addAttribute(attributeName, binding.getValue().toString());
+      dataType.writeValue(bindingXml, binding.getValue());
       extensionElements.addElement(bindingXml);
     }
     else if (binding.getBindings() != null) {
-      for (Binding<?> nestedBinding : binding.getBindings()) {
+      for (Binding nestedBinding : (List<Binding>) binding.getBindings()) {
         XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
-        bindingXml.addAttribute(attributeName, nestedBinding.getValue().toString());
+        dataType.writeValue(bindingXml, nestedBinding.getValue());
         extensionElements.addElement(bindingXml);
       }
     }
