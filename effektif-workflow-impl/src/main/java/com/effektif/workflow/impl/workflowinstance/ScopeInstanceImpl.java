@@ -259,10 +259,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       parent.setVariableValue(variableId, value);
       return;
     }
-    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataType dataType = dataTypeService.getDataTypeByValue(value); 
-    VariableInstanceImpl variableInstance = createVariableInstanceLocal(variableId, dataType);
-    setVariableValue(variableInstance, value);
+    throw new RuntimeException("dynamic variable creation not  yet implemented");
+// TODO
+//    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+//    DataType dataType = dataTypeService.getDataTypeByValue(value); 
+//    VariableInstanceImpl variableInstance = createVariableInstanceLocal(variableId, dataType);
+//    setVariableValue(variableInstance, value);
   }
 
   public void setVariableValue(VariableInstanceImpl variableInstance, Object value) {

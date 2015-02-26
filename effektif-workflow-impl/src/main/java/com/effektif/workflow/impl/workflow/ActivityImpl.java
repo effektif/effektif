@@ -31,6 +31,7 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
  */
 public class ActivityImpl extends ScopeImpl {
   
+  public Activity activity;
   public ActivityType activityType;
   /** the list of transitions for which this activity is the destination.
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
@@ -42,14 +43,15 @@ public class ActivityImpl extends ScopeImpl {
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void parse(Activity activityApi, Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
-    super.parse(activityApi, parser, parent);
+  public void parse(Activity activity, Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
+    super.parse(activity, parser, parent);
+    this.activity = activity;
     if (id==null) {
       parser.addError("Activity has no id");
     } else if ("".equals(id)) {
-      parser.addError("Activity has a empty string as name", id);
+      parser.addError("Activity has a empty string as id", id);
     } else if (id.contains(".")) {
-      parser.addError("Activity '%s' has a dot in the name", id);
+      parser.addError("Activity '%s' has a dot in the id", id);
     } else if (parser.activityIds.contains(id)) {
       parser.addError("Duplicate activity id '%s'", id);
     } else {
@@ -57,19 +59,19 @@ public class ActivityImpl extends ScopeImpl {
     }
 
     ActivityTypeService activityTypeService = parser.getConfiguration(ActivityTypeService.class);
-    this.activityType = activityTypeService.instantiateActivityType(activityApi);
+    this.activityType = activityTypeService.instantiateActivityType(activity);
     // some activity types need to validate incoming and outgoing transitions, 
     // that's why they are NOT parsed here, but after the transitions.
     if (this.activityType==null) {
       parser.addError("Activity '%s' has no activityType configured", id);
     }
 
-    if (activityApi.getOutgoingTransitions()!=null) {
-      for (Transition transition: activityApi.getOutgoingTransitions()) {
-        transition.from(activityApi.getId());
+    if (activity.getOutgoingTransitions()!=null) {
+      for (Transition transition: activity.getOutgoingTransitions()) {
+        transition.from(activity.getId());
         scopeApi.transition(transition);
       }
-      activityApi.setOutgoingTransitions(null);
+      activity.setOutgoingTransitions(null);
     }
   }
   

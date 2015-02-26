@@ -78,10 +78,7 @@ public class RhinoSandboxedScriptService extends RhinoScriptService implements S
   ///////////////////////////////////////////////////
 
   
-  /**
- * @author Tom Baeyens
- */
-public class SandboxContextFactory extends ContextFactory {
+  public class SandboxContextFactory extends ContextFactory {
     @Override
     protected Context makeContext() {
       Context context = super.makeContext();
@@ -102,10 +99,7 @@ public class SandboxContextFactory extends ContextFactory {
     }
   }
   
-  /**
- * @author Tom Baeyens
- */
-public class SandboxClassShutter implements ClassShutter {
+  public class SandboxClassShutter implements ClassShutter {
     public boolean visibleToScripts(String className) {
       if (className.startsWith("com.effektif.workflow.impl.script")) {
         return true;

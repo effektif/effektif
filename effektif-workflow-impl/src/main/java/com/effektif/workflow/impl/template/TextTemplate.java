@@ -17,12 +17,10 @@ package com.effektif.workflow.impl.template;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -120,7 +118,7 @@ public class TextTemplate {
     }
     public String toString() {
       StringBuilder text = new StringBuilder();
-      text.append("{");
+      text.append("{{");
       text.append(variableId);
       if (fields!=null) {
         for (String field: fields) {
@@ -128,7 +126,7 @@ public class TextTemplate {
           text.append(field);
         }
       }
-      text.append("}");
+      text.append("}}");
       return text.toString();
     }
     @Override

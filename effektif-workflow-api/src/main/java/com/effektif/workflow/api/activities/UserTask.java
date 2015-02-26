@@ -42,7 +42,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class UserTask extends NoneTask {
   
   protected AccessControlList access;
-  protected Binding<String> taskName;
+  protected String taskName;
   protected Binding<UserId> assigneeId;
   protected Binding<UserId> candidateIds;
   protected Binding<GroupId> candidateGroupIds;
@@ -60,18 +60,8 @@ public class UserTask extends NoneTask {
     super(id);
   }
 
-  public UserTask name(String name) {
-    this.taskName = new Binding().value(name);
-    return this;
-  }
-
-  public UserTask nameVariableId(String nameVariableId) {
-    this.taskName = new Binding().variableId(nameVariableId);
-    return this;
-  }
-
-  public UserTask nameExpression(String nameExpression) {
-    this.taskName = new Binding().expression(nameExpression);
+  public UserTask taskName(String taskName) {
+    this.taskName = taskName;
     return this;
   }
 
@@ -118,11 +108,11 @@ public class UserTask extends NoneTask {
     candidateIds.binding(binding);
   }
   
-  public Binding<String> getTaskName() {
+  public String getTaskName() {
     return taskName;
   }
   
-  public void setTaskName(Binding<String> nameBinding) {
+  public void setTaskName(String nameBinding) {
     this.taskName = nameBinding;
   }
   
@@ -220,6 +210,12 @@ public class UserTask extends NoneTask {
   }
   public UserTask reminderRepeat(RelativeTime reminderRepeat) {
     this.reminderRepeat = reminderRepeat;
+    return this;
+  }
+
+  @Override
+  public UserTask name(String name) {
+    super.name(name);
     return this;
   }
 

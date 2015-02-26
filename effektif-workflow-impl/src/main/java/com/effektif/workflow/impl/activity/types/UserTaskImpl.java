@@ -37,6 +37,7 @@ import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
 import com.effektif.workflow.impl.job.types.TaskReminderJobType;
+import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -66,9 +67,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   private static final String BPMN_ELEMENT_NAME = "userTask";
 
   protected TaskStore taskStore;
-  protected BindingImpl<String> nameBinding;
-  protected BindingImpl<UserId> assigneeBinding;
-  protected BindingImpl<UserId> candidatesBinding;
+  protected TextTemplate taskName;
+  protected BindingImpl<UserId> assigneeId;
+  protected BindingImpl<UserId> candidatesIds;
   protected BindingImpl<UserId> escalateTo;
 
   public UserTaskImpl() {
@@ -99,20 +100,17 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     super.parse(activityImpl, userTaskApi, parser);
     this.taskStore = parser.getConfiguration(TaskStore.class);
     this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
-    this.nameBinding = parser.parseBinding(userTaskApi.getTaskName(), NAME);
-    this.assigneeBinding = parser.parseBinding(userTaskApi.getAssigneeId(), ASSIGNEE);
-    this.candidatesBinding = parser.parseBinding(userTaskApi.getCandidateIds(), CANDIDATES);
+    this.taskName = TextTemplate.parse(userTaskApi.getTaskName());
+    this.assigneeId = parser.parseBinding(userTaskApi.getAssigneeId(), ASSIGNEE);
+    this.candidatesIds = parser.parseBinding(userTaskApi.getCandidateIds(), CANDIDATES);
     this.escalateTo = parser.parseBinding(userTaskApi.getEscalateToId(), ESCALATE_TO);
   }
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
-    String taskName = activityInstance.getValue(nameBinding);
-    if (taskName==null) {
-      taskName = activityInstance.activity.id;
-    }
-    UserId assignee = activityInstance.getValue(assigneeBinding);
-    List<UserId> candidates = activityInstance.getValues(candidatesBinding);
+    String resolvedTaskName = resolveTaskName(activityInstance);
+    UserId assignee = activityInstance.getValue(assigneeId);
+    List<UserId> candidates = activityInstance.getValues(candidatesIds);
     if ( assignee==null 
          && candidates!=null
          && candidates.size()==1 ) {
@@ -125,9 +123,11 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     Task task = new Task();
     task.setId(taskId);
     task.setCaseId(activityInstance.workflowInstance.taskId);
-    task.setName(taskName);
+    task.setName(resolvedTaskName);
+    task.setDescription(activity.getDescription());
     task.setAssignee(assignee);
     task.setCandidates(candidates);
+    task.setActivityId(activity.getId());
     task.setActivityInstanceId(activityInstance.id);
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
@@ -167,6 +167,17 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
         .taskId(task.getId())
         .activityInstance(activityInstance));
     }
+  }
+
+  protected String resolveTaskName(ActivityInstanceImpl activityInstance) {
+    String resolvedTaskName = this.taskName !=null ? this.taskName.resolve(activityInstance) : null;
+    if (resolvedTaskName==null) {
+      resolvedTaskName = activityInstance.activity.activity.getName();
+    }
+    if (resolvedTaskName==null) {
+      resolvedTaskName = activityInstance.activity.id;
+    }
+    return resolvedTaskName;
   }
   
   public BindingImpl<UserId> getEscalateTo() {
