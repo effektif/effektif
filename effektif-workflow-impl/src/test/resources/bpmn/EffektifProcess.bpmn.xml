@@ -3,7 +3,7 @@
    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
    xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
    xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
-   xmlns:effektif="effektif.com:1"
+   xmlns:e="effektif.com:1"
    xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
    targetNamespace="http://example.com/bpmn">
 
@@ -12,7 +12,7 @@
       <startEvent id="theStart" name="vacation requested"/>
       <sequenceFlow id="theStart1" sourceRef="theStart" targetRef="lookupAllowance"/>
 
-      <serviceTask id="lookupAllowance" effektif:type="java" name="Look-up allowance"/>
+      <serviceTask id="lookupAllowance" e:type="java" name="Look-up allowance"/>
       <sequenceFlow id="lookupAllowance1" sourceRef="lookupAllowance" targetRef="checkAllowance"/>
 
       <scriptTask id="checkAllowance"/>
@@ -26,10 +26,18 @@
 
       <userTask id="approveRequest" name="Approve vacation request">
          <extensionElements>
-            <effektif:assignee userId="42"/>
-            <effektif:candidate userId="42"/>
-            <effektif:candidate userId="43"/>
-            <effektif:candidate groupId="44"/>
+            <e:assignee userId="42"/>
+            <e:candidate userId="42"/>
+            <e:candidate userId="43"/>
+            <e:candidate groupId="44"/>
+            <e:form>
+               <e:description>Approve or reject the vacation request.</e:description>
+               <e:field key="c" label="Candidate name" type="text" readonly="true"/>
+               <e:field key="i" label="Interview date" type="date" required="true"/>
+               <e:field key="r" label="Reason" type="text"/>
+               <e:button value="Approve"/>
+               <e:button value="Reject"/>
+            </e:form>
          </extensionElements>
       </userTask>
       <sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
@@ -47,10 +55,10 @@
       <sequenceFlow id="notificationFork1" sourceRef="notificationFork" targetRef="emailNotification"/>
       <sequenceFlow id="notificationFork2" sourceRef="notificationFork" targetRef="publishVacation"/>
 
-      <serviceTask id="emailNotification" effektif:type="email"/>
+      <serviceTask id="emailNotification" e:type="email"/>
       <sequenceFlow id="emailNotification1" sourceRef="emailNotification" targetRef="notificationJoin"/>
 
-      <serviceTask id="publishVacation" effektif:type="http"/>
+      <serviceTask id="publishVacation" e:type="http"/>
       <sequenceFlow id="publishVacation1" sourceRef="publishVacation" targetRef="notificationJoin"/>
 
       <parallelGateway id="notificationJoin" gatewayDirection="Converging"/>

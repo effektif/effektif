@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -231,4 +234,49 @@ public class BpmnReader extends Bpmn {
     return results;
   }
 
+  /**
+   * Returns a form from the given XML element’s extension (child) elements.
+   */
+  public Form readForm(XmlElement xml) {
+    Form form = new Form().fields(new ArrayList<FormField>()).buttons(new ArrayList<String>());
+    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
+    if (extensionElements != null) {
+      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
+      while (extensions.hasNext()) {
+        XmlElement extension = extensions.next();
+
+        if (extension.is(getQName(EFFEKTIF_URI, "form"))) {
+          for (XmlElement formElement : extension.elements) {
+            if (formElement.is(getQName(EFFEKTIF_URI, "description"))) {
+              form.setDescription(formElement.text);
+            }
+            if (formElement.is(getQName(EFFEKTIF_URI, "field")) && formElement.attributes != null) {
+              FormField field = new FormField();
+              field.setKey(formElement.attributes.get("key"));
+              field.setName(formElement.attributes.get("label"));
+              if ("true".equals(formElement.attributes.get("readonly"))) {
+                field.readOnly();
+              }
+              if ("true".equals(formElement.attributes.get("required"))) {
+                field.required();
+              }
+
+              // TODO Work out how to replace with DataType look-up
+              if ("text".equals(formElement.attributes.get("type"))) {
+                field.setType(TextType.INSTANCE);
+              }
+
+              form.getFields().add(field);
+            }
+            if (formElement.is(getQName(EFFEKTIF_URI, "button")) && formElement.attributes != null) {
+              form.getButtons().add("");
+            }
+          }
+          // Remove the whole <code>effektif:form</code> element.
+          extensions.remove();
+        }
+      }
+    }
+    return form;
+  }
 }

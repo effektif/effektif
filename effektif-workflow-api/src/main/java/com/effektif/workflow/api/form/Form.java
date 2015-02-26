@@ -19,6 +19,9 @@ import java.util.List;
 
 
 /**
+ * A form for collecting data in a {@link com.effektif.workflow.api.activities.UserTask} or
+ * {@link com.effektif.workflow.api.triggers.FormTrigger}, used to construct an user-interface.
+ *
  * @author Tom Baeyens
  */
 public class Form {

@@ -44,6 +44,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
+ * Factory methods for the Effektif type system data types.
+ *
  * @author Tom Baeyens
  */
 public class DataTypeService implements Brewable {
