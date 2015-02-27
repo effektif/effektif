@@ -71,7 +71,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
     task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
     task.setCandidateGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "candidate"));
-
+    task.setForm(reader.readForm(xml));
+    
     return task;
   }
 
