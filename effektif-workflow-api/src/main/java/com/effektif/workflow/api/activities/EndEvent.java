@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * Completes the incoming flow, and ends the whole workflow if there are no other active flows.
+ *
+ * BPMN XML: {@code <endEvent id="theEnd"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("endEvent")

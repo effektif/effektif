@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * An exclusive gateway, used to fork and join sequence flows for conditionally executing tasks.
  *
- * BPMN XML: {@code <exclusiveGateway id="fork"/>}
+ * BPMN XML: {@code <exclusiveGateway id="fork" gatewayDirection="Diverging"/>}
  *
  * @author Tom Baeyens
  */

@@ -23,9 +23,15 @@ import com.effektif.workflow.api.types.Type;
 
 
 /** 
- * Describes how the value is obtained 
- * for an activity input parameter. 
- * 
+ * A binding stores a value for an activity input parameter, such as a process variable.
+ *
+ * <p>A binding specifies a value in one of three possible ways:</p>
+ * <ol>
+ * <li>a fixed value</li>
+ * <li>a reference to a workflow variable, with optionally field references</li>
+ * <li>a list of bindings.</li>
+ * </ol>
+ *
  * @author Tom Baeyens
  */
 public class Binding<T> {

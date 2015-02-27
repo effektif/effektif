@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
- * A start event.
+ * A start event activates its outgoing flow. A process may have zero or more start events.
  *
  * BPMN XML: {@code <startEvent id="theStart"/>}
  *

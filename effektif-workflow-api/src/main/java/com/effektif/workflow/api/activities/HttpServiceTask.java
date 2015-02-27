@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * A service task that consists of an HTTP interface.
  *
- * BPMN XML: {@code <serviceTask id="sendMail" effektif:type="http">}
+ * BPMN XML: {@code <serviceTask id="publishReleaseNotes" effektif:type="http">}
  *
  * @author Tom Baeyens
  */
