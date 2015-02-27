@@ -28,6 +28,7 @@ import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.email.EmailService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JsonService;
@@ -47,6 +48,7 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(this);
     registerDefaultActivityTypeService();
     registerDefaultDataTypeService();
+    registerDefaultEmailService();
     registerDefaultExecutorService();
     registerDefaultExpressionService();
     registerDefaultJobService();
@@ -120,6 +122,11 @@ public abstract class DefaultConfiguration implements Configuration {
   protected void registerDefaultTaskService() {
     brewery.ingredient(new TaskServiceImpl());
   }
+
+  protected void registerDefaultEmailService() {
+    brewery.ingredient(new EmailService());
+  }
+
 
   public DefaultConfiguration synchronous() {
     brewery.ingredient(new SynchronousExecutorService());

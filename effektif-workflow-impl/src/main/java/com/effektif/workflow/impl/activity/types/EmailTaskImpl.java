@@ -15,20 +15,23 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.ref.FileId;
 import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.ref.UserId;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.bpmn.ServiceTaskType;
+import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.EmailService;
+import com.effektif.workflow.impl.identity.IdentityService;
+import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -41,11 +44,12 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
 
   private static final String BPMN_ELEMENT_NAME = "serviceTask";
-  private static final InputParameter TO_USER_IDS = new InputParameter()
-    .list()
-    .type(UserIdType.INSTANCE)
-    .key("toUserIds");
   
+  protected EmailService emailService; 
+  protected IdentityService identityService; 
+
+  protected BindingImpl<String> fromEmailAddress;
+
   protected List<BindingImpl<String>> toEmailAddresses;
   protected List<BindingImpl<UserId>> toUserIds;
   protected List<BindingImpl<GroupId>> toGroupIds;
@@ -71,10 +75,29 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   @Override
   public void parse(ActivityImpl activityImpl, EmailTask activity, WorkflowParser parser) {
     super.parse(activityImpl, activity, parser);
-//    toEmailAddresses = parser.parseBindings(activity.getToUserIds(), );
-//    toUserIds = parser.parseBindings(activity.getToUserIds(), TO_USER_IDS);
-//    toGroupIds = parser.parseBindings(activity.getToUserIds(), TO_USER_IDS);
-//    toGroupIds = parser.parseBindings(activity.getToUserIds(), TO_GROUP_IDS);
+    
+    emailService = parser.getConfiguration(EmailService.class);
+    identityService = parser.getConfiguration(IdentityService.class);
+
+    fromEmailAddress = parser.parseBinding(activity.getFromEmailAddress(), "fromEmailAddress");
+
+    toEmailAddresses = parser.parseBindings(activity.getToEmailAddresses(), "toEmailAddresses");
+    toUserIds = parser.parseBindings(activity.getToUserIds(), "toUserIds");
+    toGroupIds = parser.parseBindings(activity.getToGroupIds(), "toGroupIds");
+
+    ccEmailAddresses = parser.parseBindings(activity.getCcEmailAddresses(), "ccEmailAddresses");
+    ccUserIds = parser.parseBindings(activity.getCcUserIds(), "ccUserIds");
+    ccGroupIds = parser.parseBindings(activity.getCcGroupIds(), "ccGroupIds");
+
+    bccEmailAddresses = parser.parseBindings(activity.getBccEmailAddresses(), "bccEmailAddresses");
+    bccUserIds = parser.parseBindings(activity.getBccUserIds(), "bccUserIds");
+    bccGroupIds = parser.parseBindings(activity.getBccGroupIds(), "bccGroupIds");
+    
+    subject = TextTemplate.parse(activity.getSubject(), Hint.EMAIL, Hint.SHORT);
+    bodyText = TextTemplate.parse(activity.getBodyText(), Hint.EMAIL);
+    bodyHtml = TextTemplate.parse(activity.getBodyHtml(), Hint.EMAIL, Hint.HTML);
+    
+    attachments = parser.parseBindings(activity.getAttachments(), "attachments");
   }
 
   @Override
@@ -96,5 +119,65 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
+    List<String> to = resolveEmailAddresses(toEmailAddresses, toUserIds, toGroupIds, activityInstance);
+    List<String> cc = resolveEmailAddresses(ccEmailAddresses, ccUserIds, ccGroupIds, activityInstance);
+    List<String> bcc = resolveEmailAddresses(bccEmailAddresses, bccUserIds, bccGroupIds, activityInstance);
+    
+    Email email = new Email()
+      .from(resolveFrom(activityInstance))
+      .to(to)
+      .cc(cc)
+      .bcc(bcc)
+      .subject(subject.resolve(activityInstance))
+      .bodyText(bodyText.resolve(activityInstance))
+      .bodyHtml(bodyHtml.resolve(activityInstance))
+      .attachments(activityInstance.getValues(attachments));
+    
+    emailService.send(email);
+    
+    activityInstance.onwards();
+  }
+
+  protected String resolveFrom(ActivityInstanceImpl activityInstance) {
+    // TODO current implementation uses a configurable process email
+    // Christian, could you document in 2 lines some pointers about the 
+    // current supported features that we surely need to migrate?
+    return null;
+  }
+
+  protected List<String> resolveEmailAddresses(
+          List<BindingImpl<String>> emailAddressBindings, 
+          List<BindingImpl<UserId>> userIdBindings,
+          List<BindingImpl<GroupId>> groupIdBindings, 
+          ActivityInstanceImpl activityInstance) {
+    
+    List<String> allEmailAddresses = new ArrayList<>();
+    List<String> emailAddresses = activityInstance.getValues(emailAddressBindings);
+    addEmailAddresses(allEmailAddresses, emailAddresses);
+    
+    List<UserId> userIds = activityInstance.getValues(userIdBindings);
+    if (userIds!=null && !userIds.isEmpty()) {
+      emailAddresses = identityService.getUsersEmailAddresses(userIds);
+      addEmailAddresses(allEmailAddresses, emailAddresses);
+    }
+
+    List<GroupId> groupIds = activityInstance.getValues(groupIdBindings);
+    if (groupIds!=null && !groupIds.isEmpty()) {
+      emailAddresses = identityService.getGroupsEmailAddresses(groupIds);
+      addEmailAddresses(allEmailAddresses, emailAddresses);
+    }
+    
+    return allEmailAddresses;
+  }
+
+  protected void addEmailAddresses(List<String> allEmailAddresses, List<String> emailAddresses) {
+    if (emailAddresses!=null) {
+      for (String emailAddress: emailAddresses) {
+        String validatedEmailAddress = emailService.validate(emailAddress);
+        if (validatedEmailAddress!=null) {
+          allEmailAddresses.add(validatedEmailAddress);
+        }
+      }
+    }
   }
 }

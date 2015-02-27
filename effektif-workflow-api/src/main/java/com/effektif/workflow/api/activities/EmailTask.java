@@ -37,7 +37,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonTypeName("email")
 public class EmailTask extends Activity {
-  
+
+  protected Binding<String> fromEmailAddress;
+
   protected List<Binding<String>> toEmailAddresses;
   protected List<Binding<UserId>> toUserIds;
   protected List<Binding<GroupId>> toGroupIds;
@@ -56,6 +58,18 @@ public class EmailTask extends Activity {
   
   protected List<Binding<FileId>> attachments;
   
+  public Binding<String> getFromEmailAddress() {
+    return this.fromEmailAddress;
+  }
+  public void setFromEmailAddress(Binding<String> fromEmailAddress) {
+    this.fromEmailAddress = fromEmailAddress;
+  }
+  /** optional email address to be used as the sender of the email. */  
+  public EmailTask fromEmailAddress(Binding<String> fromEmailAddress) {
+    this.fromEmailAddress = fromEmailAddress;
+    return this;
+  }
+
   public List<Binding<UserId>> getToUserIds() {
     return this.toUserIds;
   }
@@ -230,87 +244,87 @@ public class EmailTask extends Activity {
     ccEmailAddresses.add(ccEmailAddressBinding);
   }
 
-  public List<Binding<UserId>> getBbccUserIds() {
+  public List<Binding<UserId>> getBccUserIds() {
     return this.bccUserIds;
   }
-  public void setBbccUserIds(List<Binding<UserId>> bccUserIds) {
+  public void setBccUserIds(List<Binding<UserId>> bccUserIds) {
     this.bccUserIds = bccUserIds;
   }
   public EmailTask bccUserId(String bccUserId) {
     return bccUserId(new UserId(bccUserId));
   }
   public EmailTask bccUserId(UserId bccUserId) {
-    addBbccUserIdBinding(new Binding<UserId>().value(bccUserId));
+    addBccUserIdBinding(new Binding<UserId>().value(bccUserId));
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
   public EmailTask bccUserIdVariableId(String variableId) {
-    addBbccUserIdBinding(new Binding<UserId>().variableId(variableId));
+    addBccUserIdBinding(new Binding<UserId>().variableId(variableId));
     return this;
   }
   /** adds the user specified in nested field inside a variable as a recipient. */ 
   public EmailTask bccUserIdVariableField(String variableId, String... fields) {
-    addBbccUserIdBinding(new Binding<UserId>().variableId(variableId).fields(fields));
+    addBccUserIdBinding(new Binding<UserId>().variableId(variableId).fields(fields));
     return this;
   }
-  protected void addBbccUserIdBinding(Binding<UserId> bccUserIdBinding) {
+  protected void addBccUserIdBinding(Binding<UserId> bccUserIdBinding) {
     if (bccUserIds==null) {
       bccUserIds = new ArrayList<>();
     }
     bccUserIds.add(bccUserIdBinding);
   }
   
-  public List<Binding<GroupId>> getBbccGroupIds() {
+  public List<Binding<GroupId>> getBccGroupIds() {
     return this.bccGroupIds;
   }
-  public void setBbccGroupIds(List<Binding<GroupId>> bccGroupIds) {
+  public void setBccGroupIds(List<Binding<GroupId>> bccGroupIds) {
     this.bccGroupIds = bccGroupIds;
   }
   public EmailTask bccGroupId(String bccGroupId) {
     return bccGroupId(new GroupId(bccGroupId));
   }
   public EmailTask bccGroupId(GroupId bccGroupId) {
-    addBbccGroupIdBinding(new Binding<GroupId>().value(bccGroupId));
+    addBccGroupIdBinding(new Binding<GroupId>().value(bccGroupId));
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
   public EmailTask bccGroupIdVariableId(String variableId) {
-    addBbccGroupIdBinding(new Binding<GroupId>().variableId(variableId));
+    addBccGroupIdBinding(new Binding<GroupId>().variableId(variableId));
     return this;
   }
   /** adds the user specified in nested field inside a variable as a recipient. */ 
   public EmailTask bccGroupIdVariableField(String variableId, String... fields) {
-    addBbccGroupIdBinding(new Binding<GroupId>().variableId(variableId).fields(fields));
+    addBccGroupIdBinding(new Binding<GroupId>().variableId(variableId).fields(fields));
     return this;
   }
-  protected void addBbccGroupIdBinding(Binding<GroupId> bccGroupIdBinding) {
+  protected void addBccGroupIdBinding(Binding<GroupId> bccGroupIdBinding) {
     if (bccGroupIds==null) {
       bccGroupIds = new ArrayList<>();
     }
     bccGroupIds.add(bccGroupIdBinding);
   }
   
-  public List<Binding<String>> getBbccEmailAddresses() {
+  public List<Binding<String>> getBccEmailAddresses() {
     return this.bccEmailAddresses;
   }
-  public void setBbccEmailAddresses(List<Binding<String>> bccEmailAddresses) {
+  public void setBccEmailAddresses(List<Binding<String>> bccEmailAddresses) {
     this.bccEmailAddresses = bccEmailAddresses;
   }
   public EmailTask bcc(String bccEmailAddress) {
-    addBbccEmailAddressBinding(new Binding().value(bccEmailAddress));
+    addBccEmailAddressBinding(new Binding().value(bccEmailAddress));
     return this;
   }
   /** adds the email address specified in a variable as a recipient. */ 
   public EmailTask bccVariableId(String variableId) {
-    addBbccEmailAddressBinding(new Binding().variableId(variableId));
+    addBccEmailAddressBinding(new Binding().variableId(variableId));
     return this;
   }
   /** adds the user specified in nested field inside a variable as a recipient. */ 
   public EmailTask bccVariableField(String variableId, String... fields) {
-    addBbccEmailAddressBinding(new Binding().variableId(variableId).fields(fields));
+    addBccEmailAddressBinding(new Binding().variableId(variableId).fields(fields));
     return this;
   }
-  protected void addBbccEmailAddressBinding(Binding<String> bccEmailAddressBinding) {
+  protected void addBccEmailAddressBinding(Binding<String> bccEmailAddressBinding) {
     if (bccEmailAddresses==null) {
       bccEmailAddresses = new ArrayList<>();
     }

@@ -11,15 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.template;
+package com.effektif.workflow.impl.email;
 
 
 /**
  * @author Tom Baeyens
  */
-public enum Hint {
+public class EmailService {
 
-  EMAIL,
-  SHORT,
-  HTML
+  public void send(Email email) {
+  }
+
+  public String validate(String emailAddress) {
+    return null;
+  }
 }

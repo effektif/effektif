@@ -29,5 +29,6 @@ public class MemoryConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MemoryTaskStore());
     brewery.ingredient(new MemoryJobStore());
     brewery.ingredient(new MemoryAdapterService());
+    brewery.ingredient(new MemoryIdentityService());
   }
 }
