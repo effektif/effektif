@@ -80,10 +80,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeBinding(xml, "assignee", "userId", task.getAssigneeId(), UserIdType.INSTANCE);
-// Peter, can you fix this generics typing problem?
-//    writer.writeBindings(xml, "candidate", "userId", task.getCandidateIds());
-//    writer.writeBindings(xml, "candidate", "groupId", task.getCandidateGroupIds());
+    writer.writeBinding(xml, "assignee", task.getAssigneeId(), UserIdType.INSTANCE);
+    writer.writeBindings(xml, "candidate", (List) task.getCandidateIds(), UserIdType.INSTANCE);
+    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
   }
   
   @Override

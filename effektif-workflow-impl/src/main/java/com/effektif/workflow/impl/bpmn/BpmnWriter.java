@@ -185,7 +185,7 @@ public class BpmnWriter extends Bpmn {
    * e.g. <effektif:assignee userId="42"/>.
    * TODO other Binding fields, e.g. variableId
    */
-  public void writeBinding(XmlElement xml, String elementName, String attributeName, Binding<?> binding, Type type) {
+  public void writeBinding(XmlElement xml, String elementName, Binding<?> binding, Type type) {
     DataType dataType = dataTypeService.createDataType(type);
     if (binding==null) {
       return;
@@ -205,14 +205,12 @@ public class BpmnWriter extends Bpmn {
    * Writes binding values as extension elements with the given local name and attribute name,
    * e.g. <effektif:assignee userId="42"/>.
    */
-  public void writeBindings(XmlElement xml, String elementName, String attributeName, List<Binding<?>> bindings) {
+  public void writeBindings(XmlElement xml, String elementName, List<Binding> bindings, Type type) {
     if (bindings==null) {
       return;
     }
-    for (Binding<?> nestedBinding : bindings) {
-      XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
-      bindingXml.addAttribute(attributeName, nestedBinding.getValue().toString());
-      xml.addElement(bindingXml);
+    for (Binding nestedBinding : bindings) {
+      writeBinding(xml, elementName, nestedBinding, type);
     }
   }
 }
