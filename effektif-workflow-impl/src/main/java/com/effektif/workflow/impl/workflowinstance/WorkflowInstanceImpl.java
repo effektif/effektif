@@ -128,8 +128,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       } else if (STATE_STARTING_MULTI_CONTAINER.equals(activityInstance.workState)) {
         Collection<Object> values = null;
         MultiInstanceImpl multiInstance = activityType.getMultiInstance();
-        if (multiInstance!=null && multiInstance.valuesBinding!=null) {
-          Object value = multiInstance.valuesBinding.getValue(activityInstance);
+        if (multiInstance!=null && multiInstance.valuesBindings!=null) {
+          Object value = activityInstance.getValues(multiInstance.valuesBindings);
           if (value!=null) {
             if (value instanceof Collection) {
               values = (Collection<Object>) value;

@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.workflowinstance;
 import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -198,18 +199,22 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   /** to be used by activity implementations */
-  public <T> List<T> getValues(BindingImpl<T> binding) {
-    if (binding==null) {
+  public <T> List<T> getValues(List<BindingImpl<T>> bindings) {
+    if (bindings==null) {
       return null;
     }
-    Object value = binding.getValue(this);
-    if (value==null) {
-      return null;
+    List<T> values = new ArrayList<>();
+    for (BindingImpl<T> binding: bindings) {
+      T value = getValue(binding);
+      if (value!=null) {
+        if (value instanceof Collection) {
+          values.addAll((Collection<T>)value);
+        } else {
+          values.add(value);
+        }
+      }
     }
-    if (value instanceof List) {
-      return (List<T>) value;
-    }
-    return (List<T>) Lists.of(value);
+    return values;
   }
   
   public Object getValue(String variableId) {

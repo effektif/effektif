@@ -184,18 +184,9 @@ public class BpmnReader extends Bpmn {
   }
 
   /**
-   * Returns a list-based binding from the extension elements with the given name.
-   */
-  public <T> Binding<T> readListBinding(Class<T> bindingType, XmlElement xml, String elementName) {
-    Binding<T> binding = new Binding<T>();
-    binding.setBindings(readBindings(bindingType, xml, elementName));
-    return binding;
-  }
-
-  /**
    * Returns a list of bindings from the extension elements with the given name.
    */
-  private <T> List<Binding<T>> readBindings(Class<T> bindingType, XmlElement xml, String elementName) {
+  public <T> List<Binding<T>> readBindings(Class<T> bindingType, XmlElement xml, String elementName) {
     List<Binding<T>> results = new ArrayList<>();
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
     if (extensionElements != null) {

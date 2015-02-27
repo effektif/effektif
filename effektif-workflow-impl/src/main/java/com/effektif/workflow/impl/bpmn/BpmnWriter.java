@@ -175,7 +175,7 @@ public class BpmnWriter extends Bpmn {
    * Writes binding values as extension elements with the given local name and attribute name,
    * e.g. <effektif:assignee userId="42"/>.
    */
-  public void writeBindings(XmlElement xml, String elementName, String attributeName, Binding<?> binding) {
+  public void writeBinding(XmlElement xml, String elementName, String attributeName, Binding<?> binding) {
     if (binding==null) {
       return;
     }
@@ -185,15 +185,23 @@ public class BpmnWriter extends Bpmn {
       bindingXml.addAttribute(attributeName, binding.getValue().toString());
       extensionElements.addElement(bindingXml);
     }
-    else if (binding.getBindings() != null) {
-      for (Binding<?> nestedBinding : binding.getBindings()) {
-        XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
-        bindingXml.addAttribute(attributeName, nestedBinding.getValue().toString());
-        extensionElements.addElement(bindingXml);
-      }
-    }
     else {
       // TODO other binding fields
+    }
+  }
+  
+  /**
+   * Writes binding values as extension elements with the given local name and attribute name,
+   * e.g. <effektif:assignee userId="42"/>.
+   */
+  public void writeBindings(XmlElement xml, String elementName, String attributeName, List<Binding<?>> bindings) {
+    if (bindings==null) {
+      return;
+    }
+    for (Binding<?> nestedBinding : bindings) {
+      XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
+      bindingXml.addAttribute(attributeName, nestedBinding.getValue().toString());
+      xml.addElement(bindingXml);
     }
   }
 }

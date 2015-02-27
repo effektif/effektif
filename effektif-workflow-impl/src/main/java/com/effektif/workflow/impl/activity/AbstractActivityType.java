@@ -60,8 +60,8 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   }
   
   @Override
-  public void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser) {
-    this.activity = activityApi;
+  public void parse(ActivityImpl activityImpl, T activity, WorkflowParser parser) {
+    this.activity = activity;
   }
   
   /** returns the API activity object */

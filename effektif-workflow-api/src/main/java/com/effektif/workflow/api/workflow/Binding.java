@@ -65,7 +65,7 @@ public class Binding<T> {
   /** the fixed value.  
    * When serializing and deserializing, the type for this value will be automatically initialized.
    * This value is mutually exclusive with variableId and expression */
-  public Binding value(T value) {
+  public Binding<T> value(T value) {
     this.value = value;
     return this;
   }
@@ -79,7 +79,7 @@ public class Binding<T> {
     this.type = type;
   }
   /** the type of {@link #getValue()} */
-  public Binding type(Type type) {
+  public Binding<T> type(Type type) {
     this.type = type;
     return this;
   }
@@ -90,11 +90,11 @@ public class Binding<T> {
   public void setBindings(List<Binding<T>> bindings) {
     this.bindings = bindings;
   }
-  public Binding bindings(List<Binding<T>> bindings) {
+  public Binding<T> bindings(List<Binding<T>> bindings) {
     this.bindings = bindings;
     return this;
   }
-  public Binding binding(Binding<T> binding) {
+  public Binding<T> binding(Binding<T> binding) {
     if (bindings==null) {
       bindings = new ArrayList<>();
     }
@@ -119,18 +119,27 @@ public class Binding<T> {
   public void setField(List<String> fields) {
     this.fields = fields;
   }
-  public Binding field(String field) {
+  public Binding<T> field(String field) {
     if (fields==null) {
       fields = new ArrayList<>();
     }
     fields.add(field);
     return this;
   }
+  public Binding<T> fields(String[] fields) {
+    if (fields!=null) {
+      for (String field: fields) {
+        field(field);
+      }
+    }
+    return this;
+  }
+
 
   /** .-separated notation that starts with the variableId and then 
    * specifies the fields to be dereferenced 
    * eg "myVariableId.variableField.nestedField" */
-  public Binding variableField(String variableFieldExpression) {
+  public Binding<T> variableField(String variableFieldExpression) {
     if (variableFieldExpression==null) {
       return this;
     }

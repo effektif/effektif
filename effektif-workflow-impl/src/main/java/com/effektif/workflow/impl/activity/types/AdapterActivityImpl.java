@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.activity.types;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.AdapterActivity;
@@ -47,7 +48,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   protected AdapterService adapterService;
   protected ActivityDescriptor descriptor;
   protected Map<String,DataType> outputParameterDataTypes;
-
+  protected Map<String, InputParameter> inputParameters;
+  
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
   }
@@ -59,7 +61,6 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     this.activityKey = adapterActivity.getActivityKey();
     this.dataTypeService = parser.getConfiguration(DataTypeService.class);
     this.adapterService = parser.getConfiguration(AdapterService.class);
-    Map<String, InputParameter> inputParameters = null;
     Adapter adapter = adapterService.findAdapterById(adapterId);
     this.descriptor = adapter!=null ? adapter.getActivityDescriptor(activityKey) : null;
     if (descriptor!=null) {
@@ -90,7 +91,10 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         if (inputParameter==null) {
           parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activity.getId());
         }
-        BindingImpl<?> bindingImpl = parser.parseBinding(inputBinding, inputParameter, true);
+        Type type = inputParameter.getType();
+        String bindingName = inputParameter.getKey();
+        boolean required = inputParameter.isRequired();
+        BindingImpl<?> bindingImpl = parser.parseBinding(inputBinding, bindingName, required, type);
         if (bindingImpl!=null) {
           if (inputBindings==null) {
             inputBindings = new HashMap<>();
@@ -117,8 +121,16 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
 
     if (inputBindings!=null) {
       for (String adapterKey: inputBindings.keySet()) {
-        BindingImpl inputBinding = inputBindings.get(adapterKey);
-        Object value = inputBinding.getValue(activityInstance);
+        
+        Object value = null;
+        if (isList(adapterKey)) {
+          List<BindingImpl<Object>> inputBindings = inputListBindings!=null ? inputListBindings.get(adapterKey) : null;
+          value = inputBindings!=null ? BindingImpl.getValues(inputBindings, activityInstance) : null;
+        } else {
+          BindingImpl inputBinding = inputBindings.get(adapterKey);
+          value = inputBinding.getValue(activityInstance);
+        }
+        
         if (value!=null) {
           executeRequest.inputParameter(adapterKey, value);
         }
@@ -141,6 +153,11 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     if (executeResponse.isOnwards()) {
       activityInstance.onwards();
     }
+  }
+
+  protected boolean isList(String adapterKey) {
+    InputParameter inputParameter = inputParameters!=null ? inputParameters.get(adapterKey) : null;
+    return inputParameter!=null ? inputParameter.isList() : false;
   }
 
   public AdapterActivityImpl adapterId(String adapterId) {

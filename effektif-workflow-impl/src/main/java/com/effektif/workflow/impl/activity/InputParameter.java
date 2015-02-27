@@ -24,10 +24,35 @@ import com.effektif.workflow.api.types.Type;
 public class InputParameter<T> extends Parameter {
   
   protected Boolean required;
+  protected Boolean list;
   protected Boolean disableValue;
   protected Boolean disableVariable;
   protected Boolean disableExpression;
-  
+
+  public Boolean getRequired() {
+    return this.required;
+  }
+  public void setRequired(Boolean required) {
+    this.required = required;
+  }
+  public boolean isRequired() {
+    return Boolean.TRUE.equals(required);
+  }
+  public InputParameter required() {
+    this.required = true;
+    return this;
+  }
+
+  public boolean isList() {
+    return Boolean.TRUE.equals(list);
+  }
+  public void setList(Boolean isList) {
+    this.list = isList;
+  }
+  public InputParameter list() {
+    this.list = true;
+    return this;
+  }
 
   public Boolean getDisableExpression() {
     return this.disableExpression;
@@ -62,17 +87,6 @@ public class InputParameter<T> extends Parameter {
     return this;
   }
 
-  public Boolean getRequired() {
-    return this.required;
-  }
-  public void setRequired(Boolean required) {
-    this.required = required;
-  }
-  public InputParameter required(Boolean required) {
-    this.required = required;
-    return this;
-  }
-  
   @Override
   public InputParameter key(String key) {
     super.key(key);
@@ -92,8 +106,5 @@ public class InputParameter<T> extends Parameter {
   public InputParameter description(String description) {
     super.description(description);
     return this;
-  }
-  public boolean isRequired() {
-    return Boolean.TRUE.equals(required);
   }
 }

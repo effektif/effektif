@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.api.activities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.model.RelativeTime;
@@ -44,8 +47,8 @@ public class UserTask extends NoneTask {
   protected AccessControlList access;
   protected String taskName;
   protected Binding<UserId> assigneeId;
-  protected Binding<UserId> candidateIds;
-  protected Binding<GroupId> candidateGroupIds;
+  protected List<Binding<UserId>> candidateIds;
+  protected List<Binding<GroupId>> candidateGroupIds;
   protected Form form;
   protected RelativeTime duedate;
   protected RelativeTime reminder;
@@ -60,35 +63,52 @@ public class UserTask extends NoneTask {
     super(id);
   }
 
+  public String getTaskName() {
+    return taskName;
+  }
+  public void setTaskName(String nameBinding) {
+    this.taskName = nameBinding;
+  }
+  /** expression to create the task name optionally using variable information
+   * like eg "Clean room {{location.room}}" */
   public UserTask taskName(String taskName) {
     this.taskName = taskName;
     return this;
   }
 
+  public Binding<UserId> getAssigneeId() {
+    return assigneeId;
+  }
+  public void setAssigneeId(Binding<UserId> assignee) {
+    this.assigneeId = assignee;
+  }
   /** Sets the assignee to a user ID value. */
   public UserTask assigneeUserId(String assigneeUserId) {
     this.assigneeId = new Binding().value(new UserId(assigneeUserId));
     return this;
   }
-
   /** Sets the assignee to a variable value. */
   public UserTask assigneeVariableId(String assigneeVariableId) {
     this.assigneeId = new Binding().variableId(assigneeVariableId);
     return this;
   }
-
   /** Sets the assignee to an expression. */
   public UserTask assigneeExpression(String assigneeExpression) {
     this.assigneeId = new Binding().expression(assigneeExpression);
     return this;
   }
-
+  
+  public List<Binding<UserId>> getCandidateIds() {
+    return candidateIds;
+  }
+  public void setCandidateIds(List<Binding<UserId>> candidates) {
+    this.candidateIds = candidates;
+  }
   /** adds a candidate id value to the list */
   public UserTask candidateUserId(String candidateUserId) {
     addCandidateBinding(new Binding().value(new UserId(candidateUserId)));
     return this;
   }
-
   /** adds a candidate id variable to the list */
   public UserTask candidateVariableId(String candidateVariableId) {
     addCandidateBinding(new Binding().variableId(candidateVariableId));
@@ -100,46 +120,41 @@ public class UserTask extends NoneTask {
     addCandidateBinding(new Binding().expression(candidateExpression));
     return this;
   }
-
   protected void addCandidateBinding(Binding<UserId> binding) {
     if (candidateIds==null) {
-      candidateIds = new Binding<UserId>();
+      candidateIds = new ArrayList<>();
     }
-    candidateIds.binding(binding);
+    candidateIds.add(binding);
   }
   
-  public String getTaskName() {
-    return taskName;
-  }
-  
-  public void setTaskName(String nameBinding) {
-    this.taskName = nameBinding;
-  }
-  
-  public Binding<UserId> getCandidateIds() {
-    return candidateIds;
-  }
-  
-  public void setCandidateIds(Binding<UserId> candidates) {
-    this.candidateIds = candidates;
-  }
-
-  public Binding<GroupId> getCandidateGroupIds() {
+  public List<Binding<GroupId>> getCandidateGroupIds() {
     return candidateGroupIds;
   }
-
-  public void setCandidateGroupIds(Binding<GroupId> candidates) {
-    this.candidateGroupIds = candidates;
+  public void setCandidateGroupIds(List<Binding<GroupId>> candidateGroupIds) {
+    this.candidateGroupIds = candidateGroupIds;
+  }
+  /** adds a candidate id value to the list */
+  public UserTask candidateGroupId(String candidateGroupId) {
+    addCandidateBinding(new Binding().value(new UserId(candidateGroupId)));
+    return this;
+  }
+  /** adds a candidate id variable to the list */
+  public UserTask candidateGroupVariableId(String candidateGroupVariableId) {
+    addCandidateBinding(new Binding().variableId(candidateGroupVariableId));
+    return this;
+  }
+  /** adds a candidate id expression to the list */
+  public UserTask candidateGroupExpression(String candidateGroupExpression) {
+    addCandidateBinding(new Binding().expression(candidateGroupExpression));
+    return this;
+  }
+  protected void addCandidateGroupBinding(Binding<GroupId> candidateGroupBinding) {
+    if (candidateGroupIds==null) {
+      candidateGroupIds = new ArrayList<>();
+    }
+    candidateGroupIds.add(candidateGroupBinding);
   }
 
-  public Binding<UserId> getAssigneeId() {
-    return assigneeId;
-  }
-  
-  public void setAssigneeId(Binding<UserId> assignee) {
-    this.assigneeId = assignee;
-  }
-  
   public Form getForm() {
     return this.form;
   }

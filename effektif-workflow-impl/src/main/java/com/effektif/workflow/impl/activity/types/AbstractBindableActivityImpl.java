@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.AbstractBindableActivity;
@@ -25,10 +26,10 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 public abstract class AbstractBindableActivityImpl<T extends AbstractBindableActivity> extends AbstractActivityType<T> {
 
   protected Map<String,BindingImpl> inputBindings; 
+  protected Map<String,List<BindingImpl<Object>>> inputListBindings; 
   protected Map<String,String> outputBindings; 
 
   public AbstractBindableActivityImpl(Class<T> activityApiClass) {
     super(activityApiClass);
   }
-  
 }

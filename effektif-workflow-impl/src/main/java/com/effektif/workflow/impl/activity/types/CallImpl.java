@@ -101,7 +101,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
           String subWorkflowVariableId = subWorkflowVariable.getId();
           Binding inputBindingApi = inputBindingsApi.get(subWorkflowVariableId);
           parser.pushContext("inputBindings["+subWorkflowVariableId+"]", inputBindingApi, null);
-          BindingImpl<?> bindingImpl = parser.parseBinding(inputBindingApi, subWorkflowVariable.getType(), false, subWorkflowVariableId, true);
+          BindingImpl<?> bindingImpl = parser.parseBinding(inputBindingApi, subWorkflowVariableId, false, subWorkflowVariable.getType());
           if (bindingImpl!=null) {
             if (inputBindings==null) {
               inputBindings = new HashMap<>();

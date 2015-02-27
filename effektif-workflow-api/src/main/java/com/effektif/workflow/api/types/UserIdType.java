@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("userId")
 public class UserIdType extends JavaBeanType {
 
+  public static final UserIdType INSTANCE = new UserIdType();
+  
   public UserIdType() {
     super(UserId.class);
   }

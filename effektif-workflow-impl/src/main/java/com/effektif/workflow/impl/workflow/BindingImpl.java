@@ -43,7 +43,6 @@ public class BindingImpl<T> {
   public List<String> fields;
   public ExpressionService expressionService; 
   public ScriptImpl expression;
-  public List<BindingImpl<T>> bindings;
   
   public BindingImpl(Configuration configuration) {
     this.expressionService = configuration.get(ExpressionService.class);
@@ -62,26 +61,27 @@ public class BindingImpl<T> {
       ScriptResult scriptResult = expression.evaluate(scopeInstance);
       Object value = scriptResult.getResult();
       return (T) value;
-      
-    } else if (this.bindings!=null) {
-      List<Object> values = new ArrayList<>();
-      for (BindingImpl binding: this.bindings) {
-        Object elementValue = binding.getValue(scopeInstance);
-        if (elementValue!=null ) {
-          if (Collection.class.isAssignableFrom(elementValue.getClass())) {
-            Iterator iterator = ((Collection)elementValue).iterator();
-            while (iterator.hasNext()) {
-              values.add(iterator.next());
-            }
-          } else {
-            values.add(elementValue);
-          }
-        }
-      }
-      return (T) values;
     }
     
     return null;
+  }
+  
+  public static <T> List<T> getValues(List<BindingImpl<T>> bindings, ScopeInstanceImpl scopeInstance) {
+    List<T> values = new ArrayList<>();
+    for (BindingImpl<T> binding: bindings) {
+      T elementValue = binding.getValue(scopeInstance);
+      if (elementValue!=null ) {
+        if (Collection.class.isAssignableFrom(elementValue.getClass())) {
+          Iterator<T> iterator = ((Collection)elementValue).iterator();
+          while (iterator.hasNext()) {
+            values.add(iterator.next());
+          }
+        } else {
+          values.add(elementValue);
+        }
+      }
+    }
+    return values;
   }
 
   public static TypedValueImpl getTypedFieldValue(ScopeInstanceImpl scopeInstance, String variableId, List<String> fields) {

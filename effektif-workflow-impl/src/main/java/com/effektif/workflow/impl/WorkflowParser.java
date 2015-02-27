@@ -160,49 +160,55 @@ public class WorkflowParser {
     return (!activityIds.isEmpty() ? "Should be one of "+activityIds : "No activities defined in this scope");
   }
 
-//  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, Map<String, InputParameter> inputParameters) {
-//    return parseInputBindings(inputBindings, activityApi, inputParameters, false);
-//  }
-//  
-//  public Map<String, BindingImpl> parseInputBindings(Map<String, Binding> inputBindings, Activity activityApi, Map<String, InputParameter> inputParameters, boolean deserialize) {
-//  }
-
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter) {
-    return parseBinding(binding, inputParameter, false);
+  public <T> List<BindingImpl<T>> parseBindings(List<Binding<T>> bindings, String bindingName) {
+    if (bindings==null) {
+      return null;
+    }
+    List<BindingImpl<T>> bindingImpls = new ArrayList<>();
+    for (Binding<T> binding: bindings) {
+      BindingImpl<T> bindingImpl = parseBinding(binding, bindingName, false);
+      bindingImpls.add(bindingImpl);
+    }
+    return bindingImpls;
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, InputParameter inputParameter, boolean deserialize) {
-    Type type = inputParameter.getType();
-    boolean isRequired = inputParameter!=null && inputParameter.isRequired();
-    String bindingName = inputParameter.getKey();
-    return parseBinding(binding, type, isRequired, bindingName, deserialize);
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName) {
+    return parseBinding(binding, bindingName, false, null);
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type, boolean isRequired, String bindingName, boolean deserialize) {
-    BindingImpl<T> bindingImpl = parseBinding(binding, type, deserialize);
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName, boolean isRequired) {
+    return parseBinding(binding, bindingName, isRequired, null);
+  }
+
+  /** @param type is only provided if the binding is untyped.  in that case the jackson deserialization didn't
+   * instantiate the correct type and the deserialization needs to completed here based on the type.
+   * only provide the type if the binding is untyped, otherwise use null or {@link #parseBinding(Binding, String, boolean)}. */
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName, boolean isRequired, Type type) {
+    pushContext(bindingName, binding, null);
+    BindingImpl<T> bindingImpl = parseBinding(binding, type);
     int values = 0;
     if (bindingImpl!=null) {
       if (bindingImpl.value!=null) values++;
       if (bindingImpl.variableId!=null) values++;
       if (bindingImpl.expression!=null) values++;
-      if (bindingImpl.bindings!=null) values++;
     }
     if (isRequired && values==0) {
-      addError("Binding '%s' required and not specified", bindingName);
+      addWarning("Binding '%s' required and not specified", bindingName);
     } else if (values>1) {
       addWarning("Multiple values specified for binding '%s'", bindingName);
     }
+    popContext();
     return bindingImpl;
   }
 
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type, boolean deserialize) {
+  protected <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type) {
     if (binding==null) {
       return null;
     }
     BindingImpl<T> bindingImpl = new BindingImpl<>(configuration);
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
-      if (deserialize && isSerialized) {
+      if (type!=null && isSerialized) {
         DataTypeService dataTypeService = configuration.get(DataTypeService.class);
         DataType dataType = dataTypeService.createDataType(type);
         bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
@@ -222,14 +228,6 @@ public class WorkflowParser {
         bindingImpl.expression = expressionService.compile(binding.getExpression(), this);
       } catch (Exception e) {
         addError("Expression '%s' couldn't be compiled: %s", binding.getExpression(), e.getMessage());
-      }
-    }
-    List<Binding<T>> bindings = binding.getBindings();
-    if (bindings!=null && !bindings.isEmpty()) {
-      bindingImpl.bindings = new ArrayList<>();
-      for (Binding<T> elementBinding: bindings) {
-        BindingImpl<T> elementBindingImpl = parseBinding(elementBinding, type, deserialize);
-        bindingImpl.bindings.add(elementBindingImpl);
       }
     }
     return bindingImpl;

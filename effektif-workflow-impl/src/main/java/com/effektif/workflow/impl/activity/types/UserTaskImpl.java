@@ -17,22 +17,18 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.GroupId;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.job.Job;
@@ -49,28 +45,13 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class UserTaskImpl extends AbstractActivityType<UserTask> {
   
-  public static final InputParameter<String> NAME = new InputParameter<>()
-          .key("name")
-          .type(new TextType());
-
-  public static final InputParameter<List<UserId>> ASSIGNEE = new InputParameter<>()
-          .key("assignee")
-          .type(new UserIdType());
-
-  public static final InputParameter<List<UserId>> CANDIDATES = new InputParameter<>()
-          .key("candidates")
-          .type(new ListType(new UserIdType()));
-
-  public static final InputParameter<List<UserId>> ESCALATE_TO = new InputParameter<>()
-          .key("escalateTo")
-          .type(new UserIdType());
-
   private static final String BPMN_ELEMENT_NAME = "userTask";
 
   protected TaskStore taskStore;
   protected TextTemplate taskName;
   protected BindingImpl<UserId> assigneeId;
-  protected BindingImpl<UserId> candidatesIds;
+  protected List<BindingImpl<UserId>> candidateIds;
+  protected List<BindingImpl<GroupId>> candidateGroupIds;
   protected BindingImpl<UserId> escalateTo;
 
   public UserTaskImpl() {
@@ -86,8 +67,8 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.id(reader.readBpmnAttribute(xml, "id"));
 
     task.setAssigneeId(reader.readFirstBinding(UserId.class, xml, "assignee"));
-    task.setCandidateIds(reader.readListBinding(UserId.class, xml, "candidate"));
-    task.setCandidateGroupIds(reader.readListBinding(GroupId.class, xml, "candidate"));
+    task.setCandidateIds(reader.readBindings(UserId.class, xml, "candidate"));
+    task.setCandidateGroupIds(reader.readBindings(GroupId.class, xml, "candidate"));
 
     return task;
   }
@@ -96,9 +77,10 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeBindings(xml, "assignee", "userId", task.getAssigneeId());
-    writer.writeBindings(xml, "candidate", "userId", task.getCandidateIds());
-    writer.writeBindings(xml, "candidate", "groupId", task.getCandidateGroupIds());
+    writer.writeBinding(xml, "assignee", "userId", task.getAssigneeId());
+// Peter, can you fix this generics typing problem?
+//    writer.writeBindings(xml, "candidate", "userId", task.getCandidateIds());
+//    writer.writeBindings(xml, "candidate", "groupId", task.getCandidateGroupIds());
   }
   
   @Override
@@ -107,16 +89,17 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     this.taskStore = parser.getConfiguration(TaskStore.class);
     this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
     this.taskName = TextTemplate.parse(userTaskApi.getTaskName());
-    this.assigneeId = parser.parseBinding(userTaskApi.getAssigneeId(), ASSIGNEE);
-    this.candidatesIds = parser.parseBinding(userTaskApi.getCandidateIds(), CANDIDATES);
-    this.escalateTo = parser.parseBinding(userTaskApi.getEscalateToId(), ESCALATE_TO);
+    this.assigneeId = parser.parseBinding(userTaskApi.getAssigneeId(), "assigneeId");
+    this.candidateIds = parser.parseBindings(userTaskApi.getCandidateIds(), "candidateIds");
+    this.candidateGroupIds = parser.parseBindings(userTaskApi.getCandidateGroupIds(), "candidateGroupIds");
+    this.escalateTo = parser.parseBinding(userTaskApi.getEscalateToId(), "escalateTo");
   }
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     String resolvedTaskName = resolveTaskName(activityInstance);
     UserId assignee = activityInstance.getValue(assigneeId);
-    List<UserId> candidates = activityInstance.getValues(candidatesIds);
+    List<UserId> candidates = activityInstance.getValues(candidateIds);
     if ( assignee==null 
          && candidates!=null
          && candidates.size()==1 ) {

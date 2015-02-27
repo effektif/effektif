@@ -30,19 +30,15 @@ import com.effektif.workflow.impl.data.types.AnyType;
  */
 public class MultiInstanceImpl {
   
-  public static final InputParameter<List<Object>> VALUES = new InputParameter<>()
-    .key("multiInstance.valuesBinding")
-    .type(new ListType(new AnyType()));
-
   public VariableImpl elementVariable;
-  public BindingImpl<Object> valuesBinding;
+  public List<BindingImpl<Object>> valuesBindings;
 
   public void parse(MultiInstance multiInstanceApi, WorkflowParser parser) {
     parse(multiInstanceApi, parser, null);
   }
   
   public void parse(MultiInstance multiInstanceApi, WorkflowParser parser, ScopeImpl parent) {
-    this.valuesBinding = parser.parseBinding(multiInstanceApi.getValuesBindings(), VALUES);
+    this.valuesBindings = parser.parseBindings(multiInstanceApi.getValuesBindings(), "multiInstance.values");
     Variable elementVariableApi = multiInstanceApi.getVariable();
     if (elementVariableApi!=null) {
       this.elementVariable = new VariableImpl();
