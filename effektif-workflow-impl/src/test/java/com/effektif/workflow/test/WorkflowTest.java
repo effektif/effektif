@@ -44,6 +44,8 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
+import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.TestEmailService;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
@@ -62,6 +64,7 @@ public class WorkflowTest {
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   protected TaskService taskService = null;
+  protected TestEmailService mailService = null;
   
   @Before
   public void initializeWorkflowEngine() {
@@ -72,6 +75,7 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
+      mailService = configuration.get(TestEmailService.class);
     }
   }
   
@@ -139,6 +143,13 @@ public class WorkflowTest {
     return workflowEngine.send(new Message()
       .workflowInstanceId(workflowInstance.getId())
       .activityInstanceId(activityInstance.getId()));
+  }
+  
+  public Email getEmail(int index) {
+    if (mailService.emails.size()<=index) {
+      fail("Can't get email "+index+". There were only "+mailService.emails.size());
+    }
+    return mailService.emails.get(index);
   }
 
   protected void logWorkflowEngineContents() {

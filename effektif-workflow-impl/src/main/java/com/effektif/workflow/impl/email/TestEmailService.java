@@ -13,13 +13,24 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.email;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author Tom Baeyens
  */
-public interface EmailService {
+public class TestEmailService implements EmailService {
+  
+  public List<Email> emails = new ArrayList<>();
 
-  void send(Email email);
+  @Override
+  public void send(Email email) {
+    emails.add(email);
+  }
 
-  String validate(String emailAddress);
+  @Override
+  public String validate(String emailAddress) {
+    return EmailServiceImpl.validateEmailAddress(emailAddress);
+  }
 }

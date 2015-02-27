@@ -11,15 +11,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.email;
+package com.effektif.workflow.impl.file;
+
+import com.effektif.workflow.api.ref.FileId;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface EmailService {
+public interface FileService {
 
-  void send(Email email);
+  File getFile(FileId fileId);
 
-  String validate(String emailAddress);
 }

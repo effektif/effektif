@@ -21,8 +21,16 @@ import java.util.List;
 import com.effektif.workflow.api.ref.FileId;
 import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Element;
+import com.effektif.workflow.api.workflow.Extensible;
+import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -345,7 +353,7 @@ public class EmailTask extends Activity {
   }
   
   public EmailTask bodyText(String bodyText) {
-    setBodyText(bodyText);
+    this.bodyText = bodyText;
     return this;
   }
 
@@ -360,6 +368,11 @@ public class EmailTask extends Activity {
   public String getBodyHtml() {
     return bodyHtml;
   }
+  public EmailTask bodyHtml(String bodyHtml) {
+    this.bodyHtml = bodyHtml;
+    return this;
+  }
+
 
   public void setBodyHtml(String bodyHtmlBinding) {
     this.bodyHtml = bodyHtmlBinding;
@@ -390,5 +403,86 @@ public class EmailTask extends Activity {
       attachments = new ArrayList<>();
     }
     attachments.add(attachmentBinding);
+  }
+  
+  @Override
+  public EmailTask multiInstance(MultiInstance multiInstance) {
+    super.multiInstance(multiInstance);
+    return this;
+  }
+  @Override
+  public EmailTask transitionTo(String toActivityId) {
+    super.transitionTo(toActivityId);
+    return this;
+  }
+  @Override
+  public EmailTask transitionToNext() {
+    super.transitionToNext();
+    return this;
+  }
+  @Override
+  public EmailTask transitionTo(Transition transition) {
+    super.transitionTo(transition);
+    return this;
+  }
+  @Override
+  public EmailTask activity(Activity activity) {
+    super.activity(activity);
+    return this;
+  }
+  @Override
+  public EmailTask activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+  @Override
+  public EmailTask transition(Transition transition) {
+    super.transition(transition);
+    return this;
+  }
+  @Override
+  public EmailTask transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+  @Override
+  public EmailTask variable(Variable variable) {
+    super.variable(variable);
+    return this;
+  }
+  @Override
+  public EmailTask timer(Timer timer) {
+    super.timer(timer);
+    return this;
+  }
+  @Override
+  public EmailTask id(String id) {
+    super.id(id);
+    return this;
+  }
+  @Override
+  public EmailTask property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+  @Override
+  public EmailTask variable(String id, Type type) {
+    super.variable(id, type);
+    return this;
+  }
+  @Override
+  public EmailTask name(String name) {
+    super.name(name);
+    return this;
+  }
+  @Override
+  public EmailTask description(String description) {
+    super.description(description);
+    return this;
+  }
+  @Override
+  public EmailTask propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
   }
 }

@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.memory;
 
+import com.effektif.workflow.impl.email.TestEmailService;
+
 
 
 /**
@@ -25,5 +27,10 @@ public class TestConfiguration extends MemoryConfiguration {
   @Override
   protected void registerDefaultExecutorService() {
     synchronous();
+  }
+
+  @Override
+  protected void registerDefaultEmailService() {
+    brewery.ingredient(new TestEmailService());
   }
 }

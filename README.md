@@ -1,10 +1,14 @@
 # Effektif
 
-Effektif is a flexible workflow engine that you can embed into your own apps.  
+Effektif is a flexible workflow engine that you can embed into your own apps.
+When developing business applications, using a worfklow engine like Effektif 
+will save you precious time and energy that you can spend on cool features 
+for your own app.   
 
 ## What does a workflow engine do?
 
-A workflow is based on a diagram (like in BPMN or flowcharts) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.
+A workflow is based on a diagram (like in BPMN or flowcharts) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.  
+Effektif handles activities that are synchronous (automatic actions), asynchronous (wait states).
 
 ## Why did we create Effektif ?
 
@@ -23,8 +27,9 @@ and it fits better in a document database compared to a token-based approach.
 
 # Feature highlights
 
-* Create workflows in Java, BPMN or with our online workflow builder (coming soon). 
-* Keep track of user tasks and other wait states
+* Create workflows in Java, JSON, BPMN or with our online workflow builder (coming soon).
+* Specify flows including user tasks and other wait states 
+* Keeps track of workflow instances state, position in the diagram and data
 * Easy configuration of reminders, escalations and other persistent timers 
 * Intuitive Java API & REST API
 * Apache 2.0 license

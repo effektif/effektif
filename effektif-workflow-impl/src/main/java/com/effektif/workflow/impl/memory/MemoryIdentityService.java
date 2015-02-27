@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.memory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.ref.GroupId;
@@ -24,15 +25,35 @@ import com.effektif.workflow.impl.identity.IdentityService;
  * @author Tom Baeyens
  */
 public class MemoryIdentityService implements IdentityService {
+  
+  protected String domain = "example.com";
+
+  public MemoryIdentityService domain(String domain) {
+    this.domain = domain;
+    return this;
+  }
 
   @Override
   public List<String> getUsersEmailAddresses(List<UserId> userIds) {
-    return null;
+    if (userIds==null) {
+      return null;
+    }
+    List<String> emailAddresses = new ArrayList<>();
+    for (UserId userId: userIds) {
+      emailAddresses.add(userId+"@"+domain);
+    }
+    return emailAddresses;
   }
 
   @Override
   public List<String> getGroupsEmailAddresses(List<GroupId> groupIds) {
-    return null;
+    if (groupIds==null) {
+      return null;
+    }
+    List<String> emailAddresses = new ArrayList<>();
+    for (GroupId groupId: groupIds) {
+      emailAddresses.add(groupId+"@"+domain);
+    }
+    return emailAddresses;
   }
-
 }

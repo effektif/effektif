@@ -11,15 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.email;
+package com.effektif.workflow.impl.file;
+
+import java.io.InputStream;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface EmailService {
+public interface File {
 
-  void send(Email email);
+  String getContentType();
 
-  String validate(String emailAddress);
+  InputStream getInputStream();
+
 }

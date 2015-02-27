@@ -58,5 +58,4 @@ public class UserTaskTest extends WorkflowTest {
     long duedateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
     assertTrue(task.getDuedate().toDate().getTime()<=duedateLatest);
   }
-
 }

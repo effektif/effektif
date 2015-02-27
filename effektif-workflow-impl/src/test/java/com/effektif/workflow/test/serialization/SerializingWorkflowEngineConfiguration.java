@@ -18,11 +18,6 @@ package com.effektif.workflow.test.serialization;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
-import com.effektif.workflow.impl.TaskStore;
-import com.effektif.workflow.impl.WorkflowInstanceStore;
-import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.job.JobService;
-import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
@@ -56,18 +51,11 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
 
   @Override
   public <T> T get(Class<T> type) {
-    if (JsonService.class.isAssignableFrom(type)
-        || WorkflowStore.class.isAssignableFrom(type)
-        || WorkflowInstanceStore.class.isAssignableFrom(type)
-        || JobStore.class.isAssignableFrom(type)
-        || JobService.class.isAssignableFrom(type)
-        || TaskStore.class.isAssignableFrom(type)) {
-      return configuration.get(type);
-    } else if (WorkflowEngine.class.isAssignableFrom(type)) {
+    if (WorkflowEngine.class.isAssignableFrom(type)) {
       return (T) workflowEngine;
     } else if (TaskService.class.isAssignableFrom(type)) {
       return (T) taskService;
     }
-    throw new RuntimeException("damn.. i didn't expect "+type+" to be looked up from the serializing configuration");
+    return configuration.get(type);
   }
 }

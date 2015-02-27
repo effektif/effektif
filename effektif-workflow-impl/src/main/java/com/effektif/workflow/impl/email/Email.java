@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.email;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.ref.FileId;
 
@@ -24,6 +26,8 @@ import com.effektif.workflow.api.ref.FileId;
 public class Email {
 
   protected String from;
+  protected String replyTo;
+  protected Map<String,String> headers;
   protected List<String> to;
   protected List<String> cc;
   protected List<String> bcc;
@@ -42,7 +46,32 @@ public class Email {
     this.from = from;
     return this;
   }
-  
+
+  public String getReplyTo() {
+    return this.replyTo;
+  }
+  public void setReplyTo(String replyTo) {
+    this.replyTo = replyTo;
+  }
+  public Email replyTo(String replyTo) {
+    this.replyTo = replyTo;
+    return this;
+  }
+
+  public Map<String,String> getHeaders() {
+    return this.headers;
+  }
+  public void setHeaders(Map<String,String> headers) {
+    this.headers = headers;
+  }
+  public Email headers(String headerName, String headerValue) {
+    if (headers==null) {
+      headers = new HashMap<>();
+    }
+    headers.put(headerName, headerValue);
+    return this;
+  }
+
   public List<String> getTo() {
     return this.to;
   }
