@@ -18,6 +18,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A receive task waits until a message is received.
+ *
+ * BPMN XML: {@code <receiveTask id="buildComplete"/>}
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("receiveTask")

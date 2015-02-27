@@ -46,14 +46,32 @@ public class UserTask extends NoneTask {
   
   protected AccessControlList access;
   protected String taskName;
+
+  /** User who has been assigned to complete this task. */
   protected Binding<UserId> assigneeId;
+
+  /** User who is a candidate for being the assignee; can be used to allow users to pick tasks to work on. */
   protected List<Binding<UserId>> candidateIds;
+
+  /** Organisation group (defined separately from the process) that contains candidates. */
   protected List<Binding<GroupId>> candidateGroupIds;
+
+  /** Collection of fields that a user can fill in; can be used for a user task’s user interface. */
   protected Form form;
+
+  /** Deadline for completing the task; can be used for sorting task lists. */
   protected RelativeTime duedate;
+
+  /** When to send the assignee a reminder to complete the task; can be used for sending notifications. */
   protected RelativeTime reminder;
+
+  /** When to send repeated reminders; can be used for follow-up notifications. */
   protected RelativeTime reminderRepeat;
+
+  /** When to escalate the task by assigning the task to another user. */
   protected RelativeTime escalate;
+
+  /** User to assign the task to when escalating. */
   protected Binding<UserId> escalateToId;
 
   public UserTask() {

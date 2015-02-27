@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * This task doesn't do anything, it just continues (aka noop, pass-through).
  * This is used while developing process models as a placeholder for another activity type.
  *
- * BPMN XML: {@code <task id="evaluateCase"/>}
+ * BPMN XML: {@code <task id="verifyRequirements"/>}
  *
  * @author Tom Baeyens
  */
