@@ -25,8 +25,8 @@ public class FormField {
 
   protected String key;
   protected String name;
-  protected Boolean readOnly;
-  protected Boolean required;
+  protected Boolean readOnly = false;
+  protected Boolean required = false;
   protected Type type;
 
   public String getKey() {

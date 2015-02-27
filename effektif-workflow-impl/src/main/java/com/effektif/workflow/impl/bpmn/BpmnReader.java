@@ -16,15 +16,29 @@
 package com.effektif.workflow.impl.bpmn;
 
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.effektif.workflow.api.ref.GroupId;
-import com.effektif.workflow.api.ref.UserId;
-import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 
 
@@ -49,15 +63,18 @@ public class BpmnReader extends Bpmn {
   protected XmlElement xmlRoot;
   
   protected ActivityTypeService activityTypeService;
-  
-  /** maps uri's to prefixes. 
+
+  /** maps uri's to prefixes.
    * Ideally this should be done in a stack so that each element can add new namespaces.
    * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
    * The current implementation assumes that all namespaces are defined in the root element */
   protected Map<String,String> prefixes = new HashMap<>();
-  
-  public BpmnReader(ActivityTypeService activityTypeService) {
-    this.activityTypeService = activityTypeService;
+
+  private DataTypeService dataTypeService;
+
+  public BpmnReader(Configuration configuration) {
+    activityTypeService = configuration.get(ActivityTypeService.class);
+    dataTypeService = configuration.get(DataTypeService.class);
   }
 
   public Workflow readBpmnDocument(Reader reader) {
@@ -173,8 +190,8 @@ public class BpmnReader extends Bpmn {
   /**
    * Returns a binding from the first extension element with the given name.
    */
-  public <T> Binding<T> readFirstBinding(Class<T> bindingType, XmlElement xml, String elementName) {
-    List<Binding<T>> bindings = readBindings(bindingType, xml, elementName);
+  public <T> Binding<T> readBinding(Class<T> bindingType, Type dataType, XmlElement xml, String elementName) {
+    List<Binding<T>> bindings = readBindings(bindingType, dataType, xml, elementName);
     if (bindings.isEmpty()) {
       return new Binding<T>();
     }
@@ -186,7 +203,7 @@ public class BpmnReader extends Bpmn {
   /**
    * Returns a list of bindings from the extension elements with the given name.
    */
-  public <T> List<Binding<T>> readBindings(Class<T> bindingType, XmlElement xml, String elementName) {
+  public <T> List<Binding<T>> readBindings(Class<T> bindingType, Type dataType, XmlElement xml, String elementName) {
     List<Binding<T>> results = new ArrayList<>();
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
     if (extensionElements != null) {
@@ -195,22 +212,12 @@ public class BpmnReader extends Bpmn {
         XmlElement extension = extensions.next();
 
         if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
-
-          if (UserId.class.equals(bindingType)) {
-            String userId = extension.attributes.get("userId");
-            if (userId != null) {
-              results.add(new Binding().value(new UserId(userId)));
-              extensions.remove();
-            }
+          DataType type = dataTypeService.createDataType(dataType);
+          Binding binding = type.readValue(extension);
+          if (binding != null) {
+            results.add(binding);
+            extensions.remove();
           }
-          else if (GroupId.class.equals(bindingType)) {
-            String groupId = extension.attributes.get("groupId");
-            if (groupId != null) {
-              results.add(new Binding().value(new GroupId(groupId)));
-              extensions.remove();
-            }
-          }
-
           // TODO other binding fields
         }
       }
@@ -218,4 +225,49 @@ public class BpmnReader extends Bpmn {
     return results;
   }
 
+  /**
+   * Returns a form from the given XML element’s extension (child) elements.
+   */
+  public Form readForm(XmlElement xml) {
+    Form form = new Form().fields(new ArrayList<FormField>()).buttons(new ArrayList<String>());
+    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
+    if (extensionElements != null) {
+      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
+      while (extensions.hasNext()) {
+        XmlElement extension = extensions.next();
+
+        if (extension.is(getQName(EFFEKTIF_URI, "form"))) {
+          for (XmlElement formElement : extension.elements) {
+            if (formElement.is(getQName(EFFEKTIF_URI, "description"))) {
+              form.setDescription(formElement.text);
+            }
+            if (formElement.is(getQName(EFFEKTIF_URI, "field")) && formElement.attributes != null) {
+              FormField field = new FormField();
+              field.setKey(formElement.attributes.get("key"));
+              field.setName(formElement.attributes.get("label"));
+              if ("true".equals(formElement.attributes.get("readonly"))) {
+                field.readOnly();
+              }
+              if ("true".equals(formElement.attributes.get("required"))) {
+                field.required();
+              }
+
+              // TODO Work out how to replace with DataType look-up
+              if ("text".equals(formElement.attributes.get("type"))) {
+                field.setType(TextType.INSTANCE);
+              }
+
+              form.getFields().add(field);
+            }
+            if (formElement.is(getQName(EFFEKTIF_URI, "button")) && formElement.attributes != null) {
+              form.getButtons().add("");
+            }
+          }
+          // Remove the whole <code>effektif:form</code> element.
+          extensions.remove();
+        }
+      }
+    }
+    return form;
+  }
 }

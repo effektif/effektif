@@ -16,6 +16,8 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.activity.Plugin;
 import com.effektif.workflow.impl.template.Hints;
 
@@ -54,4 +56,10 @@ public interface DataType<T extends Type> extends Plugin {
   // Deprecated because I think scripts should use the json format
   @Deprecated
   Object convertScriptValueToInternal(Object scriptValue, String language);
+
+  /** Read the a binding value from the given XML element. */
+  Binding readValue(XmlElement value);
+
+  /** Write the given value as an attribute on the given XML element. */
+  void writeValue(XmlElement xml, Object value);
 }

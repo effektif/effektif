@@ -15,7 +15,41 @@
  */
 package com.effektif.workflow.test.implementation;
 
-import com.effektif.workflow.api.activities.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import junit.framework.TestCase;
+
+import org.junit.Test;
+import org.xml.sax.SAXException;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.EmailTask;
+import com.effektif.workflow.api.activities.EmbeddedSubprocess;
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -24,26 +58,6 @@ import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import junit.framework.TestCase;
-import org.junit.Test;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * @author Peter Hilton
@@ -64,34 +78,35 @@ import java.util.List;
  * - adding the unparsed BPMN to the output in the right place
  * - automate the check on the generated XML (checkXxxXml) *
  */
-public class MinimalBpmnTest extends TestCase {
+public class EffektifBpmnTest extends TestCase {
 
+  private static Configuration configuration;
   private static ActivityTypeService activityTypeService;
   private static ObjectMapper objectMapper;
   private static File testResources;
 
   static {
-    String dir = MinimalBpmnTest.class.getProtectionDomain().getCodeSource().getLocation().toString();
+    String dir = EffektifBpmnTest.class.getProtectionDomain().getCodeSource().getLocation().toString();
     dir = dir.substring(5);
     testResources = new File(dir);
   }
 
   @Override
   public void setUp() throws Exception {
-    if (activityTypeService == null || objectMapper == null) {
-      TestConfiguration testConfiguration = new TestConfiguration();
-      testConfiguration.getWorkflowEngine(); // to ensure initialization of the object mapper
-      activityTypeService = testConfiguration.get(ActivityTypeService.class);
-      objectMapper = testConfiguration.get(ObjectMapper.class);
+    if (configuration == null) {
+      configuration = new TestConfiguration();
+      configuration.getWorkflowEngine(); // to ensure initialization of the object mapper
+      activityTypeService = configuration.get(ActivityTypeService.class);
+      objectMapper = configuration.get(ObjectMapper.class);
     }
   }
 
   @Test
   public void testMinimalBpmn() throws IOException {
-    File bpmn = new File(testResources, "bpmn/MinimalProcess.bpmn.xml");
+    File bpmn = new File(testResources, "bpmn/EffektifProcess.bpmn.xml");
     byte[] encoded = Files.readAllBytes(Paths.get(bpmn.getPath()));
     String bpmnXmlString = new String(encoded, StandardCharsets.UTF_8);
-    BpmnReader reader = new BpmnReader(activityTypeService);
+    BpmnReader reader = new BpmnReader(configuration);
     Workflow workflow = reader.readBpmnDocument(new StringReader(bpmnXmlString));
 
     // Check parsed model…
@@ -115,8 +130,7 @@ public class MinimalBpmnTest extends TestCase {
     checkEndEvent(findActivity(workflow, EndEvent.class, "theEnd"));
 
     // Check XML generated from model…
-    BpmnWriter writer = new BpmnWriter(activityTypeService);
-    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, activityTypeService);
+    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
 
     // Inspect the XML output for correctness.
     System.out.println("--- GENERATED BPMN ------------------------------------------ ");
@@ -173,6 +187,20 @@ public class MinimalBpmnTest extends TestCase {
     assertEquals("UserTask candidates size", 2, task.getCandidateIds().size());
     assertEquals("UserTask candidate 2 ID", "43", task.getCandidateIds().get(1).getValue().getId());
     assertEquals("UserTask candidate group ID", "44", task.getCandidateGroupIds().get(0).getValue().getId());
+    assertNotNull("UserTask form", task.getForm());
+    checkForm(task.getForm());
+  }
+
+  private void checkForm(Form form) {
+    assertEquals("Form description", "Approve or reject the vacation request.", form.getDescription());
+    assertEquals("Form field count", 3, form.getFields().size());
+    assertEquals("Form field 1 key", "c", form.getFields().get(0).getKey());
+    assertEquals("Form field 1 label", "Candidate name", form.getFields().get(0).getName());
+    assertTrue("Form field 1 readonly", form.getFields().get(0).getReadOnly());
+    assertTrue("Form field 2 required", form.getFields().get(1).getRequired());
+    assertFalse("Form field 3 readonly", form.getFields().get(2).getReadOnly());
+    assertFalse("Form field 3 required", form.getFields().get(2).getRequired());
+    assertEquals("Form field 3 type", TextType.class, form.getFields().get(2).getType().getClass());
   }
 
   /**

@@ -24,6 +24,8 @@ import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.ref.GroupId;
 import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.types.GroupIdType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.TaskStore;
@@ -66,9 +68,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     UserTask task = new UserTask();
     task.id(reader.readBpmnAttribute(xml, "id"));
 
-    task.setAssigneeId(reader.readFirstBinding(UserId.class, xml, "assignee"));
-    task.setCandidateIds(reader.readBindings(UserId.class, xml, "candidate"));
-    task.setCandidateGroupIds(reader.readBindings(GroupId.class, xml, "candidate"));
+    task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
+    task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
+    task.setCandidateGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "candidate"));
 
     return task;
   }
@@ -77,7 +79,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeBinding(xml, "assignee", "userId", task.getAssigneeId());
+    writer.writeBinding(xml, "assignee", "userId", task.getAssigneeId(), UserIdType.INSTANCE);
 // Peter, can you fix this generics typing problem?
 //    writer.writeBindings(xml, "candidate", "userId", task.getCandidateIds());
 //    writer.writeBindings(xml, "candidate", "groupId", task.getCandidateGroupIds());
