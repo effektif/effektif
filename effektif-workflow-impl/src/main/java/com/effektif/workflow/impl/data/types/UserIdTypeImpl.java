@@ -16,11 +16,14 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.InvalidValueException;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.identity.IdentityService;
+import com.effektif.workflow.impl.identity.User;
 
 
 
@@ -47,21 +50,16 @@ public class UserIdTypeImpl extends JavaBeanTypeImpl<UserIdType> {
     return internalValue!=null ? ((UserId)internalValue).getId() : null;
   }
   
-//  @Override
-//  public Object convert(Object value, DataType valueType) {
-//    if (value instanceof UserReference) {
-//      return value;
-//    }
-//    if (value instanceof String
-//         && ( ( valueType==null
-//                || valueType instanceof TextTypeImpl) 
-//            )
-//       ){
-//      return new UserReference().id((String)value);
-//    } 
-//    throw new RuntimeException("Couldn't convert "+value+" ("+value.getClass().getName()+") to a "+UserReference.class.getName());
-//  }
-
+  @Override
+  public TypedValueImpl dereference(Object value, String fieldName) {
+    if ("user".equals(fieldName)) {
+      UserId userId = (UserId) value;
+      IdentityService identityService = configuration.get(IdentityService.class);
+      User user = identityService.getUser(userId);
+      return new TypedValueImpl(new UserTypeImpl(configuration), user);
+    }
+    return null;
+  }
 
   @Override
   public Binding readValue(XmlElement xml) {

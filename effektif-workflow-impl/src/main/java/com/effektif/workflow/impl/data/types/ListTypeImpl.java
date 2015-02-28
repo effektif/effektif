@@ -16,7 +16,6 @@
 package com.effektif.workflow.impl.data.types;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
@@ -27,7 +26,6 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeGenerator;
-import com.effektif.workflow.impl.util.Lists;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -39,13 +37,17 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   
   public DataType elementType;
   
-  public ListTypeImpl() {
-    super(new ListType(), List.class);
+  public ListTypeImpl(Configuration configuration) {
+    super(new ListType(), List.class, configuration);
+  }
+
+  public ListTypeImpl(DataType elementType, Configuration configuration) {
+    super(new ListType(), List.class, configuration);
+    this.elementType = elementType;
   }
 
   public ListTypeImpl(ListType listTypeApi, Configuration configuration) {
-    super(listTypeApi, List.class);
-    this.valueClass = List.class;
+    super(listTypeApi, List.class, configuration);
     Type elementType = listTypeApi.getElementType();
     if (elementType!=null) {
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);
@@ -53,38 +55,6 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     }
   }
   
-  @Override
-  public Object convert(Object value, DataType valueType) {
-    if (value==null) {
-      return value;
-    }
-    DataType elementValueType = null;
-    if (! (value instanceof Collection)) {
-      value = Lists.of(value);
-      elementValueType = valueType;
-    } else if (valueType instanceof ListTypeImpl) {
-      elementValueType = ((ListTypeImpl) valueType).elementType; 
-    }
-    Collection<Object> collection = (Collection<Object>) value;
-    if (!requiresConversion(collection)) {
-      return collection;
-    }
-    List<Object> convertedCollection = new ArrayList<>(collection.size());
-    for (Object element: collection) {
-      convertedCollection.add(elementType.convert(element, elementValueType));
-    }
-    return convertedCollection;
-  }
-
-  protected boolean requiresConversion(Collection<Object> collection) {
-    for (Object element: collection) {
-      if (element!=null && elementType.convert(element, null)!=element) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public TypeGenerator getTypeGenerator() {
     return new TypeGenerator<ListType>() {

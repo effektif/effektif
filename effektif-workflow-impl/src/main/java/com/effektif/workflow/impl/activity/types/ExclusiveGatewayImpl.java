@@ -15,22 +15,23 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.script.CompiledScript;
+
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.script.ScriptImpl;
+import com.effektif.workflow.impl.script.CompiledCondition;
+import com.effektif.workflow.impl.script.ConditionService;
 import com.effektif.workflow.impl.script.ScriptResult;
-import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-
-import javax.script.CompiledScript;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -40,7 +41,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
 
   private static final String BPMN_ELEMENT_NAME = "exclusiveGateway";
 
-  ScriptService scriptService;
+  ConditionService conditionService;
   CompiledScript transitionIdExpression;
   Map<String,CompiledScript> transitionExpressions;
   
@@ -67,7 +68,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   @Override
   public void parse(ActivityImpl activityImpl, ExclusiveGateway exclusiveGateway, WorkflowParser parser) {
     super.parse(activityImpl, exclusiveGateway, parser);
-    scriptService = parser.getConfiguration(ScriptService.class);
+    conditionService = parser.getConfiguration(ConditionService.class);
   }
   
   @Override
@@ -105,9 +106,9 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   protected boolean meetsCondition(TransitionImpl outgoingTransition, ActivityInstanceImpl activityInstance) {
-    ScriptImpl script = outgoingTransition.conditionScript;
-    if (script!=null) {
-      ScriptResult scriptResult = evaluateCondition(activityInstance, outgoingTransition, script, scriptService);
+    CompiledCondition condition = outgoingTransition.condition;
+    if (condition!=null) {
+      ScriptResult scriptResult = condition.evaluate(activityInstance);
       if (Boolean.TRUE.equals(scriptResult.getResult())) {
         return true;
       }
@@ -115,10 +116,6 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
     return false;
   }
 
-  protected ScriptResult evaluateCondition(ActivityInstanceImpl activityInstance, TransitionImpl outgoingTransition, ScriptImpl script, ScriptService scriptService) {
-    return scriptService.evaluate(activityInstance, script);
-  }
-  
   @Override
   public boolean isFlushSkippable() {
     return true;

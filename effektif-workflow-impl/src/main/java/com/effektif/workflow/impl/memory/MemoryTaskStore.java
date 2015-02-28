@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.impl.TaskStore;
@@ -66,7 +66,7 @@ public class MemoryTaskStore implements TaskStore {
   public Task assignTask(String taskId, UserId assignee) {
     Task task = tasks.get(taskId);
     if (task!=null) {
-      task.assignee(assignee);
+      task.assigneeId(assignee);
       task.setLastUpdated(Time.now());
     }
     return task;

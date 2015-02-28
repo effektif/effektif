@@ -24,20 +24,12 @@ import com.effektif.workflow.impl.template.Hints;
 
 public interface DataType<T extends Type> extends Plugin {
   
-  // TODO byte[] getIconBytes();
-  // TODO String getIconMimeType();
-
   Class<?> getValueClass();
   Class<? extends Type> getApiClass();
   boolean isStatic();
   T serialize();
 
   TypeGenerator getTypeGenerator();
-
-  /** typed value could be null, could be of this type or could be another type.
-   * This method should check if conversion is needed and only convert when needed.
-   * @param typedValue is not null and typedValue.value is not null */
-  Object convert(Object value, DataType type);
 
   /** invoked to validate values submitted through the api. */
   void validateInternalValue(Object internalValue) throws InvalidValueException;
@@ -49,17 +41,11 @@ public interface DataType<T extends Type> extends Plugin {
 
   String convertInternalToText(Object value, Hints hints);
 
-  // Deprecated because I think scripts should use the json format
-  @Deprecated
-  Object convertInternalToScriptValue(Object internalValue, String language);
-
-  // Deprecated because I think scripts should use the json format
-  @Deprecated
-  Object convertScriptValueToInternal(Object scriptValue, String language);
-
   /** Read the a binding value from the given XML element. */
   Binding readValue(XmlElement value);
 
   /** Write the given value as an attribute on the given XML element. */
   void writeValue(XmlElement xml, Object value);
+  
+  TypedValueImpl dereference(Object value, String field);
 }

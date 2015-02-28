@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;

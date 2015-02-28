@@ -18,7 +18,6 @@ package com.effektif.workflow.api.activities;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 
@@ -41,41 +40,18 @@ public class AbstractBindableActivity extends Activity {
   /** copies the static value to the adapter activity when it is invoked,
    * This method uses reflection and the data type service to find the type form the value. */
   public AbstractBindableActivity inputValue(String key, Object value) {
-    inputBinding(key, new Binding().value(value));
+    addInputBinding(key, new Binding().value(value));
     return this;
   }
   
-  /** copies the static typed value to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputValue(String key, Object value, Type type) {
-    inputBinding(key, new Binding()
-      .value(value)
-      .type(type));
-    return this;
-  }
-
   /** copies the variable from this workflow to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputVariable(String key, String variableId) {
-    inputBinding(key, new Binding().variableId(variableId));
-    return this;
-  }
-
-  /** copies the value from a field inside a variable from this workflow to the adapter activity when it is invoked.
-   * @param variableField is a . separated notation that starts with the variableId and then 
-   * specifies the fields to be dereferenced 
-   * eg "myVariableId.variableField.nestedField" */
-  public AbstractBindableActivity inputField(String key, String variableField) {
-    inputBinding(key, new Binding().variableField(variableField));
-    return this;
-  }
-
-  /** copies the result of the expression from this workflow to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputExpression(String key, String variableField) {
-    inputBinding(key, new Binding().variableField(variableField));
+  public AbstractBindableActivity inputExpression(String key, String variableId, String... fields) {
+    addInputBinding(key, new Binding().expression(variableId, fields));
     return this;
   }
 
   /** copies the value specified in the binding from this workflow to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputBinding(String key, Binding binding) {
+  protected AbstractBindableActivity addInputBinding(String key, Binding binding) {
     if (inputBindings==null) {
       inputBindings = new HashMap<>();
     }

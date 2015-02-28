@@ -15,14 +15,14 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.AbstractDataType;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.json.JsonService;
 
 
 /**
@@ -30,33 +30,29 @@ import com.effektif.workflow.impl.json.JsonService;
  */
 public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
   
-  protected JsonService jsonService;
   public Map<String,ObjectFieldImpl> fields;
 
   public ObjectTypeImpl(T typeApi, Class<?> valueClass, Configuration configuration) {
-    super(typeApi, valueClass);
+    super(typeApi, valueClass, configuration);
     initializeFields(configuration);
   }
 
   protected void initializeFields(Configuration configuration) {
+    // new ObjectFieldImpl(valueClass, fieldApi, configuration);
   }
 
-  protected ObjectFieldImpl createField(Configuration configuration, Class< ? > valueClass, ObjectField fieldApi) {
-    return new ObjectFieldImpl(valueClass, fieldApi, configuration);
-  }
-
-  public void dereference(TypedValueImpl typedValue, String fieldName) {
-    if (typedValue==null) {
-      return;
-    }
+  @Override
+  public TypedValueImpl dereference(Object value, String fieldName) {
     ObjectFieldImpl field = fields.get(fieldName);
-    if (typedValue.value==null || field==null) {
-      typedValue.type = null;
-      typedValue.value = null;
-      return;
-    }
-    typedValue.type = field.type;
-    field.dereferenceValue(typedValue);
+    DataType fieldType = field.type;
+    Object fieldValue = field.getFieldValue(value);
+    return new TypedValueImpl(fieldType, fieldValue);
   }
 
+  public void addField(ObjectFieldImpl field) {
+    if (fields==null) {
+      fields = new HashMap<>();
+    }
+    fields.put(field.getName(), field);
+  }
 }

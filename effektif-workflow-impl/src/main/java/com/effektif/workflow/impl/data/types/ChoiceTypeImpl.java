@@ -17,9 +17,9 @@ package com.effektif.workflow.impl.data.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
 
@@ -29,10 +29,14 @@ import com.effektif.workflow.impl.data.InvalidValueException;
 public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   
   protected List<String> options;
-  
-  public ChoiceTypeImpl(ChoiceType choiceApi, DataTypeService dataTypeService) {
-    super(choiceApi, String.class);
-    this.options = choiceApi.getOptions();
+
+  public ChoiceTypeImpl(Configuration configuration) {
+    super(new ChoiceType(), String.class, configuration);
+  }
+
+  public ChoiceTypeImpl(ChoiceType choiceType, Configuration configuration) {
+    super(choiceType, String.class, configuration);
+    this.options = choiceType.getOptions();
   }
   
   @Override

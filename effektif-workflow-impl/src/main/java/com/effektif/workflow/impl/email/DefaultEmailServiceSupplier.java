@@ -26,6 +26,8 @@ public class DefaultEmailServiceSupplier implements Supplier {
 
   @Override
   public Object supply(Brewery brewery) {
-    return new EmailServiceImpl();
+    EmailServiceImpl emailService = new EmailServiceImpl();
+    brewery.ingredient(emailService);
+    return emailService;
   }
 }

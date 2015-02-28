@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.ref.GroupId;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -23,11 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Peter Hilton
  */
 @JsonTypeName("groupId")
-public class GroupIdType extends JavaBeanType {
+public class GroupIdType extends Type {
 
   public static final GroupIdType INSTANCE = new GroupIdType();
 
-  public GroupIdType() {
-    super(GroupId.class);
-  }
 }

@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.script;
 import java.io.StringWriter;
 
 import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -32,7 +31,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class StandardScriptService implements ScriptService, Brewable {
+public class StandardScriptService extends AbstractScriptService implements ScriptService, ConditionService, Brewable {
 
   public static final String JAVASCRIPT = "JavaScript";
 
@@ -50,9 +49,11 @@ public class StandardScriptService implements ScriptService, Brewable {
   public void brew(Brewery brewery) {
     this.scriptEngineManager = brewery.get(ScriptEngineManager.class);
   }
-
+  
+  @Override
   public ScriptImpl compile(Script script, WorkflowParser parser) {
     ScriptImpl scriptImpl = new ScriptImpl();
+    scriptImpl.scriptService = this;
     scriptImpl.mappings = script.getMappings();
     
     String language = script.getLanguage();
@@ -71,13 +72,14 @@ public class StandardScriptService implements ScriptService, Brewable {
   }
   
   @Override
-  public ScriptResult evaluate(ScopeInstanceImpl scopeInstance, ScriptImpl script) {
+  public ScriptResult evaluate(ScopeInstanceImpl scopeInstance, CompiledScript compiledScript) {
+    ScriptImpl script = (ScriptImpl) compiledScript;
     ScriptResult scriptResult = new ScriptResult();
     try {
       StringWriter logWriter = new StringWriter();
       StandardScriptContext scriptContext = new StandardScriptContext(scopeInstance, script, logWriter);
-      CompiledScript compiledScript = (CompiledScript) script.compiledScript;
-      Object result = compiledScript.eval(scriptContext);
+      javax.script.CompiledScript javaxScript = (javax.script.CompiledScript) script.compiledScript;
+      Object result = javaxScript.eval(scriptContext);
       scriptResult.setResult(result);
       scriptResult.setLogs(logWriter.toString());
     } catch (ScriptException e) {

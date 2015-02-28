@@ -24,6 +24,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.internal.runners.TestMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +152,7 @@ public class WorkflowTest {
     }
     return mailService.emails.get(index);
   }
-
+  
   protected void logWorkflowEngineContents() {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
@@ -242,6 +243,7 @@ public class WorkflowTest {
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
     TaskStore taskStore = configuration.get(TaskStore.class);
+    mailService.emails.clear();
 
     workflowStore.deleteWorkflows(new WorkflowQuery());
     workflowInstanceStore.deleteWorkflowInstances(new WorkflowInstanceQuery());

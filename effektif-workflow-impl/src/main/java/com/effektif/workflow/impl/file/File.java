@@ -13,16 +13,46 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.file;
 
-import java.io.InputStream;
-
 
 /**
  * @author Tom Baeyens
  */
-public interface File {
+public class File {
 
-  String getContentType();
+  protected String fileName;
+  protected String contentType;
+  protected Long sizeInBytes;
 
-  InputStream getInputStream();
+  public String getFileName() {
+    return this.fileName;
+  }
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+  public File fileName(String fileName) {
+    this.fileName = fileName;
+    return this;
+  }
 
+  public String getContentType() {
+    return this.contentType;
+  }
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
+  public File contentType(String contentType) {
+    this.contentType = contentType;
+    return this;
+  }
+  
+  public Long getSizeInBytes() {
+    return this.sizeInBytes;
+  }
+  public void setSizeInBytes(Long sizeInBytes) {
+    this.sizeInBytes = sizeInBytes;
+  }
+  public File sizeInBytes(Long sizeInBytes) {
+    this.sizeInBytes = sizeInBytes;
+    return this;
+  }
 }

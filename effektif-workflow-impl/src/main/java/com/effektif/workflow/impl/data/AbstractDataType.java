@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.data;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
@@ -26,11 +27,13 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   private T typeApi;
   protected Class<? extends Type> apiClass;
   protected Class<?> valueClass;
-  
-  public AbstractDataType(T typeApi, Class< ? > valueClass) {
+  protected Configuration configuration;
+
+  public AbstractDataType(T typeApi, Class< ? > valueClass, Configuration configuration) {
     this.typeApi = typeApi;
     this.apiClass = typeApi.getClass();
     this.valueClass = valueClass;
+    this.configuration = configuration;
   }
   
   @Override
@@ -59,10 +62,8 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
   }
 
-  
-  @Override
-  public Object convert(Object value, DataType type) {
-    return value;
+  public TypedValueImpl dereference(Object value, String field) {
+    return null;
   }
 
   @Override

@@ -125,10 +125,10 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         Object value = null;
         if (isList(adapterKey)) {
           List<BindingImpl<Object>> inputBindings = inputListBindings!=null ? inputListBindings.get(adapterKey) : null;
-          value = inputBindings!=null ? BindingImpl.getValues(inputBindings, activityInstance) : null;
+          value = inputBindings!=null ? activityInstance.getValues(inputBindings) : null;
         } else {
           BindingImpl inputBinding = inputBindings.get(adapterKey);
-          value = inputBinding.getValue(activityInstance);
+          value = activityInstance.getValue(inputBinding);
         }
         
         if (value!=null) {

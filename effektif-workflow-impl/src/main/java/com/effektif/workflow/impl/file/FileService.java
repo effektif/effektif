@@ -13,7 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.file;
 
-import com.effektif.workflow.api.ref.FileId;
+import com.effektif.workflow.api.model.Attachment;
+import com.effektif.workflow.api.model.FileId;
 
 
 /**

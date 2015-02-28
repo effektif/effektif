@@ -52,6 +52,9 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   }
 
   public void setValue(Object value) {
+    if (value instanceof TypedValueImpl) {
+      throw new RuntimeException("buuuu");
+    }
     this.value = value;
     if (updates!=null) {
       updates.isValueChanged = true;

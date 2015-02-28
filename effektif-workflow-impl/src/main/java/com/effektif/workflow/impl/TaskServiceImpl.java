@@ -20,7 +20,7 @@ import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -64,9 +64,9 @@ public class TaskServiceImpl implements TaskService, Brewable {
     
     task.setId(taskId);
     task.setOrganizationId(organizationId);
-    task.setCreatedBy(actorUserId);
+    task.setCreatorId(actorUserId);
     
-    List<UserId> participants = task.getParticipants();
+    List<UserId> participants = task.getParticipantIds();
     if (actorUserId!=null) {
       if (participants==null) {
         participants = new ArrayList<>();
@@ -78,7 +78,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
       }
       participants.add(0, actorUserId);
     }
-    task.setParticipants(participants);
+    task.setParticipantIds(participants);
 
     if (task.getParentId()!=null) {
       Task parentTask = taskStore.addSubtask(task.getParentId(), task);

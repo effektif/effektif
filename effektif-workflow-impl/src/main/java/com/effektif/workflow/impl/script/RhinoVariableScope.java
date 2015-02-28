@@ -44,6 +44,7 @@ import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 /**
  * @author Tom Baeyens
  */
+@SuppressWarnings("restriction")
 public class RhinoVariableScope implements Scriptable {
   
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);

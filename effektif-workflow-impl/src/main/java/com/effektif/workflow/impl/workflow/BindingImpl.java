@@ -15,20 +15,7 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.data.DataType;
-import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
-import com.effektif.workflow.impl.script.ExpressionService;
-import com.effektif.workflow.impl.script.ScriptImpl;
-import com.effektif.workflow.impl.script.ScriptResult;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
 
 /**
@@ -37,63 +24,7 @@ import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 public class BindingImpl<T> {
 
   public DataType dataType;
-
   public T value;
-  public String variableId;
-  public List<String> fields;
-  public ExpressionService expressionService; 
-  public ScriptImpl expression;
+  public ExpressionImpl expression;
   
-  public BindingImpl(Configuration configuration) {
-    this.expressionService = configuration.get(ExpressionService.class);
-  }
-  
-  public T getValue(ScopeInstanceImpl scopeInstance) {
-    // IDEA : you might want to coerce value returned to this.dataType (ensure initialized properly)
-    if (this.value!=null) {
-      return value;
-    
-    } else if (this.variableId!=null) {
-      TypedValueImpl typedValue = getTypedFieldValue(scopeInstance, variableId, fields);
-      return (T) typedValue.getValue();
-      
-    } else if (this.expression!=null) {
-      ScriptResult scriptResult = expression.evaluate(scopeInstance);
-      Object value = scriptResult.getResult();
-      return (T) value;
-    }
-    
-    return null;
-  }
-  
-  public static <T> List<T> getValues(List<BindingImpl<T>> bindings, ScopeInstanceImpl scopeInstance) {
-    List<T> values = new ArrayList<>();
-    for (BindingImpl<T> binding: bindings) {
-      T elementValue = binding.getValue(scopeInstance);
-      if (elementValue!=null ) {
-        if (Collection.class.isAssignableFrom(elementValue.getClass())) {
-          Iterator<T> iterator = ((Collection)elementValue).iterator();
-          while (iterator.hasNext()) {
-            values.add(iterator.next());
-          }
-        } else {
-          values.add(elementValue);
-        }
-      }
-    }
-    return values;
-  }
-
-  public static TypedValueImpl getTypedFieldValue(ScopeInstanceImpl scopeInstance, String variableId, List<String> fields) {
-    VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
-    if (fields==null) {
-      return variableInstance.getTypedValue();
-    }
-    TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
-    for (String field: fields) {
-      ObjectTypeImpl<?> objectType = (ObjectTypeImpl< ? >) typedValue.type; 
-      objectType.dereference(typedValue, field);
-    }
-    return typedValue;
-  }
 }

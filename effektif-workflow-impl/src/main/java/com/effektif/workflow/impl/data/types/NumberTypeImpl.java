@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
@@ -25,8 +26,8 @@ import com.effektif.workflow.impl.data.InvalidValueException;
  */
 public class NumberTypeImpl extends AbstractDataType {
 
-  public NumberTypeImpl() {
-    super(NumberType.INSTANCE, Number.class);
+  public NumberTypeImpl(Configuration configuration) {
+    super(NumberType.INSTANCE, Number.class, configuration);
   }
   
   @Override

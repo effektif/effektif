@@ -76,7 +76,7 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
     } else {
       hasOutgoingTransitions = true;
       for (TransitionImpl outgoingTransition: activityImpl.getOutgoingTransitions()) {
-        if (outgoingTransition.conditionScript!=null) {
+        if (outgoingTransition.condition!=null) {
           saveTransitionsTaken = true;
         }
       }

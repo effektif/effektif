@@ -29,11 +29,10 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.email.DefaultEmailServiceSupplier;
-import com.effektif.workflow.impl.email.EmailService;
+import com.effektif.workflow.impl.email.EmailServiceImpl;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.script.ExpressionServiceImpl;
 import com.effektif.workflow.impl.script.StandardScriptService;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +50,6 @@ public abstract class DefaultConfiguration implements Configuration {
     registerDefaultDataTypeService();
     registerDefaultEmailService();
     registerDefaultExecutorService();
-    registerDefaultExpressionService();
     registerDefaultJobService();
     registerDefaultJsonFactory();
     registerDefaultJsonService();
@@ -82,10 +80,6 @@ public abstract class DefaultConfiguration implements Configuration {
 
   protected void registerDefaultExecutorService() {
     brewery.ingredient(new AsynchronousExecutorService());
-  }
-
-  protected void registerDefaultExpressionService() {
-    brewery.ingredient(new ExpressionServiceImpl());
   }
 
   protected void registerDefaultScriptService() {
@@ -125,7 +119,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
 
   protected void registerDefaultEmailService() {
-    brewery.supplier(new DefaultEmailServiceSupplier(), EmailService.class);
+    brewery.supplier(new DefaultEmailServiceSupplier(), EmailServiceImpl.class);
   }
 
 

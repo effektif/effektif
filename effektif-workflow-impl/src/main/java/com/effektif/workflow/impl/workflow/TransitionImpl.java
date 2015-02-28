@@ -23,8 +23,7 @@ import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.script.ScriptImpl;
-import com.effektif.workflow.impl.script.ScriptService;
+import com.effektif.workflow.impl.script.CompiledCondition;
 
 
 /**
@@ -41,7 +40,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
 
   public ActivityImpl from;
   public ActivityImpl to;
-  public ScriptImpl conditionScript;
+  public CompiledCondition condition;
 
 //  public Transition serialize() {
 //    Transition transition = new Transition();
@@ -72,8 +71,8 @@ public class TransitionImpl implements BpmnModel<Transition> {
     writer.writeBpmnAttribute(xml, "targetRef", transition.getTo());
   }
 
-  public void parse(Transition transitionApi, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
-    this.id = transitionApi.getId();
+  public void parse(Transition transition, ScopeImpl parent, WorkflowParser parser, Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
+    this.id = transition.getId();
     if (id!=null) {
       if (parser.transitionIds.contains(id)) {
         parser.addError("Duplicate transition id '%s'", id);
@@ -92,7 +91,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
       activityHavingThisAsDefault.defaultTransition = this;
     }
 
-    String fromId = transitionApi.getFrom();
+    String fromId = transition.getFrom();
     if (fromId==null) {
       parser.addWarning("Transition has no 'from' specified");
     } else {
@@ -107,7 +106,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
       }
     }
     String toId = null;
-    if (transitionApi.isToNext()) {
+    if (transition.isToNext()) {
       this.to = parent.getNextActivity(from);
       if (this.to!=null) {
         this.to.addIncomingTransition(this);
@@ -115,7 +114,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
         parser.addWarning("Transition has no next");
       }
     } else {
-      toId = transitionApi.getTo();
+      toId = transition.getTo();
       if (toId==null) {
         parser.addWarning("Transition has no 'to' specified");
       } else {
@@ -127,17 +126,10 @@ public class TransitionImpl implements BpmnModel<Transition> {
         }
       }
     }
-    if (transitionApi.getCondition()!=null) {
-      try {
-        // this.conditionScript = transitionApi.getCondition();
-        this.conditionScript = configuration
-            .get(ScriptService.class)
-            .compile(transitionApi.getCondition(), parser);
-      } catch (Exception e) {
-        parser.addError("Transition (%s)--%s>(%s) has an invalid condition expression '%s' : %s", 
-                fromId, (id!=null ? id+"--" : ""),
-                toId, transitionApi.getCondition(), e.getMessage());
-      }
+    if (transition.getCondition()!=null) {
+      parser.pushContext(transition.toString(), condition, null);
+      this.condition = parser.parseCondition(transition.getCondition());
+      parser.popContext();
     }
   }
 }

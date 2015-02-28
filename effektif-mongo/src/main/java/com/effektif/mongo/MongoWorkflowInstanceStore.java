@@ -442,6 +442,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     resolveActivityReferences(workflowInstance, workflow, allActivityIds);
     
     workflowInstance.variableInstances = readVariableInstances(dbWorkflowInstance, workflowInstance);
+    workflowInstance.updateVariableInstancesMap();
     workflowInstance.work = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK, workflowInstance);
     workflowInstance.workAsync = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK_ASYNC, workflowInstance);
     workflowInstance.properties = readObjectMap(dbWorkflowInstance, WorkflowInstanceFields.PROPERTIES);
@@ -571,6 +572,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     activityInstance.workflow = workflowInstance.workflow;
     activityInstance.workflowInstance = workflowInstance;
     activityInstance.variableInstances = readVariableInstances(dbActivityInstance, activityInstance);
+    activityInstance.updateVariableInstancesMap();
     return activityInstance;
   }
 

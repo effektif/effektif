@@ -13,30 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.ref;
+package com.effektif.workflow.api.model;
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserId {
+public class GroupId {
 
   protected String id;
   
-  public UserId() {
+  public GroupId() {
   }
-  
-  public UserId(String id) {
+  public GroupId(String id) {
     this.id = id;
   }
-  
+
   public String getId() {
     return this.id;
   }
   public void setId(String id) {
     this.id = id;
   }
-
+  
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -44,7 +43,6 @@ public class UserId {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -53,7 +51,7 @@ public class UserId {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    UserId other = (UserId) obj;
+    GroupId other = (GroupId) obj;
     if (id == null) {
       if (other.id != null)
         return false;

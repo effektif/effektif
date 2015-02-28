@@ -1,6 +1,5 @@
-/*
- * Copyright 2014 Effektif GmbH.
- *
+/* Copyright (c) 2014, Effektif GmbH.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,52 +10,38 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 package com.effektif.workflow.api.workflow;
 
-import java.util.Map;
-
-import com.effektif.workflow.api.types.Type;
 
 
 /**
  * @author Tom Baeyens
  */
-public class Expression extends Script {
+public class Expression {
 
-  protected Type type;
+  protected String variableId;
+  protected String[] fields;
 
-  public Type getType() {
-    return this.type;
+  public String getVariableId() {
+    return this.variableId;
   }
-  public void setType(Type type) {
-    this.type = type;
+  public void setVariableId(String variableId) {
+    this.variableId = variableId;
   }
-  public Expression type(Type type) {
-    this.type = type;
+  public Expression variableId(String variableId) {
+    this.variableId = variableId;
     return this;
   }
   
-  
-  @Override
-  public Expression language(String language) {
-    super.language(language);
-    return this;
+  public String[] getFields() {
+    return this.fields;
   }
-  @Override
-  public Expression script(String script) {
-    super.script(script);
-    return this;
+  public void setFields(String[] fields) {
+    this.fields = fields;
   }
-  @Override
-  public Expression mappings(Map<String, String> mappings) {
-    super.mappings(mappings);
-    return this;
-  }
-  @Override
-  public Expression mapping(String scriptVariableName, String variableId) {
-    super.mapping(scriptVariableName, variableId);
+  public Expression fields(String... fields) {
+    this.fields = fields;
     return this;
   }
 }

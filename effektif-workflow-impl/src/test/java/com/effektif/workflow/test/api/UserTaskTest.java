@@ -51,9 +51,9 @@ public class UserTaskTest extends WorkflowTest {
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
     assertEquals("release", task.getName());
-    assertEquals("johndoe", task.getAssignee().getId());
-    assertEquals("joesmoe", task.getCandidates().get(0).getId());
-    assertEquals("jackblack", task.getCandidates().get(1).getId());
+    assertEquals("johndoe", task.getAssigneeId().getId());
+    assertEquals("joesmoe", task.getCandidateIds().get(0).getId());
+    assertEquals("jackblack", task.getCandidateIds().get(1).getId());
     assertTrue(duedateEarliest<=task.getDuedate().toDate().getTime());
     long duedateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
     assertTrue(task.getDuedate().toDate().getTime()<=duedateLatest);

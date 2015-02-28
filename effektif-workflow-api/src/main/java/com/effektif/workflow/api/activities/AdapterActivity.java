@@ -17,7 +17,6 @@ package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -61,36 +60,6 @@ public class AdapterActivity extends AbstractBindableActivity {
   @Override
   public AdapterActivity inputValue(String adapterKey, Object value) {
     super.inputValue(adapterKey, value);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputValue(String adapterKey, Object value, Type type) {
-    super.inputValue(adapterKey, value, type);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputVariable(String adapterKey, String variableId) {
-    super.inputVariable(adapterKey, variableId);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputField(String adapterKey, String variableField) {
-    super.inputField(adapterKey, variableField);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputExpression(String adapterKey, String variableField) {
-    super.inputExpression(adapterKey, variableField);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity inputBinding(String adapterKey, Binding binding) {
-    super.inputBinding(adapterKey, binding);
     return this;
   }
 
@@ -151,6 +120,36 @@ public class AdapterActivity extends AbstractBindableActivity {
   @Override
   public AdapterActivity property(String key, Object value) {
     super.property(key, value);
+    return this;
+  }
+  @Override
+  public AdapterActivity inputExpression(String key, String variableId, String... fields) {
+    super.inputExpression(key, variableId, fields);
+    return this;
+  }
+  @Override
+  public AdapterActivity transitionToNext() {
+    super.transitionToNext();
+    return this;
+  }
+  @Override
+  public AdapterActivity activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+  @Override
+  public AdapterActivity transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+  @Override
+  public AdapterActivity variable(String id, Type type) {
+    super.variable(id, type);
+    return this;
+  }
+  @Override
+  public AdapterActivity name(String name) {
+    super.name(name);
     return this;
   }
 }

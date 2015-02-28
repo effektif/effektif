@@ -15,11 +15,12 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EmailTask;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.test.WorkflowTest;
@@ -34,7 +35,6 @@ public class EmailTaskTest extends WorkflowTest {
   public void testTask() throws Exception {
     Workflow workflow = new Workflow()
       .activity("1", new EmailTask()
-        .name("release")
         .to("johndoe@example.com")
         .subject("hi")
         .bodyText("by")
@@ -46,5 +46,34 @@ public class EmailTaskTest extends WorkflowTest {
 
     Email email = getEmail(0);
     assertNotNull(email);
+    // assertEquals("", email.getFrom());
+    assertEquals("johndoe@example.com", email.getTo().get(0));
+    assertEquals("hi", email.getSubject());
+    assertEquals("by", email.getBodyText());
+    assertEquals("<b>by</b>", email.getBodyHtml());
+  }
+
+  @Test
+  public void testTaskTemplatVariables() throws Exception {
+    Workflow workflow = new Workflow()
+      .activity("1", new EmailTask()
+        .subject("ba{{fruit}}na")
+        .bodyText("im{{animal}}la")
+        .bodyHtml("<b>un{{state}}cious</b>"));
+    
+    deploy(workflow);
+    
+    workflowEngine.start(new TriggerInstance()
+      .data("fruit", "na")
+      .data("animal", "pa")
+      .data("state", "cons")
+      .workflowId(workflow.getId()));
+
+    Email email = getEmail(0);
+    assertNotNull(email);
+    // assertEquals("", email.getFrom());
+    assertEquals("banana", email.getSubject());
+    assertEquals("impala", email.getBodyText());
+    assertEquals("<b>unconscious</b>", email.getBodyHtml());
   }
 }

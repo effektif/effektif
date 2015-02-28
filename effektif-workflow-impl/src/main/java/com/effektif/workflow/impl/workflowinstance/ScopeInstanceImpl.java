@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -39,10 +40,11 @@ import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.util.Lists;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
@@ -166,7 +168,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     variableInstance.configuration = configuration;
     variableInstance.workflowInstance = workflowInstance;
     variableInstance.type = variable.type;
-    variableInstance.value = variable.initialValue;
+    variableInstance.setValue(variable.initialValue);
     variableInstance.variable = variable;
     if (updates!=null) {
       variableInstance.updates = new VariableInstanceUpdates(true);
@@ -179,8 +181,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return variableInstance;
   }
   
-  public VariableInstanceImpl createVariableInstanceLocal(String id, DataType dataType) {
+  public VariableInstanceImpl createVariableInstanceLocal(String variableId, DataType dataType) {
     VariableImpl variable = new VariableImpl();
+    variable.id = variableId;
     variable.type = dataType;
     return createVariableInstanceLocal(variable);
   }
@@ -189,13 +192,41 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     variableInstance.parent = this;
     if (variableInstances==null) {
       variableInstances = new ArrayList<>();
+      variableInstancesMap = new HashMap<>();
     }
     variableInstances.add(variableInstance);
+    variableInstancesMap.put(variableInstance.variable.id, variableInstance);
   }
 
   /** to be used by activity implementations */
   public <T> T getValue(BindingImpl<T> binding) {
-    return (T) (binding!=null ? binding.getValue(this) : null);
+    if (binding==null) {
+      return null;
+    }
+    if (binding.value!=null) {
+      return binding.value;
+    }
+    if (binding.expression!=null) {
+      return (T) getValue(binding.expression);
+    }
+    return null;
+  }
+  
+  public Object getValue(ExpressionImpl expression) {
+    VariableInstanceImpl variableInstance = getVariableInstance(expression);
+    if (expression.fields==null) {
+      return variableInstance.getValue();
+    }
+    TypedValueImpl typedValue = getTypedValueField(variableInstance, expression.fields);
+    return typedValue!=null ? typedValue.value : null;
+  }
+
+  protected VariableInstanceImpl getVariableInstance(ExpressionImpl expression) {
+    if (expression==null || expression.variableId==null) {
+      return null;
+    }
+    VariableInstanceImpl variableInstance = findVariableInstance(expression.variableId);
+    return variableInstance;
   }
 
   /** to be used by activity implementations */
@@ -217,6 +248,35 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return values;
   }
   
+  public TypedValueImpl getTypedValue(ExpressionImpl expression) {
+    VariableInstanceImpl variableInstance = getVariableInstance(expression);
+    if (expression.fields==null) {
+      return variableInstance.getTypedValue();
+    }
+    return getTypedValueField(variableInstance, expression.fields);
+  }
+
+  protected TypedValueImpl getTypedValueField(VariableInstanceImpl variableInstance, String[] fields) {
+    TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
+    if (fields!=null) {
+      for (int i=0; i<fields.length && typedValue!=null; i++) {
+        String field = fields[i];
+        Object value = typedValue.value;
+        if (value!=null) {
+          DataType type = typedValue.type;
+          if ( (value instanceof Collection)
+               && ! (type instanceof ListTypeImpl) ){
+            type = new ListTypeImpl(type, configuration);
+          }
+          typedValue = typedValue.type.dereference(value, field);
+        } else {
+          typedValue = null; 
+        }
+      }
+    }
+    return typedValue;
+  }
+  
   public Object getValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
     if (variableInstance!=null) {
@@ -224,6 +284,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }
+  
+  
   
   public TypedValueImpl getTypedValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
@@ -264,12 +326,13 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       parent.setVariableValue(variableId, value);
       return;
     }
-    throw new RuntimeException("dynamic variable creation not  yet implemented");
-// TODO
-//    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-//    DataType dataType = dataTypeService.getDataTypeByValue(value); 
-//    VariableInstanceImpl variableInstance = createVariableInstanceLocal(variableId, dataType);
-//    setVariableValue(variableInstance, value);
+    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+    DataType dataType = dataTypeService.getDataTypeByValue(value);
+    if (dataType==null) {
+      throw new RuntimeException("Couldn't determine data type dynamically for value "+value);
+    }
+    VariableInstanceImpl variableInstance = createVariableInstanceLocal(variableId, dataType);
+    setVariableValue(variableInstance, value);
   }
 
   public void setVariableValue(VariableInstanceImpl variableInstance, Object value) {
@@ -296,16 +359,17 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
   
   protected VariableInstanceImpl getVariableInstanceLocal(String variableId) {
-    ensureVariableInstancesMapInitialized();
     return variableInstancesMap.get(variableId);
   }
 
-  protected void ensureVariableInstancesMapInitialized() {
-    if (variableInstancesMap==null && variableInstances!=null) {
+  public void updateVariableInstancesMap() {
+    if (variableInstances!=null) {
       variableInstancesMap = new HashMap<>();
       for (VariableInstanceImpl variableInstance: variableInstances) {
         variableInstancesMap.put(variableInstance.variable.id, variableInstance);
       }
+    } else {
+      variableInstancesMap = null;
     }
   }
   

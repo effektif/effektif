@@ -17,7 +17,7 @@ package com.effektif.workflow.api.task;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 
 
 /**

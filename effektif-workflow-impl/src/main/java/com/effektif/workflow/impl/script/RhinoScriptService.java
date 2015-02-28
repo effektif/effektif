@@ -36,7 +36,8 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class RhinoScriptService implements ScriptService, Brewable {
+@SuppressWarnings("restriction")
+public class RhinoScriptService extends AbstractScriptService implements ScriptService, ConditionService, Brewable {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);
   
@@ -66,7 +67,8 @@ public class RhinoScriptService implements ScriptService, Brewable {
   }
 
   @Override
-  public ScriptResult evaluate(final ScopeInstanceImpl scopeInstance, final ScriptImpl script) {
+  public ScriptResult evaluate(final ScopeInstanceImpl scopeInstance, final CompiledScript compiledScript) {
+    final ScriptImpl script = (ScriptImpl) compiledScript;
     return (ScriptResult) contextFactory.call(new ContextAction() {
       public Object run(Context context) {
         Scriptable scope = context.initStandardObjects();

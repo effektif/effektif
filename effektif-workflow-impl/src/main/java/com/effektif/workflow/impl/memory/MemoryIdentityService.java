@@ -14,11 +14,15 @@
 package com.effektif.workflow.impl.memory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.effektif.workflow.api.ref.GroupId;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.impl.identity.Group;
 import com.effektif.workflow.impl.identity.IdentityService;
+import com.effektif.workflow.impl.identity.User;
 
 
 /**
@@ -26,10 +30,16 @@ import com.effektif.workflow.impl.identity.IdentityService;
  */
 public class MemoryIdentityService implements IdentityService {
   
-  protected String domain = "example.com";
+  Map<UserId, User> users = new HashMap<>(); 
+  Map<GroupId, Group> groups = new HashMap<>(); 
 
-  public MemoryIdentityService domain(String domain) {
-    this.domain = domain;
+  public MemoryIdentityService addUser(User user) {
+    users.put(user.getId(), user);
+    return this;
+  }
+
+  public MemoryIdentityService addGroup(Group group) {
+    groups.put(group.getId(), group);
     return this;
   }
 
@@ -40,7 +50,8 @@ public class MemoryIdentityService implements IdentityService {
     }
     List<String> emailAddresses = new ArrayList<>();
     for (UserId userId: userIds) {
-      emailAddresses.add(userId+"@"+domain);
+      User user = users.get(userId.getId());
+      emailAddresses.add(user.getEmail());
     }
     return emailAddresses;
   }
@@ -52,8 +63,20 @@ public class MemoryIdentityService implements IdentityService {
     }
     List<String> emailAddresses = new ArrayList<>();
     for (GroupId groupId: groupIds) {
-      emailAddresses.add(groupId+"@"+domain);
+      Group group = groups.get(groupId);
+      List<String> memberEmailAddresses = getUsersEmailAddresses(group.getMemberIds());
+      emailAddresses.addAll(memberEmailAddresses);
     }
     return emailAddresses;
+  }
+
+  @Override
+  public User getUser(UserId userId) {
+    return users.get(userId);
+  }
+
+  @Override
+  public Group getGroup(GroupId groupId) {
+    return groups.get(groupId);
   }
 }

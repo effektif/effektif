@@ -17,7 +17,6 @@ package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -74,36 +73,6 @@ public class Call extends AbstractBindableActivity {
   @Override
   public Call inputValue(String subWorkflowKey, Object value) {
     super.inputValue(subWorkflowKey, value);
-    return this;
-  }
-
-  @Override
-  public Call inputValue(String subWorkflowKey, Object value, Type type) {
-    super.inputValue(subWorkflowKey, value, type);
-    return this;
-  }
-
-  @Override
-  public Call inputVariable(String subWorkflowKey, String variableId) {
-    super.inputVariable(subWorkflowKey, variableId);
-    return this;
-  }
-
-  @Override
-  public Call inputField(String subWorkflowKey, String variableField) {
-    super.inputField(subWorkflowKey, variableField);
-    return this;
-  }
-
-  @Override
-  public Call inputExpression(String subWorkflowKey, String variableField) {
-    super.inputExpression(subWorkflowKey, variableField);
-    return this;
-  }
-
-  @Override
-  public Call inputBinding(String subWorkflowKey, Binding binding) {
-    super.inputBinding(subWorkflowKey, binding);
     return this;
   }
 
@@ -166,6 +135,35 @@ public class Call extends AbstractBindableActivity {
     super.property(key, value);
     return this;
   }
-  
 
+  @Override
+  public Call inputExpression(String key, String variableId, String... fields) {
+    super.inputExpression(key, variableId, fields);
+    return this;
+  }
+  @Override
+  public Call transitionToNext() {
+    super.transitionToNext();
+    return this;
+  }
+  @Override
+  public Call activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+  @Override
+  public Call transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+  @Override
+  public Call variable(String id, Type type) {
+    super.variable(id, type);
+    return this;
+  }
+  @Override
+  public Call name(String name) {
+    super.name(name);
+    return this;
+  }
 }

@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 
 import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
 import com.effektif.workflow.api.acl.Access;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
-import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.impl.TaskStore;

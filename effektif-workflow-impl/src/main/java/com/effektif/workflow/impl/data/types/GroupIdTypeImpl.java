@@ -16,23 +16,24 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.ref.GroupId;
+import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.types.GroupIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
+import com.effektif.workflow.impl.data.AbstractDataType;
 
 
 /**
  * @author Tom Baeyens
  */
-public class GroupIdTypeImpl extends JavaBeanTypeImpl<GroupIdType> {
+public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
 
   public GroupIdTypeImpl(Configuration configuration) {
     this(new GroupIdType(), configuration);
   }
 
   public GroupIdTypeImpl(GroupIdType type, Configuration configuration) {
-    super(type, configuration);
+    super(type, GroupId.class, configuration);
   }
 
   @Override

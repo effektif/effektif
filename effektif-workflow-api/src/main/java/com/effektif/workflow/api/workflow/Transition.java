@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.effektif.workflow.api.types.BooleanType;
 
 
 /**
@@ -29,7 +28,7 @@ public class Transition extends Element {
 
   protected String from;
   protected String to;
-  protected Expression condition;
+  protected Condition condition;
   protected Boolean isToNext;
 
   public Transition id(String id) {
@@ -71,27 +70,19 @@ public class Transition extends Element {
     return this;
   }
   
-  public Expression getCondition() {
+  public Condition getCondition() {
     return this.condition;
   }
-  public void setCondition(Expression condition) {
+  public void setCondition(Condition condition) {
     this.condition = condition;
   }
-  public Transition condition(String condition) {
-    if (this.condition == null) {
-      this.condition = new Expression()
-        .type(BooleanType.INSTANCE);
-    }
-    this.condition.script(condition);
+  public Transition condition(String expression) {
+    this.condition = new Condition()
+      .expression(expression);
     return this;
   }
-
-  public Transition conditionMapping(String scriptVariableName, String variableId) {
-    if (this.condition == null) {
-      this.condition = new Expression()
-        .type(BooleanType.INSTANCE);
-    }
-    this.condition.mapping(scriptVariableName, variableId);
+  public Transition condition(Condition condition) {
+    this.condition = condition;
     return this;
   }
 
@@ -122,6 +113,9 @@ public class Transition extends Element {
     super.propertyOpt(key, value);
     return this;
   }
-  
-  
+
+  @Override
+  public String toString() {
+    return "("+(from!=null?from:" ")+")--"+(id!=null?id+"--":"")+">("+(to!=null?to:" ")+")";
+  }
 }

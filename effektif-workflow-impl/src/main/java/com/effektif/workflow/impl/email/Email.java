@@ -13,11 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.email;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.ref.FileId;
+import com.effektif.workflow.api.model.Attachment;
 
 
 /**
@@ -34,7 +35,7 @@ public class Email {
   protected String subject;
   protected String bodyText;
   protected String bodyHtml;
-  protected List<FileId> attachments;
+  protected List<Attachment> attachments;
 
   public String getFrom() {
     return this.from;
@@ -138,14 +139,17 @@ public class Email {
     return this;
   }
   
-  public List<FileId> getAttachments() {
+  public List<Attachment> getAttachments() {
     return this.attachments;
   }
-  public void setAttachments(List<FileId> attachments) {
+  public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
   }
-  public Email attachments(List<FileId> attachments) {
-    this.attachments = attachments;
+  public Email attachment(Attachment attachment) {
+    if (this.attachments==null) {
+      this.attachments = new ArrayList<>();
+    };
+    this.attachments.add(attachment);
     return this;
   }
 }

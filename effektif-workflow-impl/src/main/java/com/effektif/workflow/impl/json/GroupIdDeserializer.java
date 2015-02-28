@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.json;
 
 import java.io.IOException;
 
-import com.effektif.workflow.api.ref.GroupId;
+import com.effektif.workflow.api.model.GroupId;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;

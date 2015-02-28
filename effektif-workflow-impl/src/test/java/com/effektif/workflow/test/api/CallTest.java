@@ -23,8 +23,8 @@ import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.ref.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.types.UserIdType;
@@ -82,7 +82,7 @@ public class CallTest extends WorkflowTest {
     Workflow subWorkflow = new Workflow()
       .variable("performer", new UserIdType())
       .activity("subtask", new UserTask()
-        .assigneeVariableId("performer")
+        .assigneeExpression("performer")
       );
     
     deploy(subWorkflow);
@@ -97,7 +97,7 @@ public class CallTest extends WorkflowTest {
     start(superWorkflow);
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssignee().getId());
+    assertEquals("johndoe", task.getAssigneeId().getId());
   }
 
   @Test
@@ -105,7 +105,7 @@ public class CallTest extends WorkflowTest {
     Workflow subWorkflow = new Workflow()
       .variable("performer", new UserIdType())
       .activity("subtask", new UserTask()
-        .assigneeVariableId("performer")
+        .assigneeExpression("performer")
       );
     
     deploy(subWorkflow);
@@ -113,7 +113,7 @@ public class CallTest extends WorkflowTest {
     Workflow superWorkflow = new Workflow()
       .variable("guineapig", new UserIdType())
       .activity(new Call("call")
-        .inputVariable("performer", "guineapig")
+        .inputExpression("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
     
     deploy(superWorkflow);
@@ -124,7 +124,7 @@ public class CallTest extends WorkflowTest {
     );
 
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssignee().getId());
+    assertEquals("johndoe", task.getAssigneeId().getId());
   }
 
 }

@@ -26,12 +26,12 @@ import com.effektif.workflow.api.types.CustomType;
  */
 public class CustomTypeImpl extends ObjectTypeImpl<CustomType> {
 
-  public CustomTypeImpl() {
-    super(new CustomType(), Map.class, null);
+  public CustomTypeImpl(Configuration configuration) {
+    super(new CustomType(), Map.class, configuration);
   }
   
-  public CustomTypeImpl(CustomType typeApi, Configuration configuration) {
-    super(typeApi, Map.class, configuration);
+  public CustomTypeImpl(CustomType customType, Configuration configuration) {
+    super(customType, Map.class, configuration);
   }
 
   protected void initializeFields(Configuration configuration) {

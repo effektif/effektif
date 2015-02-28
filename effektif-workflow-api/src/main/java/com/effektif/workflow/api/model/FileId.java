@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.ref;
+package com.effektif.workflow.api.model;
 
 
 /**
  * @author Tom Baeyens
  */
-public class GroupId {
+public class FileId {
 
   protected String id;
   
-  public GroupId() {
+  public FileId() {
   }
-  public GroupId(String id) {
+  public FileId(String id) {
     this.id = id;
   }
 
@@ -51,7 +51,7 @@ public class GroupId {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    GroupId other = (GroupId) obj;
+    FileId other = (FileId) obj;
     if (id == null) {
       if (other.id != null)
         return false;

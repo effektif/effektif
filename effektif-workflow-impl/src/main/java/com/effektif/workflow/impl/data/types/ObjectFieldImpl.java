@@ -22,7 +22,6 @@ import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 /**
@@ -37,16 +36,21 @@ public class ObjectFieldImpl {
     this.name = name;
   }
 
-  public ObjectFieldImpl(Class< ? > objectClass, ObjectField fieldApi, Configuration configuration) {
-    this.name = fieldApi.getName();
-    Type fieldType = fieldApi.getType();
+  public ObjectFieldImpl(String name, DataType type) {
+    this.name = name;
+    this.type = type;
+  }
+
+  public ObjectFieldImpl(Class< ? > objectClass, ObjectField field, Configuration configuration) {
+    this.name = field.getName();
+    Type fieldType = field.getType();
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
     this.type = dataTypeService.createDataType(fieldType);
   }
   
-  public void dereferenceValue(TypedValueImpl typedValue) {
-    Map<String,Object> map = (Map<String, Object>) typedValue.value;
-    typedValue.value = map.get(name);
+  public Object getFieldValue(Object value) {
+    Map<String,Object> map = (Map<String, Object>) value;
+    return map.get(name);
   }
 
   public String getName() {

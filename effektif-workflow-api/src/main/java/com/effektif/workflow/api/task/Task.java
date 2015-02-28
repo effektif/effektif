@@ -25,8 +25,8 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.AccessControlledObject;
-import com.effektif.workflow.api.ref.GroupId;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -49,11 +49,11 @@ public class Task extends Extensible implements AccessControlledObject {
   protected AccessControlList access;
 
   // creator, people that add comments and people assigned to tasks are participants
-  protected UserId createdBy;
-  protected List<UserId> participants;
-  protected UserId assignee;
-  protected List<UserId> candidates;
-  protected List<GroupId> candidateGroups;
+  protected UserId creatorId;
+  protected List<UserId> participantIds;
+  protected UserId assigneeId;
+  protected List<UserId> candidateIds;
+  protected List<GroupId> candidateGroupIds;
 
   protected String caseId; // id of the root task in the task parent-child relationship
   protected String parentId;
@@ -89,11 +89,11 @@ public class Task extends Extensible implements AccessControlledObject {
     this.name = other.name;
     this.description = other.description;
     this.access = other.access;
-    this.createdBy = other.createdBy;
-    this.participants= other.participants;
-    this.assignee = other.assignee;
-    this.candidates = other.candidates;
-    this.candidateGroups = other.candidateGroups;
+    this.creatorId = other.creatorId;
+    this.participantIds= other.participantIds;
+    this.assigneeId = other.assigneeId;
+    this.candidateIds = other.candidateIds;
+    this.candidateGroupIds = other.candidateGroupIds;
     this.caseId = other.caseId;
     this.parentId = other.parentId;
     this.subtaskIds = other.subtaskIds;
@@ -120,16 +120,29 @@ public class Task extends Extensible implements AccessControlledObject {
     return this;
   }
   
-  public Task assignee(UserId assignee) {
-    this.assignee = assignee;
+  public Task assigneeId(UserId assigneeId) {
+    this.assigneeId = assigneeId;
     return this;
   }
 
-  public Task candidates(List<UserId> candidates) {
-    this.candidates = candidates;
+  public Task assigneeId(String assigneeId) {
+    this.assigneeId = new UserId(assigneeId);
     return this;
   }
 
+  public Task candidateId(UserId candidateId) {
+    if (this.candidateIds==null) {
+      this.candidateIds = new ArrayList<>();
+    }
+    this.candidateIds.add(candidateId);
+    return this;
+  }
+
+  public Task candidateId(String candidateId) {
+    this.candidateId(new UserId(candidateId));
+    return this;
+  }
+  
   public String getId() {
     return id;
   }
@@ -147,21 +160,21 @@ public class Task extends Extensible implements AccessControlledObject {
   }
 
   
-  public UserId getAssignee() {
-    return assignee;
+  public UserId getAssigneeId() {
+    return assigneeId;
   }
   
-  public void setAssignee(UserId assignee) {
-    this.assignee = assignee;
+  public void setAssigneeId(UserId assignee) {
+    this.assigneeId = assignee;
   }
   
-  public List<UserId> getCandidates() {
-    return candidates;
+  public List<UserId> getCandidateIds() {
+    return candidateIds;
   }
 
   
-  public void setCandidates(List<UserId> candidates) {
-    this.candidates = candidates;
+  public void setCandidateIds(List<UserId> candidates) {
+    this.candidateIds = candidates;
   }
 
 
@@ -249,11 +262,11 @@ public class Task extends Extensible implements AccessControlledObject {
     this.activityId = activityId;
   }
 
-  public List<GroupId> getCandidateGroups() {
-    return this.candidateGroups;
+  public List<GroupId> getCandidateGroupIds() {
+    return this.candidateGroupIds;
   }
-  public void setCandidateGroups(List<GroupId> candidateGroups) {
-    this.candidateGroups = candidateGroups;
+  public void setCandidateGroupIds(List<GroupId> candidateGroupIds) {
+    this.candidateGroupIds = candidateGroupIds;
   }
   
   public Boolean isCanceled() {
@@ -270,11 +283,11 @@ public class Task extends Extensible implements AccessControlledObject {
     this.completed = completed;
   }
   
-  public UserId getCreatedBy() {
-    return this.createdBy;
+  public UserId getCreatorId() {
+    return this.creatorId;
   }
-  public void setCreatedBy(UserId createdBy) {
-    this.createdBy = createdBy;
+  public void setCreatorId(UserId creatorId) {
+    this.creatorId = creatorId;
   }
 
   public String getDescription() {
@@ -316,11 +329,11 @@ public class Task extends Extensible implements AccessControlledObject {
     this.lastUpdated = lastUpdated;
   }
 
-  public List<UserId> getParticipants() {
-    return this.participants;
+  public List<UserId> getParticipantIds() {
+    return this.participantIds;
   }
-  public void setParticipants(List<UserId> participants) {
-    this.participants = participants;
+  public void setParticipantIds(List<UserId> participantIds) {
+    this.participantIds = participantIds;
   }
   
   public String getSourceWorkflowId() {

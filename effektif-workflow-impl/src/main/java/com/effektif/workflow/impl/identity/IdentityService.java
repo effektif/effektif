@@ -15,8 +15,8 @@ package com.effektif.workflow.impl.identity;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.GroupId;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.UserId;
 
 
 /**
@@ -27,4 +27,8 @@ public interface IdentityService {
   List<String> getUsersEmailAddresses(List<UserId> userIds);
 
   List<String> getGroupsEmailAddresses(List<GroupId> groupIds);
+  
+  User getUser(UserId userId);
+
+  Group getGroup(GroupId groupId);
 }

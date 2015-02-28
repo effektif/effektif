@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
@@ -25,8 +26,8 @@ import com.effektif.workflow.impl.data.InvalidValueException;
  */
 public class TextTypeImpl extends AbstractDataType<TextType> {
 
-  public TextTypeImpl() {
-    super(TextType.INSTANCE, String.class);
+  public TextTypeImpl(Configuration configuration) {
+    super(TextType.INSTANCE, String.class, configuration);
   }
   
   @Override

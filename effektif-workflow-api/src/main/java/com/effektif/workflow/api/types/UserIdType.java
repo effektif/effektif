@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 

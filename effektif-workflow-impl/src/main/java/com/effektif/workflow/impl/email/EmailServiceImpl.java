@@ -36,48 +36,53 @@ import javax.mail.util.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.ref.FileId;
-import com.effektif.workflow.impl.configuration.Brewable;
-import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.file.File;
-import com.effektif.workflow.impl.file.FileService;
+import com.effektif.workflow.api.model.Attachment;
 
 
 /**
  * @author Tom Baeyens
  */
-public class EmailServiceImpl implements EmailService, Brewable {
+public class EmailServiceImpl implements EmailService {
 
   private static final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
   
-  protected FileService fileService;
   protected Properties properties = new Properties();
   protected Authenticator authenticator = null;
   
   public EmailServiceImpl() {
     properties = new Properties();
     property("mail.transport.protocol", "smtp");
-    hostName("localhost");
-    port(25);
+    host("localhost");
+    portDefault();
   }
   
-  @Override
-  public void brew(Brewery brewery) {
-    fileService = brewery.get(FileService.class);
-  }
-  
-  public EmailServiceImpl hostName(String hostName) {
+  public EmailServiceImpl host(String hostName) {
     properties.put("mail.smtp.host", hostName);
     return this;
   }
 
+  public EmailServiceImpl port(int port) {
+    properties.put("mail.smtp.port", Integer.toString(port));
+    return this;
+  }
+  
   public EmailServiceImpl portDefault() {
     port(25);
     return this;
   }
 
+  public EmailServiceImpl portDefaultSsl() {
+    port(465);
+    return this;
+  }
+
+  public EmailServiceImpl portDefaultTls() {
+    port(587);
+    return this;
+  }
+
   public EmailServiceImpl ssl() {
-    ssl(465);
+    portDefaultSsl();
     return this;
   }
 
@@ -89,11 +94,12 @@ public class EmailServiceImpl implements EmailService, Brewable {
     return this;
   }
 
-  public EmailServiceImpl port(int port) {
-    properties.put("mail.smtp.port", Integer.toString(port));
+  public EmailServiceImpl tls() {
+    portDefaultTls();
+    properties.setProperty("mail.smtp.starttls.enable", "true");
     return this;
   }
-  
+
   public EmailServiceImpl authenticate(final String username, final String password) {
     properties.setProperty("mail.smtp.auth", "true");
     this.authenticator = new Authenticator() {
@@ -105,11 +111,6 @@ public class EmailServiceImpl implements EmailService, Brewable {
     return this;
   }
   
-  public EmailServiceImpl tls() {
-    properties.setProperty("mail.smtp.starttls.enable", "true");
-    return this;
-  }
-
   public EmailServiceImpl from(String mailSmtpFrom) {
     properties.setProperty("mail.smtp.from", mailSmtpFrom);
     return this;
@@ -120,8 +121,11 @@ public class EmailServiceImpl implements EmailService, Brewable {
     return this;
   }
 
-  public EmailServiceImpl connectionTimeout(long connectionTimeout) {
-    properties.put("mail.smtp.connectiontimeout", Long.toString(connectionTimeout));
+  public EmailServiceImpl connectionTimeoutSeconds(long connectionTimeoutSeconds) {
+    if (connectionTimeoutSeconds<=0) {
+      throw new RuntimeException("Invalid timeout value "+connectionTimeoutSeconds+". Expected positive value expressed in seconds.");
+    }
+    properties.put("mail.smtp.connectiontimeout", Long.toString(connectionTimeoutSeconds*1000));
     return this;
   }
 
@@ -138,8 +142,8 @@ public class EmailServiceImpl implements EmailService, Brewable {
   public static String validateEmailAddress(String emailAddress) {
     if (emailAddress != null) {
       try {
-        InternetAddress add = new InternetAddress(emailAddress);
-        return add.toUnicodeString();
+        InternetAddress internetAddress = new InternetAddress(emailAddress);
+        return internetAddress.toUnicodeString();
       } catch (AddressException e) {
         log.error("Invalid mail address: " + emailAddress, e);
       }
@@ -152,10 +156,27 @@ public class EmailServiceImpl implements EmailService, Brewable {
     try {
       Session session = getSession();
       MimeMessage message = createMessage(session, email);
-      Transport.send(message);
+      if (isValid(email)) {
+        log.debug("Sending email to "+email.getTo()+" with "+properties.get("mail.smtp.host"));
+        Transport.send(message);
+      }
     } catch (MessagingException | IOException e) {
+      log.error("Problem sending email: "+e.getMessage());
+      if (properties!=null) {
+        for (Object key: properties.keySet()) {
+          log.error(key+"="+properties.get(key));
+        }
+      }
       throw new RuntimeException("Problem sending email: "+e.getMessage(), e);
     }
+  }
+
+  protected boolean isValid(Email email) {
+    if (email.getTo()==null || email.getTo().isEmpty() || email.getTo().contains(null)) {
+      log.error("NOT sending mail: no TO recipients specified");
+      return false;
+    }
+    return true;
   }
 
   protected MimeMessage createMessage(Session session, Email email) throws AddressException, MessagingException, IOException {
@@ -198,8 +219,8 @@ public class EmailServiceImpl implements EmailService, Brewable {
       content.addBodyPart(part);
     }
     if (email.getAttachments()!=null) {
-      for (FileId fileId: email.getAttachments()) {
-        MimeBodyPart part = createBodyPartAttachment(fileId);
+      for (Attachment attachment: email.getAttachments()) {
+        MimeBodyPart part = createBodyPartAttachment(attachment);
         content.addBodyPart(part);
       }
     }
@@ -219,10 +240,10 @@ public class EmailServiceImpl implements EmailService, Brewable {
     return bodyPart;
   }
 
-  protected MimeBodyPart createBodyPartAttachment(FileId fileId) throws IOException, MessagingException {
+  protected MimeBodyPart createBodyPartAttachment(Attachment attachment) throws IOException, MessagingException {
     MimeBodyPart bodyPart = new MimeBodyPart();
-    File file = fileService.getFile(fileId);
-    DataSource dataSource = new ByteArrayDataSource(file.getInputStream(), file.getContentType());
+    bodyPart.setFileName(attachment.getFileName());
+    DataSource dataSource = new ByteArrayDataSource(attachment.getInputStream(), attachment.getContentType());
     bodyPart.setDataHandler(new DataHandler(dataSource));
     return bodyPart;
   }

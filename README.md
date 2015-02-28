@@ -31,7 +31,7 @@ and it fits better in a document database compared to a token-based approach.
 * Specify flows including user tasks and other wait states 
 * Keeps track of workflow instances state, position in the diagram and data
 * Easy configuration of reminders, escalations and other persistent timers 
-* Intuitive Java API & REST API
+* Intuitive, fluent Java API & REST API
 * Apache 2.0 license
 
 ## Example

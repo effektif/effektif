@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ObjectField;
-import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.data.DataType;
 
 
 /**
@@ -29,8 +29,17 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
 
   protected Field field;
 
+  public JavaBeanFieldImpl(Class< ? > objectClass, String fieldName, DataType dataType) {
+    super(fieldName, dataType);
+    initializeField(objectClass);
+  }
+
   public JavaBeanFieldImpl(Class< ? > objectClass, ObjectField fieldApi, Configuration configuration) {
     super(objectClass, fieldApi, configuration);
+    initializeField(objectClass);
+  }
+
+  protected void initializeField(Class< ? > objectClass) {
     try {
       this.field = objectClass.getDeclaredField(name);
       this.field.setAccessible(true);
@@ -44,9 +53,9 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
   }
 
   @Override
-  public void dereferenceValue(TypedValueImpl typedValue) {
+  public Object getFieldValue(Object value) {
     try {
-      typedValue.value = field.get(typedValue.value);
+      return field.get(value);
     } catch (IllegalArgumentException | IllegalAccessException e) {
       throw new RuntimeException("Couldn't dereference "+name+": "+e.getMessage(), e);
     }

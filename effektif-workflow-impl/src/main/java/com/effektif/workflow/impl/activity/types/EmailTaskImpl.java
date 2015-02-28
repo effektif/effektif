@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.ref.FileId;
-import com.effektif.workflow.api.ref.GroupId;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.Attachment;
+import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
@@ -66,7 +66,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   protected TextTemplate bodyText;
   protected TextTemplate bodyHtml;
   
-  protected List<BindingImpl<FileId>> attachments;
+  protected List<BindingImpl<Attachment>> attachments;
 
   public EmailTaskImpl() {
     super(EmailTask.class);
@@ -93,9 +93,9 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     bccUserIds = parser.parseBindings(activity.getBccUserIds(), "bccUserIds");
     bccGroupIds = parser.parseBindings(activity.getBccGroupIds(), "bccGroupIds");
     
-    subject = TextTemplate.parse(activity.getSubject(), Hint.EMAIL, Hint.SHORT);
-    bodyText = TextTemplate.parse(activity.getBodyText(), Hint.EMAIL);
-    bodyHtml = TextTemplate.parse(activity.getBodyHtml(), Hint.EMAIL, Hint.HTML);
+    subject = parser.parseTextTemplate(activity.getSubject(), Hint.EMAIL, Hint.EMAIL_SUBJECT, Hint.SHORT);
+    bodyText = parser.parseTextTemplate(activity.getBodyText(), Hint.EMAIL, Hint.EMAIL_BODY_TEXT);
+    bodyHtml = parser.parseTextTemplate(activity.getBodyHtml(), Hint.EMAIL, Hint.EMAIL_BODY_HTML, Hint.HTML);
     
     attachments = parser.parseBindings(activity.getAttachments(), "attachments");
   }
@@ -128,14 +128,18 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
       .to(to)
       .cc(cc)
       .bcc(bcc)
-      .subject(subject.resolve(activityInstance))
-      .bodyText(bodyText.resolve(activityInstance))
-      .bodyHtml(bodyHtml.resolve(activityInstance))
-      .attachments(activityInstance.getValues(attachments));
+      .subject(resolve(subject, activityInstance))
+      .bodyText(resolve(bodyText, activityInstance))
+      .bodyHtml(resolve(bodyHtml, activityInstance));
+    email.setAttachments(activityInstance.getValues(attachments));
     
     emailService.send(email);
     
     activityInstance.onwards();
+  }
+
+  protected String resolve(TextTemplate textTemplate, ActivityInstanceImpl activityInstance) {
+    return textTemplate!=null ? textTemplate.resolve(activityInstance) : null;
   }
 
   protected String resolveFrom(ActivityInstanceImpl activityInstance) {

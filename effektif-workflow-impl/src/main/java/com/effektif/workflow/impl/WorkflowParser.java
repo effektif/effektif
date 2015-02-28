@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +31,26 @@ import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Condition;
 import com.effektif.workflow.api.workflow.Element;
+import com.effektif.workflow.api.workflow.Expression;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
-import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.json.SerializedWorkflow;
-import com.effektif.workflow.impl.script.ExpressionService;
+import com.effektif.workflow.impl.script.CompiledCondition;
+import com.effektif.workflow.impl.script.CompiledScript;
+import com.effektif.workflow.impl.script.ConditionService;
+import com.effektif.workflow.impl.script.ScriptService;
+import com.effektif.workflow.impl.template.Hint;
+import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
@@ -189,7 +198,6 @@ public class WorkflowParser {
     int values = 0;
     if (bindingImpl!=null) {
       if (bindingImpl.value!=null) values++;
-      if (bindingImpl.variableId!=null) values++;
       if (bindingImpl.expression!=null) values++;
     }
     if (isRequired && values==0) {
@@ -205,7 +213,7 @@ public class WorkflowParser {
     if (binding==null) {
       return null;
     }
-    BindingImpl<T> bindingImpl = new BindingImpl<>(configuration);
+    BindingImpl<T> bindingImpl = new BindingImpl<>();
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
       if (type!=null && isSerialized) {
@@ -214,23 +222,25 @@ public class WorkflowParser {
         bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
       }
     }
-    if (binding.getVariableId()!=null) {
-      // TODO check if the variable exists and add an error if not
-      bindingImpl.variableId = binding.getVariableId();
-    }
-    if (binding.getFields()!=null) {
-      // TODO check if the fields exist and add errors if not
-      bindingImpl.fields = binding.getFields(); 
-    }
-    if (binding.getExpression()!=null) {
-      ExpressionService expressionService = configuration.get(ExpressionService.class);
-      try {
-        bindingImpl.expression = expressionService.compile(binding.getExpression(), this);
-      } catch (Exception e) {
-        addError("Expression '%s' couldn't be compiled: %s", binding.getExpression(), e.getMessage());
-      }
-    }
+    bindingImpl.expression = parseExpression(binding.getExpression());
     return bindingImpl;
+  }
+
+  public ExpressionImpl parseExpression(Expression expression) {
+    if (expression==null) {
+      return null;
+    }
+    String variableId = expression.getVariableId();
+    if (!variableIds.contains(variableId)) {
+      addWarning("Variable %s doesn't exist", variableId);
+    }
+    
+    // TODO check the fields and if necessary also resolve the type ? 
+
+    ExpressionImpl expressionImpl = new ExpressionImpl();
+    expressionImpl.variableId = expression.getVariableId();
+    expressionImpl.fields = expression.getFields();
+    return expressionImpl;
   }
 
   protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
@@ -303,5 +313,63 @@ public class WorkflowParser {
     multiInstanceImpl.parse(multiInstance, this);
     popContext();
     return multiInstanceImpl;
+  }
+
+  public CompiledCondition parseCondition(Condition condition) {
+    if (condition==null) {
+      return null;
+    }
+    try {
+      return configuration
+              .get(ConditionService.class)
+              .compile(condition, this);
+    } catch (Exception e) {
+      addError("Invalid condition '%s' : %s", condition, e.getMessage());
+    }
+    return null;
+  }
+
+  public CompiledScript parseScript(Script script) {
+    if (script==null) {
+      return null;
+    }
+    try {
+      return configuration
+              .get(ScriptService.class)
+              .compile(script, this);
+    } catch (Exception e) {
+      addError("Invalid script '%s' : %s", script, e.getMessage());
+    }
+    return null;
+  }
+  
+  public ExpressionImpl parseExpression(String expression) {
+    if (expression==null) {
+      return null;
+    }
+    StringTokenizer stringTokenizer = new StringTokenizer(expression, ".");
+    String variableId = null;
+    List<String> fields = null;
+    while (stringTokenizer.hasMoreTokens()) {
+      String token = stringTokenizer.nextToken();
+      if (variableId==null) {
+        variableId = token;
+      } else {
+        if (fields==null) {
+          fields = new ArrayList<>();
+        }
+        fields.add(token);
+      }
+    }
+    return parseExpression(new Expression()
+      .variableId(variableId)
+      .fields(fields!=null ? fields.toArray(new String[fields.size()]) : null));
+  }
+
+  public TextTemplate parseTextTemplate(String templateText, Hint... hints) {
+    if (templateText==null) {
+      return null;
+    }
+    return new TextTemplate(templateText, hints, this);
   }
 }

@@ -23,6 +23,7 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 
 
@@ -51,7 +52,7 @@ public class WorkflowImpl extends ScopeImpl {
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
     this.sourceWorkflowId = workflowApi.getSourceWorkflowId();
     this.access = workflowApi.getAccess();
-    this.caseNameTemplate = TextTemplate.parse(workflowApi.getCaseNameTemplate());
+    this.caseNameTemplate = parser.parseTextTemplate(workflowApi.getCaseNameTemplate(), Hint.CASE_NAME_TEMPLATE);
     
     Trigger triggerApi = workflowApi.getTrigger();
     if (triggerApi!=null) {

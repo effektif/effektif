@@ -51,15 +51,11 @@ public class MultiInstance {
   public void setValueBindings(List<Binding<Object>> valuesBindings) {
     this.valuesBindings = valuesBindings;
   }
-  public MultiInstance valuesVariableId(String valuesVariableId) {
-    valueBinding(new Binding().variableId(valuesVariableId));
+  public MultiInstance valuesExpression(String variableId, String... fields) {
+    addValueBinding(new Binding().expression(variableId, fields));
     return this;
   }
-  public MultiInstance valuesExpression(String valuesExpression) {
-    valueBinding(new Binding().expression(valuesExpression));
-    return this;
-  }
-  protected MultiInstance valueBinding(Binding valueBinding) {
+  protected MultiInstance addValueBinding(Binding valueBinding) {
     if (valuesBindings==null) {
       valuesBindings = new ArrayList<>();
     }

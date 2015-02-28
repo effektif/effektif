@@ -20,6 +20,11 @@ package com.effektif.workflow.impl.template;
 public enum Hint {
 
   EMAIL,
+  EMAIL_SUBJECT, 
+  EMAIL_BODY_TEXT, 
+  EMAIL_BODY_HTML,
   SHORT,
-  HTML
+  HTML, 
+  TASK_NAME, 
+  CASE_NAME_TEMPLATE
 }

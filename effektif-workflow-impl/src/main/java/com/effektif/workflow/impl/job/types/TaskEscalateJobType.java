@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.job.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -50,7 +50,7 @@ public class TaskEscalateJobType extends AbstractJobType {
       UserTaskImpl userTaskImpl = (UserTaskImpl) activityInstance.getActivity().getActivityType();
       BindingImpl<UserId> escalateTo = userTaskImpl.getEscalateTo();
       UserId escalateToReference = activityInstance.getValue(escalateTo);
-      task.assignee(escalateToReference);
+      task.assigneeId(escalateToReference);
       // The next method requires that authentication is NOT set (AuthenticationThreadLocal) 
       // The TaskStore will apply authentication to the query if it is specified.
       taskService.assignTask(taskId, escalateToReference);

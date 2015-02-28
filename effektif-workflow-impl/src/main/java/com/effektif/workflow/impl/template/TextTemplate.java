@@ -17,13 +17,12 @@ package com.effektif.workflow.impl.template;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 /**
@@ -31,41 +30,22 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 public class TextTemplate {
 
-//  public static void main(String[] args) {
-//    System.out.println(new TextTemplate("aaa {{"+new ObjectId()+".firstName}} bbb"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+".firstName}} bbb"));
-//    System.out.println(new TextTemplate("aaa {{"+new ObjectId()+".firstName}}"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+".firstName}}"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+".firstName}} aaa {{"+new ObjectId()+".lastName}}"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+".firstName}} aaa {{"+new ObjectId()+".lastName}} bbb {{"+new ObjectId()+".fullName}}"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+".firstName}}{{"+new ObjectId()+".lastName}}{{"+new ObjectId()+".fullName}}"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+"}}"));
-//    System.out.println(new TextTemplate("{{"+new ObjectId()+".firstName.lastName}}"));
-//  }
-
   private static final Pattern BINDING_PATTERN = Pattern.compile("\\{\\{(.+?)\\}\\}");
 
-  Hints hints;
-  List<TemplateElement> elements = new ArrayList<>();
+  public List<TemplateElement> elements = new ArrayList<>();
+  public Hints hints;
   
-  public static TextTemplate parse(String templateText, Hint... hints) {
-    if (templateText==null) {
-      return null;
-    }
-    return new TextTemplate(templateText, hints);
-  }
-  
-  public TextTemplate(String templateText, Hint... hints) {
+  public TextTemplate(String templateText, Hint[] hints, WorkflowParser parser) {
     if (templateText!=null) {
       int startScan = 0;
       Matcher matcher = BINDING_PATTERN.matcher(templateText);
       while (matcher.find()) {
-        String bindingString = matcher.group(1);
+        String expression = matcher.group(1);
         int start = matcher.start();
         if (startScan<start) {
           elements.add(new StringTemplateElement(templateText.substring(startScan, start)));
         }
-        elements.add(new BindingTemplateElement(bindingString));
+        elements.add(new ExpressionTemplateElement(expression, parser));
         startScan = matcher.end();
       }
       if (startScan<templateText.length()) {
@@ -80,11 +60,11 @@ public class TextTemplate {
     }
   }
   
-  interface TemplateElement {
+  public interface TemplateElement {
     void append(StringBuilder out, ScopeInstanceImpl scopeInstance, Hints hints);
   }
   
-  class StringTemplateElement implements TemplateElement {
+  public class StringTemplateElement implements TemplateElement {
     String text;
     public StringTemplateElement(String text) {
       this.text = text;
@@ -98,40 +78,17 @@ public class TextTemplate {
     }
   }
   
-  class BindingTemplateElement implements TemplateElement {
-    String variableId;
-    List<String> fields;
-    public BindingTemplateElement(String dynamicText) {
-      StringTokenizer stringTokenizer = new StringTokenizer(dynamicText, ".");
-      Binding binding = null;
-      while (stringTokenizer.hasMoreTokens()) {
-        String token = stringTokenizer.nextToken();
-        if (binding==null) {
-          variableId = token;
-        } else {
-          if (fields==null) {
-            fields = new ArrayList<>();
-          }
-          fields.add(token);
-        }
-      }
+  public class ExpressionTemplateElement implements TemplateElement {
+    ExpressionImpl expression;
+    public ExpressionTemplateElement(String expression, WorkflowParser parser) {
+      this.expression = parser.parseExpression(expression);
     }
     public String toString() {
-      StringBuilder text = new StringBuilder();
-      text.append("{{");
-      text.append(variableId);
-      if (fields!=null) {
-        for (String field: fields) {
-          text.append(".");
-          text.append(field);
-        }
-      }
-      text.append("}}");
-      return text.toString();
+      return expression!=null ? expression.toString() : "null";
     }
     @Override
     public void append(StringBuilder out, ScopeInstanceImpl scopeInstance, Hints hints) {
-      TypedValueImpl typedFieldValue = BindingImpl.getTypedFieldValue(scopeInstance, variableId, fields);
+      TypedValueImpl typedFieldValue = scopeInstance.getTypedValue(expression);
       String text = typedFieldValue.type.convertInternalToText(typedFieldValue.value, hints);
       if (text!=null) {
         out.append(text);

@@ -18,7 +18,7 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.Type;
 
 

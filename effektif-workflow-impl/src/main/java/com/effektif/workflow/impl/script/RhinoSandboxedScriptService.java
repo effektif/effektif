@@ -32,6 +32,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
 /**
  * @author Tom Baeyens
  */
+@SuppressWarnings("restriction")
 public class RhinoSandboxedScriptService extends RhinoScriptService implements ScriptService, Brewable {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoSandboxedScriptService.class);

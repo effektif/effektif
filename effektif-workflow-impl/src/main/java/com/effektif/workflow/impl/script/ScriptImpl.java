@@ -24,9 +24,9 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class ScriptImpl {
+public class ScriptImpl implements CompiledScript, CompiledCondition {
 
-  public ScriptService scriptService;
+  public AbstractScriptService scriptService;
   public Object compiledScript;
   /** maps script variable names to workflow variable ids */ 
   public Map<String, String> mappings;

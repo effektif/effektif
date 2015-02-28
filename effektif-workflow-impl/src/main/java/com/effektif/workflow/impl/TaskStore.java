@@ -15,7 +15,7 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 
