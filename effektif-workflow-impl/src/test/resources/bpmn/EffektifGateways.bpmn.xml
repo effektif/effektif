@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions id="definitions"
+   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+   xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+   xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+   xmlns:e="effektif.com:1"
+   xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+   targetNamespace="http://example.com/bpmn">
+
+   <process id="releaseSoftware" name="Release software">
+
+      <startEvent id="theStart" name="code complete"/>
+      <sequenceFlow id="theStart1" sourceRef="theStart" targetRef="performRelease"/>
+
+      <userTask id="performRelease" name="Perform release"/>
+      <sequenceFlow id="performRelease1" sourceRef="performRelease" targetRef="notificationFork"/>
+
+      <parallelGateway id="notificationFork" gatewayDirection="Diverging"/>
+      <sequenceFlow id="notificationFork1" sourceRef="notificationFork" targetRef="announceRelease"/>
+      <sequenceFlow id="notificationFork2" sourceRef="notificationFork" targetRef="publishReleaseNotes"/>
+
+         <serviceTask id="announceRelease" e:type="email"/>
+         <sequenceFlow id="announceRelease1" sourceRef="announceRelease" targetRef="notificationJoin"/>
+
+         <serviceTask id="publishReleaseNotes" e:type="http"/>
+         <sequenceFlow id="publishReleaseNotes1" sourceRef="publishReleaseNotes" targetRef="notificationJoin"/>
+
+      <parallelGateway id="notificationJoin" gatewayDirection="Converging"/>
+      <sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="theEnd"/>
+
+      <endEvent id="theEnd" name="software released"/>
+
+   </process>
+
+</definitions>
