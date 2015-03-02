@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /** 
  * Invokes another workflow and ends when the other workflow instance completes.
  *
- * BPMN XML: {@code <callActivity id="investigateRequest"/>}
+ * BPMN XML: {@code <callActivity id="runTests"/>}
  *
  * @author Tom Baeyens
  */ 

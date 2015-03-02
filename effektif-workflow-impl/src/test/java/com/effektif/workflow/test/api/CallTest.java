@@ -17,6 +17,7 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.*;
 
+import com.effektif.workflow.impl.json.JsonService;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;

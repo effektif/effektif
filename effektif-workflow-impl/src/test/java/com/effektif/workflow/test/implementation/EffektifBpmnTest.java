@@ -30,6 +30,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import com.effektif.workflow.impl.json.JsonService;
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -147,11 +148,11 @@ public class EffektifBpmnTest extends TestCase {
     assertEquals("Workflow should have the right name", "Vacation request", workflow.getName());
   }
 
-  private void checkCall(Call task) {
-    assertNotNull("Call should exist", task);
+  private void checkCall(Call task) {assertNotNull("Call should exist", task);
   }
 
-  private void checkEmailTask(EmailTask task) { assertNotNull("EmailTask should exist", task); }
+  private void checkEmailTask(EmailTask task) {
+    assertNotNull("EmailTask should exist", task); }
 
   private void checkEmbeddedSubprocess(EmbeddedSubprocess activity) { assertNotNull("EmbeddedSubprocess should exist", activity); }
 
