@@ -13,15 +13,30 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.file;
 
+import com.effektif.workflow.api.model.Attachment;
+import com.effektif.workflow.api.model.FileId;
+
 
 /**
  * @author Tom Baeyens
  */
-public class File {
+public abstract class File implements Attachment {
 
+  protected FileId id;
   protected String fileName;
   protected String contentType;
   protected Long sizeInBytes;
+
+  public FileId getId() {
+    return this.id;
+  }
+  public void setId(FileId id) {
+    this.id = id;
+  }
+  public File id(FileId id) {
+    this.id = id;
+    return this;
+  }
 
   public String getFileName() {
     return this.fileName;

@@ -13,17 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.test.implementation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EmailTask;
+import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.identity.User;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -54,5 +58,45 @@ public class ExpressionTest extends WorkflowTest {
       .workflowId(workflow.getId()));
     
     assertEquals("johndoe@localhost", getEmail(0).getTo().get(0));
+  }
+
+  @Test
+  public void testExpressionList() {
+    User johndoe = new User()
+      .id("johndoe")
+      .fullName("John Doe")
+      .email("johndoe@localhost");
+  
+    User joesmoe = new User()
+      .id("joesmoe")
+      .fullName("Joe Smoe")
+      .email("joesmoe@localhost");
+  
+    User jackblack = new User()
+      .id("jackblack")
+      .fullName("Jack Black")
+      .email("jackblack@localhost");
+  
+    configuration.get(MemoryIdentityService.class)
+      .addUser(johndoe)
+      .addUser(joesmoe)
+      .addUser(jackblack);
+    
+    Workflow workflow = new Workflow()
+      .variable("manager", new UserIdType())
+      .variable("workers", new ListType(new UserIdType()))
+      .activity("1", new UserTask()
+        .candidateExpression("manager")
+        .candidateExpression("workers"));
+    
+    deploy(workflow);
+    
+    workflowEngine.start(new TriggerInstance()
+      .data("manager", new UserId("johndoe"))
+      .data("workers", Lists.of(new UserId("joesmoe"), new UserId("jackblack")))
+      .workflowId(workflow.getId()));
+    
+    Task task = taskService.findTasks(null).get(0);
+    assertEquals(Lists.of(new UserId("johndoe"), new UserId("joesmoe"), new UserId("jackblack")), task.getCandidateIds());
   }
 }

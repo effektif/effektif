@@ -79,4 +79,11 @@ public class MemoryIdentityService implements IdentityService {
   public Group getGroup(GroupId groupId) {
     return groups.get(groupId);
   }
+
+  public void deleteUsers() {
+    users = new HashMap<>(); 
+  }
+  public void deleteGroups() {
+    groups = new HashMap<>(); 
+  }
 }

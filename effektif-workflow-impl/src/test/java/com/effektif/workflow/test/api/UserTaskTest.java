@@ -40,9 +40,9 @@ public class UserTaskTest extends WorkflowTest {
     Workflow workflow = new Workflow()
       .activity("1", new UserTask()
         .name("release")
-        .assigneeUserId("johndoe")
-        .candidateUserId("joesmoe")
-        .candidateUserId("jackblack")
+        .assigneeId("johndoe")
+        .candidateId("joesmoe")
+        .candidateId("jackblack")
         .duedate(RelativeTime.minutes(5)));
     
     deploy(workflow);

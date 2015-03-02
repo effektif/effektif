@@ -101,13 +101,13 @@ public class UserTask extends NoneTask {
     this.assigneeId = assignee;
   }
   /** Sets the assignee to a user ID value. */
-  public UserTask assigneeUserId(String assigneeUserId) {
-    this.assigneeId = new Binding().value(new UserId(assigneeUserId));
+  public UserTask assigneeId(String assigneeId) {
+    this.assigneeId = new Binding().value(new UserId(assigneeId));
     return this;
   }
   /** Sets the assignee to a user ID value. */
-  public UserTask assigneeUserId(UserId assigneeUserId) {
-    this.assigneeId = new Binding().value(assigneeUserId);
+  public UserTask assigneeId(UserId assigneeId) {
+    this.assigneeId = new Binding().value(assigneeId);
     return this;
   }
   /** Sets the assignee to a variable value. */
@@ -123,13 +123,13 @@ public class UserTask extends NoneTask {
     this.candidateIds = candidates;
   }
   /** adds a candidate id value to the list */
-  public UserTask candidateUserId(String candidateUserId) {
-    addCandidateBinding(new Binding().value(new UserId(candidateUserId)));
+  public UserTask candidateId(String candidateId) {
+    addCandidateBinding(new Binding().value(new UserId(candidateId)));
     return this;
   }
   /** adds a candidate id value to the list */
-  public UserTask candidateUserId(UserId candidateUserId) {
-    addCandidateBinding(new Binding().value(candidateUserId));
+  public UserTask candidateId(UserId candidateId) {
+    addCandidateBinding(new Binding().value(candidateId));
     return this;
   }
   /** adds a candidate id variable to the list */

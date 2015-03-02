@@ -50,7 +50,7 @@ public class MemoryTaskStore implements TaskStore {
   public List<Task> findTasks(TaskQuery taskQuery) {
     List<Task> result = new ArrayList<>();
     for (Task task: tasks.values()) {
-      if (taskQuery.meetsCriteria(task)) {
+      if (taskQuery==null || taskQuery.meetsCriteria(task)) {
         result.add(task);
       }
     }

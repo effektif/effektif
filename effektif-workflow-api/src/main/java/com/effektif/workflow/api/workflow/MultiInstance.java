@@ -27,7 +27,7 @@ import com.effektif.workflow.api.types.Type;
 public class MultiInstance {
 
   protected Variable variable;
-  protected List<Binding<Object>> valuesBindings;
+  protected List<Binding<Object>> values;
 
   public Variable getVariable() {
     return this.variable;
@@ -45,21 +45,21 @@ public class MultiInstance {
       .type(type);
     return this;
   }
-  public List<Binding<Object>> getValuesBindings() {
-    return this.valuesBindings;
+  public List<Binding<Object>> getValues() {
+    return this.values;
   }
-  public void setValueBindings(List<Binding<Object>> valuesBindings) {
-    this.valuesBindings = valuesBindings;
+  public void setValues(List<Binding<Object>> values) {
+    this.values = values;
   }
   public MultiInstance valuesExpression(String variableId, String... fields) {
     addValueBinding(new Binding().expression(variableId, fields));
     return this;
   }
   protected MultiInstance addValueBinding(Binding valueBinding) {
-    if (valuesBindings==null) {
-      valuesBindings = new ArrayList<>();
+    if (values==null) {
+      values = new ArrayList<>();
     }
-    valuesBindings.add(valueBinding);
+    values.add(valueBinding);
     return this;
   }
 }

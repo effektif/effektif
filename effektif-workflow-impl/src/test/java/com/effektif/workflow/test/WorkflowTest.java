@@ -24,7 +24,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.internal.runners.TestMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +46,12 @@ import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.TestEmailService;
+import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -244,6 +245,8 @@ public class WorkflowTest {
     JobStore jobStore = configuration.get(JobStore.class);
     TaskStore taskStore = configuration.get(TaskStore.class);
     mailService.emails.clear();
+    configuration.get(MemoryIdentityService.class).deleteUsers();
+    configuration.get(MemoryIdentityService.class).deleteGroups();
 
     workflowStore.deleteWorkflows(new WorkflowQuery());
     workflowInstanceStore.deleteWorkflowInstances(new WorkflowInstanceQuery());

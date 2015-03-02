@@ -40,7 +40,7 @@ public class UserTaskTimersTest extends JobWorkflowTest {
     Workflow workflow = new Workflow()
       .activity("1", new UserTask()
         .name("t")
-        .assigneeUserId("johndoe")
+        .assigneeId("johndoe")
         .escalate(RelativeTime.minutes(5))
         .escalateToUserId("joesmoe"));
     

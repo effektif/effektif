@@ -133,15 +133,17 @@ public class EmailTask extends Activity {
     this.toEmailAddresses = toEmailAddresses;
   }
   public EmailTask to(String toEmailAddress) {
-    addToEmailAddressBinding(new Binding().value(toEmailAddress));
+    addToEmailAddress(new Binding().value(toEmailAddress));
     return this;
   }
-  /** adds the email address specified in a variable as a recipient. */ 
+  /** adds the email address specified in a variable to the list of 'to' recipients.
+   * @see <a href="http://github.../expressions">See Expressions</a> 
+   *  */ 
   public EmailTask toExpression(String variableId, String... fields) {
-    addToEmailAddressBinding(new Binding().expression(variableId, fields));
+    addToEmailAddress(new Binding().expression(variableId, fields));
     return this;
   }
-  protected void addToEmailAddressBinding(Binding<String> toEmailAddressBinding) {
+  protected void addToEmailAddress(Binding<String> toEmailAddressBinding) {
     if (toEmailAddresses==null) {
       toEmailAddresses = new ArrayList<>();
     }

@@ -26,6 +26,7 @@ public class TestEmailService implements EmailService {
 
   @Override
   public void send(Email email) {
+    
     emails.add(email);
   }
 

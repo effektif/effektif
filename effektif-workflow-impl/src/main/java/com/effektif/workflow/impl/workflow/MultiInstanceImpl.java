@@ -38,7 +38,7 @@ public class MultiInstanceImpl {
   }
   
   public void parse(MultiInstance multiInstanceApi, WorkflowParser parser, ScopeImpl parent) {
-    this.valuesBindings = parser.parseBindings(multiInstanceApi.getValuesBindings(), "multiInstance.values");
+    this.valuesBindings = parser.parseBindings(multiInstanceApi.getValues(), "multiInstance.values");
     Variable elementVariableApi = multiInstanceApi.getVariable();
     if (elementVariableApi!=null) {
       this.elementVariable = new VariableImpl();
