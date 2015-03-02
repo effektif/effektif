@@ -132,6 +132,21 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
     writer.writeEffektifType(xml, ServiceTaskType.EMAIL);
+    writer.writeStringValue(xml, "subject", task.getSubject());
+    writer.writeStringValueAsText(xml, "bodyText", task.getBodyText());
+    writer.writeStringValueAsCData(xml, "bodyHtml", task.getBodyHtml());
+
+    writer.writeBindings(xml, "to", (List) task.getToEmailAddresses(), TextType.INSTANCE);
+    writer.writeBindings(xml, "to", (List) task.getToGroupIds(), GroupIdType.INSTANCE);
+    writer.writeBindings(xml, "to", (List) task.getToUserIds(), UserIdType.INSTANCE);
+
+    writer.writeBindings(xml, "cc", (List) task.getCcEmailAddresses(), TextType.INSTANCE);
+    writer.writeBindings(xml, "cc", (List) task.getCcGroupIds(), GroupIdType.INSTANCE);
+    writer.writeBindings(xml, "cc", (List) task.getCcUserIds(), UserIdType.INSTANCE);
+
+    writer.writeBindings(xml, "bcc", (List) task.getBccEmailAddresses(), TextType.INSTANCE);
+    writer.writeBindings(xml, "bcc", (List) task.getBccGroupIds(), GroupIdType.INSTANCE);
+    writer.writeBindings(xml, "bcc", (List) task.getBccUserIds(), UserIdType.INSTANCE);
   }
 
   @Override
