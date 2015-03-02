@@ -1,26 +1,35 @@
 package com.effektif.workflow.test.implementation;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.activities.*;
+import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.ref.FileId;
-import com.effektif.workflow.api.ref.UserId;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.sun.tools.javac.util.List;
-import junit.framework.TestCase;
-import org.junit.Test;
+import com.effektif.workflow.impl.util.Lists;
 
 /**
  * Stub for a test of
@@ -48,7 +57,7 @@ public class JsonTest extends TestCase {
   @Test
   public void testEmailTask() {
     EmailTask activity = new EmailTask()
-        .attachment(new FileId("releaseNotes"))
+        // .attachmentId(new FileId("releaseNotes"))
         .bcc("archive@example.org")
         .bodyText("A new version has been deployed on production.")
         .cc("dev@example.org")
@@ -121,8 +130,8 @@ public class JsonTest extends TestCase {
 
   @Test
   public void testUserTask() {
-    List<FormField> fields = List.of(new FormField().key("tester").name("Tester").type(new TextType()));
-    Form form = new Form().buttons(List.of("Pass", "Fail")).fields(fields).description("Try to break stuff!");
+    List<FormField> fields = Lists.of(new FormField().key("tester").name("Tester").type(new TextType()));
+    Form form = new Form().buttons(Lists.of("Pass", "Fail")).fields(fields).description("Try to break stuff!");
     UserTask activity = new UserTask("smokeTest")
         .candidateGroupId("dev")
         .form(form)
