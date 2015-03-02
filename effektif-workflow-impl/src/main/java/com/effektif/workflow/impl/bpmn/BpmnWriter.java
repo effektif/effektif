@@ -186,12 +186,12 @@ public class BpmnWriter extends Bpmn {
    * TODO other Binding fields, e.g. variableId
    */
   public void writeBinding(XmlElement xml, String elementName, Binding<?> binding, Type type) {
-    DataType dataType = dataTypeService.createDataType(type);
     if (binding==null) {
       return;
     }
-    XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
+    DataType dataType = dataTypeService.createDataType(type);
     if (binding.getValue() != null) {
+      XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
       XmlElement bindingXml = new XmlElement(getEffektifQName(elementName));
       dataType.writeValue(bindingXml, binding.getValue());
       extensionElements.addElement(bindingXml);
@@ -211,6 +211,29 @@ public class BpmnWriter extends Bpmn {
     }
     for (Binding nestedBinding : bindings) {
       writeBinding(xml, elementName, nestedBinding, type);
+    }
+  }
+
+  /**
+   * Writes the given documentation string as a BPMN <code>documentation</code> element.
+   */
+  public void writeDocumentation(XmlElement xml, String documentation) {
+    if (documentation != null && !documentation.isEmpty()) {
+      XmlElement newElement = new XmlElement(getBpmnQName("documentation"));
+      newElement.addText(documentation);
+      xml.addElementFirst(newElement);
+    }
+  }
+
+  /**
+   * Writes an extension element with the given element name and string value.
+   */
+  public void writeStringValue(XmlElement xml, String elementName, String value) {
+    if (value != null && !value.isEmpty()) {
+      XmlElement newElement = new XmlElement(getEffektifQName(elementName));
+      newElement.addAttribute("value", value);
+      XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
+      extensionElements.addElement(newElement);
     }
   }
 }

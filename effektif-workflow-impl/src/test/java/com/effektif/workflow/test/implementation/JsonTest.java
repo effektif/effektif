@@ -2,10 +2,6 @@ package com.effektif.workflow.test.implementation;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmailTask;
@@ -30,6 +26,8 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.util.Lists;
+import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Stub for a test of

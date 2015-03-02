@@ -270,4 +270,41 @@ public class BpmnReader extends Bpmn {
     }
     return form;
   }
+
+  /**
+   * Returns a string value read from the extension element with the given name.
+   */
+  public String readStringValue(XmlElement xml, String elementName) {
+    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
+
+    if (extensionElements != null) {
+      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
+      while (extensions.hasNext()) {
+        XmlElement extension = extensions.next();
+
+        if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
+          extensions.remove();
+          return extension.attributes.get("value");
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the contents of the BPMN <code>documentation</code> element.
+   */
+  public String readBpmnDocumentation(XmlElement xml) {
+    if (xml.elements != null) {
+      Iterator<XmlElement> elements = xml.elements.iterator();
+      while (elements.hasNext()) {
+        XmlElement element = elements.next();
+        if (element.is(getQName(BPMN_URI, "documentation"))) {
+          elements.remove();
+          return element.text;
+        }
+      }
+    }
+    return null;
+  }
 }

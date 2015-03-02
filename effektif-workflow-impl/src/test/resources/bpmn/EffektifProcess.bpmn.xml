@@ -24,22 +24,7 @@
       <sequenceFlow id="approvalFork2" sourceRef="approvalFork" targetRef="investigateRequest"/>
       <sequenceFlow id="approvalFork3" sourceRef="approvalFork" targetRef="increaseVacationAllowance"/>
 
-      <userTask id="approveRequest" name="Approve vacation request">
-         <extensionElements>
-            <e:assignee userId="42"/>
-            <e:candidate userId="42"/>
-            <e:candidate userId="43"/>
-            <e:candidate groupId="44"/>
-            <e:form>
-               <e:description>Approve or reject the vacation request.</e:description>
-               <e:field key="c" label="Candidate name" type="text" readonly="true"/>
-               <e:field key="i" label="Interview date" type="date" required="true"/>
-               <e:field key="r" label="Reason" type="text"/>
-               <e:button value="Approve"/>
-               <e:button value="Reject"/>
-            </e:form>
-         </extensionElements>
-      </userTask>
+      <userTask id="approveRequest" name="Approve vacation request"/>
       <sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
 
       <callActivity id="investigateRequest"/>
