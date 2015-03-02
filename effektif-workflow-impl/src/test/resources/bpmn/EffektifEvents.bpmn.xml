@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions id="definitions"
+   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+   xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+   xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+   xmlns:e="effektif.com:1"
+   xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+   targetNamespace="http://example.com/bpmn">
+
+   <process id="releaseSoftware" name="Release software">
+
+      <startEvent id="theStart" name="code complete"/>
+      <sequenceFlow id="theStart1" sourceRef="theStart" targetRef="performRelease"/>
+
+      <userTask id="performRelease" name="Perform release"/>
+      <sequenceFlow id="performRelease1" sourceRef="performRelease" targetRef="theEnd"/>
+
+      <endEvent id="theEnd" name="software released"/>
+
+   </process>
+
+</definitions>

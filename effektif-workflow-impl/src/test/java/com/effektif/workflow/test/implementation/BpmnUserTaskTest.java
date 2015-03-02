@@ -10,17 +10,24 @@ import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import org.junit.Test;
 
 /**
- *
+ * Test BPMN parsing and generation for basic {@link com.effektif.workflow.api.activities.UserTask} properties.
  *
  * @author Peter Hilton
  */
 public class BpmnUserTaskTest extends BpmnTestCase {
 
-  @Test
-  public void testUserTask() throws IOException {
-    Workflow workflow = readWorkflow("bpmn/EffektifUserTask.bpmn.xml");
+  private Workflow workflow;
+  private UserTask task;
 
-    UserTask task = findActivity(workflow, UserTask.class, "performRelease");
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    workflow = readWorkflow("bpmn/EffektifUserTask.bpmn.xml");
+    task = findActivity(workflow, UserTask.class, "performRelease");
+  }
+
+  @Test
+  public void testUserTask() {
     assertNotNull("UserTask should exist", task);
     assertEquals("UserTask name", "Perform release", task.getName());
     assertEquals("UserTask description", "Release a new version of the software", task.getDescription());
@@ -30,22 +37,11 @@ public class BpmnUserTaskTest extends BpmnTestCase {
     assertEquals("UserTask candidate 2 ID", "43", task.getCandidateIds().get(1).getValue().getId());
     assertEquals("UserTask candidate group ID", "44", task.getCandidateGroupIds().get(0).getValue().getId());
     assertNotNull("UserTask form", task.getForm());
-    checkForm(task.getForm());
-
-    // Check XML generated from model…
-    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
-
-    // Inspect the XML output for correctness.
-    System.out.println("--- GENERATED BPMN ------------------------------------------ ");
-    System.out.println(generatedBpmnDocument);
-    System.out.println("------------------------------------------------------------- ");
-
-    // Validate generated XML.
-    // TODO Automate the XML correctness check with assertions on the parsed XML.
-    validateBpmnXml(generatedBpmnDocument);
   }
 
-  private void checkForm(Form form) {
+  @Test
+  public void testForm() {
+    Form form = task.getForm();
     assertEquals("Form description", "Provide release information.", form.getDescription());
     assertEquals("Form field count", 3, form.getFields().size());
     assertEquals("Form field 1 key", "v", form.getFields().get(0).getKey());
@@ -55,4 +51,21 @@ public class BpmnUserTaskTest extends BpmnTestCase {
     assertFalse("Form field 3 readonly", form.getFields().get(2).getReadOnly());
     assertFalse("Form field 3 required", form.getFields().get(2).getRequired());
     assertEquals("Form field 3 type", TextType.class, form.getFields().get(2).getType().getClass());
-  }}
+  }
+
+  /**
+   * Check XML generated from model: validates the generated XML. Inspect the XML output for correctness manually.
+   * TODO Automate the XML correctness check with assertions on the parsed XML.
+   */
+  @Test
+  public void testGeneratedBpmn() throws IOException {
+    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
+
+    System.out.println("--- GENERATED BPMN ------------------------------------------ ");
+    System.out.println(generatedBpmnDocument);
+    System.out.println("------------------------------------------------------------- ");
+
+    validateBpmnXml(generatedBpmnDocument);
+  }
+
+}

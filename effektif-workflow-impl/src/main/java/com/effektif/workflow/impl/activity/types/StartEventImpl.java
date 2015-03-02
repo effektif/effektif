@@ -48,6 +48,7 @@ public class StartEventImpl extends AbstractActivityType<StartEvent> {
   public void writeBpmn(StartEvent event, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", event.getId());
+    writer.writeBpmnAttribute(xml, "name", event.getName());
   }
 
   @Override
