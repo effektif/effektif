@@ -13,61 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.file;
 
-import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.FileId;
 
 
 /**
  * @author Tom Baeyens
  */
-public abstract class File implements Attachment {
+public interface File {
 
-  protected FileId id;
-  protected String fileName;
-  protected String contentType;
-  protected Long sizeInBytes;
-
-  public FileId getId() {
-    return this.id;
-  }
-  public void setId(FileId id) {
-    this.id = id;
-  }
-  public File id(FileId id) {
-    this.id = id;
-    return this;
-  }
-
-  public String getFileName() {
-    return this.fileName;
-  }
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
-  }
-  public File fileName(String fileName) {
-    this.fileName = fileName;
-    return this;
-  }
-
-  public String getContentType() {
-    return this.contentType;
-  }
-  public void setContentType(String contentType) {
-    this.contentType = contentType;
-  }
-  public File contentType(String contentType) {
-    this.contentType = contentType;
-    return this;
-  }
-  
-  public Long getSizeInBytes() {
-    return this.sizeInBytes;
-  }
-  public void setSizeInBytes(Long sizeInBytes) {
-    this.sizeInBytes = sizeInBytes;
-  }
-  public File sizeInBytes(Long sizeInBytes) {
-    this.sizeInBytes = sizeInBytes;
-    return this;
-  }
+  FileId getId();
+  String getFileName();
+  String getContentType();
+  Long getSizeInBytes();
 }

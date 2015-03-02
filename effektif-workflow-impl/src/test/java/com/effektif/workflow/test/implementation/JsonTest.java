@@ -141,8 +141,6 @@ public class JsonTest extends TestCase {
     print(activity);
   }
 
-
-
   public void print(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
     System.out.println(configuration.get(JsonService.class).objectToJsonStringPretty(o));

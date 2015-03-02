@@ -17,13 +17,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import com.effektif.workflow.api.model.FileId;
-import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.file.AbstractFile;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MemoryFile extends File {
+public class MemoryFile extends AbstractFile {
   
   protected byte[] content;
 
