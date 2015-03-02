@@ -38,11 +38,8 @@ public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
 
   @Override
   public Binding readValue(XmlElement xml) {
-    if (xml == null) {
-      throw new IllegalArgumentException("null argument to method");
-    }
-    String value = xml.attributes.get("groupId");
-    return value == null ? null : new Binding().value(new GroupId(value.toString()));
+    String value = readStringValue(xml, "groupId");
+    return value == null ? null : new Binding().value(new GroupId(value));
   }
 
   @Override

@@ -17,6 +17,8 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
@@ -41,5 +43,18 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
       return valueApi;
     }
     throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getSimpleName());
+  }
+
+  @Override
+  public Binding readValue(XmlElement xml) {
+    String value = readStringValue(xml, "value");
+    return value == null ? null : new Binding().value(value);
+  }
+
+  @Override
+  public void writeValue(XmlElement xml, Object value) {
+    if (value != null) {
+      xml.addAttribute("value", value.toString());
+    }
   }
 }

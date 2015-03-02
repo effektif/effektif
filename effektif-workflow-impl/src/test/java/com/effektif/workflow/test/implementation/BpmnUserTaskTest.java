@@ -28,15 +28,15 @@ public class BpmnUserTaskTest extends BpmnTestCase {
 
   @Test
   public void testUserTask() {
-    assertNotNull("UserTask should exist", task);
-    assertEquals("UserTask name", "Perform release", task.getName());
-    assertEquals("UserTask description", "Release a new version of the software", task.getDescription());
-    assertEquals("UserTask task name", "Release version {{version}}", task.getTaskName());
-    assertEquals("UserTask assignee", "42", task.getAssigneeId().getValue().getId());
-    assertEquals("UserTask candidates size", 2, task.getCandidateIds().size());
-    assertEquals("UserTask candidate 2 ID", "43", task.getCandidateIds().get(1).getValue().getId());
-    assertEquals("UserTask candidate group ID", "44", task.getCandidateGroupIds().get(0).getValue().getId());
-    assertNotNull("UserTask form", task.getForm());
+    assertNotNull("Task should exist", task);
+    assertEquals("Task name", "Perform release", task.getName());
+    assertEquals("Task description", "Release a new version of the software", task.getDescription());
+    assertEquals("Task task name", "Release version {{version}}", task.getTaskName());
+    assertEquals("Task assignee", "42", task.getAssigneeId().getValue().getId());
+    assertEquals("Task candidates size", 2, task.getCandidateIds().size());
+    assertEquals("Task candidate 2 ID", "43", task.getCandidateIds().get(1).getValue().getId());
+    assertEquals("Task candidate group ID", "44", task.getCandidateGroupIds().get(0).getValue().getId());
+    assertNotNull("Task form", task.getForm());
   }
 
   @Test

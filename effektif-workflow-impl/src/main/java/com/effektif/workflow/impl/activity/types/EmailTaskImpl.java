@@ -22,6 +22,9 @@ import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.types.GroupIdType;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
@@ -106,6 +109,21 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
       return null;
     }
     EmailTask task = new EmailTask();
+    task.setSubject(reader.readStringValue(xml, "subject"));
+    task.setBodyText(reader.readStringValue(xml, "bodyText"));
+    task.setBodyHtml(reader.readStringValue(xml, "bodyHtml"));
+
+    task.setToEmailAddresses(reader.readBindings(String.class, TextType.INSTANCE, xml, "to"));
+    task.setToGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "to"));
+    task.setToUserIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "to"));
+
+    task.setCcEmailAddresses(reader.readBindings(String.class, TextType.INSTANCE, xml, "cc"));
+    task.setCcGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "cc"));
+    task.setCcUserIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "cc"));
+
+    task.setBccEmailAddresses(reader.readBindings(String.class, TextType.INSTANCE, xml, "bcc"));
+    task.setBccGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "bcc"));
+    task.setBccUserIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "bcc"));
     return task;
   }
 

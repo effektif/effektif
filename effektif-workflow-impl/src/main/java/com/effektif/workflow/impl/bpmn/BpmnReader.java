@@ -275,6 +275,7 @@ public class BpmnReader extends Bpmn {
 
   /**
    * Returns a string value read from the extension element with the given name.
+   * The value is either read from the element’s <code>value</code> attribute, or its text content.
    */
   public String readStringValue(XmlElement xml, String elementName) {
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
@@ -285,8 +286,15 @@ public class BpmnReader extends Bpmn {
         XmlElement extension = extensions.next();
 
         if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
+          String value;
+          if (extension.attributes != null && extension.attributes.containsKey("value")) {
+            value = extension.attributes.get("value");
+          }
+          else {
+            value = extension.text;
+          }
           extensions.remove();
-          return extension.attributes.get("value");
+          return value;
         }
       }
     }

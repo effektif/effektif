@@ -51,11 +51,7 @@ public class BpmnEventsTest extends BpmnTestCase {
   @Test
   public void testGeneratedBpmn() throws IOException {
     String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
-
-    System.out.println("--- GENERATED BPMN ------------------------------------------ ");
-    System.out.println(generatedBpmnDocument);
-    System.out.println("------------------------------------------------------------- ");
-
+    printBpmnXml(generatedBpmnDocument);
     validateBpmnXml(generatedBpmnDocument);
   }
 }
