@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
@@ -49,13 +50,21 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
     if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
       return null;
     }
-    ScriptTask task = new ScriptTask();
-    return task;
+    Script script = new Script();
+    script.setLanguage(reader.readStringValue(xml, "language"));
+    script.setScript(reader.readStringValue(xml, "script"));
+    script.setMappings(reader.readStringMappings(xml, "mapping", "scriptVariable", "workflowVariable"));
+    return new ScriptTask().script(script);
   }
 
   @Override
   public void writeBpmn(ScriptTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+    if (task.getScript() != null) {
+      writer.writeStringValue(xml, "language", task.getScript().getLanguage());
+      writer.writeStringMappings(xml, "mapping", "scriptVariable", "workflowVariable", task.getScript().getMappings());
+      writer.writeStringValueAsCData(xml, "script", task.getScript().getScript());
+    }
   }
 
   @Override
