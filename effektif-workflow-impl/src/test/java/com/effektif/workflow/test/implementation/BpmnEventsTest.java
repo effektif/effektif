@@ -31,6 +31,7 @@ public class BpmnEventsTest extends BpmnTestCase {
     StartEvent event = findActivity(workflow, StartEvent.class, "theStart");
     assertNotNull("StartEvent should exist", event);
     assertEquals("StartEvent name", "code complete", event.getName());
+    assertEquals("StartEvent description", "Starts the process when the code is ready to release.", event.getDescription());
 //    assertEquals("StartEvent outgoing transitions", 1, event.getOutgoingTransitions().size());
   }
 
@@ -39,6 +40,7 @@ public class BpmnEventsTest extends BpmnTestCase {
     EndEvent event = findActivity(workflow, EndEvent.class, "theEnd");
     assertNotNull("EndEvent should exist", event);
     assertEquals("EndEvent name", "software released", event.getName());
+    assertEquals("EndEvent description", "Ends the process when the release is complete.", event.getDescription());
     assertNull("EndEvent outgoing transitions", event.getOutgoingTransitions());
   }
 

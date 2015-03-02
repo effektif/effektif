@@ -136,12 +136,14 @@ public class BpmnReader extends Bpmn {
         // Check if the XML element can be parsed as one of the activity types.
         Activity activity = null;
         Iterator<ActivityType> activityTypeIterator = activityTypes.iterator();
-        while (activity==null && activityTypeIterator.hasNext()) {
+        while (activity == null && activityTypeIterator.hasNext()) {
           ActivityType activityType = activityTypeIterator.next();
           activity = activityType.readBpmn(childElement, this);
         }
         if (activity!=null) {
+          activity.setId(readBpmnAttribute(childElement, "id"));
           activity.setName(readBpmnAttribute(childElement, "name"));
+          activity.setDescription(readBpmnDocumentation(childElement));
           scope.activity(activity);
           setUnparsedBpmn(activity, childElement);
           // Remove the activity XML element as it has been parsed in the model.

@@ -106,7 +106,6 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
       return null;
     }
     EmailTask task = new EmailTask();
-    task.id(reader.readBpmnAttribute(xml, "id"));
     return task;
   }
 

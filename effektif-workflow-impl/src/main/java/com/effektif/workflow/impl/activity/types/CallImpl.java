@@ -61,7 +61,6 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
       return null;
     }
     Call activity = new Call();
-    activity.id(reader.readBpmnAttribute(xml, "id"));
     return activity;
   }
 

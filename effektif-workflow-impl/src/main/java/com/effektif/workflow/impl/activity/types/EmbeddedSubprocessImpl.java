@@ -46,7 +46,6 @@ public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubproc
       return null;
     }
     EmbeddedSubprocess activity = new EmbeddedSubprocess();
-    activity.id(reader.readBpmnAttribute(xml, "id"));
     return activity;
   }
 

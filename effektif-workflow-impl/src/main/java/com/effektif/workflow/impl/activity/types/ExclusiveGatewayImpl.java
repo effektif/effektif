@@ -55,14 +55,12 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
       return null;
     }
     ExclusiveGateway gateway = new ExclusiveGateway();
-    gateway.id(reader.readBpmnAttribute(xml, "id"));
     return gateway;
   }
 
   @Override
   public void writeBpmn(ExclusiveGateway gateway, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", gateway.getId());
   }
 
   @Override

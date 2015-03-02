@@ -40,15 +40,12 @@ public class EndEventImpl extends AbstractActivityType<EndEvent> {
       return null;
     }
     EndEvent event = new EndEvent();
-    event.id(reader.readBpmnAttribute(xml, "id"));
     return event;
   }
 
   @Override
   public void writeBpmn(EndEvent event, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", event.getId());
-    writer.writeBpmnAttribute(xml, "name", event.getName());
   }
 
   @Override

@@ -38,7 +38,6 @@ public class NoneTaskImpl extends AbstractActivityType<NoneTask> {
       return null;
     }
     NoneTask task = new NoneTask();
-    task.id(reader.readBpmnAttribute(xml, "id"));
     return task;
   }
 

@@ -45,7 +45,6 @@ public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
       return null;
     }
     JavaServiceTask task = new JavaServiceTask();
-    task.id(reader.readBpmnAttribute(xml, "id"));
     return task;
   }
 

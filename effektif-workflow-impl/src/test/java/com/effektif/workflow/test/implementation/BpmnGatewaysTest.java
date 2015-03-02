@@ -2,9 +2,8 @@ package com.effektif.workflow.test.implementation;
 
 import java.io.IOException;
 
-import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import org.junit.Test;
@@ -22,6 +21,20 @@ public class BpmnGatewaysTest extends BpmnTestCase {
   public void setUp() throws Exception {
     super.setUp();
     workflow = readWorkflow("bpmn/EffektifGateways.bpmn.xml");
+  }
+
+  @Test
+  public void testExclusiveGatewayFork() {
+    ExclusiveGateway gateway = findActivity(workflow, ExclusiveGateway.class, "testingFork");
+    assertNotNull("ExclusiveGateway fork should exist", gateway);
+    assertEquals("ExclusiveGateway name", "Integration release?", gateway.getName());
+  }
+
+  @Test
+  public void testExclusiveGatewayJoin() {
+    ExclusiveGateway gateway = findActivity(workflow, ExclusiveGateway.class, "testingJoin");
+    assertNotNull("ExclusiveGateway join should exist", gateway);
+    assertEquals("ExclusiveGateway name", "Testing complete", gateway.getName());
   }
 
   @Test

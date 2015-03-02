@@ -127,6 +127,9 @@ public class BpmnWriter extends Bpmn {
         Activity activity = activities.get(i);
         ActivityType<Activity> activityType = activityTypeService.getActivityType(activity.getClass());
         XmlElement activityXml = getXmlElement(activity.getBpmn());
+        writeBpmnAttribute(activityXml, "id", activity.getId());
+        writeBpmnAttribute(activityXml, "name", activity.getName());
+        writeDocumentation(activityXml, activity.getDescription());
         activityType.writeBpmn(activity, activityXml, this);
         scopeElement.addElementFirst(activityXml);
       }

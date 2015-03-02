@@ -9,13 +9,17 @@
 
    <process id="releaseSoftware" name="Release software">
 
-      <startEvent id="theStart" name="code complete"/>
+      <startEvent id="theStart" name="code complete">
+         <documentation>Starts the process when the code is ready to release.</documentation>
+      </startEvent>
       <sequenceFlow id="theStart1" sourceRef="theStart" targetRef="performRelease"/>
 
       <userTask id="performRelease" name="Perform release"/>
       <sequenceFlow id="performRelease1" sourceRef="performRelease" targetRef="theEnd"/>
 
-      <endEvent id="theEnd" name="software released"/>
+      <endEvent id="theEnd" name="software released">
+         <documentation>Ends the process when the release is complete.</documentation>
+      </endEvent>
 
    </process>
 

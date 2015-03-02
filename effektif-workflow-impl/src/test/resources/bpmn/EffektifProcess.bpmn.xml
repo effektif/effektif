@@ -24,14 +24,14 @@
       <sequenceFlow id="approvalFork2" sourceRef="approvalFork" targetRef="investigateRequest"/>
       <sequenceFlow id="approvalFork3" sourceRef="approvalFork" targetRef="increaseVacationAllowance"/>
 
-      <userTask id="approveRequest" name="Approve vacation request"/>
-      <sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
+         <userTask id="approveRequest" name="Approve vacation request"/>
+         <sequenceFlow id="approveRequest1" sourceRef="approveRequest" targetRef="approvalJoin"/>
 
-      <callActivity id="investigateRequest"/>
-      <sequenceFlow id="investigateRequest1" sourceRef="investigateRequest" targetRef="approvalJoin"/>
+         <callActivity id="investigateRequest"/>
+         <sequenceFlow id="investigateRequest1" sourceRef="investigateRequest" targetRef="approvalJoin"/>
 
-      <subProcess id="increaseVacationAllowance"/>
-      <sequenceFlow id="increaseVacationAllowance1" sourceRef="increaseVacationAllowance" targetRef="approvalJoin"/>
+         <subProcess id="increaseVacationAllowance"/>
+         <sequenceFlow id="increaseVacationAllowance1" sourceRef="increaseVacationAllowance" targetRef="approvalJoin"/>
 
       <exclusiveGateway id="approvalJoin" gatewayDirection="Converging"/>
 
@@ -40,11 +40,11 @@
       <sequenceFlow id="notificationFork1" sourceRef="notificationFork" targetRef="emailNotification"/>
       <sequenceFlow id="notificationFork2" sourceRef="notificationFork" targetRef="publishVacation"/>
 
-      <serviceTask id="emailNotification" e:type="email"/>
-      <sequenceFlow id="emailNotification1" sourceRef="emailNotification" targetRef="notificationJoin"/>
+         <serviceTask id="emailNotification" e:type="email"/>
+         <sequenceFlow id="emailNotification1" sourceRef="emailNotification" targetRef="notificationJoin"/>
 
-      <serviceTask id="publishVacation" e:type="http"/>
-      <sequenceFlow id="publishVacation1" sourceRef="publishVacation" targetRef="notificationJoin"/>
+         <serviceTask id="publishVacation" e:type="http"/>
+         <sequenceFlow id="publishVacation1" sourceRef="publishVacation" targetRef="notificationJoin"/>
 
       <parallelGateway id="notificationJoin" gatewayDirection="Converging"/>
       <sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="evaluateCase"/>
