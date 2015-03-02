@@ -43,10 +43,16 @@ import org.junit.Test;
  */
 public class BpmnProcessTest extends BpmnTestCase {
 
+  private Workflow workflow;
+
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    workflow = readWorkflow("bpmn/EffektifProcess.bpmn.xml");
+  }
+
   @Test
   public void testWholeProcess() throws IOException {
-    Workflow workflow = readWorkflow("bpmn/EffektifProcess.bpmn.xml");
-
     // Check parsed model…
     checkProcessModel(workflow);
     checkStartEvent(findActivity(workflow, StartEvent.class, "theStart"));
@@ -69,14 +75,7 @@ public class BpmnProcessTest extends BpmnTestCase {
 
     // Check XML generated from model…
     String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
-
-    // Inspect the XML output for correctness.
-    System.out.println("--- GENERATED BPMN ------------------------------------------ ");
-    System.out.println(generatedBpmnDocument);
-    System.out.println("------------------------------------------------------------- ");
-
-    // Validate generated XML.
-    // TODO Automate the XML correctness check with assertions on the parsed XML.
+    printBpmnXml(generatedBpmnDocument);
     validateBpmnXml(generatedBpmnDocument);
   }
 
@@ -118,4 +117,15 @@ public class BpmnProcessTest extends BpmnTestCase {
 
   private void checkUserTask(UserTask task) { assertNotNull("UserTask should exist", task); }
 
+
+  /**
+   * Check XML generated from model: validates the generated XML. Inspect the XML output for correctness manually.
+   * TODO Automate the XML correctness check with assertions on the parsed XML.
+   */
+  @Test
+  public void testGeneratedBpmn() throws IOException {
+    String generatedBpmnDocument = BpmnWriter.writeBpmnDocumentString(workflow, configuration);
+    printBpmnXml(generatedBpmnDocument);
+    validateBpmnXml(generatedBpmnDocument);
+  }
 }

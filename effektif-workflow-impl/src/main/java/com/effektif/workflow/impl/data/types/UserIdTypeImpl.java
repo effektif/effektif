@@ -63,11 +63,8 @@ public class UserIdTypeImpl extends JavaBeanTypeImpl<UserIdType> {
 
   @Override
   public Binding readValue(XmlElement xml) {
-    if (xml == null) {
-      throw new IllegalArgumentException("null argument to method");
-    }
-    String value = xml.attributes.get("userId");
-    return value == null ? null : new Binding().value(new UserId(value.toString()));
+    String value = readStringValue(xml, "userId");
+    return value == null ? null : new Binding().value(new UserId(value));
   }
 
   @Override

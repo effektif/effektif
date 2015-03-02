@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions id="definitions"
+   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+   xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+   xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+   xmlns:e="effektif.com:1"
+   xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+   targetNamespace="http://example.com/bpmn">
+
+   <process id="releaseSoftware" name="Release software">
+
+      <serviceTask id="announceRelease" e:type="email" name="Announce release">
+         <documentation>Announce the new software release.</documentation>
+         <extensionElements>
+            <e:to value="dev@example.org"/>
+            <e:to groupId="42"/>
+            <e:to userId="43"/>
+            <e:cc value="phb@example.org"/>
+            <e:cc groupId="44"/>
+            <e:cc userId="45"/>
+            <e:bcc value="archive@example.org"/>
+            <e:bcc groupId="46"/>
+            <e:bcc userId="47"/>
+            <e:subject value="Version {{version}} released"/>
+            <e:bodyText>Release deployed in production!</e:bodyText>
+            <e:bodyHtml><![CDATA[<p>Release deployed in <strong>production!</p>]]></e:bodyHtml>
+         </extensionElements>
+      </serviceTask>
+
+   </process>
+
+</definitions>

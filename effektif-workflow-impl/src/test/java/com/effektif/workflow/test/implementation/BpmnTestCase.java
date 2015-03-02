@@ -103,4 +103,10 @@ public abstract class BpmnTestCase extends TestCase {
     BpmnReader reader = new BpmnReader(configuration);
     return reader.readBpmnDocument(new StringReader(bpmnXmlString));
   }
+
+  protected void printBpmnXml(String generatedBpmnDocument) {
+    System.out.println("--- GENERATED BPMN ------------------------------------------ ");
+    System.out.println(generatedBpmnDocument);
+    System.out.println("------------------------------------------------------------- ");
+  }
 }

@@ -50,14 +50,12 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
       return null;
     }
     ScriptTask task = new ScriptTask();
-    task.id(reader.readBpmnAttribute(xml, "id"));
     return task;
   }
 
   @Override
   public void writeBpmn(ScriptTask task, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", task.getId());
   }
 
   @Override

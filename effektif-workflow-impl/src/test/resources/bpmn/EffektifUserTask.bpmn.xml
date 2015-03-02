@@ -9,9 +9,6 @@
 
    <process id="releaseSoftware" name="Release software">
 
-      <startEvent id="theStart" name="code complete"/>
-      <sequenceFlow id="theStart1" sourceRef="theStart" targetRef="performRelease"/>
-
       <userTask id="performRelease" name="Perform release">
          <documentation>Release a new version of the software</documentation>
          <extensionElements>
@@ -30,9 +27,6 @@
             </e:form>
          </extensionElements>
       </userTask>
-      <sequenceFlow id="performRelease1" sourceRef="performRelease" targetRef="theEnd"/>
-
-      <endEvent id="theEnd"/>
 
    </process>
 

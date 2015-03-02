@@ -50,14 +50,12 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
       return null;
     }
     ParallelGateway gateway = new ParallelGateway();
-    gateway.id(reader.readBpmnAttribute(xml, "id"));
     return gateway;
   }
 
   @Override
   public void writeBpmn(ParallelGateway gateway, XmlElement xml, BpmnWriter writer) {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", gateway.getId());
   }
 
   @Override

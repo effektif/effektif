@@ -127,6 +127,9 @@ public class BpmnWriter extends Bpmn {
         Activity activity = activities.get(i);
         ActivityType<Activity> activityType = activityTypeService.getActivityType(activity.getClass());
         XmlElement activityXml = getXmlElement(activity.getBpmn());
+        writeBpmnAttribute(activityXml, "id", activity.getId());
+        writeBpmnAttribute(activityXml, "name", activity.getName());
+        writeDocumentation(activityXml, activity.getDescription());
         activityType.writeBpmn(activity, activityXml, this);
         scopeElement.addElementFirst(activityXml);
       }
@@ -226,7 +229,7 @@ public class BpmnWriter extends Bpmn {
   }
 
   /**
-   * Writes an extension element with the given element name and string value.
+   * Writes an extension element with the string value as an attribute.
    */
   public void writeStringValue(XmlElement xml, String elementName, String value) {
     if (value != null && !value.isEmpty()) {
@@ -234,6 +237,27 @@ public class BpmnWriter extends Bpmn {
       newElement.addAttribute("value", value);
       XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
       extensionElements.addElement(newElement);
+    }
+  }
+
+  /**
+   * Writes an extension element with the string value as text content.
+   */
+  public void writeStringValueAsText(XmlElement xml, String elementName, String value) {
+    if (value != null && !value.isEmpty()) {
+      XmlElement newElement = new XmlElement(getEffektifQName(elementName));
+      newElement.addText(value);
+      XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
+      extensionElements.addElement(newElement);
+    }
+  }
+
+  /**
+   * Writes an extension element with the string value as text content.
+   */
+  public void writeStringValueAsCData(XmlElement xml, String elementName, String value) {
+    if (value != null && !value.isEmpty()) {
+      writeStringValueAsText(xml, elementName, "<![CDATA[" + value + "]]>");
     }
   }
 }

@@ -22,6 +22,9 @@ import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.types.GroupIdType;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
@@ -106,7 +109,21 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
       return null;
     }
     EmailTask task = new EmailTask();
-    task.id(reader.readBpmnAttribute(xml, "id"));
+    task.setSubject(reader.readStringValue(xml, "subject"));
+    task.setBodyText(reader.readStringValue(xml, "bodyText"));
+    task.setBodyHtml(reader.readStringValue(xml, "bodyHtml"));
+
+    task.setToEmailAddresses(reader.readBindings(String.class, TextType.INSTANCE, xml, "to"));
+    task.setToGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "to"));
+    task.setToUserIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "to"));
+
+    task.setCcEmailAddresses(reader.readBindings(String.class, TextType.INSTANCE, xml, "cc"));
+    task.setCcGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "cc"));
+    task.setCcUserIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "cc"));
+
+    task.setBccEmailAddresses(reader.readBindings(String.class, TextType.INSTANCE, xml, "bcc"));
+    task.setBccGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "bcc"));
+    task.setBccUserIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "bcc"));
     return task;
   }
 
@@ -115,6 +132,21 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
     writer.writeBpmnAttribute(xml, "id", task.getId());
     writer.writeEffektifType(xml, ServiceTaskType.EMAIL);
+    writer.writeStringValue(xml, "subject", task.getSubject());
+    writer.writeStringValueAsText(xml, "bodyText", task.getBodyText());
+    writer.writeStringValueAsCData(xml, "bodyHtml", task.getBodyHtml());
+
+    writer.writeBindings(xml, "to", (List) task.getToEmailAddresses(), TextType.INSTANCE);
+    writer.writeBindings(xml, "to", (List) task.getToGroupIds(), GroupIdType.INSTANCE);
+    writer.writeBindings(xml, "to", (List) task.getToUserIds(), UserIdType.INSTANCE);
+
+    writer.writeBindings(xml, "cc", (List) task.getCcEmailAddresses(), TextType.INSTANCE);
+    writer.writeBindings(xml, "cc", (List) task.getCcGroupIds(), GroupIdType.INSTANCE);
+    writer.writeBindings(xml, "cc", (List) task.getCcUserIds(), UserIdType.INSTANCE);
+
+    writer.writeBindings(xml, "bcc", (List) task.getBccEmailAddresses(), TextType.INSTANCE);
+    writer.writeBindings(xml, "bcc", (List) task.getBccGroupIds(), GroupIdType.INSTANCE);
+    writer.writeBindings(xml, "bcc", (List) task.getBccUserIds(), UserIdType.INSTANCE);
   }
 
   @Override

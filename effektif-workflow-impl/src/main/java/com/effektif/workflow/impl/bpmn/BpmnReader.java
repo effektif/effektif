@@ -136,12 +136,14 @@ public class BpmnReader extends Bpmn {
         // Check if the XML element can be parsed as one of the activity types.
         Activity activity = null;
         Iterator<ActivityType> activityTypeIterator = activityTypes.iterator();
-        while (activity==null && activityTypeIterator.hasNext()) {
+        while (activity == null && activityTypeIterator.hasNext()) {
           ActivityType activityType = activityTypeIterator.next();
           activity = activityType.readBpmn(childElement, this);
         }
         if (activity!=null) {
+          activity.setId(readBpmnAttribute(childElement, "id"));
           activity.setName(readBpmnAttribute(childElement, "name"));
+          activity.setDescription(readBpmnDocumentation(childElement));
           scope.activity(activity);
           setUnparsedBpmn(activity, childElement);
           // Remove the activity XML element as it has been parsed in the model.
@@ -273,6 +275,7 @@ public class BpmnReader extends Bpmn {
 
   /**
    * Returns a string value read from the extension element with the given name.
+   * The value is either read from the element’s <code>value</code> attribute, or its text content.
    */
   public String readStringValue(XmlElement xml, String elementName) {
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
@@ -283,8 +286,15 @@ public class BpmnReader extends Bpmn {
         XmlElement extension = extensions.next();
 
         if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
+          String value;
+          if (extension.attributes != null && extension.attributes.containsKey("value")) {
+            value = extension.attributes.get("value");
+          }
+          else {
+            value = extension.text;
+          }
           extensions.remove();
-          return extension.attributes.get("value");
+          return value;
         }
       }
     }

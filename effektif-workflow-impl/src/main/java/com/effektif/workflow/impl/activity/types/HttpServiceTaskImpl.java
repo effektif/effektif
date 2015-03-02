@@ -41,7 +41,6 @@ public class HttpServiceTaskImpl extends AbstractActivityType<HttpServiceTask> {
       return null;
     }
     HttpServiceTask task = new HttpServiceTask();
-    task.id(reader.readBpmnAttribute(xml, "id"));
     return task;
   }
 
