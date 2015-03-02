@@ -15,7 +15,7 @@
       <userTask id="performRelease" name="Perform release"/>
       <sequenceFlow id="performRelease1" sourceRef="performRelease" targetRef="notificationFork"/>
 
-      <parallelGateway id="notificationFork" gatewayDirection="Diverging"/>
+      <parallelGateway id="notificationFork" gatewayDirection="Diverging" name="start notifications"/>
       <sequenceFlow id="notificationFork1" sourceRef="notificationFork" targetRef="announceRelease"/>
       <sequenceFlow id="notificationFork2" sourceRef="notificationFork" targetRef="publishReleaseNotes"/>
 
@@ -25,7 +25,7 @@
          <serviceTask id="publishReleaseNotes" e:type="http"/>
          <sequenceFlow id="publishReleaseNotes1" sourceRef="publishReleaseNotes" targetRef="notificationJoin"/>
 
-      <parallelGateway id="notificationJoin" gatewayDirection="Converging"/>
+      <parallelGateway id="notificationJoin" gatewayDirection="Converging" name="notifications complete"/>
       <sequenceFlow id="notificationJoin1" sourceRef="notificationJoin" targetRef="theEnd"/>
 
       <endEvent id="theEnd" name="software released"/>

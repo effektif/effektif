@@ -3,6 +3,7 @@ package com.effektif.workflow.test.implementation;
 import java.io.IOException;
 
 import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
@@ -24,17 +25,17 @@ public class BpmnGatewaysTest extends BpmnTestCase {
   }
 
   @Test
-  public void testParallelGatewayFork() throws IOException {
-    StartEvent event = findActivity(workflow, StartEvent.class, "notificationFork");
-    assertNotNull("ParallelGateway fork should exist", event);
-    assertEquals("ParallelGateway name", "code complete", event.getName());
+  public void testParallelGatewayFork() {
+    ParallelGateway gateway = findActivity(workflow, ParallelGateway.class, "notificationFork");
+    assertNotNull("ParallelGateway fork should exist", gateway);
+    assertEquals("ParallelGateway name", "start notifications", gateway.getName());
   }
 
   @Test
-  public void testParallelGatewayJoin() throws IOException {
-    EndEvent event = findActivity(workflow, EndEvent.class, "notificationJoin");
-    assertNotNull("ParallelGateway join should exist", event);
-    assertEquals("ParallelGateway name", "software released", event.getName());
+  public void testParallelGatewayJoin() {
+    ParallelGateway gateway = findActivity(workflow, ParallelGateway.class, "notificationJoin");
+    assertNotNull("ParallelGateway join should exist", gateway);
+    assertEquals("ParallelGateway name", "notifications complete", gateway.getName());
   }
 
   /**
