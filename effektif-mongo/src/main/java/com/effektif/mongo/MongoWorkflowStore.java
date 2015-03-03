@@ -121,6 +121,9 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
 
   public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
+    if (dbWorkflow==null) {
+      return null;
+    }
     Date deployedTime = (Date) dbWorkflow.remove(FieldsWorkflow.DEPLOYED_TIME);
     T workflow = mongoToWorkflowApiAbstract(dbWorkflow, workflowClass);
     if (deployedTime!=null) {
@@ -130,6 +133,9 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
 
   public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {
+    if (dbWorkflow==null) {
+      return null;
+    }
     // convert id
     ObjectId workflowId = (ObjectId) dbWorkflow.remove(FieldsWorkflow._ID);
     ObjectId organizationId = (ObjectId) dbWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);

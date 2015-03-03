@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 
 /** Specifies which actions are permitted by whom on a given entity.
  *  
@@ -25,6 +27,7 @@ import java.util.Map;
  */
 public class AccessControlList {
   
+  @JsonUnwrapped
   protected Map<String,List<AccessIdentity>> identitiesByAction;
 
   public Map<String,List<AccessIdentity>> getIdentitiesByAction() {
@@ -105,5 +108,9 @@ public class AccessControlList {
       identitiesByAction = new HashMap<>();
     }
     identitiesByAction.put(action, identities);
+  }
+  
+  public boolean isEmpty() {
+    return identitiesByAction==null || identitiesByAction.isEmpty();
   }
 }
