@@ -317,4 +317,24 @@ public class BpmnReader extends Bpmn {
     }
     return null;
   }
+  public Map<String, String> readStringMappings(XmlElement xml, String elementName, String keyAttribute, String valueAttribute) {
+    Map<String, String> mappings = new HashMap<>();
+    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
+
+    if (extensionElements != null) {
+      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
+      while (extensions.hasNext()) {
+        XmlElement extension = extensions.next();
+
+        if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
+          Map<String, String> attributes = extension.attributes;
+          if (attributes != null && attributes.containsKey(keyAttribute) && attributes.containsKey(keyAttribute)) {
+            mappings.put(attributes.get(keyAttribute), attributes.get(valueAttribute));
+          }
+          extensions.remove();
+        }
+      }
+    }
+    return mappings;
+  }
 }

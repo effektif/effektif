@@ -260,4 +260,19 @@ public class BpmnWriter extends Bpmn {
       writeStringValueAsText(xml, elementName, "<![CDATA[" + value + "]]>");
     }
   }
+
+  /**
+   * Writes extension elements with the string mappings as attribute values.
+   */
+  public void writeStringMappings(XmlElement xml, String elementName, String keyAttribute, String valueAttribute, Map<String, String> mappings) {
+    if (mappings != null && !mappings.isEmpty()) {
+      XmlElement extensionElements = xml.findOrAddChildElement(getBpmnQName("extensionElements"));
+      for (String mappingKey : mappings.keySet()) {
+        XmlElement newElement = new XmlElement(getEffektifQName(elementName));
+        newElement.addAttribute(keyAttribute, mappingKey);
+        newElement.addAttribute(valueAttribute, mappings.get(mappingKey));
+        extensionElements.addElement(newElement);
+      }
+    }
+  }
 }
