@@ -25,9 +25,7 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.data.TypeGenerator;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 /**
@@ -55,24 +53,6 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     }
   }
   
-  @Override
-  public TypeGenerator getTypeGenerator() {
-    return new TypeGenerator<ListType>() {
-      @Override
-      public JavaType createJavaType(ListType listType, TypeFactory typeFactory, DataTypeService dataTypeService) {
-        Type elementType = listType.getElementType();
-        if (elementType==null) {
-          return null;
-        }
-        JavaType elementJavaType = dataTypeService.createJavaType(elementType);
-        if (elementJavaType==null) {
-          return elementJavaType = typeFactory.constructType(Object.class);
-        }
-        return typeFactory.constructParametricType(List.class, elementJavaType);
-      }
-    };
-  }
-
   @Override
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
     if (internalValue==null) {
@@ -104,6 +84,17 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
       list.set(i, elementInternalValue);
     }
     return list;
+  }
+  
+  @Override
+  public TypedValueImpl dereference(Object value, String field) {
+    List<Object> values = (List<Object>) value;
+    List<Object> fieldValues = new ArrayList<>();
+    for (Object elementValue: values) {
+      TypedValueImpl elementFieldValue = elementType.dereference(elementValue, field);
+      fieldValues.add(elementFieldValue.value);
+    }
+    return new TypedValueImpl(this, fieldValues);
   }
 
   @SuppressWarnings("unchecked")

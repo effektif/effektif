@@ -13,6 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.workflow;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 
 /**
  * @author Tom Baeyens
@@ -20,11 +24,25 @@ package com.effektif.workflow.impl.workflow;
 public class ExpressionImpl {
 
   public String variableId;
-  public String[] fields;
+  public List<String> fields;
+
+  public ExpressionImpl(String expression) {
+    StringTokenizer stringTokenizer = new StringTokenizer(expression, ".");
+    while (stringTokenizer.hasMoreTokens()) {
+      String token = stringTokenizer.nextToken();
+      if (variableId==null) {
+        variableId = token;
+      } else {
+        if (fields==null) {
+          fields = new ArrayList<>();
+        }
+        fields.add(token);
+      }
+    }
+  }
 
   public String toString() {
     StringBuilder text = new StringBuilder();
-    text.append("{{");
     text.append(variableId);
     if (fields!=null) {
       for (String field: fields) {
@@ -32,7 +50,6 @@ public class ExpressionImpl {
         text.append(field);
       }
     }
-    text.append("}}");
     return text.toString();
   }
 }

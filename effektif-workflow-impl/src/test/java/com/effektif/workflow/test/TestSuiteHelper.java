@@ -59,7 +59,7 @@ public class TestSuiteHelper {
       }
       
       Configuration originalConfiguration = WorkflowTest.cachedConfiguration;
-      WorkflowTest.cachedConfiguration = new SerializingWorkflowEngineConfiguration();
+      WorkflowTest.cachedConfiguration = configuration;
 
       JUnitCore junitCore = new JUnitCore();
       Result result = junitCore.run(request);

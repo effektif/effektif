@@ -24,11 +24,11 @@ import com.effektif.workflow.api.model.UserId;
  */
 public interface IdentityService {
 
+  User createUser(User user);
   List<String> getUsersEmailAddresses(List<UserId> userIds);
+  User findUserById(UserId userId);
 
+  Group createGroup(Group group);
   List<String> getGroupsEmailAddresses(List<GroupId> groupIds);
-  
-  User getUser(UserId userId);
-
-  Group getGroup(GroupId groupId);
+  Group findGroupById(GroupId groupId);
 }

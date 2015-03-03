@@ -37,25 +37,5 @@ public class EmailServerConfigurationExampleTest {
       .tls() // also sets the port to the default tls port 587
       .connectionTimeoutSeconds(34523523l)
       .authenticate("youraccount@gmail.com", "***");
-    
-//    WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
-//    
-//    // Create a workflow
-//    Workflow workflow = new Workflow()
-//      .activity("Send birthday card", new EmailTask()
-//        .to("friend@example.com")
-//        .subject("Happy birthday!")
-//        .bodyText("Enjoy!"));
-//    
-//    // Deploy the workflow to the engine
-//    String workflowId = workflowEngine
-//      .deployWorkflow(workflow)
-//      .checkNoErrorsAndNoWarnings()
-//      .getWorkflowId();
-//    
-//    // Start a new workflow instance
-//    TriggerInstance triggerInstance = new TriggerInstance()
-//      .workflowId(workflowId);
-//    workflowEngine.start(triggerInstance);
   }
 }

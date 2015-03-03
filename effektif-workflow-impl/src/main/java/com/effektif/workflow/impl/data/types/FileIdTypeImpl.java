@@ -45,20 +45,20 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
 
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return jsonValue!=null ? new UserId((String)jsonValue) : null;
+    return jsonValue!=null ? new FileId((String)jsonValue) : null;
   }
 
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue!=null ? ((UserId)internalValue).getId() : null;
+    return internalValue!=null ? ((FileId)internalValue).getId() : null;
   }
   
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
-    if ("file".equals(fieldName)) {
+    if ("@".equals(fieldName)) {
       FileId fileId = (FileId) value;
       FileService fileService = configuration.get(FileService.class);
-      File file = fileService.getFile(fileId);
+      File file = fileService.getFileById(fileId);
       return new TypedValueImpl(new FileTypeImpl(configuration), file);
     }
     return null;

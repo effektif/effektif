@@ -11,37 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.workflow;
+package com.effektif.workflow.api.types;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-public class Expression {
+@JsonTypeName("emailId")
+public class EmailIdType extends Type {
 
-  protected String variableId;
-  protected String[] fields;
+  public static final EmailIdType INSTANCE = new EmailIdType();
 
-  public String getVariableId() {
-    return this.variableId;
-  }
-  public void setVariableId(String variableId) {
-    this.variableId = variableId;
-  }
-  public Expression variableId(String variableId) {
-    this.variableId = variableId;
-    return this;
-  }
-  
-  public String[] getFields() {
-    return this.fields;
-  }
-  public void setFields(String[] fields) {
-    this.fields = fields;
-  }
-  public Expression fields(String... fields) {
-    this.fields = fields;
-    return this;
-  }
 }
+
+

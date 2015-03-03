@@ -111,8 +111,8 @@ public class UserTask extends NoneTask {
     return this;
   }
   /** Sets the assignee to a variable value. */
-  public UserTask assigneeExpression(String variableId, String... fields) {
-    this.assigneeId = new Binding().expression(variableId, fields);
+  public UserTask assigneeExpression(String expression) {
+    this.assigneeId = new Binding().expression(expression);
     return this;
   }
   
@@ -133,8 +133,8 @@ public class UserTask extends NoneTask {
     return this;
   }
   /** adds a candidate id variable to the list */
-  public UserTask candidateExpression(String variableId, String... fields) {
-    addCandidateBinding(new Binding().expression(variableId, fields));
+  public UserTask candidateExpression(String expression) {
+    addCandidateBinding(new Binding().expression(expression));
     return this;
   }
   protected void addCandidateBinding(Binding<UserId> binding) {
@@ -161,8 +161,8 @@ public class UserTask extends NoneTask {
     return this;
   }
   /** adds a candidate id variable to the list */
-  public UserTask candidateGroupExpression(String variableId, String... fields) {
-    addCandidateBinding(new Binding().expression(variableId, fields));
+  public UserTask candidateGroupExpression(String expression) {
+    addCandidateBinding(new Binding().expression(expression));
     return this;
   }
   protected void addCandidateGroupBinding(Binding<GroupId> candidateGroupBinding) {

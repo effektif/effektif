@@ -45,8 +45,8 @@ public class AbstractBindableActivity extends Activity {
   }
   
   /** copies the variable from this workflow to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputExpression(String key, String variableId, String... fields) {
-    addInputBinding(key, new Binding().expression(variableId, fields));
+  public AbstractBindableActivity inputExpression(String key, String expression) {
+    addInputBinding(key, new Binding().expression(expression));
     return this;
   }
 

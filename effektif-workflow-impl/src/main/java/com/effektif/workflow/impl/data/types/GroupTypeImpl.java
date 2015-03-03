@@ -16,26 +16,25 @@ package com.effektif.workflow.impl.data.types;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.identity.User;
+import com.effektif.workflow.impl.identity.Group;
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
-  
-  public UserTypeImpl(Configuration configuration) {
-    super(User.class, configuration);
+public class GroupTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
+
+  public GroupTypeImpl(Configuration configuration) {
+    super(Group.class, configuration);
   }
 
-  public UserTypeImpl(Type type, Configuration configuration) {
-    super(User.class, configuration);
+  public GroupTypeImpl(Type type, Configuration configuration) {
+    super(Group.class, configuration);
   }
 
   @Override
   protected void initializeFields(Configuration configuration) {
-    addField(new JavaBeanFieldImpl(User.class, "id", new UserIdTypeImpl(configuration)));
-    addField(new JavaBeanFieldImpl(User.class, "fullName", new TextTypeImpl(configuration)));
-    addField(new JavaBeanFieldImpl(User.class, "email", new TextTypeImpl(configuration)));
+    addField(new JavaBeanFieldImpl(Group.class, "id", new UserIdTypeImpl(configuration)));
+    addField(new JavaBeanFieldImpl(Group.class, "name", new TextTypeImpl(configuration)));
   }
 }

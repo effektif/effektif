@@ -17,6 +17,8 @@ package com.effektif.workflow.impl.json;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.model.UserId;
@@ -58,12 +60,18 @@ public class DefaultObjectMapperSupplier implements Supplier {
       .setSerializationInclusion(Include.NON_EMPTY);
   
     SimpleModule module = new SimpleModule();
+    
     module.addSerializer(new LocalDateTimeSerializer());
     module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
     module.addSerializer(new UserIdSerializer());
     module.addDeserializer(UserId.class, new UserIdDeserializer());
     module.addSerializer(new GroupIdSerializer());
     module.addDeserializer(GroupId.class, new GroupIdDeserializer());
+    module.addSerializer(new FileIdSerializer());
+    // module.addDeserializer(FileId.class, new FileIdDeserializer());
+    module.addSerializer(new EmailIdSerializer());
+    // module.addDeserializer(EmailId.class, new EmailIdDeserializer());
+
     module.setDeserializerModifier(new BeanDeserializerModifier() {
       @Override
       public JsonDeserializer< ? > modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer< ? > deserializer) {

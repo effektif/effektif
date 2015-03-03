@@ -104,7 +104,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         workflowId = workflowStore.generateWorkflowId();
         workflowApi.setId(workflowId);
       }
-      workflowApi.setDeployedTime(Time.now());
+      workflowApi.setCreateTime(Time.now());
       workflowImpl.id = workflowApi.getId();
       workflowStore.insertWorkflow(workflowApi);
       if (workflowImpl.trigger!=null) {

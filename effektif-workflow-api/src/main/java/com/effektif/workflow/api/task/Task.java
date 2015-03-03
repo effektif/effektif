@@ -50,6 +50,7 @@ public class Task extends Extensible implements AccessControlledObject {
 
   // creator, people that add comments and people assigned to tasks are participants
   protected UserId creatorId;
+  protected LocalDateTime createTime;
   protected List<UserId> participantIds;
   protected UserId assigneeId;
   protected List<UserId> candidateIds;
@@ -90,6 +91,7 @@ public class Task extends Extensible implements AccessControlledObject {
     this.description = other.description;
     this.access = other.access;
     this.creatorId = other.creatorId;
+    this.createTime = other.createTime;
     this.participantIds= other.participantIds;
     this.assigneeId = other.assigneeId;
     this.candidateIds = other.candidateIds;
@@ -288,6 +290,13 @@ public class Task extends Extensible implements AccessControlledObject {
   }
   public void setCreatorId(UserId creatorId) {
     this.creatorId = creatorId;
+  }
+
+  public LocalDateTime getCreateTime() {
+    return this.createTime;
+  }
+  public void setCreateTime(LocalDateTime createTime) {
+    this.createTime = createTime;
   }
 
   public String getDescription() {

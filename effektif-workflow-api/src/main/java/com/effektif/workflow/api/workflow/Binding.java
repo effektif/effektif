@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import java.beans.Expression;
 
 /**
  * A binding stores a value for an activity input parameter, such as a process
@@ -36,8 +36,7 @@ public class Binding<T> {
 
   protected T value;
   
-  @JsonUnwrapped
-  protected Expression expression;
+  protected String expression;
 
   /**
    * the fixed value. When serializing and deserializing, the type for this
@@ -67,26 +66,18 @@ public class Binding<T> {
   
   /** specifies how a dynamic value is to be fetched from the variables. 
    * @see Expression */
-  public Expression getExpression() {
+  public String getExpression() {
     return this.expression;
   }
   /** specifies how a dynamic value is to be fetched from the variables. 
    * @see Expression */
-  public void setExpression(Expression expression) {
+  public void setExpression(String expression) {
     this.expression = expression;
   }
   /** specifies how a dynamic value is to be fetched from the variables. 
    * @see Expression */
-  public Binding expression(Expression expression) {
+  public Binding expression(String expression) {
     this.expression = expression;
-    return this;
-  }
-  /** specifies how a dynamic value is to be fetched from the variables. 
-   * @see Expression */
-  public Binding expression(String variableId, String... fields) {
-    this.expression = new Expression()
-      .variableId(variableId)
-      .fields(fields);
     return this;
   }
 }

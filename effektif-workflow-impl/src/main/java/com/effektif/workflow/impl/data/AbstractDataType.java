@@ -40,7 +40,7 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   public boolean isStatic() {
     return false;
   }
-
+  
   public Class<? extends Type> getApiClass() {
     return apiClass;
   }

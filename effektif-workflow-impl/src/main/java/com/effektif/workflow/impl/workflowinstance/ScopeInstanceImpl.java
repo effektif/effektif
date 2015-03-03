@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TypedValue;
-import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -225,8 +224,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     if (expression==null || expression.variableId==null) {
       return null;
     }
-    VariableInstanceImpl variableInstance = findVariableInstance(expression.variableId);
-    return variableInstance;
+    return findVariableInstance(expression.variableId);
   }
 
   /** to be used by activity implementations */
@@ -256,11 +254,11 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return getTypedValueField(variableInstance, expression.fields);
   }
 
-  protected TypedValueImpl getTypedValueField(VariableInstanceImpl variableInstance, String[] fields) {
+  protected TypedValueImpl getTypedValueField(VariableInstanceImpl variableInstance, List<String> fields) {
     TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
     if (fields!=null) {
-      for (int i=0; i<fields.length && typedValue!=null; i++) {
-        String field = fields[i];
+      for (int i=0; i<fields.size() && typedValue!=null; i++) {
+        String field = fields.get(i);
         Object value = typedValue.value;
         if (value!=null) {
           DataType type = typedValue.type;

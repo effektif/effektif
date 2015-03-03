@@ -35,14 +35,18 @@ import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.ChoiceTypeImpl;
 import com.effektif.workflow.impl.data.types.CustomTypeImpl;
+import com.effektif.workflow.impl.data.types.EmailIdTypeImpl;
+import com.effektif.workflow.impl.data.types.EmailTypeImpl;
+import com.effektif.workflow.impl.data.types.FileIdTypeImpl;
+import com.effektif.workflow.impl.data.types.FileTypeImpl;
 import com.effektif.workflow.impl.data.types.GroupIdTypeImpl;
+import com.effektif.workflow.impl.data.types.GroupTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
 import com.effektif.workflow.impl.data.types.UserIdTypeImpl;
 import com.effektif.workflow.impl.data.types.UserTypeImpl;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -58,14 +62,11 @@ public class DataTypeService implements Brewable {
   protected Configuration configuration;
   protected ObjectMapper objectMapper;
   
-  // protected Map<Class<? extends Type>, Class<? extends DataType>> dataTypeClasses = new HashMap<>();
   protected Map<Class<? extends Type>,DataType> singletons = new ConcurrentHashMap<>();
   protected Map<Class<? extends Type>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
-  protected Map<Class<? extends Type>, TypeGenerator> typeGenerators = new HashMap<>();
   protected Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
-  
-  
+
   @Override
   public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
@@ -78,8 +79,13 @@ public class DataTypeService implements Brewable {
     registerDataType(new BooleanTypeImpl(configuration));
     registerDataType(new ChoiceTypeImpl(configuration));
     registerDataType(new CustomTypeImpl(configuration));
+    registerDataType(new EmailIdTypeImpl(configuration));
+    registerDataType(new EmailTypeImpl(configuration));
+    registerDataType(new FileIdTypeImpl(configuration));
+    registerDataType(new FileTypeImpl(configuration));
     registerDataType(new JavaBeanTypeImpl(configuration));
     registerDataType(new GroupIdTypeImpl(configuration));
+    registerDataType(new GroupTypeImpl(configuration));
     registerDataType(new NumberTypeImpl(configuration));
     registerDataType(new ListTypeImpl(configuration));
     registerDataType(new TextTypeImpl(configuration));
@@ -93,11 +99,6 @@ public class DataTypeService implements Brewable {
   
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
-    // dataTypeClasses.put(apiClass, dataType.getClass());
-    TypeGenerator typeGenerator = dataType.getTypeGenerator();
-    if (typeGenerator!=null) {
-      typeGenerators.put(apiClass, typeGenerator);
-    }
     if (dataType.isStatic()) {
       singletons.put(apiClass, dataType);
     } else {
@@ -112,19 +113,6 @@ public class DataTypeService implements Brewable {
     objectMapper.registerSubtypes(apiClass);
   }
   
-  
-  
-  public JavaType createJavaType(Type type) {
-    if (type==null) {
-      return null;
-    }
-    TypeGenerator typeGenerator = typeGenerators.get(type.getClass());
-    if (typeGenerator==null) {
-      return null;
-    }
-    return typeGenerator.createJavaType(type, objectMapper.getTypeFactory(), this);
-  }
-
   protected Constructor< ? > findDataTypeConstructor(Class< ? extends DataType> dataTypeClass) {
     for (Constructor<?> constructor: dataTypeClass.getDeclaredConstructors()) {
       Class< ? >[] parameterTypes = constructor.getParameterTypes();
@@ -197,7 +185,6 @@ public class DataTypeService implements Brewable {
     throw new RuntimeException("No DataType defined for "+type.getClass().getName());
   }
 
-  
   public ObjectMapper getObjectMapper() {
     return objectMapper;
   }

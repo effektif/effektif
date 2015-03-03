@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.types;
+package com.effektif.workflow.impl.data.types;
+
+import com.effektif.workflow.api.types.Type;
 
 
+/** this is just an idea for now. moves to api when mature.
+ * 
+ * @author Tom Baeyens
+ */
 public abstract class ObjectType extends Type {
 
 }

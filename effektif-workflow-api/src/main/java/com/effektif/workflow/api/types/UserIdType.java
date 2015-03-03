@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.model.UserId;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -23,11 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("userId")
-public class UserIdType extends JavaBeanType {
+public class UserIdType extends Type {
 
   public static final UserIdType INSTANCE = new UserIdType();
   
-  public UserIdType() {
-    super(UserId.class);
-  }
 }

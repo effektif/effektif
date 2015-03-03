@@ -46,8 +46,8 @@ import com.effektif.workflow.api.types.Type;
 public class Workflow extends AbstractWorkflow {
   
   protected String sourceWorkflowId;
-  protected LocalDateTime deployedTime;
-  protected UserId deployedBy;
+  protected LocalDateTime createTime;
+  protected UserId creatorId;
 
   /** refers to the id in the source (or authoring) form of this workflow.
    * @see #sourceWorkflowId(String) */
@@ -78,25 +78,25 @@ public class Workflow extends AbstractWorkflow {
     return this;
   }
   
-  public LocalDateTime getDeployedTime() {
-    return this.deployedTime;
+  public LocalDateTime getCreateTime() {
+    return this.createTime;
   }
-  public void setDeployedTime(LocalDateTime deployedTime) {
-    this.deployedTime = deployedTime;
+  public void setCreateTime(LocalDateTime createTime) {
+    this.createTime = createTime;
   }
-  public Workflow deployedTime(LocalDateTime deployedTime) {
-    this.deployedTime = deployedTime;
+  public Workflow createTime(LocalDateTime createTime) {
+    this.createTime = createTime;
     return this;
   }
   
-  public UserId getDeployedBy() {
-    return this.deployedBy;
+  public UserId getCreatorId() {
+    return this.creatorId;
   }
-  public void setDeployedBy(UserId deployedBy) {
-    this.deployedBy = deployedBy;
+  public void setCreatorId(UserId creatorId) {
+    this.creatorId = creatorId;
   }
-  public Workflow deployedBy(UserId deployedBy) {
-    this.deployedBy = deployedBy;
+  public Workflow creatorId(UserId creatorId) {
+    this.creatorId = creatorId;
     return this;
   }
 

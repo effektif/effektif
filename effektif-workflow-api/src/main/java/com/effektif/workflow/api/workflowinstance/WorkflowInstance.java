@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.effektif.workflow.api.model.UserId;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -26,6 +27,7 @@ public class WorkflowInstance extends ScopeInstance {
 
   protected String organizationId;
   protected String workflowId;
+  protected UserId creatorId;
   protected String callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
 
@@ -55,5 +57,12 @@ public class WorkflowInstance extends ScopeInstance {
   }
   public void setWorkflowId(String workflowId) {
     this.workflowId = workflowId;
+  }
+  
+  public UserId getCreatorId() {
+    return this.creatorId;
+  }
+  public void setCreatorId(UserId creatorId) {
+    this.creatorId = creatorId;
   }
 }

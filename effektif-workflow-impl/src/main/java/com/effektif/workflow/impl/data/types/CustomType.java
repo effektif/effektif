@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.types;
+package com.effektif.workflow.impl.data.types;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** 
+/** this is just an idea for now. moves to api when mature.
+ * 
  * represents a json object type that internally is parsed to a hash map. 
  * 
  * @author Tom Baeyens

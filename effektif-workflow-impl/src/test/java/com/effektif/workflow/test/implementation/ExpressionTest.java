@@ -25,6 +25,7 @@ import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.identity.User;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
@@ -37,19 +38,19 @@ import com.effektif.workflow.test.WorkflowTest;
 public class ExpressionTest extends WorkflowTest {
 
   @Test
-  public void testExpression() {
+  public void testExpressionUserDereferencing() {
     User johndoe = new User()
       .id("johndoe")
       .fullName("John Doe")
       .email("johndoe@localhost");
     
     configuration.get(MemoryIdentityService.class)
-      .addUser(johndoe);
+      .createUser(johndoe);
     
     Workflow workflow = new Workflow()
       .variable("initiatorId", new UserIdType())
       .activity("1", new EmailTask()
-        .toExpression("initiatorId", "user", "email"));
+        .toExpression("initiatorId.@.email"));
     
     deploy(workflow);
     
@@ -61,7 +62,7 @@ public class ExpressionTest extends WorkflowTest {
   }
 
   @Test
-  public void testExpressionList() {
+  public void testExpressionListFlattening() {
     User johndoe = new User()
       .id("johndoe")
       .fullName("John Doe")
@@ -77,10 +78,10 @@ public class ExpressionTest extends WorkflowTest {
       .fullName("Jack Black")
       .email("jackblack@localhost");
   
-    configuration.get(MemoryIdentityService.class)
-      .addUser(johndoe)
-      .addUser(joesmoe)
-      .addUser(jackblack);
+    IdentityService identityService = configuration.get(IdentityService.class);
+    identityService.createUser(johndoe);
+    identityService.createUser(joesmoe);
+    identityService.createUser(jackblack);
     
     Workflow workflow = new Workflow()
       .variable("manager", new UserIdType())

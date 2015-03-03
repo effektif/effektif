@@ -16,62 +16,65 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.types.UserIdType;
+import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.api.model.FileId;
+import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.identity.IdentityService;
-import com.effektif.workflow.impl.identity.User;
+import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.EmailStore;
+import com.effektif.workflow.impl.util.Exceptions;
 
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
-
-  public UserIdTypeImpl(Configuration configuration) {
-    this(new UserIdType(), configuration);
+public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
+  
+  public EmailIdTypeImpl(Configuration configuration) {
+    this(EmailIdType.INSTANCE, configuration);
   }
 
-  public UserIdTypeImpl(UserIdType type, Configuration configuration) {
-    super(type, String.class, configuration);
+  public EmailIdTypeImpl(EmailIdType emailIdType, Configuration configuration) {
+    super(emailIdType, EmailId.class, configuration);
   }
 
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return jsonValue!=null ? new UserId((String)jsonValue) : null;
+    return jsonValue!=null ? new EmailId((String)jsonValue) : null;
   }
 
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue!=null ? ((UserId)internalValue).getId() : null;
+    return internalValue!=null ? ((EmailId)internalValue).getId() : null;
   }
   
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
     if ("@".equals(fieldName)) {
-      UserId userId = (UserId) value;
-      IdentityService identityService = configuration.get(IdentityService.class);
-      User user = identityService.findUserById(userId);
-      return new TypedValueImpl(new UserTypeImpl(configuration), user);
+      EmailId emailId = (EmailId) value;
+      EmailStore emailStore = configuration.get(EmailStore.class);
+      Email email = emailStore.findEmailById(emailId);
+      return new TypedValueImpl(new EmailTypeImpl(configuration), email);
     }
     return null;
   }
 
   @Override
   public Binding readValue(XmlElement xml) {
-    String value = readStringValue(xml, "userId");
-    return value == null ? null : new Binding().value(new UserId(value));
+    Exceptions.checkNotNullParameter(xml, "xml");
+    String value = xml.attributes.get("fileId");
+    return value == null ? null : new Binding().value(new FileId(value.toString()));
   }
 
   @Override
   public void writeValue(XmlElement xml, Object value) {
     if (value != null) {
-      xml.addAttribute("userId", value.toString());
+      xml.addAttribute("fileId", value.toString());
     }
   }
 }

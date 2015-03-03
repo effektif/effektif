@@ -11,18 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.file;
+package com.effektif.workflow.impl.email;
 
-import com.effektif.workflow.api.model.FileId;
+import com.effektif.workflow.api.model.EmailId;
 
 
-/**
+/** stores emails.
+ * 
  * @author Tom Baeyens
  */
-public interface File {
+public interface EmailStore {
 
-  FileId getId();
-  String getFileName();
-  String getContentType();
-  Long getSizeInBytes();
+  Email createEmail(Email email);
+  
+  Email findEmailById(EmailId emailId);
+
 }

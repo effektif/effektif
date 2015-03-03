@@ -76,6 +76,74 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   }
   
   @Override
+  public void execute(ActivityInstanceImpl activityInstance) {
+    List<String> to = resolveEmailAddresses(toEmailAddresses, toUserIds, toGroupIds, activityInstance);
+    List<String> cc = resolveEmailAddresses(ccEmailAddresses, ccUserIds, ccGroupIds, activityInstance);
+    List<String> bcc = resolveEmailAddresses(bccEmailAddresses, bccUserIds, bccGroupIds, activityInstance);
+    
+    Email email = new Email()
+      .from(resolveFrom(activityInstance))
+      .to(to)
+      .cc(cc)
+      .bcc(bcc)
+      .subject(resolve(subject, activityInstance))
+      .bodyText(resolve(bodyText, activityInstance))
+      .bodyHtml(resolve(bodyHtml, activityInstance));
+    email.setAttachments(activityInstance.getValues(attachments));
+    
+    emailService.send(email);
+    
+    activityInstance.onwards();
+  }
+
+  protected String resolve(TextTemplate textTemplate, ActivityInstanceImpl activityInstance) {
+    return textTemplate!=null ? textTemplate.resolve(activityInstance) : null;
+  }
+
+  protected String resolveFrom(ActivityInstanceImpl activityInstance) {
+    // TODO current implementation uses a configurable process email
+    // Christian, could you document in 2 lines some pointers about the 
+    // current supported features that we surely need to migrate?
+    return null;
+  }
+
+  protected List<String> resolveEmailAddresses(
+          List<BindingImpl<String>> emailAddressBindings, 
+          List<BindingImpl<UserId>> userIdBindings,
+          List<BindingImpl<GroupId>> groupIdBindings, 
+          ActivityInstanceImpl activityInstance) {
+    
+    List<String> allEmailAddresses = new ArrayList<>();
+    List<String> emailAddresses = activityInstance.getValues(emailAddressBindings);
+    addEmailAddresses(allEmailAddresses, emailAddresses);
+    
+    List<UserId> userIds = activityInstance.getValues(userIdBindings);
+    if (userIds!=null && !userIds.isEmpty()) {
+      emailAddresses = identityService.getUsersEmailAddresses(userIds);
+      addEmailAddresses(allEmailAddresses, emailAddresses);
+    }
+
+    List<GroupId> groupIds = activityInstance.getValues(groupIdBindings);
+    if (groupIds!=null && !groupIds.isEmpty()) {
+      emailAddresses = identityService.getGroupsEmailAddresses(groupIds);
+      addEmailAddresses(allEmailAddresses, emailAddresses);
+    }
+    
+    return allEmailAddresses;
+  }
+
+  protected void addEmailAddresses(List<String> allEmailAddresses, List<String> emailAddresses) {
+    if (emailAddresses!=null) {
+      for (String emailAddress: emailAddresses) {
+        String validatedEmailAddress = emailService.validate(emailAddress);
+        if (validatedEmailAddress!=null) {
+          allEmailAddresses.add(validatedEmailAddress);
+        }
+      }
+    }
+  }
+
+  @Override
   public void parse(ActivityImpl activityImpl, EmailTask activity, WorkflowParser parser) {
     super.parse(activityImpl, activity, parser);
     
@@ -147,73 +215,5 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     writer.writeBindings(xml, "bcc", (List) task.getBccEmailAddresses(), TextType.INSTANCE);
     writer.writeBindings(xml, "bcc", (List) task.getBccGroupIds(), GroupIdType.INSTANCE);
     writer.writeBindings(xml, "bcc", (List) task.getBccUserIds(), UserIdType.INSTANCE);
-  }
-
-  @Override
-  public void execute(ActivityInstanceImpl activityInstance) {
-    List<String> to = resolveEmailAddresses(toEmailAddresses, toUserIds, toGroupIds, activityInstance);
-    List<String> cc = resolveEmailAddresses(ccEmailAddresses, ccUserIds, ccGroupIds, activityInstance);
-    List<String> bcc = resolveEmailAddresses(bccEmailAddresses, bccUserIds, bccGroupIds, activityInstance);
-    
-    Email email = new Email()
-      .from(resolveFrom(activityInstance))
-      .to(to)
-      .cc(cc)
-      .bcc(bcc)
-      .subject(resolve(subject, activityInstance))
-      .bodyText(resolve(bodyText, activityInstance))
-      .bodyHtml(resolve(bodyHtml, activityInstance));
-    email.setAttachments(activityInstance.getValues(attachments));
-    
-    emailService.send(email);
-    
-    activityInstance.onwards();
-  }
-
-  protected String resolve(TextTemplate textTemplate, ActivityInstanceImpl activityInstance) {
-    return textTemplate!=null ? textTemplate.resolve(activityInstance) : null;
-  }
-
-  protected String resolveFrom(ActivityInstanceImpl activityInstance) {
-    // TODO current implementation uses a configurable process email
-    // Christian, could you document in 2 lines some pointers about the 
-    // current supported features that we surely need to migrate?
-    return null;
-  }
-
-  protected List<String> resolveEmailAddresses(
-          List<BindingImpl<String>> emailAddressBindings, 
-          List<BindingImpl<UserId>> userIdBindings,
-          List<BindingImpl<GroupId>> groupIdBindings, 
-          ActivityInstanceImpl activityInstance) {
-    
-    List<String> allEmailAddresses = new ArrayList<>();
-    List<String> emailAddresses = activityInstance.getValues(emailAddressBindings);
-    addEmailAddresses(allEmailAddresses, emailAddresses);
-    
-    List<UserId> userIds = activityInstance.getValues(userIdBindings);
-    if (userIds!=null && !userIds.isEmpty()) {
-      emailAddresses = identityService.getUsersEmailAddresses(userIds);
-      addEmailAddresses(allEmailAddresses, emailAddresses);
-    }
-
-    List<GroupId> groupIds = activityInstance.getValues(groupIdBindings);
-    if (groupIds!=null && !groupIds.isEmpty()) {
-      emailAddresses = identityService.getGroupsEmailAddresses(groupIds);
-      addEmailAddresses(allEmailAddresses, emailAddresses);
-    }
-    
-    return allEmailAddresses;
-  }
-
-  protected void addEmailAddresses(List<String> allEmailAddresses, List<String> emailAddresses) {
-    if (emailAddresses!=null) {
-      for (String emailAddress: emailAddresses) {
-        String validatedEmailAddress = emailService.validate(emailAddress);
-        if (validatedEmailAddress!=null) {
-          allEmailAddresses.add(validatedEmailAddress);
-        }
-      }
-    }
   }
 }

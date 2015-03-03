@@ -16,17 +16,26 @@ package com.effektif.workflow.impl.memory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import com.effektif.workflow.api.model.FileId;
-import com.effektif.workflow.impl.file.AbstractFile;
+import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.util.Streams;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MemoryFile extends AbstractFile {
+public class MemoryFile extends File {
   
   protected byte[] content;
 
+  public MemoryFile() {
+  }
+  
+  public MemoryFile(File file) {
+    super(file);
+    this.content = Streams.read(file.getInputStream());
+    this.inputStream = null;
+  }
+  
   public byte[] getContent() {
     return this.content;
   }
@@ -43,11 +52,6 @@ public class MemoryFile extends AbstractFile {
     return new ByteArrayInputStream(content);
   }
   
-  @Override
-  public MemoryFile id(FileId id) {
-    super.id(id);
-    return this;
-  }
   @Override
   public MemoryFile fileName(String fileName) {
     super.fileName(fileName);

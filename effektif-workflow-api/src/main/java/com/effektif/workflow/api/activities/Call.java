@@ -137,8 +137,8 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
-  public Call inputExpression(String key, String variableId, String... fields) {
-    super.inputExpression(key, variableId, fields);
+  public Call inputExpression(String key, String expression) {
+    super.inputExpression(key, expression);
     return this;
   }
   @Override

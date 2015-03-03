@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
+/** service for testing that stores the sent emails in a list 
+ * instead of sending them.
+ * 
  * @author Tom Baeyens
  */
 public class TestEmailService implements EmailService {

@@ -121,6 +121,11 @@ public abstract class DefaultConfiguration implements Configuration {
   protected void registerDefaultEmailService() {
     brewery.supplier(new DefaultEmailServiceSupplier(), EmailServiceImpl.class);
   }
+  
+  public DefaultConfiguration ingredient(Object ingredient) {
+    brewery.ingredient(ingredient);
+    return this;
+  }
 
 
   public DefaultConfiguration synchronous() {

@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.model.Attachment;
 
 
-/**
+/** default impl that sends emails using javax.mail.
+ * 
  * @author Tom Baeyens
  */
 public class EmailServiceImpl implements EmailService {

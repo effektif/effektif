@@ -17,6 +17,7 @@ package com.effektif.workflow.test;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +47,13 @@ import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.TestEmailService;
-import com.effektif.workflow.impl.identity.IdentityService;
+import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.file.FileService;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.memory.MemoryFile;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
@@ -66,7 +69,8 @@ public class WorkflowTest {
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   protected TaskService taskService = null;
-  protected TestEmailService mailService = null;
+  protected TestEmailService emailService = null;
+  protected FileService fileService = null;
   
   @Before
   public void initializeWorkflowEngine() {
@@ -77,7 +81,8 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
-      mailService = configuration.get(TestEmailService.class);
+      emailService = configuration.get(TestEmailService.class);
+      fileService = configuration.get(FileService.class);
     }
   }
   
@@ -148,12 +153,25 @@ public class WorkflowTest {
   }
   
   public Email getEmail(int index) {
-    if (mailService.emails.size()<=index) {
-      fail("Can't get email "+index+". There were only "+mailService.emails.size());
+    if (emailService.emails.size()<=index) {
+      fail("Can't get email "+index+". There were only "+emailService.emails.size());
     }
-    return mailService.emails.get(index);
+    return emailService.emails.get(index);
   }
   
+  public File createTestFile(String content, String fileName, String contentType) {
+    return createTestFile(content.getBytes(), fileName, contentType);
+  }
+
+  public File createTestFile(byte[] bytes, String fileName, String contentType) {
+    File file = new MemoryFile()
+      .content(bytes)
+      .fileName(fileName)
+      .contentType(contentType);
+    file = fileService.createFile(file);
+    return file;
+  }
+
   protected void logWorkflowEngineContents() {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
@@ -244,7 +262,7 @@ public class WorkflowTest {
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
     TaskStore taskStore = configuration.get(TaskStore.class);
-    mailService.emails.clear();
+    emailService.emails.clear();
     configuration.get(MemoryIdentityService.class).deleteUsers();
     configuration.get(MemoryIdentityService.class).deleteGroups();
 

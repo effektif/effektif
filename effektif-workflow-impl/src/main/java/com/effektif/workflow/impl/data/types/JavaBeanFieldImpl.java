@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.data.types;
 import java.lang.reflect.Field;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.impl.data.DataType;
 
 

@@ -20,7 +20,9 @@ import com.effektif.workflow.api.model.FileId;
  * @author Tom Baeyens
  */
 public interface FileService {
+  
+  File createFile(File file);
 
-  File getFile(FileId fileId);
+  File getFileById(FileId fileId);
 
 }

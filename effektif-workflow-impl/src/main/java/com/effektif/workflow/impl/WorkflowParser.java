@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Condition;
 import com.effektif.workflow.api.workflow.Element;
-import com.effektif.workflow.api.workflow.Expression;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
@@ -226,31 +224,6 @@ public class WorkflowParser {
     return bindingImpl;
   }
 
-  public ExpressionImpl parseExpression(Expression expression) {
-    if (expression==null) {
-      return null;
-    }
-    String variableId = expression.getVariableId();
-    if (!variableIds.contains(variableId)) {
-      addWarning("Variable %s doesn't exist", variableId);
-    }
-    
-    // TODO check the fields and if necessary also resolve the type ? 
-
-    ExpressionImpl expressionImpl = new ExpressionImpl();
-    expressionImpl.variableId = expression.getVariableId();
-    expressionImpl.fields = expression.getFields();
-    return expressionImpl;
-  }
-
-  protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
-    if (typedValue==null) {
-      return null;
-    }
-    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataType type = dataTypeService.createDataType(typedValue.getType());
-    return new TypedValueImpl(type, typedValue.getValue());
-  }
 
   public void addError(String message, Object... messageArgs) {
     ParseContext currentContext = contextStack.peek();
@@ -344,26 +317,25 @@ public class WorkflowParser {
   }
   
   public ExpressionImpl parseExpression(String expression) {
-    if (expression==null) {
+    if (expression==null || "".equals(expression)) {
       return null;
     }
-    StringTokenizer stringTokenizer = new StringTokenizer(expression, ".");
-    String variableId = null;
-    List<String> fields = null;
-    while (stringTokenizer.hasMoreTokens()) {
-      String token = stringTokenizer.nextToken();
-      if (variableId==null) {
-        variableId = token;
-      } else {
-        if (fields==null) {
-          fields = new ArrayList<>();
-        }
-        fields.add(token);
-      }
+    ExpressionImpl expressionImpl = new ExpressionImpl(expression);
+    if (!variableIds.contains(expressionImpl.variableId)) {
+      addWarning("Variable %s doesn't exist", expressionImpl.variableId);
+    } else {
+      // TODO check the fields and if necessary also resolve the type ? 
     }
-    return parseExpression(new Expression()
-      .variableId(variableId)
-      .fields(fields!=null ? fields.toArray(new String[fields.size()]) : null));
+    return expressionImpl;
+  }
+
+  protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
+    if (typedValue==null) {
+      return null;
+    }
+    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+    DataType type = dataTypeService.createDataType(typedValue.getType());
+    return new TypedValueImpl(type, typedValue.getValue());
   }
 
   public TextTemplate parseTextTemplate(String templateText, Hint... hints) {

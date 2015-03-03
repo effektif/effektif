@@ -21,19 +21,33 @@ import com.effektif.workflow.api.types.GroupIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.AbstractDataType;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.identity.Group;
+import com.effektif.workflow.impl.identity.IdentityService;
 
 
 /**
  * @author Tom Baeyens
  */
 public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
-
+  
   public GroupIdTypeImpl(Configuration configuration) {
     this(new GroupIdType(), configuration);
   }
 
   public GroupIdTypeImpl(GroupIdType type, Configuration configuration) {
     super(type, GroupId.class, configuration);
+  }
+
+  @Override
+  public TypedValueImpl dereference(Object value, String fieldName) {
+    if ("@".equals(fieldName)) {
+      GroupId groupId = (GroupId) value;
+      IdentityService identityService = configuration.get(IdentityService.class);
+      Group group = identityService.findGroupById(groupId);
+      return new TypedValueImpl(new GroupTypeImpl(configuration), group);
+    }
+    return null;
   }
 
   @Override

@@ -18,11 +18,11 @@ package com.effektif.workflow.impl.json;
 import java.io.IOException;
 
 import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,9 +52,9 @@ public class TypedValueDeserializer extends StdDeserializer<TypedValue> implemen
   public TypedValue deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
     TypedValue typedValue = (TypedValue) defaultDeserializer.deserialize(jp, ctxt);
     if (typedValue.getType()!=null && typedValue.getValue()!=null) {
-      JavaType javaType = dataTypeService.createJavaType(typedValue.getType());
-      if (javaType!=null) {
-        Object deserializedValue = objectMapper.convertValue(typedValue.getValue(), javaType);
+      DataType dataType = dataTypeService.createDataType(typedValue.getType());
+      if (dataType!=null) {
+        Object deserializedValue = dataType.convertJsonToInternalValue(typedValue.getValue());
         typedValue.setValue(deserializedValue);
       }
     }

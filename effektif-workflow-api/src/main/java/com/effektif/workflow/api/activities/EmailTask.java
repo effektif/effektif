@@ -90,8 +90,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask toUserIdExpression(String variableId, String... fields) {
-    addToUserIdBinding(new Binding<UserId>().expression(variableId, fields));
+  public EmailTask toUserIdExpression(String expression) {
+    addToUserIdBinding(new Binding<UserId>().expression(expression));
     return this;
   }
   protected void addToUserIdBinding(Binding<UserId> toUserIdBinding) {
@@ -115,8 +115,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask toGroupIdExpression(String variableId, String... fields) {
-    addToGroupIdBinding(new Binding<GroupId>().expression(variableId, fields));
+  public EmailTask toGroupIdExpression(String expression) {
+    addToGroupIdBinding(new Binding<GroupId>().expression(expression));
     return this;
   }
   protected void addToGroupIdBinding(Binding<GroupId> toGroupIdBinding) {
@@ -139,8 +139,8 @@ public class EmailTask extends Activity {
   /** adds the email address specified in a variable to the list of 'to' recipients.
    * @see <a href="http://github.../expressions">See Expressions</a> 
    *  */ 
-  public EmailTask toExpression(String variableId, String... fields) {
-    addToEmailAddress(new Binding().expression(variableId, fields));
+  public EmailTask toExpression(String expression) {
+    addToEmailAddress(new Binding().expression(expression));
     return this;
   }
   protected void addToEmailAddress(Binding<String> toEmailAddressBinding) {
@@ -164,8 +164,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask ccUserIdExpression(String variableId, String... fields) {
-    addCcUserIdBinding(new Binding<UserId>().expression(variableId, fields));
+  public EmailTask ccUserIdExpression(String expression) {
+    addCcUserIdBinding(new Binding<UserId>().expression(expression));
     return this;
   }
   protected void addCcUserIdBinding(Binding<UserId> ccUserIdBinding) {
@@ -189,8 +189,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask ccGroupIdExpression(String variableId, String... fields) {
-    addCcGroupIdBinding(new Binding<GroupId>().expression(variableId, fields));
+  public EmailTask ccGroupIdExpression(String expression) {
+    addCcGroupIdBinding(new Binding<GroupId>().expression(expression));
     return this;
   }
   protected void addCcGroupIdBinding(Binding<GroupId> ccGroupIdBinding) {
@@ -211,8 +211,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the email address specified in a variable as a recipient. */ 
-  public EmailTask ccExpression(String variableId, String... fields) {
-    addCcEmailAddressBinding(new Binding().expression(variableId, fields));
+  public EmailTask ccExpression(String expression) {
+    addCcEmailAddressBinding(new Binding().expression(expression));
     return this;
   }
   protected void addCcEmailAddressBinding(Binding<String> ccEmailAddressBinding) {
@@ -236,8 +236,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask bccUserIdExpression(String variableId, String... fields) {
-    addBccUserIdBinding(new Binding<UserId>().expression(variableId, fields));
+  public EmailTask bccUserIdExpression(String expression) {
+    addBccUserIdBinding(new Binding<UserId>().expression(expression));
     return this;
   }
   protected void addBccUserIdBinding(Binding<UserId> bccUserIdBinding) {
@@ -261,8 +261,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in nested field inside a variable as a recipient. */ 
-  public EmailTask bccGroupIdExpression(String variableId, String... fields) {
-    addBccGroupIdBinding(new Binding<GroupId>().expression(variableId,fields));
+  public EmailTask bccGroupIdExpression(String expression) {
+    addBccGroupIdBinding(new Binding<GroupId>().expression(expression));
     return this;
   }
   protected void addBccGroupIdBinding(Binding<GroupId> bccGroupIdBinding) {
@@ -283,8 +283,8 @@ public class EmailTask extends Activity {
     return this;
   }
   /** adds the user specified in nested field inside a variable as a recipient. */ 
-  public EmailTask bccExpression(String variableId, String... fields) {
-    addBccEmailAddressBinding(new Binding().expression(variableId,fields));
+  public EmailTask bccExpression(String expression) {
+    addBccEmailAddressBinding(new Binding().expression(expression));
     return this;
   }
   protected void addBccEmailAddressBinding(Binding<String> bccEmailAddressBinding) {
@@ -340,19 +340,19 @@ public class EmailTask extends Activity {
     this.attachments = attachments;
   }
   public EmailTask attachment(Attachment attachment) {
-    addAttachmentBinding(new Binding<Attachment>().value(attachment));
+    addAttachment(new Binding<Attachment>().value(attachment));
     return this;
   }
   /** adds the user specified in nested field inside a variable as a recipient. */ 
-  public EmailTask attachmentExpression(String variableId, String... fields) {
-    addAttachmentBinding(new Binding<Attachment>().expression(variableId,fields));
+  public EmailTask attachmentExpression(String expression) {
+    addAttachment(new Binding<Attachment>().expression(expression));
     return this;
   }
-  protected void addAttachmentBinding(Binding<Attachment> attachmentBinding) {
+  protected void addAttachment(Binding<Attachment> attachment) {
     if (attachments==null) {
       attachments = new ArrayList<>();
     }
-    attachments.add(attachmentBinding);
+    attachments.add(attachment);
   }
   
   @Override

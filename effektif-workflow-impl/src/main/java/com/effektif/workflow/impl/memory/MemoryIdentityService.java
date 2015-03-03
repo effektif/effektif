@@ -33,14 +33,14 @@ public class MemoryIdentityService implements IdentityService {
   Map<UserId, User> users = new HashMap<>(); 
   Map<GroupId, Group> groups = new HashMap<>(); 
 
-  public MemoryIdentityService addUser(User user) {
+  public User createUser(User user) {
     users.put(user.getId(), user);
-    return this;
+    return user;
   }
 
-  public MemoryIdentityService addGroup(Group group) {
+  public Group createGroup(Group group) {
     groups.put(group.getId(), group);
-    return this;
+    return group;
   }
 
   @Override
@@ -71,12 +71,12 @@ public class MemoryIdentityService implements IdentityService {
   }
 
   @Override
-  public User getUser(UserId userId) {
+  public User findUserById(UserId userId) {
     return users.get(userId);
   }
 
   @Override
-  public Group getGroup(GroupId groupId) {
+  public Group findGroupById(GroupId groupId) {
     return groups.get(groupId);
   }
 

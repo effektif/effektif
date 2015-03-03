@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.data;
 
 import java.util.List;
 
-import com.effektif.workflow.api.types.CustomType;
+import com.effektif.workflow.impl.data.types.CustomType;
 
 
 public interface CustomTypeStore {

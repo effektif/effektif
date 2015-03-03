@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.memory.MemoryEmailStore;
+import com.effektif.workflow.impl.memory.MemoryFileService;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
@@ -57,6 +59,8 @@ public class MongoConfiguration extends DefaultConfiguration {
     
     // TODO replace this with a default mongo identity service
     brewery.ingredient(new MemoryIdentityService());
+    brewery.ingredient(new MemoryFileService());
+    brewery.ingredient(new MemoryEmailStore());
   }
   
   public MongoConfiguration db(DB db) {
@@ -233,6 +237,10 @@ public class MongoConfiguration extends DefaultConfiguration {
   public MongoClientOptions.Builder getOptionBuilder() {
     return optionBuilder;
   }
-  
-  
+
+  @Override
+  public MongoConfiguration ingredient(Object ingredient) {
+    super.ingredient(ingredient);
+    return this;
+  }
 }

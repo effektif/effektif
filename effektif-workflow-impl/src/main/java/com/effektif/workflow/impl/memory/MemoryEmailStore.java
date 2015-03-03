@@ -13,55 +13,40 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.memory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.model.FileId;
-import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.impl.file.File;
-import com.effektif.workflow.impl.file.FileService;
-import com.effektif.workflow.impl.util.Time;
+import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.EmailStore;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MemoryFileService implements FileService {
+public class MemoryEmailStore implements EmailStore {
   
-  Map<FileId,MemoryFile> files = new HashMap<>();
+  Map<EmailId, Email> emails = new ConcurrentHashMap<>();
   long nextId = 1;
-  
+
   @Override
-  public File createFile(File file) {
-    MemoryFile memoryFile = null;
-    if (file instanceof MemoryFile) {
-      memoryFile = (MemoryFile) file;
-    } else {
-      memoryFile = new MemoryFile(file);
-    }
-    
+  public Email createEmail(Email email) {
     Authentication authentication = Authentications.current();
     String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
     if (organizationId!=null) {
-      memoryFile.setOrganizationId(organizationId);
+      email.setOrganizationId(organizationId);
     }
-    String userId = authentication!=null ? authentication.getUserId() : null;
-    if (userId!=null) {
-      memoryFile.creatorId(new UserId(userId));
-    }
-    
-    FileId fileId = new FileId(Long.toString(nextId++));
-    memoryFile.setId(fileId);
-    memoryFile.createTime(Time.now());
-    files.put(fileId, memoryFile);
-    
-    return file;
+
+    EmailId emailId = new EmailId(Long.toString(nextId++));
+    email.setId(emailId);
+    emails.put(emailId, email);
+    return email;
   }
 
   @Override
-  public File getFileById(FileId fileId) {
-    return files.get(fileId);
+  public Email findEmailById(EmailId emailId) {
+    return emails.get(emailId);
   }
 }

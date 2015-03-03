@@ -11,17 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.email;
+package com.effektif.workflow.impl.data.types;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.file.FileService;
 
 
-
-/** sends emails. 
- * 
+/**
  * @author Tom Baeyens
  */
-public interface EmailService {
+public class EmailTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
+  
+  FileService fileService;
 
-  void send(Email email);
+  public EmailTypeImpl(Configuration configuration) {
+    super(File.class, configuration);
+    this.fileService = configuration.get(FileService.class);
+  }
 
-  String validate(String emailAddress);
+  public EmailTypeImpl(JavaBeanType typeApi, Configuration configuration) {
+    super(typeApi, configuration);
+  }
 }

@@ -84,7 +84,7 @@ public class TextTemplate {
       this.expression = parser.parseExpression(expression);
     }
     public String toString() {
-      return expression!=null ? expression.toString() : "null";
+      return expression!=null ? "{{"+expression+"}}" : "{{}}";
     }
     @Override
     public void append(StringBuilder out, ScopeInstanceImpl scopeInstance, Hints hints) {

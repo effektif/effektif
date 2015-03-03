@@ -18,13 +18,13 @@ package com.effektif.workflow.impl.data.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.ObjectField;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 
-/**
+/**  idea for now.  @see CustomTypeStore, CustomTypeImpl
+ * 
  * @author Tom Baeyens
  */
 public class ObjectFieldImpl {

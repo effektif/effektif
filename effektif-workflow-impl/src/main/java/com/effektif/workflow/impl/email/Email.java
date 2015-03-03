@@ -19,13 +19,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.model.Attachment;
+import com.effektif.workflow.api.model.EmailId;
 
 
-/**
+/** used for both sending emails {@link EmailService} as 
+ * well as storing emails ({@link EmailStore}.
+ * 
+ * When sending emails, properties id and organizationId are ignored. 
+ *  
  * @author Tom Baeyens
  */
 public class Email {
 
+  protected EmailId id;
+  protected String organizationId;
   protected String from;
   protected String replyTo;
   protected Map<String,String> headers;
@@ -37,6 +44,20 @@ public class Email {
   protected String bodyHtml;
   protected List<Attachment> attachments;
 
+  public EmailId getId() {
+    return this.id;
+  }
+  public void setId(EmailId id) {
+    this.id = id;
+  }
+
+  public String getOrganizationId() {
+    return this.organizationId;
+  }
+  public void setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
+  }
+  
   public String getFrom() {
     return this.from;
   }

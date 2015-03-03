@@ -96,7 +96,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   public BasicDBObject workflowApiToMongo(Workflow workflow) {
     BasicDBObject dbWorkflow = workflowApiToMongoAbstract(workflow);
     Workflow w = (Workflow) workflow;
-    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, w.getDeployedTime());
+    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, w.getCreateTime());
     return dbWorkflow;
   }
 
@@ -124,7 +124,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     Date deployedTime = (Date) dbWorkflow.remove(FieldsWorkflow.DEPLOYED_TIME);
     T workflow = mongoToWorkflowApiAbstract(dbWorkflow, workflowClass);
     if (deployedTime!=null) {
-      workflow.deployedTime(new LocalDateTime(deployedTime));
+      workflow.createTime(new LocalDateTime(deployedTime));
     }
     return workflow;
   }

@@ -17,18 +17,16 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -83,51 +81,32 @@ public class EmailTaskTest extends WorkflowTest {
     assertEquals("<b>unconscious</b>", email.getBodyHtml());
   }
   
-//  public static class TestAttachment implements Attachment {
-//    byte[] content;
-//    String fileName;
-//    String contentType;
-//    public TestAttachment(String content, String fileName, String contentType) {
-//      this(content.getBytes(), fileName, contentType);
-//    }
-//    public TestAttachment(byte[] content, String fileName, String contentType) {
-//      this.content = content;
-//      this.fileName = fileName;
-//      this.contentType = contentType;
-//    }
-//    @Override
-//    public InputStream getInputStream() {
-//      return new ByteArrayInputStream(content);
-//    }
-//    @Override
-//    public String getFileName() {
-//      return fileName;
-//    }
-//    @Override
-//    public String getContentType() {
-//      return contentType;
-//    }
-//  }
-//
-//  @Test
-//  public void testEmailAttachmentValues() throws Exception {
-//    Attachment a1 = new TestAttachment("one", "fn1", "text/plain");
-//    Attachment a2 = new TestAttachment("two", "fn2", "text/plain");
-//    
-//    Workflow workflow = new Workflow()
-//      .activity("1", new EmailTask()
-//        .attachment(a1)
-//        .attachment(a2));
-//    
-//    deploy(workflow);
-//    
-//    start(workflow);
-//
-//    Email email = getEmail(0);
-//    assertNotNull(email);
-//    assertEquals("fn1", email.getAttachments().get(0).getFileName());
-//    assertEquals("fn2", email.getAttachments().get(1).getFileName());
-//  }
+  @Test
+  public void testEmailAttachmentValues() throws Exception {
+    File expenseNote = createTestFile("expense note details", "expensenote.txt", "text/plain");
+    File receiptOne = createTestFile("receipt one", "receiptone.png", "image/png");
+    File receiptTwo = createTestFile("receipt two", "receipttwo.png", "image/png");
+    
+    Workflow workflow = new Workflow()
+      .variable("expenseNote", new FileIdType())
+      .variable("receipts", new ListType(new FileIdType()))
+      .activity("1", new EmailTask()
+        .attachmentExpression("expenseNote.@")
+        .attachmentExpression("receipts.@"));
+    
+    deploy(workflow);
+    
+    workflowEngine.start(new TriggerInstance()
+      .data("expenseNote", expenseNote.getId())
+      .data("receipts", Lists.of(receiptOne.getId(), receiptTwo.getId()))
+      .workflowId(workflow.getId()));
+
+    Email email = getEmail(0);
+    assertNotNull(email);
+    assertEquals("expensenote.txt", email.getAttachments().get(0).getFileName());
+    assertEquals("receiptone.png", email.getAttachments().get(1).getFileName());
+    assertEquals("receipttwo.png", email.getAttachments().get(2).getFileName());
+  }
 
 //  @Test
 //  public void testEmailAttachmentExpression() throws Exception {

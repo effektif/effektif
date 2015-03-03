@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.json;
 import java.io.IOException;
 
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,9 +53,9 @@ public class VariableInstanceDeserializer extends StdDeserializer<VariableInstan
   public VariableInstance deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
     VariableInstance variableInstance = (VariableInstance) defaultDeserializer.deserialize(jp, ctxt);
     if (variableInstance.getType()!=null && variableInstance.getValue()!=null) {
-      JavaType javaType = dataTypeService.createJavaType(variableInstance.getType());
-      if (javaType!=null) {
-        Object deserializedValue = objectMapper.convertValue(variableInstance.getValue(), javaType);
+      DataType<?> dataType = dataTypeService.createDataType(variableInstance.getType());
+      if (dataType!=null) {
+        Object deserializedValue = dataType.convertJsonToInternalValue(variableInstance.getValue());
         variableInstance.setValue(deserializedValue);
       }
     }

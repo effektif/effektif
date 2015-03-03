@@ -18,10 +18,10 @@ package com.effektif.workflow.impl.data.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.CustomType;
 
 
-/**
+/** idea for now.  @see custom type store
+ * 
  * @author Tom Baeyens
  */
 public class CustomTypeImpl extends ObjectTypeImpl<CustomType> {

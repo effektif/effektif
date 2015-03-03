@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.data.source;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.types.CustomType;
+import com.effektif.workflow.impl.data.types.CustomType;
 
 
 /**
