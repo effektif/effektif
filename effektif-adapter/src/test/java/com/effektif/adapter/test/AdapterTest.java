@@ -37,27 +37,38 @@ public class AdapterTest {
 
   @Test
   public void testAdapter() {
+    // NOTE from Rotterdam meeting:
+    // Users will be able to create an API key in the Effektif Organization Settings UI
+    // This API key will have to be passed into the pushDescriptorsToEffektif method
+    
     // A developer or sysamind boots his own adapter
     int port = 11111;
     AdapterServer adapterServer = new AdapterServer()
+      // .id("coca-cola") (*)
       .port(port)
       .registerActivityAdapter(new HelloWorldActivityAdapter())
       .registerDataSourceAdapter(new ThingsDataSourceAdapter());
     adapterServer.startup();
 
+    // (*) TODO the adapter server should define its id.
+    //     the pushDescriptorsToEffektif should also push the adapterServerId to the central workflow engine
+    
     // The user opens the settings in the Effektif product and 
     // adds the adapter by configuring the URL
     TestConfiguration configuration = new TestConfiguration();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     AdapterService adapterService = configuration.get(AdapterService.class);
     Adapter adapter = adapterService.saveAdapter(new Adapter().url("http://localhost:"+port+"/"));
-    adapterService.refreshAdapter(adapter.getId());
+    adapterService.refreshAdapter(adapter.getId()); // TODO (*) replace this with the line below
+    // adapterServer.pushDescriptorsToEffektif("apikey");
 
+    
     // Next, the user is able to start building and executing workflows 
     // with the new activity 
     Workflow workflow = new Workflow()
       .activity("hello", new AdapterActivity()
-        .adapterId(adapter.getId())
+        .adapterId(adapter.getId()) // TODO (*) replace with the line below
+        // .adapterServerId("coca-cola")
         .activityKey("hello")
         .inputValue(HelloWorldActivityAdapter.NAME, "Walter")
       );

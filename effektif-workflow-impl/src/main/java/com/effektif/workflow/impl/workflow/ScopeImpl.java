@@ -42,76 +42,88 @@ public abstract class ScopeImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
 
-  public void parse(Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
-    this.id = scopeApi.getId();
+  public void parse(Scope scope, WorkflowParser parser, ScopeImpl parent) {
+    this.id = scope.getId();
     this.configuration = parser.configuration;
     if (parent!=null) {
       this.parent = parent;
       this.workflow = parent.workflow;
     }
     
-    List<Variable> variableApi = scopeApi.getVariables();
-    if (variableApi!=null) {
+    List<Variable> variables = scope.getVariables();
+    if (variables!=null && !variables.isEmpty()) {
       int i = 0;
-      for (Variable apiVariable: variableApi) {
+      for (Variable variable: variables) {
         VariableImpl variableImpl = new VariableImpl();
-        parser.pushContext("variables", apiVariable, i);
-        variableImpl.parse(apiVariable, parser, this);
+        parser.pushContext("variables", variable, i);
+        variableImpl.parse(variable, parser, this);
         addVariable(variableImpl);
         parser.popContext();
         i++;
       }
+    } else {
+      // ensures there are not empty collections in the persistent storage
+      scope.setVariables(null);
     }
     
-    List<Timer> timersApi = scopeApi.getTimers();
-    if (timersApi!=null) {
+    List<Timer> timers = scope.getTimers();
+    if (timers!=null && !timers.isEmpty()) {
       int i = 0;
-      for (Timer timerApi: timersApi) {
-        TimerImpl timer = new TimerImpl();
-        parser.pushContext("timers", timerApi, i);
-        timer.parse(timerApi, this, parser);
-        addTimer(timer);
+      for (Timer timer: timers) {
+        TimerImpl timerImpl = new TimerImpl();
+        parser.pushContext("timers", timer, i);
+        timerImpl.parse(timer, this, parser);
+        addTimer(timerImpl);
         parser.popContext();
         i++;
       }
+    } else {
+      // ensures there are not empty collections in the persistent storage
+      scope.setTimers(null);
     }
 
     Map<String, ActivityImpl> activitiesByDefaultTransitionId = new HashMap<>();
-    List<Activity> activitiesApi = scopeApi.getActivities();
-    if (activitiesApi!=null) {
+    List<Activity> activities = scope.getActivities();
+    if (activities!=null && !activities.isEmpty()) {
       int i = 0;
-      for (Activity activityApi: activitiesApi) {
+      for (Activity activity: activities) {
         ActivityImpl activityImpl = new ActivityImpl();
-        parser.pushContext("activities", activityApi, i);
-        if (activityApi.getDefaultTransitionId()!=null) {
-          activitiesByDefaultTransitionId.put(activityApi.getDefaultTransitionId(), activityImpl);
+        parser.pushContext("activities", activity, i);
+        if (activity.getDefaultTransitionId()!=null) {
+          activitiesByDefaultTransitionId.put(activity.getDefaultTransitionId(), activityImpl);
         }
-        activityImpl.parse(activityApi, scopeApi, parser, this);
+        activityImpl.parse(activity, scope, parser, this);
         addActivity(activityImpl);
         parser.popContext();
         i++;
       }
+    } else {
+      // ensures there are not empty collections in the persistent storage
+      scope.setActivities(null);
     }
 
-    List<Transition> transitionsApi = scopeApi.getTransitions();
-    if (transitionsApi!=null) {
+    List<Transition> transitions = scope.getTransitions();
+    if (transitions!=null && !transitions.isEmpty()) {
       int i = 0;
-      for (Transition transitionApi: transitionsApi) {
+      for (Transition transition: transitions) {
         TransitionImpl transitionImpl = new TransitionImpl();
-        parser.pushContext("transitions", transitionApi, i);
-        transitionImpl.parse(transitionApi, this, parser, activitiesByDefaultTransitionId);
+        parser.pushContext("transitions", transition, i);
+        transitionImpl.parse(transition, this, parser, activitiesByDefaultTransitionId);
         addTransition(transitionImpl);
         parser.popContext();
         i++;
       }
+    } else {
+      // ensures there are not empty collections in the persistent storage
+      scope.setTransitions(null);
     }
 
     if (activities!=null) {
       // some activity types need to validate incoming and outgoing transitions, 
       // that's why they are validated after the transitions.
       int i = 0;
-      for (ActivityImpl activity : activities.values()) {
-        Activity apiActivity = activitiesApi.get(i);
+      for (ActivityImpl activity : this.activities.values()) {
+        Activity apiActivity = activities.get(i);
         if (activity.activityType != null) {
           parser.pushContext("activities", apiActivity, i);
           activity.activityType.parse(activity, apiActivity, parser);
