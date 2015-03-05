@@ -37,8 +37,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * make Effektif’s process model easier to understand. A service task is an appropriate mapping because you can think of
  * sending an email as calling an external ‘email connector’ - a black box service external to the process engine.
  *
- * BPMN XML: {@code <serviceTask id="announceRelease" effektif:type="email">}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Email-Task">Email Task</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("email")

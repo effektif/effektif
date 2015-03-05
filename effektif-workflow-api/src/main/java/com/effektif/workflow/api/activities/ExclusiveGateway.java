@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * An exclusive gateway, used to fork and join sequence flows for conditionally executing tasks.
  *
- * BPMN XML: {@code <exclusiveGateway id="fork" gatewayDirection="Diverging"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Exclusive-Gateway">Exclusive Gateway</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("exclusiveGateway")

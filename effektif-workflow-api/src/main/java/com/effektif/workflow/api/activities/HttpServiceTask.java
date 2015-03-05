@@ -21,8 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * A service task that consists of an HTTP interface.
  *
- * BPMN XML: {@code <serviceTask id="publishReleaseNotes" effektif:type="http">}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/HTTP-Service-Task">HTTP Service Task</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("httpServiceTask")

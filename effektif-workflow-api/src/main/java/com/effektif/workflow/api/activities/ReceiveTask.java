@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * A receive task waits until a message is received.
  *
- * BPMN XML: {@code <receiveTask id="buildComplete"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Receive-Task">Receive Task</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("receiveTask")

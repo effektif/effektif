@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * A script task - JavaScript code that will be executed by the process engine.
  *
- * BPMN XML: {@code <scriptTask id="checkAllowance"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Script-Task">Script Task</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("scriptTask")

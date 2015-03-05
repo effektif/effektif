@@ -21,7 +21,8 @@ import com.effektif.workflow.api.task.TaskService;
 /** Instantiate one of the implementing classes like 
  * MemoryConfiguration or a MongoConfiguration 
  * to get started configuring your workflow engine.
- * 
+ *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Runtime-configuration">Runtime configuration</a>
  * @author Tom Baeyens
  */
 public interface Configuration {

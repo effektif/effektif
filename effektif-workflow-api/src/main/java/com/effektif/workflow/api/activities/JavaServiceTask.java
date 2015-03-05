@@ -20,7 +20,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /** 
  * invokes a java method.
- *  
+ *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Java-Service-Task">Java Service Task</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("javaServiceTask")

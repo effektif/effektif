@@ -37,8 +37,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * A user task, also known as a human task.  
  * Tasks can be assigned and optionally have a form to complete.
  *
- * BPMN XML: {@code <userTask id="approveRequest" name="Approve vacation request"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/User-Task">User Task</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("userTask")

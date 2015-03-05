@@ -20,6 +20,7 @@ import com.effektif.workflow.impl.email.TestEmailService;
 
 
 /**
+ * @see <a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types#test-workflow-engine">Test workflow engine</a>
  * @author Tom Baeyens
  */
 public class TestConfiguration extends MemoryConfiguration {

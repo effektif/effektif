@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -25,7 +24,11 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
-
+/**
+ * An activity is part of a workflow model that corresponds to a workflow task when executing the workflow.
+ *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Activity-types">Activity types</a>
+ */
 public interface ActivityType<T extends Activity> extends Plugin {
   
   /** provides the data structure to the UI how this activity can be configured so that the UI can show a dialog */

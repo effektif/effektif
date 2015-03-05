@@ -19,6 +19,7 @@ import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 
 
 /**
+ * @see <a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types#in-memory-workflow-engine">In-memory workflow engine</a>
  * @author Tom Baeyens
  */
 public class MemoryConfiguration extends DefaultConfiguration {

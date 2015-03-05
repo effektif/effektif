@@ -19,8 +19,7 @@ package com.effektif.workflow.api.activities;
 /**
  * A service task is a call to code that will execute outside the service engine.
  *
- * BPMN XML: {@code <serviceTask id="updateStatistics"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Service-Task">Service Task</a>
  * @author Tom Baeyens
  */
 public abstract class ServiceTask extends NoneTask {

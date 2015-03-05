@@ -35,7 +35,7 @@ public class UserTaskTest extends WorkflowTest {
 
   @Test
   public void testTask() throws Exception {
-    long duedateEarliest = new LocalDateTime().plusMinutes(5).toDate().getTime();
+    long dueDateEarliest = new LocalDateTime().plusMinutes(5).toDate().getTime();
     
     Workflow workflow = new Workflow()
       .activity("1", new UserTask()
@@ -54,8 +54,8 @@ public class UserTaskTest extends WorkflowTest {
     assertEquals("johndoe", task.getAssigneeId().getId());
     assertEquals("joesmoe", task.getCandidateIds().get(0).getId());
     assertEquals("jackblack", task.getCandidateIds().get(1).getId());
-    assertTrue(duedateEarliest<=task.getDuedate().toDate().getTime());
-    long duedateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
-    assertTrue(task.getDuedate().toDate().getTime()<=duedateLatest);
+    assertTrue(dueDateEarliest<=task.getDuedate().toDate().getTime());
+    long dueDateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
+    assertTrue(task.getDuedate().toDate().getTime()<=dueDateLatest);
   }
 }

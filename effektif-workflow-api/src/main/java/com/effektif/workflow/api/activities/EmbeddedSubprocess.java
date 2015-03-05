@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * Invokes a workflow that is embedded in another workflow.
  *
- * BPMN XML: {@code <subProcess id="increaseVacationAllowance"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Embedded-Subprocess">Embedded Subprocess</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("embeddedSubprocess")

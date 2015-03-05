@@ -30,7 +30,9 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
-
+/**
+ * @see <a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types#mongodb-workflow-engine">MongoDB workflow engine</a>
+ */
 public class MongoConfiguration extends DefaultConfiguration {
 
   public static List<ServerAddress> DEFAULT_SERVER_ADDRESSES = Lists.of(createServerAddress("localhost", null));

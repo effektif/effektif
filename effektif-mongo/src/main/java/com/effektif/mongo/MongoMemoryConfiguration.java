@@ -17,7 +17,9 @@ package com.effektif.mongo;
 
 import com.effektif.workflow.impl.memory.MemoryWorkflowStore;
 
-
+/**
+ * @see <a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types#mongodb--memory-workflow-engine">MongoDB / Memory workflow engine</a>
+ */
 public class MongoMemoryConfiguration extends MongoConfiguration {
 
   public MongoMemoryConfiguration() {

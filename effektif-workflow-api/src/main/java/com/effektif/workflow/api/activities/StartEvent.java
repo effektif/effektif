@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * A start event activates its outgoing flow. A process may have zero or more start events.
  *
- * BPMN XML: {@code <startEvent id="theStart"/>}
- *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Start-Event">Start Event</a>
  * @author Tom Baeyens
  */
 @JsonTypeName("startEvent")
