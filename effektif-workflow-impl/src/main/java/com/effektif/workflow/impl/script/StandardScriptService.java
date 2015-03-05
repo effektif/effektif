@@ -77,11 +77,13 @@ public class StandardScriptService extends AbstractScriptService implements Scri
     ScriptResult scriptResult = new ScriptResult();
     try {
       StringWriter logWriter = new StringWriter();
-      StandardScriptContext scriptContext = new StandardScriptContext(scopeInstance, script, logWriter);
+      StandardScriptBindings scriptBindings = new StandardScriptBindings(script, scopeInstance, logWriter);
+      StandardScriptContext scriptContext = new StandardScriptContext(scriptBindings, script, logWriter);
       javax.script.CompiledScript javaxScript = (javax.script.CompiledScript) script.compiledScript;
       Object result = javaxScript.eval(scriptContext);
       scriptResult.setResult(result);
       scriptResult.setLogs(logWriter.toString());
+      scriptResult.setUpdates(scriptBindings.updates);
     } catch (ScriptException e) {
       e.printStackTrace();
       scriptResult.setException(e);

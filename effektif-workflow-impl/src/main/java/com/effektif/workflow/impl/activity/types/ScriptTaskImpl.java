@@ -24,7 +24,9 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.script.CompiledScript;
+import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -77,7 +79,14 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     if (script!=null) {
-      script.evaluate(activityInstance);
+      ScriptResult scriptResult = script.evaluate(activityInstance);
+      Map<String, TypedValueImpl> updates = scriptResult!=null ? scriptResult.getUpdates() : null;
+      if (scriptResult!=null && updates!=null) {
+        for (String variableId: updates.keySet()) {
+          TypedValueImpl typedValue = updates.get(variableId);
+          activityInstance.setVariableValue(variableId, typedValue.value);
+        }
+      }
     }
     activityInstance.onwards();
   }

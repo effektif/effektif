@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +37,7 @@ import sun.org.mozilla.javascript.internal.ScriptableObject;
 
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 
@@ -52,14 +53,14 @@ public class RhinoVariableScope implements Scriptable {
   protected ScopeInstanceImpl scopeInstance;
   protected Scriptable parentScope;
   
-  protected Map<String,Object> localObjects;
+  public Map<String,Object> localObjects;
   protected Set<String> updated;
-  protected Map<String,String> scriptToWorkflowMappings;
+  protected Map<String,String> mappings;
   
   public RhinoVariableScope(ScopeInstanceImpl scopeInstance, Map<String,String> scriptToWorkflowMappings, PrintWriter console, Scriptable parentScope) {
     this.scopeInstance = scopeInstance;
     this.parentScope = parentScope;
-    this.scriptToWorkflowMappings = scriptToWorkflowMappings;
+    this.mappings = scriptToWorkflowMappings;
     this.updated = new HashSet<>();
     this.localObjects = new HashMap<>();
     this.localObjects.put("console", new Console(console)); 
@@ -72,7 +73,7 @@ public class RhinoVariableScope implements Scriptable {
     if (localObjects.containsKey(name)) {
       return localObjects.get(name);
     }
-    String variableId = scriptToWorkflowMappings.get(name);
+    String variableId = mappings!=null ? mappings.get(name) : null;
     if (variableId==null) {
       variableId = name;
     }
@@ -80,9 +81,8 @@ public class RhinoVariableScope implements Scriptable {
     VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
     if (variableInstance!=null) {
       TypedValueImpl typedValue = variableInstance.getTypedValue();
-      Object jsonValue = typedValue.type.convertInternalToJsonValue(typedValue.value);
-      log.debug("  lazy loading "+name+" = "+jsonValue);
-      nativeValue = convertInternalToNative(jsonValue, name);
+      log.debug("  lazy loaded variable "+name+" = "+(typedValue!=null ? typedValue.value : "null"));
+      nativeValue = convertInternalToNative(typedValue, name);
     }
     localObjects.put(name, nativeValue);
     return nativeValue;
@@ -97,7 +97,7 @@ public class RhinoVariableScope implements Scriptable {
     if (localObjects.containsKey(name)) {
       return true;
     }
-    String variableId = scriptToWorkflowMappings.get(name);
+    String variableId = mappings!=null ? mappings.get(name) : null;
     if (variableId==null) {
       variableId = name;
     }
@@ -133,8 +133,8 @@ public class RhinoVariableScope implements Scriptable {
   public Map<String,TypedValueImpl> getUpdatedVariableValues() {
     Map<String,TypedValueImpl> updatedValues = new HashMap<>();
     for (String scriptVariableName: updated) {
-      Object nativeObject = localObjects.get(scriptVariableName);
-      String variableId = scriptToWorkflowMappings.get(scriptVariableName);
+      Object localObject = localObjects.get(scriptVariableName);
+      String variableId = mappings!=null ? mappings.get(scriptVariableName) : null;
       if (variableId==null) {
         variableId = scriptVariableName;
       }
@@ -144,9 +144,18 @@ public class RhinoVariableScope implements Scriptable {
         // NativeObject implements Map
         // NativeArray implements List
         // So the data type conversion from javascript to internal should work
-        Object internalValue = type.convertJsonToInternalValue(nativeObject);
-        TypedValueImpl value = new TypedValueImpl(type, internalValue);
-        updatedValues.put(scriptVariableName, value);
+        Object value = null;
+        if (localObject instanceof DirtyCheckingNativeObject) {
+          DirtyCheckingNativeObject nativeObject = (DirtyCheckingNativeObject) localObject;
+          value = nativeObject.value;
+        } else if (localObject instanceof DirtyCheckingNativeArray) {
+          DirtyCheckingNativeArray nativeArray = (DirtyCheckingNativeArray) localObject;
+          value = nativeArray.values;
+        } else {
+          value = localObject;
+        }
+        TypedValueImpl typedValue = new TypedValueImpl(type, value);
+        updatedValues.put(variableId, typedValue);
       }
     }
     return updatedValues;
@@ -158,40 +167,52 @@ public class RhinoVariableScope implements Scriptable {
     updated.add(name);
   }
 
-  protected Object convertInternalToNative(Object internalObject, String name) {
-    if (internalObject==null) {
+  protected Object convertInternalToNative(TypedValueImpl typedValue, String name) {
+    if (typedValue==null) {
       return null;
     }
-    Class< ? extends Object> valueClass = internalObject.getClass();
-    if (String.class.isAssignableFrom(valueClass)
-        || Number.class.isAssignableFrom(valueClass)) {
-      return internalObject;
-    }
-    if (Map.class.isAssignableFrom(valueClass)) {
-      return new DirtyCheckingNativeObject((Map)internalObject, name);
-    }
-    if (Collection.class.isAssignableFrom(valueClass)) {
-      return new DirtyCheckingNativeArray((Collection)internalObject, name);
-    }
-    return null;
+    return convertInternalToNative(typedValue.type,  typedValue.value, name);
   }
 
-  /**
- * @author Tom Baeyens
- */
-public class DirtyCheckingNativeArray extends NativeArray {
-    String name;
-    public DirtyCheckingNativeArray(Collection collection, String name) {
-      super(collection.size());
-      this.name = name;
-      Iterator iterator = collection.iterator();
-      int i=0;
-      while (iterator.hasNext()) {
-        Object nativeObject = convertInternalToNative(iterator.next(), name);
-        this.set(i, nativeObject);
-        i++;
-      }
+  protected Object convertInternalToNative(DataType type, Object value, String name) {
+    if (value==null) {
+      return null;
     }
+    Class< ? extends Object> valueClass = value.getClass();
+    if (String.class.isAssignableFrom(valueClass)
+        || Number.class.isAssignableFrom(valueClass)
+        || Boolean.class.isAssignableFrom(valueClass)) {
+      return value;
+    }
+    if (type instanceof ListTypeImpl) {
+      ListTypeImpl listType = (ListTypeImpl) type;
+      return new DirtyCheckingNativeArray(listType.elementType, (List<Object>) value, name);
+    }
+    return new DirtyCheckingNativeObject(type, value, name);
+  }
+
+  public class DirtyCheckingNativeArray extends NativeArray {
+    String name;
+    DataType elementType;
+    List<Object> values;
+    public DirtyCheckingNativeArray(DataType elementType, List<Object> values, String name) {
+      super(values.size());
+      this.name = name;
+      this.values = values;
+    }
+    
+    @Override
+    public Object get(int index, Scriptable arg1) {
+      log.debug("  get index "+index);
+      Object elementValue = values.get(index);
+      return convertInternalToNative(elementType, elementValue, name);
+    }
+
+    @Override
+    public Object get(int index) {
+      return get(index, null);
+    }
+
     @Override
     public void add(int arg0, Object arg1) {
       updated(name);
@@ -272,20 +293,30 @@ public class DirtyCheckingNativeArray extends NativeArray {
       updated(name);
       super.setInstanceIdValue(arg0, arg1);
     }
-    
   }
 
-  /**
- * @author Tom Baeyens
- */
-public class DirtyCheckingNativeObject extends NativeObject {
+
+  public class DirtyCheckingNativeObject extends NativeObject {
     String name;
-    public DirtyCheckingNativeObject(Map<String,Object> map, String name) {
+    DataType type;
+    Object value;
+    public DirtyCheckingNativeObject(DataType type, Object value, String name) {
       this.name = name;
-      for (Map.Entry<String,Object> entry: map.entrySet()) {
-        Object nativeObject = convertInternalToNative(entry.getValue(), name);
-        this.put(entry.getKey(), this, nativeObject);
-      }
+      this.type = type;
+      this.value = value;
+    }
+    
+    @Override
+    public boolean has(String field, Scriptable arg1) {
+      log.debug("  has field "+field);
+      return true;
+    }
+
+    @Override
+    public Object get(String field, Scriptable arg1) {
+      log.debug("  get field "+field);
+      TypedValueImpl typedFieldValue = type.dereference(value, field);
+      return convertInternalToNative(typedFieldValue, field);
     }
 
     @Override

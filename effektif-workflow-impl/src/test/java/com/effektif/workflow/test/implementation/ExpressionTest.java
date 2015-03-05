@@ -27,7 +27,6 @@ import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.identity.User;
-import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -44,13 +43,13 @@ public class ExpressionTest extends WorkflowTest {
       .fullName("John Doe")
       .email("johndoe@localhost");
     
-    configuration.get(MemoryIdentityService.class)
+    configuration.get(IdentityService.class)
       .createUser(johndoe);
     
     Workflow workflow = new Workflow()
       .variable("initiatorId", new UserIdType())
       .activity("1", new EmailTask()
-        .toExpression("initiatorId.@.email"));
+        .toExpression("initiatorId.email"));
     
     deploy(workflow);
     

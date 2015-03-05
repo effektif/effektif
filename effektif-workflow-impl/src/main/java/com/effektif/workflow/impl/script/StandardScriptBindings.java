@@ -60,6 +60,7 @@ public class StandardScriptBindings implements Bindings {
   protected Map<String,String> scriptToProcessMappings;
   protected Console console;
   protected Map<Object,Object> transientValues;
+  protected Map<String,TypedValueImpl> updates;
 
   public StandardScriptBindings(ScriptImpl script, ScopeInstanceImpl scopeInstance, Writer logWriter) {
     this.scriptToProcessMappings = script.mappings;
@@ -141,8 +142,7 @@ public class StandardScriptBindings implements Bindings {
       if (variableInstance==null) {
         throw new RuntimeException("Variable "+variableId+" is not defined (script variable name '"+scriptVariableName+"')");
       }
-      Object value = variableInstance.type.convertJsonToInternalValue(scriptValue);
-      scopeInstance.setVariableValue(variableInstance, value);
+      updates.put(variableId, new TypedValueImpl(variableInstance.type, scriptValue));
     }
     return null;
   }

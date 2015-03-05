@@ -41,13 +41,13 @@ public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
 
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
-    if ("@".equals(fieldName)) {
-      GroupId groupId = (GroupId) value;
-      IdentityService identityService = configuration.get(IdentityService.class);
-      Group group = identityService.findGroupById(groupId);
+    GroupId groupId = (GroupId) value;
+    IdentityService identityService = configuration.get(IdentityService.class);
+    Group group = identityService.findGroupById(groupId);
+    if ("*".equals(fieldName)) {
       return new TypedValueImpl(new GroupTypeImpl(configuration), group);
     }
-    return null;
+    return new GroupTypeImpl(configuration).dereference(group, fieldName);
   }
 
   @Override

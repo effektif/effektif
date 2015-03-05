@@ -55,13 +55,13 @@ public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
   
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
-    if ("@".equals(fieldName)) {
-      EmailId emailId = (EmailId) value;
-      EmailStore emailStore = configuration.get(EmailStore.class);
-      Email email = emailStore.findEmailById(emailId);
+    EmailId emailId = (EmailId) value;
+    EmailStore emailStore = configuration.get(EmailStore.class);
+    Email email = emailStore.findEmailById(emailId);
+    if ("*".equals(fieldName)) {
       return new TypedValueImpl(new EmailTypeImpl(configuration), email);
     }
-    return null;
+    return new EmailTypeImpl(configuration).dereference(email, fieldName);
   }
 
   @Override

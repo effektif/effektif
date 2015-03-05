@@ -21,9 +21,13 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.identity.IdentityService;
+import com.effektif.workflow.impl.identity.User;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -49,5 +53,30 @@ public class ScriptTest extends WorkflowTest {
       .data("n", "World"));
 
     assertEquals("Hello World", workflowInstance.getVariableValue("m"));
+  }
+
+  @Test
+  public void testScriptDereferencing() {
+    User johndoe = new User()
+      .id("johndoe")
+      .fullName("John Doe")
+      .email("johndoe@localhost");
+
+    configuration.get(IdentityService.class)
+      .createUser(johndoe);
+
+    Workflow workflow = new Workflow()
+      .variable("user", new UserIdType())
+      .variable("name", new TextType())
+      .activity("s", new ScriptTask()
+        .script("name = user.fullName;"));
+
+    deploy(workflow);
+    
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("user", new UserId("johndoe")));
+
+    assertEquals("John Doe", workflowInstance.getVariableValue("name"));
   }
 }

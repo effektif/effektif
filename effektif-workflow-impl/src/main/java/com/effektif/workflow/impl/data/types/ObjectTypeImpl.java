@@ -44,6 +44,9 @@ public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
     ObjectFieldImpl field = fields.get(fieldName);
+    if (field==null) {
+      throw new RuntimeException("Field '"+fieldName+"' doesn't exist in type "+getClass().getSimpleName());
+    }
     DataType fieldType = field.type;
     Object fieldValue = field.getFieldValue(value);
     return new TypedValueImpl(fieldType, fieldValue);

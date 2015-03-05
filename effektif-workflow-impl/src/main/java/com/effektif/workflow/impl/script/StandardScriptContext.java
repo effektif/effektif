@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 /**
@@ -33,10 +32,10 @@ public class StandardScriptContext extends SimpleScriptContext {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
   
-  public StandardScriptContext(ScopeInstanceImpl scopeInstance, ScriptImpl script, Writer logWriter) {
+  public StandardScriptContext(StandardScriptBindings scriptBindings, ScriptImpl script, Writer logWriter) {
     setWriter(logWriter);
     setErrorWriter(logWriter);
-    setBindings(new StandardScriptBindings(script, scopeInstance, logWriter), ENGINE_SCOPE);
+    setBindings(scriptBindings, ENGINE_SCOPE);
   }
 
 }
