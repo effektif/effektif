@@ -79,7 +79,7 @@ assertEquals(1, tasks.size());
 ## Introduction
 
 * [Who is behind this project?](https://github.com/effektif/effektif-oss/wiki/Team)
-* [Roadmap](https://github.com/effektif/effektif-oss/wiki/Roadmap)
+* [Road map](https://github.com/effektif/effektif-oss/wiki/Road-map)
 
 ## User Documentation
 
