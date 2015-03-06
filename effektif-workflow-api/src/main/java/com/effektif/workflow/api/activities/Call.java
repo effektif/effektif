@@ -81,6 +81,9 @@ public class Call extends AbstractBindableActivity {
     return this;
   }
 
+  /**
+   * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
+   */
   @Override
   public Call multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);

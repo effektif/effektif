@@ -22,6 +22,7 @@ import com.effektif.workflow.api.types.Type;
 
 
 /**
+ * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
  * @author Tom Baeyens
  */
 public class MultiInstance {

@@ -53,6 +53,9 @@ public class Activity extends Scope {
     return this;
   }
 
+  /**
+   * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
+   */
   public MultiInstance getMultiInstance() {
     return this.multiInstance;
   }
