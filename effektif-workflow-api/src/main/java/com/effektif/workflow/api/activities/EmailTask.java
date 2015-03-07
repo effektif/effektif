@@ -353,7 +353,10 @@ public class EmailTask extends Activity {
     }
     attachments.add(attachment);
   }
-  
+
+  /**
+   * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
+   */
   @Override
   public EmailTask multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);

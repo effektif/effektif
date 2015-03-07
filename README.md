@@ -1,29 +1,32 @@
 # Effektif
 
-Effektif is a flexible workflow engine that you can embed into your own apps.
-When developing business applications, using a worfklow engine like Effektif 
-will save you precious time and energy that you can spend on cool features 
-for your own app.   
+Effektif is a flexible workflow engine that you can embed into your own applicaitons.
+Developing business applications with a worfklow engine like Effektif
+saves time and energy that you can spend on cool features for your own application.
 
-## What does a workflow engine do?
+## What a workflow does
 
-A workflow is based on a diagram (like in BPMN or flowcharts) and specify an execution flow to coordinate tasks, automatic activities and timers.  The workflow engine keeps track of each execution (aka workflow instance) and executes the activities as specified in the workflow.  
+A workflow is based on a model (as in a flow chart or BPMN diagram)
+and specifies an execution flow to coordinate tasks, automatic activities and timers.
+The workflow engine keeps track of each execution (aka workflow instance)
+and executes the activities as specified in the workflow.
 Effektif handles activities that are synchronous (automatic actions), asynchronous (wait states).
 
-## Why did we create Effektif ?
+## Why we created Effektif
 
-Workflows interact more and more with cloud services or micro services 
-over REST APIs. Those services don't participate in a transaction. The engine 
-needs to save it's state before each activity is being executed.  
+Workflows increasingly interact with cloud services or micro services
+over REST APIs. Those services don’t participate in transactions. The engine
+needs to save its state before each activity is executed.
 
-Secondly, support for pluggable persistence.  For starters our cloud 
-hosted solution we want to use MongoDB for horizontal scalability.  
-Our engine is unique becaues it separates the persistence from the 
-core engine. Advanced users can even plug in their own persistence.
+Secondly, support for pluggable persistence.
+To start with, for our cloud hosted solution, we use MongoDB for horizontal scalability.
+Our engine is unique becaues it separates persistence from the core engine.
+Advanced users can even plug in their own persistence.
 
-Third, the internals are a lot simpler.  Effektif tracks the runtime state of 
-workflows using nested activity instances.  This is a lot easier to understand 
-and it fits better in a document database compared to a token-based approach. 
+Third, the internals are a lot simpler.
+Effektif tracks the runtime state of workflows using nested activity instances.
+This is a lot easier to understand and it fits better in a document database,
+compared to a token-based approach.
 
 # Feature highlights
 
@@ -36,7 +39,7 @@ and it fits better in a document database compared to a token-based approach.
 
 ## Example
 
-A workflow that looks like this
+A workflow that looks like this:
 
 ![Example diagram](files/README-diagram.png?raw=true "Workflow diagram")
 
@@ -76,27 +79,16 @@ assertEquals("Move open issues", tasks.get(0).getName());
 assertEquals(1, tasks.size());
 ```
 
-## Introduction
+## Documentation
 
-* [Who is behind this project?](https://github.com/effektif/effektif-oss/wiki/Team)
-* [Roadmap](https://github.com/effektif/effektif-oss/wiki/Roadmap)
-
-## User Documentation
+[The wiki](https://github.com/effektif/effektif/wiki) contains user and developer documentation. Start with:
 
 * [Getting started](https://github.com/effektif/effektif-oss/wiki/Getting-started)
-* [Building workflows](https://github.com/effektif/effektif-oss/wiki/Building-workflows)
-* [Workflow engine types](https://github.com/effektif/effektif-oss/wiki/Workflow-engine-types)
-* Create your own activity
-* Create your own datasource
-* Run the REST service
-* [Advanced features](https://github.com/effektif/effektif-oss/wiki/Advanced-features)
+* [Building the sources](https://github.com/effektif/effektif-oss/wiki/Building-the-sources)
+* [Contributing code](https://github.com/effektif/effektif-oss/wiki/Contributing)
+* [Project team](https://github.com/effektif/effektif-oss/wiki/Team)
 
 ## Help
 
-* TODO: document forum: stackoverflow or github issues
-
-## Developer Documentation
-
-* [Building the sources](https://github.com/effektif/effektif-oss/wiki/Building-the-sources)
-* Architecture
-* [Start contributing](https://github.com/effektif/effektif-oss/wiki/Contributing)
+* Using Effektif - [Stack Overflow questions tagged ‘effektif’](http://stackoverflow.com/questions/tagged/effektif)
+* Developer chat room - TBA

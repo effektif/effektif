@@ -264,6 +264,9 @@ public class UserTask extends NoneTask {
     return this;
   }
 
+  /**
+   * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
+   */
   @Override
   public UserTask multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);
