@@ -51,7 +51,7 @@ import com.effektif.workflow.test.WorkflowTest;
 /**
  * @author Tom Baeyens
  */
-public class ExecutionListenerTest extends WorkflowTest {
+public class WorkflowExecutionListenerTest extends WorkflowTest {
   
   private class LoggingListener implements WorkflowExecutionListener {
     private List<String> events = new ArrayList<>();
