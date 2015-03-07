@@ -14,6 +14,7 @@
     <module>effektif-workflow-impl</module>
     <module>effektif-mongo</module>
     <module>effektif-adapter</module>
+    <module>effektif-server</module>
   </modules>
 
   <dependencies>
