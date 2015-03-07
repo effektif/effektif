@@ -41,7 +41,7 @@ public class TaskReminderJobType extends AbstractJobType {
     
     if (task!=null && !task.isCompleted()) {
       NotificationService notificationService = jobController.getConfiguration().get(NotificationService.class);
-      notificationService.notifyTaskReminder(task);
+      notificationService.taskReminder(task);
     }
   }
 

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.Id;
 import com.mongodb.BasicDBObject;
 
 
@@ -30,6 +31,10 @@ public abstract class MongoHelper {
 
   public static void writeId(Map<String,Object> o, String fieldName, String value) {
     o.put(fieldName, new ObjectId(value));
+  }
+
+  public static void writeId(Map<String,Object> o, String fieldName, Id value) {
+    o.put(fieldName, new ObjectId(value.getId()));
   }
 
   public static void writeIdOpt(Map<String,Object> o, String fieldName, String value) {

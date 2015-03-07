@@ -15,6 +15,10 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.Call;
@@ -35,10 +39,6 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Tom Baeyens
@@ -118,7 +118,6 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
-    ActivityInstanceImpl activityInstanceImpl = (ActivityInstanceImpl) activityInstance;
     Configuration configuration = activityInstance.getConfiguration();
 
     String actualSubWorkflowId = null;
@@ -150,8 +149,10 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
       }
       
       WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-      WorkflowInstance calledProcessInstance = workflowEngine.start(triggerInstance);
-      activityInstanceImpl.setCalledWorkflowInstanceId(calledProcessInstance.getId());
+      WorkflowInstanceImpl calledWorkflowInstance = workflowEngine.startInitialize(triggerInstance);
+      calledWorkflowInstance.addLockedWorkflowInstance(activityInstance.workflowInstance);
+      activityInstance.setCalledWorkflowInstanceId(calledWorkflowInstance.getId());
+      workflowEngine.startExecute(calledWorkflowInstance);
       
     } else {
       log.debug("Skipping call activity because no sub workflow was defined");
@@ -159,7 +160,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     }
   }
   
-  public void calledProcessInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
+  public void calledWorkflowInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
     if (outputBindings!=null) {
       for (String subWorkflowVariableId: outputBindings.keySet()) {
         String variableId = outputBindings.get(subWorkflowVariableId);

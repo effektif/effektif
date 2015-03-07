@@ -13,21 +13,24 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
+import java.util.List;
+
 import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.task.CaseId;
+import com.effektif.workflow.api.task.CaseQuery;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface NotificationService {
+public interface CaseStore {
 
-  void taskAssigned(Task task);
+  CaseId generateCaseId();
 
-  void taskReminder(Task task);
+  void insertCase(Case caze);
 
-  void taskCreated(Task task);
+  List<Case> findCases(CaseQuery caseQuery);
 
-  void caseCreated(Case caze);
+  void deleteCases(CaseQuery caseQuery);
 
 }

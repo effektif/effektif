@@ -21,6 +21,7 @@ import org.bson.types.ObjectId;
 
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
+import com.effektif.workflow.api.model.Id;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
@@ -52,6 +53,12 @@ public class MongoQuery {
     query.put(fieldName, dbValue);
     return this;
   }
+
+  public MongoQuery id(Id id) {
+    query.put("_id", new ObjectId(id.getId()));
+    return this;
+  }
+
 
   public MongoQuery equalOpt(String fieldName, Object dbValue) {
     if (dbValue!=null) {

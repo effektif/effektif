@@ -11,23 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl;
-
-import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.Task;
+package com.effektif.workflow.impl.workflowinstance;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface NotificationService {
+public interface UnlockListener {
 
-  void taskAssigned(Task task);
-
-  void taskReminder(Task task);
-
-  void taskCreated(Task task);
-
-  void caseCreated(Case caze);
+  void unlocked(WorkflowInstanceImpl workflowInstanceImpl);
 
 }

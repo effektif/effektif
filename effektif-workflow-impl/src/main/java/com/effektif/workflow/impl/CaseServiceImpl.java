@@ -21,9 +21,10 @@ import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
 import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.api.task.Case;
+import com.effektif.workflow.api.task.CaseId;
+import com.effektif.workflow.api.task.CaseQuery;
+import com.effektif.workflow.api.task.CaseService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
@@ -33,23 +34,23 @@ import com.effektif.workflow.impl.util.Time;
 /**
  * @author Tom Baeyens
  */
-public class TaskServiceImpl implements TaskService, Brewable {
+public class CaseServiceImpl implements CaseService, Brewable {
   
-  protected TaskStore taskStore;
+  protected CaseStore caseStore;
   protected NotificationService notificationService;
   protected WorkflowEngineImpl workflowEngine;
 
   @Override
   public void brew(Brewery brewery) {
-    this.taskStore = brewery.get(TaskStore.class);
+    this.caseStore = brewery.get(CaseStore.class);
     this.notificationService = brewery.getOpt(NotificationService.class);
     this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
   }
 
   @Override
-  public Task createTask(Task task) {
-    if (task==null) {
-      task = new Task();
+  public Case createCase(Case caze) {
+    if (caze==null) {
+      caze = new Case();
     }
     
     Authentication authentication = Authentications.current();
@@ -57,16 +58,17 @@ public class TaskServiceImpl implements TaskService, Brewable {
     String actorId = authentication!=null ? authentication.getUserId() : null;
     UserId actorUserId = actorId!=null ? new UserId(actorId) : null;
 
-    String taskId = task.getId();
-    if (taskId==null) {
-      taskId = taskStore.generateTaskId();
+    CaseId caseId = caze.getId();
+    if (caseId==null) {
+      caseId = caseStore.generateCaseId();
     }
     
-    task.setId(taskId);
-    task.setOrganizationId(organizationId);
-    task.setCreatorId(actorUserId);
+    caze.setId(caseId);
+    caze.setOrganizationId(organizationId);
+    caze.setCreatorId(actorUserId);
+    caze.setCreateTime(Time.now());
     
-    List<UserId> participants = task.getParticipantIds();
+    List<UserId> participants = caze.getParticipantIds();
     if (actorUserId!=null) {
       if (participants==null) {
         participants = new ArrayList<>();
@@ -78,26 +80,9 @@ public class TaskServiceImpl implements TaskService, Brewable {
       }
       participants.add(0, actorUserId);
     }
-    task.setParticipantIds(participants);
+    caze.setParticipantIds(participants);
 
-    if (task.getParentId()!=null) {
-      Task parentTask = taskStore.addSubtask(task.getParentId(), task);
-      if (parentTask==null) {
-        throw new BadRequestException("Parent "+task.getParentId()+" does not exist or you don't have permission");
-      }
-      // if the new task doesn't specify any particular access control
-      // and the parent task has access control specified, 
-      if (task.getAccess()==null && parentTask.getAccess()!=null) {
-        // then copy the parent access control as the default.
-        task.setAccess(parentTask.getAccess());
-      }
-      task.setParentId(task.getParentId());
-      task.setCaseId(parentTask.getCaseId());
-    } else {
-      task.setCaseId(taskId);
-    }
-
-    AccessControlList access = task.getAccess();
+    AccessControlList access = caze.getAccess();
     // if access is specified 
     // and the current authenticated user does not have access 
     if ( access!=null // if access is specified  
@@ -107,38 +92,31 @@ public class TaskServiceImpl implements TaskService, Brewable {
        ) {
       throw new BadRequestException("If you specify access control, the creator must at least have view and edit access");
     }
-    task.setAccess(access);
+    caze.setAccess(access);
     
-    taskStore.insertTask(task);
+    caze.setLastUpdated(Time.now());
+
+    caseStore.insertCase(caze);
 
     if (notificationService!=null) {
-      notificationService.taskCreated(task);
+      notificationService.caseCreated(caze);
     }
     
-    return task;
+    return caze;
+  }
+
+  public Case findCaseById(String caseId) {
+    List<Case> cases = findCases(new CaseQuery().caseId(caseId));
+    return !cases.isEmpty() ? cases.get(0) : null;
   }
 
   @Override
-  public void assignTask(String taskId, UserId assignee) {
-    Task task = taskStore.assignTask(taskId, assignee);
-    if (notificationService!=null) {
-      notificationService.taskAssigned(task);
-    }
-  }
-  
-  @Override
-  public Task findTaskById(String taskId) {
-    List<Task> tasks = findTasks(new TaskQuery().taskId(taskId));
-    return !tasks.isEmpty() ? tasks.get(0) : null;
+  public List<Case> findCases(CaseQuery caseQuery) {
+    return caseStore.findCases(caseQuery);
   }
 
   @Override
-  public List<Task> findTasks(TaskQuery taskQuery) {
-    return taskStore.findTasks(taskQuery);
-  }
-
-  @Override
-  public void deleteTasks(TaskQuery taskQuery) {
-    taskStore.deleteTasks(taskQuery);
+  public void deleteCases(CaseQuery caseQuery) {
+    caseStore.deleteCases(caseQuery);
   }
 }

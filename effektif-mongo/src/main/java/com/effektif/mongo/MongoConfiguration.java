@@ -43,6 +43,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
   protected String tasksCollectionName = "tasks";
+  protected String casesCollectionName = "cases";
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
   protected boolean isPretty;
@@ -57,6 +58,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
     brewery.ingredient(new MongoTaskStore());
+    brewery.ingredient(new MongoCaseStore());
     brewery.ingredient(new MongoJobStore());
     
     // TODO replace this with a default mongo identity service
@@ -199,6 +201,14 @@ public class MongoConfiguration extends DefaultConfiguration {
 
   public void setTasksCollectionName(String tasksCollectionName) {
     this.tasksCollectionName = tasksCollectionName;
+  }
+
+  public String getCasesCollectionName() {
+    return casesCollectionName;
+  }
+
+  public void setCasesCollectionName(String casesCollectionName) {
+    this.casesCollectionName = casesCollectionName;
   }
 
   public String getJobsCollectionName() {

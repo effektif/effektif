@@ -21,6 +21,7 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
+import com.effektif.workflow.impl.CaseServiceImpl;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.TaskServiceImpl;
@@ -48,6 +49,7 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery = new Brewery();
     brewery.ingredient(this);
     registerDefaultActivityTypeService();
+    registerDefaultCaseService();
     registerDefaultDataTypeService();
     registerDefaultEmailService();
     registerDefaultExecutorService();
@@ -62,6 +64,10 @@ public abstract class DefaultConfiguration implements Configuration {
     registerDefaultWorkflowEngine();
   }
   
+  public void registerDefaultCaseService() {
+    brewery.ingredient(new CaseServiceImpl());
+  }
+
   public WorkflowEngine getWorkflowEngine() {
     return brewery.get(WorkflowEngine.class);
   }

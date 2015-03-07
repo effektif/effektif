@@ -17,10 +17,14 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import com.effektif.workflow.impl.json.JsonService;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -76,6 +80,57 @@ public class CallTest extends WorkflowTest {
         .workflowInstanceId(superInstance.getId()))
       .get(0);
     assertTrue(superInstance.isEnded());
+  }
+
+  @Test
+  public void testTwoCallActivitiesInSequence() {
+    Workflow subWorkflow = new Workflow()
+      .activity(new NoneTask("auto"));
+    
+    deploy(subWorkflow);
+    
+    Workflow superWorkflow = new Workflow()
+      .activity(new Call("call1")
+        .subWorkflowId(subWorkflow.getId())
+        .transitionToNext())
+      .activity(new Call("call2")
+        .subWorkflowId(subWorkflow.getId()));
+
+    deploy(superWorkflow);
+
+    WorkflowInstance superInstance = start(superWorkflow);
+    assertTrue(superInstance.isEnded());
+
+    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery());
+    for (WorkflowInstance workflowInstance: workflowInstances) {
+      assertTrue(workflowInstance.isEnded());
+    }
+    assertEquals(3, workflowInstances.size());
+  }
+
+  @Test
+  public void testTwoCallActivitiesInparallel() {
+    Workflow subWorkflow = new Workflow()
+      .activity(new NoneTask("auto"));
+    
+    deploy(subWorkflow);
+    
+    Workflow superWorkflow = new Workflow()
+      .activity(new Call("call1")
+        .subWorkflowId(subWorkflow.getId()))
+      .activity(new Call("call2")
+        .subWorkflowId(subWorkflow.getId()));
+
+    deploy(superWorkflow);
+
+    WorkflowInstance superInstance = start(superWorkflow);
+    assertTrue(superInstance.isEnded());
+
+    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery());
+    for (WorkflowInstance workflowInstance: workflowInstances) {
+      assertTrue(workflowInstance.isEnded());
+    }
+    assertEquals(3, workflowInstances.size());
   }
 
   @Test

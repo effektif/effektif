@@ -17,7 +17,6 @@ package com.effektif.workflow.test;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.task.CaseService;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -68,6 +68,7 @@ public class WorkflowTest {
   
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
+  protected CaseService caseService = null;
   protected TaskService taskService = null;
   protected TestEmailService emailService = null;
   protected FileService fileService = null;
@@ -81,6 +82,7 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
+      caseService = configuration.get(CaseService.class);
       emailService = configuration.get(TestEmailService.class);
       fileService = configuration.get(FileService.class);
     }

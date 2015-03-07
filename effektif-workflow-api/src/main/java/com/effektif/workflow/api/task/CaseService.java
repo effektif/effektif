@@ -1,5 +1,6 @@
-/* Copyright (c) 2014, Effektif GmbH.
- * 
+/*
+ * Copyright 2014 Effektif GmbH.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,24 +11,22 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. */
-package com.effektif.workflow.impl;
+ * limitations under the License.
+ */
+package com.effektif.workflow.api.task;
 
-import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.Task;
+import java.util.List;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface NotificationService {
+public interface CaseService {
 
-  void taskAssigned(Task task);
+  Case createCase(Case caze);
 
-  void taskReminder(Task task);
-
-  void taskCreated(Task task);
-
-  void caseCreated(Case caze);
+  List<Case> findCases(CaseQuery caseQuery);
+  
+  void deleteCases(CaseQuery caseQuery);
 
 }

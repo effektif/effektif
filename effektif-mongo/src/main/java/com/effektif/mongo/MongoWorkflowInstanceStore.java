@@ -64,7 +64,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   protected boolean storeWorkflowIdsAsStrings;
   
   interface ScopeInstanceFields {
-    String _ID = "_id";
+    String _ID = "id";
     String START = "start";
     String END = "end";
     String DURATION = "duration";

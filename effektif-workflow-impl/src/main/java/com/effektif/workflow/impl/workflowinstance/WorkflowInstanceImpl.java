@@ -19,8 +19,11 @@ import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import org.joda.time.LocalDateTime;
@@ -61,6 +64,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
   public List<Job> jobs;
+  public Map<String,WorkflowInstanceImpl> lockedWorkflowInstances;
 
   public WorkflowInstanceImpl() {
   }
@@ -187,20 +191,30 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
   
+  public void addLockedWorkflowInstance(WorkflowInstanceImpl lockedWorkflowInstance) {
+    if (lockedWorkflowInstances==null) {
+      lockedWorkflowInstances = new HashMap<>();
+    }
+    lockedWorkflowInstances.put(lockedWorkflowInstance.getId(), lockedWorkflowInstance);
+  }
+
   public void workflowInstanceEnded() {
     if (callerWorkflowInstanceId!=null) {
-      WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-      WorkflowInstanceImpl callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
-              workflowInstance.callerWorkflowInstanceId,
-              workflowInstance.callerActivityInstanceId);
-      ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
-      if (callerActivityInstance.isEnded()) {
-        throw new RuntimeException("Call activity instance "+callerActivityInstance+" is already ended");
+      WorkflowInstanceImpl callerProcessInstance = null;
+      if (lockedWorkflowInstances!=null) {
+        callerProcessInstance = lockedWorkflowInstances.get(workflowInstance.callerWorkflowInstanceId);
       }
+      if (callerProcessInstance==null) {
+        WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
+        callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
+                workflowInstance.callerWorkflowInstanceId,
+                workflowInstance.callerActivityInstanceId);
+      }
+      ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
       if (log.isDebugEnabled()) log.debug("Notifying caller "+callerActivityInstance);
       ActivityImpl activityDefinition = callerActivityInstance.getActivity();
       CallImpl callActivity = (CallImpl) activityDefinition.activityType;
-      callActivity.calledProcessInstanceEnded(callerActivityInstance, workflowInstance);
+      callActivity.calledWorkflowInstanceEnded(callerActivityInstance, workflowInstance);
       callerActivityInstance.onwards();
       callerProcessInstance.executeWork();
     }
