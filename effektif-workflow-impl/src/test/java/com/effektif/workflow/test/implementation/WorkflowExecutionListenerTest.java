@@ -83,13 +83,13 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
   public void initializeWorkflowEngine() {
     super.initializeWorkflowEngine();
     listener = new LoggingListener();
-    ((WorkflowEngineImpl)workflowEngine)
+    ((WorkflowEngineImpl) workflowEngine)
       .addWorkflowExecutionListener(listener);
   }
   
   @After
   public void removeListener() {
-    ((WorkflowEngineImpl)workflowEngine)
+    ((WorkflowEngineImpl) workflowEngine)
       .removeWorkflowExecutionListener(listener);
   }
 
