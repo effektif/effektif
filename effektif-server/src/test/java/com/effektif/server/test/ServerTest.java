@@ -25,6 +25,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
+import com.effektif.workflow.api.WorkflowEngine;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
@@ -100,6 +101,10 @@ public class ServerTest extends JerseyTest {
         .transitionToNext())
       .activity("Five", new EndEvent());
 
+    String str = getConfiguration().get(JsonService.class).objectToJsonString(workflow);
+    System.out.println("XXXXXXXXXX");
+    System.out.println(str);
+
     Deployment deployment = target("deploy").request()
             .post(Entity.entity(workflow, MediaType.APPLICATION_JSON))
             .readEntity(Deployment.class);
@@ -123,6 +128,10 @@ public class ServerTest extends JerseyTest {
   protected void runProcessInstance() {
     TriggerInstance start = new TriggerInstance()
       .sourceWorkflowId("Server test workflow");
+
+    String str = getConfiguration().get(JsonService.class).objectToJsonString(start);
+    System.out.println("YYYYYYYYYYYYYY");
+    System.out.println(str);
     
     WorkflowInstance workflowInstance = target("start").request()
             .post(Entity.entity(start, MediaType.APPLICATION_JSON))
