@@ -136,8 +136,7 @@ public class Case extends Extensible implements AccessControlledObject {
     this.workflowId = workflowId;
   }
 
-  /** id references to the subtasks.
-   * Inverse relation of the {@link #getParentId()} */
+  /** id references to the subtasks. */
   public List<String> getTaskIds() {
     return this.taskIds;
   }

@@ -34,10 +34,10 @@ public class ActivityImpl extends ScopeImpl {
   public Activity activity;
   public ActivityType activityType;
   /** the list of transitions for which this activity is the destination.
-   * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
+   * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitions} */
   public List<TransitionImpl> incomingTransitions;
   /** the list of transitions for which this activity is the source.
-   * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitionDefinitions} */
+   * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitions} */
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
   

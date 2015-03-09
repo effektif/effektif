@@ -32,7 +32,7 @@ public interface JobStore {
   List<Job> findArchivedJobs(JobQuery jobQuery);
   void deleteArchivedJobs(JobQuery jobQuery);
 
-  /** locks a job not having a {@link Job#lockWorkflowInstance} specified  
+  /** locks a job not having a {@link Job#lock} specified
    * and retrieves it from the store */
   Job lockNextJob();
 

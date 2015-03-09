@@ -43,7 +43,7 @@ public class TriggerInstance {
   }
 
   /** use this specific workflow version. 
-   * If you want to use the latest version of a certain workflow, use {@link #workflowSource(String)} */ 
+   * If you want to use the latest version of a certain workflow, use {@link #sourceWorkflowId(String)}. */
   public TriggerInstance workflowId(String workflowId) {
     this.workflowId = workflowId;
     return this;
@@ -89,14 +89,17 @@ public class TriggerInstance {
   public void setBusinessKey(String businessKey) {
     this.businessKey = businessKey;
   }
-  /** optional user-defined unique id (unique in the scope of one workflow) 
-   * @see Message# */
+
+  /**
+   * Optional user-defined unique ID (unique in the scope of one workflow).
+   */
   public TriggerInstance businessKey(String businessKey) {
     this.businessKey = businessKey;
     return this;
   }
 
-  /** optional id that is passed.
+  /**
+   * Optional ID that is passed.
    * Please be aware that worklfowInstanceIds are normally assigned by 
    * the (persistence implementation in the) engine.
    * You can provide your own here but please be aware that it 

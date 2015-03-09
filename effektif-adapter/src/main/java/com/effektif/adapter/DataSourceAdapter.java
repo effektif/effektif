@@ -21,11 +21,14 @@ import com.effektif.workflow.api.datasource.ItemQuery;
 import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 
-
+/**
+ * A data source is a provider for external reference data. For example, a data source might represent a large list of people in an
+ * organisation, for use in a form.
+ */
 public interface DataSourceAdapter {
 
   List<ItemReference> findItems(ItemQuery query);
 
   DataSourceDescriptor getDescriptor();
-  
+
 }

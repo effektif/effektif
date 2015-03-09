@@ -43,7 +43,7 @@ public class AccessControlList {
   }
   /** grants the identity permission for 'action'.
    * Only adds the permission if it is not already included. 
-   * @param for action values, see {@link Access} */
+   * For action values, see {@link Access}. */
   public AccessControlList permission(AccessIdentity identity, String action) {
     if (identitiesByAction==null) {
       identitiesByAction = new HashMap<>();
