@@ -7,13 +7,14 @@
   <groupId>com.effektif</groupId>
   <artifactId>effektif-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>3.0.0-alpha1-SNAPSHOT</version>
 
   <modules>
     <module>effektif-workflow-api</module>
     <module>effektif-workflow-impl</module>
     <module>effektif-mongo</module>
     <module>effektif-adapter</module>
+    <module>effektif-server</module>
   </modules>
 
   <dependencies>

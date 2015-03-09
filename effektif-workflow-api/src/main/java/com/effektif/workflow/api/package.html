@@ -1,36 +1,5 @@
 <body>
-Model classes for editing workflows, excluding runtime considerations.
-
-<pre>
-// Create the default memory workflow engine
-WorkflowEngine workflowEngine = new WorkflowEngineConfiguration()
-   .buildWorkflowEngine();
-
-// Create a workflow builder object
-WorkflowBuilder workflow = workflowEngine.newWorkflow();
-
-// Add an activity to the workflow
-workflow.newActivity()
-  .id("a")
-  .activityType(new DefaultTask());
-
-workflow.newActivity()
-  .id("b")
-  .activityType(new DefaultTask());
-
-// Add a transition to the workflow
-// The referenced activities do not yet have to exist at this point,
-// as long as they exist when the workflow is deployed.
-workflow.newTransition()
-  .from("a")
-  .to("b");
-
-// Deploy the workflow to the engine
-String workflowId = workflow.deploy();
-
-// Start a new workflow instance
-WorkflowInstance workflowInstance = workflowEngine.newStart()
-  .workflowId(workflowId)   
-  .startWorkflowInstance();
-</pre>
+Interfaces Configuration and WorkflowEngine, see 
+<a href="https://github.com/effektif/effektif/wiki/Getting-started">Getting started</a>
+<a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types">Workflow engine types</a>
 </body>
