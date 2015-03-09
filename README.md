@@ -81,4 +81,4 @@ assertEquals(1, tasks.size());
 
 ## Documentation
 
-[Effektif documentation](https://github.com/effektif/effektif/wiki) - user and developer documentation.
+### [Effektif documentation - user and developer documentation](https://github.com/effektif/effektif/wiki)
