@@ -84,9 +84,9 @@ assertEquals(1, tasks.size());
 [The wiki](https://github.com/effektif/effektif/wiki) contains user and developer documentation. Start with:
 
 * [Getting started](https://github.com/effektif/effektif-oss/wiki/Getting-started)
-* [Building the sources](https://github.com/effektif/effektif-oss/wiki/Building-the-sources)
-* [Contributing code](https://github.com/effektif/effektif-oss/wiki/Contributing)
-* [Project team](https://github.com/effektif/effektif-oss/wiki/Team)
+* [Project overview](https://github.com/effektif/effektif/wiki)
+* [User guide](https://github.com/effektif/effektif/wiki)
+* [Developer guide](https://github.com/effektif/effektif/wiki)
 
 ## Help
 
