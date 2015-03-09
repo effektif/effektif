@@ -57,6 +57,9 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
+    if (query==null) {
+      query = new WorkflowQuery();
+    }
     List<Workflow> result = new ArrayList<>();
     if (query.getWorkflowId()!=null) {
       Workflow workflow = workflows.get(query.getWorkflowId());

@@ -22,6 +22,7 @@ import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
@@ -37,7 +38,7 @@ public class WorkflowImpl extends ScopeImpl {
   public String sourceWorkflowId;
   public String organizationId;
   public List<ActivityImpl> startActivities;
-  public TriggerImpl trigger;
+  public AbstractTriggerImpl trigger;
   public AccessControlList access;
   public TextTemplate caseNameTemplate;
   
@@ -87,7 +88,7 @@ public class WorkflowImpl extends ScopeImpl {
   }
 
   
-  public TriggerImpl getTrigger() {
+  public AbstractTriggerImpl getTrigger() {
     return trigger;
   }
 
@@ -95,4 +96,5 @@ public class WorkflowImpl extends ScopeImpl {
   public AccessControlList getAccess() {
     return access;
   }
+
 }

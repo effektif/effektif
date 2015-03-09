@@ -99,7 +99,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
         for (Variable subWorkflowVariable: subWorkflowVariables) {
           String subWorkflowVariableId = subWorkflowVariable.getId();
           Binding inputBindingApi = inputBindingsApi.get(subWorkflowVariableId);
-          parser.pushContext("inputBindings["+subWorkflowVariableId+"]", inputBindingApi, null);
+          parser.pushContext("inputBindings["+subWorkflowVariableId+"]", inputBindingApi, null, null);
           BindingImpl<?> bindingImpl = parser.parseBinding(inputBindingApi, subWorkflowVariableId, false, subWorkflowVariable.getType());
           if (bindingImpl!=null) {
             if (inputBindings==null) {

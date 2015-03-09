@@ -13,10 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.junit.Test;
 
-import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.types.DecisionType;
+import com.effektif.workflow.api.types.NumberType;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -26,36 +34,30 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class FormTriggerTest extends WorkflowTest {
   
-/*  
-
-  { trigger: {
-      form: {
-        fields : [
-          { id="1",
-            type: text }
-        ]
-      },
-      outputBindings : {
-        "1" : "v1"
-      }
-    },
-    variables : [ {
-      id: "v1",
-      type: text
-    ]
-  }
-  
-*/
-
   @Test
   public void testFormTrigger() {
-//    Workflow workflow = new Workflow()
-//      .trigger(new FormTrigger()
-//        .form(new Form()));
-//    
-//    deploy(workflow);
-//    
-//    start(workflow);
-//
+    Workflow workflow = new Workflow()
+      .variable(new Variable()
+        .id("v1")
+        .name("Veewan")
+        .type(new TextType()))
+      .variable("v2", new NumberType())
+      .variable("v3", new DecisionType()
+        .option("Approve")
+        .option("Reject"))
+      .trigger(new FormTrigger()
+        .field("v1")
+        .field("v2")
+        .field("v3"));
+    
+    deploy(workflow);
+
+    workflow = workflowEngine.findWorkflows(null).get(0);
+    FormTrigger formTrigger =  (FormTrigger) workflow.getTrigger();
+    List<FormField> fields = formTrigger.getForm().getFields();
+    assertEquals("Veewan", fields.get(0).getName());
+    assertEquals(TextType.class, fields.get(0).getType().getClass());
+    
+    // start(workflow);
   }
 }

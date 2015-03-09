@@ -71,14 +71,6 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return null;
   }
   
-  public Object convertInternalToScriptValue(Object internalValue, String language) {
-    return internalValue;
-  }
-
-  public Object convertScriptValueToInternal(Object scriptValue, String language) {
-    return scriptValue;
-  }
-
   @Override
   public T serialize() {
     return typeApi;

@@ -15,34 +15,25 @@
  */
 package com.effektif.workflow.api.form;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.effektif.workflow.api.model.TypedValue;
 
 
 /**
  * @author Tom Baeyens
  */
-public class FormInstance extends Form {
+public class AbstractForm {
 
-  protected Map<String,TypedValue> values;
+  protected String description;
+  
+  // TODO Map<String,String> descriptionI18n;
 
-  public Map<String,TypedValue> getValues() {
-    return this.values;
+  public String getDescription() {
+    return this.description;
   }
-  public void setValues(Map<String,TypedValue> values) {
-    this.values = values;
+  public void setDescription(String description) {
+    this.description = description;
   }
-  public FormInstance values(Map<String,TypedValue> values) {
-    this.values = values;
-    return this;
-  }
-  public FormInstance value(String key, TypedValue value) {
-    if (this.values==null) {
-      this.values = new HashMap<>();
-    }
-    this.values.put(key, value);
+  public AbstractForm description(String description) {
+    this.description = description;
     return this;
   }
 }

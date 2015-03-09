@@ -53,6 +53,9 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
 
   @Override
   public Object getFieldValue(Object value) {
+    if (value==null) {
+      return null;
+    }
     try {
       return field.get(value);
     } catch (IllegalArgumentException | IllegalAccessException e) {

@@ -1,6 +1,8 @@
 package com.effektif.workflow.test.implementation;
 
-import java.util.List;
+import junit.framework.TestCase;
+
+import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.Call;
@@ -20,14 +22,10 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.effektif.workflow.impl.util.Lists;
-import junit.framework.TestCase;
-import org.junit.Test;
 
 /**
  * Stub for a test of
@@ -42,6 +40,7 @@ public class JsonTest extends TestCase {
   public void setUp() throws Exception {
     if (configuration == null) {
       configuration = new TestConfiguration();
+      configuration.getWorkflowEngine();
     }
   }
 
@@ -126,10 +125,27 @@ public class JsonTest extends TestCase {
     print(activity);
   }
 
+  /** this shows what properties to set when setting or updating a form in a workflow */
+  @Test
+  public void testFormInput() {
+    Form form = new Form()
+      .description("Form description")
+      .field("v1")
+      .field(new FormField()
+        .binding("v2")
+        .readOnly()
+        .required());
+    print(form);
+  }
+
   @Test
   public void testUserTask() {
-    List<FormField> fields = Lists.of(new FormField().key("tester").name("Tester").type(new TextType()));
-    Form form = new Form().buttons(Lists.of("Pass", "Fail")).fields(fields).description("Try to break stuff!");
+    Form form = new Form()
+      .description("Form description")
+      .field(new FormField()
+        .id("f1")
+        .name("The first field in the form")
+        .binding("v1"));
     UserTask activity = new UserTask("smokeTest")
         .candidateGroupId("dev")
         .form(form)
@@ -143,6 +159,7 @@ public class JsonTest extends TestCase {
 
   public void print(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
-    System.out.println(configuration.get(JsonService.class).objectToJsonStringPretty(o));
+    JsonService jsonService = configuration.get(JsonService.class);
+    System.out.println(jsonService.objectToJsonStringPretty(o));
   }
 }

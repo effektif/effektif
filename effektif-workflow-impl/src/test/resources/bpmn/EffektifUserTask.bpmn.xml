@@ -19,9 +19,9 @@
             <e:candidate groupId="44"/>
             <e:form>
                <e:description>Provide release information.</e:description>
-               <e:field key="v" label="Version" type="text" readonly="true"/>
-               <e:field key="d" label="Release date" type="date" required="true"/>
-               <e:field key="s" label="Changes" type="text"/>
+               <e:field id="v" name="Version" type="text" readonly="true"/>
+               <e:field id="d" name="Release date" type="date" required="true"/>
+               <e:field id="s" name="Changes" type="text"/>
                <e:button value="Approve"/>
                <e:button value="Reject"/>
             </e:form>

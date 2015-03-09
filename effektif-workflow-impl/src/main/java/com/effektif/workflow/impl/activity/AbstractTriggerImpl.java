@@ -13,39 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.workflow;
-
-import java.util.Map;
+package com.effektif.workflow.impl.activity;
 
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.activity.ActivityDescriptor;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TriggerImpl<T extends Trigger> {
+public abstract class AbstractTriggerImpl<T extends Trigger> {
   
-  public Map<String,String> outputBindings;
+  Class<T> triggerApiClass;
   
+  public AbstractTriggerImpl(Class<T> triggerApiClass) {
+    this.triggerApiClass = triggerApiClass;
+  }
+
   public ActivityDescriptor getDescriptor() {
     return null;
   }
 
-  public Class getTriggerApiClass() {
-    return Trigger.class;
+  public Class<T> getTriggerApiClass() {
+    return triggerApiClass; 
   }
 
   public void parse(WorkflowImpl workflow, T triggerApi, WorkflowParser parser) {
-    this.outputBindings = triggerApi.getOutputBindings();
   }
 
   public void published(WorkflowImpl workflow) {
   }
 
   public void applyTriggerValues(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
+  }
+
+  public DataType<?> getDataTypeForTriggerKey(String triggerKey) {
+    return null;
   }
 }

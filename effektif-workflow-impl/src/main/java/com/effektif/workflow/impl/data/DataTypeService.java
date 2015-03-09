@@ -35,6 +35,7 @@ import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.ChoiceTypeImpl;
 import com.effektif.workflow.impl.data.types.CustomTypeImpl;
+import com.effektif.workflow.impl.data.types.DecisionTypeImpl;
 import com.effektif.workflow.impl.data.types.EmailIdTypeImpl;
 import com.effektif.workflow.impl.data.types.EmailTypeImpl;
 import com.effektif.workflow.impl.data.types.FileIdTypeImpl;
@@ -79,6 +80,7 @@ public class DataTypeService implements Brewable {
     registerDataType(new BooleanTypeImpl(configuration));
     registerDataType(new ChoiceTypeImpl(configuration));
     registerDataType(new CustomTypeImpl(configuration));
+    registerDataType(new DecisionTypeImpl(configuration));
     registerDataType(new EmailIdTypeImpl(configuration));
     registerDataType(new EmailTypeImpl(configuration));
     registerDataType(new FileIdTypeImpl(configuration));

@@ -55,7 +55,7 @@ public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
   public TypedValueImpl dereference(Object value, String fieldName) {
     UserId userId = (UserId) value;
     IdentityService identityService = configuration.get(IdentityService.class);
-    User user = identityService.findUserById(userId);
+    User user = userId!=null ? identityService.findUserById(userId) : null;
     if ("*".equals(fieldName)) {
       return new TypedValueImpl(new UserTypeImpl(configuration), user);
     }

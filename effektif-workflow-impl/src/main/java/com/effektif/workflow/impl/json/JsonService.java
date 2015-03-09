@@ -25,6 +25,7 @@ import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -114,13 +115,15 @@ public class JsonService implements Brewable {
   public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
     Map<String, Object> triggerValues = triggerInstance.getData();
     if (triggerValues!=null) {
-      Map<String,String> triggerOutputBindings = workflow.trigger!=null ? workflow.trigger.outputBindings : null;
       for (String triggerKey: triggerValues.keySet()) {
         Object jsonValue = triggerValues.get(triggerKey);
-        String variableId = triggerOutputBindings!=null ? triggerOutputBindings.get(triggerKey) : triggerKey;
-        VariableImpl variable = workflow.findVariableByIdLocal(variableId);
-        if (variable!=null && variable.type!=null) {
-          Object value = variable.type.convertJsonToInternalValue(jsonValue);
+        DataType<?> dataType = workflow.trigger!=null ? workflow.trigger.getDataTypeForTriggerKey(triggerKey) : null;
+        if (dataType==null) {
+          VariableImpl variable = workflow.findVariableByIdLocal(triggerKey);
+          dataType = variable!=null ? variable.type : null; 
+        }
+        if (dataType!=null) {
+          Object value = dataType.convertJsonToInternalValue(jsonValue);
           triggerValues.put(triggerKey, value);
         }
       }

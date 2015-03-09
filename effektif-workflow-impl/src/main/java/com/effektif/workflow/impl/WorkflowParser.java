@@ -16,16 +16,21 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
@@ -52,6 +57,7 @@ import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
@@ -74,10 +80,10 @@ public class WorkflowParser {
   public boolean isSerialized;
   
   private class ParseContext {
-    ParseContext(String property, Object element, Integer index) {
+    ParseContext(String property, Object element, Object elementImpl, Integer index) {
       this.property = property;
       this.element = element;
-      
+      this.elementImpl = elementImpl;
       String indexText = null;
       if (element instanceof Element) {
         indexText = ((Element)element).getId();
@@ -89,6 +95,7 @@ public class WorkflowParser {
     Object element;
     String property;
     String index;
+    public Object elementImpl;
     public String toString() {
       if (index!=null) {
         return property+"["+index+"]";
@@ -118,8 +125,8 @@ public class WorkflowParser {
    * By returning the parser itself you can access the  */
   public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi) {
     WorkflowParser parser = new WorkflowParser(configuration);
-    parser.pushContext("workflow", workflowApi, null);
     parser.workflow = new WorkflowImpl();
+    parser.pushContext("workflow", workflowApi, parser.workflow, null);
     parser.isSerialized = workflowApi instanceof SerializedWorkflow;
     parser.workflow.parse(workflowApi, parser);
     parser.popContext();
@@ -133,8 +140,8 @@ public class WorkflowParser {
     this.issues = new ParseIssues();
   }
 
-  public void pushContext(String property, Object element, Integer index) {
-    this.contextStack.push(new ParseContext(property, element, index));
+  public void pushContext(String property, Object element, Object elementImpl, Integer index) {
+    this.contextStack.push(new ParseContext(property, element, elementImpl, index));
   }
   
   public void popContext() {
@@ -191,7 +198,7 @@ public class WorkflowParser {
    * instantiate the correct type and the deserialization needs to completed here based on the type.
    * only provide the type if the binding is untyped, otherwise use null or {@link #parseBinding(Binding, String, boolean)}. */
   public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName, boolean isRequired, Type type) {
-    pushContext(bindingName, binding, null);
+    pushContext(bindingName, binding, null, null);
     BindingImpl<T> bindingImpl = parseBinding(binding, type);
     int values = 0;
     if (bindingImpl!=null) {
@@ -282,7 +289,7 @@ public class WorkflowParser {
       return null;
     }
     MultiInstanceImpl multiInstanceImpl = new MultiInstanceImpl();
-    pushContext("multiInstance", multiInstance, null);
+    pushContext("multiInstance", multiInstance, null, null);
     multiInstanceImpl.parse(multiInstance, this);
     popContext();
     return multiInstanceImpl;
@@ -320,13 +327,7 @@ public class WorkflowParser {
     if (expression==null || "".equals(expression)) {
       return null;
     }
-    ExpressionImpl expressionImpl = new ExpressionImpl(expression);
-    if (!variableIds.contains(expressionImpl.variableId)) {
-      addWarning("Variable %s doesn't exist", expressionImpl.variableId);
-    } else {
-      // TODO check the fields and if necessary also resolve the type ? 
-    }
-    return expressionImpl;
+    return new ExpressionImpl(expression, this);
   }
 
   protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
@@ -343,5 +344,77 @@ public class WorkflowParser {
       return null;
     }
     return new TextTemplate(templateText, hints, this);
+  }
+
+  public Map<String, BindingImpl> parseForm(Form form) {
+    Map<String,BindingImpl> bindings = null;
+    if (form!=null && form.getFields()!=null && !form.getFields().isEmpty()) {
+      bindings = new HashMap<>();
+      int index = 0;
+      Set<String> fieldIds = collectFieldIds(form.getFields());
+      for (FormField field: form.getFields()) {
+        pushContext("fields", field, null, index);
+        Binding binding = field.getBinding();
+        if (binding!=null) {
+          BindingImpl bindingImpl = parseBinding(binding, "form field binding");
+          if (bindingImpl!=null) {
+            ExpressionImpl expression = bindingImpl.expression;
+            if ( field.getType()==null
+                 && expression.type!=null ) {
+              field.setType(expression.type.serialize());
+            }
+            if ( field.getName()==null
+                 && expression!=null 
+                 && expression.fields==null) {
+              ScopeImpl scope = getCurrentScope();
+              VariableImpl variableImpl = scope.findVariableByIdRecursive(bindingImpl.expression.variableId);
+              if (variableImpl!=null) {
+                field.setName(variableImpl.variable.getName());
+              }
+            }
+          }
+          String fieldId = field.getId();
+          if (fieldId==null) {
+            fieldId = generateFieldId(fieldIds);
+            field.setId(fieldId);
+            fieldIds.add(fieldId);
+          }
+          bindings.put(fieldId, bindingImpl);
+        }
+        popContext();
+        index++;
+      }
+    }
+    return bindings;
+  }
+
+  protected String generateFieldId(Set<String> fieldIds) {
+    Long fieldNumber = fieldIds.size()+1L;
+    String fieldId = Long.toString(fieldNumber);
+    while (fieldIds.contains(fieldId)) {
+      fieldNumber = fieldNumber+1;
+      fieldId = Long.toString(fieldNumber);
+    }
+    return fieldId;
+  }
+
+  protected Set<String> collectFieldIds(List<FormField> fields) {
+    Set<String> fieldIds = new HashSet<>();
+    for (FormField field: fields) {
+      if (field.getId()!=null) {
+        fieldIds.add(field.getId());
+      }
+    }
+    return fieldIds;
+  }
+
+  public ScopeImpl getCurrentScope() {
+    for (int i=contextStack.size()-1; i>=0; i--) {
+      Object elementImpl = contextStack.get(i).elementImpl;
+      if (elementImpl instanceof ScopeImpl) {
+        return (ScopeImpl) elementImpl;
+      }
+    }
+    return null;
   }
 }

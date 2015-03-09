@@ -162,6 +162,9 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
+    if (query==null) {
+      query = new WorkflowQuery();
+    }
     List<Workflow> workflows = new ArrayList<>();
     DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {

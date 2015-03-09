@@ -127,7 +127,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
       }
     }
     if (transition.getCondition()!=null) {
-      parser.pushContext(transition.toString(), condition, null);
+      parser.pushContext(transition.toString(), condition, null, null);
       this.condition = parser.parseCondition(transition.getCondition());
       parser.popContext();
     }

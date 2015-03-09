@@ -31,9 +31,6 @@ public interface DataType<T extends Type> extends Plugin {
 
   TypeGenerator getTypeGenerator();
 
-  /** invoked to validate values submitted through the api. */
-  void validateInternalValue(Object internalValue) throws InvalidValueException;
-
   /** only returns valid internal values. */
   Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
 

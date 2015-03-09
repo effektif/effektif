@@ -42,7 +42,7 @@ public class MultiInstanceImpl {
     Variable elementVariableApi = multiInstanceApi.getVariable();
     if (elementVariableApi!=null) {
       this.elementVariable = new VariableImpl();
-      parser.pushContext("elementVariable", elementVariableApi, -1);
+      parser.pushContext("elementVariable", elementVariableApi, null, -1);
       this.elementVariable.parse(elementVariableApi, parser, parent);
       parser.popContext();
     } else {

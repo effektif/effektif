@@ -15,19 +15,22 @@
  */
 package com.effektif.workflow.api.form;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * A form for collecting data in a {@link com.effektif.workflow.api.activities.UserTask} or
- * {@link com.effektif.workflow.api.triggers.FormTrigger}, used to construct an user-interface.
+ * A form definition (aka declaration) that specifies the fields to display for 
+ * {@link com.effektif.workflow.api.activities.UserTask} or
+ * {@link com.effektif.workflow.api.triggers.FormTrigger}.
+ * 
+ * Also see <a href="https://github.com/effektif/effektif/wiki/Forms">The Forms wiki page</a>
+ * for more documentation on Forms.
  *
  * @author Tom Baeyens
  */
-public class Form {
+public class Form extends AbstractForm {
 
-  protected String description;
-  protected List<String> buttons;
   protected List<FormField> fields;
 
   public List<FormField> getFields() {
@@ -36,30 +39,21 @@ public class Form {
   public void setFields(List<FormField> fields) {
     this.fields = fields;
   }
-  public Form fields(List<FormField> fields) {
-    this.fields = fields;
+  public Form field(FormField field) {
+    if (fields==null) {
+      fields = new ArrayList<>();
+    }
+    fields.add(field);
     return this;
   }
-
-  public List<String> getButtons() {
-    return this.buttons;
-  }
-  public void setButtons(List<String> buttons) {
-    this.buttons = buttons;
-  }
-  public Form buttons(List<String> buttons) {
-    this.buttons = buttons;
+  public Form field(String bindingExpression) {
+    field(new FormField().binding(bindingExpression));
     return this;
   }
-
-  public String getDescription() {
-    return this.description;
-  }
-  public void setDescription(String description) {
-    this.description = description;
-  }
+  
+  @Override
   public Form description(String description) {
-    this.description = description;
+    super.description(description);
     return this;
   }
 }

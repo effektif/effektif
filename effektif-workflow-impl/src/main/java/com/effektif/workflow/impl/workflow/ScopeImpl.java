@@ -55,7 +55,7 @@ public abstract class ScopeImpl {
       int i = 0;
       for (Variable variable: variables) {
         VariableImpl variableImpl = new VariableImpl();
-        parser.pushContext("variables", variable, i);
+        parser.pushContext("variables", variable, variableImpl, i);
         variableImpl.parse(variable, parser, this);
         addVariable(variableImpl);
         parser.popContext();
@@ -71,7 +71,7 @@ public abstract class ScopeImpl {
       int i = 0;
       for (Timer timer: timers) {
         TimerImpl timerImpl = new TimerImpl();
-        parser.pushContext("timers", timer, i);
+        parser.pushContext("timers", timer, timerImpl, i);
         timerImpl.parse(timer, this, parser);
         addTimer(timerImpl);
         parser.popContext();
@@ -88,7 +88,7 @@ public abstract class ScopeImpl {
       int i = 0;
       for (Activity activity: activities) {
         ActivityImpl activityImpl = new ActivityImpl();
-        parser.pushContext("activities", activity, i);
+        parser.pushContext("activities", activity, activityImpl, i);
         if (activity.getDefaultTransitionId()!=null) {
           activitiesByDefaultTransitionId.put(activity.getDefaultTransitionId(), activityImpl);
         }
@@ -107,7 +107,7 @@ public abstract class ScopeImpl {
       int i = 0;
       for (Transition transition: transitions) {
         TransitionImpl transitionImpl = new TransitionImpl();
-        parser.pushContext("transitions", transition, i);
+        parser.pushContext("transitions", transition, transitionImpl, i);
         transitionImpl.parse(transition, this, parser, activitiesByDefaultTransitionId);
         addTransition(transitionImpl);
         parser.popContext();
@@ -122,11 +122,11 @@ public abstract class ScopeImpl {
       // some activity types need to validate incoming and outgoing transitions, 
       // that's why they are validated after the transitions.
       int i = 0;
-      for (ActivityImpl activity : this.activities.values()) {
-        Activity apiActivity = activities.get(i);
-        if (activity.activityType != null) {
-          parser.pushContext("activities", apiActivity, i);
-          activity.activityType.parse(activity, apiActivity, parser);
+      for (ActivityImpl activityImpl : this.activities.values()) {
+        Activity activity = activities.get(i);
+        if (activityImpl.activityType != null) {
+          parser.pushContext("activities", activity, activityImpl, i);
+          activityImpl.activityType.parse(activityImpl, activity, parser);
           parser.popContext();
         }
         i++;
@@ -226,6 +226,17 @@ public abstract class ScopeImpl {
   public VariableImpl findVariableByIdLocal(String variableId) {
     return variables!=null ? variables.get(variableId) : null;
   }
+  
+  public VariableImpl findVariableByIdRecursive(String variableId) {
+    if (variables!=null && variables.containsKey(variableId)) {
+      return variables.get(variableId);
+    }
+    if (parent!=null) {
+      return parent.findVariableByIdRecursive(variableId);
+    }
+    return null;
+  }
+
 
   public ActivityImpl getNextActivity(ActivityImpl previous) {
     if (activities!=null) {

@@ -54,21 +54,6 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   }
   
   @Override
-  public void validateInternalValue(Object internalValue) throws InvalidValueException {
-    if (internalValue==null) {
-      return;
-    }
-    if (!(internalValue instanceof List)) {
-      throw new InvalidValueException("Value for must be a list, but was "+internalValue+" ("+internalValue.getClass().getName()+")");
-    }
-    @SuppressWarnings("unchecked")
-    java.util.List<Object> list = (java.util.List<Object>) internalValue;
-    for (Object element: list) {
-      elementType.validateInternalValue(element);
-    }
-  }
-
-  @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue==null) {
       return null;
@@ -88,11 +73,14 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   
   @Override
   public TypedValueImpl dereference(Object value, String field) {
-    List<Object> values = (List<Object>) value;
-    List<Object> fieldValues = new ArrayList<>();
-    for (Object elementValue: values) {
-      TypedValueImpl elementFieldValue = elementType.dereference(elementValue, field);
-      fieldValues.add(elementFieldValue.value);
+    List<Object> fieldValues = null;
+    if (value instanceof List) {
+      List<Object> values = (List<Object>) value;
+      fieldValues = new ArrayList<>(); 
+      for (Object elementValue: values) {
+        TypedValueImpl elementFieldValue = elementType.dereference(elementValue, field);
+        fieldValues.add(elementFieldValue.value);
+      }
     }
     return new TypedValueImpl(this, fieldValues);
   }

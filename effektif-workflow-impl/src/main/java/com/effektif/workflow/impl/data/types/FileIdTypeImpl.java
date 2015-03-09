@@ -57,7 +57,7 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
   public TypedValueImpl dereference(Object value, String fieldName) {
     FileId fileId = (FileId) value;
     FileService fileService = configuration.get(FileService.class);
-    File file = fileService.getFileById(fileId);
+    File file = fileId!=null ? fileService.getFileById(fileId) : null;
     if ("*".equals(fieldName)) {
       return new TypedValueImpl(new FileTypeImpl(configuration), file);
     }

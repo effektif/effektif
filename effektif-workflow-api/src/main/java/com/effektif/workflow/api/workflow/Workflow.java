@@ -179,4 +179,12 @@ public class Workflow extends AbstractWorkflow {
     super.organizationId(organizationId);
     return this;
   }
+
+  @Override
+  public Workflow variable(Variable variable) {
+    super.variable(variable);
+    return this;
+  }
+  
+  
 }

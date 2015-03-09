@@ -231,7 +231,7 @@ public class BpmnReader extends Bpmn {
    * Returns a form from the given XML element’s extension (child) elements.
    */
   public Form readForm(XmlElement xml) {
-    Form form = new Form().fields(new ArrayList<FormField>()).buttons(new ArrayList<String>());
+    Form form = new Form();
     XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
     if (extensionElements != null) {
       Iterator<XmlElement> extensions = extensionElements.elements.iterator();
@@ -245,8 +245,8 @@ public class BpmnReader extends Bpmn {
             }
             if (formElement.is(getQName(EFFEKTIF_URI, "field")) && formElement.attributes != null) {
               FormField field = new FormField();
-              field.setKey(formElement.attributes.get("key"));
-              field.setName(formElement.attributes.get("label"));
+              field.setId(formElement.attributes.get("id"));
+              field.setName(formElement.attributes.get("name"));
               if ("true".equals(formElement.attributes.get("readonly"))) {
                 field.readOnly();
               }
@@ -259,10 +259,7 @@ public class BpmnReader extends Bpmn {
                 field.setType(TextType.INSTANCE);
               }
 
-              form.getFields().add(field);
-            }
-            if (formElement.is(getQName(EFFEKTIF_URI, "button")) && formElement.attributes != null) {
-              form.getButtons().add("");
+              form.field(field);
             }
           }
           // Remove the whole <code>effektif:form</code> element.

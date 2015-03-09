@@ -17,26 +17,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+
 
 /**
  * @author Tom Baeyens
  */
 public class ExpressionImpl {
 
+  public DataType type;
   public String variableId;
   public List<String> fields;
 
-  public ExpressionImpl(String expression) {
+  public ExpressionImpl(String expression, WorkflowParser parser) {
     StringTokenizer stringTokenizer = new StringTokenizer(expression, ".");
-    while (stringTokenizer.hasMoreTokens()) {
+    boolean isError = false;
+    while (stringTokenizer.hasMoreTokens() && !isError) {
       String token = stringTokenizer.nextToken();
       if (variableId==null) {
         variableId = token;
+        ScopeImpl scope = parser.getCurrentScope();
+        if (scope!=null) {
+          VariableImpl variableImpl = scope.findVariableByIdRecursive(variableId);
+          if (variableImpl == null) {
+            parser.addWarning("Variable %s does not exist", variableId);
+            isError = true;
+          } else {
+            type = variableImpl.type;
+          }
+        }
       } else {
+        String field = token;
         if (fields==null) {
           fields = new ArrayList<>();
         }
-        fields.add(token);
+        fields.add(field);
+        if (type!=null) {
+          TypedValueImpl typedValue = type.dereference(null, field);
+          if (typedValue == null) {
+            parser.addWarning("Field '%s' does not exist", field);
+            isError = true;
+          } else {
+            type = typedValue.type;
+          }
+        }
       }
     }
   }

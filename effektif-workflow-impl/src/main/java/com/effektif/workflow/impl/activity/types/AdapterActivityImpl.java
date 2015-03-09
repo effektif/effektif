@@ -87,7 +87,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         String key = entry.getKey();
         Binding inputBinding = entry.getValue();
         InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
-        parser.pushContext("inputBindings["+key+"]", inputParameter, null);
+        parser.pushContext("inputBindings["+key+"]", inputParameter, null, null);
         if (inputParameter==null) {
           parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activity.getId());
         }

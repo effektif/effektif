@@ -13,36 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.triggers;
+package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.workflow.Trigger;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/**
+/** Type to represent decision buttons at the end of a form.
+ * 
  * @author Tom Baeyens
  */
-@JsonTypeName("form")
-public class FormTrigger extends Trigger {
-  
-  protected Form form;
+@JsonTypeName("decision")
+public class DecisionType extends TextType {
 
-  public Form getForm() {
-    return this.form;
+  protected List<DecisionOption> options;
+  
+  public List<DecisionOption> getOptions() {
+    return options;
   }
-  public void setForm(Form form) {
-    this.form = form;
+  public void setOptions(List<DecisionOption> options) {
+    this.options = options;
   }
-  public FormTrigger form(Form form) {
-    this.form = form;
-    return this;
-  }
-  public FormTrigger field(String bindingExpression) {
-    if (form==null) {
-      form = new Form();
+  public DecisionType option(String option) {
+    if (options==null) {
+      options = new ArrayList<>();
     }
-    form.field(bindingExpression);
+    options.add(new DecisionOption().name(option));
     return this;
   }
 }

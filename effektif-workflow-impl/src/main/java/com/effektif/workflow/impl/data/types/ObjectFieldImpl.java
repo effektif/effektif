@@ -49,8 +49,11 @@ public class ObjectFieldImpl {
   }
   
   public Object getFieldValue(Object value) {
-    Map<String,Object> map = (Map<String, Object>) value;
-    return map.get(name);
+    if (value instanceof Map) {
+      Map<String,Object> map = (Map<String, Object>) value;
+      return map.get(name);
+    }
+    return null;
   }
 
   public String getName() {
