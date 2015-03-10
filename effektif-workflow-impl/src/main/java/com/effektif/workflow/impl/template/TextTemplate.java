@@ -37,6 +37,7 @@ public class TextTemplate {
   
   public TextTemplate(String templateText, Hint[] hints, WorkflowParser parser) {
     if (templateText!=null) {
+      int expressionIndex = 0;
       int startScan = 0;
       Matcher matcher = BINDING_PATTERN.matcher(templateText);
       while (matcher.find()) {
@@ -45,7 +46,8 @@ public class TextTemplate {
         if (startScan<start) {
           elements.add(new StringTemplateElement(templateText.substring(startScan, start)));
         }
-        elements.add(new ExpressionTemplateElement(expression, parser));
+        elements.add(new ExpressionTemplateElement(expression, expressionIndex, parser));
+        expressionIndex++;
         startScan = matcher.end();
       }
       if (startScan<templateText.length()) {
@@ -80,8 +82,11 @@ public class TextTemplate {
   
   public class ExpressionTemplateElement implements TemplateElement {
     ExpressionImpl expression;
-    public ExpressionTemplateElement(String expression, WorkflowParser parser) {
-      this.expression = parser.parseExpression(expression);
+    public ExpressionTemplateElement(String expression, int expressionIndex, WorkflowParser parser) {
+      this.expression = new ExpressionImpl();
+      parser.pushContext("expression", expression, this.expression, expressionIndex);
+      this.expression.parse(expression, parser);
+      parser.popContext();
     }
     public String toString() {
       return expression!=null ? "{{"+expression+"}}" : "{{}}";

@@ -110,26 +110,6 @@ public class JsonService implements Brewable {
     return object;
   }
   
-  
-  
-  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
-    Map<String, Object> triggerValues = triggerInstance.getData();
-    if (triggerValues!=null) {
-      for (String triggerKey: triggerValues.keySet()) {
-        Object jsonValue = triggerValues.get(triggerKey);
-        DataType<?> dataType = workflow.trigger!=null ? workflow.trigger.getDataTypeForTriggerKey(triggerKey) : null;
-        if (dataType==null) {
-          VariableImpl variable = workflow.findVariableByIdLocal(triggerKey);
-          dataType = variable!=null ? variable.type : null; 
-        }
-        if (dataType!=null) {
-          Object value = dataType.convertJsonToInternalValue(jsonValue);
-          triggerValues.put(triggerKey, value);
-        }
-      }
-    }
-  }
-  
   public void deserializeMessage(Message message, WorkflowImpl workflow) {
     deserializeVariableValues(message.getData(), workflow);
   }
@@ -146,5 +126,4 @@ public class JsonService implements Brewable {
       }
     }
   }
-
 }

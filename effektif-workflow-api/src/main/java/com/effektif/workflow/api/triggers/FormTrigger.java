@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.triggers;
 
 import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -38,11 +39,17 @@ public class FormTrigger extends Trigger {
     this.form = form;
     return this;
   }
-  public FormTrigger field(String bindingExpression) {
+  /** adds a form field */  
+  public FormTrigger field(FormField field) {
     if (form==null) {
       form = new Form();
     }
-    form.field(bindingExpression);
+    form.field(field);
+    return this;
+  }
+  /** shortcut to add a field and set the binding expression */  
+  public FormTrigger field(String bindingExpression) {
+    field(new FormField().binding(bindingExpression));
     return this;
   }
 }

@@ -41,4 +41,9 @@ public interface TaskStore {
    * the operation will only be performed if the authenticated user has 
    * EDIT access on the parent task. */
   Task addSubtask(String parentId, Task subtask);
+
+  /** sets the completed to true, removes the activityNotify and 
+   * returns the old task so the task service impl knows if the 
+   * activity should be notified. */
+  Task completeTask(String taskId);
 }

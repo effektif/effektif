@@ -51,9 +51,13 @@ public class DecisionTypeImpl extends AbstractDataType<DecisionType> {
     if (internalValue==null) {
       return;
     }
-    if ( internalValue!=null 
-         && !options.contains(internalValue) ) {
-      throw new InvalidValueException("Invalid value '"+internalValue+"'.  Expected one of "+options+" (or null)");
+    if (options!=null) {
+      for (DecisionOption option: options) {
+        if (internalValue.equals(option.getName())) {
+          return;
+        }
+      }
     }
+    throw new InvalidValueException("Invalid value '"+internalValue+"'.  Expected one of "+options+" (or null)");
   }
 }

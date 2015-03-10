@@ -16,21 +16,16 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
@@ -57,7 +52,6 @@ import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
@@ -227,7 +221,12 @@ public class WorkflowParser {
         bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
       }
     }
-    bindingImpl.expression = parseExpression(binding.getExpression());
+    String expression = binding.getExpression();
+    if (expression!=null) {
+      bindingImpl.expression = new ExpressionImpl();
+      pushContext("expression", expression, bindingImpl.expression, null);
+      bindingImpl.expression.parse(expression, this);
+    }
     return bindingImpl;
   }
 
@@ -323,13 +322,6 @@ public class WorkflowParser {
     return null;
   }
   
-  public ExpressionImpl parseExpression(String expression) {
-    if (expression==null || "".equals(expression)) {
-      return null;
-    }
-    return new ExpressionImpl(expression, this);
-  }
-
   protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
     if (typedValue==null) {
       return null;
@@ -344,68 +336,6 @@ public class WorkflowParser {
       return null;
     }
     return new TextTemplate(templateText, hints, this);
-  }
-
-  public Map<String, BindingImpl> parseForm(Form form) {
-    Map<String,BindingImpl> bindings = null;
-    if (form!=null && form.getFields()!=null && !form.getFields().isEmpty()) {
-      bindings = new HashMap<>();
-      int index = 0;
-      Set<String> fieldIds = collectFieldIds(form.getFields());
-      for (FormField field: form.getFields()) {
-        pushContext("fields", field, null, index);
-        Binding binding = field.getBinding();
-        if (binding!=null) {
-          BindingImpl bindingImpl = parseBinding(binding, "form field binding");
-          if (bindingImpl!=null) {
-            ExpressionImpl expression = bindingImpl.expression;
-            if ( field.getType()==null
-                 && expression.type!=null ) {
-              field.setType(expression.type.serialize());
-            }
-            if ( field.getName()==null
-                 && expression!=null 
-                 && expression.fields==null) {
-              ScopeImpl scope = getCurrentScope();
-              VariableImpl variableImpl = scope.findVariableByIdRecursive(bindingImpl.expression.variableId);
-              if (variableImpl!=null) {
-                field.setName(variableImpl.variable.getName());
-              }
-            }
-          }
-          String fieldId = field.getId();
-          if (fieldId==null) {
-            fieldId = generateFieldId(fieldIds);
-            field.setId(fieldId);
-            fieldIds.add(fieldId);
-          }
-          bindings.put(fieldId, bindingImpl);
-        }
-        popContext();
-        index++;
-      }
-    }
-    return bindings;
-  }
-
-  protected String generateFieldId(Set<String> fieldIds) {
-    Long fieldNumber = fieldIds.size()+1L;
-    String fieldId = Long.toString(fieldNumber);
-    while (fieldIds.contains(fieldId)) {
-      fieldNumber = fieldNumber+1;
-      fieldId = Long.toString(fieldNumber);
-    }
-    return fieldId;
-  }
-
-  protected Set<String> collectFieldIds(List<FormField> fields) {
-    Set<String> fieldIds = new HashSet<>();
-    for (FormField field: fields) {
-      if (field.getId()!=null) {
-        fieldIds.add(field.getId());
-      }
-    }
-    return fieldIds;
   }
 
   public ScopeImpl getCurrentScope() {

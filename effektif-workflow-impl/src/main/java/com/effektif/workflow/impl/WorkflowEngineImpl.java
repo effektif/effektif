@@ -17,12 +17,14 @@ package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -41,6 +43,7 @@ import com.effektif.workflow.impl.json.SerializedTriggerInstance;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -150,18 +153,41 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowInstance.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
     workflowInstance.start = Time.now();
     workflowInstance.lock = lock;
-    
+
     if (triggerInstance instanceof SerializedTriggerInstance) {
-      jsonService.deserializeTriggerInstance(triggerInstance, workflow);
+      if (workflow.trigger!=null) {
+        workflow.trigger.deserializeTriggerInstance(triggerInstance, workflow);
+      } else {
+        deserializeTriggerInstanceData(triggerInstance, workflow);
+      }
     }
-    
+
     if (workflow.trigger!=null) {
-      workflow.trigger.applyTriggerValues(workflowInstance, triggerInstance);
+      workflow.trigger.applyTriggerData(workflowInstance, triggerInstance);
     } else {
       workflowInstance.setVariableValues(triggerInstance.getData());
     }
 
     return workflowInstance;
+  }
+
+  /** default deserialization of trigger instance data.
+   * This is called if there is no trigger defined and it will 
+   * assume the trigger instance data maps variable ids to values 
+   * @param workflow */
+  protected void deserializeTriggerInstanceData(TriggerInstance triggerInstance, WorkflowImpl workflow) {
+    if (triggerInstance!=null && triggerInstance.getData()!=null) {
+      for (String variableId: triggerInstance.getData().keySet()) {
+        VariableImpl variable = workflow.findVariableByIdLocal(variableId);
+        if (variable!=null) {
+          Object dataValue = triggerInstance.getData(variableId);
+          Object deserializedValue = variable.type.convertJsonToInternalValue(dataValue);
+          triggerInstance.data(variableId, deserializedValue);
+        } else {
+          log.debug("Can't deserialize undeclared variableId '"+variableId+"' in trigger instance data");
+        }
+      }
+    }
   }
 
   /** second part of starting a new workflow instance: executing the start actvities */

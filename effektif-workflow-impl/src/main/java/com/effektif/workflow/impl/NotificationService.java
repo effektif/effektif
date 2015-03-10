@@ -30,4 +30,6 @@ public interface NotificationService {
 
   void caseCreated(Case caze);
 
+  void taskCompleted(Task task);
+
 }

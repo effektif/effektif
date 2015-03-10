@@ -44,6 +44,11 @@ public class MongoUpdate {
     return this;
   }
 
+  public MongoUpdate unset(String field) {
+    set(field, null, null);
+    return this;
+  }
+
   public MongoUpdate set(String field, Object value) {
     return set(field, value, null);
   }

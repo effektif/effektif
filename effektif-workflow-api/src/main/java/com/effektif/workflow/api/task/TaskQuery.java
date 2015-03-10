@@ -25,9 +25,54 @@ import com.effektif.workflow.api.query.Query;
 public class TaskQuery extends Query {
 
   protected String taskId;
+  protected String taskName;
+  // 3 state logic:
+  //   - null means return both completed and open tasks
+  //   - false means return only open tasks 
+  //   - true means return only completed tasks 
+  protected Boolean completed;
+
+  public Boolean getCompleted() {
+    return this.completed;
+  }
+  public void setCompleted(Boolean completed) {
+    this.completed = completed;
+  }
+  public TaskQuery completed() {
+    this.completed = true;
+    return this;
+  }
+  public TaskQuery open() {
+    this.completed = false;
+    return this;
+  }
+
+  public String getTaskName() {
+    return this.taskName;
+  }
+  public void setTaskName(String taskName) {
+    this.taskName = taskName;
+  }
+  /** include only tasks that contain the string taskName in their name. */ 
+  public TaskQuery taskName(String taskName) {
+    this.taskName = taskName;
+    return this;
+  }
 
   public boolean meetsCriteria(Task task) {
     if (taskId!=null && !taskId.equals(task.getId())) {
+      return false;
+    }
+    if (completed!=null) {
+      if (completed && !task.isCompleted()) {
+        return false;
+      }
+      if (!completed && task.isCompleted()) {
+        return false;
+      }
+    }
+    if ( taskName!=null 
+         && (task.getName()==null || !task.getName().contains(taskName))) {
       return false;
     }
     return true;

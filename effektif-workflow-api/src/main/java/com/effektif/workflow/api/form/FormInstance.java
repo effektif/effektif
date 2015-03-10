@@ -32,6 +32,7 @@ import java.util.List;
 public class FormInstance extends AbstractForm {
 
   protected List<FormInstanceField> fields;
+  public static final String DATAKEY = "formInstance";
 
   public List<FormInstanceField> getFields() {
     return this.fields;

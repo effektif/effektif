@@ -58,4 +58,27 @@ public class UserTaskTest extends WorkflowTest {
     long dueDateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
     assertTrue(task.getDuedate().toDate().getTime()<=dueDateLatest);
   }
+
+  @Test
+  public void testTaskQuery() throws Exception {
+    Workflow workflow = new Workflow()
+      .activity("1", new UserTask())
+      .activity("2", new UserTask())
+      .activity("3", new UserTask());
+    
+    deploy(workflow);
+    
+    start(workflow);
+    
+    assertOpenTaskNames(new TaskQuery(), "1", "2", "3");
+    assertOpenTaskNames(new TaskQuery().open(), "1", "2", "3");
+    assertOpenTaskNames(new TaskQuery().completed());
+
+    Task task1 = taskService.findTasks(new TaskQuery().taskName("1")).get(0);
+    taskService.completeTask(task1.getId());
+
+    assertOpenTaskNames(new TaskQuery(), "1", "2", "3");
+    assertOpenTaskNames(new TaskQuery().open(), "2", "3");
+    assertOpenTaskNames(new TaskQuery().completed(), "1");
+  }
 }

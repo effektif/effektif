@@ -70,10 +70,12 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   }
 
   @Override
-  public void assignTask(String taskId, UserId assignee) {
+  public Task assignTask(String taskId, UserId assignee) {
     log.debug("assignTask");
     assignee = wireize("  >>assignee>>", assignee, UserId.class);
-    taskService.assignTask(taskId, assignee);
+    Task task = taskService.assignTask(taskId, assignee);
+    task = wireize("  <<task<<", task, Task.class);
+    return task;
   }
 
   @Override
@@ -81,5 +83,12 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
     log.debug("deleteTasks");
     query = wireize("  >>query>>", query, TaskQuery.class);
     taskService.deleteTasks(query);
+  }
+
+  @Override
+  public Task completeTask(String taskId) {
+    Task task = taskService.completeTask(taskId);
+    task = wireize("  <<task<<", task, Task.class);
+    return task;
   }
 }

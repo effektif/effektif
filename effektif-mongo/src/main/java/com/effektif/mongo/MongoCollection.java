@@ -89,10 +89,14 @@ public class MongoCollection {
   }
 
   public BasicDBObject findAndModify(String description, DBObject query, DBObject update, DBObject fields) {
+    return findAndModify(description, query, update, fields, null, false, true, false);
+  }
+
+  public BasicDBObject findAndModify(String description, DBObject query, DBObject update, DBObject fields, DBObject sort, boolean remove, boolean returnNew, boolean upsert) {
     if (log.isDebugEnabled()) {
       log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+" u="+toString(update)+" f="+toString(fields));
     }
-    BasicDBObject dbObject = (BasicDBObject) dbCollection.findAndModify( query, fields, null, false, update, true, false );
+    BasicDBObject dbObject = (BasicDBObject) dbCollection.findAndModify(query, fields, sort, remove, update, returnNew, upsert);
     if (log.isDebugEnabled()) {
       log.debug("<-"+dbCollection.getName()+"-- "+(dbObject!=null ? toString(dbObject) : "null"));
     }

@@ -18,6 +18,7 @@ package com.effektif.workflow.api.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -82,6 +83,11 @@ public class TriggerInstance {
     data.put(key, value);
     return this;
   }
+  /** retrieves a data item from the map */
+  public Object getData(String key) {
+    return data!=null ? data.get(key) : null;
+  }
+
   
   public String getBusinessKey() {
     return this.businessKey;

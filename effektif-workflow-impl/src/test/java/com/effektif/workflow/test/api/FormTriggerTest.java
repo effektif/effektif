@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.api.types.DecisionType;
 import com.effektif.workflow.api.types.NumberType;
@@ -39,15 +40,17 @@ public class FormTriggerTest extends WorkflowTest {
     Workflow workflow = new Workflow()
       .variable(new Variable()
         .id("v1")
-        .name("Veewan")
-        .type(new TextType()))
+        .name("Veewan") // the field using this variable should pick up this name by default 
+        .type(new TextType())) // the field using this variable should pick up this type
       .variable("v2", new NumberType())
       .variable("v3", new DecisionType()
         .option("Approve")
         .option("Reject"))
       .trigger(new FormTrigger()
-        .field("v1")
-        .field("v2")
+        .field("v1") // by default, the variableId is also taken as the fieldId
+        .field(new FormField()
+          .id("f2")  // users can also define their own field ids
+          .binding("v2"))  
         .field("v3"));
     
     deploy(workflow);
@@ -55,9 +58,13 @@ public class FormTriggerTest extends WorkflowTest {
     workflow = workflowEngine.findWorkflows(null).get(0);
     FormTrigger formTrigger =  (FormTrigger) workflow.getTrigger();
     List<FormField> fields = formTrigger.getForm().getFields();
+    assertNotNull(fields.get(0).getId());
     assertEquals("Veewan", fields.get(0).getName());
     assertEquals(TextType.class, fields.get(0).getType().getClass());
     
-    // start(workflow);
+    start(workflow, new FormInstance()
+      .value("v1", "hello")
+      .value("f2", 5)
+      .value("v3", "Approve"));
   }
 }

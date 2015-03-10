@@ -48,10 +48,13 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
   public void published(WorkflowImpl workflow) {
   }
 
-  public void applyTriggerValues(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
   }
 
   public DataType<?> getDataTypeForTriggerKey(String triggerKey) {
     return null;
+  }
+
+  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
   }
 }

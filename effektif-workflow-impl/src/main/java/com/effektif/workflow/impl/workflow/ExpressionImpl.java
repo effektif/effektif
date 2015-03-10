@@ -31,7 +31,11 @@ public class ExpressionImpl {
   public String variableId;
   public List<String> fields;
 
-  public ExpressionImpl(String expression, WorkflowParser parser) {
+  public void parse(String expression, WorkflowParser parser) {
+    if (expression==null || "".equals(expression)) {
+      return;
+    }
+
     StringTokenizer stringTokenizer = new StringTokenizer(expression, ".");
     boolean isError = false;
     while (stringTokenizer.hasMoreTokens() && !isError) {

@@ -56,11 +56,13 @@ public class FormField extends AbstractFormField {
     super.name(name);
     return this;
   }
+  /** sets readonly to true in a fluent api style */
   @Override
   public FormField readOnly() {
     super.readOnly();
     return this;
   }
+  /** sets required to true in a fluent api style */
   @Override
   public FormField required() {
     super.required();

@@ -18,8 +18,10 @@ package com.effektif.workflow.test;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -107,6 +110,12 @@ public class WorkflowTest {
       .workflowId(workflow.getId()));
   }
   
+  public WorkflowInstance start(Workflow workflow, FormInstance formInstance) {
+    return workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data(FormInstance.DATAKEY, formInstance));
+  }
+  
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {
     return workflowEngine.send(new Message()
       .workflowInstanceId(workflowInstance.getId())
@@ -138,6 +147,20 @@ public class WorkflowTest {
         }
       }
     }
+  }
+  
+  public void assertOpenTaskNames(TaskQuery taskQuery, String... expectedTaskNames) {
+    Set<String> expectedTaskNameSet = new HashSet<>();
+    if (expectedTaskNames!=null) {
+      for (String taskName : expectedTaskNames) {
+        expectedTaskNameSet.add(taskName);
+      }
+    }
+    Set<String> taskNameSet = new HashSet<>();
+    for (Task task: taskService.findTasks(taskQuery)) {
+      taskNameSet.add(task.getName());
+    }
+    assertEquals(expectedTaskNameSet, taskNameSet);
   }
   
   public static String getActivityInstanceId(WorkflowInstance workflowInstance, String activityId) {

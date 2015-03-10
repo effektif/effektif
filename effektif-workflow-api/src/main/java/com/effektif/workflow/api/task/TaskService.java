@@ -27,11 +27,13 @@ public interface TaskService {
 
   Task createTask(Task task);
 
-  void assignTask(String taskId, UserId assignee);
+  Task assignTask(String taskId, UserId assignee);
 
   Task findTaskById(String taskId);
   List<Task> findTasks(TaskQuery taskQuery);
   
   void deleteTasks(TaskQuery taskQuery);
+
+  Task completeTask(String taskId);
 
 }

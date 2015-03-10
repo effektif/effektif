@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
 
@@ -109,6 +110,8 @@ public class PrettyPrinter {
       jsonText.append(jsonObject.toString());
     } else if (jsonObject.getClass().isArray()) {
       jsonObjectToTextFormatted(Arrays.asList((Object[])jsonObject), indent, jsonText);
+    } else if (jsonObject instanceof Pattern) {
+      jsonText.append("/"+jsonObject.toString()+"/");
     } else {
       throw new RuntimeException("couldn't pretty print "+jsonObject.getClass().getName());
     }

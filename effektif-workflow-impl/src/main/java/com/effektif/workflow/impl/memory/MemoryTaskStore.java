@@ -54,7 +54,7 @@ public class MemoryTaskStore implements TaskStore {
         result.add(task);
       }
     }
-    return new ArrayList<>(tasks.values());
+    return result;
   }
 
   @Override
@@ -70,6 +70,12 @@ public class MemoryTaskStore implements TaskStore {
       task.setLastUpdated(Time.now());
     }
     return task;
+  }
+  
+  @Override
+  public Task completeTask(String taskId) {
+    // the task service will set the completed to true
+    return findTaskById(taskId);
   }
 
   @Override

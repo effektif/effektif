@@ -60,9 +60,13 @@ public class AbstractFormField {
   public void setReadOnly(Boolean readOnly) {
     this.readOnly = readOnly;
   }
+  /** sets readonly to true in a fluent api style */
   public AbstractFormField readOnly() {
     this.readOnly = true;
     return this;
+  }
+  public boolean isReadOnly() {
+    return Boolean.TRUE.equals(readOnly);
   }
   
   public Boolean getRequired() {
@@ -71,9 +75,13 @@ public class AbstractFormField {
   public void setRequired(Boolean required) {
     this.required = required;
   }
+  /** sets required to true in a fluent api style */
   public AbstractFormField required() {
     this.required = true;
     return this;
+  }
+  public boolean isRequired() {
+    return Boolean.TRUE.equals(required);
   }
   
   /** The type is retrieved from the variable or expression 

@@ -15,11 +15,16 @@ package com.effektif.workflow.impl.activity.types;
 
 import java.util.Map;
 
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormInstance;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.impl.FormBindings;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
-import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**
@@ -27,7 +32,8 @@ import com.effektif.workflow.impl.workflow.WorkflowImpl;
  */
 public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
 
-  public Map<String,BindingImpl> bindings;
+  public FormBindings formBindings;
+  public JsonService jsonService;
   
   public FormTriggerImpl() {
     super(FormTrigger.class);
@@ -36,7 +42,33 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
   @Override
   public void parse(WorkflowImpl workflow, FormTrigger formTrigger, WorkflowParser parser) {
     super.parse(workflow, formTrigger, parser);
-    
-    bindings = parser.parseForm(formTrigger.getForm());
+    this.jsonService = parser.getConfiguration(JsonService.class);
+    Form form = formTrigger.getForm();
+    if (form!=null) {
+      formBindings = new FormBindings();
+      parser.pushContext("form", formTrigger, formBindings, null);
+      formBindings.parse(form, parser);
+      parser.popContext();
+    } else {
+      parser.addWarning("Form trigger doesn't have a form");
+    }
+  }
+
+  @Override
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
+    FormInstance formInstance = (FormInstance) triggerInstance.getData(FormInstance.DATAKEY);
+    if (formBindings!=null) {
+      formBindings.applyFormInstanceData(formInstance, workflowInstance);
+    }
+  }
+
+  @Override
+  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
+    Object serializedFormInstance = triggerInstance.getData(FormInstance.DATAKEY);
+    if (serializedFormInstance instanceof Map) {
+      FormInstance formInstance = jsonService.jsonMapToObject((Map)serializedFormInstance, FormInstance.class);
+      triggerInstance.data(FormInstance.DATAKEY, formInstance);
+      formBindings.deserializeFormInstance(formInstance);
+    }
   }
 }

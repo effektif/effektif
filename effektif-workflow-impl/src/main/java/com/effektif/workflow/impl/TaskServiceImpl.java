@@ -20,6 +20,7 @@ import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
+import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -119,11 +120,30 @@ public class TaskServiceImpl implements TaskService, Brewable {
   }
 
   @Override
-  public void assignTask(String taskId, UserId assignee) {
+  public Task assignTask(String taskId, UserId assignee) {
     Task task = taskStore.assignTask(taskId, assignee);
     if (notificationService!=null) {
       notificationService.taskAssigned(task);
     }
+    return task;
+  }
+  
+  @Override
+  public Task completeTask(String taskId) {
+    Task task = taskStore.completeTask(taskId);
+    task.setCompleted(true);
+    if (notificationService!=null) {
+      notificationService.taskCompleted(task);
+    }
+    if (Boolean.TRUE.equals(task.getActivityNotify())) {
+      task.setActivityNotify(null); // db update was already done. ensuring here that the object model is in sync with the db
+      Message message = new Message()
+        .workflowInstanceId(task.getWorkflowInstanceId())
+        .activityInstanceId(task.getActivityInstanceId());
+      // TODO send the task form values
+      workflowEngine.send(message);
+    }
+    return task;
   }
   
   @Override
