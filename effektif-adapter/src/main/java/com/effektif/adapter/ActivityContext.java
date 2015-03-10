@@ -72,7 +72,8 @@ public class ActivityContext {
   public Object getInputParameterValue(String parameterKey) {
     return executeRequest.getInputParameterValue(parameterKey);
   }
-  public void setOutputParameterValue(String greeting, String string) {
+  public void setOutputParameterValue(String outputParameterKey, Object value) {
+    executeResponse.setOutputParameterValue(outputParameterKey, value);
   }
 
   public void onwards() {

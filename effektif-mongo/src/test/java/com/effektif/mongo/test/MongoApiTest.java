@@ -47,4 +47,13 @@ public class MongoApiTest {
       .synchronous();
   }
 
+  @Test
+  public void testMongoConfigurationApi() {
+    // this is used to copy and paste into the wiki docs
+    Configuration configuration = new MongoConfiguration()
+      .server("localhost") // localhost is the default
+      .databaseName("databasename")
+      .authentication("username", "password", "database");
+  }
+
 }

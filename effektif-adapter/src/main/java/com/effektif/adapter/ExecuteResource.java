@@ -46,6 +46,8 @@ public class ExecuteResource {
   protected Configuration configuration;
   /** maps activity keys to activity adapters */
   protected Map<String, ActivityAdapter> activityAdapters = new HashMap<>();
+  /** cache that maps activityKeys to a map of input parameter data types
+   * The keys of the nested maps are inputParameterKeys */
   protected Map<String, Map<String,DataType>> inputParameterDataTypes = new ConcurrentHashMap<>();
   
   public ExecuteResource(Configuration configuration) {

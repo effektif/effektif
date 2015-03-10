@@ -29,9 +29,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -301,15 +299,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         setVariableValue(variableId, value);
       }
     }
-  }
-
-  public TypedValueImpl createTypedValueImpl(TypedValue typedValue, Configuration configuration) {
-    if (typedValue==null || typedValue.getValue()==null) {
-      return null;
-    }
-    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataType dataType = dataTypeService.createDataType(typedValue.getType());
-    return new TypedValueImpl(dataType, typedValue.getValue());
   }
 
   public void setVariableValue(String variableId, Object value) {

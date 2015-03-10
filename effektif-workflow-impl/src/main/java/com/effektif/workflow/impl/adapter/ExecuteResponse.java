@@ -18,8 +18,6 @@ package com.effektif.workflow.impl.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.model.TypedValue;
-
 
 /**
  * @author Tom Baeyens
@@ -42,7 +40,7 @@ public class ExecuteResponse {
     if (outputParameterValues==null) {
       outputParameterValues = new HashMap<>(); 
     }
-    outputParameterValues.put(outputParameterKey, new TypedValue().value(value));
+    outputParameterValues.put(outputParameterKey, value);
   }
 
   public boolean isOnwards() {

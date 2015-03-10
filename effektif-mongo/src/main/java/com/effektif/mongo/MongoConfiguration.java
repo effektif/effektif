@@ -108,11 +108,11 @@ public class MongoConfiguration extends DefaultConfiguration {
     return serverAddresses!=null ? serverAddresses : DEFAULT_SERVER_ADDRESSES;
   }
 
-  public MongoConfiguration authentication(String userName, String database, char[] password) {
+  public MongoConfiguration authentication(String username, String password, String database) {
     if (credentials==null) {
       credentials = new ArrayList<>();
     }
-    credentials.add(MongoCredential.createMongoCRCredential(userName, database, password));
+    credentials.add(MongoCredential.createMongoCRCredential(username, database, password.toCharArray()));
     return this;
   }
   

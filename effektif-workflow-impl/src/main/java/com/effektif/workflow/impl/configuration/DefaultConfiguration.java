@@ -32,7 +32,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.email.DefaultEmailServiceSupplier;
 import com.effektif.workflow.impl.email.EmailServiceImpl;
 import com.effektif.workflow.impl.job.JobServiceImpl;
-import com.effektif.workflow.impl.json.DefaultObjectMapperSupplier;
+import com.effektif.workflow.impl.json.ObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.script.RhinoScriptService;
 import com.effektif.workflow.impl.script.StandardScriptService;
@@ -110,7 +110,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
   
   protected void registerDefaultObjectMapper() {
-    brewery.supplier(new DefaultObjectMapperSupplier(), ObjectMapper.class);
+    brewery.supplier(new ObjectMapperSupplier(), ObjectMapper.class);
   }
 
   protected void registerDefaultJsonFactory() {

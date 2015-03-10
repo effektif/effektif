@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Binding;
@@ -38,7 +37,6 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.json.SerializedWorkflow;
 import com.effektif.workflow.impl.script.CompiledCondition;
 import com.effektif.workflow.impl.script.CompiledScript;
@@ -322,15 +320,6 @@ public class WorkflowParser {
     return null;
   }
   
-  protected TypedValueImpl parseTypedValue(TypedValue typedValue) {
-    if (typedValue==null) {
-      return null;
-    }
-    DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataType type = dataTypeService.createDataType(typedValue.getType());
-    return new TypedValueImpl(type, typedValue.getValue());
-  }
-
   public TextTemplate parseTextTemplate(String templateText, Hint... hints) {
     if (templateText==null) {
       return null;

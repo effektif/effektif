@@ -49,7 +49,7 @@ public class Id {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    GroupId other = (GroupId) obj;
+    Id other = (Id) obj;
     if (id == null) {
       if (other.id != null)
         return false;

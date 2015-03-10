@@ -56,7 +56,9 @@ public class Task extends Extensible implements AccessControlledObject {
   protected List<UserId> candidateIds;
   protected List<GroupId> candidateGroupIds;
 
-  protected String caseId; // id of the root task in the task parent-child relationship
+  /** id of the root task in the task parent-child relationship
+   * can be null for tasks that don't have a case. */
+  protected String caseId; 
   protected String parentId;
   protected List<String> subtaskIds;
   protected LocalDateTime duedate;
