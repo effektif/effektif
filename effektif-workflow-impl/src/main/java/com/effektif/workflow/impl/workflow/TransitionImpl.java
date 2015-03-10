@@ -110,6 +110,8 @@ public class TransitionImpl implements BpmnModel<Transition> {
       this.to = parent.getNextActivity(from);
       if (this.to!=null) {
         this.to.addIncomingTransition(this);
+        transition.to(this.to.getId());
+        transition.setToNext(null);
       } else {
         parser.addWarning("Transition has no next");
       }

@@ -47,10 +47,10 @@ public class MemoryTaskStore implements TaskStore {
   }
 
   @Override
-  public List<Task> findTasks(TaskQuery taskQuery) {
+  public List<Task> findTasks(TaskQuery query) {
     List<Task> result = new ArrayList<>();
     for (Task task: tasks.values()) {
-      if (taskQuery==null || taskQuery.meetsCriteria(task)) {
+      if (query==null || query.meetsCriteria(task)) {
         result.add(task);
       }
     }

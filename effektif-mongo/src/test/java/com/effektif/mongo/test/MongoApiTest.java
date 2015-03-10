@@ -21,7 +21,6 @@ import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.email.TestEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
-import com.effektif.workflow.test.api.CallTest;
 import com.mongodb.DB;
 
 
@@ -47,4 +46,5 @@ public class MongoApiTest {
       .prettyPrint()
       .synchronous();
   }
+
 }

@@ -136,7 +136,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
   @Override
   public List<Task> findTasks(TaskQuery query) {
     List<Task> tasks = new ArrayList<>();
-    BasicDBObject dbQuery = createTaskQuery(query, Access.VIEW).get();
+    BasicDBObject dbQuery = createDbQuery(query, Access.VIEW).get();
     DBCursor dbCursor = tasksCollection.find("find-tasks", dbQuery);
     if (query.getLimit()!=null) {
       dbCursor.limit(query.getLimit());
@@ -154,7 +154,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
 
   @Override
   public void deleteTasks(TaskQuery query) {
-    BasicDBObject dbQuery = createTaskQuery(query, Access.EDIT).get();
+    BasicDBObject dbQuery = createDbQuery(query, Access.EDIT).get();
     tasksCollection.remove("delete-tasks", dbQuery);
   }
 
@@ -189,7 +189,10 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
   
   /** builds the query and ensures VIEW access */
-  protected MongoQuery createTaskQuery(TaskQuery query, String... accessActions) {
+  protected MongoQuery createDbQuery(TaskQuery query, String... accessActions) {
+    if (query==null) {
+      query = new TaskQuery();
+    }
     MongoQuery mongoQuery = new MongoQuery();
     if (accessActions!=null) {
       mongoQuery.access(accessActions);

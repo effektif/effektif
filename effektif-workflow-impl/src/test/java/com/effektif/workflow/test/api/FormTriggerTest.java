@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.triggers.FormTrigger;
@@ -27,6 +28,7 @@ import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -36,25 +38,21 @@ import com.effektif.workflow.test.WorkflowTest;
 public class FormTriggerTest extends WorkflowTest {
   
   @Test
-  public void testFormTrigger() {
+  public void testFormTriggerNameAndTypeResolving() {
     Workflow workflow = new Workflow()
       .variable(new Variable()
         .id("v1")
         .name("Veewan") // the field using this variable should pick up this name by default 
         .type(new TextType())) // the field using this variable should pick up this type
-      .variable("v2", new NumberType())
-      .variable("v3", new DecisionType()
-        .option("Approve")
-        .option("Reject"))
       .trigger(new FormTrigger()
-        .field("v1") // by default, the variableId is also taken as the fieldId
-        .field(new FormField()
-          .id("f2")  // users can also define their own field ids
-          .binding("v2"))  
-        .field("v3"));
+        // by default, the variableId is also taken as the fieldId
+        .field("v1"));
     
+    
+    // deploying will initialize the name and type on the form field 
+    // because it is linked to variable v1
     deploy(workflow);
-
+    
     workflow = workflowEngine.findWorkflows(null).get(0);
     FormTrigger formTrigger =  (FormTrigger) workflow.getTrigger();
     List<FormField> fields = formTrigger.getForm().getFields();
@@ -62,9 +60,55 @@ public class FormTriggerTest extends WorkflowTest {
     assertEquals("Veewan", fields.get(0).getName());
     assertEquals(TextType.class, fields.get(0).getType().getClass());
     
-    start(workflow, new FormInstance()
-      .value("v1", "hello")
-      .value("f2", 5)
-      .value("v3", "Approve"));
+    WorkflowInstance workflowInstance = start(workflow, new FormInstance()
+      .value("v1", "hello"));
+    
+    assertEquals("hello", workflowInstance.getVariableValue("v1"));
+  }
+
+  @Test
+  public void testFormTriggerCustomFieldId() {
+    Workflow workflow = new Workflow()
+      .variable("v1", new NumberType())
+      .trigger(new FormTrigger()
+        .field(new FormField()
+          .id("f1")  // users can also define their own field ids
+          .binding("v1")));
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = start(workflow, new FormInstance()
+      .value("f1", 5));
+    
+    Number value = (Number)workflowInstance.getVariableValue("v1");
+    assertEquals(5, value.intValue()); // the value might be of any number type, but must be 5
+  }
+
+  @Test
+  public void testFormTriggerDecision() {
+    Workflow workflow = new Workflow()
+      .variable("v1", new DecisionType()
+        .option("Approve")
+        .option("Reject"))
+      .trigger(new FormTrigger()
+        .field("v1"));
+    
+    deploy(workflow);
+
+    workflow = workflowEngine.findWorkflows(null).get(0);
+    FormTrigger formTrigger =  (FormTrigger) workflow.getTrigger();
+    Form form = formTrigger.getForm();
+    List<FormField> fields = form.getFields();
+    FormField formField = fields.get(0);
+    assertEquals("v1", formField.getId());
+    assertEquals(DecisionType.class, formField.getType().getClass());
+    DecisionType decisionType = (DecisionType) formField.getType();
+    assertEquals("Approve", decisionType.getOptions().get(0).getId());
+    assertEquals("Reject", decisionType.getOptions().get(1).getId());
+    
+    WorkflowInstance workflowInstance = start(workflow, new FormInstance()
+      .value("v1", "Approve"));
+    
+    assertEquals("Approve", workflowInstance.getVariableValue("v1"));
   }
 }

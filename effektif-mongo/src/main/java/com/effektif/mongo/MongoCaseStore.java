@@ -36,7 +36,6 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -93,7 +92,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
   @Override
   public List<Case> findCases(CaseQuery query) {
     List<Case> cases = new ArrayList<>();
-    BasicDBObject dbQuery = createCaseQuery(query, Access.VIEW).get();
+    BasicDBObject dbQuery = createDbQuery(query, Access.VIEW).get();
     DBCursor dbCursor = casesCollection.find("find-cases", dbQuery);
     if (query.getLimit()!=null) {
       dbCursor.limit(query.getLimit());
@@ -111,7 +110,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
 
   @Override
   public void deleteCases(CaseQuery query) {
-    BasicDBObject dbQuery = createCaseQuery(query, Access.EDIT).get();
+    BasicDBObject dbQuery = createDbQuery(query, Access.EDIT).get();
     casesCollection.remove("delete-cases", dbQuery);
   }
 
@@ -140,15 +139,18 @@ public class MongoCaseStore implements CaseStore, Brewable {
   }
   
   /** builds the query and ensures VIEW access */
-  protected MongoQuery createCaseQuery(CaseQuery query, String... accessActions) {
-    MongoQuery mongoQuery = new MongoQuery();
+  protected MongoQuery createDbQuery(CaseQuery query, String... accessActions) {
+    if (query==null) {
+      query = new CaseQuery();
+    }
+    MongoQuery dbQuery = new MongoQuery();
     if (accessActions!=null) {
-      mongoQuery.access(accessActions);
+      dbQuery.access(accessActions);
     }
     if (query.getCaseId()!=null) {
-      mongoQuery.id(query.getCaseId());
+      dbQuery.id(query.getCaseId());
     }
-    return mongoQuery;
+    return dbQuery;
   }
 
   public DBObject writeOrderBy(List<OrderBy> orderBy) {

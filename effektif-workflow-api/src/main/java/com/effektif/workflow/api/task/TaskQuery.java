@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.task;
 
+import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.Query;
 
@@ -31,6 +32,31 @@ public class TaskQuery extends Query {
   //   - false means return only open tasks 
   //   - true means return only completed tasks 
   protected Boolean completed;
+  protected UserId taskAssigneeId;
+  
+  public boolean meetsCriteria(Task task) {
+    if (taskId!=null && !taskId.equals(task.getId())) {
+      return false;
+    }
+    if (taskAssigneeId!=null) {
+      if (!taskAssigneeId.equals(task.getAssigneeId())) {
+        return false;
+      }
+    }
+    if (completed!=null) {
+      if (completed && !task.isCompleted()) {
+        return false;
+      }
+      if (!completed && task.isCompleted()) {
+        return false;
+      }
+    }
+    if ( taskName!=null 
+         && (task.getName()==null || !task.getName().contains(taskName))) {
+      return false;
+    }
+    return true;
+  }
 
   public Boolean getCompleted() {
     return this.completed;
@@ -47,6 +73,21 @@ public class TaskQuery extends Query {
     return this;
   }
 
+  public UserId getTaskAssigneeId() {
+    return this.taskAssigneeId;
+  }
+  public void setTaskAssigneeId(UserId taskAssigneeId) {
+    this.taskAssigneeId = taskAssigneeId;
+  }
+  public TaskQuery taskAssigneeId(UserId taskAssigneeId) {
+    this.taskAssigneeId = taskAssigneeId;
+    return this;
+  }
+  public TaskQuery taskAssigneeId(String taskAssigneeId) {
+    taskAssigneeId(new UserId(taskAssigneeId));
+    return this;
+  }
+
   public String getTaskName() {
     return this.taskName;
   }
@@ -57,25 +98,6 @@ public class TaskQuery extends Query {
   public TaskQuery taskName(String taskName) {
     this.taskName = taskName;
     return this;
-  }
-
-  public boolean meetsCriteria(Task task) {
-    if (taskId!=null && !taskId.equals(task.getId())) {
-      return false;
-    }
-    if (completed!=null) {
-      if (completed && !task.isCompleted()) {
-        return false;
-      }
-      if (!completed && task.isCompleted()) {
-        return false;
-      }
-    }
-    if ( taskName!=null 
-         && (task.getName()==null || !task.getName().contains(taskName))) {
-      return false;
-    }
-    return true;
   }
 
   public String getTaskId() {

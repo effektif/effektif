@@ -53,7 +53,7 @@ public class DecisionTypeImpl extends AbstractDataType<DecisionType> {
     }
     if (options!=null) {
       for (DecisionOption option: options) {
-        if (internalValue.equals(option.getName())) {
+        if (internalValue.equals(option.getId())) {
           return;
         }
       }

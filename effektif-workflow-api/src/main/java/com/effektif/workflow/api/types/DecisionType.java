@@ -40,7 +40,7 @@ public class DecisionType extends TextType {
     if (options==null) {
       options = new ArrayList<>();
     }
-    options.add(new DecisionOption().name(option));
+    options.add(new DecisionOption().id(option));
     return this;
   }
 }

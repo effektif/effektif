@@ -258,9 +258,9 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   @Override
-  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
-    BasicDBObject query = buildQuery(workflowInstanceQuery);
-    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instances", query);
+  public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery query) {
+    BasicDBObject dbQuery = createDbQuery(query);
+    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instances", dbQuery);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
     while (workflowInstanceCursor.hasNext()) {
       BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
@@ -272,19 +272,22 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
-    BasicDBObject query = buildQuery(workflowInstanceQuery);
+    BasicDBObject query = createDbQuery(workflowInstanceQuery);
     workflowInstancesCollection.remove("delete-workflow-instances", query);
   }
 
-  protected BasicDBObject buildQuery(WorkflowInstanceQuery workflowInstanceQuery) {
-    BasicDBObject query = new BasicDBObject();
-    if (workflowInstanceQuery.getWorkflowInstanceId()!=null) {
-      query.append(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceQuery.getWorkflowInstanceId()));
+  protected BasicDBObject createDbQuery(WorkflowInstanceQuery query) {
+    if (query==null) {
+      query = new WorkflowInstanceQuery();
     }
-    if (workflowInstanceQuery.getActivityInstanceId()!=null) {
-      query.append(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, workflowInstanceQuery.getActivityInstanceId());
+    BasicDBObject dbQuery = new BasicDBObject();
+    if (query.getWorkflowInstanceId()!=null) {
+      dbQuery.append(WorkflowInstanceFields._ID, new ObjectId(query.getWorkflowInstanceId()));
     }
-    return query;
+    if (query.getActivityInstanceId()!=null) {
+      dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, query.getActivityInstanceId());
+    }
+    return dbQuery;
   }
   
   public void saveWorkflowInstance(BasicDBObject dbWorkflowInstance) {

@@ -19,20 +19,20 @@ package com.effektif.workflow.api.types;
  */
 public class DecisionOption {
   
-  protected String name;
+  protected String id;
 
-  public String getName() {
-    return this.name;
+  public String getId() {
+    return this.id;
   }
-  public void setName(String name) {
-    this.name = name;
+  public void setId(String id) {
+    this.id = id;
   }
-  public DecisionOption name(String name) {
-    this.name = name;
+  public DecisionOption id(String id) {
+    this.id = id;
     return this;
   }
   
   public String toString() {
-    return name;
+    return id;
   }
 }

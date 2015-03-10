@@ -31,6 +31,9 @@ import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.email.EmailServiceImpl;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 
@@ -50,6 +53,7 @@ public class ApiExamplesTest {
     Workflow workflow = new Workflow()
       .sourceWorkflowId("Release")
       .activity("Move open issues", new UserTask()
+        .assigneeId("johndoe")
         .transitionToNext())
       .activity("Check continuous integration", new UserTask()
         .transitionToNext())
@@ -63,14 +67,37 @@ public class ApiExamplesTest {
       .deployWorkflow(workflow)
       .checkNoErrorsAndNoWarnings()
       .getWorkflowId();
-    
+
     // Start a new workflow instance
-    TriggerInstance triggerInstance = new TriggerInstance()
-      .workflowId(workflowId);
-    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance);
+    WorkflowInstance workflowInstance = workflowEngine
+      .start(new TriggerInstance()
+        .workflowId(workflowId));
     
-    List<Task> tasks = taskService.findTasks(new TaskQuery());
-    assertEquals("Move open issues", tasks.get(0).getName());
+    List<Task> tasks = taskService.findTasks(new TaskQuery()
+      .open()
+      .taskAssigneeId("johndoe"));
+    
+    Task task = tasks.get(0);
+    assertEquals("Move open issues", task.getName());
     assertEquals(1, tasks.size());
+    
+    taskService.completeTask(task.getId());
+    
+    System.err.println(configuration.get(JsonService.class).objectToJsonStringPretty(workflow));
+    
+    System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
   }
+  
+  @Test
+  public void testEmailServerConfiguration() {
+    Configuration configuration = new MemoryConfiguration();
+    configuration.get(EmailServiceImpl.class)
+      // by default, localhost and port 25 are configured
+      .host("smtp.gmail.com") // overwrite the default server
+      .ssl() // also sets the port to the default ssl port 465 
+      .tls() // also sets the port to the default tls port 587
+      .connectionTimeoutSeconds(34523523l)
+      .authenticate("youraccount@gmail.com", "***");
+  }
+
 }

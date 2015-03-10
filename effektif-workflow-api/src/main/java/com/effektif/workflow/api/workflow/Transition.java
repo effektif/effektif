@@ -69,6 +69,12 @@ public class Transition extends Element {
     this.isToNext = true;
     return this;
   }
+  public boolean isToNext() {
+    return Boolean.TRUE.equals(isToNext);
+  }
+  public void setToNext(Boolean toNext) {
+    this.isToNext = toNext;
+  }
   
   public Condition getCondition() {
     return this.condition;
@@ -84,10 +90,6 @@ public class Transition extends Element {
   public Transition condition(Condition condition) {
     this.condition = condition;
     return this;
-  }
-
-  public boolean isToNext() {
-    return Boolean.TRUE.equals(isToNext);
   }
 
   @Override

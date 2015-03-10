@@ -39,18 +39,13 @@ compared to a token-based approach.
 
 ## Example
 
-A workflow that looks like this:
+Here's what a workflow could look like:
 
 ![Example diagram](files/README-diagram.png?raw=true "Workflow diagram")
 
-Can be created and executed in your Java code like this:
+Here's how you can create this workflow in Java:
 
 ```java
-// Create the default (in-memory) workflow engine
-Configuration configuration = new MemoryConfiguration();
-WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
-TaskService taskService = configuration.getTaskService();
-
 // Create a workflow
 Workflow workflow = new Workflow()
   .sourceWorkflowId("Release")
@@ -62,18 +57,70 @@ Workflow workflow = new Workflow()
     .to("releases@example.com")
     .subject("New version released")
     .bodyText("Enjoy!"));
+```
 
-// Deploy the workflow to the engine
-String workflowId = workflowEngine
-  .deployWorkflow(workflow)
-  .checkNoErrorsAndNoWarnings()
-  .getWorkflowId();
+The workflow model can be easily converted to/from JSON:
+```json
+{
+  "id" : "25077976-bd66-432e-a269-68de86ad78b7",
+  "activities" : [ {
+    "type" : "userTask",
+    "id" : "Move open issues"
+  }, {
+    "type" : "userTask",
+    "id" : "Check continuous integration"
+  }, {
+    "type" : "email",
+    "id" : "Notify community",
+    "toEmailAddresses" : [ {
+      "value" : "releases@example.com"
+    } ],
+    "subject" : "New version released",
+    "bodyText" : "Enjoy!"
+  } ],
+  "transitions" : [ {
+    "from" : "Move open issues",
+    "to" : "Check continuous integration"
+  }, {
+    "from" : "Check continuous integration",
+    "to" : "Notify community"
+  } ],
+  "sourceWorkflowId" : "Release",
+  "createTime" : "2015-03-10T13:53:09.396"
+}
+```
 
-// Start a new workflow instance
-TriggerInstance triggerInstance = new TriggerInstance()
-  .workflowId(workflowId);
-WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance);
+or BPMN:
+```xml
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:effektif="effektif.com:1">
+  <process id="Release">
+    <userTask id="Move open issues"/>
+    <userTask id="Check continuous integration"/>
+    <serviceTask id="Notify community" effektif:type="email">
+      <extensionElements>
+        <effektif:subject value="New version released"/>
+        <effektif:bodyText>Enjoy!</effektif:bodyText>
+        <effektif:to value="releases@example.com"/>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow sourceRef="Move open issues" targetRef="Check continuous integration"/>
+    <sequenceFlow sourceRef="Check continuous integration" targetRef="Notify community"/>
+  </process>
+</definitions>
+```
 
+The workflow engine can execute these workflows.  Here's how you start a new workflow instance: 
+
+```java
+WorkflowInstance workflowInstance = workflowEngine
+  .start(new TriggerInstance()
+    .workflowId(workflowId));
+```
+
+The workflow engine includes a task service that you can use 
+in your app to create task lists for people. 
+
+```java 
 List<Task> tasks = taskService.findTasks(new TaskQuery());
 assertEquals("Move open issues", tasks.get(0).getName());
 assertEquals(1, tasks.size());
@@ -81,4 +128,5 @@ assertEquals(1, tasks.size());
 
 ## Documentation
 
-### [Effektif documentation - user and developer documentation](https://github.com/effektif/effektif/wiki)
+### [The Effektif Wiki](https://github.com/effektif/effektif/wiki)
+Is the central place to

@@ -182,7 +182,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
-    BasicDBObject dbQuery = createWorkflowDbQuery(query);
+    BasicDBObject dbQuery = createDbQuery(query);
     workflowsCollection.remove("delete-workflows", dbQuery);
   }
 
@@ -199,7 +199,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
 
   public DBCursor createWorkflowDbCursor(WorkflowQuery query) {
-    BasicDBObject dbQuery = createWorkflowDbQuery(query);
+    BasicDBObject dbQuery = createDbQuery(query);
     DBCursor dbCursor = workflowsCollection.find("find-workflows", dbQuery);
     if (query.getLimit()!=null) {
       dbCursor.limit(query.getLimit());
@@ -210,7 +210,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     return dbCursor;
   }
 
-  protected BasicDBObject createWorkflowDbQuery(WorkflowQuery query) {
+  protected BasicDBObject createDbQuery(WorkflowQuery query) {
     BasicDBObject dbQuery = new BasicDBObject();
     if (query.getWorkflowId()!=null) {
       dbQuery.append(FieldsWorkflow._ID, new ObjectId(query.getWorkflowId()));
