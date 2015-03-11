@@ -16,9 +16,7 @@ public class TaskCommand implements CommandImpl {
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     final String taskId = command.getArgument();
-    final TaskService taskService = configuration.getTaskService();
-    final Task task = taskService.findTaskById(taskId);
-
+    final Task task = configuration.getTaskService().findTaskById(taskId);
     final JsonService jsonService = configuration.get(JsonService.class);
     out.println(jsonService.objectToJsonStringPretty(task));
     out.println();

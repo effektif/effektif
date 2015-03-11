@@ -16,17 +16,8 @@ public class StartCommand implements CommandImpl {
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     final String sourceWorkflowId = command.getArgument();
-    final WorkflowEngine engine = configuration.getWorkflowEngine();
-
-    for (Workflow workflow : engine.findWorkflows(new WorkflowQuery())) {
-      if (workflow.getSourceWorkflowId().equals(sourceWorkflowId)) {
-        final TriggerInstance trigger = new TriggerInstance().workflowId(workflow.getId());
-        engine.start(trigger);
-        return;
-      }
-    }
-
-    out.println("Workflow not found");
-    out.println();
+    final TriggerInstance trigger = new TriggerInstance().sourceWorkflowId(sourceWorkflowId);
+    configuration.getWorkflowEngine().start(trigger);
+    out.println("Started workflow " + sourceWorkflowId);
   }
 }
