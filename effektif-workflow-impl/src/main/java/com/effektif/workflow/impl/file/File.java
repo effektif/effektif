@@ -57,6 +57,14 @@ public class File implements Attachment {
   public void setId(FileId id) {
     this.id = id;
   }
+  public File id(FileId id) {
+    this.id = id;
+    return this;
+  }
+  public File id(String id) {
+    this.id = new FileId(id);
+    return this;
+  }
 
   public String getOrganizationId() {
     return this.organizationId;

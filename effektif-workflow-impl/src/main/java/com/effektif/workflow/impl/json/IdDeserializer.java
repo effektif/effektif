@@ -31,7 +31,7 @@ public abstract class IdDeserializer<T extends Id> extends StdDeserializer<T> {
 
   private static final long serialVersionUID = 1L;
 
-  protected IdDeserializer(Class<T> idClass) {
+  public IdDeserializer(Class<T> idClass) {
     super(idClass);
   }
 

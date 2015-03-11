@@ -15,33 +15,22 @@
  */
 package com.effektif.workflow.impl.json;
 
-import java.io.IOException;
-
 import com.effektif.workflow.api.model.UserId;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserIdDeserializer extends StdDeserializer<UserId> {
+public class UserIdDeserializer extends IdDeserializer<UserId> {
 
   private static final long serialVersionUID = 1L;
 
-  protected UserIdDeserializer() {
+  public UserIdDeserializer() {
     super(UserId.class);
   }
 
   @Override
-  public UserId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    String idString = jp.getText();
-    if (idString!=null) {
-      return new UserId(idString);
-    } else {
-      return null;
-    }
+  protected UserId instantiate(String idString) {
+    return new UserId(idString);
   }
 }

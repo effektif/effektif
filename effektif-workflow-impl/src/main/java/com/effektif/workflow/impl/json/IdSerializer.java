@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 public class IdSerializer extends StdSerializer<Id> {
 
-  protected IdSerializer() {
+  public IdSerializer() {
     super(Id.class);
   }
   

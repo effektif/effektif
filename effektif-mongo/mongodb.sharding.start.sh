@@ -3,9 +3,9 @@
 set -x
 
 MONGODB_VERSION=${MONGODB_VERSION-2.6.5}
-MONGODB_HOME=${MONGODB_HOME-$HOME/.heisenberg/mongodb-$MONGODB_VERSION}
+MONGODB_HOME=${MONGODB_HOME-$HOME/.effektif/mongodb-$MONGODB_VERSION}
 
-DATABASES_HOME=$HOME/.heisenberg
+DATABASES_HOME=$HOME/.effektif
 
 DATABASE_DIR=$DATABASES_HOME/shard
 CONFIGSVR_DIR=$DATABASES_HOME/cfg
@@ -62,9 +62,9 @@ $MONGODB_HOME/bin/mongo admin --eval "db.runCommand({'addShard':'localhost:29001
 $MONGODB_HOME/bin/mongo admin --eval "db.runCommand({'addShard':'localhost:29002'})"
 $MONGODB_HOME/bin/mongo admin --eval "db.runCommand({'addShard':'localhost:29003'})"
 
-$MONGODB_HOME/bin/mongo admin --eval "db.runCommand( { enableSharding: 'heisenberg' } )"
+$MONGODB_HOME/bin/mongo admin --eval "db.runCommand( { enableSharding: 'effektif' } )"
 
-$MONGODB_HOME/bin/mongo heisenberg --eval "db.createCollection('processInstances')"
-$MONGODB_HOME/bin/mongo heisenberg --eval "db.collection.ensureIndex( { _id: 'hashed' } )"
+$MONGODB_HOME/bin/mongo effektif --eval "db.createCollection('processInstances')"
+$MONGODB_HOME/bin/mongo effektif --eval "db.collection.ensureIndex( { _id: 'hashed' } )"
 
-$MONGODB_HOME/bin/mongo admin --eval "db.runCommand( { shardCollection: 'heisenberg.processInstances', key: { '_id': 'hashed' } } )"
+$MONGODB_HOME/bin/mongo admin --eval "db.runCommand( { shardCollection: 'effektif.workflowInstances', key: { '_id': 'hashed' } } )"

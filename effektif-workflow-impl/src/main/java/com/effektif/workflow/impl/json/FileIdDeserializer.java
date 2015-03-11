@@ -15,33 +15,22 @@
  */
 package com.effektif.workflow.impl.json;
 
-import java.io.IOException;
-
 import com.effektif.workflow.api.model.FileId;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
 /**
  * @author Tom Baeyens
  */
-public class FileIdDeserializer extends StdDeserializer<FileId> {
+public class FileIdDeserializer extends IdDeserializer<FileId> {
 
   private static final long serialVersionUID = 1L;
 
-  protected FileIdDeserializer() {
+  public FileIdDeserializer() {
     super(FileId.class);
   }
 
   @Override
-  public FileId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    String idString = jp.getText();
-    if (idString!=null) {
-      return new FileId(idString);
-    } else {
-      return null;
-    }
+  protected FileId instantiate(String idString) {
+    return new FileId(idString);
   }
 }

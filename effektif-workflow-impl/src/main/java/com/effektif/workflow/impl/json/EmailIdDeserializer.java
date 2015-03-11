@@ -15,33 +15,22 @@
  */
 package com.effektif.workflow.impl.json;
 
-import java.io.IOException;
-
 import com.effektif.workflow.api.model.EmailId;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
 /**
  * @author Tom Baeyens
  */
-public class EmailIdDeserializer extends StdDeserializer<EmailId> {
+public class EmailIdDeserializer extends IdDeserializer<EmailId> {
 
   private static final long serialVersionUID = 1L;
 
-  protected EmailIdDeserializer() {
+  public EmailIdDeserializer() {
     super(EmailId.class);
   }
 
   @Override
-  public EmailId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    String idString = jp.getText();
-    if (idString!=null) {
-      return new EmailId(idString);
-    } else {
-      return null;
-    }
+  protected EmailId instantiate(String idString) {
+    return new EmailId(idString);
   }
 }

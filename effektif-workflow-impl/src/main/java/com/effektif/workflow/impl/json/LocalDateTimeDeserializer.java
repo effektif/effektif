@@ -36,7 +36,7 @@ public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
   static DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
 
-  protected LocalDateTimeDeserializer() {
+  public LocalDateTimeDeserializer() {
     super(LocalDateTime.class);
   }
 

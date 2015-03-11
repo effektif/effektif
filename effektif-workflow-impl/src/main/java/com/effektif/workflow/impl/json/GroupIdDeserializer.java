@@ -15,33 +15,22 @@
  */
 package com.effektif.workflow.impl.json;
 
-import java.io.IOException;
-
 import com.effektif.workflow.api.model.GroupId;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 
 /**
  * @author Tom Baeyens
  */
-public class GroupIdDeserializer extends StdDeserializer<GroupId> {
+public class GroupIdDeserializer extends IdDeserializer<GroupId> {
 
   private static final long serialVersionUID = 1L;
 
-  protected GroupIdDeserializer() {
+  public GroupIdDeserializer() {
     super(GroupId.class);
   }
 
   @Override
-  public GroupId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    String idString = jp.getText();
-    if (idString!=null) {
-      return new GroupId(idString);
-    } else {
-      return null;
-    }
+  protected GroupId instantiate(String idString) {
+    return new GroupId(idString);
   }
 }

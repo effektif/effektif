@@ -34,7 +34,7 @@ public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
   static DateTimeFormatter formatter = ISODateTimeFormat.dateTime();
   
-  protected LocalDateTimeSerializer() {
+  public LocalDateTimeSerializer() {
     super(LocalDateTime.class);
   }
   
