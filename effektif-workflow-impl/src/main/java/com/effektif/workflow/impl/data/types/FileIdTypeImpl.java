@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.FileId;
-import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;

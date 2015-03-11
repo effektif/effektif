@@ -32,10 +32,9 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.email.DefaultEmailServiceSupplier;
 import com.effektif.workflow.impl.email.EmailServiceImpl;
 import com.effektif.workflow.impl.job.JobServiceImpl;
-import com.effektif.workflow.impl.json.ObjectMapperSupplier;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.ObjectMapperSupplier;
 import com.effektif.workflow.impl.script.RhinoScriptService;
-import com.effektif.workflow.impl.script.StandardScriptService;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

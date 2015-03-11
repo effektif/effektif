@@ -18,8 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.CaseId;
 import com.effektif.workflow.api.task.CaseQuery;
 import com.effektif.workflow.impl.CaseStore;
 
@@ -58,5 +59,15 @@ public class MemoryCaseStore implements CaseStore {
     for (Case caze: findCases(caseQuery)) {
       cases.remove(caze.getId());
     }
+  }
+
+  @Override
+  public boolean addTask(CaseId caseId, TaskId taskId) {
+    Case caze = cases.get(caseId);
+    if (caze==null) {
+      return false;
+    }
+    caze.addTaskId(taskId);
+    return true;
   }
 }

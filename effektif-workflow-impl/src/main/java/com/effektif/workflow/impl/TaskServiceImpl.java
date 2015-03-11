@@ -60,7 +60,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
 
     TaskId taskId = task.getId();
     if (taskId==null) {
-      taskId = new TaskId(taskStore.generateTaskId());
+      taskId = taskStore.generateTaskId();
     }
     
     task.setId(taskId);

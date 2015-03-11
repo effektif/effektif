@@ -25,9 +25,11 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.AccessControlledObject;
+import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -59,7 +61,7 @@ public class Task extends Extensible implements AccessControlledObject {
 
   /** id of the root task in the task parent-child relationship
    * can be null for tasks that don't have a case. */
-  protected String caseId; 
+  protected CaseId caseId; 
   protected TaskId parentId;
   protected List<TaskId> subtaskIds;
   protected LocalDateTime duedate;
@@ -81,7 +83,7 @@ public class Task extends Extensible implements AccessControlledObject {
   protected Boolean hasWorkflowForm;
   protected String workflowInstanceId;
   protected String sourceWorkflowId;
-  protected String workflowId;
+  protected WorkflowId workflowId;
   
   public Task() {
   }
@@ -213,12 +215,12 @@ public class Task extends Extensible implements AccessControlledObject {
   }
 
   
-  public String getWorkflowId() {
+  public WorkflowId getWorkflowId() {
     return workflowId;
   }
 
   
-  public void setWorkflowId(String workflowId) {
+  public void setWorkflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
   }
 
@@ -252,11 +254,11 @@ public class Task extends Extensible implements AccessControlledObject {
   
   /** id reference to the root task in the task 
    * {@link #getParentId() parent} - {@link #getSubtaskIds() child} relation */
-  public String getCaseId() {
+  public CaseId getCaseId() {
     return this.caseId;
   }
   /** @see #getCaseId() */
-  public void setCaseId(String caseId) {
+  public void setCaseId(CaseId caseId) {
     this.caseId = caseId;
   }
 

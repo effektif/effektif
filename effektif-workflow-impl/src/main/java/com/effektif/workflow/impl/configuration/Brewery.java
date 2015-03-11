@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.util.Exceptions;
 
 

@@ -31,6 +31,7 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
  */
 public class ActivityImpl extends ScopeImpl {
   
+  public String id;
   public Activity activity;
   public ActivityType activityType;
   /** the list of transitions for which this activity is the destination.
@@ -43,8 +44,9 @@ public class ActivityImpl extends ScopeImpl {
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void parse(Activity activity, Scope scopeApi, WorkflowParser parser, ScopeImpl parent) {
-    super.parse(activity, parser, parent);
+  public void parse(Activity activity, Scope parentScope, ScopeImpl parentScopeImpl, WorkflowParser parser) {
+    super.parse(activity, parentScopeImpl, parser);
+    this.id = activity.getId();
     this.activity = activity;
     if (id==null) {
       parser.addError("Activity has no id");
@@ -69,7 +71,7 @@ public class ActivityImpl extends ScopeImpl {
     if (activity.getOutgoingTransitions()!=null) {
       for (Transition transition: activity.getOutgoingTransitions()) {
         transition.from(activity.getId());
-        scopeApi.transition(transition);
+        parentScope.transition(transition);
       }
       activity.setOutgoingTransitions(null);
     }
@@ -77,6 +79,10 @@ public class ActivityImpl extends ScopeImpl {
   
   public boolean isMultiInstance() {
     return activityType.getMultiInstance() != null; 
+  }
+
+  public String getIdText() {
+    return id;
   }
 
   /// other methods ////////////////////////////
@@ -101,7 +107,6 @@ public class ActivityImpl extends ScopeImpl {
     this.outgoingTransitions = outgoingTransitionDefinitions;
   }
 
-
   public void addIncomingTransition(TransitionImpl transitionDefinition) {
     if (incomingTransitions==null) {
       incomingTransitions = new ArrayList<TransitionImpl>();
@@ -113,7 +118,6 @@ public class ActivityImpl extends ScopeImpl {
     return incomingTransitions!=null && !incomingTransitions.isEmpty();
   }
 
-  
   public List<TransitionImpl> getIncomingTransitions() {
     return incomingTransitions;
   }
@@ -140,5 +144,9 @@ public class ActivityImpl extends ScopeImpl {
 
   public String toString() {
     return id!=null ? "["+id.toString()+"]" : "["+Integer.toString(System.identityHashCode(this))+"]";
+  }
+
+  public String getId() {
+    return id;
   }
 }

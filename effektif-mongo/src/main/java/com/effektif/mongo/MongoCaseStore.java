@@ -24,21 +24,24 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
-import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
 import com.effektif.workflow.api.acl.Access;
+import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.CaseId;
 import com.effektif.workflow.api.task.CaseQuery;
 import com.effektif.workflow.impl.CaseStore;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 
 
 public class MongoCaseStore implements CaseStore, Brewable {
@@ -53,6 +56,8 @@ public class MongoCaseStore implements CaseStore, Brewable {
     String NAME = "name";
     String ORGANIZATION_ID = "organizationId";
     String LAST_UPDATED = "lastUpdated";
+    String TASK_IDS = "tasks";
+    String WORKFLOW_ID = "workflowId";
   }
 
   @Override
@@ -73,21 +78,22 @@ public class MongoCaseStore implements CaseStore, Brewable {
     BasicDBObject dbCase = caseToMongo(caze);
     casesCollection.insert("insert-case", dbCase);
   }
-
-//  @Override
-//  public Task addTask(String caseId, Case caze) {
-//    String subtaskId = caze.getId();
-//    BasicDBObject query = new MongoQuery()
-//      ._id(parentId)
-//      .access(Access.EDIT)
-//      .get();
-//    BasicDBObject update = new MongoUpdate()
-//      .push(FieldsCase.SUBTASK_IDS, subtaskId)
-//      .set(FieldsCase.LAST_UPDATED, Time.now().toDate())
-//      .get();
-//    BasicDBObject dbTask = casesCollection.findAndModify("add-subtask", query, update);
-//    return mongoToTask(dbTask);
-//  }
+  
+  /** returns true if the case was found, the authenticated user 
+   * has edit rights and if the db operation succeeded. */
+  @Override
+  public boolean addTask(CaseId caseId, TaskId taskId) {
+    BasicDBObject query = new MongoQuery()
+      ._id(caseId)
+      .access(Access.EDIT)
+      .get();
+    BasicDBObject update = new MongoUpdate()
+      .push(FieldsCase.TASK_IDS, new ObjectId(taskId.getInternal()))
+      .set(FieldsCase.LAST_UPDATED, Time.now().toDate())
+      .get();
+    WriteResult result = casesCollection.update("add-subtask", query, update);
+    return result.getN()==1;
+  }
   
   @Override
   public List<Case> findCases(CaseQuery query) {
@@ -119,21 +125,27 @@ public class MongoCaseStore implements CaseStore, Brewable {
     BasicDBObject dbWorkflow = new BasicDBObject(); 
     jsonWorkflow.remove("id");
     jsonWorkflow.remove(FieldsCase.ORGANIZATION_ID);
+    jsonWorkflow.remove(FieldsCase.WORKFLOW_ID);
     dbWorkflow.putAll(jsonWorkflow);
-    writeId(dbWorkflow, FieldsWorkflow._ID, caze.getId());
-    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, caze.getOrganizationId());
+    writeIdOptNew(dbWorkflow, FieldsCase._ID, caze.getId());
+    writeIdOpt(dbWorkflow, FieldsCase.ORGANIZATION_ID, caze.getOrganizationId());
+    writeIdOptNew(dbWorkflow, FieldsCase.WORKFLOW_ID, caze.getWorkflowId());
     return dbWorkflow;
   }
 
   public Case mongoToCase(BasicDBObject dbTask) {
     ObjectId caseId = (ObjectId) dbTask.remove(FieldsCase._ID);
     ObjectId organizationId = (ObjectId) dbTask.remove(FieldsCase.ORGANIZATION_ID);
+    ObjectId workflowId = (ObjectId) dbTask.remove(FieldsCase.WORKFLOW_ID);
     Case caze = jsonService.jsonMapToObject(dbTask, Case.class);
     if (caseId!=null) {
       caze.setId(new CaseId(caseId.toString()));
     }
     if (organizationId!=null) {
       caze.setOrganizationId(organizationId.toString());
+    }
+    if (workflowId!=null) {
+      caze.setWorkflowId(new WorkflowId(workflowId.toString()));
     }
     return caze;
   }
@@ -148,7 +160,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
       dbQuery.access(accessActions);
     }
     if (query.getCaseId()!=null) {
-      dbQuery.id(query.getCaseId());
+      dbQuery._id(query.getCaseId().getInternal());
     }
     return dbQuery;
   }

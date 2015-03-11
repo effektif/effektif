@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl;
+package com.effektif.workflow.impl.json;
 
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 
 
-public interface WorkflowCache {
+/**
+ * @author Tom Baeyens
+ */
+public class WorkflowInstanceIdDeserializer extends IdDeserializer<WorkflowInstanceId> {
 
-  WorkflowImpl get(WorkflowId workflowId);
-  void put(WorkflowImpl workflow);
+  private static final long serialVersionUID = 1L;
+
+  public WorkflowInstanceIdDeserializer() {
+    super(WorkflowInstanceId.class);
+  }
+
+  @Override
+  protected WorkflowInstanceId instantiate(String idString) {
+    return new WorkflowInstanceId(idString);
+  }
 }

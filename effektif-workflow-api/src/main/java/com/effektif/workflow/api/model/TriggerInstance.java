@@ -18,7 +18,6 @@ package com.effektif.workflow.api.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -28,24 +27,24 @@ import com.effektif.workflow.api.workflow.Workflow;
 public class TriggerInstance {
   
   protected String workflowInstanceId;
-  protected String workflowId;
+  protected WorkflowId workflowId;
   protected String sourceWorkflowId;
   protected String businessKey;
   protected Map<String,Object> data;
-  protected String caseId;
+  protected CaseId caseId;
   protected String callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
 
-  public String getWorkflowId() {
+  public WorkflowId getWorkflowId() {
     return this.workflowId;
   }
-  public void setWorkflowId(String workflowId) {
+  public void setWorkflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
   }
 
   /** use this specific workflow version. 
    * If you want to use the latest version of a certain workflow, use {@link #sourceWorkflowId(String)}. */
-  public TriggerInstance workflowId(String workflowId) {
+  public TriggerInstance workflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
     return this;
   }
@@ -120,12 +119,12 @@ public class TriggerInstance {
 
   /** references the top-level-task (aka case) that is related to the 
    * created workflow instance. */
-  public String getCaseId() {
+  public CaseId getCaseId() {
     return this.caseId;
   }
   /** references the top-level-task (aka case) that is related to the 
    * created workflow instance. */
-  public void setCaseId(String caseId) {
+  public void setCaseId(CaseId caseId) {
     this.caseId = caseId;
   }
   

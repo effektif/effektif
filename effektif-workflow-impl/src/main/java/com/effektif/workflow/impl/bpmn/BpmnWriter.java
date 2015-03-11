@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -101,7 +102,8 @@ public class BpmnWriter extends Bpmn {
     setBpmnName(processElement, "process");
     String sourceWorkflowId = (String) workflow.getSourceWorkflowId();
     if (sourceWorkflowId==null) {
-      sourceWorkflowId = workflow.getId();
+      WorkflowId workflowId = workflow.getId();
+      sourceWorkflowId = workflowId!=null ? workflowId.getInternal() : null;
     }
     writeBpmnAttribute(processElement, "id", sourceWorkflowId);
     writeBpmnAttribute(processElement, "name", workflow.getName());

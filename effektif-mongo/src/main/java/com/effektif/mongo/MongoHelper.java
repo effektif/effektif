@@ -25,6 +25,8 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.mongodb.BasicDBObject;
 
 
@@ -46,7 +48,7 @@ public abstract class MongoHelper {
 
   public static void writeIdOptNew(Map<String,Object> o, String fieldName, Id id) {
     if (id!=null) {
-      o.put(fieldName, id.getInternal());
+      o.put(fieldName, new ObjectId(id.getInternal()));
     }
   }
 
@@ -122,8 +124,18 @@ public abstract class MongoHelper {
   }
 
   public static TaskId readTaskId(BasicDBObject dbObject, String fieldName) {
-    Object internal = dbObject.get(fieldName);
-    return internal!=null ? new TaskId(internal.toString()) : null;
+    Object oid = dbObject.get(fieldName);
+    return oid!=null ? new TaskId(oid.toString()) : null;
+  }
+
+  public static WorkflowId readWorkflowId(BasicDBObject dbObject, String fieldName) {
+    Object oid = dbObject.get(fieldName);
+    return oid!=null ? new WorkflowId(oid.toString()) : null;
+  }
+
+  public static WorkflowInstanceId readWorkflowInstanceId(BasicDBObject dbObject, String fieldName) {
+    Object oid = dbObject.get(fieldName);
+    return oid!=null ? new WorkflowInstanceId(oid.toString()) : null;
   }
 
   public static Long readLong(BasicDBObject dbObject, String fieldName) {

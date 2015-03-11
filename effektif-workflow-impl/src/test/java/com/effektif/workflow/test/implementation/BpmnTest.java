@@ -21,10 +21,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import com.effektif.workflow.api.Configuration;
 import junit.framework.TestCase;
+
 import org.junit.Test;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;

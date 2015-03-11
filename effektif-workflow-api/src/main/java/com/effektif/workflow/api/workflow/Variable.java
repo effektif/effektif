@@ -23,14 +23,28 @@ import com.effektif.workflow.api.types.Type;
  */
 public class Variable extends Element {
   
+  protected String id;
   protected Type type;
 
   public Variable() {
   }
 
-  public Variable(String id, Type type) {
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
     this.id = id;
-    this.type = type;
+  }
+  /** replace with .activity("id", new Activity()) */
+  @Deprecated
+  public Variable(String id) {
+    this.id = id;
+  }
+  /** replace with .activity("id", new Activity()) */
+  @Deprecated
+  public Variable id(String id) {
+    this.id = id;
+    return this;
   }
 
   public Type getType() {
@@ -41,12 +55,6 @@ public class Variable extends Element {
   }
   public Variable type(Type type) {
     this.type = type;
-    return this;
-  }
-
-  @Override
-  public Variable id(String id) {
-    super.id(id);
     return this;
   }
 

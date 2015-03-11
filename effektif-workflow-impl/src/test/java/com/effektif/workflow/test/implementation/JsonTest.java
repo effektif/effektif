@@ -22,6 +22,7 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.json.JsonService;
@@ -46,7 +47,9 @@ public class JsonTest extends TestCase {
 
   @Test
   public void testCall() {
-    Call activity = new Call("runTests").subWorkflowName("Run tests").subWorkflowId("releaseTests1");
+    Call activity = new Call("runTests")
+      .subWorkflowName("Run tests")
+      .subWorkflowId(new WorkflowId("releaseTests1"));
     activity.setSubWorkflowSource("releaseTests");
     print(activity);
   }

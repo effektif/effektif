@@ -14,13 +14,16 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.acl.AccessControlList;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.xml.XmlElement;
 
 
 /**
  * @author Tom Baeyens
  */
-public class AbstractWorkflow extends Scope {
+public abstract class AbstractWorkflow extends Scope {
+
+  protected WorkflowId id;
 
   protected Trigger trigger;
   protected XmlElement bpmnDefinitions;
@@ -29,9 +32,18 @@ public class AbstractWorkflow extends Scope {
   protected String organizationId;
   
   protected String caseNameTemplate;
+  
+  public abstract String getSourceWorkflowId();
 
-  public String getSourceWorkflowId() {
-    return id;
+  public WorkflowId getId() {
+    return this.id;
+  }
+  public void setId(WorkflowId id) {
+    this.id = id;
+  }
+  public AbstractWorkflow id(WorkflowId id) {
+    this.id = id;
+    return this;
   }
 
   public Trigger getTrigger() {

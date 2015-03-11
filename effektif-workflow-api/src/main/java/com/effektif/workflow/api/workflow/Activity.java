@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public class Activity extends Scope {
   
+  protected String id;
   protected String defaultTransitionId;
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
@@ -38,10 +39,24 @@ public class Activity extends Scope {
   public Activity() {
   }
 
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  /** replace with .activity("id", new Activity()) */
+  @Deprecated
   public Activity(String id) {
     this.id = id;
   }
-  
+  /** replace with .activity("id", new Activity()) */
+  @Deprecated
+  public Activity id(String id) {
+    this.id = id;
+    return this;
+  }
+
   public String getDefaultTransitionId() {
     return this.defaultTransitionId;
   }
@@ -121,11 +136,6 @@ public class Activity extends Scope {
   @Override
   public Activity timer(Timer timer) {
     super.timer(timer);
-    return this;
-  }
-  @Override
-  public Activity id(String id) {
-    super.id(id);
     return this;
   }
   @Override

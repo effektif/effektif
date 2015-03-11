@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowStore;
@@ -35,7 +36,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
  */
 public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
-  protected Map<String, Workflow> workflows;
+  protected Map<WorkflowId, Workflow> workflows;
 
   public MemoryWorkflowStore() {
   }
@@ -46,8 +47,8 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   }
   
   @Override
-  public String generateWorkflowId() {
-    return UUID.randomUUID().toString();
+  public WorkflowId generateWorkflowId() {
+    return new WorkflowId(UUID.randomUUID().toString());
   }
 
   @Override
@@ -89,7 +90,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public String findLatestWorkflowIdBySource(String workflowName) {
+  public WorkflowId findLatestWorkflowIdBySource(String workflowName) {
     if (workflowName==null) {
       return null;
     }
@@ -113,7 +114,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public Workflow loadWorkflowById(String workflowId) {
+  public Workflow loadWorkflowById(WorkflowId workflowId) {
     return workflows.get(workflowId);
   }
 }

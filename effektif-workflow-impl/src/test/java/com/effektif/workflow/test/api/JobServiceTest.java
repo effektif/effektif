@@ -30,7 +30,6 @@ import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.job.JobExecution;
-import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.test.JobWorkflowTest;
 import com.fasterxml.jackson.annotation.JsonTypeName;

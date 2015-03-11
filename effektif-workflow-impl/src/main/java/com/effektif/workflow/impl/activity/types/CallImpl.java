@@ -23,11 +23,11 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -48,7 +48,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
   private static final String BPMN_ELEMENT_NAME = "callActivity";
 
   // IDEA Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
-  protected String subWorkflowId;
+  protected WorkflowId subWorkflowId;
   protected String subWorkflowSource;
 
   public CallImpl() {
@@ -120,7 +120,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
   public void execute(ActivityInstanceImpl activityInstance) {
     Configuration configuration = activityInstance.getConfiguration();
 
-    String actualSubWorkflowId = null;
+    WorkflowId actualSubWorkflowId = null;
     if (this.subWorkflowId!=null) {
       actualSubWorkflowId = this.subWorkflowId;
     } else if (subWorkflowSource!=null) {

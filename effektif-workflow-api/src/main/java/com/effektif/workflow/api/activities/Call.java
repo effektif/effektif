@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 public class Call extends AbstractBindableActivity {
 
-  protected String subWorkflowId; 
+  protected WorkflowId subWorkflowId; 
   protected String subWorkflowSource; 
   
   public Call() {
@@ -42,7 +43,7 @@ public class Call extends AbstractBindableActivity {
     super(id);
   }
 
-  public Call subWorkflowId(String subWorkflowId) {
+  public Call subWorkflowId(WorkflowId subWorkflowId) {
     this.subWorkflowId = subWorkflowId;
     return this;
   }
@@ -52,7 +53,7 @@ public class Call extends AbstractBindableActivity {
     return this;
   }
   
-  public String getSubWorkflowId() {
+  public WorkflowId getSubWorkflowId() {
     return subWorkflowId;
   }
   
@@ -60,7 +61,7 @@ public class Call extends AbstractBindableActivity {
     return subWorkflowSource;
   }
 
-  public void setSubWorkflowId(String subWorkflowId) {
+  public void setSubWorkflowId(WorkflowId subWorkflowId) {
     this.subWorkflowId = subWorkflowId;
   }
   

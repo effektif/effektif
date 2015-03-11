@@ -27,6 +27,7 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -100,7 +101,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
-      String workflowId; 
+      WorkflowId workflowId; 
       if (workflowApi.getId()==null) {
         workflowId = workflowStore.generateWorkflowId();
         workflowApi.setId(workflowId);
@@ -135,7 +136,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   /** first part of starting a new workflow instance: creating the workflow instance and applying the trigger data */
   public WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance) {
-    String workflowId = getLatestWorkflowId(triggerInstance);
+    WorkflowId workflowId = getLatestWorkflowId(triggerInstance);
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
 
     LockImpl lock = new LockImpl();
@@ -187,8 +188,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return workflowInstance.toWorkflowInstance();
   }
 
-  public String getLatestWorkflowId(TriggerInstance triggerInstance) {
-    String workflowId = triggerInstance.getWorkflowId();
+  public WorkflowId getLatestWorkflowId(TriggerInstance triggerInstance) {
+    WorkflowId workflowId = triggerInstance.getWorkflowId();
     if (workflowId==null) {
       if (triggerInstance.getSourceWorkflowId()!=null) {
         workflowId = workflowStore.findLatestWorkflowIdBySource(triggerInstance.getSourceWorkflowId());
@@ -233,7 +234,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
   
   /** retrieves the executable form of the workflow using the workflow cache */
-  public WorkflowImpl getWorkflowImpl(String workflowId) {
+  public WorkflowImpl getWorkflowImpl(WorkflowId workflowId) {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
       Workflow workflow = workflowStore.loadWorkflowById(workflowId);

@@ -21,7 +21,6 @@ import com.effektif.mongo.MongoMemoryConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.email.TestEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
-import com.effektif.workflow.test.api.CaseTest;
 import com.mongodb.DB;
 
 
