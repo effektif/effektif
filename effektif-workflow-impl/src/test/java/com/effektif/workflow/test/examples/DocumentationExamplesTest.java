@@ -1,5 +1,8 @@
-package com.effektif.workflow.test.implementation;
+package com.effektif.workflow.test.examples;
 
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -27,12 +30,14 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
+import javax.swing.*;
+
 /**
- * Stub for a test of
+ * Stub for a test of JSON and BPMN output, used to generate samples for documentation.
  *
  * @author Peter Hilton
  */
-public class JsonTest extends TestCase {
+public class DocumentationExamplesTest extends TestCase {
 
   private static Configuration configuration;
 
@@ -46,7 +51,9 @@ public class JsonTest extends TestCase {
 
   @Test
   public void testCall() {
-    Call activity = new Call("runTests").subWorkflowName("Run tests").subWorkflowId("releaseTests1");
+    Call activity = new Call("runTests")
+      .subWorkflowName("Run tests")
+      .subWorkflowId("releaseTests1");
     activity.setSubWorkflowSource("releaseTests");
     print(activity);
   }
@@ -147,6 +154,7 @@ public class JsonTest extends TestCase {
         .name("The first field in the form")
         .binding("v1"));
     UserTask activity = new UserTask("smokeTest")
+        .name("Smoke test")
         .candidateGroupId("dev")
         .form(form)
         .duedate(RelativeTime.hours(1))
@@ -157,9 +165,21 @@ public class JsonTest extends TestCase {
     print(activity);
   }
 
-  public void print(Object o) {
+  private void printJson(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
     JsonService jsonService = configuration.get(JsonService.class);
     System.out.println(jsonService.objectToJsonStringPretty(o));
+  }
+
+  private void print(Activity activity) {
+    printJson(activity);
+
+    Workflow workflow = new Workflow().activity(activity);
+    System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
+  }
+
+  private void print(Form form) {
+    UserTask activity = new UserTask().form(form);
+    print(activity);
   }
 }
