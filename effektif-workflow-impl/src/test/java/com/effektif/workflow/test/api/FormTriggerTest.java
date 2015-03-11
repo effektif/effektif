@@ -41,57 +41,58 @@ public class FormTriggerTest extends WorkflowTest {
   public void testFormTriggerNameAndTypeResolving() {
     Workflow workflow = new Workflow()
       .variable(new Variable()
-        .id("v1")
-        .name("Veewan") // the field using this variable should pick up this name by default 
+        .id("version")
+        .name("Version number") // the field using this variable should pick up this name by default
         .type(new TextType())) // the field using this variable should pick up this type
       .trigger(new FormTrigger()
         // by default, the variableId is also taken as the fieldId
-        .field("v1"));
+        .field("version"));
     
     
     // deploying will initialize the name and type on the form field 
-    // because it is linked to variable v1
+    // because it is linked to variable version
     deploy(workflow);
     
     workflow = workflowEngine.findWorkflows(null).get(0);
     FormTrigger formTrigger =  (FormTrigger) workflow.getTrigger();
     List<FormField> fields = formTrigger.getForm().getFields();
     assertNotNull(fields.get(0).getId());
-    assertEquals("Veewan", fields.get(0).getName());
+    assertEquals("Version number", fields.get(0).getName());
     assertEquals(TextType.class, fields.get(0).getType().getClass());
     
     WorkflowInstance workflowInstance = start(workflow, new FormInstance()
-      .value("v1", "hello"));
+      .value("version", "4.2"));
     
-    assertEquals("hello", workflowInstance.getVariableValue("v1"));
+    assertEquals("4.2", workflowInstance.getVariableValue("version"));
   }
 
   @Test
   public void testFormTriggerCustomFieldId() {
     Workflow workflow = new Workflow()
-      .variable("v1", new NumberType())
+      .variable("version", new NumberType())
       .trigger(new FormTrigger()
         .field(new FormField()
-          .id("f1")  // users can also define their own field ids
-          .binding("v1")));
+          .id("versionField")  // users can also define their own field ids
+          .name("Version number")
+          .binding("version")));
     
     deploy(workflow);
 
-    WorkflowInstance workflowInstance = start(workflow, new FormInstance()
-      .value("f1", 5));
+    WorkflowInstance workflowInstance = start(workflow,
+      new FormInstance().value("versionField", 5));
     
-    Number value = (Number)workflowInstance.getVariableValue("v1");
+    Number value = (Number)workflowInstance.getVariableValue("version");
     assertEquals(5, value.intValue()); // the value might be of any number type, but must be 5
   }
 
   @Test
   public void testFormTriggerDecision() {
     Workflow workflow = new Workflow()
-      .variable("v1", new DecisionType()
+      .variable("reviewResult", new DecisionType()
         .option("Approve")
         .option("Reject"))
       .trigger(new FormTrigger()
-        .field("v1"));
+        .field("reviewResult"));
     
     deploy(workflow);
 
@@ -100,15 +101,15 @@ public class FormTriggerTest extends WorkflowTest {
     Form form = formTrigger.getForm();
     List<FormField> fields = form.getFields();
     FormField formField = fields.get(0);
-    assertEquals("v1", formField.getId());
+    assertEquals("reviewResult", formField.getId());
     assertEquals(DecisionType.class, formField.getType().getClass());
     DecisionType decisionType = (DecisionType) formField.getType();
     assertEquals("Approve", decisionType.getOptions().get(0).getId());
     assertEquals("Reject", decisionType.getOptions().get(1).getId());
     
     WorkflowInstance workflowInstance = start(workflow, new FormInstance()
-      .value("v1", "Approve"));
+      .value("reviewResult", "Approve"));
     
-    assertEquals("Approve", workflowInstance.getVariableValue("v1"));
+    assertEquals("Approve", workflowInstance.getVariableValue("reviewResult"));
   }
 }

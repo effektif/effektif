@@ -61,13 +61,13 @@ public class DocumentationExamplesTest extends TestCase {
   @Test
   public void testEmailTask() {
     EmailTask activity = new EmailTask()
-        // .attachmentId(new FileId("releaseNotes"))
-        .bcc("archive@example.org")
-        .bodyText("A new version has been deployed on production.")
-        .cc("dev@example.org")
-        .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
-        .subject("New release")
-        .to("releases@example.org").toGroupId("releases");
+      // .attachmentId(new FileId("releaseNotes"))
+      .bcc("archive@example.org")
+      .bodyText("A new version has been deployed on production.")
+      .cc("dev@example.org")
+      .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
+      .subject("New release")
+      .to("releases@example.org").toGroupId("releases");
     print(activity);
   }
 
@@ -85,7 +85,8 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testExclusiveGateway() {
-    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway("fork").defaultTransitionId("proceed");
+    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway("fork")
+      .defaultTransitionId("proceed");
     print(activity);
   }
 
@@ -121,8 +122,11 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testScriptTask() {
-    Script script = new Script().language("javascript").script("console.log('TODO');").mapping("Version", "version");
-    ScriptTask activity = new ScriptTask("postToTeamChat").script(script);
+    ScriptTask activity = new ScriptTask("postToTeamChat")
+      .script(new Script()
+        .language("javascript")
+        .script("console.log('TODO');")
+        .mapping("Version", "version"));
     print(activity);
   }
 
@@ -154,14 +158,14 @@ public class DocumentationExamplesTest extends TestCase {
         .name("The first field in the form")
         .binding("v1"));
     UserTask activity = new UserTask("smokeTest")
-        .name("Smoke test")
-        .candidateGroupId("dev")
-        .form(form)
-        .duedate(RelativeTime.hours(1))
-        .reminder(RelativeTime.hours(2))
-        .reminderRepeat(RelativeTime.minutes(30))
-        .escalate(RelativeTime.hours(4))
-        .escalateTo(new Binding().value(new UserId("bofh")));
+      .name("Smoke test")
+      .candidateGroupId("dev")
+      .form(form)
+      .duedate(RelativeTime.hours(1))
+      .reminder(RelativeTime.hours(2))
+      .reminderRepeat(RelativeTime.minutes(30))
+      .escalate(RelativeTime.hours(4))
+      .escalateTo(new Binding().value(new UserId("bofh")));
     print(activity);
   }
 
