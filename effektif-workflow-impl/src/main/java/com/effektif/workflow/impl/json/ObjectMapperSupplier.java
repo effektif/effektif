@@ -17,11 +17,14 @@ package com.effektif.workflow.impl.json;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.EmailId;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
@@ -64,6 +67,9 @@ public class ObjectMapperSupplier implements Supplier {
     module.addDeserializer(FileId.class, new FileIdDeserializer());
     module.addDeserializer(EmailId.class, new EmailIdDeserializer());
     module.addDeserializer(TaskId.class, new TaskIdDeserializer());
+    module.addDeserializer(CaseId.class, new CaseIdDeserializer());
+    module.addDeserializer(WorkflowId.class, new WorkflowIdDeserializer());
+    module.addDeserializer(WorkflowInstanceId.class, new WorkflowInstanceIdDeserializer());
 
     module.addSerializer(new LocalDateTimeSerializer());
     module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());

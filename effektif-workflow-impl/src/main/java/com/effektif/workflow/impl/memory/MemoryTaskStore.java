@@ -38,8 +38,8 @@ public class MemoryTaskStore implements TaskStore {
   protected Map<TaskId, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<TaskId,Task>());
 
   @Override
-  public String generateTaskId() {
-    return Integer.toString(nextId++);
+  public TaskId generateTaskId() {
+    return new TaskId(Integer.toString(nextId++));
   }
 
   @Override

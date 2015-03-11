@@ -26,8 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Condition;
 import com.effektif.workflow.api.workflow.Element;
@@ -35,6 +37,9 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.SerializedWorkflow;
@@ -78,7 +83,7 @@ public class WorkflowParser {
       this.elementImpl = elementImpl;
       String indexText = null;
       if (element instanceof Element) {
-        indexText = ((Element)element).getId();
+        indexText = getIdText(element);
       }
       if (indexText==null && index!=null) {
         indexText = Integer.toString(index);
@@ -109,6 +114,20 @@ public class WorkflowParser {
       }
       return null;
     }
+  }
+  
+  public static String getIdText(Object object) {
+    if (object instanceof Activity) {
+      return ((Activity)object).getId();
+    } else if (object instanceof Transition) {
+      return ((Transition)object).getId();
+    } else if (object instanceof Variable) {
+      return ((Variable)object).getId();
+    } else if (object instanceof Workflow) {
+      WorkflowId workflowId = ((Workflow)object).getId();
+      return workflowId!=null ? workflowId.getInternal() : null;
+    }
+    return null;
   }
 
   /** parses the content of workflowApi into workflowImpl and 
@@ -276,7 +295,7 @@ public class WorkflowParser {
       }
     }
     if (startActivities.isEmpty()) {
-      this.addWarning("No start activities in %s", scope.id);
+      this.addWarning("No start activities in %s", scope.getIdText());
     }
     return startActivities;
   }

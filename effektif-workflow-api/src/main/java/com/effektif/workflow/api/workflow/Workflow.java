@@ -19,6 +19,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -139,7 +140,7 @@ public class Workflow extends AbstractWorkflow {
   /** sets the id of this workflow.
    * The id is not really used during execution. */
   @Override
-  public Workflow id(String id) {
+  public Workflow id(WorkflowId id) {
     super.id(id);
     return this;
   }

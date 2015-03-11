@@ -35,7 +35,7 @@ public class VariableImpl {
   public DataType type;
   public Object initialValue;
 
-  public void parse(Variable variable, WorkflowParser parser, ScopeImpl parent) {
+  public void parse(Variable variable, ScopeImpl parentImpl, WorkflowParser parser) {
     this.id = variable.getId();
     this.variable = variable;
     if (id==null || "".equals(id)) {
@@ -47,7 +47,7 @@ public class VariableImpl {
     } else {
       parser.variableIds.add(id);
     }
-    this.parent = parent;
+    this.parent = parentImpl;
     DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
     Type typeApi = variable.getType();
     if (typeApi!=null) {

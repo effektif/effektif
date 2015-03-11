@@ -26,7 +26,7 @@ import com.effektif.workflow.api.task.TaskQuery;
  */
 public interface TaskStore {
 
-  String generateTaskId();
+  TaskId generateTaskId();
 
   void insertTask(Task task);
 

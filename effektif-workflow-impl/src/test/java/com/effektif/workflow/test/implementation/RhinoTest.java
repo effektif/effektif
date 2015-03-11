@@ -24,7 +24,6 @@ import sun.org.mozilla.javascript.internal.ContextFactory;
 import sun.org.mozilla.javascript.internal.Scriptable;
 
 import com.effektif.workflow.impl.script.RhinoVariableScope;
-import com.effektif.workflow.impl.script.ScriptResult;
 
 
 /**

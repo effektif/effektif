@@ -22,8 +22,20 @@ package com.effektif.workflow.api.workflow;
  */
 public class Timer {
 
+  protected String id;
   protected String duedate;
   protected String repeat;
+
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public Timer id(String id) {
+    this.id = id;
+    return this;
+  }
 
   public String getDuedate() {
     return this.duedate;

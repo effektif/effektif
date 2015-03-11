@@ -33,7 +33,6 @@ import com.effektif.workflow.impl.WorkflowParser;
 
 public abstract class ScopeImpl {
 
-  public String id;
   public ScopeImpl parent;
   public Configuration configuration;
   public WorkflowImpl workflow;
@@ -42,12 +41,11 @@ public abstract class ScopeImpl {
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
 
-  public void parse(Scope scope, WorkflowParser parser, ScopeImpl parent) {
-    this.id = scope.getId();
+  public void parse(Scope scope, ScopeImpl parentImpl, WorkflowParser parser) {
     this.configuration = parser.configuration;
-    if (parent!=null) {
-      this.parent = parent;
-      this.workflow = parent.workflow;
+    if (parentImpl!=null) {
+      this.parent = parentImpl;
+      this.workflow = parentImpl.workflow;
     }
     
     List<Variable> variables = scope.getVariables();
@@ -56,7 +54,7 @@ public abstract class ScopeImpl {
       for (Variable variable: variables) {
         VariableImpl variableImpl = new VariableImpl();
         parser.pushContext("variables", variable, variableImpl, i);
-        variableImpl.parse(variable, parser, this);
+        variableImpl.parse(variable, this, parser);
         addVariable(variableImpl);
         parser.popContext();
         i++;
@@ -92,7 +90,7 @@ public abstract class ScopeImpl {
         if (activity.getDefaultTransitionId()!=null) {
           activitiesByDefaultTransitionId.put(activity.getDefaultTransitionId(), activityImpl);
         }
-        activityImpl.parse(activity, scope, parser, this);
+        activityImpl.parse(activity, scope, this, parser);
         addActivity(activityImpl);
         parser.popContext();
         i++;
@@ -108,7 +106,7 @@ public abstract class ScopeImpl {
       for (Transition transition: transitions) {
         TransitionImpl transitionImpl = new TransitionImpl();
         parser.pushContext("transitions", transition, transitionImpl, i);
-        transitionImpl.parse(transition, this, parser, activitiesByDefaultTransitionId);
+        transitionImpl.parse(transition, this, activitiesByDefaultTransitionId, parser);
         addTransition(transitionImpl);
         parser.popContext();
         i++;
@@ -256,12 +254,6 @@ public abstract class ScopeImpl {
     return null;
   }
 
-  
-  public String getId() {
-    return id;
-  }
-
-  
   public ScopeImpl getParent() {
     return parent;
   }
@@ -295,4 +287,6 @@ public abstract class ScopeImpl {
   public List<TransitionImpl> getTransitions() {
     return transitions;
   }
+
+  public abstract String getIdText();
 }

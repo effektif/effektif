@@ -20,8 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.workflow.Scope;
-
 /** 
  * XML DOM structure that is jsonnable with Jackson
  * so that it can be serialized to/from JSON for REST service and database persistence.

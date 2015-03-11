@@ -31,6 +31,20 @@ public class Transition extends Element {
   protected Condition condition;
   protected Boolean isToNext;
 
+  protected String id;
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  /** replace with .activity("id", new Activity()) */
+  @Deprecated
+  public Transition(String id) {
+    this.id = id;
+  }
+  /** replace with .activity("id", new Activity()) */
+  @Deprecated
   public Transition id(String id) {
     this.id = id;
     return this;
@@ -39,10 +53,6 @@ public class Transition extends Element {
   public Transition() {
   }
   
-  public Transition(String id) {
-    id(id);
-  }
-
   public String getFrom() {
     return this.from;
   }

@@ -2,11 +2,11 @@ package com.effektif.workflow.test.implementation;
 
 import java.io.IOException;
 
+import org.junit.Test;
+
 import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import org.junit.Test;
 
 /**
  * Test BPMN parsing and generation for basic {@link com.effektif.workflow.api.activities.EmailTask} properties.

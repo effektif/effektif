@@ -77,8 +77,8 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
 
   @Override
-  public String generateTaskId() {
-    return new ObjectId().toString();
+  public TaskId generateTaskId() {
+    return new TaskId(new ObjectId().toString());
   }
 
   @Override

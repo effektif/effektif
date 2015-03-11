@@ -23,20 +23,20 @@ import com.effektif.workflow.api.workflow.ParseIssues;
  */
 public class Deployment extends ParseIssues {
 
-  protected String workflowId;
+  protected WorkflowId workflowId;
 
   public Deployment() {
   }
 
-  public Deployment(String workflowId, ParseIssues parseIssues) {
+  public Deployment(WorkflowId workflowId, ParseIssues parseIssues) {
     this.workflowId = workflowId;
     this.issues = parseIssues.getIssues();
   }
   
-  public String getWorkflowId() {
+  public WorkflowId getWorkflowId() {
     return this.workflowId;
   }
-  public void setWorkflowId(String workflowId) {
+  public void setWorkflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
   }
 

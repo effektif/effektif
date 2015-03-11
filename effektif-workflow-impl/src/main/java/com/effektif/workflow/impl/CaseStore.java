@@ -15,8 +15,9 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.CaseId;
 import com.effektif.workflow.api.task.CaseQuery;
 
 
@@ -33,4 +34,8 @@ public interface CaseStore {
 
   void deleteCases(CaseQuery caseQuery);
 
+  /** adds the task to the case and 
+   * returns true if the case was found, the authenticated user 
+   * has edit rights and if the db operation succeeded. */
+  boolean addTask(CaseId caseId, TaskId taskId);
 }

@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.query;
 
+import com.effektif.workflow.api.model.WorkflowId;
+
 
 
 /**
@@ -25,7 +27,7 @@ public class WorkflowQuery extends Query {
   public static final String FIELD_DEPLOY_TIME = "deployTime";
   
   protected String organizationId;
-  protected String workflowId;
+  protected WorkflowId workflowId;
   protected String workflowSource;
   
   public String getOrganizationId() {
@@ -39,13 +41,13 @@ public class WorkflowQuery extends Query {
     return this;
   }
 
-  public String getWorkflowId() {
+  public WorkflowId getWorkflowId() {
     return this.workflowId;
   }
-  public void setWorkflowId(String workflowId) {
+  public void setWorkflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
   }
-  public WorkflowQuery workflowId(String workflowId) {
+  public WorkflowQuery workflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
     return this;
   }

@@ -25,7 +25,10 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.AccessControlledObject;
+import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -51,7 +54,7 @@ public class Case extends Extensible implements AccessControlledObject {
   protected LocalDateTime duedate;
   protected List<UserId> participantIds;
 
-  protected List<String> taskIds;
+  protected List<TaskId> taskIds;
   protected LocalDateTime lastUpdated;
   protected Boolean canceled;
   protected Boolean closed;
@@ -60,7 +63,7 @@ public class Case extends Extensible implements AccessControlledObject {
   
   protected String workflowInstanceId;
   protected String sourceWorkflowId;
-  protected String workflowId;
+  protected WorkflowId workflowId;
   
   public Case() {
   }
@@ -129,22 +132,22 @@ public class Case extends Extensible implements AccessControlledObject {
     this.organizationId = organizationId;
   }
   
-  public String getWorkflowId() {
+  public WorkflowId getWorkflowId() {
     return workflowId;
   }
-  public void setWorkflowId(String workflowId) {
+  public void setWorkflowId(WorkflowId workflowId) {
     this.workflowId = workflowId;
   }
 
   /** id references to the subtasks. */
-  public List<String> getTaskIds() {
+  public List<TaskId> getTaskIds() {
     return this.taskIds;
   }
   /** @see #getTaskIds() */
-  public void setTaskIds(List<String> taskIds) {
+  public void setTaskIds(List<TaskId> taskIds) {
     this.taskIds = taskIds;
   }
-  public void addTaskId(String taskId) {
+  public void addTaskId(TaskId taskId) {
     if (taskIds==null) {
       taskIds = new ArrayList<>();
     }

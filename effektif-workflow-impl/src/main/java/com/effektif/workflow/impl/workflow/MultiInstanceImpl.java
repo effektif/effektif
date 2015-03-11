@@ -17,12 +17,9 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.List;
 
-import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.activity.InputParameter;
-import com.effektif.workflow.impl.data.types.AnyType;
 
 
 /**
@@ -33,17 +30,17 @@ public class MultiInstanceImpl {
   public VariableImpl elementVariable;
   public List<BindingImpl<Object>> valuesBindings;
 
-  public void parse(MultiInstance multiInstanceApi, WorkflowParser parser) {
-    parse(multiInstanceApi, parser, null);
+  public void parse(MultiInstance multiInstance, WorkflowParser parser) {
+    parse(multiInstance, parser, null);
   }
   
-  public void parse(MultiInstance multiInstanceApi, WorkflowParser parser, ScopeImpl parent) {
-    this.valuesBindings = parser.parseBindings(multiInstanceApi.getValues(), "multiInstance.values");
-    Variable elementVariableApi = multiInstanceApi.getVariable();
-    if (elementVariableApi!=null) {
+  public void parse(MultiInstance multiInstance, WorkflowParser parser, ScopeImpl parentImpl) {
+    this.valuesBindings = parser.parseBindings(multiInstance.getValues(), "multiInstance.values");
+    Variable elementVariable = multiInstance.getVariable();
+    if (elementVariable!=null) {
       this.elementVariable = new VariableImpl();
-      parser.pushContext("elementVariable", elementVariableApi, null, -1);
-      this.elementVariable.parse(elementVariableApi, parser, parent);
+      parser.pushContext("elementVariable", elementVariable, null, -1);
+      this.elementVariable.parse(elementVariable, parentImpl, parser);
       parser.popContext();
     } else {
       parser.addError("Multi instance has no elementVariable");

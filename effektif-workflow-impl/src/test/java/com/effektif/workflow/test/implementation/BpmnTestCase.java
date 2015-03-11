@@ -7,12 +7,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import junit.framework.TestCase;
+
+import org.xml.sax.SAXException;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
@@ -22,8 +27,6 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import junit.framework.TestCase;
-import org.xml.sax.SAXException;
 
 /**
  * Set-up and convenience methods for BPMN reader and writer test cases.

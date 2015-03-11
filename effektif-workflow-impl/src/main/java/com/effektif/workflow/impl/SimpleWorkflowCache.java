@@ -18,16 +18,17 @@ package com.effektif.workflow.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
 /** caches executable workflows */
 public class SimpleWorkflowCache implements WorkflowCache {
   
-  protected Map<String, WorkflowImpl> workflows = new ConcurrentHashMap<String, WorkflowImpl>();
+  protected Map<WorkflowId, WorkflowImpl> workflows = new ConcurrentHashMap<WorkflowId, WorkflowImpl>();
 
   @Override
-  public WorkflowImpl get(String workflowId) {
+  public WorkflowImpl get(WorkflowId workflowId) {
     return workflows.get(workflowId);
   }
 
@@ -36,11 +37,11 @@ public class SimpleWorkflowCache implements WorkflowCache {
     workflows.put(workflow.id, workflow);
   }
   
-  public Map<String, WorkflowImpl> getWorkflows() {
+  public Map<WorkflowId, WorkflowImpl> getWorkflows() {
     return workflows;
   }
   
-  public void setWorkflows(Map<String, WorkflowImpl> workflows) {
+  public void setWorkflows(Map<WorkflowId, WorkflowImpl> workflows) {
     this.workflows = workflows;
   }
 }

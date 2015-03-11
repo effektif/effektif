@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import com.effektif.workflow.impl.json.JsonService;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;

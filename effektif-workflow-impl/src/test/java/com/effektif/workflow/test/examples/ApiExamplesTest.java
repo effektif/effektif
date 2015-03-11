@@ -26,6 +26,7 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -63,7 +64,7 @@ public class ApiExamplesTest {
         .bodyText("Enjoy!"));
     
     // Deploy the workflow to the engine
-    String workflowId = workflowEngine
+    WorkflowId workflowId = workflowEngine
       .deployWorkflow(workflow)
       .checkNoErrorsAndNoWarnings()
       .getWorkflowId();

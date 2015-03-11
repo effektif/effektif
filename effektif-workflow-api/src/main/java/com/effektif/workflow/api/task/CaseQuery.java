@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.task;
 
+import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.Query;
 

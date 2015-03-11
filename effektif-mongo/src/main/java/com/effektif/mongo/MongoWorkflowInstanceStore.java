@@ -29,6 +29,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -349,11 +350,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     writeId(dbWorkflowInstance, WorkflowInstanceFields._ID, workflowInstance.id);
     writeIdOpt(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID, workflowInstance.organizationId);
     if (storeWorkflowIdsAsStrings) {
-      writeString(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
+      writeString(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id.getInternal());
     } else {
-      writeId(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
+      writeIdOptNew(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
     }
-    writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.TASK_ID, workflowInstance.caseId);
+    writeIdOptNew(dbWorkflowInstance, WorkflowInstanceFields.TASK_ID, workflowInstance.caseId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID, workflowInstance.callerWorkflowInstanceId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID, workflowInstance.callerActivityInstanceId);
     writeLongOpt(dbWorkflowInstance, WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
@@ -392,18 +393,14 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.id = readId(dbWorkflowInstance, WorkflowInstanceFields._ID);
     workflowInstance.organizationId = readId(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
     
-    String workflowId = null;
+    Object workflowIdObject = readObject(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);
+
     // workflowId is ObjectId in the MongoConfiguration
     // workflowId is String in the MongoMemoryConfiguration
     // The code is written to work dynamically (and not according to the 
     // configuration field storeWorkflowIdsAsStrings) because the test 
     // suite cleanup might encounter workflow instances created by the other engine
-    Object workflowIdObject = readObject(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);
-    if (workflowIdObject instanceof String) {
-      workflowId = (String) workflowIdObject; 
-    } else {
-      workflowId = workflowIdObject.toString();
-    }
+    WorkflowId workflowId = new WorkflowId(workflowIdObject.toString());
     WorkflowImpl workflow = workflowEngine.getWorkflowImpl(workflowId);
     if (workflow==null) {
       throw new RuntimeException("No workflow for instance "+workflowInstance.id);

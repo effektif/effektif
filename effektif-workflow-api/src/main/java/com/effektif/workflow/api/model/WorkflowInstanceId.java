@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl;
-
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+package com.effektif.workflow.api.model;
 
 
-public interface WorkflowCache {
+/**
+ * @author Tom Baeyens
+ */
+public class WorkflowInstanceId extends Id {
 
-  WorkflowImpl get(WorkflowId workflowId);
-  void put(WorkflowImpl workflow);
+  public WorkflowInstanceId() {
+  }
+
+  public WorkflowInstanceId(String id) {
+    super(id);
+  }
 }

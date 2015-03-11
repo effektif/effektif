@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import com.effektif.workflow.impl.data.DataType;
 
 
 /**

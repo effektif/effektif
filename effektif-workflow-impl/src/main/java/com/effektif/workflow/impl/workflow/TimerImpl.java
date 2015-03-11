@@ -26,16 +26,18 @@ import com.effektif.workflow.impl.job.JobType;
  */
 public class TimerImpl {
   
+  public String id;
   public ScopeImpl parent;
   public Configuration configuration;
   public WorkflowImpl workflow;
   public JobType jobType;
 
-  public void parse(Timer timerApi, ScopeImpl parent, WorkflowParser parser) {
+  public void parse(Timer timer, ScopeImpl parentImpl, WorkflowParser parser) {
     this.configuration = parser.configuration;
-    if (parent!=null) {
-      this.parent = parent;
-      this.workflow = parent.workflow;
+    this.id = timer.getId();
+    if (parentImpl!=null) {
+      this.parent = parentImpl;
+      this.workflow = parentImpl.workflow;
     }
   }
 

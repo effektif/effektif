@@ -15,8 +15,6 @@ package com.effektif.mongo;
 
 import java.util.Map;
 
-import org.bson.types.ObjectId;
-
 import com.mongodb.BasicDBObject;
 
 

@@ -20,7 +20,6 @@ import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
@@ -65,7 +65,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextVariableInstanceId;
   public List<Job> jobs;
   public Map<String,WorkflowInstanceImpl> lockedWorkflowInstances;
-  public String caseId;
+  public CaseId caseId;
 
   public WorkflowInstanceImpl() {
   }
