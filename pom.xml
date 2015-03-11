@@ -15,7 +15,6 @@
     <module>effektif-mongo</module>
     <module>effektif-adapter</module>
     <module>effektif-server</module>
-    <module>effektif-examples</module>
   </modules>
 
   <dependencies>
