@@ -36,5 +36,4 @@ public interface TaskService {
   void deleteTasks(TaskQuery taskQuery);
 
   Task completeTask(TaskId taskId);
-
 }

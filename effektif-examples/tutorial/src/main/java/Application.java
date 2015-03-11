@@ -1,6 +1,11 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.task.Task;
@@ -9,10 +14,6 @@ import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Simplified version of the command line application in <code>/effektif-examples/cli</code>
@@ -63,7 +64,7 @@ public class Application {
 
   private static void completeTask(String commandLine) {
     String taskId = commandLine.substring("complete".length()).trim();
-    Task task = taskService.completeTask(taskId);
+    Task task = taskService.completeTask(new TaskId(taskId));
     System.out.println("Completed task " + task.getId());
   }
 
@@ -82,7 +83,7 @@ public class Application {
 
   private static void showTask(String commandLine) {
     String taskId = commandLine.substring("task".length()).trim();
-    Task task = taskService.findTaskById(taskId);
+    Task task = taskService.findTaskById(new TaskId(taskId));
     System.out.println(jsonService.objectToJsonStringPretty(task));
   }
 

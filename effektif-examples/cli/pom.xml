@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.effektif.example</groupId>
-  <artifactId>cli</artifactId>
+  <artifactId>effektif-cli</artifactId>
   <version>0.1</version>
 
   <name>Command Line Example</name>
