@@ -1,5 +1,8 @@
-package com.effektif.workflow.test.implementation;
+package com.effektif.workflow.test.examples;
 
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -28,12 +31,14 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
+import javax.swing.*;
+
 /**
- * Stub for a test of
+ * Stub for a test of JSON and BPMN output, used to generate samples for documentation.
  *
  * @author Peter Hilton
  */
-public class JsonTest extends TestCase {
+public class DocumentationExamplesTest extends TestCase {
 
   private static Configuration configuration;
 
@@ -57,13 +62,13 @@ public class JsonTest extends TestCase {
   @Test
   public void testEmailTask() {
     EmailTask activity = new EmailTask()
-        // .attachmentId(new FileId("releaseNotes"))
-        .bcc("archive@example.org")
-        .bodyText("A new version has been deployed on production.")
-        .cc("dev@example.org")
-        .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
-        .subject("New release")
-        .to("releases@example.org").toGroupId("releases");
+      // .attachmentId(new FileId("releaseNotes"))
+      .bcc("archive@example.org")
+      .bodyText("A new version has been deployed on production.")
+      .cc("dev@example.org")
+      .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
+      .subject("New release")
+      .to("releases@example.org").toGroupId("releases");
     print(activity);
   }
 
@@ -81,7 +86,8 @@ public class JsonTest extends TestCase {
 
   @Test
   public void testExclusiveGateway() {
-    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway("fork").defaultTransitionId("proceed");
+    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway("fork")
+      .defaultTransitionId("proceed");
     print(activity);
   }
 
@@ -117,8 +123,11 @@ public class JsonTest extends TestCase {
 
   @Test
   public void testScriptTask() {
-    Script script = new Script().language("javascript").script("console.log('TODO');").mapping("Version", "version");
-    ScriptTask activity = new ScriptTask("postToTeamChat").script(script);
+    ScriptTask activity = new ScriptTask("postToTeamChat")
+      .script(new Script()
+        .language("javascript")
+        .script("console.log('TODO');")
+        .mapping("Version", "version"));
     print(activity);
   }
 
@@ -150,19 +159,32 @@ public class JsonTest extends TestCase {
         .name("The first field in the form")
         .binding("v1"));
     UserTask activity = new UserTask("smokeTest")
-        .candidateGroupId("dev")
-        .form(form)
-        .duedate(RelativeTime.hours(1))
-        .reminder(RelativeTime.hours(2))
-        .reminderRepeat(RelativeTime.minutes(30))
-        .escalate(RelativeTime.hours(4))
-        .escalateTo(new Binding().value(new UserId("bofh")));
+      .name("Smoke test")
+      .candidateGroupId("dev")
+      .form(form)
+      .duedate(RelativeTime.hours(1))
+      .reminder(RelativeTime.hours(2))
+      .reminderRepeat(RelativeTime.minutes(30))
+      .escalate(RelativeTime.hours(4))
+      .escalateTo(new Binding().value(new UserId("bofh")));
     print(activity);
   }
 
-  public void print(Object o) {
+  private void printJson(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
     JsonService jsonService = configuration.get(JsonService.class);
     System.out.println(jsonService.objectToJsonStringPretty(o));
+  }
+
+  private void print(Activity activity) {
+    printJson(activity);
+
+    Workflow workflow = new Workflow().activity(activity);
+    System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
+  }
+
+  private void print(Form form) {
+    UserTask activity = new UserTask().form(form);
+    print(activity);
   }
 }

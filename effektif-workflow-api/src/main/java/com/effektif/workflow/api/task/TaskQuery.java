@@ -22,6 +22,9 @@ import com.effektif.workflow.api.query.Query;
 
 
 /**
+ * A query for finding {@link com.effektif.workflow.api.task.Task} instances using
+ * {@link com.effektif.workflow.api.task.TaskService#findTasks(TaskQuery)}.
+ *
  * @author Tom Baeyens
  */
 public class TaskQuery extends Query {

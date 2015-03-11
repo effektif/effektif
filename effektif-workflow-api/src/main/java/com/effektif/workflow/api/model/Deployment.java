@@ -19,6 +19,8 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 
 
 /**
+ * Wrapper for a deployed {@link com.effektif.workflow.api.workflow.Workflow}.
+ *
  * @author Tom Baeyens
  */
 public class Deployment extends ParseIssues {

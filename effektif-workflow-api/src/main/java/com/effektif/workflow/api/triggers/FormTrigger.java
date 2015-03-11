@@ -22,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A {@link com.effektif.workflow.api.workflow.Trigger} for starting a workflow using a
+ * {@link com.effektif.workflow.api.form.Form} -
+ * see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("form")

@@ -20,6 +20,9 @@ import com.effektif.workflow.api.model.WorkflowId;
 
 
 /**
+ * A query for finding {@link com.effektif.workflow.api.workflow.Workflow} definitions
+ * using {@link com.effektif.workflow.api.WorkflowEngine#findWorkflows(WorkflowQuery)}.
+ *
  * @author Tom Baeyens
  */
 public class WorkflowQuery extends Query {
