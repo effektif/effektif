@@ -65,6 +65,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextVariableInstanceId;
   public List<Job> jobs;
   public Map<String,WorkflowInstanceImpl> lockedWorkflowInstances;
+  public String caseId;
 
   public WorkflowInstanceImpl() {
   }

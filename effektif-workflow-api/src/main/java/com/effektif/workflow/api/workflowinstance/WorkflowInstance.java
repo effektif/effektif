@@ -30,6 +30,7 @@ public class WorkflowInstance extends ScopeInstance {
   protected UserId creatorId;
   protected String callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
+  protected String caseId;
 
   public String getOrganizationId() {
     return this.organizationId;
@@ -64,5 +65,16 @@ public class WorkflowInstance extends ScopeInstance {
   }
   public void setCreatorId(UserId creatorId) {
     this.creatorId = creatorId;
+  }
+
+  public String getCaseId() {
+    return this.caseId;
+  }
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
+  }
+  public WorkflowInstance caseId(String caseId) {
+    this.caseId = caseId;
+    return this;
   }
 }

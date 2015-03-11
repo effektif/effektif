@@ -35,7 +35,7 @@ public class CaseTest extends WorkflowTest {
       .name("hello"));
     
     assertNotNull(caze.getId());
-    assertNotNull(caze.getId().getId());
+    assertNotNull(caze.getId().getInternal());
     assertEquals("hello", caze.getName());
     assertNotNull(caze.getCreateTime());
     
@@ -43,7 +43,7 @@ public class CaseTest extends WorkflowTest {
     assertTrue(!cases.isEmpty());
     caze = cases.get(0);
     assertNotNull(caze.getId());
-    assertNotNull(caze.getId().getId());
+    assertNotNull(caze.getId().getInternal());
     assertEquals("hello", caze.getName());
     assertNotNull(caze.getCreateTime());
     assertEquals(1, cases.size());

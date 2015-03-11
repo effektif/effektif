@@ -50,7 +50,7 @@ public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
 
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue!=null ? ((EmailId)internalValue).getId() : null;
+    return internalValue!=null ? ((EmailId)internalValue).getInternal() : null;
   }
   
   @Override

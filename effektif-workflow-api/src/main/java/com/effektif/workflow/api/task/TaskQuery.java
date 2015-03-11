@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.task;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.Query;
@@ -25,7 +26,7 @@ import com.effektif.workflow.api.query.Query;
  */
 public class TaskQuery extends Query {
 
-  protected String taskId;
+  protected TaskId taskId;
   protected String taskName;
   // 3 state logic:
   //   - null means return both completed and open tasks
@@ -100,14 +101,18 @@ public class TaskQuery extends Query {
     return this;
   }
 
-  public String getTaskId() {
+  public TaskId getTaskId() {
     return this.taskId;
   }
-  public void setTaskId(String taskId) {
+  public void setTaskId(TaskId taskId) {
     this.taskId = taskId;
   }
-  public TaskQuery taskId(String taskId) {
+  public TaskQuery taskId(TaskId taskId) {
     this.taskId = taskId;
+    return this;
+  }
+  public TaskQuery taskId(String taskIdInternal) {
+    this.taskId = new TaskId(taskIdInternal);
     return this;
   }
 

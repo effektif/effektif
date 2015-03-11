@@ -32,10 +32,10 @@ public class BpmnUserTaskTest extends BpmnTestCase {
     assertEquals("Task name", "Perform release", task.getName());
     assertEquals("Task description", "Release a new version of the software", task.getDescription());
     assertEquals("Task task name", "Release version {{version}}", task.getTaskName());
-    assertEquals("Task assignee", "42", task.getAssigneeId().getValue().getId());
+    assertEquals("Task assignee", "42", task.getAssigneeId().getValue().getInternal());
     assertEquals("Task candidates size", 2, task.getCandidateIds().size());
-    assertEquals("Task candidate 2 ID", "43", task.getCandidateIds().get(1).getValue().getId());
-    assertEquals("Task candidate group ID", "44", task.getCandidateGroupIds().get(0).getValue().getId());
+    assertEquals("Task candidate 2 ID", "43", task.getCandidateIds().get(1).getValue().getInternal());
+    assertEquals("Task candidate group ID", "44", task.getCandidateGroupIds().get(0).getValue().getInternal());
     assertNotNull("Task form", task.getForm());
   }
 

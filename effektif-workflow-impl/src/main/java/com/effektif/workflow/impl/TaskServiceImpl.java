@@ -21,6 +21,7 @@ import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
 import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -28,7 +29,6 @@ import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
-import com.effektif.workflow.impl.util.Time;
 
 
 /**
@@ -58,9 +58,9 @@ public class TaskServiceImpl implements TaskService, Brewable {
     String actorId = authentication!=null ? authentication.getUserId() : null;
     UserId actorUserId = actorId!=null ? new UserId(actorId) : null;
 
-    String taskId = task.getId();
+    TaskId taskId = task.getId();
     if (taskId==null) {
-      taskId = taskStore.generateTaskId();
+      taskId = new TaskId(taskStore.generateTaskId());
     }
     
     task.setId(taskId);
@@ -94,8 +94,6 @@ public class TaskServiceImpl implements TaskService, Brewable {
       }
       task.setParentId(task.getParentId());
       task.setCaseId(parentTask.getCaseId());
-    } else {
-      task.setCaseId(taskId);
     }
 
     AccessControlList access = task.getAccess();
@@ -120,7 +118,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
   }
 
   @Override
-  public Task assignTask(String taskId, UserId assignee) {
+  public Task assignTask(TaskId taskId, UserId assignee) {
     Task task = taskStore.assignTask(taskId, assignee);
     if (notificationService!=null) {
       notificationService.taskAssigned(task);
@@ -129,7 +127,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
   }
   
   @Override
-  public Task completeTask(String taskId) {
+  public Task completeTask(TaskId taskId) {
     Task task = taskStore.completeTask(taskId);
     task.setCompleted(true);
     if (notificationService!=null) {
@@ -147,7 +145,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
   }
   
   @Override
-  public Task findTaskById(String taskId) {
+  public Task findTaskById(TaskId taskId) {
     List<Task> tasks = findTasks(new TaskQuery().taskId(taskId));
     return !tasks.isEmpty() ? tasks.get(0) : null;
   }

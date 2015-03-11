@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 
 import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
 import com.effektif.workflow.api.acl.Access;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
@@ -88,12 +89,12 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
 
   @Override
-  public Task assignTask(String taskId, UserId assignee) {
+  public Task assignTask(TaskId taskId, UserId assignee) {
     BasicDBObject query = new MongoQuery()
-      ._id(taskId)
+      ._id(taskId.getInternal())
       .access(Access.EDIT)
       .get();
-    BasicDBObject dbAssignee = new BasicDBObject(FieldsUserReference.ID, assignee.getId());
+    BasicDBObject dbAssignee = new BasicDBObject(FieldsUserReference.ID, assignee.getInternal());
     BasicDBObject update = new MongoUpdate()
       .set(FieldsTask.ASSIGNEE, dbAssignee)
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
@@ -104,9 +105,9 @@ public class MongoTaskStore implements TaskStore, Brewable {
   
 
   @Override
-  public Task completeTask(String taskId) {
+  public Task completeTask(TaskId taskId) {
     BasicDBObject query = new MongoQuery()
-      ._id(taskId)
+      ._id(taskId.getInternal())
       .access(Access.EDIT)
       .get();
     BasicDBObject update = new MongoUpdate()
@@ -119,14 +120,14 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
   
   @Override
-  public Task addSubtask(String parentId, Task subtask) {
-    String subtaskId = subtask.getId();
+  public Task addSubtask(TaskId parentId, Task subtask) {
+    TaskId subtaskId = subtask.getId();
     BasicDBObject query = new MongoQuery()
-      ._id(parentId)
+      ._id(parentId.getInternal())
       .access(Access.EDIT)
       .get();
     BasicDBObject update = new MongoUpdate()
-      .push(FieldsTask.SUBTASK_IDS, subtaskId)
+      .push(FieldsTask.SUBTASK_IDS, new ObjectId(subtaskId.getInternal()))
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .get();
     BasicDBObject dbTask = tasksCollection.findAndModify("add-subtask", query, update);
@@ -159,25 +160,41 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
 
   public BasicDBObject taskToMongo(Task task) {
-    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(task);
-    BasicDBObject dbWorkflow = new BasicDBObject(); 
-    jsonWorkflow.remove("id");
-    jsonWorkflow.remove(FieldsTask.ORGANIZATION_ID);
-    jsonWorkflow.remove(FieldsTask.LAST_UPDATED);
-    dbWorkflow.putAll(jsonWorkflow);
-    writeId(dbWorkflow, FieldsWorkflow._ID, task.getId());
-    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, task.getOrganizationId());
-    writeTimeOpt(dbWorkflow, FieldsTask.LAST_UPDATED, task.getLastUpdated());
-    return dbWorkflow;
+    Map<String,Object> jsonTask = jsonService.objectToJsonMap(task);
+    BasicDBObject dbTask = new BasicDBObject(); 
+    jsonTask.remove("id");
+    jsonTask.remove(FieldsTask.ORGANIZATION_ID);
+    jsonTask.remove(FieldsTask.LAST_UPDATED);
+    dbTask.putAll(jsonTask);
+    writeId(dbTask, FieldsWorkflow._ID, task.getId());
+    writeIdOpt(dbTask, FieldsWorkflow.ORGANIZATION_ID, task.getOrganizationId());
+    writeTimeOpt(dbTask, FieldsTask.LAST_UPDATED, task.getLastUpdated());
+    List<String> subtaskIdStrings = (List<String>) dbTask.get(FieldsTask.SUBTASK_IDS);
+    if (subtaskIdStrings!=null) {
+      List<ObjectId> subtaskIdsInternal = new ArrayList<>();
+      for (String subtaskIdString: subtaskIdStrings) {
+        subtaskIdsInternal.add(new ObjectId(subtaskIdString));
+      }
+      dbTask.put(FieldsTask.SUBTASK_IDS, subtaskIdsInternal);
+    }
+    return dbTask;
   }
 
   public Task mongoToTask(BasicDBObject dbTask) {
-    ObjectId taskId = (ObjectId) dbTask.remove(FieldsWorkflow._ID);
+    ObjectId taskId = (ObjectId) dbTask.remove(FieldsTask._ID);
+    List<ObjectId> subtaskIdInternals = (List<ObjectId>) dbTask.remove(FieldsTask.SUBTASK_IDS);
     ObjectId organizationId = (ObjectId) dbTask.remove(FieldsTask.ORGANIZATION_ID);
     Date lastUpdated = (Date) dbTask.remove(FieldsTask.LAST_UPDATED);
     Task task = jsonService.jsonMapToObject(dbTask, Task.class);
     if (taskId!=null) {
-      task.setId(taskId.toString());
+      task.setId(new TaskId(taskId.toString()));
+    }
+    if (subtaskIdInternals!=null) {
+      List<TaskId> subtaskIds = new ArrayList<>(subtaskIdInternals.size());
+      for (ObjectId subtaskId: subtaskIdInternals) {
+        subtaskIds.add(new TaskId(subtaskId.toString()));
+      }
+      task.setSubtaskIds(subtaskIds);
     }
     if (organizationId!=null) {
       task.setOrganizationId(organizationId.toString());
@@ -185,6 +202,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     if (lastUpdated!=null) {
       task.setLastUpdated(new LocalDateTime(lastUpdated));
     }
+    
     return task;
   }
   
@@ -198,7 +216,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
       mongoQuery.access(accessActions);
     }
     if (query.getTaskId()!=null) {
-      mongoQuery.equal(FieldsTask._ID, new ObjectId(query.getTaskId()));
+      mongoQuery.equal(FieldsTask._ID, query.getTaskId().getInternal());
     }
     if (query.getTaskName()!=null) {
       mongoQuery.equal(FieldsTask.NAME, Pattern.compile(query.getTaskName()));

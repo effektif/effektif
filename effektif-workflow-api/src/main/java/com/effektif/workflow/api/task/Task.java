@@ -26,6 +26,7 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.AccessControlledObject;
 import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.workflow.Extensible;
 
@@ -42,7 +43,7 @@ public class Task extends Extensible implements AccessControlledObject {
           "activityId", "activityInstanceId", "activityNotify", "hasWorkflowForm", 
           "workflowInstanceId", "sourceWorkflowId", "workflowId", "properties"));
   
-  protected String id;
+  protected TaskId id;
   protected String organizationId;
   protected String name;
   protected String description;
@@ -59,8 +60,8 @@ public class Task extends Extensible implements AccessControlledObject {
   /** id of the root task in the task parent-child relationship
    * can be null for tasks that don't have a case. */
   protected String caseId; 
-  protected String parentId;
-  protected List<String> subtaskIds;
+  protected TaskId parentId;
+  protected List<TaskId> subtaskIds;
   protected LocalDateTime duedate;
   protected LocalDateTime lastUpdated;
   // cancelled==true ==> completed==true 
@@ -147,14 +148,14 @@ public class Task extends Extensible implements AccessControlledObject {
     return this;
   }
   
-  public String getId() {
+  public TaskId getId() {
     return id;
   }
   
-  public void setId(String id) {
+  public void setId(TaskId id) {
     this.id = id;
   }
-  
+
   public String getName() {
     return name;
   }
@@ -223,25 +224,25 @@ public class Task extends Extensible implements AccessControlledObject {
 
   /** the parent task.
    * Inverse relation of the {@link #getSubtaskIds()} */
-  public String getParentId() {
+  public TaskId getParentId() {
     return this.parentId;
   }
   /** @see #getParentId() */
-  public void setParentId(String parentId) {
+  public void setParentId(TaskId parentId) {
     this.parentId = parentId;
   }
   
   /** id references to the subtasks.
    * Inverse relation of the {@link #getParentId()} */
-  public List<String> getSubtaskIds() {
+  public List<TaskId> getSubtaskIds() {
     return this.subtaskIds;
   }
   /** @see #getSubtaskIds() */
-  public void setSubtaskIds(List<String> subtaskIds) {
+  public void setSubtaskIds(List<TaskId> subtaskIds) {
     this.subtaskIds = subtaskIds;
   }
   
-  public void addSubtaskId(String subtaskId) {
+  public void addSubtaskId(TaskId subtaskId) {
     if (subtaskIds==null) {
       subtaskIds = new ArrayList<>();
     }

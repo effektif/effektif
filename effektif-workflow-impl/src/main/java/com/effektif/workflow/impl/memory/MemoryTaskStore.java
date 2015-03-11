@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -34,13 +35,18 @@ import com.effektif.workflow.impl.util.Time;
 public class MemoryTaskStore implements TaskStore {
   
   protected int nextId = 1;
-  protected Map<String, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<String,Task>());
+  protected Map<TaskId, Task> tasks = Collections.synchronizedMap(new LinkedHashMap<TaskId,Task>());
+
+  @Override
+  public String generateTaskId() {
+    return Integer.toString(nextId++);
+  }
 
   @Override
   public void insertTask(Task task) {
     if (task.getId()==null) {
       String taskId = Integer.toString(nextId++);
-      task.setId(taskId);
+      task.setId(new TaskId(taskId));
     }
     task.setLastUpdated(Time.now());
     tasks.put(task.getId(), task);
@@ -63,7 +69,7 @@ public class MemoryTaskStore implements TaskStore {
   }
 
   @Override
-  public Task assignTask(String taskId, UserId assignee) {
+  public Task assignTask(TaskId taskId, UserId assignee) {
     Task task = tasks.get(taskId);
     if (task!=null) {
       task.assigneeId(assignee);
@@ -73,18 +79,13 @@ public class MemoryTaskStore implements TaskStore {
   }
   
   @Override
-  public Task completeTask(String taskId) {
+  public Task completeTask(TaskId taskId) {
     // the task service will set the completed to true
     return findTaskById(taskId);
   }
 
   @Override
-  public String generateTaskId() {
-    return Integer.toString(nextId++);
-  }
-
-  @Override
-  public Task addSubtask(String parentId, Task subtask) {
+  public Task addSubtask(TaskId parentId, Task subtask) {
     Task parentTask = tasks.get(parentId);
     if (parentTask!=null) {
       parentTask.addSubtaskId(subtask.getId());
@@ -93,7 +94,7 @@ public class MemoryTaskStore implements TaskStore {
     return parentTask;
   }
 
-  public Task findTaskById(String taskId) {
+  public Task findTaskById(TaskId taskId) {
     return tasks.get(taskId);
   }
 }

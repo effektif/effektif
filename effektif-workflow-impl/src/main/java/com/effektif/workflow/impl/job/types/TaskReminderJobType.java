@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.job.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
@@ -34,7 +35,7 @@ public class TaskReminderJobType extends AbstractJobType {
   @Override
   public void execute(JobController jobController) {
     Job job = jobController.getJob();
-    String taskId = job.getTaskId();
+    TaskId taskId = job.getTaskId();
     
     TaskService taskService = jobController.getConfiguration().getTaskService();
     Task task = getTask(taskService, taskId);
@@ -45,7 +46,7 @@ public class TaskReminderJobType extends AbstractJobType {
     }
   }
 
-  public Task getTask(TaskService taskService, String taskId) {
+  public Task getTask(TaskService taskService, TaskId taskId) {
     List<Task> tasks = taskService.findTasks(new TaskQuery().taskId(taskId));
     if (tasks!=null && !tasks.isEmpty()) {
       return tasks.get(0);

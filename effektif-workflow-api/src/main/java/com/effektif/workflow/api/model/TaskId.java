@@ -13,28 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.task;
-
-import java.util.List;
-
-import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.model.UserId;
+package com.effektif.workflow.api.model;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface TaskService {
+public class TaskId extends Id {
 
-  Task createTask(Task task);
+  public TaskId() {
+  }
 
-  Task assignTask(TaskId taskId, UserId assignee);
-
-  Task findTaskById(TaskId taskId);
-  List<Task> findTasks(TaskQuery taskQuery);
-  
-  void deleteTasks(TaskQuery taskQuery);
-
-  Task completeTask(TaskId taskId);
-
+  public TaskId(String id) {
+    super(id);
+  }
 }
