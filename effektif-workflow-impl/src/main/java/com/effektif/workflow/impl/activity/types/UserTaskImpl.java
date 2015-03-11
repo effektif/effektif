@@ -22,6 +22,7 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.types.GroupIdType;
@@ -41,6 +42,7 @@ import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**
@@ -108,13 +110,13 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
          && candidates.size()==1 ) {
       assignee = candidates.get(0);
     }
-    
-    String taskId = taskStore.generateTaskId();
-    activityInstance.setTaskId(taskId);
+
+    WorkflowInstanceImpl workflowInstance = activityInstance.workflowInstance;
+    TaskId taskId = new TaskId(taskStore.generateTaskId());
     
     Task task = new Task();
     task.setId(taskId);
-    task.setCaseId(activityInstance.workflowInstance.taskId);
+    task.setCaseId(workflowInstance.caseId);
     task.setName(resolvedTaskName);
     task.setDescription(activity.getDescription());
     task.setAssigneeId(assignee);
@@ -125,11 +127,13 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
     
-    String parentTaskId = activityInstance.parent.findTaskIdRecursive();
+    TaskId parentTaskId = activityInstance.parent.findTaskIdRecursive();
     if (parentTaskId!=null) {
       Task parentTask = taskStore.addSubtask(parentTaskId, task);
       task.setCaseId(parentTask.getCaseId());
       task.setParentId(parentTaskId);
+    } else if (workflowInstance.caseId!=null) {
+      // TODO caseStore.addTask(workflowInstance.caseId, task);
     }
     
     RelativeTime duedate = activity.getDuedate();

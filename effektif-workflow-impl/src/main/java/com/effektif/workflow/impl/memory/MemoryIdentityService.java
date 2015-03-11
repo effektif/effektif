@@ -50,7 +50,7 @@ public class MemoryIdentityService implements IdentityService {
     }
     List<String> emailAddresses = new ArrayList<>();
     for (UserId userId: userIds) {
-      User user = users.get(userId.getId());
+      User user = users.get(userId.getInternal());
       emailAddresses.add(user.getEmail());
     }
     return emailAddresses;

@@ -94,6 +94,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String CALLED_WORKFLOW_INSTANCE_ID = "calledWorkflowInstanceId";
     String ACTIVITY_ID = "activityId";
     String WORK_STATE = "workState";
+    String TASK_ID = "taskId";
   }
 
   interface WorkflowInstanceLockFields {
@@ -352,7 +353,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     } else {
       writeId(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
     }
-    writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.TASK_ID, workflowInstance.taskId);
+    writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.TASK_ID, workflowInstance.caseId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID, workflowInstance.callerWorkflowInstanceId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID, workflowInstance.callerActivityInstanceId);
     writeLongOpt(dbWorkflowInstance, WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
@@ -560,6 +561,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     writeTimeOpt(dbActivity, ActivityInstanceFields.START, activityInstance.start);
     writeTimeOpt(dbActivity, ActivityInstanceFields.END, activityInstance.end);
     writeLongOpt(dbActivity, ActivityInstanceFields.DURATION, activityInstance.duration);
+    writeIdOptNew(dbActivity, ActivityInstanceFields.TASK_ID, activityInstance.taskId);
     return dbActivity;
   }
   
@@ -571,6 +573,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     activityInstance.calledWorkflowInstanceId = readString(dbActivityInstance, ActivityInstanceFields.CALLED_WORKFLOW_INSTANCE_ID);
     activityInstance.duration = readLong(dbActivityInstance, ActivityInstanceFields.DURATION);
     activityInstance.workState = readString(dbActivityInstance, ActivityInstanceFields.WORK_STATE);
+    activityInstance.taskId = readTaskId(dbActivityInstance, ActivityInstanceFields.TASK_ID);
     activityInstance.configuration = configuration;
     activityInstance.workflow = workflowInstance.workflow;
     activityInstance.workflowInstance = workflowInstance;

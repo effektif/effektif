@@ -48,7 +48,7 @@ public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
 
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue!=null ? ((UserId)internalValue).getId() : null;
+    return internalValue!=null ? ((UserId)internalValue).getInternal() : null;
   }
   
   @Override

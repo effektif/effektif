@@ -15,6 +15,7 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -29,21 +30,21 @@ public interface TaskStore {
 
   void insertTask(Task task);
 
-  /** @return the task with the new assignee if it exists */
-  Task assignTask(String taskId, UserId assignee);
-
   List<Task> findTasks(TaskQuery taskQuery);
   
-  void deleteTasks(TaskQuery taskQuery);
+  /** @return the task with the new assignee if it exists */
+  Task assignTask(TaskId taskId, UserId assignee);
 
   /** adds the subtaskId to the parent and returns the parent task.
    * If authentication is set (see AuthenticationThreadLocal) then 
    * the operation will only be performed if the authenticated user has 
    * EDIT access on the parent task. */
-  Task addSubtask(String parentId, Task subtask);
+  Task addSubtask(TaskId parentId, Task subtask);
 
   /** sets the completed to true, removes the activityNotify and 
    * returns the old task so the task service impl knows if the 
    * activity should be notified. */
-  Task completeTask(String taskId);
+  Task completeTask(TaskId taskId);
+
+  void deleteTasks(TaskQuery taskQuery);
 }

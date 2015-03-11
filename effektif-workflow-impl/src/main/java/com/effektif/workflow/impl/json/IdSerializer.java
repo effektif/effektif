@@ -35,8 +35,10 @@ public class IdSerializer extends StdSerializer<Id> {
   
   @Override
   public void serialize(Id value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonGenerationException {
-    if (value!=null) {
-      jgen.writeString(value.getId());
+    Object internal = value!=null ? value.getInternal() : null;
+    if (internal!=null) {
+      String idString = internal instanceof String ? (String)internal : internal.toString();
+      jgen.writeString(idString);
     } else {
       jgen.writeNull();
     }

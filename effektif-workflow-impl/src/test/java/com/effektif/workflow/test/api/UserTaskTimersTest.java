@@ -50,11 +50,11 @@ public class UserTaskTimersTest extends JobWorkflowTest {
     
     Time.now = new LocalDateTime().plusHours(1);
 
-    assertEquals("johndoe", getTasks().get(0).getAssigneeId().getId());
+    assertEquals("johndoe", getTasks().get(0).getAssigneeId().getInternal());
 
     checkWorkflowInstanceJobs();
     
-    assertEquals("joesmoe", getTasks().get(0).getAssigneeId().getId());
+    assertEquals("joesmoe", getTasks().get(0).getAssigneeId().getInternal());
 
     assertEquals(0, jobStore.findJobs(new JobQuery()).size());
     assertEquals(1, jobStore.findArchivedJobs(new JobQuery()).size());

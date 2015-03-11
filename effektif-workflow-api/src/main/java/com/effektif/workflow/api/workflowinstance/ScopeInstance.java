@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.TaskId;
+
 
 /**
  * @author Tom Baeyens
@@ -32,7 +34,7 @@ public class ScopeInstance {
   protected List<ActivityInstance> activityInstances;
   protected List<VariableInstance> variableInstances;
   protected List<TimerInstance> timerInstances;
-  protected String taskId;
+  protected TaskId taskId;
   
   public ActivityInstance findOpenActivityInstance(String activityId) {
     if (activityId!=null && activityInstances!=null) {
@@ -142,10 +144,10 @@ public class ScopeInstance {
     this.timerInstances = timerInstances;
   }
   
-  public String getTaskId() {
+  public TaskId getTaskId() {
     return this.taskId;
   }
-  public void setTaskId(String taskId) {
+  public void setTaskId(TaskId taskId) {
     this.taskId = taskId;
   }
 }

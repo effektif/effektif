@@ -153,7 +153,7 @@ public class CallTest extends WorkflowTest {
     start(superWorkflow);
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssigneeId().getId());
+    assertEquals("johndoe", task.getAssigneeId().getInternal());
   }
 
   @Test
@@ -180,7 +180,7 @@ public class CallTest extends WorkflowTest {
     );
 
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssigneeId().getId());
+    assertEquals("johndoe", task.getAssigneeId().getInternal());
   }
 
 }

@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -26,6 +27,7 @@ public class ActivityInstance extends ScopeInstance {
   
   protected String activityId;
   protected String calledWorkflowInstanceId;
+  protected TaskId taskId;
 
   public String getActivityId() {
     return this.activityId;
@@ -46,5 +48,16 @@ public class ActivityInstance extends ScopeInstance {
       return this;
     }
     return super.findOpenActivityInstance(activityId);
+  }
+
+  public TaskId getTaskId() {
+    return this.taskId;
+  }
+  public void setTaskId(TaskId taskId) {
+    this.taskId = taskId;
+  }
+  public ActivityInstance taskId(TaskId taskId) {
+    this.taskId = taskId;
+    return this;
   }
 }

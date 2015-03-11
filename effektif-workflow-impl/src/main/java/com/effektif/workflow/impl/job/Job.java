@@ -19,6 +19,7 @@ import java.util.LinkedList;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -50,7 +51,7 @@ public class Job {
   public String workflowId;
   public String workflowInstanceId;
   public String activityInstanceId;
-  public String taskId;
+  public TaskId taskId;
 
   public boolean isDue() {
     return duedate==null || duedate.compareTo(Time.now())<=0;
@@ -120,7 +121,7 @@ public class Job {
     return this;
   }
   
-  public Job taskId(String taskId) {
+  public Job taskId(TaskId taskId) {
     this.taskId = taskId;
     return this;
   }
@@ -222,7 +223,7 @@ public class Job {
   }
 
   
-  public String getTaskId() {
+  public TaskId getTaskId() {
     return taskId;
   }
 }

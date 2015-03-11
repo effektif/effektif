@@ -99,5 +99,4 @@ public class ApiExamplesTest {
       .connectionTimeoutSeconds(34523523l)
       .authenticate("youraccount@gmail.com", "***");
   }
-
 }

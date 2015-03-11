@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.job.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -39,7 +40,7 @@ public class TaskEscalateJobType extends AbstractJobType {
   public void execute(JobController jobController) {
     WorkflowInstanceImpl workflowInstance = jobController.getWorkflowInstance();
     Job job = jobController.getJob();
-    String taskId = job.getTaskId();
+    TaskId taskId = job.getTaskId();
     
     TaskService taskService = jobController.getConfiguration().getTaskService();
 
@@ -57,7 +58,7 @@ public class TaskEscalateJobType extends AbstractJobType {
     }
   }
 
-  public Task getTask(TaskService taskService, String taskId) {
+  public Task getTask(TaskService taskService, TaskId taskId) {
     List<Task> tasks = taskService.findTasks(new TaskQuery().taskId(taskId));
     if (tasks!=null && !tasks.isEmpty()) {
       return tasks.get(0);

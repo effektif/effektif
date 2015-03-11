@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
@@ -56,6 +57,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public String workState;
   public String calledWorkflowInstanceId;
   public List<String> transitionsTaken;
+  public TaskId taskId;
   
   public ActivityInstanceImpl() {
   }
@@ -251,5 +253,10 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       return true;
     }
     return super.hasActivityInstance(activityInstanceId);
+  }
+
+  @Override
+  public TaskId findTaskIdRecursive() {
+    return taskId!=null ? taskId : parent.findTaskIdRecursive();
   }
 }

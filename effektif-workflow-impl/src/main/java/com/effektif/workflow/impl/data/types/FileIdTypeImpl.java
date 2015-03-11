@@ -50,7 +50,7 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
 
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue!=null ? ((FileId)internalValue).getId() : null;
+    return internalValue!=null ? ((FileId)internalValue).getInternal() : null;
   }
   
   @Override
