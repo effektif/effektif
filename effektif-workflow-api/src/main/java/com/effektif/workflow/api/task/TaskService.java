@@ -22,6 +22,8 @@ import com.effektif.workflow.api.model.UserId;
 
 
 /**
+ * The API for accessing workflow {@link com.effektif.workflow.api.task.Task} instances.
+ *
  * @author Tom Baeyens
  */
 public interface TaskService {

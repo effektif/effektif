@@ -17,6 +17,8 @@ package com.effektif.workflow.api.model;
 
 
 /**
+ * Unique identifier for a {@link com.effektif.workflow.api.task.Task}.
+ *
  * @author Tom Baeyens
  */
 public class TaskId extends Id {

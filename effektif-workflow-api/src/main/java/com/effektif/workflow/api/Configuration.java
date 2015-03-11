@@ -18,8 +18,11 @@ package com.effektif.workflow.api;
 import com.effektif.workflow.api.task.TaskService;
 
 
-/** Instantiate one of the implementing classes like 
- * MemoryConfiguration or a MongoConfiguration 
+/**
+ * A workflow engine runtime configuration.
+ * Instantiate one of the implementing classes like
+ * <code>com.effektif.workflow.impl.memory.MemoryConfiguration</code> or a
+ * <code>com.effektif.mongo.MongoConfiguration</code>
  * to get started configuring your workflow engine.
  *
  * @see <a href="https://github.com/effektif/effektif/wiki/Runtime-configuration">Runtime configuration</a>

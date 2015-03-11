@@ -32,6 +32,12 @@ import com.effektif.workflow.api.workflow.Extensible;
 
 
 /**
+ * An entry in a user’s task list, created for an
+ * {@link com.effektif.workflow.api.workflow.Activity} in a
+ * {@link com.effektif.workflow.api.workflow.Workflow} definition
+ * when executing the workflow.
+ *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Tasks-and-cases">Tasks and cases</a>
  * @author Tom Baeyens
  */
 public class Task extends Extensible implements AccessControlledObject {

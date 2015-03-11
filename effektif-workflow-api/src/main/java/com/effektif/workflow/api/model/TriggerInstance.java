@@ -23,6 +23,9 @@ import com.effektif.workflow.api.workflow.Workflow;
 
 
 /**
+ * The runtime representation of a {@link com.effektif.workflow.api.workflow.Trigger}
+ * when executing a workflow.
+ *
  * @author Tom Baeyens
  */
 public class TriggerInstance {

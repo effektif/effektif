@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 
 /**
+ * The API for converting model objects to and from JSON.
+ *
  * @author Tom Baeyens
  */
 public class JsonService implements Brewable {

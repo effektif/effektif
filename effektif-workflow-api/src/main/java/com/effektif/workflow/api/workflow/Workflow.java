@@ -22,7 +22,8 @@ import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.Type;
 
 
-/** An executable workflow in API format to deploy 
+/**
+ * An executable workflow in API format to deploy
  * it into the {@link WorkflowEngine}.
  * 
  * From this API format, the workflow can be converted 
