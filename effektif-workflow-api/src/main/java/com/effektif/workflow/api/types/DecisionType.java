@@ -21,7 +21,10 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-/** Type to represent decision buttons at the end of a form.
+/**
+ * Represents decision buttons at the end of a
+ * {@link com.effektif.workflow.api.activities.UserTask} form -
+ * a choice that completes the task.
  * 
  * @author Tom Baeyens
  */

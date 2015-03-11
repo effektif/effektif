@@ -16,12 +16,13 @@ package com.effektif.workflow.api.form;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/** Represents one inputfield in a form and it specifies 
- * how it's connected to the workflow variables.  
- * 
- * The type of a form field doesn't have to be specified when 
- * defining workflows.  It's derived from the binding expression
- * and is passed to the form rendering engines. 
+/**
+ * Represents one input field on a {@link com.effektif.workflow.api.form.Form},
+ * also specifying how it’s connected to the workflow variables -
+ * see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>.
+ *
+ * You don’t have to specify a form field’s type when you define a workflow.
+ * The type is derived from the binding expression and is passed to the form rendering engines.
  * 
  * @author Tom Baeyens
  */
