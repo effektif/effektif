@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.effektif.example</groupId>
+  <artifactId>tutorial</artifactId>
+  <version>0.1</version>
+  <properties>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+    <exec.mainClass>Application</exec.mainClass>
+  </properties>
+
+  <name>Tutorial</name>
+
+  <dependencies>
+    <dependency> 
+      <groupId>com.effektif</groupId>
+      <artifactId>effektif-workflow-impl</artifactId>
+      <version>3.0.0-alpha1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+</project>
