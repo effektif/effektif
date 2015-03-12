@@ -18,12 +18,14 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.SerializedFormInstance;
 
 
 /**
@@ -91,5 +93,11 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
     Task task = taskService.completeTask(taskId);
     task = wireize("  <<task<<", task, Task.class);
     return task;
+  }
+
+  @Override
+  public void saveFormInstance(TaskId taskId, FormInstance formInstance) {
+    formInstance = wireize("  >>formInstance>>", formInstance, SerializedFormInstance.class);
+    taskService.saveFormInstance(taskId, formInstance); 
   }
 }

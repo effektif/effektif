@@ -20,15 +20,20 @@ import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.impl.activity.types.UserTaskImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
+import com.effektif.workflow.impl.json.SerializedFormInstance;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**
@@ -127,6 +132,32 @@ public class TaskServiceImpl implements TaskService, Brewable {
   }
   
   @Override
+  public void saveFormInstance(TaskId taskId, FormInstance formInstance) {
+    List<Task> tasks = findTasks(new TaskQuery().taskId(taskId));
+    if (tasks.isEmpty()) {
+      return;
+    }
+    Task task = tasks.get(0);
+    if (!task.hasWorkflowForm()) {
+      return;
+    }
+    
+    String activityInstanceId = task.getActivityInstanceId();
+    WorkflowInstanceImpl workflowInstance = workflowEngine.workflowInstanceStore
+            .lockWorkflowInstance(task.getWorkflowInstanceId(), activityInstanceId);
+    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
+    UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
+    FormBindings formBindings = userTask.formBindings;
+
+    if (formInstance instanceof SerializedFormInstance) {
+      formBindings.deserializeFormInstance(formInstance);
+    }
+    
+    formBindings.applyFormInstanceData(formInstance, activityInstance);
+    workflowEngine.workflowInstanceStore.flushAndUnlock(workflowInstance);
+  }
+  
+  @Override
   public Task completeTask(TaskId taskId) {
     Task task = taskStore.completeTask(taskId);
     task.setCompleted(true);
@@ -147,7 +178,20 @@ public class TaskServiceImpl implements TaskService, Brewable {
   @Override
   public Task findTaskById(TaskId taskId) {
     List<Task> tasks = findTasks(new TaskQuery().taskId(taskId));
-    return !tasks.isEmpty() ? tasks.get(0) : null;
+    if (tasks.isEmpty()) {
+      return null;
+    }
+    Task task = tasks.get(0);
+    if (task.hasWorkflowForm()) {
+      WorkflowInstanceImpl workflowInstance = workflowEngine.workflowInstanceStore
+              .getWorkflowInstanceImplById(task.getWorkflowInstanceId());
+      String activityInstanceId = task.getActivityInstanceId();
+      ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
+      UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
+      FormInstance formInstance = userTask.formBindings.createFormInstance(activityInstance);
+      task.setFormInstance(formInstance);
+    }
+    return task;
   }
 
   @Override

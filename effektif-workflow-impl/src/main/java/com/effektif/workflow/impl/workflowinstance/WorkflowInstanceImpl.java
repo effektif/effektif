@@ -223,7 +223,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       }
       if (callerProcessInstance==null) {
         WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-        callerProcessInstance = workflowEngine.lockProcessInstanceWithRetry(
+        callerProcessInstance = workflowEngine.lockWorkflowInstanceWithRetry(
                 workflowInstance.callerWorkflowInstanceId,
                 workflowInstance.callerActivityInstanceId);
       }

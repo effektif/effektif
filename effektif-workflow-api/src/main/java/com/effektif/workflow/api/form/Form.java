@@ -18,6 +18,8 @@ package com.effektif.workflow.api.form;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.types.ChoiceType;
+
 
 /**
  * A form definition (aka declaration) that specifies the fields to display for 
@@ -30,6 +32,7 @@ import java.util.List;
 public class Form extends AbstractForm {
 
   protected List<FormField> fields;
+  protected String decisionVariableId;
 
   public List<FormField> getFields() {
     return this.fields;
@@ -52,6 +55,33 @@ public class Form extends AbstractForm {
   @Override
   public Form description(String description) {
     super.description(description);
+    return this;
+  }
+
+  public String getDecisionVariableId() {
+    return this.decisionVariableId;
+  }
+  public void setDecisionVariableId(String decisionVariableId) {
+    this.decisionVariableId = decisionVariableId;
+  }
+  /** specifies the variableId where the decision is stored when you want to 
+   * use decision buttons. Only use this if you don't want the default "Done" or 
+   * "Submit" button.  The decision buttons are intended to be used in combination 
+   * with exclusive gateway conditions. */
+  public Form decisionVariableId(String decisionVariableId) {
+    this.decisionVariableId = decisionVariableId;
+    return this;
+  }
+  
+  @Override
+  public Form decisionButtons(ChoiceType decisionButtons) {
+    super.decisionButtons(decisionButtons);
+    return this;
+  }
+  
+  @Override
+  public Form decisionButton(String decisionOption) {
+    super.decisionButton(decisionOption);
     return this;
   }
 }

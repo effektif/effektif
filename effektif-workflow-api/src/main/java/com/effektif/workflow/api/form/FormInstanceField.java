@@ -22,6 +22,12 @@ public class FormInstanceField extends AbstractFormField {
 
   protected Object value;
 
+  public FormInstanceField() {
+  }
+  public FormInstanceField(AbstractFormField field) {
+    super(field);
+  }
+
   public Object getValue() {
     return this.value;
   }

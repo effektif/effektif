@@ -62,6 +62,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     String LAST_UPDATED = "lastUpdated";
     String COMPLETED = "completed";
     String ACTIVITY_NOTIFY = "activityNotify";
+    String HAS_WORKFLOW_FORM = "hasWorkflowForm";
   }
 
   public interface FieldsUserReference {
@@ -114,7 +115,9 @@ public class MongoTaskStore implements TaskStore, Brewable {
       .set(FieldsTask.COMPLETED, true)
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .unset(FieldsTask.ACTIVITY_NOTIFY)
+      .unset(FieldsTask.HAS_WORKFLOW_FORM)
       .get();
+    // this findAndModify returns the old version
     BasicDBObject dbTask = tasksCollection.findAndModify("complete-task", query, update, null, null, false, false, false);
     return mongoToTask(dbTask);
   }

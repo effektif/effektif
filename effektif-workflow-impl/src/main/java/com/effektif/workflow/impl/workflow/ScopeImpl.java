@@ -134,7 +134,7 @@ public abstract class ScopeImpl {
     if (!activitiesByDefaultTransitionId.isEmpty()) {
       for (String nonExistingDefaultTransitionId: activitiesByDefaultTransitionId.keySet()) {
         ActivityImpl activity = activitiesByDefaultTransitionId.get(nonExistingDefaultTransitionId);
-        parser.addError("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
+        parser.addWarning("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
       }
     }
   }

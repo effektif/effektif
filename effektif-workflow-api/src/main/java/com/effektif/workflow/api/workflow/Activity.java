@@ -87,6 +87,13 @@ public class Activity extends Scope {
     return this;
   }
   
+  public Activity transitionWithConditionTo(String conditionExpression, String toActivityId) {
+    transitionTo(new Transition()
+      .condition(conditionExpression)
+      .to(toActivityId));
+    return this;
+  }
+  
   public Activity transitionToNext() {
     transitionTo(new Transition().toNext());
     return this;

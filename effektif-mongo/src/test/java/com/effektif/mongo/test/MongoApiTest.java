@@ -21,6 +21,7 @@ import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.email.TestEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
+import com.effektif.workflow.test.api.EmailTaskTest;
 import com.mongodb.DB;
 
 
@@ -35,7 +36,7 @@ public class MongoApiTest {
 
     TestSuiteHelper.run(configuration
       // use the next line if you only want to run 1 test
-      // , CallTest.class, "testTwoCallActivitiesInSequence"
+      // , EmailTaskTest.class, "testEmailTemplateVariables"
       );
   }
   

@@ -204,7 +204,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   
   @Override
   public WorkflowInstance send(Message message) {
-    WorkflowInstanceImpl workflowInstance = lockProcessInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
     
     if (message instanceof SerializedMessage) {
       deserializeMessage(message, workflowInstance.workflow);
@@ -246,7 +246,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return workflowImpl;
   }
   
-  public WorkflowInstanceImpl lockProcessInstanceWithRetry(
+  public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(
           final WorkflowInstanceId workflowInstanceId, 
           final String activityInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {

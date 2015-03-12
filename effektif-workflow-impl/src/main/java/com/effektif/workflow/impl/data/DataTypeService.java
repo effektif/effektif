@@ -35,7 +35,6 @@ import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.ChoiceTypeImpl;
 import com.effektif.workflow.impl.data.types.CustomTypeImpl;
-import com.effektif.workflow.impl.data.types.DecisionTypeImpl;
 import com.effektif.workflow.impl.data.types.EmailIdTypeImpl;
 import com.effektif.workflow.impl.data.types.EmailTypeImpl;
 import com.effektif.workflow.impl.data.types.FileIdTypeImpl;
@@ -76,11 +75,19 @@ public class DataTypeService implements Brewable {
   }
 
   protected void initializeDataTypes() {
-    registerDataType(new AnyTypeImpl(configuration));
+    // For undeclared variables a new variable instance 
+    // will be created on the fly when a value is set.  
+    // dataType.getValueClass(); is used.  Since more 
+    // dataTypes have String as a value type, 
+    // we need to register the types we want to use 
+    // during auto-creation first.
     registerDataType(new BooleanTypeImpl(configuration));
+    registerDataType(new NumberTypeImpl(configuration));
+    registerDataType(new TextTypeImpl(configuration));
+
+    registerDataType(new AnyTypeImpl(configuration));
     registerDataType(new ChoiceTypeImpl(configuration));
     registerDataType(new CustomTypeImpl(configuration));
-    registerDataType(new DecisionTypeImpl(configuration));
     registerDataType(new EmailIdTypeImpl(configuration));
     registerDataType(new EmailTypeImpl(configuration));
     registerDataType(new FileIdTypeImpl(configuration));
@@ -88,9 +95,7 @@ public class DataTypeService implements Brewable {
     registerDataType(new JavaBeanTypeImpl(configuration));
     registerDataType(new GroupIdTypeImpl(configuration));
     registerDataType(new GroupTypeImpl(configuration));
-    registerDataType(new NumberTypeImpl(configuration));
     registerDataType(new ListTypeImpl(configuration));
-    registerDataType(new TextTypeImpl(configuration));
     registerDataType(new UserIdTypeImpl(configuration));
     registerDataType(new UserTypeImpl(configuration));
   }
@@ -109,7 +114,9 @@ public class DataTypeService implements Brewable {
     }
     Class valueClass = dataType.getValueClass();
     if (valueClass!=null) {
-      dataTypesByValueClass.put(valueClass, dataType);
+      if (!dataTypesByValueClass.containsKey(valueClass)) {
+        dataTypesByValueClass.put(valueClass, dataType);
+      }
       objectMapper.registerSubtypes(valueClass);
     }
     objectMapper.registerSubtypes(apiClass);
@@ -135,10 +142,14 @@ public class DataTypeService implements Brewable {
   }
   
   public DataType getDataTypeByValue(Object value) {
-    if (value==null) {
-      return new AnyTypeImpl(configuration);
+    DataType dataType = null;
+    if (value!=null) {
+      dataType = dataTypesByValueClass.get(value.getClass());
     }
-    return dataTypesByValueClass.get(value.getClass());
+    if (dataType==null) {
+      dataType = new AnyTypeImpl(configuration);
+    }
+    return dataType;
   }
 
   public Type getTypeByValue(Object value) {

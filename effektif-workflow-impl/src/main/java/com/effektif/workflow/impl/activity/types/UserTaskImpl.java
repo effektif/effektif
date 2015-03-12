@@ -20,6 +20,7 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.TaskId;
@@ -30,6 +31,7 @@ import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.CaseStore;
+import com.effektif.workflow.impl.FormBindings;
 import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
@@ -60,6 +62,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   protected List<BindingImpl<UserId>> candidateIds;
   protected List<BindingImpl<GroupId>> candidateGroupIds;
   protected BindingImpl<UserId> escalateTo;
+  public FormBindings formBindings;
 
   public UserTaskImpl() {
     super(UserTask.class);
@@ -91,16 +94,24 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   }
   
   @Override
-  public void parse(ActivityImpl activityImpl, UserTask userTaskApi, WorkflowParser parser) {
-    super.parse(activityImpl, userTaskApi, parser);
+  public void parse(ActivityImpl activityImpl, UserTask userTask, WorkflowParser parser) {
+    super.parse(activityImpl, userTask, parser);
     this.taskStore = parser.getConfiguration(TaskStore.class);
     this.caseStore = parser.getConfiguration(CaseStore.class);
-    this.multiInstance = parser.parseMultiInstance(userTaskApi.getMultiInstance());
-    this.taskName = parser.parseTextTemplate(userTaskApi.getTaskName(), Hint.TASK_NAME);
-    this.assigneeId = parser.parseBinding(userTaskApi.getAssigneeId(), "assigneeId");
-    this.candidateIds = parser.parseBindings(userTaskApi.getCandidateIds(), "candidateIds");
-    this.candidateGroupIds = parser.parseBindings(userTaskApi.getCandidateGroupIds(), "candidateGroupIds");
-    this.escalateTo = parser.parseBinding(userTaskApi.getEscalateToId(), "escalateTo");
+    this.multiInstance = parser.parseMultiInstance(userTask.getMultiInstance());
+    this.taskName = parser.parseTextTemplate(userTask.getTaskName(), Hint.TASK_NAME);
+    this.assigneeId = parser.parseBinding(userTask.getAssigneeId(), "assigneeId");
+    this.candidateIds = parser.parseBindings(userTask.getCandidateIds(), "candidateIds");
+    this.candidateGroupIds = parser.parseBindings(userTask.getCandidateGroupIds(), "candidateGroupIds");
+    this.escalateTo = parser.parseBinding(userTask.getEscalateToId(), "escalateTo");
+    
+    Form form = userTask.getForm();
+    if (form!=null) {
+      formBindings = new FormBindings();
+      parser.pushContext("form", userTask, formBindings, null);
+      formBindings.parse(form, parser);
+      parser.popContext();
+    }
   }
 
   @Override
@@ -129,6 +140,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setWorkflowInstanceId(activityInstance.workflowInstance.id);
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
+    task.setWorkflowForm(formBindings!=null ? true : null);
     
     TaskId parentTaskId = activityInstance.parent.findTaskIdRecursive();
     if (parentTaskId!=null) {

@@ -32,6 +32,18 @@ public class AbstractFormField {
   protected Boolean readOnly;
   protected Boolean required;
 
+  public AbstractFormField() {
+  }
+  
+  /** shallow copy constructor */
+  public AbstractFormField(AbstractFormField other) {
+    this.id = other.id;
+    this.name = other.name;
+    this.type = other.type;
+    this.readOnly = other.readOnly;
+    this.required = other.required;
+  }
+
   public String getId() {
     return this.id;
   }

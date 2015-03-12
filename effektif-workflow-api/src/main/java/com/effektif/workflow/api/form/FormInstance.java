@@ -34,6 +34,20 @@ public class FormInstance extends AbstractForm {
   protected List<FormInstanceField> fields;
   public static final String DATAKEY = "formInstance";
 
+  public FormInstance() {
+  }
+  
+  public FormInstance(Form form) {
+    super(form);
+    if (form.getFields()!=null) {
+      fields = new ArrayList<>();
+      for (FormField field: form.getFields()) {
+        FormInstanceField formInstanceField = new FormInstanceField(field);
+        fields.add(formInstanceField);
+      }
+    }
+  }
+
   public List<FormInstanceField> getFields() {
     return this.fields;
   }

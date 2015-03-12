@@ -41,9 +41,11 @@ public class FormBindings {
   
   private static final Logger log = LoggerFactory.getLogger(FormBindings.class);
 
+  public Form form;
   public Map<String,FormFieldBinding> formFieldBindings;
 
   public void parse(Form form, WorkflowParser parser) {
+    this.form = form;
     if (form!=null && form.getFields()!=null && !form.getFields().isEmpty()) {
       int index = 0;
       Set<String> fieldIds = collectFieldIds(form.getFields());
@@ -137,6 +139,18 @@ public class FormBindings {
         }
       }
     }
+  }
+  
+  public FormInstance createFormInstance(ScopeInstanceImpl scopeInstance) {
+    FormInstance formInstance = new FormInstance(form);
+    if (formFieldBindings!=null) {
+      for (String fieldId : formFieldBindings.keySet()) {
+        FormFieldBinding formFieldBinding = formFieldBindings.get(fieldId);
+        Object value = scopeInstance.getValue(formFieldBinding.binding);
+        formInstance.value(fieldId, value);
+      }
+    }
+    return formInstance;
   }
 
   protected boolean isWritable(FormFieldBinding formFieldBinding) {

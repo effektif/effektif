@@ -28,7 +28,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public String id;
   public Object value;
-  public VariableImpl variable; // might be null in case variables are created dynamically
+  public VariableImpl variable;
   public DataType type;         // never null (initialized with the variable.type)
   public VariableInstanceUpdates updates;
 

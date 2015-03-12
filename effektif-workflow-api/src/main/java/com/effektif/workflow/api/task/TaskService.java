@@ -17,6 +17,7 @@ package com.effektif.workflow.api.task;
 
 import java.util.List;
 
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 
@@ -32,10 +33,16 @@ public interface TaskService {
 
   Task assignTask(TaskId taskId, UserId assignee);
 
+  void saveFormInstance(TaskId taskId, FormInstance formInstance);
+
+  /** gets all the task details, including the form instance */
   Task findTaskById(TaskId taskId);
+
+  /** gets all the task summaries, excluding the form instance */
   List<Task> findTasks(TaskQuery taskQuery);
   
   void deleteTasks(TaskQuery taskQuery);
 
   Task completeTask(TaskId taskId);
+
 }

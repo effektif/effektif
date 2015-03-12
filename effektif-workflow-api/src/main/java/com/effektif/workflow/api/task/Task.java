@@ -25,6 +25,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.AccessControlledObject;
+import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.TaskId;
@@ -65,6 +66,7 @@ public class Task extends Extensible implements AccessControlledObject {
   protected UserId assigneeId;
   protected List<UserId> candidateIds;
   protected List<GroupId> candidateGroupIds;
+  protected FormInstance formInstance;
 
   /** id of the root task in the task parent-child relationship
    * can be null for tasks that don't have a case. */
@@ -336,8 +338,8 @@ public class Task extends Extensible implements AccessControlledObject {
     this.activityNotify = activityNotify;
   }
   
-  public Boolean hasWorkflowForm() {
-    return this.hasWorkflowForm;
+  public boolean hasWorkflowForm() {
+    return Boolean.TRUE.equals(this.hasWorkflowForm);
   }
   public void setWorkflowForm(Boolean hasWorkflowForm) {
     this.hasWorkflowForm = hasWorkflowForm;
@@ -390,4 +392,14 @@ public class Task extends Extensible implements AccessControlledObject {
     this.access = access;
   }
   
+  public FormInstance getFormInstance() {
+    return this.formInstance;
+  }
+  public void setFormInstance(FormInstance formInstance) {
+    this.formInstance = formInstance;
+  }
+  public Task formInstance(FormInstance formInstance) {
+    this.formInstance = formInstance;
+    return this;
+  }
 }

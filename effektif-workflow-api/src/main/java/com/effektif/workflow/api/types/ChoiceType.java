@@ -16,33 +16,34 @@
 package com.effektif.workflow.api.types;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * Represents decision buttons at the end of a
+ * {@link com.effektif.workflow.api.activities.UserTask} form -
+ * a choice that completes the task.
+ * 
  * @author Tom Baeyens
  */
-@JsonTypeName("choice")
+@JsonTypeName("decision")
 public class ChoiceType extends TextType {
 
-  protected java.util.List<String> options;
+  protected List<ChoiceOption> options;
   
+  public List<ChoiceOption> getOptions() {
+    return options;
+  }
+  public void setOptions(List<ChoiceOption> options) {
+    this.options = options;
+  }
   public ChoiceType option(String option) {
     if (options==null) {
       options = new ArrayList<>();
     }
-    options.add(option);
+    options.add(new ChoiceOption().id(option));
     return this;
-  }
-
-  
-  public java.util.List<String> getOptions() {
-    return options;
-  }
-
-  
-  public void setOptions(java.util.List<String> options) {
-    this.options = options;
   }
 }

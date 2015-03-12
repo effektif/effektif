@@ -110,6 +110,11 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
+  public WorkflowInstanceImpl getWorkflowInstanceImplById(WorkflowInstanceId workflowInstanceId) {
+    return workflowInstances.get(workflowInstanceId);
+  }
+
+  @Override
   public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
       .workflowInstanceId(workflowInstanceId)

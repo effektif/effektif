@@ -23,7 +23,7 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.triggers.FormTrigger;
-import com.effektif.workflow.api.types.DecisionType;
+import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Variable;
@@ -88,7 +88,7 @@ public class FormTriggerTest extends WorkflowTest {
   @Test
   public void testFormTriggerDecision() {
     Workflow workflow = new Workflow()
-      .variable("reviewResult", new DecisionType()
+      .variable("reviewResult", new ChoiceType()
         .option("Approve")
         .option("Reject"))
       .trigger(new FormTrigger()
@@ -102,10 +102,10 @@ public class FormTriggerTest extends WorkflowTest {
     List<FormField> fields = form.getFields();
     FormField formField = fields.get(0);
     assertEquals("reviewResult", formField.getId());
-    assertEquals(DecisionType.class, formField.getType().getClass());
-    DecisionType decisionType = (DecisionType) formField.getType();
-    assertEquals("Approve", decisionType.getOptions().get(0).getId());
-    assertEquals("Reject", decisionType.getOptions().get(1).getId());
+    assertEquals(ChoiceType.class, formField.getType().getClass());
+    ChoiceType choiceType = (ChoiceType) formField.getType();
+    assertEquals("Approve", choiceType.getOptions().get(0).getId());
+    assertEquals("Reject", choiceType.getOptions().get(1).getId());
     
     WorkflowInstance workflowInstance = start(workflow, new FormInstance()
       .value("reviewResult", "Approve"));
