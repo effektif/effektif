@@ -166,11 +166,14 @@ public class Email {
   public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
   }
-  public Email attachment(Attachment attachment) {
+  public void addAttachment(Attachment attachment) {
     if (this.attachments==null) {
       this.attachments = new ArrayList<>();
-    };
+    }
     this.attachments.add(attachment);
+  }
+  public Email attachment(Attachment attachment) {
+    addAttachment(attachment);
     return this;
   }
 }
