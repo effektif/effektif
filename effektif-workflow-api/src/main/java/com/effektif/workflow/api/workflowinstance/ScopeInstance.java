@@ -27,7 +27,6 @@ import com.effektif.workflow.api.model.TaskId;
  */
 public class ScopeInstance {
   
-  protected String id;
   protected LocalDateTime start;
   protected LocalDateTime end;
   protected Long duration;
@@ -82,16 +81,6 @@ public class ScopeInstance {
       return ((Number)value).doubleValue();
     }
     throw new RuntimeException("Value is not a double: "+value+" ("+value.getClass().getName()+")");
-  }
-
-
-
-  public String getId() {
-    return id;
-  }
-  
-  public void setId(String id) {
-    this.id = id;
   }
 
   public LocalDateTime getStart() {

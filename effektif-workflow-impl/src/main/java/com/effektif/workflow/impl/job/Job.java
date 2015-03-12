@@ -21,6 +21,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
@@ -50,7 +51,7 @@ public class Job {
   public String organizationId;
   public String sourceWorkflowId;
   public WorkflowId workflowId;
-  public String workflowInstanceId;
+  public WorkflowInstanceId workflowInstanceId;
   public String activityInstanceId;
   public TaskId taskId;
 
@@ -117,7 +118,7 @@ public class Job {
     return this;
   }
   
-  public Job workflowInstanceId(String workflowInstanceId) {
+  public Job workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
     return this;
   }
@@ -214,7 +215,7 @@ public class Job {
   }
 
   
-  public String getWorkflowInstanceId() {
+  public WorkflowInstanceId getWorkflowInstanceId() {
     return workflowInstanceId;
   }
 

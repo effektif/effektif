@@ -24,7 +24,6 @@ import com.effektif.workflow.impl.workflow.WorkflowImpl;
  */
 public class BaseInstanceImpl {
 
-  public String id;
   public ScopeInstanceImpl parent;
   public WorkflowInstanceImpl workflowInstance;
   public WorkflowImpl workflow;
@@ -33,8 +32,7 @@ public class BaseInstanceImpl {
   public BaseInstanceImpl() {
   }
 
-  public BaseInstanceImpl(ScopeInstanceImpl parent, String id) {
-    this.id = id;
+  public BaseInstanceImpl(ScopeInstanceImpl parent) {
     this.parent = parent;
     this.workflowInstance = parent.workflowInstance;
     this.workflow = parent.workflow;
@@ -43,10 +41,6 @@ public class BaseInstanceImpl {
 
   public Configuration getConfiguration() {
     return configuration;
-  }
-  
-  public String getId() {
-    return id;
   }
   
   public ScopeInstanceImpl getParent() {

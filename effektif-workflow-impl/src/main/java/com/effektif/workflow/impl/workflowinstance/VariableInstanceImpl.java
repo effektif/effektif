@@ -26,6 +26,7 @@ import com.effektif.workflow.impl.workflow.VariableImpl;
  */
 public class VariableInstanceImpl extends BaseInstanceImpl {
 
+  public String id;
   public Object value;
   public VariableImpl variable; // might be null in case variables are created dynamically
   public DataType type;         // never null (initialized with the variable.type)
@@ -35,7 +36,8 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   }
 
   public VariableInstanceImpl(ScopeInstanceImpl parent, VariableImpl variable, String id) {
-    super(parent, id);
+    super(parent);
+    this.id = id;
     this.variable = variable;
   }
 
@@ -68,5 +70,12 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
 
   public TypedValueImpl getTypedValue() {
     return new TypedValueImpl(type, value);
+  }
+
+  public String getId() {
+    return this.id;
+  }
+  public void setId(String id) {
+    this.id = id;
   }
 }

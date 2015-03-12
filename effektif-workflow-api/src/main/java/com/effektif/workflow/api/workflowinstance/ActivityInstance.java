@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.workflowinstance;
 
 import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -25,9 +26,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({"id", "activityId", "start", "end", "duration", "activityInstances", "variableInstances", "timerInstances"})
 public class ActivityInstance extends ScopeInstance {
   
+  protected String id;
   protected String activityId;
-  protected String calledWorkflowInstanceId;
+  protected WorkflowInstanceId calledWorkflowInstanceId;
   protected TaskId taskId;
+
+
+  public String getId() {
+    return id;
+  }
+  
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public String getActivityId() {
     return this.activityId;
@@ -36,10 +47,10 @@ public class ActivityInstance extends ScopeInstance {
     this.activityId = activityId;
   }
 
-  public String getCalledWorkflowInstanceId() {
+  public WorkflowInstanceId getCalledWorkflowInstanceId() {
     return this.calledWorkflowInstanceId;
   }
-  public void setCalledWorkflowInstanceId(String calledWorkflowInstanceId) {
+  public void setCalledWorkflowInstanceId(WorkflowInstanceId calledWorkflowInstanceId) {
     this.calledWorkflowInstanceId = calledWorkflowInstanceId;
   }
 

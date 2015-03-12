@@ -28,6 +28,7 @@ import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -143,7 +144,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     lock.setTime(Time.now());
     lock.setOwner(getId());
 
-    String workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
+    WorkflowInstanceId workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
     
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(configuration, workflow, workflowInstanceId);
     
@@ -246,7 +247,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
   
   public WorkflowInstanceImpl lockProcessInstanceWithRetry(
-          final String workflowInstanceId, 
+          final WorkflowInstanceId workflowInstanceId, 
           final String activityInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {
       @Override

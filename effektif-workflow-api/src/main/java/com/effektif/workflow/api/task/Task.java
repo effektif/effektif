@@ -30,6 +30,7 @@ import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -87,7 +88,7 @@ public class Task extends Extensible implements AccessControlledObject {
   //    when completed: co==true & eai == null (absent)
   protected Boolean activityNotify;
   protected Boolean hasWorkflowForm;
-  protected String workflowInstanceId;
+  protected WorkflowInstanceId workflowInstanceId;
   protected String sourceWorkflowId;
   protected WorkflowId workflowId;
   
@@ -196,12 +197,12 @@ public class Task extends Extensible implements AccessControlledObject {
   }
 
   
-  public String getWorkflowInstanceId() {
+  public WorkflowInstanceId getWorkflowInstanceId() {
     return workflowInstanceId;
   }
 
   
-  public void setWorkflowInstanceId(String workflowInstanceId) {
+  public void setWorkflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
 

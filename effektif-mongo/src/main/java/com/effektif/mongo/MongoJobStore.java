@@ -155,7 +155,7 @@ public class MongoJobStore implements JobStore, Brewable {
     job.sourceWorkflowId = readId(dbJob, JobFields.processId);
     job.taskId = readTaskId(dbJob, JobFields.taskId);
     job.workflowId = readWorkflowId(dbJob, JobFields.workflowId);
-    job.workflowInstanceId = readId(dbJob, JobFields.workflowInstanceId);
+    job.workflowInstanceId = readWorkflowInstanceId(dbJob, JobFields.workflowInstanceId);
     job.activityInstanceId = readId(dbJob, JobFields.activityInstanceId);
     readExecutions(job, readList(dbJob, JobFields.executions));
     readLock(job, readBasicDBObject(dbJob, JobFields.lock));
@@ -198,7 +198,7 @@ public class MongoJobStore implements JobStore, Brewable {
     writeIdOpt(dbJob, JobFields.organizationId, job.organizationId);
     writeIdOpt(dbJob, JobFields.processId, job.sourceWorkflowId);
     writeIdOpt(dbJob, JobFields.activityInstanceId, job.activityInstanceId);
-    writeIdOpt(dbJob, JobFields.workflowInstanceId, job.workflowInstanceId);
+    writeIdOptNew(dbJob, JobFields.workflowInstanceId, job.workflowInstanceId);
     writeIdOptNew(dbJob, JobFields.workflowId, job.workflowId);
     writeIdOptNew(dbJob, JobFields.taskId, job.taskId);
     writeExecutions(dbJob, job.executions);

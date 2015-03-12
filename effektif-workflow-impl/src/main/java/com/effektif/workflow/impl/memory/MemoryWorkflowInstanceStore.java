@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -46,8 +47,8 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   private static final Logger log = WorkflowEngineImpl.log;
 
   protected String workflowEngineId;
-  protected Map<String, WorkflowInstanceImpl> workflowInstances;
-  protected Set<String> lockedWorkflowInstanceIds;
+  protected Map<WorkflowInstanceId, WorkflowInstanceImpl> workflowInstances;
+  protected Set<WorkflowInstanceId> lockedWorkflowInstanceIds;
   
   public MemoryWorkflowInstanceStore() {
   }
@@ -55,13 +56,13 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   @Override
   public void brew(Brewery brewery) {
     this.workflowInstances = new ConcurrentHashMap<>();
-    this.lockedWorkflowInstanceIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    this.lockedWorkflowInstanceIds = Collections.newSetFromMap(new ConcurrentHashMap<WorkflowInstanceId, Boolean>());
     this.workflowEngineId = brewery.get(WorkflowEngineImpl.class).id;
   }
   
   @Override
-  public String generateWorkflowInstanceId() {
-    return UUID.randomUUID().toString();
+  public WorkflowInstanceId generateWorkflowInstanceId() {
+    return new WorkflowInstanceId(UUID.randomUUID().toString());
   }
 
   @Override
@@ -109,7 +110,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId) {
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
       .workflowInstanceId(workflowInstanceId)
       .activityInstanceId(activityInstanceId);
@@ -125,7 +126,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   public synchronized void lockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
-    String workflowInstanceId = workflowInstance.getId();
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
     if (lockedWorkflowInstanceIds.contains(workflowInstanceId)) {
       throw new RuntimeException("Process instance "+workflowInstanceId+" is already locked");
     }

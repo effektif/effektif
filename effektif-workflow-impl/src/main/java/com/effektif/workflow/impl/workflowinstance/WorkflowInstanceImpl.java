@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
@@ -54,23 +55,30 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
+  public WorkflowInstanceId id;
   public String organizationId;
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
-  public String callerWorkflowInstanceId;
+  public WorkflowInstanceId callerWorkflowInstanceId;
   public String callerActivityInstanceId;
   public Boolean isAsync;
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
   public List<Job> jobs;
-  public Map<String,WorkflowInstanceImpl> lockedWorkflowInstances;
+  /** local cache of the locked workflow instance for the purpose of the 
+   * call activity.  in case the subprocess is fully synchronous and it 
+   * finishes and wants to continue the parent, that parent is already 
+   * locked in the db.  the call activity will first check this cache to see 
+   * if the workflow instance is already locked and use this one instead of 
+   * going to the db. */
+  public Map<WorkflowInstanceId,WorkflowInstanceImpl> lockedWorkflowInstances;
   public CaseId caseId;
 
   public WorkflowInstanceImpl() {
   }
   
-  public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, String workflowInstanceId) {
+  public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, WorkflowInstanceId workflowInstanceId) {
     this.id = workflowInstanceId;
     this.organizationId = workflow.organizationId;
     this.configuration = configuration;
@@ -86,6 +94,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
   public WorkflowInstance toWorkflowInstance() {
     WorkflowInstance workflowInstance = new WorkflowInstance();
+    workflowInstance.setId(id);
     workflowInstance.setOrganizationId(organizationId);
     workflowInstance.setWorkflowId(workflow.id);
     workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
@@ -203,6 +212,13 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     if (callerWorkflowInstanceId!=null) {
       WorkflowInstanceImpl callerProcessInstance = null;
       if (lockedWorkflowInstances!=null) {
+        // the lockedWorkflowInstances is a local cache of the locked workflow instances 
+        // which is passed down to the sub workflow instance in the call activity.  
+        // in case the subprocess is fully synchronous and it 
+        // finishes and wants to continue the parent, that parent is already 
+        // locked in the db.  the call activity will first check this cache to see 
+        // if the workflow instance is already locked and use this one instead of 
+        // going to the db.
         callerProcessInstance = lockedWorkflowInstances.get(workflowInstance.callerWorkflowInstanceId);
       }
       if (callerProcessInstance==null) {
@@ -377,5 +393,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     if (updates!=null) {
       getUpdates().isJobsChanged = true;
     }
+  }
+
+  public WorkflowInstanceId getId() {
+    return this.id;
   }
 }

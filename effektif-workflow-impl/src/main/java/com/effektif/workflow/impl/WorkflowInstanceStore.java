@@ -17,17 +17,18 @@ package com.effektif.workflow.impl;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 public interface WorkflowInstanceStore {
   
-  String generateWorkflowInstanceId();
+  WorkflowInstanceId generateWorkflowInstanceId();
 
   void insertWorkflowInstance(WorkflowInstanceImpl worklflowInstance);
 
-  WorkflowInstanceImpl lockWorkflowInstance(String workflowInstanceId, String activityInstanceId);
+  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String activityInstanceId);
 
   WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
 

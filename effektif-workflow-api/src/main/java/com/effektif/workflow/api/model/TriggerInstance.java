@@ -29,13 +29,13 @@ import com.effektif.workflow.api.workflow.Workflow;
  */
 public class TriggerInstance {
   
-  protected String workflowInstanceId;
+  protected WorkflowInstanceId workflowInstanceId;
   protected WorkflowId workflowId;
   protected String sourceWorkflowId;
   protected String businessKey;
   protected Map<String,Object> data;
   protected CaseId caseId;
-  protected String callerWorkflowInstanceId;
+  protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
 
   public WorkflowId getWorkflowId() {
@@ -113,10 +113,13 @@ public class TriggerInstance {
    * You can provide your own here but please be aware that it 
    * might have to be compatible with the persistence implementation.
    */
-  public String getWorkflowInstanceId() {
+  public WorkflowInstanceId getWorkflowInstanceId() {
     return this.workflowInstanceId;
   }
-  public void setWorkflowInstanceId(String workflowInstanceId) {
+  /** pass in an id for the workflow instance that will be created,
+   * ensure the id internal value is unique and that the configured 
+   * persistence supports it. */
+  public void setWorkflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
 
@@ -133,13 +136,13 @@ public class TriggerInstance {
   
   /** used by the call activity to establish the link between the calling activity instance 
    * and the called workflow instance */
-  public String getCallerWorkflowInstanceId() {
+  public WorkflowInstanceId getCallerWorkflowInstanceId() {
     return callerWorkflowInstanceId;
   }
   
   /** used by the call activity to establish the link between the calling activity instance 
    * and the called workflow instance */
-  public void setCallerWorkflowInstanceId(String callerWorkflowInstanceId) {
+  public void setCallerWorkflowInstanceId(WorkflowInstanceId callerWorkflowInstanceId) {
     this.callerWorkflowInstanceId = callerWorkflowInstanceId;
   }
   

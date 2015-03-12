@@ -26,6 +26,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
 import com.effektif.workflow.api.WorkflowEngine;
+
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
@@ -43,6 +44,7 @@ import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonService;
@@ -137,7 +139,7 @@ public class ServerTest extends JerseyTest {
             .post(Entity.entity(start, MediaType.APPLICATION_JSON))
             .readEntity(WorkflowInstance.class);
 
-    String workflowInstanceId = workflowInstance.getId();
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
     String subTaskInstanceId = workflowInstance.findOpenActivityInstance("Three").getId();
 
     Message message = new Message()

@@ -68,8 +68,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public ScopeInstanceImpl() {
   }
 
-  public ScopeInstanceImpl(ScopeInstanceImpl parent, ScopeImpl scope, String id) {
-    super(parent, id);
+  public ScopeInstanceImpl(ScopeInstanceImpl parent, ScopeImpl scope) {
+    super(parent);
     this.scope = scope;
     this.start = Time.now();
   }
@@ -79,7 +79,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public abstract boolean isWorkflowInstance();
   
   protected void toScopeInstance(ScopeInstance scopeInstanceApi) {
-    scopeInstanceApi.setId(id);
     scopeInstanceApi.setStart(start);
     scopeInstanceApi.setEnd(end);
     scopeInstanceApi.setDuration(duration);

@@ -24,19 +24,19 @@ import java.util.Map;
  */
 public class Message {
 
-  protected String workflowInstanceId;
+  protected WorkflowInstanceId workflowInstanceId;
   protected String sourceWorkflowId;
   protected String businessKey;
   protected String activityInstanceId;
   protected Map<String,Object> data;
 
-  public String getWorkflowInstanceId() {
+  public WorkflowInstanceId getWorkflowInstanceId() {
     return this.workflowInstanceId;
   }
-  public void setWorkflowInstanceId(String workflowInstanceId) {
+  public void setWorkflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
-  public Message workflowInstanceId(String workflowInstanceId) {
+  public Message workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
     return this;
   }

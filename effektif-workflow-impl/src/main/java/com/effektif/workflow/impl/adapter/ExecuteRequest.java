@@ -18,6 +18,8 @@ package com.effektif.workflow.impl.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.model.WorkflowInstanceId;
+
 
 /**
  * @author Tom Baeyens
@@ -27,7 +29,7 @@ public class ExecuteRequest {
   // private static final Logger log = LoggerFactory.getLogger(ExecuteRequest.class);
 
   protected String activityKey;
-  protected String workflowInstanceId;
+  protected WorkflowInstanceId workflowInstanceId;
   protected String activityInstanceId;
   protected Map<String,Object> inputParameters;
   
@@ -42,13 +44,13 @@ public class ExecuteRequest {
     return this;
   }
 
-  public String getWorkflowInstanceId() {
+  public WorkflowInstanceId getWorkflowInstanceId() {
     return this.workflowInstanceId;
   }
-  public void setWorkflowInstanceId(String workflowInstanceId) {
+  public void setWorkflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
-  public ExecuteRequest workflowInstanceId(String workflowInstanceId) {
+  public ExecuteRequest workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
     return this;
   }
