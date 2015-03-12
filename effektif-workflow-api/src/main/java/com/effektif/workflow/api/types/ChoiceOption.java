@@ -17,7 +17,7 @@ package com.effektif.workflow.api.types;
 /**
  * @author Tom Baeyens
  */
-public class DecisionOption {
+public class ChoiceOption {
   
   protected String id;
 
@@ -27,7 +27,7 @@ public class DecisionOption {
   public void setId(String id) {
     this.id = id;
   }
-  public DecisionOption id(String id) {
+  public ChoiceOption id(String id) {
     this.id = id;
     return this;
   }
