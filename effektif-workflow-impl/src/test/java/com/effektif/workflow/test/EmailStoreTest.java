@@ -5,9 +5,11 @@ import com.effektif.workflow.api.model.EmailId;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailStore;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.sun.tools.javac.util.List;
+import com.google.common.collect.ImmutableList;
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 /**
  * Tests {@link com.effektif.workflow.impl.email.EmailStore} storage and retrieval.
@@ -32,9 +34,9 @@ public class EmailStoreTest extends TestCase {
       .from("ci@example.com")
       .replyTo("ci@example.com")
       .headers("X-SourceWorkflowId", "release")
-      .to(List.of("dev@example.com"))
-      .cc(List.of("releases@example.com"))
-      .bcc(List.of("archive@example.com"))
+      .to(ImmutableList.of("dev@example.com"))
+      .cc(ImmutableList.of("releases@example.com"))
+      .bcc(ImmutableList.of("archive@example.com"))
       .subject("New release")
       .bodyText("A new version has been deployed on production.")
       .bodyHtml("<p>A new version has been deployed on production.</p>");
