@@ -24,6 +24,8 @@ import com.effektif.workflow.impl.email.EmailStore;
 
 
 /**
+ * In-memory {@link java.util.Map}-based email storage implementation.
+ *
  * @author Tom Baeyens
  */
 public class MemoryEmailStore implements EmailStore {

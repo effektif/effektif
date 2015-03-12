@@ -15,7 +15,8 @@ package com.effektif.workflow.impl.email;
 
 
 
-/** sends emails. 
+/**
+ * API for sending emails, used for notifications and the {@link com.effektif.workflow.api.activities.EmailTask}.
  * 
  * @author Tom Baeyens
  */

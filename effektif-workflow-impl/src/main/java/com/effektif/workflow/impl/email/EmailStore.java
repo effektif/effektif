@@ -16,14 +16,15 @@ package com.effektif.workflow.impl.email;
 import com.effektif.workflow.api.model.EmailId;
 
 
-/** stores emails.
+/**
+ * Persistence API for storing sent or received email messages.
  * 
  * @author Tom Baeyens
  */
 public interface EmailStore {
 
+  /** Stores the given email and returns the email with an updated ID. */
   Email createEmail(Email email);
-  
-  Email findEmailById(EmailId emailId);
 
+  Email findEmailById(EmailId emailId);
 }
