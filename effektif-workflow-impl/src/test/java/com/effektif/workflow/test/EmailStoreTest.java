@@ -23,10 +23,6 @@ public class EmailStoreTest extends TestCase {
   private Email mail;
 
   @Override protected void setUp() throws Exception {
-    if (configuration != null) {
-      throw new IllegalStateException("already configured");
-    }
-
     configuration = new TestConfiguration();
     emailStore = configuration.get(EmailStore.class);
 
