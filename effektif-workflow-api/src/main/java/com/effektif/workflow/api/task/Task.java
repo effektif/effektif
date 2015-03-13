@@ -379,10 +379,9 @@ public class Task extends Extensible implements AccessControlledObject {
     return this;
   }
 
+  @Override
   protected void checkPropertyKey(String key) {
-    if (key==null || INVALID_PROPERTY_KEYS.contains(key)) {
-      throw new RuntimeException("Invalid property '"+key+"'");
-    }
+    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 
   public AccessControlList getAccess() {

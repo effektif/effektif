@@ -30,7 +30,7 @@ import com.effektif.workflow.api.xml.XmlElement;
 public class Element extends Extensible {
   
   public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "id", "name", "description", "bpmn"));
+          "name", "description", "bpmn"));
 
   protected String name;
   protected String description;
@@ -75,9 +75,8 @@ public class Element extends Extensible {
     this.bpmn = bpmn;
   }
   
+  @Override
   protected void checkPropertyKey(String key) {
-    if (key==null || INVALID_PROPERTY_KEYS.contains(key)) {
-      throw new RuntimeException("Invalid property '"+key+"'");
-    }
+    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 }

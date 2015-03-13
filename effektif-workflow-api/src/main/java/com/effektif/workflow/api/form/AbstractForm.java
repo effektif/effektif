@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.form;
 
-import com.effektif.workflow.api.types.ChoiceType;
 
 
 
@@ -26,14 +25,12 @@ public class AbstractForm {
 
   protected String description;
   // TODO Map<String,String> descriptionI18n;
-  protected ChoiceType decisionButtons;
 
   public AbstractForm() {
   }
   /** shallow copy constructor */
   public AbstractForm(AbstractForm other) {
     this.description = other.description;
-    this.decisionButtons = other.decisionButtons;
   }
   
   public String getDescription() {
@@ -44,30 +41,6 @@ public class AbstractForm {
   }
   public AbstractForm description(String description) {
     this.description = description;
-    return this;
-  }
-
-  public ChoiceType getDecisionButtons() {
-    return this.decisionButtons;
-  }
-  public void setDecisionButtons(ChoiceType decisionButtons) {
-    this.decisionButtons = decisionButtons;
-  }
-  /** optional variable declaration defining decision buttons 
-   * that will be rendered instead of the form-submit or task-completion button. 
-   * When specifying this, you must also specify the the decisionVariableId */
-  public AbstractForm decisionButtons(ChoiceType decisionButtons) {
-    this.decisionButtons = decisionButtons;
-    return this;
-  }
-  /** adds a button to this form (requires you also set a {@link #decisionVariableId(String)} ).
-   * A default "Done" or "Submit" button will always be on this form.  The decision 
-   * buttons are intended to be used in combination with exclusive gateway conditions. */
-  public AbstractForm decisionButton(String decisionOption) {
-    if (decisionButtons==null) {
-      decisionButtons = new ChoiceType();
-    }
-    decisionButtons.option(decisionOption);
     return this;
   }
 }

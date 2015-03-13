@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -27,6 +27,7 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
@@ -43,6 +44,10 @@ public class DecisionButtonsTest extends WorkflowTest {
   public void testExclusiveGateway() {
     Workflow workflow = new Workflow()
       .variable("Conclusion", new TextType())
+      .variable("Decision", new ChoiceType()
+        .option("Approve")
+        .option("Reject")
+      )
       .activity("Start", new StartEvent()
         .transitionToNext())
       .activity("Submit conclusion", new UserTask()
@@ -54,9 +59,10 @@ public class DecisionButtonsTest extends WorkflowTest {
           .field(new FormField()
             .binding("Conclusion")
             .readOnly())
-          .decisionVariableId("Decision")
-          .decisionButton("Approve")
-          .decisionButton("Reject"))
+          .field(new FormField()
+            .binding("Decision")
+            .required()
+            .property("asButtons", true)))
         .transitionToNext())
       .activity("Approved?", new ExclusiveGateway()
         .transitionWithConditionTo("Conclusion == 'Reject'", "Submit conclusion")

@@ -69,4 +69,14 @@ public class FormField extends AbstractFormField {
     super.required();
     return this;
   }
+  @Override
+  public FormField property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+  @Override
+  public FormField propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
 }
