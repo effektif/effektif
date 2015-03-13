@@ -42,7 +42,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
     return triggerApiClass; 
   }
 
-  public void parse(WorkflowImpl workflow, T triggerApi, WorkflowParser parser) {
+  public void parse(WorkflowImpl workflow, T trigger, WorkflowParser parser) {
   }
 
   public void published(WorkflowImpl workflow) {

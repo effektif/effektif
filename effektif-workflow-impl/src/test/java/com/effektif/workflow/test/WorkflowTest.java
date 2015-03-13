@@ -113,7 +113,7 @@ public class WorkflowTest {
   public WorkflowInstance start(Workflow workflow, FormInstance formInstance) {
     return workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data(FormInstance.DATAKEY, formInstance));
+      .data(FormInstance.FORM_INSTANCE_KEY, formInstance));
   }
   
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {

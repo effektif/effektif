@@ -26,13 +26,13 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.activity.types.AdapterActivityImpl;
 import com.effektif.workflow.impl.activity.types.CallImpl;
 import com.effektif.workflow.impl.activity.types.EmailTaskImpl;
+import com.effektif.workflow.impl.activity.types.EmailTriggerImpl;
 import com.effektif.workflow.impl.activity.types.EmbeddedSubprocessImpl;
 import com.effektif.workflow.impl.activity.types.EndEventImpl;
 import com.effektif.workflow.impl.activity.types.ExclusiveGatewayImpl;
 import com.effektif.workflow.impl.activity.types.FormTriggerImpl;
 import com.effektif.workflow.impl.activity.types.HttpServiceTaskImpl;
 import com.effektif.workflow.impl.activity.types.JavaServiceTaskImpl;
-import com.effektif.workflow.impl.activity.types.MailTriggerImpl;
 import com.effektif.workflow.impl.activity.types.NoneTaskImpl;
 import com.effektif.workflow.impl.activity.types.ParallelGatewayImpl;
 import com.effektif.workflow.impl.activity.types.ReceiveTaskImpl;
@@ -96,7 +96,7 @@ public class ActivityTypeService implements Brewable {
 
   protected void initializeTriggerTypes() {
     registerTriggerType(new FormTriggerImpl());
-    registerTriggerType(new MailTriggerImpl());
+    registerTriggerType(new EmailTriggerImpl());
 
   }
 
