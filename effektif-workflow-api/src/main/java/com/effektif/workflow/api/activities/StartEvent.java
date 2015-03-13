@@ -28,10 +28,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("startEvent")
 public class StartEvent extends Activity {
 
-  public StartEvent() {
+  @Override
+  public StartEvent id(String id) {
+    super.id(id);
+    return this;
   }
 
-  public StartEvent(String id) {
-    super(id);
-  }
 }

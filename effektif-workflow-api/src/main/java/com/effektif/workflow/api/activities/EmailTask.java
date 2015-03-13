@@ -62,6 +62,12 @@ public class EmailTask extends Activity {
   
   protected List<Binding<Attachment>> attachments;
   
+  @Override
+  public EmailTask id(String id) {
+    super.id(id);
+    return this;
+  }
+
   public Binding<String> getFromEmailAddress() {
     return this.fromEmailAddress;
   }
@@ -404,11 +410,6 @@ public class EmailTask extends Activity {
   @Override
   public EmailTask timer(Timer timer) {
     super.timer(timer);
-    return this;
-  }
-  @Override
-  public EmailTask id(String id) {
-    super.id(id);
     return this;
   }
   @Override

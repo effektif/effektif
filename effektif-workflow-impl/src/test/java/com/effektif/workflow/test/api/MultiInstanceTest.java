@@ -39,7 +39,7 @@ public class MultiInstanceTest extends WorkflowTest {
   public void testMultiInstanceUserTask() throws Exception {
     Workflow workflow = new Workflow()
       .variable("reviewers", new ListType(new UserIdType()))
-      .activity(new UserTask("Review")
+      .activity("Review", new UserTask()
         .assigneeExpression("reviewer")
         .multiInstance(new MultiInstance()
           .valuesExpression("reviewers")

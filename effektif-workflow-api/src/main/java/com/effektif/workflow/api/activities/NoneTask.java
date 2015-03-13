@@ -29,10 +29,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("noneTask")
 public class NoneTask extends Activity {
 
-  public NoneTask() {
-  }
-
-  public NoneTask(String id) {
-    super(id);
-  }
 }

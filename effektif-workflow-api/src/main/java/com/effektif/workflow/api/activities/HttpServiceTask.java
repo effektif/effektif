@@ -27,10 +27,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("httpServiceTask")
 public class HttpServiceTask extends ServiceTask {
 
-  public HttpServiceTask() {
-  }
-
-  public HttpServiceTask(String id) {
-    super(id);
-  }
 }

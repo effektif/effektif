@@ -43,13 +43,13 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
   @Test 
   public void testOne() {
     Workflow workflow = new Workflow()
-      .activity(new StartEvent("start")
+      .activity("start", new StartEvent()
         .transitionTo("sub"))
-      .activity(new EmbeddedSubprocess("sub")
-        .activity(new UserTask("w1"))
-        .activity(new UserTask("w2"))
+      .activity("sub", new EmbeddedSubprocess()
+        .activity("w1", new UserTask())
+        .activity("w2", new UserTask())
         .transitionTo("end"))
-      .activity(new EndEvent("end"));
+      .activity("end", new EndEvent());
   
     deploy(workflow);
     

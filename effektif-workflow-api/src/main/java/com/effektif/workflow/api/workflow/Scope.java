@@ -38,7 +38,8 @@ public class Scope extends Element {
     this.activities = activities;
   }
   public Scope activity(String id, Activity activity) {
-    activity(activity.id(id));
+    activity.setId(id);
+    activity(activity);
     return this;
   }
   public Scope activity(Activity activity) {
@@ -56,7 +57,8 @@ public class Scope extends Element {
     this.transitions = transitions;
   }
   public Scope transition(String id, Transition transition) {
-    transition(transition.id(id));
+    transition.setId(id);
+    transition(transition);
     return this;
   }
   public Scope transition(Transition transition) {
@@ -74,9 +76,10 @@ public class Scope extends Element {
     this.variables = variables;
   }
   public Scope variable(String id, Type type) {
-    variable(new Variable()
-      .id(id)
-      .type(type));
+    Variable variable = new Variable();
+    variable.setId(id);
+    variable.setType(type);
+    variable(variable);
     return this;
   }
   public Scope variable(Variable variable) {

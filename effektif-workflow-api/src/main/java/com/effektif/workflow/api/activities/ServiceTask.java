@@ -24,10 +24,10 @@ package com.effektif.workflow.api.activities;
  */
 public abstract class ServiceTask extends NoneTask {
 
-  public ServiceTask() {
+  @Override
+  public ServiceTask id(String id) {
+    super.id(id);
+    return this;
   }
 
-  public ServiceTask(String id) {
-    super(id);
-  }
 }

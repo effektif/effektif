@@ -28,10 +28,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("parallelGateway")
 public class ParallelGateway extends Activity {
 
-  public ParallelGateway() {
-  }
-
-  public ParallelGateway(String id) {
-    super(id);
-  }
 }

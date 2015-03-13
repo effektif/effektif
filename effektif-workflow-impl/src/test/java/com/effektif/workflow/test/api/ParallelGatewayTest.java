@@ -51,25 +51,25 @@ public class ParallelGatewayTest extends WorkflowTest {
     */
 
     Workflow workflow = new Workflow()
-      .activity(new StartEvent("start")
+      .activity("start", new StartEvent()
         .transitionTo("f1"))
-      .activity(new ParallelGateway("f1")
+      .activity("f1", new ParallelGateway()
         .transitionTo("f2")
         .transitionTo("t3"))
-      .activity(new ParallelGateway("f2")
+      .activity("f2", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo("t2"))
-      .activity(new UserTask("t1")
+      .activity("t1", new UserTask()
         .transitionTo("j1"))
-      .activity(new UserTask("t2")
+      .activity("t2", new UserTask()
         .transitionTo("j2"))
-      .activity(new UserTask("t3")
+      .activity("t3", new UserTask()
         .transitionTo("j2"))
-      .activity(new ParallelGateway("j1")
+      .activity("j1", new ParallelGateway()
         .transitionTo("end"))
-      .activity(new ParallelGateway("j2")
+      .activity("j2", new ParallelGateway()
         .transitionTo("j1"))
-      .activity(new EndEvent("end"));
+      .activity("end", new EndEvent());
         
     deploy(workflow);
     
@@ -110,19 +110,19 @@ public class ParallelGatewayTest extends WorkflowTest {
     */
 
     Workflow workflow = new Workflow()
-      .activity(new UserTask("t1")
+      .activity("t1", new UserTask()
         .transitionTo("+"))
-      .activity(new UserTask("t2")
+      .activity("t2", new UserTask()
         .transitionTo("x"))
-      .activity(new ExclusiveGateway("x")
+      .activity("x", new ExclusiveGateway()
         .defaultTransitionId("default") // let's set the transition to 'o' as the default one
         .transitionTo(new Transition()
           .id("default").to("o"))
         .transitionTo("+")) // this transition will never be taken
-      .activity(new EndEvent("o"))
-      .activity(new ParallelGateway("+")
+      .activity("o", new EndEvent())
+      .activity("+", new ParallelGateway()
         .transitionTo("t3"))
-      .activity(new UserTask("t3"));
+      .activity("t3", new UserTask());
         
     deploy(workflow);
     

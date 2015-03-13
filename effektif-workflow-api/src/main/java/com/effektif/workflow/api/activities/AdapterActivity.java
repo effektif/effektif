@@ -35,6 +35,12 @@ public class AdapterActivity extends AbstractBindableActivity {
   protected String adapterId;
   protected String activityKey;
 
+  @Override
+  public AdapterActivity id(String id) {
+    super.id(id);
+    return this;
+  }
+
   public String getAdapterId() {
     return this.adapterId;
   }
@@ -111,12 +117,6 @@ public class AdapterActivity extends AbstractBindableActivity {
   @Override
   public AdapterActivity timer(Timer timer) {
     super.timer(timer);
-    return this;
-  }
-
-  @Override
-  public AdapterActivity id(String id) {
-    super.id(id);
     return this;
   }
 

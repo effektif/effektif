@@ -1,8 +1,5 @@
 package com.effektif.workflow.test.examples;
 
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -26,12 +23,13 @@ import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-
-import javax.swing.*;
 
 /**
  * Stub for a test of JSON and BPMN output, used to generate samples for documentation.
@@ -52,7 +50,8 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testCall() {
-    Call activity = new Call("runTests")
+    Call activity = new Call()
+      .id("runTests")
       .subWorkflowName("Run tests")
       .subWorkflowId(new WorkflowId("releaseTests1"));
     activity.setSubWorkflowSource("releaseTests");
@@ -62,6 +61,7 @@ public class DocumentationExamplesTest extends TestCase {
   @Test
   public void testEmailTask() {
     EmailTask activity = new EmailTask()
+      .id("sendEmail")
       // .attachmentId(new FileId("releaseNotes"))
       .bcc("archive@example.org")
       .bodyText("A new version has been deployed on production.")
@@ -74,56 +74,65 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testEmbeddedSubprocess() {
-    EmbeddedSubprocess activity = new EmbeddedSubprocess("tagRelease");
+    EmbeddedSubprocess activity = new EmbeddedSubprocess();
+    activity.setId("phase1");
     print(activity);
   }
 
   @Test
   public void testEndEvent() {
-    EndEvent activity = new EndEvent("releaseComplete");
+    EndEvent activity = new EndEvent();
+    activity.setId("releaseComplete");
     print(activity);
   }
 
   @Test
   public void testExclusiveGateway() {
-    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway("fork")
+    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway()
+      .id("ok?")
       .defaultTransitionId("proceed");
     print(activity);
   }
 
   @Test
   public void testHttpServiceTask() {
-    HttpServiceTask activity = new HttpServiceTask("publishReleaseNotes");
+    HttpServiceTask activity = new HttpServiceTask();
+    activity.setId("publishReleaseNotes");
     print(activity);
   }
 
   @Test
   public void testJavaServiceTask() {
-    JavaServiceTask activity = new JavaServiceTask("profilePerformance");
+    JavaServiceTask activity = new JavaServiceTask();
+    activity.setId("profilePerformance");
     print(activity);
   }
 
   @Test
   public void testNoneTask() {
-    NoneTask activity = new NoneTask("verifyRequirements");
+    NoneTask activity = new NoneTask();
+    activity.setId("verifyRequirements");
     print(activity);
   }
 
   @Test
   public void testParallelGateway() {
-    ParallelGateway activity = new ParallelGateway("fork");
+    ParallelGateway activity = new ParallelGateway();
+    activity.setId("fork");
     print(activity);
   }
 
   @Test
   public void testReceiveTask() {
-    ReceiveTask activity = new ReceiveTask("buildComplete");
+    ReceiveTask activity = new ReceiveTask();
+    activity.setId("buildComplete");
     print(activity);
   }
 
   @Test
   public void testScriptTask() {
-    ScriptTask activity = new ScriptTask("postToTeamChat")
+    ScriptTask activity = new ScriptTask()
+      .id("postToTeamChat")
       .script(new Script()
         .language("javascript")
         .script("console.log('TODO');")
@@ -133,7 +142,8 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testStartEvent() {
-    StartEvent activity = new StartEvent("codeComplete");
+    StartEvent activity = new StartEvent();
+    activity.setId("codeComplete");
     print(activity);
   }
 
@@ -158,7 +168,8 @@ public class DocumentationExamplesTest extends TestCase {
         .id("f1")
         .name("The first field in the form")
         .binding("v1"));
-    UserTask activity = new UserTask("smokeTest")
+    UserTask activity = new UserTask()
+      .id("smokeTest")
       .name("Smoke test")
       .candidateGroupId("dev")
       .form(form)

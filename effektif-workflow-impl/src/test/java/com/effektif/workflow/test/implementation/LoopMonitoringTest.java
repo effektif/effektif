@@ -106,9 +106,9 @@ public class LoopMonitoringTest extends WorkflowTest {
   @Test
   public void testBasicEvents() {
     Workflow workflow = new Workflow()
-      .activity(new StartEvent("start")
+      .activity("start", new StartEvent()
         .transitionToNext())
-      .activity(new NoneTask("groundhog")
+      .activity("groundhog", new NoneTask()
         .transitionTo("groundhog"));
 
     deploy(workflow);

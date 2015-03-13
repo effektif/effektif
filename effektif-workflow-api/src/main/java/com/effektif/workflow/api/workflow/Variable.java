@@ -35,13 +35,6 @@ public class Variable extends Element {
   public void setId(String id) {
     this.id = id;
   }
-  /** replace with .activity("id", new Activity()) */
-  @Deprecated
-  public Variable(String id) {
-    this.id = id;
-  }
-  /** replace with .activity("id", new Activity()) */
-  @Deprecated
   public Variable id(String id) {
     this.id = id;
     return this;

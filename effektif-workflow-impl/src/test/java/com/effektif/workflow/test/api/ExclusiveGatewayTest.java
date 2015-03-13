@@ -47,11 +47,12 @@ public class ExclusiveGatewayTest extends WorkflowTest {
       .transition(new Transition()
         .condition("v < 100")
         .from("?").to("t2"))
-      .transition(new Transition("default")
+      .transition(new Transition()
+        .id("default")
         .from("?").to("t3"))
-      .activity(new UserTask("t1"))
-      .activity(new UserTask("t2"))
-      .activity(new UserTask("t3"));
+      .activity("t1", new UserTask())
+      .activity("t2", new UserTask())
+      .activity("t3", new UserTask());
     
     deploy(workflow);
 

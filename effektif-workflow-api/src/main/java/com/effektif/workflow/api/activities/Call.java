@@ -35,12 +35,11 @@ public class Call extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
   protected String subWorkflowSource; 
-  
-  public Call() {
-  }
 
-  public Call(String id) {
-    super(id);
+  @Override
+  public Call id(String id) {
+    super.id(id);
+    return this;
   }
 
   public Call subWorkflowId(WorkflowId subWorkflowId) {
@@ -124,12 +123,6 @@ public class Call extends AbstractBindableActivity {
   @Override
   public Call timer(Timer timer) {
     super.timer(timer);
-    return this;
-  }
-
-  @Override
-  public Call id(String id) {
-    super.id(id);
     return this;
   }
 

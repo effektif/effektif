@@ -26,11 +26,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("receiveTask")
 public class ReceiveTask extends Activity {
 
-  public ReceiveTask() {
-    super();
-  }
-
-  public ReceiveTask(String id) {
-    super(id);
-  }
 }

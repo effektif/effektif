@@ -96,11 +96,11 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
   @Test
   public void testBasicEvents() {
     Workflow workflow = new Workflow()
-      .activity(new StartEvent("s")
+      .activity("s", new StartEvent()
         .transitionTo("t"))
-      .activity(new NoneTask("t")
+      .activity("t", new NoneTask()
         .transitionTo("e"))
-      .activity(new EndEvent("e"));
+      .activity("e", new EndEvent());
 
     deploy(workflow);
 
@@ -123,18 +123,18 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     //  s - g1 -X       X- g2 - e
     //           \- b -/
     Workflow workflow = new Workflow()
-      .activity(new NoneTask("s")
+      .activity("s", new NoneTask()
         .transitionTo("g1"))
-      .activity(new ParallelGateway("g1")
+      .activity("g1", new ParallelGateway()
         .transitionTo("a")
         .transitionTo("b"))
-      .activity(new NoneTask("a")
+      .activity("a", new NoneTask()
         .transitionTo("g2"))
-      .activity(new NoneTask("b")
+      .activity("b", new NoneTask()
         .transitionTo("g2"))
-      .activity(new ParallelGateway("g2")
+      .activity("g2", new ParallelGateway()
         .transitionTo("e"))
-      .activity(new EndEvent("e"));
+      .activity("e", new EndEvent());
 
     deploy(workflow);
     
@@ -169,16 +169,16 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     //  s - g1 -X       X- g2 - e
     //           \- b -/
     Workflow workflow = new Workflow()
-      .activity(new StartEvent("s")
+      .activity("s", new StartEvent()
         .transitionTo("g1"))
-      .activity(new ParallelGateway("g1")
+      .activity("g1", new ParallelGateway()
         .transitionTo("g2")
         .transitionTo("b"))
-      .activity(new NoneTask("b")
+      .activity("b", new NoneTask()
         .transitionTo("g2"))
-      .activity(new ParallelGateway("g2")
+      .activity("g2", new ParallelGateway()
         .transitionTo("e"))
-      .activity(new EndEvent("e"));
+      .activity("e", new EndEvent());
 
     deploy(workflow);
     start(workflow);

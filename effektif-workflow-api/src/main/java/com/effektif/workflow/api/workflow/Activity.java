@@ -45,13 +45,6 @@ public class Activity extends Scope {
   public void setId(String id) {
     this.id = id;
   }
-  /** replace with .activity("id", new Activity()) */
-  @Deprecated
-  public Activity(String id) {
-    this.id = id;
-  }
-  /** replace with .activity("id", new Activity()) */
-  @Deprecated
   public Activity id(String id) {
     this.id = id;
     return this;

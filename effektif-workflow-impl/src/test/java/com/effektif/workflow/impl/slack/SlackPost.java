@@ -117,10 +117,6 @@ public class SlackPost extends Activity {
     return super.timer(timer);
   }
   @Override
-  public Activity id(String id) {
-    return super.id(id);
-  }
-  @Override
   public Activity property(String key, Object value) {
     return super.property(key, value);
   }
@@ -132,5 +128,4 @@ public class SlackPost extends Activity {
   public Element description(String description) {
     return super.description(description);
   }
-  
 }

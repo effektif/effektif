@@ -33,10 +33,10 @@ public class MultipleStartActivitiesTest extends WorkflowTest {
   @Test
   public void testDefaultStartActivitiesParallelExecution() {
     Workflow workflow = new Workflow() 
-      .activity(new UserTask("one"))
-      .activity(new UserTask("two")
+      .activity("one", new UserTask())
+      .activity("two", new UserTask()
         .transitionTo("three"))
-      .activity(new UserTask("three"));
+      .activity("three", new UserTask());
     
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);

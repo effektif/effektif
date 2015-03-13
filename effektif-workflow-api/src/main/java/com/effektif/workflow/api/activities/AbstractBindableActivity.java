@@ -30,13 +30,6 @@ public class AbstractBindableActivity extends Activity {
   protected Map<String,Binding> inputBindings; 
   protected Map<String,String> outputBindings;
   
-  public AbstractBindableActivity() {
-  }
-
-  public AbstractBindableActivity(String id) {
-    super(id);
-  }
-
   /** copies the static value to the adapter activity when it is invoked,
    * This method uses reflection and the data type service to find the type form the value. */
   public AbstractBindableActivity inputValue(String key, Object value) {

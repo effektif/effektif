@@ -45,12 +45,12 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testCallActivity() {
     Workflow subWorkflow = new Workflow()
-      .activity(new UserTask("subtask"));
+      .activity("subtask", new UserTask());
     
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .activity(new Call("call")
+      .activity("call", new Call()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -83,15 +83,15 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testTwoCallActivitiesInSequence() {
     Workflow subWorkflow = new Workflow()
-      .activity(new NoneTask("auto"));
+      .activity("auto", new NoneTask());
     
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .activity(new Call("call1")
+      .activity("call1", new Call()
         .subWorkflowId(subWorkflow.getId())
         .transitionToNext())
-      .activity(new Call("call2")
+      .activity("call2", new Call()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -109,14 +109,14 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testTwoCallActivitiesInparallel() {
     Workflow subWorkflow = new Workflow()
-      .activity(new NoneTask("auto"));
+      .activity("auto", new NoneTask());
     
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .activity(new Call("call1")
+      .activity("call1", new Call()
         .subWorkflowId(subWorkflow.getId()))
-      .activity(new Call("call2")
+      .activity("call2", new Call()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -166,7 +166,7 @@ public class CallTest extends WorkflowTest {
     
     Workflow superWorkflow = new Workflow()
       .variable("guineapig", new UserIdType())
-      .activity(new Call("call")
+      .activity("call", new Call()
         .inputExpression("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
     

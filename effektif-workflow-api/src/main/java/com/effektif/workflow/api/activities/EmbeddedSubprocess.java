@@ -28,10 +28,4 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("embeddedSubprocess")
 public class EmbeddedSubprocess extends Activity {
 
-  public EmbeddedSubprocess() {
-  }
-
-  public EmbeddedSubprocess(String id) {
-    super(id);
-  }
 }

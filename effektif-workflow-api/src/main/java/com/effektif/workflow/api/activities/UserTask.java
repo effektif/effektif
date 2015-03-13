@@ -73,11 +73,10 @@ public class UserTask extends NoneTask {
   /** User to assign the task to when escalating. */
   protected Binding<UserId> escalateToId;
 
-  public UserTask() {
-  }
-
-  public UserTask(String id) {
-    super(id);
+  @Override
+  public UserTask id(String id) {
+    super.id(id);
+    return this;
   }
 
   public String getTaskName() {
@@ -324,12 +323,6 @@ public class UserTask extends NoneTask {
   @Override
   public UserTask timer(Timer timer) {
     super.timer(timer);
-    return this;
-  }
-
-  @Override
-  public UserTask id(String id) {
-    super.id(id);
     return this;
   }
 

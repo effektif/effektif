@@ -33,11 +33,11 @@ public class SequentialExecutionTest extends WorkflowTest {
   @Test
   public void testOne() {
     Workflow workflow = new Workflow()
-      .activity(new UserTask("one")
+      .activity("one", new UserTask()
         .transitionTo("two"))
-      .activity(new UserTask("two")
+      .activity("two", new UserTask()
         .transitionTo("three"))
-      .activity(new UserTask("three"));
+      .activity("three", new UserTask());
     
     deploy(workflow);
     

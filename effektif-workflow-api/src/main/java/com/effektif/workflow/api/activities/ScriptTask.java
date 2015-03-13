@@ -30,11 +30,10 @@ public class ScriptTask extends NoneTask {
 
   protected Script script;
   
-  public ScriptTask() {
-  }
-
-  public ScriptTask(String id) {
-    super(id);
+  @Override
+  public ScriptTask id(String id) {
+    super.id(id);
+    return this;
   }
 
   public ScriptTask script(Script script) {
