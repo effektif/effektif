@@ -206,5 +206,16 @@
     </profile>
 
   </profiles>
+  
+  <developers>
+    <developer>
+      <id>tombaeyens</id>
+      <name>Tom Baeyens</name>
+      <email>tom@effektif.com</email>
+      <url>https://github.com/tombaeyens</url>
+      <organization>Effektif</organization>
+      <organizationUrl>http://effektif.com</organizationUrl>
+    </developer>
+  </developers>
 
 </project>
