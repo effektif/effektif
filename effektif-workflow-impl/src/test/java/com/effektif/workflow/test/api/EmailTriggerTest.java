@@ -13,17 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailTrigger;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
-import org.junit.Test;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
 
 /**
  * @author Peter Hilton
@@ -33,7 +34,9 @@ public class EmailTriggerTest extends WorkflowTest {
   @Test
   public void testEmailTrigger() {
     Workflow workflow = new Workflow()
-      .trigger(new EmailTrigger());
+      .variable("eml", new EmailIdType())
+      .trigger(new EmailTrigger()
+        .emailIdVariableId("eml"));
 
     deploy(workflow);
     
@@ -42,11 +45,12 @@ public class EmailTriggerTest extends WorkflowTest {
       .to(Lists.of("you"))
       .subject("hi");
 
-    WorkflowInstance workflowInstance = workflowEngine.start(
-            new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data(EmailTrigger.EMAIL_KEY, email));
 
-    Object emailVariable = workflowInstance.getVariableValue(EmailTrigger.EMAIL_KEY);
-//    assertNotNull("Email not null", emailVariable);
+    Object emailVariable = workflowInstance.getVariableValue("eml");
+    assertNotNull("Email not null", emailVariable);
 //    assertEquals("Email has correct type", Email.class, emailVariable.getClass());
 //
 //    Email storedEmail = (Email) emailVariable;
