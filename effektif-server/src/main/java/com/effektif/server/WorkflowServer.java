@@ -67,7 +67,7 @@ public class WorkflowServer {
       ResourceConfig config = buildRestApplication(configuration);
       Server server = JettyHttpContainerFactory.createServer(baseUri, config);
       server.start();
-      log.info("Workflow server started.");
+      log.info("Workflow server started on "+baseUrl);
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException(e);

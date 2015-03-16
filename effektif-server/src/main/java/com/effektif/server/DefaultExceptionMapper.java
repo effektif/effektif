@@ -22,16 +22,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Tom Baeyens
  */
 public class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
   
+  private static final Logger log = LoggerFactory.getLogger(DefaultExceptionMapper.class);
+  
   @Override 
   public Response toResponse(Throwable ex) {
       StringWriter errorStackTrace = new StringWriter();
       ex.printStackTrace(new PrintWriter(errorStackTrace));
+      log.error("Exception in Effektif server: "+ex.getMessage(), ex);
       return Response.status(400)
               .entity(errorStackTrace.toString())
               .type(MediaType.TEXT_PLAIN)
