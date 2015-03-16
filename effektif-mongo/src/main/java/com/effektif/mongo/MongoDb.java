@@ -15,12 +15,17 @@
  */
 package com.effektif.mongo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.mongodb.DB;
 
 
 public class MongoDb implements Brewable {
+  
+  public static final Logger log = LoggerFactory.getLogger(MongoDb.class);
 
   protected DB db;
   protected boolean isPretty;

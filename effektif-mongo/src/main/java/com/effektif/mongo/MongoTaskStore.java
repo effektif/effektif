@@ -36,7 +36,6 @@ import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.impl.TaskStore;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.json.JsonService;
@@ -44,11 +43,12 @@ import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 
 
 public class MongoTaskStore implements TaskStore, Brewable {
   
-  public static final Logger log = WorkflowEngineImpl.log;
+  public static final Logger log = MongoDb.log;
   
   protected JsonService jsonService;
   protected MongoCollection tasksCollection;

@@ -14,15 +14,22 @@
 package com.effektif.mongo;
 
 import java.io.InputStream;
-import java.util.Map;
 
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import com.effektif.workflow.api.acl.Authentication;
+import com.effektif.workflow.api.acl.Authentications;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.impl.file.FileService;
+import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
+import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 
 
@@ -31,11 +38,26 @@ import com.mongodb.gridfs.GridFSInputFile;
  */
 public class MongoFileService implements FileService, Brewable {
 
+  public static final Logger log = MongoDb.log;
+  
+  public JsonService jsonService;
+  public MongoCollection filesCollection;
   public GridFS gridFs;
   
+  public interface FieldsFile {
+    String _ID = "_id";
+    String ORGANIZATION_ID = "organizationId";
+    String FILE_NAME = "fileName";
+    String taskId = "taskId";
+  }
+
   @Override
   public void brew(Brewery brewery) {
+    MongoDb mongoDb = brewery.get(MongoDb.class);
+    MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
+    this.filesCollection = mongoDb.createCollection(mongoConfiguration.getFilesCollectionName());
     this.gridFs = brewery.get(GridFS.class);
+    this.jsonService = brewery.get(JsonService.class);
   }
   
   @Override
@@ -44,32 +66,67 @@ public class MongoFileService implements FileService, Brewable {
     Exceptions.checkNotNullParameter(fileStream, "file.inputStream");
     
     GridFSInputFile gridFsFile = gridFs.createFile(fileStream);
-    gridFsFile.setContentType(file.getContentType());
-    gridFsFile.setFilename(file.getFileName());
-    if (file.getProperties()!=null) {
-      for (Map.Entry<String, Object> property: file.getProperties().entrySet()) {
-        gridFsFile.put(property.getKey(), property.getValue());
-      }
-    }
     gridFsFile.save();
     
-    file.setId(new FileId(gridFsFile.getId().toString()));
+    file.setStreamId(gridFsFile.getId().toString());
+    
+    insertFile(file);
 
     return file;
   }
 
   @Override
-  public InputStream getFileStream(String fileStreamId) {
+  public File createFile(File file) {
+    Exceptions.checkNotNullParameter(file, "file");
+    Exceptions.checkNotNullParameter(file.getStreamId(), "file.streamId");
+
+    insertFile(file);
+
     return null;
+  }
+
+  protected void insertFile(File file) {
+    BasicDBObject dbFile = fileToMongo(file);
+    filesCollection.insert("insert-file", dbFile);
+    ObjectId id = (ObjectId) dbFile.get("_id");
+    file.setId(new FileId(id.toString()));
+  }
+  
+  @Override
+  public InputStream getFileStream(String fileStreamId) {
+    BasicDBObject query = new BasicDBObject("_id", new ObjectId(fileStreamId));
+    GridFSDBFile file = gridFs.findOne(query);
+    return file!=null ? file.getInputStream() : null;
   }
   
   @Override
   public File getFileById(FileId fileId) {
-    return null;
+    Authentication authentication = Authentications.current();
+    String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
+
+    BasicDBObject query = new MongoQuery()
+      ._id(new ObjectId(fileId.getInternal()))
+      .equalOpt(FieldsFile.ORGANIZATION_ID, organizationId)
+      .get();
+
+    BasicDBObject dbFile = filesCollection.findOne("get-file", query);
+
+    return mongoToFile(dbFile);
   }
 
-  @Override
-  public File createFile(File file) {
-    return null;
+  private File mongoToFile(BasicDBObject dbFile) {
+    return new MongoReader(dbFile, jsonService)
+      .convertId()
+      .convertUserId("creatorId")
+      .convertTime("createTime")
+      .get(File.class);
+  }
+
+  protected BasicDBObject fileToMongo(File file) {
+    return new MongoWriter(file, jsonService)
+      .convertId()
+      .convertUserId("creatorId")
+      .convertTime("createTime")
+      .get();
   }
 }

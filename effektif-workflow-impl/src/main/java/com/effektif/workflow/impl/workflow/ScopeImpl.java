@@ -116,7 +116,7 @@ public abstract class ScopeImpl {
       scope.setTransitions(null);
     }
 
-    if (activities!=null) {
+    if (this.activities!=null) {
       // some activity types need to validate incoming and outgoing transitions, 
       // that's why they are validated after the transitions.
       int i = 0;

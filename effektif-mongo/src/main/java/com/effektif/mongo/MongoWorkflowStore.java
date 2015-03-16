@@ -49,7 +49,7 @@ import com.mongodb.DBObject;
 
 public class MongoWorkflowStore implements WorkflowStore, Brewable {
   
-  public static final Logger log = WorkflowEngineImpl.log;
+  public static final Logger log = MongoDb.log;
   
   protected WorkflowEngineImpl workflowEngine;
   protected JsonService jsonService;

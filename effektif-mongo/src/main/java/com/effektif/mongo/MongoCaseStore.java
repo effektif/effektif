@@ -46,7 +46,7 @@ import com.mongodb.WriteResult;
 
 public class MongoCaseStore implements CaseStore, Brewable {
   
-  public static final Logger log = WorkflowEngineImpl.log;
+  public static final Logger log = MongoDb.log;
   
   protected JsonService jsonService;
   protected MongoCollection casesCollection;

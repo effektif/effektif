@@ -20,7 +20,6 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -31,7 +30,7 @@ import com.mongodb.WriteResult;
 
 public class MongoCollection {
   
-  public static final Logger log = WorkflowEngineImpl.log;
+  public static final Logger log = MongoDb.log;
   
   public DBCollection dbCollection;
   public boolean isPretty;

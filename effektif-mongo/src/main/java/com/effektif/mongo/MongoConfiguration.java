@@ -46,6 +46,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String casesCollectionName = "cases";
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
+  protected String filesCollectionName = "files";
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
@@ -211,6 +212,14 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.casesCollectionName = casesCollectionName;
   }
 
+  public String getFilesCollectionName() {
+    return filesCollectionName;
+  }
+  
+  public void setFilesCollectionName(String filesCollectionName) {
+    this.filesCollectionName = filesCollectionName;
+  }
+
   public String getJobsCollectionName() {
     return jobsCollectionName;
   }
@@ -245,6 +254,8 @@ public class MongoConfiguration extends DefaultConfiguration {
   public void setOptionBuilder(MongoClientOptions.Builder optionBuilder) {
     this.optionBuilder = optionBuilder;
   }
+  
+  
 
   public MongoClientOptions.Builder getOptionBuilder() {
     return optionBuilder;

@@ -32,7 +32,7 @@ import com.mongodb.ServerAddress;
 
 public class LoggingCursor extends DBCursor {
   
-  public static final Logger log = WorkflowEngineImpl.log;
+  public static final Logger log = MongoDb.log;
 
   protected DBCursor cursor;
   protected MongoCollection mongoCollection;
