@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+/* Copyright (c) 2015, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,17 @@
  * limitations under the License. */
 package com.effektif.workflow.test.api;
 
-import org.junit.Test;
-
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.email.Email;
-import com.effektif.workflow.impl.email.EmailStore;
 import com.effektif.workflow.impl.email.EmailTrigger;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 /**
  * @author Peter Hilton
@@ -32,21 +33,26 @@ public class EmailTriggerTest extends WorkflowTest {
   @Test
   public void testEmailTrigger() {
     Workflow workflow = new Workflow()
-      .variable("triggerEmail", new EmailIdType())
-      .trigger(new EmailTrigger()
-        .emailIdVariableId("triggerEmail"));
-    
+      .trigger(new EmailTrigger());
+
     deploy(workflow);
     
     Email email = new Email()
       .from("me")
       .to(Lists.of("you"))
       .subject("hi");
-    
-    workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data(EmailTrigger.EMAIL_KEY, email));
-    
-    // TODO check if the email shows up in the variable "triggerEmail"
+
+    WorkflowInstance workflowInstance = workflowEngine.start(
+            new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+
+    Object emailVariable = workflowInstance.getVariableValue(EmailTrigger.EMAIL_KEY);
+    assertNotNull("Email not null", emailVariable);
+    assertEquals("Email has correct type", Email.class, emailVariable.getClass());
+
+    Email storedEmail = (Email) emailVariable;
+    assertEquals("Email from", "me", storedEmail.getFrom());
+    assertEquals("Email subject", "hi", storedEmail.getSubject());
+    assertEquals("Email to length", 1, storedEmail.getTo().size());
+    assertEquals("Email to", "you", storedEmail.getTo().get(0));
   }
 }
