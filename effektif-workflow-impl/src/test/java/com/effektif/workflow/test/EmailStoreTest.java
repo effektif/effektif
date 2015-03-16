@@ -1,15 +1,15 @@
 package com.effektif.workflow.test;
 
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.EmailId;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailStore;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.google.common.collect.ImmutableList;
-import junit.framework.TestCase;
-import org.junit.Test;
-
-import java.util.ArrayList;
 
 /**
  * Tests {@link com.effektif.workflow.impl.email.EmailStore} storage and retrieval.

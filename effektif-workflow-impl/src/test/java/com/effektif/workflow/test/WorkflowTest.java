@@ -17,6 +17,7 @@ package com.effektif.workflow.test;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +57,6 @@ import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.memory.MemoryFile;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
@@ -189,11 +189,10 @@ public class WorkflowTest {
   }
 
   public File createTestFile(byte[] bytes, String fileName, String contentType) {
-    File file = new MemoryFile()
-      .content(bytes)
+    File file = new File()
       .fileName(fileName)
       .contentType(contentType);
-    file = fileService.createFile(file);
+    file = fileService.createFile(file, new ByteArrayInputStream(bytes));
     return file;
   }
 

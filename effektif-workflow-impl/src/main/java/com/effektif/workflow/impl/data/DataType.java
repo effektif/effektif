@@ -44,5 +44,6 @@ public interface DataType<T extends Type> extends Plugin {
   /** Write the given value as an attribute on the given XML element. */
   void writeValue(XmlElement xml, Object value);
   
+  /** The returned value is never null. */
   TypedValueImpl dereference(Object value, String field);
 }

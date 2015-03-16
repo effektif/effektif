@@ -32,6 +32,7 @@ import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
+import com.effektif.workflow.impl.data.types.AttachmentTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.ChoiceTypeImpl;
 import com.effektif.workflow.impl.data.types.CustomTypeImpl;
@@ -86,6 +87,7 @@ public class DataTypeService implements Brewable {
     registerDataType(new TextTypeImpl(configuration));
 
     registerDataType(new AnyTypeImpl(configuration));
+    registerDataType(new AttachmentTypeImpl(configuration));
     registerDataType(new ChoiceTypeImpl(configuration));
     registerDataType(new CustomTypeImpl(configuration));
     registerDataType(new EmailIdTypeImpl(configuration));
@@ -131,7 +133,7 @@ public class DataTypeService implements Brewable {
         return constructor;
       }
     }
-    throw new RuntimeException("Constructor not found "+dataTypeClass.getName()+"("+Type.class.getName()+","+DataTypeService.class.getName()+")");
+    throw new RuntimeException("Constructor not found "+dataTypeClass.getName()+"("+Type.class.getName()+","+Configuration.class.getName()+")");
   }
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {

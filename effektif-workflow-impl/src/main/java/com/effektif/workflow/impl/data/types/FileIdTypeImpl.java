@@ -24,6 +24,7 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.file.FileAttachment;
 import com.effektif.workflow.impl.file.FileService;
 import com.effektif.workflow.impl.util.Exceptions;
 
@@ -34,8 +35,11 @@ import com.effektif.workflow.impl.util.Exceptions;
  */
 public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
   
+  protected FileService fileService;
+  
   public FileIdTypeImpl(Configuration configuration) {
     this(FileIdType.INSTANCE, configuration);
+    this.fileService = configuration.get(FileService.class);
   }
 
   public FileIdTypeImpl(FileIdType fileIdType, Configuration configuration) {
@@ -59,6 +63,9 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
     File file = fileId!=null ? fileService.getFileById(fileId) : null;
     if ("*".equals(fieldName)) {
       return new TypedValueImpl(new FileTypeImpl(configuration), file);
+    } else  if ("attachment".equals(fieldName)) {
+      FileAttachment fileAttachment = FileAttachment.createFileAttachment(file, fileService);
+      return new TypedValueImpl(new AttachmentTypeImpl(configuration), fileAttachment);
     }
     return new FileTypeImpl(configuration).dereference(file, fieldName);
   }

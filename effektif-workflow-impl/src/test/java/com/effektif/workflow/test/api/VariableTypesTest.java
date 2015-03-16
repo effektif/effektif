@@ -19,12 +19,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -48,7 +51,7 @@ public class VariableTypesTest extends WorkflowTest {
   }
 
   @Test
-  public void testUserReferenceType() {
+  public void testUserIdType() {
     Workflow workflow = new Workflow()
       .variable("v", new UserIdType());
     
@@ -61,4 +64,21 @@ public class VariableTypesTest extends WorkflowTest {
     assertEquals(UserId.class, workflowInstance.getVariableValue("v").getClass());
   }
 
+  @Test
+  public void testFileIdType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new FileIdType());
+    
+    deploy(workflow);
+    
+    File file = createTestFile("blabla", "joke.txt", "text/plain");
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", file.getId()));
+    
+    Object value = workflowInstance.getVariableValue("v");
+    assertEquals(FileId.class, value.getClass());
+    assertEquals(file.getId().getInternal(), ((FileId)value).getInternal());
+  }
 }

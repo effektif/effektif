@@ -13,19 +13,27 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.file;
 
-import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.workflow.Extensible;
 
 
 /**
  * @author Tom Baeyens
  */
-public class File implements Attachment {
+public class File extends Extensible {
+  
+  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
+          "id", "organizationId", "creatorId", "createTime", "fileName", "contentType",
+          "sizeInBytes"));
 
   protected FileId id;
   protected String organizationId;
@@ -34,7 +42,8 @@ public class File implements Attachment {
   protected String fileName;
   protected String contentType;
   protected Long sizeInBytes;
-  protected InputStream inputStream;
+  protected String streamId;
+  protected Map<String,String> headers;
 
   public File() {
   }
@@ -48,7 +57,6 @@ public class File implements Attachment {
     this.fileName = other.fileName;
     this.contentType = other.contentType;
     this.sizeInBytes = other.sizeInBytes;
-    this.inputStream = other.inputStream;
   }
   
   public FileId getId() {
@@ -132,15 +140,33 @@ public class File implements Attachment {
     return this;
   }
 
-  public InputStream getInputStream() {
-    return this.inputStream;
+  public String getStreamId() {
+    return this.streamId;
   }
-  public void setInputStream(InputStream inputStream) {
-    this.inputStream = inputStream;
+  public void setStreamId(String streamId) {
+    this.streamId = streamId;
   }
-  public File inputStream(InputStream inputStream) {
-    this.inputStream = inputStream;
+  public File streamId(String streamId) {
+    this.streamId = streamId;
     return this;
   }
 
+  public Map<String,String> getHeaders() {
+    return this.headers;
+  }
+  public void setHeaders(Map<String,String> headers) {
+    this.headers = headers;
+  }
+  public File header(String headerName, String headerValue) {
+    if (this.headers==null) {
+      this.headers = new HashMap<>();
+    };
+    headers.put(headerName, headerValue);
+    return this;
+  }
+
+  @Override
+  protected void checkPropertyKey(String key) {
+    super.checkPropertyKey(key, INVALID_PROPERTY_KEYS);
+  }
 }

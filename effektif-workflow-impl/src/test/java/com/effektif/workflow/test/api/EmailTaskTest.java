@@ -91,8 +91,8 @@ public class EmailTaskTest extends WorkflowTest {
       .variable("expenseNote", new FileIdType())
       .variable("receipts", new ListType(new FileIdType()))
       .activity("1", new EmailTask()
-        .attachmentExpression("expenseNote.*")
-        .attachmentExpression("receipts.*"));
+        .attachmentExpression("expenseNote.attachment")
+        .attachmentExpression("receipts.attachment"));
     
     deploy(workflow);
     

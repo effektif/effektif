@@ -1,12 +1,14 @@
 package com.effektif.workflow.impl.email;
 
 import com.effektif.workflow.api.workflow.Trigger;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Starts a workflow as a result of receiving an email.
  *
  * @author Peter Hilton
  */
+@JsonTypeName("email")
 public class EmailTrigger extends Trigger {
 
   public static final String EMAIL_KEY = "email";
