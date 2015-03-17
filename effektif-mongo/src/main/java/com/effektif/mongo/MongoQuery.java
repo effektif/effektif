@@ -49,7 +49,9 @@ public class MongoQuery {
     Authentication authentication = Authentications.current();
     if (authentication!=null) {
       String organizationId = authentication.getOrganizationId();
-      query.append("organizationId", new ObjectId(organizationId));
+      if (organizationId != null) {
+        query.append("organizationId", new ObjectId(organizationId));
+      }
     }
     return this;
   }
