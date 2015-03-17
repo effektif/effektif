@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -74,12 +76,18 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
    * if the workflow instance is already locked and use this one instead of 
    * going to the db. */
   public Map<WorkflowInstanceId,WorkflowInstanceImpl> lockedWorkflowInstances;
+  public Case caze;
   public CaseId caseId;
 
   public WorkflowInstanceImpl() {
   }
-  
-  public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, WorkflowInstanceId workflowInstanceId) {
+
+  public WorkflowInstanceImpl(
+          Configuration configuration, 
+          WorkflowImpl workflow, 
+          WorkflowInstanceId workflowInstanceId, 
+          TriggerInstance triggerInstance,
+          LockImpl lock) {
     this.id = workflowInstanceId;
     this.organizationId = workflow.organizationId;
     this.configuration = configuration;
@@ -89,10 +97,13 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.start = Time.now();
     this.nextActivityInstanceId = 1l;
     this.nextVariableInstanceId = 1l;
-    initializeVariableInstances();
-    if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
+    this.businessKey = triggerInstance.getBusinessKey();
+    this.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
+    this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
+    this.lock = lock;
+    this.initializeVariableInstances();
   }
-  
+
   public WorkflowInstance toWorkflowInstance() {
     WorkflowInstance workflowInstance = new WorkflowInstance();
     workflowInstance.setId(id);

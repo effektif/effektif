@@ -29,6 +29,7 @@ import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -61,7 +62,7 @@ public class Case extends Extensible implements AccessControlledObject {
 
   // fields related to the workflow
   
-  protected String workflowInstanceId;
+  protected WorkflowInstanceId workflowInstanceId;
   protected String sourceWorkflowId;
   protected WorkflowId workflowId;
   
@@ -118,10 +119,10 @@ public class Case extends Extensible implements AccessControlledObject {
     this.description = description;
   }
   
-  public String getWorkflowInstanceId() {
+  public WorkflowInstanceId getWorkflowInstanceId() {
     return workflowInstanceId;
   }
-  public void setWorkflowInstanceId(String workflowInstanceId) {
+  public void setWorkflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
   }
 

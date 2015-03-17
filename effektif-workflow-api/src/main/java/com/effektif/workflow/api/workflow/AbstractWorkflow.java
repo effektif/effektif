@@ -31,6 +31,7 @@ public abstract class AbstractWorkflow extends Scope {
   protected AccessControlList access;
   protected String organizationId;
   
+  protected Boolean enableCases;
   protected String caseNameTemplate;
   
   public abstract String getSourceWorkflowId();
@@ -97,5 +98,22 @@ public abstract class AbstractWorkflow extends Scope {
   }
   public void setCaseNameTemplate(String caseNameTemplate) {
     this.caseNameTemplate = caseNameTemplate;
+  }
+
+  public Boolean getEnableCases() {
+    return this.enableCases;
+  }
+  public boolean isEnableCases() {
+    return Boolean.TRUE.equals(this.enableCases);
+  }
+  public void setEnableCases(Boolean enableCases) {
+    this.enableCases = enableCases;
+  }
+  /** enables cases, which means that each workflow instance will also create a corresponding case, 
+   * which is a collaboration space around the tasks for a single workflow instance.
+   * If enabled, cases will have the same id internal string value as the workflow instances ids. */
+  public AbstractWorkflow enableCases() {
+    this.enableCases = true;
+    return this;
   }
 }

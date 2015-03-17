@@ -19,11 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.acl.Access;
+import com.effektif.workflow.api.acl.AccessControlList;
+import com.effektif.workflow.api.acl.Authentication;
+import com.effektif.workflow.api.acl.Authentications;
+import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -31,12 +38,14 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.exceptions.BadRequestException;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.json.SerializedMessage;
 import com.effektif.workflow.impl.json.SerializedTriggerInstance;
@@ -61,6 +70,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowCache workflowCache;
   public WorkflowStore workflowStore;
   public WorkflowInstanceStore workflowInstanceStore;
+  public CaseServiceImpl caseService;
   public JsonService jsonService;
   public Brewery brewery;
   public Configuration configuration;
@@ -75,6 +85,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowCache = brewery.get(WorkflowCache.class);
     this.workflowStore = brewery.get(WorkflowStore.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
+    this.caseService = brewery.get(CaseServiceImpl.class);
     this.brewery = brewery;
     
     // ensuring the default activity types are registered
@@ -144,16 +155,19 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     lock.setTime(Time.now());
     lock.setOwner(getId());
 
-    WorkflowInstanceId workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
+    WorkflowInstanceId workflowInstanceId = triggerInstance.getWorkflowInstanceId();
+    if (workflowInstanceId==null) {
+      workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
+    }
     
-    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(configuration, workflow, workflowInstanceId);
-    
-    workflowInstance.businessKey = triggerInstance.getBusinessKey();
-    workflowInstance.caseId = triggerInstance.getCaseId();
-    workflowInstance.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
-    workflowInstance.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
-    workflowInstance.start = Time.now();
-    workflowInstance.lock = lock;
+    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(
+            configuration,
+            workflow,
+            workflowInstanceId,
+            triggerInstance,
+            lock);
+
+    if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
 
     if (triggerInstance instanceof SerializedTriggerInstance) {
       if (workflow.trigger!=null) {
@@ -168,8 +182,50 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     } else {
       workflowInstance.setVariableValues(triggerInstance.getData());
     }
+    
+    if (workflow.enableCases || triggerInstance.getCase()!=null) {
+      Case caze = triggerInstance.getCase()!=null ? triggerInstance.getCase() : new Case();
+      
+      CaseId caseId = new CaseId(workflowInstanceId.getInternal());
+      caze.setId(caseId);
+      caze.setWorkflowInstanceId(new WorkflowInstanceId(caseId.getInternal()));
+      caze.setWorkflowId(workflowId);
+      caze.setSourceWorkflowId(workflow.getSourceWorkflowId());
+
+      AccessControlList workflowAccess = workflow.getAccess();
+      if (workflowAccess!=null) {
+        Authentication authentication = Authentications.current();
+        // check if the authenticated user has access to start this workflow
+        if (authentication!=null && !workflowAccess.hasPermission(authentication, Access.START)) {
+          throw new BadRequestException("Workflow doesn't exist or you don't have permission to start it");
+        }
+        // copy the case view and edit access from the worklfow to the case
+        AccessControlList.setAccessIdentities(caze, Access.VIEW, workflowAccess.getIdentities(Access.CASES_VIEW));
+        AccessControlList.setAccessIdentities(caze, Access.EDIT, workflowAccess.getIdentities(Access.CASES_EDIT));
+      }
+      
+      workflowInstance.caze = caze;
+      workflowInstance.caseId = caseId;
+      
+      if (caze.getName()==null) {
+        String caseName = null;
+        if (workflow.caseNameTemplate!=null) {
+          caseName = workflow.caseNameTemplate.resolve(workflowInstance);
+        }
+        if (caseName==null) {
+          caseName = generateName(workflow);
+        }
+        caze.setName(caseName);
+      }
+    }
 
     return workflowInstance;
+  }
+
+  static DateTimeFormatter formatter = DateTimeFormat.forPattern(" dd MMM yyyy HH:mm:ss");
+  public String generateName(WorkflowImpl workflow) {
+    String time = formatter.print(Time.now());
+    return workflow.name!=null ? workflow.name+time : "Unnamed case"+time;
   }
 
   /** second part of starting a new workflow instance: executing the start actvities */
@@ -187,6 +243,14 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);
     workflowInstance.executeWork();
+    
+    if (workflowInstance.caze!=null) {
+      if (workflowInstance.isEnded()) {
+        workflowInstance.caze.setClosed(true);
+      }
+      caseService.createCase(workflowInstance.caze);
+    }
+
     return workflowInstance.toWorkflowInstance();
   }
 

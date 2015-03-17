@@ -35,12 +35,14 @@ import com.effektif.workflow.impl.template.TextTemplate;
 public class WorkflowImpl extends ScopeImpl {
   
   public WorkflowId id;
+  public String name;
   public WorkflowEngineImpl workflowEngine;
   public String sourceWorkflowId;
   public String organizationId;
   public List<ActivityImpl> startActivities;
   public AbstractTriggerImpl trigger;
   public AccessControlList access;
+  public boolean enableCases;
   public TextTemplate caseNameTemplate;
   
   public WorkflowImpl() {
@@ -48,6 +50,7 @@ public class WorkflowImpl extends ScopeImpl {
 
   public void parse(AbstractWorkflow workflow, WorkflowParser parser) {
     this.workflow = this;
+    this.name = workflow.getName();
     this.organizationId = workflow.getOrganizationId();
     super.parse(workflow, null, parser);
     this.startActivities = parser.getStartActivities(this);
@@ -55,6 +58,7 @@ public class WorkflowImpl extends ScopeImpl {
     this.sourceWorkflowId = workflow.getSourceWorkflowId();
     this.access = workflow.getAccess();
     this.caseNameTemplate = parser.parseTextTemplate(workflow.getCaseNameTemplate(), Hint.CASE_NAME_TEMPLATE);
+    this.enableCases = workflow.isEnableCases();
     
     Trigger triggerApi = workflow.getTrigger();
     if (triggerApi!=null) {

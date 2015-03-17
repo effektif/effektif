@@ -18,6 +18,7 @@ package com.effektif.workflow.api.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -34,7 +35,7 @@ public class TriggerInstance {
   protected String sourceWorkflowId;
   protected String businessKey;
   protected Map<String,Object> data;
-  protected CaseId caseId;
+  protected Case caze;
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
 
@@ -123,15 +124,18 @@ public class TriggerInstance {
     this.workflowInstanceId = workflowInstanceId;
   }
 
-  /** references the top-level-task (aka case) that is related to the 
-   * created workflow instance. */
-  public CaseId getCaseId() {
-    return this.caseId;
+  /** the collaboration space around workflow instance tasks. */
+  public Case getCase() {
+    return this.caze;
   }
-  /** references the top-level-task (aka case) that is related to the 
-   * created workflow instance. */
-  public void setCaseId(CaseId caseId) {
-    this.caseId = caseId;
+  /** the collaboration space around workflow instance tasks. */
+  public void setCase(Case caze) {
+    this.caze = caze;
+  }
+  /** the collaboration space around workflow instance tasks. */
+  public TriggerInstance caze(Case caze) {
+    this.caze = caze;
+    return this;
   }
   
   /** used by the call activity to establish the link between the calling activity instance 
