@@ -15,6 +15,9 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.*;
 
+import com.effektif.workflow.impl.email.EmailService;
+import com.effektif.workflow.impl.email.EmailStore;
+import com.effektif.workflow.impl.util.Lists;
 import org.junit.Test;
 
 import com.effektif.workflow.api.model.EmailId;
@@ -27,10 +30,15 @@ import com.effektif.workflow.impl.email.EmailTrigger;
 import com.effektif.workflow.test.WorkflowTest;
 
 /**
+ * Tests starting workflows with email triggers.
+ *
  * @author Peter Hilton
  */
 public class EmailTriggerTest extends WorkflowTest {
-  
+
+  /**
+   * Tests starting a workflow with an email trigger, and retrieving the email from the workflow instance.
+   */
   @Test
   public void testEmailTrigger() {
     Workflow workflow = new Workflow()
@@ -38,7 +46,10 @@ public class EmailTriggerTest extends WorkflowTest {
 
     deploy(workflow);
     
-    Email email = new Email();
+    Email email = new Email()
+      .subject("Software release")
+      .from("dev@example.com")
+      .to(Lists.of("releases@example.com"));
 
     WorkflowInstance workflowInstance = workflowEngine.start(
       new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
@@ -46,6 +57,13 @@ public class EmailTriggerTest extends WorkflowTest {
     Object emailVariable = workflowInstance.getVariableValue(EmailTrigger.EMAIL_ID_KEY);
     assertNotNull("Email ID not null", emailVariable);
     assertEquals("Email ID has correct type", EmailId.class, emailVariable.getClass());
+
+    Email storedEmail = configuration.get(EmailStore.class).findEmailById((EmailId) emailVariable);
+    assertNotNull("Email not null", storedEmail);
+    assertEquals("Email subject", "Software release", storedEmail.getSubject());
+    assertEquals("Email from", "dev@example.com", storedEmail.getFrom());
+    assertEquals("Email to", 1, storedEmail.getTo().size());
+    assertEquals("Email to", "releases@example.com", storedEmail.getTo().get(0));
   }
 
   /**
