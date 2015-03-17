@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
@@ -29,8 +30,10 @@ import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.data.types.AnyType;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.AttachmentTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
@@ -86,20 +89,11 @@ public class DataTypeService implements Brewable {
     registerDataType(new NumberTypeImpl(configuration));
     registerDataType(new TextTypeImpl(configuration));
 
-    registerDataType(new AnyTypeImpl(configuration));
-    registerDataType(new AttachmentTypeImpl(configuration));
-    registerDataType(new ChoiceTypeImpl(configuration));
-    registerDataType(new CustomTypeImpl(configuration));
-    registerDataType(new EmailIdTypeImpl(configuration));
-    registerDataType(new EmailTypeImpl(configuration));
-    registerDataType(new FileIdTypeImpl(configuration));
-    registerDataType(new FileTypeImpl(configuration));
-    registerDataType(new JavaBeanTypeImpl(configuration));
-    registerDataType(new GroupIdTypeImpl(configuration));
-    registerDataType(new GroupTypeImpl(configuration));
-    registerDataType(new ListTypeImpl(configuration));
-    registerDataType(new UserIdTypeImpl(configuration));
-    registerDataType(new UserTypeImpl(configuration));
+    ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
+    for (DataType dataType: dataTypeLoader) {
+      dataType.initialize(configuration);
+      registerDataType(dataType);
+    }
   }
   
   public void setObjectMapper(ObjectMapper objectMapper) {
@@ -149,7 +143,7 @@ public class DataTypeService implements Brewable {
       dataType = dataTypesByValueClass.get(value.getClass());
     }
     if (dataType==null) {
-      dataType = new AnyTypeImpl(configuration);
+      dataType = new AnyTypeImpl(AnyType.INSTANCE, configuration);
     }
     return dataType;
   }

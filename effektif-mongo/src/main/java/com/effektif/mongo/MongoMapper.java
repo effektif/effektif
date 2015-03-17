@@ -16,10 +16,13 @@ package com.effektif.mongo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.LocalDateTimeDeserializer;
 import com.effektif.workflow.impl.json.LocalDateTimeSerializer;
 import com.mongodb.BasicDBObject;
 
@@ -28,41 +31,41 @@ import com.mongodb.BasicDBObject;
  *  
  * @author Tom Baeyens
  */
-public class MongoReader {
+public class MongoMapper<T> {
 
-  BasicDBObject dbObject;
+  Class<T> type;
   JsonService jsonService;
   boolean convertId;
   List<String> userIdFields = new ArrayList<>();
   List<String> timeFields = new ArrayList<>();
 
-  public MongoReader(BasicDBObject dbObject, JsonService jsonService) {
-    this.dbObject =  dbObject;
+  public MongoMapper(Class<T> type, JsonService jsonService) {
+    this.type = type;
     this.jsonService = jsonService;
   }
 
-  public MongoReader convertId() {
+  public MongoMapper convertId() {
     this.convertId = true;
     return this;
   }
 
-  public MongoReader convertUserId(String fieldName) {
+  public MongoMapper convertUserId(String fieldName) {
     userIdFields.add(fieldName);
     return this;
   }
 
-  public MongoReader convertTime(String fieldName) {
+  public MongoMapper convertTime(String fieldName) {
     timeFields.add(fieldName);
     return this;
   }
   
-  public <T> T get(Class<T> type) {
+  public T read(BasicDBObject dbObject) {
     if (dbObject==null) {
       return null;
     }
     
     if (convertId) {
-      String id = (String) dbObject.remove("_id");
+      Object id = dbObject.remove("_id");
       if (id!=null) {
         dbObject.put("id", id.toString());
       }
@@ -83,5 +86,37 @@ public class MongoReader {
     }
 
     return jsonService.jsonMapToObject(dbObject, type);
+  }
+
+  public BasicDBObject write(Object object) {
+    if (object==null) {
+      return null;
+    }
+    
+    Map<String,Object> jsonMap = jsonService.objectToJsonMap(object);
+    BasicDBObject dbObject = new BasicDBObject(jsonMap);
+
+    if (convertId) {
+      String id = (String) jsonMap.remove("id");
+      if (id!=null) {
+        dbObject.put("_id", new ObjectId(id));
+      }
+    }
+    
+    for (String userIdField: userIdFields) {
+      String value = (String) dbObject.get(userIdField);
+      if (value!=null) {
+        dbObject.put(userIdField, new ObjectId(value));
+      }
+    }
+
+    for (String timeField: timeFields) {
+      String value = (String) dbObject.get(timeField);
+      if (value!=null) {
+        dbObject.put(timeField, LocalDateTimeDeserializer.formatter.parseLocalDateTime(value));
+      }
+    }
+
+    return dbObject;
   }
 }

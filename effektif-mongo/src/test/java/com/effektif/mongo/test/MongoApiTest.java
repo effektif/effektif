@@ -21,7 +21,6 @@ import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.email.TestEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
-import com.effektif.workflow.test.api.EmailTaskTest;
 import com.mongodb.DB;
 
 
@@ -56,5 +55,4 @@ public class MongoApiTest {
       .databaseName("databasename")
       .authentication("username", "password", "database");
   }
-
 }

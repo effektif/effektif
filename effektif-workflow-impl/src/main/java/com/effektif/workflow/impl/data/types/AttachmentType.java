@@ -23,4 +23,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("attachment")
 public class AttachmentType extends Type {
 
+  public static final AttachmentType INSTANCE = new AttachmentType();
+
 }

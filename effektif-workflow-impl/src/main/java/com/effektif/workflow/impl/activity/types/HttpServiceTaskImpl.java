@@ -24,7 +24,7 @@ import com.effektif.workflow.impl.bpmn.ServiceTaskType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-/**
+/** TODO
  * @author Tom Baeyens
  */
 public class HttpServiceTaskImpl extends AbstractActivityType<HttpServiceTask> {

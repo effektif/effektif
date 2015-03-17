@@ -29,7 +29,7 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   protected Class<?> valueClass;
   protected Configuration configuration;
 
-  public AbstractDataType(T typeApi, Class< ? > valueClass, Configuration configuration) {
+  public void initialize(T typeApi, Class< ? > valueClass, Configuration configuration) {
     this.typeApi = typeApi;
     this.apiClass = typeApi.getClass();
     this.valueClass = valueClass;

@@ -56,35 +56,4 @@ public class MongoWriter {
     return this;
   }
   
-  public BasicDBObject get() {
-    if (o==null) {
-      return null;
-    }
-    
-    Map<String,Object> jsonMap = jsonService.objectToJsonMap(o);
-    BasicDBObject dbObject = new BasicDBObject(jsonMap);
-
-    if (convertId) {
-      String id = (String) jsonMap.remove("id");
-      if (id!=null) {
-        dbObject.put("_id", new ObjectId(id));
-      }
-    }
-    
-    for (String userIdField: userIdFields) {
-      String value = (String) dbObject.get(userIdField);
-      if (value!=null) {
-        dbObject.put(userIdField, new ObjectId(value));
-      }
-    }
-
-    for (String timeField: timeFields) {
-      String value = (String) dbObject.get(timeField);
-      if (value!=null) {
-        dbObject.put(timeField, LocalDateTimeDeserializer.formatter.parseLocalDateTime(value));
-      }
-    }
-
-    return dbObject;
-  }
 }

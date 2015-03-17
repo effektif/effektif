@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.identity.Group;
 
 
@@ -24,12 +23,20 @@ import com.effektif.workflow.impl.identity.Group;
  */
 public class GroupTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
 
-  public GroupTypeImpl(Configuration configuration) {
-    super(Group.class, configuration);
+  
+  public GroupTypeImpl() {
   }
 
-  public GroupTypeImpl(Type type, Configuration configuration) {
-    super(Group.class, configuration);
+  public void initialize(Configuration configuration) {
+    initialize(new JavaBeanType(Group.class), Group.class, configuration);
+  }
+
+  public GroupTypeImpl(JavaBeanType type, Configuration configuration) {
+    initialize(type, Group.class, configuration);
+  }
+
+  public GroupTypeImpl(Configuration configuration) {
+    initialize(configuration);
   }
 
   @Override

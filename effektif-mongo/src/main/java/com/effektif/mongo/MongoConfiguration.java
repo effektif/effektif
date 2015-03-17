@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.memory.MemoryEmailStore;
-import com.effektif.workflow.impl.memory.MemoryFileService;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
@@ -29,6 +28,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.gridfs.GridFS;
 
 /**
  * @see <a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types#mongodb-workflow-engine">MongoDB workflow engine</a>
@@ -39,6 +39,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   
   protected List<ServerAddress> serverAddresses;
   protected String databaseName = "effektif";
+  protected String fileDatabaseName = "effektif-files";
   protected List<MongoCredential> credentials;
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
@@ -53,18 +54,19 @@ public class MongoConfiguration extends DefaultConfiguration {
 
   public MongoConfiguration() {
     brewery.ingredient(this);
-    brewery.supplier(new MongoClientFactory(), MongoClient.class);
-    brewery.supplier(new MongoDbFactory(), DB.class);
+    brewery.supplier(new MongoClientSupplier(), MongoClient.class);
+    brewery.supplier(new MongoDbSupplier(), DB.class);
+    brewery.supplier(new MongoGridFSSupplier(), GridFS.class);
     brewery.ingredient(new MongoDb());
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
     brewery.ingredient(new MongoTaskStore());
     brewery.ingredient(new MongoCaseStore());
     brewery.ingredient(new MongoJobStore());
+    brewery.ingredient(new MongoFileService());
     
     // TODO replace this with a default mongo identity service
     brewery.ingredient(new MemoryIdentityService());
-    brewery.ingredient(new MemoryFileService());
     brewery.ingredient(new MemoryEmailStore());
   }
   
@@ -255,7 +257,13 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.optionBuilder = optionBuilder;
   }
   
-  
+  public String getFileDatabaseName() {
+    return fileDatabaseName;
+  }
+
+  public void setFileDatabaseName(String fileDatabaseName) {
+    this.fileDatabaseName = fileDatabaseName;
+  }
 
   public MongoClientOptions.Builder getOptionBuilder() {
     return optionBuilder;

@@ -33,14 +33,20 @@ import com.effektif.workflow.impl.identity.User;
  */
 public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
 
-  public UserIdTypeImpl(Configuration configuration) {
-    this(new UserIdType(), configuration);
+  public UserIdTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(new UserIdType(), String.class, configuration);
   }
 
   public UserIdTypeImpl(UserIdType type, Configuration configuration) {
-    super(type, String.class, configuration);
+    initialize(type, String.class, configuration);
   }
 
+  public UserIdTypeImpl(Configuration configuration) {
+    initialize(configuration);
+  }
+  
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     return jsonValue!=null ? new UserId((String)jsonValue) : null;

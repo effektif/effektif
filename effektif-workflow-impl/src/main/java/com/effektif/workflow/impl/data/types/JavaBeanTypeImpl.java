@@ -34,16 +34,19 @@ public class JavaBeanTypeImpl<T extends JavaBeanType> extends ObjectTypeImpl<T> 
   
   public JsonService jsonService;
   
-  public JavaBeanTypeImpl(Configuration configuration) {
-    super((T) new JavaBeanType(), null, configuration);
+  public JavaBeanTypeImpl() {
+  }
+  
+  public void initialize(Configuration configuration) {
+    initialize((T) new JavaBeanType(), null, configuration);
   }
   
   public JavaBeanTypeImpl(Class<?> valueClass, Configuration configuration) {
-    super((T) new JavaBeanType(valueClass), valueClass, configuration);
+    initialize((T) new JavaBeanType(valueClass), valueClass, configuration);
   }
   
   public JavaBeanTypeImpl(T typeApi, Configuration configuration) {
-    super(typeApi, typeApi.getJavaClass(), configuration);
+    initialize(typeApi, typeApi.getJavaClass(), configuration);
     this.jsonService = configuration.get(JsonService.class);
   }
   

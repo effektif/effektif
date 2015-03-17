@@ -26,10 +26,19 @@ import com.effektif.workflow.impl.data.InvalidValueException;
  */
 public class NumberTypeImpl extends AbstractDataType {
 
-  public NumberTypeImpl(Configuration configuration) {
-    super(NumberType.INSTANCE, Number.class, configuration);
+  public NumberTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(NumberType.INSTANCE, Number.class, configuration);
+  }
+  public NumberTypeImpl(NumberType numberType, Configuration configuration) {
+    initialize(numberType, Number.class, configuration);
   }
   
+  public NumberTypeImpl(Configuration configuration) {
+    initialize(configuration);
+  }
+
   @Override
   public boolean isStatic() {
     return true;

@@ -21,12 +21,19 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 /**
  * @author Tom Baeyens
  */
-public class AttachmentTypeImpl extends AbstractDataType {
+public class AttachmentTypeImpl extends AbstractDataType<AttachmentType> {
+
+  public AttachmentTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(AttachmentType.INSTANCE, Attachment.class, configuration);
+  }
 
   public AttachmentTypeImpl(Configuration configuration) {
-    this(new AttachmentType(), configuration);
+    initialize(configuration);
   }
+
   public AttachmentTypeImpl(AttachmentType attachmentType, Configuration configuration) {
-    super(attachmentType, Attachment.class, configuration);
+    initialize(attachmentType, Attachment.class, configuration);
   }
 }

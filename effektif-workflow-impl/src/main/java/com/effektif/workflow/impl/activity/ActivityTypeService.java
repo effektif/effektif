@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
@@ -78,26 +79,15 @@ public class ActivityTypeService implements Brewable {
   }
 
   protected void initializeActivityTypes() {
-    registerActivityType(new UserTaskImpl());
-    registerActivityType(new ParallelGatewayImpl());
-    registerActivityType(new ExclusiveGatewayImpl());
-    registerActivityType(new StartEventImpl());
-    registerActivityType(new EndEventImpl());
-    registerActivityType(new EmailTaskImpl());
-    registerActivityType(new ScriptTaskImpl());
-    registerActivityType(new AdapterActivityImpl());
-    registerActivityType(new CallImpl());
-    registerActivityType(new EmbeddedSubprocessImpl());
-    registerActivityType(new JavaServiceTaskImpl());
-    registerActivityType(new HttpServiceTaskImpl());
-    registerActivityType(new NoneTaskImpl());
-    registerActivityType(new ReceiveTaskImpl());
+    ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
+    for (ActivityType activityType: activityTypeLoader) {
+      registerActivityType(activityType);
+    }
   }
 
   protected void initializeTriggerTypes() {
     registerTriggerType(new FormTriggerImpl());
     registerTriggerType(new EmailTriggerImpl());
-
   }
 
   public void registerActivityType(ActivityType activityType) {

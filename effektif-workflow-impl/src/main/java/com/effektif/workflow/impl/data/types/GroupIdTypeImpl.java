@@ -30,13 +30,17 @@ import com.effektif.workflow.impl.identity.IdentityService;
  * @author Tom Baeyens
  */
 public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
-  
-  public GroupIdTypeImpl(Configuration configuration) {
-    this(new GroupIdType(), configuration);
+
+  public GroupIdTypeImpl() {
+    initialize(new GroupIdType(), GroupId.class, configuration);
+  }
+
+  public void initialize(Configuration configuration) {
+    initialize(new GroupIdType(), GroupId.class, configuration);
   }
 
   public GroupIdTypeImpl(GroupIdType type, Configuration configuration) {
-    super(type, GroupId.class, configuration);
+    initialize(type, GroupId.class, configuration);
   }
 
   @Override

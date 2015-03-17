@@ -32,9 +32,11 @@ public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
   
   public Map<String,ObjectFieldImpl> fields;
 
-  public ObjectTypeImpl(T typeApi, Class<?> valueClass, Configuration configuration) {
-    super(typeApi, valueClass, configuration);
-    initializeFields(configuration);
+  public ObjectTypeImpl() {
+  }
+
+  @Override
+  public void initialize(Configuration configuration) {
   }
 
   protected void initializeFields(Configuration configuration) {

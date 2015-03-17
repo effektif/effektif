@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.data;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.xml.XmlElement;
@@ -24,6 +25,8 @@ import com.effektif.workflow.impl.template.Hints;
 
 public interface DataType<T extends Type> extends Plugin {
   
+  void initialize(Configuration configuration);
+
   Class<?> getValueClass();
   Class<? extends Type> getApiClass();
   boolean isStatic();

@@ -28,8 +28,18 @@ import com.effektif.workflow.impl.data.InvalidValueException;
  */
 public class TextTypeImpl extends AbstractDataType<TextType> {
 
+  
+  public TextTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(TextType.INSTANCE, String.class, configuration);
+  }
+  public TextTypeImpl(TextType textType, Configuration configuration) {
+    initialize(textType, String.class, configuration);
+  }
+  
   public TextTypeImpl(Configuration configuration) {
-    super(TextType.INSTANCE, String.class, configuration);
+    initialize(configuration);
   }
   
   @Override

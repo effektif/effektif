@@ -24,7 +24,7 @@ import com.effektif.workflow.impl.bpmn.ServiceTaskType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
-/**
+/** TODO
  * A service task implemented in Java.
  *
  * BPMN XML: {@code <serviceTask id="sendMail" effektif:type="java">}

@@ -35,12 +35,14 @@ import com.effektif.workflow.impl.util.Exceptions;
  */
 public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
   
-  public EmailIdTypeImpl(Configuration configuration) {
-    this(EmailIdType.INSTANCE, configuration);
+  public EmailIdTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(EmailIdType.INSTANCE, EmailId.class, configuration);
   }
 
   public EmailIdTypeImpl(EmailIdType emailIdType, Configuration configuration) {
-    super(emailIdType, EmailId.class, configuration);
+    initialize(emailIdType, EmailId.class, configuration);
   }
 
   @Override

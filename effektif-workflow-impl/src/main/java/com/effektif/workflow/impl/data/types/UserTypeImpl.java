@@ -24,12 +24,22 @@ import com.effektif.workflow.impl.identity.User;
  */
 public class UserTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
   
-  public UserTypeImpl(Configuration configuration) {
-    super(User.class, configuration);
+  public UserTypeImpl() {
+  }
+  
+  public void initialize(Configuration configuration) {
+    initialize(new JavaBeanType(User.class), User.class, configuration);
+    initializeFields(configuration);
   }
 
   public UserTypeImpl(Type type, Configuration configuration) {
-    super(User.class, configuration);
+    initialize(new JavaBeanType(User.class), User.class, configuration);
+    initializeFields(configuration);
+  }
+
+  public UserTypeImpl(Configuration configuration) {
+    initialize(configuration);
+    initializeFields(configuration);
   }
 
   @Override

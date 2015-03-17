@@ -37,13 +37,15 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
   
   protected FileService fileService;
   
-  public FileIdTypeImpl(Configuration configuration) {
-    this(FileIdType.INSTANCE, configuration);
+  public FileIdTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(FileIdType.INSTANCE,  FileId.class, configuration);
     this.fileService = configuration.get(FileService.class);
   }
 
   public FileIdTypeImpl(FileIdType fileIdType, Configuration configuration) {
-    super(fileIdType, FileId.class, configuration);
+    initialize(fileIdType, FileId.class, configuration);
   }
 
   @Override

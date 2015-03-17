@@ -31,12 +31,15 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   
   protected List<ChoiceOption> options;
 
-  public ChoiceTypeImpl(Configuration configuration) {
-    super(new ChoiceType(), String.class, configuration);
+  public ChoiceTypeImpl() {
+  }
+
+  public void initialize(Configuration configuration) {
+    initialize(new ChoiceType(), String.class, configuration);
   }
 
   public ChoiceTypeImpl(ChoiceType choiceType, Configuration configuration) {
-    super(choiceType, String.class, configuration);
+    initialize(choiceType, String.class, configuration);
     this.options = choiceType.getOptions();
   }
   

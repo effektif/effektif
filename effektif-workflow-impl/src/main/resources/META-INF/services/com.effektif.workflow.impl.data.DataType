@@ -1,0 +1,14 @@
+com.effektif.workflow.impl.data.types.AnyTypeImpl
+com.effektif.workflow.impl.data.types.AttachmentTypeImpl
+com.effektif.workflow.impl.data.types.ChoiceTypeImpl
+com.effektif.workflow.impl.data.types.CustomTypeImpl
+com.effektif.workflow.impl.data.types.EmailIdTypeImpl
+com.effektif.workflow.impl.data.types.EmailTypeImpl
+com.effektif.workflow.impl.data.types.FileIdTypeImpl
+com.effektif.workflow.impl.data.types.FileTypeImpl
+com.effektif.workflow.impl.data.types.JavaBeanTypeImpl
+com.effektif.workflow.impl.data.types.GroupIdTypeImpl
+com.effektif.workflow.impl.data.types.GroupTypeImpl
+com.effektif.workflow.impl.data.types.ListTypeImpl
+com.effektif.workflow.impl.data.types.UserIdTypeImpl
+com.effektif.workflow.impl.data.types.UserTypeImpl

@@ -35,17 +35,20 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   
   public DataType elementType;
   
-  public ListTypeImpl(Configuration configuration) {
-    super(new ListType(), List.class, configuration);
+  public ListTypeImpl() {
+  }
+  
+  public void initialize(Configuration configuration) {
+    initialize(new ListType(), List.class, configuration);
   }
 
   public ListTypeImpl(DataType elementType, Configuration configuration) {
-    super(new ListType(), List.class, configuration);
+    initialize(new ListType(), List.class, configuration);
     this.elementType = elementType;
   }
 
   public ListTypeImpl(ListType listTypeApi, Configuration configuration) {
-    super(listTypeApi, List.class, configuration);
+    initialize(listTypeApi, List.class, configuration);
     Type elementType = listTypeApi.getElementType();
     if (elementType!=null) {
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);

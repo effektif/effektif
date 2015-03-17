@@ -25,11 +25,20 @@ import com.effektif.workflow.impl.data.InvalidValueException;
  * @author Tom Baeyens
  */
 public class BooleanTypeImpl extends AbstractDataType<BooleanType> {
-
-  public BooleanTypeImpl(Configuration configuration) {
-    super(BooleanType.INSTANCE, Boolean.class, configuration);
+  
+  public BooleanTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(BooleanType.INSTANCE, Boolean.class, configuration);
   }
   
+  public BooleanTypeImpl(BooleanType booleanType, Configuration configuration) {
+    initialize(booleanType, Boolean.class, configuration);
+  }
+  
+  public BooleanTypeImpl(Configuration configuration) {
+    initialize(configuration);
+  }
   @Override
   public boolean isStatic() {
     return true;

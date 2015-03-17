@@ -19,17 +19,19 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.gridfs.GridFS;
 
 
-public class MongoDbFactory implements Supplier {
+public class MongoGridFSSupplier implements Supplier {
 
   @Override
   public Object supply(Brewery brewery) {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     MongoClient mongoClient = brewery.get(MongoClient.class);
-    String databaseName = mongoConfiguration.getDatabaseName();
-    DB db = mongoClient.getDB(databaseName);
-    brewery.brew(db);
-    return db;
+    String filedatabaseName = mongoConfiguration.getFileDatabaseName();
+    DB db = mongoClient.getDB(filedatabaseName);
+    GridFS gridFs = new GridFS(db);
+    brewery.brew(gridFs);
+    return gridFs;
   }
 }

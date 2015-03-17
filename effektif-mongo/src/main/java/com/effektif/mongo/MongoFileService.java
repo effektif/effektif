@@ -40,9 +40,9 @@ public class MongoFileService implements FileService, Brewable {
 
   public static final Logger log = MongoDb.log;
   
-  public JsonService jsonService;
   public MongoCollection filesCollection;
   public GridFS gridFs;
+  public MongoMapper<File> mongoMapper;
   
   public interface FieldsFile {
     String _ID = "_id";
@@ -57,7 +57,11 @@ public class MongoFileService implements FileService, Brewable {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.filesCollection = mongoDb.createCollection(mongoConfiguration.getFilesCollectionName());
     this.gridFs = brewery.get(GridFS.class);
-    this.jsonService = brewery.get(JsonService.class);
+    JsonService jsonService = brewery.get(JsonService.class);
+    this.mongoMapper = new MongoMapper<>(File.class, jsonService)
+        .convertId()
+        .convertUserId("creatorId")
+        .convertTime("createTime");
   }
   
   @Override
@@ -86,7 +90,7 @@ public class MongoFileService implements FileService, Brewable {
   }
 
   protected void insertFile(File file) {
-    BasicDBObject dbFile = fileToMongo(file);
+    BasicDBObject dbFile = mongoMapper.write(file);
     filesCollection.insert("insert-file", dbFile);
     ObjectId id = (ObjectId) dbFile.get("_id");
     file.setId(new FileId(id.toString()));
@@ -111,22 +115,6 @@ public class MongoFileService implements FileService, Brewable {
 
     BasicDBObject dbFile = filesCollection.findOne("get-file", query);
 
-    return mongoToFile(dbFile);
-  }
-
-  private File mongoToFile(BasicDBObject dbFile) {
-    return new MongoReader(dbFile, jsonService)
-      .convertId()
-      .convertUserId("creatorId")
-      .convertTime("createTime")
-      .get(File.class);
-  }
-
-  protected BasicDBObject fileToMongo(File file) {
-    return new MongoWriter(file, jsonService)
-      .convertId()
-      .convertUserId("creatorId")
-      .convertTime("createTime")
-      .get();
+    return mongoMapper.read(dbFile);
   }
 }

@@ -26,9 +26,15 @@ public class FileTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
   
   FileService fileService;
 
-  public FileTypeImpl(Configuration configuration) {
-    super(File.class, configuration);
+  public FileTypeImpl() {
+  }
+  public void initialize(Configuration configuration) {
+    initialize(new JavaBeanType(File.class), File.class, configuration);
     this.fileService = configuration.get(FileService.class);
+  }
+
+  public FileTypeImpl(Configuration configuration) {
+    initialize(configuration);
   }
 
   public FileTypeImpl(JavaBeanType typeApi, Configuration configuration) {
