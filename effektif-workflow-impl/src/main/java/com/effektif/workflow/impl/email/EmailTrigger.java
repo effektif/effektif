@@ -4,7 +4,12 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * Starts a workflow as a result of receiving an email.
+ * Starts a workflow as a result of receiving an email, instead of starting a workflow directly and setting workflow
+ * variables for initial data.
+ *
+ * <p>When you use an email trigger, you provide either an {@link com.effektif.workflow.api.model.EmailId} for a
+ * previously-stored email, or an actual {@link com.effektif.workflow.impl.email.Email}, which will be stored and made
+ * available via an <code>EmailId</code>.
  *
  * @author Peter Hilton
  */
