@@ -130,10 +130,11 @@ public class WorkflowParser {
     return null;
   }
 
-  /** parses the content of workflowApi into workflowImpl and 
-   * adds any parse issues to workflowApi.
+  /**
+   * Parses the content of <code>workflowApi</code> into <code>workflowImpl</code> and
+   * adds any parse issues to <code>workflowApi</code>.
    * Use one parser for each parse.
-   * By returning the parser itself you can access the  */
+   */
   public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi) {
     WorkflowParser parser = new WorkflowParser(configuration);
     parser.workflow = new WorkflowImpl();

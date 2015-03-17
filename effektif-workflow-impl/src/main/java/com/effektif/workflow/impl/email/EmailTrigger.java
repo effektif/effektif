@@ -13,7 +13,8 @@ public class EmailTrigger extends Trigger {
 
   public static final String EMAIL_KEY = "email";
   public static final String EMAIL_ID_KEY = "emailId";
-  
+
+  /** Optional variable that specifies the name to use for the process variable, instead of <code>EMAIL_ID_KEY</code>. */
   protected String emailIdVariableId;
 
   public String getEmailIdVariableId() {

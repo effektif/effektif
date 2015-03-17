@@ -342,10 +342,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
 
-  /** default deserialization of trigger instance data.
+  /**
+   * Default deserialization of trigger instance data.
    * This is called if there is no trigger defined and it will 
-   * assume the trigger instance data maps variable ids to values 
-   * @param workflow */
+   * assume the trigger instance data maps variable ids to values. */
   public void deserializeTriggerInstanceData(TriggerInstance triggerInstance, WorkflowImpl workflow) {
     if (triggerInstance!=null && triggerInstance.getData()!=null) {
       for (String variableId: triggerInstance.getData().keySet()) {

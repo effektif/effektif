@@ -42,12 +42,19 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
     return triggerApiClass; 
   }
 
+  /**
+   * Parses the {@link com.effektif.workflow.api.workflow.Trigger} to set up this object.
+   */
   public void parse(WorkflowImpl workflow, T trigger, WorkflowParser parser) {
   }
 
   public void published(WorkflowImpl workflow) {
   }
 
+  /**
+   * Copies the trigger data from the given {@link com.effektif.workflow.api.model.TriggerInstance} to the given
+   * {@link com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl} when starting a workflow.
+   */
   public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
   }
 
@@ -55,6 +62,10 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
     return null;
   }
 
+  /**
+   * Converts trigger data in the trigger instance from JSON format to the correct Java type,
+   * according to the corresponding {@link com.effektif.workflow.api.types.Type}.
+   */
   public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
   }
 }
