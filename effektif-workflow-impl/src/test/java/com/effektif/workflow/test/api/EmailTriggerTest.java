@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.effektif.workflow.api.model.EmailId;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailTrigger;
-import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
 /**
@@ -34,29 +34,60 @@ public class EmailTriggerTest extends WorkflowTest {
   @Test
   public void testEmailTrigger() {
     Workflow workflow = new Workflow()
-      .variable("eml", new EmailIdType())
-      .trigger(new EmailTrigger()
-        .emailIdVariableId("eml"));
+      .trigger(new EmailTrigger());
 
     deploy(workflow);
     
-    Email email = new Email()
-      .from("me")
-      .to(Lists.of("you"))
-      .subject("hi");
+    Email email = new Email();
 
-    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data(EmailTrigger.EMAIL_KEY, email));
+    WorkflowInstance workflowInstance = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
 
-    Object emailVariable = workflowInstance.getVariableValue("eml");
-    assertNotNull("Email not null", emailVariable);
-//    assertEquals("Email has correct type", Email.class, emailVariable.getClass());
-//
-//    Email storedEmail = (Email) emailVariable;
-//    assertEquals("Email from", "me", storedEmail.getFrom());
-//    assertEquals("Email subject", "hi", storedEmail.getSubject());
-//    assertEquals("Email to length", 1, storedEmail.getTo().size());
-//    assertEquals("Email to", "you", storedEmail.getTo().get(0));
+    Object emailVariable = workflowInstance.getVariableValue(EmailTrigger.EMAIL_ID_KEY);
+    assertNotNull("Email ID not null", emailVariable);
+    assertEquals("Email ID has correct type", EmailId.class, emailVariable.getClass());
+  }
+
+  /**
+   * Tests specifying a custom variable ID for the {@link com.effektif.workflow.api.model.EmailId} workflow variable
+   * in the trigger.
+   */
+  @Test
+  public void testEmailTriggerVariableId() {
+    Workflow workflow = new Workflow()
+      .variable("triggerEmail", new EmailIdType())
+      .trigger(new EmailTrigger().emailIdVariableId("triggerEmail"));
+
+    deploy(workflow);
+
+    Email email = new Email();
+
+    WorkflowInstance workflowInstance = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+
+    Object emailVariable = workflowInstance.getVariableValue("triggerEmail");
+    assertNotNull("Email ID not null", emailVariable);
+    assertEquals("Email ID has correct type", EmailId.class, emailVariable.getClass());
+  }
+
+  /**
+   * Repeats the test in {@link #testEmailTriggerVariableId} but does not declare the workflow variable, to test that
+   * the variable’s type is automatically set correctly to {@link EmailIdType}.
+   */
+  @Test
+  public void testEmailTriggerVariableIdDetectType() {
+    Workflow workflow = new Workflow()
+      .trigger(new EmailTrigger().emailIdVariableId("triggerEmail"));
+
+    deploy(workflow);
+
+    Email email = new Email();
+
+    WorkflowInstance workflowInstance = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+
+    Object emailVariable = workflowInstance.getVariableValue("triggerEmail");
+    assertNotNull("Email ID not null", emailVariable);
+    assertEquals("Email ID has correct type", EmailId.class, emailVariable.getClass());
   }
 }

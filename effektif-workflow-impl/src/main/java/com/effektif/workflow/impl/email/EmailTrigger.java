@@ -17,8 +17,12 @@ public class EmailTrigger extends Trigger {
   /** Optional variable that specifies the name to use for the process variable, instead of <code>EMAIL_ID_KEY</code>. */
   protected String emailIdVariableId;
 
+  /**
+   * Returns the variable ID to use to look up the {@link com.effektif.workflow.api.model.EmailId},
+   * using {@link #EMAIL_ID_KEY} as a default value.
+   */
   public String getEmailIdVariableId() {
-    return this.emailIdVariableId;
+    return emailIdVariableId == null ? EMAIL_ID_KEY : emailIdVariableId;
   }
   public void setEmailIdVariableId(String emailIdVariableId) {
     this.emailIdVariableId = emailIdVariableId;
