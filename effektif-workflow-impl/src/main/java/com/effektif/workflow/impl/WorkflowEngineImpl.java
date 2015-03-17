@@ -148,6 +148,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(configuration, workflow, workflowInstanceId);
     
+    workflowInstance.businessKey = triggerInstance.getBusinessKey();
     workflowInstance.caseId = triggerInstance.getCaseId();
     workflowInstance.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
     workflowInstance.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();

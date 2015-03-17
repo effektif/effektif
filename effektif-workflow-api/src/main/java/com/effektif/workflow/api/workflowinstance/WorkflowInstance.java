@@ -30,6 +30,7 @@ public class WorkflowInstance extends ScopeInstance {
   protected WorkflowInstanceId id;
   protected String organizationId;
   protected WorkflowId workflowId;
+  protected String businessKey;
   protected UserId creatorId;
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
@@ -85,6 +86,17 @@ public class WorkflowInstance extends ScopeInstance {
   }
   public WorkflowInstance caseId(String caseId) {
     this.caseId = caseId;
+    return this;
+  }
+
+  public String getBusinessKey() {
+    return this.businessKey;
+  }
+  public void setBusinessKey(String businessKey) {
+    this.businessKey = businessKey;
+  }
+  public WorkflowInstance businessKey(String businessKey) {
+    this.businessKey = businessKey;
     return this;
   }
 }

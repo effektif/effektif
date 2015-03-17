@@ -56,6 +56,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
   public WorkflowInstanceId id;
+  public String businessKey;
   public String organizationId;
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
@@ -95,6 +96,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstance toWorkflowInstance() {
     WorkflowInstance workflowInstance = new WorkflowInstance();
     workflowInstance.setId(id);
+    workflowInstance.setBusinessKey(businessKey);
     workflowInstance.setOrganizationId(organizationId);
     workflowInstance.setWorkflowId(workflow.id);
     workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);

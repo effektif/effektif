@@ -95,6 +95,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
     String JOBS = "jobs";
     String PROPERTIES = "properties";
+    String BUSINESS_KEY = "businessKey";
   }
   
   interface ActivityInstanceFields extends ScopeInstanceFields {
@@ -377,6 +378,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     } else {
       writeIdOptNew(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id);
     }
+    writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.BUSINESS_KEY, workflowInstance.businessKey);
     writeIdOptNew(dbWorkflowInstance, WorkflowInstanceFields.TASK_ID, workflowInstance.caseId);
     writeIdOptNew(dbWorkflowInstance, WorkflowInstanceFields.CALLER_WORKFLOW_INSTANCE_ID, workflowInstance.callerWorkflowInstanceId);
     writeStringOpt(dbWorkflowInstance, WorkflowInstanceFields.CALLER_ACTIVITY_INSTANCE_ID, workflowInstance.callerActivityInstanceId);
@@ -416,6 +418,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
     workflowInstance.id = readWorkflowInstanceId(dbWorkflowInstance, WorkflowInstanceFields._ID);
     workflowInstance.organizationId = readId(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
+    workflowInstance.businessKey = readString(dbWorkflowInstance, WorkflowInstanceFields.BUSINESS_KEY);
     
     Object workflowIdObject = readObject(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);
 
