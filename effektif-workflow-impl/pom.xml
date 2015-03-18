@@ -51,6 +51,12 @@
       <artifactId>httpclient</artifactId>
       <version>4.3.6</version>
     </dependency>
+    
+    <dependency>
+  	  <groupId>org.mozilla</groupId>
+      <artifactId>rhino</artifactId>
+      <version>1.7R3</version>
+    </dependency>
 
     <!-- TEST DEPENDENCIES -->
 

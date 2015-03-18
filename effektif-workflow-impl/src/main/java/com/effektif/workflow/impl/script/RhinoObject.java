@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.script;
 
-import sun.org.mozilla.javascript.internal.Scriptable;
+import org.mozilla.javascript.Scriptable;
 
 import com.effektif.workflow.impl.data.TypedValueImpl;
 
@@ -22,7 +22,7 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
  * @author Tom Baeyens
  */
 @SuppressWarnings("restriction")
-public class RhinoObject extends sun.org.mozilla.javascript.internal.ScriptableObject {
+public class RhinoObject extends org.mozilla.javascript.ScriptableObject {
   
   TypedValueImpl typedValue;
 

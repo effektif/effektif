@@ -18,10 +18,10 @@ import java.io.StringWriter;
 
 import org.junit.Test;
 
-import sun.org.mozilla.javascript.internal.Context;
-import sun.org.mozilla.javascript.internal.ContextAction;
-import sun.org.mozilla.javascript.internal.ContextFactory;
-import sun.org.mozilla.javascript.internal.Scriptable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextAction;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Scriptable;
 
 import com.effektif.workflow.impl.script.RhinoVariableScope;
 
@@ -64,7 +64,7 @@ public class RhinoTest {
         
         Object result = null;
         try {
-          sun.org.mozilla.javascript.internal.Script rhinoCompiledScript = (sun.org.mozilla.javascript.internal.Script) script;
+          org.mozilla.javascript.Script rhinoCompiledScript = (org.mozilla.javascript.Script) script;
           result = rhinoCompiledScript.exec(context, rhinoVariableScope);
           
         } catch (Exception e) {
@@ -76,7 +76,7 @@ public class RhinoTest {
   }
   
   @SuppressWarnings("restriction")
-  public static class MagicScriptableObject extends sun.org.mozilla.javascript.internal.ScriptableObject {
+  public static class MagicScriptableObject extends org.mozilla.javascript.ScriptableObject {
     String name;
     public MagicScriptableObject(String name) {
       this.name = name;
