@@ -22,18 +22,17 @@ import java.util.List;
  * 
  * @author Tom Baeyens
  */
-public class TestEmailService implements EmailService {
+public class TestOutgoingEmailService implements OutgoingEmailService {
   
-  public List<Email> emails = new ArrayList<>();
+  public List<OutgoingEmail> emails = new ArrayList<>();
 
   @Override
-  public void send(Email email) {
-    
+  public void send(OutgoingEmail email) {
     emails.add(email);
   }
 
   @Override
   public String validate(String emailAddress) {
-    return EmailServiceImpl.validateEmailAddress(emailAddress);
+    return OutgoingEmailServiceImpl.validateEmailAddress(emailAddress);
   }
 }

@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.effektif.workflow.api.acl.Authentication;
 import com.effektif.workflow.api.acl.Authentications;
 import com.effektif.workflow.api.model.EmailId;
-import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailStore;
+import com.effektif.workflow.impl.email.PersistentEmail;
 
 
 /**
@@ -30,11 +30,11 @@ import com.effektif.workflow.impl.email.EmailStore;
  */
 public class MemoryEmailStore implements EmailStore {
   
-  Map<EmailId, Email> emails = new ConcurrentHashMap<>();
+  Map<EmailId, PersistentEmail> emails = new ConcurrentHashMap<>();
   long nextId = 1;
 
   @Override
-  public Email createEmail(Email email) {
+  public void insertEmail(PersistentEmail email) {
     Authentication authentication = Authentications.current();
     String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
     if (organizationId!=null) {
@@ -44,11 +44,10 @@ public class MemoryEmailStore implements EmailStore {
     EmailId emailId = new EmailId(Long.toString(nextId++));
     email.setId(emailId);
     emails.put(emailId, email);
-    return email;
   }
 
   @Override
-  public Email findEmailById(EmailId emailId) {
+  public PersistentEmail findEmailById(EmailId emailId) {
     return emails.get(emailId);
   }
 }

@@ -33,7 +33,7 @@ import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.email.EmailServiceImpl;
+import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
@@ -92,7 +92,7 @@ public class ApiExamplesTest {
   @Test
   public void testEmailServerConfiguration() {
     Configuration configuration = new MemoryConfiguration();
-    configuration.get(EmailServiceImpl.class)
+    configuration.get(OutgoingEmailServiceImpl.class)
       // by default, localhost and port 25 are configured
       .host("smtp.gmail.com") // overwrite the default server
       .ssl() // also sets the port to the default ssl port 465 

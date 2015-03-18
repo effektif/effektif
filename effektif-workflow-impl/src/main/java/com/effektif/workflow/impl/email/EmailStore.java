@@ -23,8 +23,8 @@ import com.effektif.workflow.api.model.EmailId;
  */
 public interface EmailStore {
 
-  /** Stores the given email and returns the email with an updated ID. */
-  Email createEmail(Email email);
+  /** Stores the given email and updates the id. */
+  void insertEmail(PersistentEmail email);
 
-  Email findEmailById(EmailId emailId);
+  PersistentEmail findEmailById(EmailId emailId);
 }

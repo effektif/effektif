@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.EmailId;
-import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailStore;
+import com.effektif.workflow.impl.email.PersistentEmail;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.google.common.collect.ImmutableList;
 
@@ -20,13 +20,13 @@ public class EmailStoreTest extends TestCase {
   protected static EmailStore emailStore;
 
 
-  private Email mail;
+  private PersistentEmail email;
 
   @Override protected void setUp() throws Exception {
     configuration = new TestConfiguration();
     emailStore = configuration.get(EmailStore.class);
 
-    mail = new Email()
+    email = new PersistentEmail()
       .from("ci@example.com")
       .replyTo("ci@example.com")
       .headers("X-SourceWorkflowId", "release")
@@ -36,33 +36,34 @@ public class EmailStoreTest extends TestCase {
       .subject("New release")
       .bodyText("A new version has been deployed on production.")
       .bodyHtml("<p>A new version has been deployed on production.</p>");
-    mail.setOrganizationId("43");
+    email.setOrganizationId("43");
   }
 
   @Test
   public void testStoreEmail() {
-    EmailId newEmailId = emailStore.createEmail(mail).getId();
-    Email storedMail = emailStore.findEmailById(newEmailId);
+    emailStore.insertEmail(email);
+    EmailId newEmailId = email.getId();
+    PersistentEmail storedMail = emailStore.findEmailById(newEmailId);
     assertNotNull(storedMail);
 
-    assertEquals(mail.getFrom(), storedMail.getFrom());
-    assertEquals(mail.getReplyTo(), storedMail.getReplyTo());
+    assertEquals(email.getFrom(), storedMail.getFrom());
+    assertEquals(email.getReplyTo(), storedMail.getReplyTo());
 
     assertTrue(storedMail.getHeaders().containsKey("X-SourceWorkflowId"));
-    assertEquals(mail.getHeaders().get("X-SourceWorkflowId"), storedMail.getHeaders().get("X-SourceWorkflowId"));
+    assertEquals(email.getHeaders().get("X-SourceWorkflowId"), storedMail.getHeaders().get("X-SourceWorkflowId"));
 
-    assertEquals(1, mail.getTo().size());
-    assertEquals(1, mail.getCc().size());
-    assertEquals(1, mail.getBcc().size());
+    assertEquals(1, email.getTo().size());
+    assertEquals(1, email.getCc().size());
+    assertEquals(1, email.getBcc().size());
 
-    assertEquals(mail.getTo().get(0), storedMail.getTo().get(0));
-    assertEquals(mail.getCc().get(0), storedMail.getCc().get(0));
-    assertEquals(mail.getBcc().get(0), storedMail.getBcc().get(0));
+    assertEquals(email.getTo().get(0), storedMail.getTo().get(0));
+    assertEquals(email.getCc().get(0), storedMail.getCc().get(0));
+    assertEquals(email.getBcc().get(0), storedMail.getBcc().get(0));
 
-    assertEquals(mail.getSubject(), storedMail.getSubject());
-    assertEquals(mail.getBodyText(), storedMail.getBodyText());
-    assertEquals(mail.getBodyHtml(), storedMail.getBodyHtml());
-    assertEquals(mail.getId(), storedMail.getId());
-    assertEquals(mail.getOrganizationId(), storedMail.getOrganizationId());
+    assertEquals(email.getSubject(), storedMail.getSubject());
+    assertEquals(email.getBodyText(), storedMail.getBodyText());
+    assertEquals(email.getBodyHtml(), storedMail.getBodyHtml());
+    assertEquals(email.getId(), storedMail.getId());
+    assertEquals(email.getOrganizationId(), storedMail.getOrganizationId());
   }
 }

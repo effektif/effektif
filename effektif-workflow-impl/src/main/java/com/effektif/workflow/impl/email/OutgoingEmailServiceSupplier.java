@@ -13,16 +13,21 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.email;
 
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Supplier;
 
 
-/**
- * API for sending emails, used for notifications and the {@link com.effektif.workflow.api.activities.EmailTask}.
+/** This supplier ensures that the library is only needed 
+ * if the service is actually used
  * 
  * @author Tom Baeyens
  */
-public interface EmailService {
+public class OutgoingEmailServiceSupplier implements Supplier {
 
-  void send(Email email);
-
-  String validate(String emailAddress);
+  @Override
+  public Object supply(Brewery brewery) {
+    OutgoingEmailServiceImpl emailService = new OutgoingEmailServiceImpl();
+    brewery.ingredient(emailService);
+    return emailService;
+  }
 }

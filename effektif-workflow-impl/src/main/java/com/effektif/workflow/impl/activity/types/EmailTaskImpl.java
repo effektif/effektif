@@ -31,8 +31,8 @@ import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.bpmn.ServiceTaskType;
-import com.effektif.workflow.impl.email.Email;
-import com.effektif.workflow.impl.email.EmailService;
+import com.effektif.workflow.impl.email.OutgoingEmail;
+import com.effektif.workflow.impl.email.OutgoingEmailService;
 import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
@@ -48,7 +48,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
 
   private static final String BPMN_ELEMENT_NAME = "serviceTask";
   
-  protected EmailService emailService; 
+  protected OutgoingEmailService outgoingEmailService; 
   protected IdentityService identityService; 
 
   protected BindingImpl<String> fromEmailAddress;
@@ -81,7 +81,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     List<String> cc = resolveEmailAddresses(ccEmailAddresses, ccUserIds, ccGroupIds, activityInstance);
     List<String> bcc = resolveEmailAddresses(bccEmailAddresses, bccUserIds, bccGroupIds, activityInstance);
     
-    Email email = new Email()
+    OutgoingEmail email = new OutgoingEmail()
       .from(resolveFrom(activityInstance))
       .to(to)
       .cc(cc)
@@ -91,7 +91,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
       .bodyHtml(resolve(bodyHtml, activityInstance));
     email.setAttachments(activityInstance.getValues(attachments));
     
-    emailService.send(email);
+    outgoingEmailService.send(email);
     
     activityInstance.onwards();
   }
@@ -135,7 +135,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   protected void addEmailAddresses(List<String> allEmailAddresses, List<String> emailAddresses) {
     if (emailAddresses!=null) {
       for (String emailAddress: emailAddresses) {
-        String validatedEmailAddress = emailService.validate(emailAddress);
+        String validatedEmailAddress = outgoingEmailService.validate(emailAddress);
         if (validatedEmailAddress!=null) {
           allEmailAddresses.add(validatedEmailAddress);
         }
@@ -147,7 +147,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   public void parse(ActivityImpl activityImpl, EmailTask activity, WorkflowParser parser) {
     super.parse(activityImpl, activity, parser);
     
-    emailService = parser.getConfiguration(EmailService.class);
+    outgoingEmailService = parser.getConfiguration(OutgoingEmailService.class);
     identityService = parser.getConfiguration(IdentityService.class);
 
     fromEmailAddress = parser.parseBinding(activity.getFromEmailAddress(), "fromEmailAddress");

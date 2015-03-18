@@ -57,7 +57,7 @@ public class ExpressionTest extends WorkflowTest {
       .data("initiatorId", new UserId("johndoe"))
       .workflowId(workflow.getId()));
     
-    assertEquals("johndoe@localhost", getEmail(0).getTo().get(0));
+    assertEquals("johndoe@localhost", getOutgoingEmail(0).getTo().get(0));
   }
 
   @Test

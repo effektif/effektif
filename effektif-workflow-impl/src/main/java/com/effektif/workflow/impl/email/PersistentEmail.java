@@ -18,18 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.api.model.FileId;
 
 
-/** used for both sending emails {@link EmailService} as 
- * well as storing emails ({@link EmailStore}.
- * 
- * When sending emails, properties id and organizationId are ignored. 
- *  
+/**
  * @author Tom Baeyens
  */
-public class Email {
+public class PersistentEmail {
 
   protected EmailId id;
   protected String organizationId;
@@ -42,7 +38,7 @@ public class Email {
   protected String subject;
   protected String bodyText;
   protected String bodyHtml;
-  protected List<Attachment> attachments;
+  protected List<FileId> attachmentFileIds;
 
   public EmailId getId() {
     return this.id;
@@ -64,7 +60,7 @@ public class Email {
   public void setFrom(String from) {
     this.from = from;
   }
-  public Email from(String from) {
+  public PersistentEmail from(String from) {
     this.from = from;
     return this;
   }
@@ -75,7 +71,7 @@ public class Email {
   public void setReplyTo(String replyTo) {
     this.replyTo = replyTo;
   }
-  public Email replyTo(String replyTo) {
+  public PersistentEmail replyTo(String replyTo) {
     this.replyTo = replyTo;
     return this;
   }
@@ -86,7 +82,7 @@ public class Email {
   public void setHeaders(Map<String,String> headers) {
     this.headers = headers;
   }
-  public Email headers(String headerName, String headerValue) {
+  public PersistentEmail headers(String headerName, String headerValue) {
     if (headers==null) {
       headers = new HashMap<>();
     }
@@ -100,7 +96,7 @@ public class Email {
   public void setTo(List<String> to) {
     this.to = to;
   }
-  public Email to(List<String> to) {
+  public PersistentEmail to(List<String> to) {
     this.to = to;
     return this;
   }
@@ -111,7 +107,7 @@ public class Email {
   public void setCc(List<String> cc) {
     this.cc = cc;
   }
-  public Email cc(List<String> cc) {
+  public PersistentEmail cc(List<String> cc) {
     this.cc = cc;
     return this;
   }
@@ -122,7 +118,7 @@ public class Email {
   public void setBcc(List<String> bcc) {
     this.bcc = bcc;
   }
-  public Email bcc(List<String> bcc) {
+  public PersistentEmail bcc(List<String> bcc) {
     this.bcc = bcc;
     return this;
   }
@@ -133,7 +129,7 @@ public class Email {
   public void setSubject(String subject) {
     this.subject = subject;
   }
-  public Email subject(String subject) {
+  public PersistentEmail subject(String subject) {
     this.subject = subject;
     return this;
   }
@@ -144,7 +140,7 @@ public class Email {
   public void setBodyText(String bodyText) {
     this.bodyText = bodyText;
   }
-  public Email bodyText(String bodyText) {
+  public PersistentEmail bodyText(String bodyText) {
     this.bodyText = bodyText;
     return this;
   }
@@ -155,25 +151,22 @@ public class Email {
   public void setBodyHtml(String bodyHtml) {
     this.bodyHtml = bodyHtml;
   }
-  public Email bodyHtml(String bodyHtml) {
+  public PersistentEmail bodyHtml(String bodyHtml) {
     this.bodyHtml = bodyHtml;
     return this;
   }
-  
-  public List<Attachment> getAttachments() {
-    return this.attachments;
+
+  public List<FileId> getAttachmentFileIds() {
+    return this.attachmentFileIds;
   }
-  public void setAttachments(List<Attachment> attachments) {
-    this.attachments = attachments;
+  public void setAttachmentFileIds(List<FileId> attachmentFileIds) {
+    this.attachmentFileIds = attachmentFileIds;
   }
-  public void addAttachment(Attachment attachment) {
-    if (this.attachments==null) {
-      this.attachments = new ArrayList<>();
+  public PersistentEmail attachmentFileId(FileId attachmentFileId) {
+    if (attachmentFileIds==null) {
+      attachmentFileIds = new ArrayList<>();
     }
-    this.attachments.add(attachment);
-  }
-  public Email attachment(Attachment attachment) {
-    addAttachment(attachment);
+    attachmentFileIds.add(attachmentFileId);
     return this;
   }
 }

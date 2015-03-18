@@ -24,7 +24,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.OutgoingEmail;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
@@ -48,7 +48,7 @@ public class EmailTaskTest extends WorkflowTest {
     
     start(workflow);
 
-    Email email = getEmail(0);
+    OutgoingEmail email = getOutgoingEmail(0);
     assertNotNull(email);
     // assertEquals("", email.getFrom());
     assertEquals("johndoe@example.com", email.getTo().get(0));
@@ -73,7 +73,7 @@ public class EmailTaskTest extends WorkflowTest {
       .data("state", "cons")
       .workflowId(workflow.getId()));
 
-    Email email = getEmail(0);
+    OutgoingEmail email = getOutgoingEmail(0);
     assertNotNull(email);
     // assertEquals("", email.getFrom());
     assertEquals("banana", email.getSubject());
@@ -101,7 +101,7 @@ public class EmailTaskTest extends WorkflowTest {
       .data("receipts", Lists.of(receiptOne.getId(), receiptTwo.getId()))
       .workflowId(workflow.getId()));
 
-    Email email = getEmail(0);
+    OutgoingEmail email = getOutgoingEmail(0);
     assertNotNull(email);
     assertEquals("expensenote.txt", email.getAttachments().get(0).getFileName());
     assertEquals("receiptone.png", email.getAttachments().get(1).getFileName());

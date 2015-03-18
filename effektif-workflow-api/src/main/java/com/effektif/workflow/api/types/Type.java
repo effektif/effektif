@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  *
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="id")
+@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="name")
 public class Type {
 
   

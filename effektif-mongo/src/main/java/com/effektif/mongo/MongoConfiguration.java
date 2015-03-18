@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
-import com.effektif.workflow.impl.memory.MemoryEmailStore;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
@@ -48,6 +47,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
   protected String filesCollectionName = "files";
+  protected String emailsCollectionName = "emails";
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
@@ -64,10 +64,10 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoCaseStore());
     brewery.ingredient(new MongoJobStore());
     brewery.ingredient(new MongoFileService());
+    brewery.ingredient(new MongoEmailStore());
     
     // TODO replace this with a default mongo identity service
     brewery.ingredient(new MemoryIdentityService());
-    brewery.ingredient(new MemoryEmailStore());
   }
   
   public MongoConfiguration db(DB db) {
@@ -235,6 +235,13 @@ public class MongoConfiguration extends DefaultConfiguration {
   }
   public void setJobsArchivedCollectionName(String jobsArchivedCollectionName) {
     this.jobsArchivedCollectionName = jobsArchivedCollectionName;
+  }
+  
+  public String getEmailsCollectionName() {
+    return this.emailsCollectionName;
+  }
+  public void setEmailsCollectionName(String emailsCollectionName) {
+    this.emailsCollectionName = emailsCollectionName;
   }
 
   public boolean isPretty() {

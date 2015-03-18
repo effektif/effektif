@@ -15,7 +15,7 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.PersistentEmail;
 import com.effektif.workflow.impl.file.FileService;
 
 
@@ -35,18 +35,18 @@ public class EmailTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
   }
 
   public void initialize(Configuration configuration) {
-    initialize(new JavaBeanType(Email.class), Email.class, configuration);
+    initialize(new JavaBeanType(PersistentEmail.class), PersistentEmail.class, configuration);
     initializeFields(configuration);
     this.fileService = configuration.get(FileService.class);
   }
 
   public EmailTypeImpl(JavaBeanType typeApi, Configuration configuration) {
-    initialize(typeApi, Email.class, configuration);
+    initialize(typeApi, PersistentEmail.class, configuration);
     initializeFields(configuration);
   }
 
   @Override
   protected void initializeFields(Configuration configuration) {
-    addField(new JavaBeanFieldImpl(Email.class, "subject", new TextTypeImpl(configuration)));
+    addField(new JavaBeanFieldImpl(PersistentEmail.class, "subject", new TextTypeImpl(configuration)));
   }
 }

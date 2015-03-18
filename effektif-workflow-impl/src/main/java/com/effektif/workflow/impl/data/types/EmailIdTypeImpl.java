@@ -24,8 +24,8 @@ import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.email.Email;
 import com.effektif.workflow.impl.email.EmailStore;
+import com.effektif.workflow.impl.email.PersistentEmail;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
@@ -59,7 +59,7 @@ public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
   public TypedValueImpl dereference(Object value, String fieldName) {
     EmailId emailId = (EmailId) value;
     EmailStore emailStore = configuration.get(EmailStore.class);
-    Email email = emailId!=null ? emailStore.findEmailById(emailId) : null;
+    PersistentEmail email = emailId!=null ? emailStore.findEmailById(emailId) : null;
     if ("*".equals(fieldName)) {
       return new TypedValueImpl(new EmailTypeImpl(configuration), email);
     }

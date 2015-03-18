@@ -15,9 +15,6 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.*;
 
-import com.effektif.workflow.impl.email.EmailService;
-import com.effektif.workflow.impl.email.EmailStore;
-import com.effektif.workflow.impl.util.Lists;
 import org.junit.Test;
 
 import com.effektif.workflow.api.model.EmailId;
@@ -25,8 +22,10 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.email.Email;
+import com.effektif.workflow.impl.email.EmailStore;
 import com.effektif.workflow.impl.email.EmailTrigger;
+import com.effektif.workflow.impl.email.PersistentEmail;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
 /**
@@ -46,24 +45,26 @@ public class EmailTriggerTest extends WorkflowTest {
 
     deploy(workflow);
     
-    Email email = new Email()
+    PersistentEmail email = new PersistentEmail()
       .subject("Software release")
       .from("dev@example.com")
       .to(Lists.of("releases@example.com"));
+    
+    emailStore.insertEmail(email);
 
     WorkflowInstance workflowInstance = workflowEngine.start(
-      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_ID_KEY, email.getId()));
 
     Object emailVariable = workflowInstance.getVariableValue(EmailTrigger.EMAIL_ID_KEY);
     assertNotNull("Email ID not null", emailVariable);
     assertEquals("Email ID has correct type", EmailId.class, emailVariable.getClass());
 
-    Email storedEmail = configuration.get(EmailStore.class).findEmailById((EmailId) emailVariable);
-    assertNotNull("Email not null", storedEmail);
-    assertEquals("Email subject", "Software release", storedEmail.getSubject());
-    assertEquals("Email from", "dev@example.com", storedEmail.getFrom());
-    assertEquals("Email to", 1, storedEmail.getTo().size());
-    assertEquals("Email to", "releases@example.com", storedEmail.getTo().get(0));
+    PersistentEmail retrievedEmail = configuration.get(EmailStore.class).findEmailById((EmailId) emailVariable);
+    assertNotNull("Email not null", retrievedEmail);
+    assertEquals("Email subject", "Software release", retrievedEmail.getSubject());
+    assertEquals("Email from", "dev@example.com", retrievedEmail.getFrom());
+    assertEquals("Email to", 1, retrievedEmail.getTo().size());
+    assertEquals("Email to", "releases@example.com", retrievedEmail.getTo().get(0));
   }
 
   /**
@@ -78,10 +79,11 @@ public class EmailTriggerTest extends WorkflowTest {
 
     deploy(workflow);
 
-    Email email = new Email();
+    PersistentEmail email = new PersistentEmail();
+    emailStore.insertEmail(email);
 
     WorkflowInstance workflowInstance = workflowEngine.start(
-      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_ID_KEY, email.getId()));
 
     Object emailVariable = workflowInstance.getVariableValue("triggerEmail");
     assertNotNull("Email ID not null", emailVariable);
@@ -99,10 +101,11 @@ public class EmailTriggerTest extends WorkflowTest {
 
     deploy(workflow);
 
-    Email email = new Email();
+    PersistentEmail email = new PersistentEmail();
+    emailStore.insertEmail(email);
 
     WorkflowInstance workflowInstance = workflowEngine.start(
-      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_KEY, email));
+      new TriggerInstance().workflowId(workflow.getId()).data(EmailTrigger.EMAIL_ID_KEY, email.getId()));
 
     Object emailVariable = workflowInstance.getVariableValue("triggerEmail");
     assertNotNull("Email ID not null", emailVariable);

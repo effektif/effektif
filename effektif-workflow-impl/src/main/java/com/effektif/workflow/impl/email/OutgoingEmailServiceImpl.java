@@ -43,51 +43,51 @@ import com.effektif.workflow.api.model.Attachment;
  * 
  * @author Tom Baeyens
  */
-public class EmailServiceImpl implements EmailService {
+public class OutgoingEmailServiceImpl implements OutgoingEmailService {
 
-  private static final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(OutgoingEmailServiceImpl.class);
   
   protected Properties properties = new Properties();
   protected Authenticator authenticator = null;
   
-  public EmailServiceImpl() {
+  public OutgoingEmailServiceImpl() {
     properties = new Properties();
     property("mail.transport.protocol", "smtp");
     host("localhost");
     portDefault();
   }
   
-  public EmailServiceImpl host(String hostName) {
+  public OutgoingEmailServiceImpl host(String hostName) {
     properties.put("mail.smtp.host", hostName);
     return this;
   }
 
-  public EmailServiceImpl port(int port) {
+  public OutgoingEmailServiceImpl port(int port) {
     properties.put("mail.smtp.port", Integer.toString(port));
     return this;
   }
   
-  public EmailServiceImpl portDefault() {
+  public OutgoingEmailServiceImpl portDefault() {
     port(25);
     return this;
   }
 
-  public EmailServiceImpl portDefaultSsl() {
+  public OutgoingEmailServiceImpl portDefaultSsl() {
     port(465);
     return this;
   }
 
-  public EmailServiceImpl portDefaultTls() {
+  public OutgoingEmailServiceImpl portDefaultTls() {
     port(587);
     return this;
   }
 
-  public EmailServiceImpl ssl() {
+  public OutgoingEmailServiceImpl ssl() {
     portDefaultSsl();
     return this;
   }
 
-  public EmailServiceImpl ssl(int port) {
+  public OutgoingEmailServiceImpl ssl(int port) {
     port(port);
     properties.put("mail.smtp.socketFactory.port", Integer.toString(port));
     properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -95,13 +95,13 @@ public class EmailServiceImpl implements EmailService {
     return this;
   }
 
-  public EmailServiceImpl tls() {
+  public OutgoingEmailServiceImpl tls() {
     portDefaultTls();
     properties.setProperty("mail.smtp.starttls.enable", "true");
     return this;
   }
 
-  public EmailServiceImpl authenticate(final String username, final String password) {
+  public OutgoingEmailServiceImpl authenticate(final String username, final String password) {
     properties.setProperty("mail.smtp.auth", "true");
     this.authenticator = new Authenticator() {
       @Override
@@ -112,17 +112,17 @@ public class EmailServiceImpl implements EmailService {
     return this;
   }
   
-  public EmailServiceImpl from(String mailSmtpFrom) {
+  public OutgoingEmailServiceImpl from(String mailSmtpFrom) {
     properties.setProperty("mail.smtp.from", mailSmtpFrom);
     return this;
   }
 
-  public EmailServiceImpl timeout(long timeout) {
+  public OutgoingEmailServiceImpl timeout(long timeout) {
     properties.put("mail.smtp.timeout", Long.toString(timeout));
     return this;
   }
 
-  public EmailServiceImpl connectionTimeoutSeconds(long connectionTimeoutSeconds) {
+  public OutgoingEmailServiceImpl connectionTimeoutSeconds(long connectionTimeoutSeconds) {
     if (connectionTimeoutSeconds<=0) {
       throw new RuntimeException("Invalid timeout value "+connectionTimeoutSeconds+". Expected positive value expressed in seconds.");
     }
@@ -130,7 +130,7 @@ public class EmailServiceImpl implements EmailService {
     return this;
   }
 
-  public EmailServiceImpl property(String key, String value) {
+  public OutgoingEmailServiceImpl property(String key, String value) {
     properties.put(key, value);
     return this;
   }
@@ -153,7 +153,7 @@ public class EmailServiceImpl implements EmailService {
   }
 
   @Override
-  public void send(Email email) {
+  public void send(OutgoingEmail email) {
     try {
       Session session = getSession();
       MimeMessage message = createMessage(session, email);
@@ -172,7 +172,7 @@ public class EmailServiceImpl implements EmailService {
     }
   }
 
-  protected boolean isValid(Email email) {
+  protected boolean isValid(OutgoingEmail email) {
     if (email.getTo()==null || email.getTo().isEmpty() || email.getTo().contains(null)) {
       log.error("NOT sending mail: no TO recipients specified");
       return false;
@@ -180,7 +180,7 @@ public class EmailServiceImpl implements EmailService {
     return true;
   }
 
-  protected MimeMessage createMessage(Session session, Email email) throws AddressException, MessagingException, IOException {
+  protected MimeMessage createMessage(Session session, OutgoingEmail email) throws AddressException, MessagingException, IOException {
     MimeMessage message = new MimeMessage(session);
     Map<String, String> headers = email.getHeaders();
     if (headers!=null) {
