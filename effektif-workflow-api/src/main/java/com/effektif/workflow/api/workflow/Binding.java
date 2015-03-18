@@ -21,11 +21,11 @@ package com.effektif.workflow.api.workflow;
  * variable.
  *
  * <p>
- * A binding specifies a value in one of three possible ways:
+ * A binding specifies a value in one of two ways:
  * </p>
  * <ol>
  * <li>a fixed value</li>
- * <li>an expression : See <a href="https://github.com/effektif/effektif/wiki/Expressions">wiki for expressions documentation</a></li>
+ * <li>an expression - see <a href="https://github.com/effektif/effektif/wiki/Expressions">Expressions</a>.</li>
  * </ol>
  *
  * @author Tom Baeyens
