@@ -74,7 +74,7 @@ public class FormTriggerTest extends WorkflowTest {
         .field(new FormField()
           .id("versionField")  // users can also define their own field ids
           .name("Version number")
-          .binding("version")));
+          .bindingExpression("version")));
     
     deploy(workflow);
 

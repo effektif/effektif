@@ -154,7 +154,7 @@ public class DocumentationExamplesTest extends TestCase {
       .description("Form description")
       .field("v1")
       .field(new FormField()
-        .binding("v2")
+        .bindingExpression("v2")
         .readOnly()
         .required());
     print(form);
@@ -167,7 +167,7 @@ public class DocumentationExamplesTest extends TestCase {
       .field(new FormField()
         .id("f1")
         .name("The first field in the form")
-        .binding("v1"));
+        .bindingExpression("v1"));
     UserTask activity = new UserTask()
       .id("smokeTest")
       .name("Smoke test")

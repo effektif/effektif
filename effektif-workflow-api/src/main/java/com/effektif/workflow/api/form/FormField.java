@@ -42,7 +42,7 @@ public class FormField extends AbstractFormField {
   }
   /** shortcut to set the binding expression on this field 
    * @see https://github.com/effektif/effektif/wiki/Expressions */
-  public FormField binding(String bindingExpression) {
+  public FormField bindingExpression(String bindingExpression) {
     this.binding = new Binding().expression(bindingExpression);
     return this;
   }

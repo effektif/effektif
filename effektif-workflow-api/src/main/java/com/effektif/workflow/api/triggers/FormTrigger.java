@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class FormTrigger extends Trigger {
   
   protected Form form;
+  public static final String FORM_INSTANCE_KEY = "formInstance";
 
   public Form getForm() {
     return this.form;
@@ -53,7 +54,7 @@ public class FormTrigger extends Trigger {
   }
   /** shortcut to add a field and set the binding expression */  
   public FormTrigger field(String bindingExpression) {
-    field(new FormField().binding(bindingExpression));
+    field(new FormField().bindingExpression(bindingExpression));
     return this;
   }
 }

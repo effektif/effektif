@@ -45,7 +45,7 @@ public class Form extends AbstractForm {
     return this;
   }
   public Form field(String bindingExpression) {
-    field(new FormField().binding(bindingExpression));
+    field(new FormField().bindingExpression(bindingExpression));
     return this;
   }
   

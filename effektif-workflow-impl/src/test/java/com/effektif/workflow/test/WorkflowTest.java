@@ -42,6 +42,7 @@ import com.effektif.workflow.api.task.CaseService;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
@@ -116,7 +117,7 @@ public class WorkflowTest {
   public WorkflowInstance start(Workflow workflow, FormInstance formInstance) {
     return workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data(FormInstance.FORM_INSTANCE_KEY, formInstance));
+      .data(FormTrigger.FORM_INSTANCE_KEY, formInstance));
   }
   
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {
