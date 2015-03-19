@@ -27,6 +27,8 @@ import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.identity.User;
+import com.effektif.workflow.impl.script.CompiledCondition;
+import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
