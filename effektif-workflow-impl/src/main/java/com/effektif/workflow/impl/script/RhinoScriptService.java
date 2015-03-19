@@ -21,10 +21,10 @@ import java.io.StringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.org.mozilla.javascript.internal.Context;
-import sun.org.mozilla.javascript.internal.ContextAction;
-import sun.org.mozilla.javascript.internal.ContextFactory;
-import sun.org.mozilla.javascript.internal.Scriptable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextAction;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Scriptable;
 
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -79,7 +79,7 @@ public class RhinoScriptService extends AbstractScriptService implements ScriptS
         
         ScriptResult scriptResult = new ScriptResult();
         try {
-          sun.org.mozilla.javascript.internal.Script rhinoCompiledScript = (sun.org.mozilla.javascript.internal.Script) script.compiledScript;
+          org.mozilla.javascript.Script rhinoCompiledScript = (org.mozilla.javascript.Script) script.compiledScript;
           Object result = rhinoCompiledScript.exec(context, rhinoVariableScope);
           
           if (script.expectedResultType!=null && result!=null) {
