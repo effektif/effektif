@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -130,14 +131,23 @@ public class FormBindings {
 
   public void applyFormInstanceData(FormInstance formInstance, ScopeInstanceImpl scopeInstance) {
     if (formInstance!=null && formInstance.getFields()!=null) {
+      List<FormInstanceField> renderedFields = new ArrayList<>();
       for (FormInstanceField field: formInstance.getFields()) {
         Object value = field.getValue();
         FormFieldBinding formFieldBinding = formFieldBindings.get(field.getId());
         if (isWritable(formFieldBinding)) {
           String variableId = formFieldBinding.binding.expression.variableId;
           scopeInstance.setVariableValue(variableId, value);
+          FormField formField = formFieldBinding.formField;
+          // The name and type are copied from the form to the form instance
+          // This is for the start form rendering
+          // The start form instance will later be added to the event
+          field.setName(formField.getName());
+          field.setType(formField.getType());
+          renderedFields.add(field);
         }
       }
+      formInstance.setFields(renderedFields);
     }
   }
   

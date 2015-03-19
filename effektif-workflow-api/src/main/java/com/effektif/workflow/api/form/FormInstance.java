@@ -70,4 +70,18 @@ public class FormInstance extends AbstractForm {
       .value(value));
     return this;
   }
+
+  public FormInstanceField getField(String fieldId) {
+    if (fieldId==null) {
+      return null;
+    }
+    if (fields!=null) {
+      for (FormInstanceField field: fields) {
+        if (fieldId.equals(field.getId())) {
+          return field;
+        }
+      }
+    }
+    return null;
+  }
 }
