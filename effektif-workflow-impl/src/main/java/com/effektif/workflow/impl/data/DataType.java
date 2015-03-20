@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.template.Hints;
 
 public interface DataType<T extends Type> extends Plugin {
   
-  void initialize(Configuration configuration);
+  void setConfiguration(Configuration configuration);
 
   Class<?> getValueClass();
   Class<? extends Type> getApiClass();

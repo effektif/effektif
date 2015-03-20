@@ -36,26 +36,28 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   public DataType elementType;
   
   public ListTypeImpl() {
+    this(new ListType());
   }
   
-  public void initialize(Configuration configuration) {
-    initialize(new ListType(), List.class, configuration);
+  public ListTypeImpl(ListType listType) {
+    super(listType, List.class);
   }
-
-  public ListTypeImpl(DataType elementType, Configuration configuration) {
-    initialize(new ListType(), List.class, configuration);
-    this.elementType = elementType;
-  }
-
-  public ListTypeImpl(ListType listTypeApi, Configuration configuration) {
-    initialize(listTypeApi, List.class, configuration);
-    Type elementType = listTypeApi.getElementType();
+  
+  @Override
+  public void setConfiguration(Configuration configuration) {
+    super.setConfiguration(configuration);
+    Type elementType = type.getElementType();
     if (elementType!=null) {
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);
       this.elementType = dataTypeService.createDataType(elementType);
     }
   }
-  
+
+  @Override
+  public boolean isStatic() {
+    return false;
+  }
+
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue==null) {

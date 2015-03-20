@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
@@ -259,7 +260,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
           DataType type = typedValue.type;
           if ( (value instanceof Collection)
                && ! (type instanceof ListTypeImpl) ){
-            type = new ListTypeImpl(type, configuration);
+            type = new ListTypeImpl((ListType)type);
+            type.setConfiguration(configuration);
           }
           typedValue = typedValue.type.dereference(value, field);
         } else {
@@ -311,7 +313,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       return;
     }
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataType dataType = dataTypeService.getDataTypeByValue(value);
+    Class<?> valueClass = value!=null ? value.getClass() : null;
+    DataType dataType = dataTypeService.getDataTypeByValue(valueClass);
     if (dataType==null) {
       throw new RuntimeException("Couldn't determine data type dynamically for value "+value);
     }

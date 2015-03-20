@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.IdFunctionObject;
@@ -34,6 +31,8 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -45,15 +44,15 @@ import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-@SuppressWarnings("restriction")
 public class RhinoVariableScope implements Scriptable {
-  
+
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);
   
   protected ScopeInstanceImpl scopeInstance;
   protected Scriptable parentScope;
   
-  public Map<String,Object> localObjects;
+  public Map<String,Object> objects;
+  protected Map<String,Callable> functions = null;
   protected Set<String> updated;
   protected Map<String,String> mappings;
   
@@ -62,16 +61,43 @@ public class RhinoVariableScope implements Scriptable {
     this.parentScope = parentScope;
     this.mappings = scriptToWorkflowMappings;
     this.updated = new HashSet<>();
-    this.localObjects = new HashMap<>();
-    this.localObjects.put("console", new Console(console)); 
-    this.localObjects.put("JSON", new JSON()); 
+    initializeObjects(console);
+    initializeFunctions();
   }
 
+  protected void initializeObjects(PrintWriter console) {
+    this.objects = new HashMap<>();
+    this.objects.put("console", new Console(console)); 
+    this.objects.put("JSON", new JSON());
+  }
+  
+  protected void initializeFunctions() {
+    functions = new HashMap<>();
+    functions.put("contains", new Callable() {
+      @Override
+      public Object call(Context context, Scriptable scope, Scriptable thisObject, Object[] args) {
+        if (args==null || args.length!=2 || args[0]==null) {
+          return false;
+        }
+        if (args[0] instanceof String) {
+          return ((String)args[0]).contains((CharSequence) args[1]);
+        }
+        if (args[0] instanceof Collection) {
+          return ((Collection)args[0]).contains(args[1]);
+        }
+        return false;
+      }
+    });
+  }
+  
   @Override
   public Object get(String name, Scriptable start) {
     log.debug("get "+name+" | "+start);
-    if (localObjects.containsKey(name)) {
-      return localObjects.get(name);
+    if (objects.containsKey(name)) {
+      return objects.get(name);
+    }
+    if (functions.containsKey(name)) {
+      return functions.get(name);
     }
     String variableId = mappings!=null ? mappings.get(name) : null;
     if (variableId==null) {
@@ -84,17 +110,15 @@ public class RhinoVariableScope implements Scriptable {
       log.debug("  lazy loaded variable "+name+" = "+(typedValue!=null ? typedValue.value : "null"));
       nativeValue = convertInternalToNative(typedValue, name);
     }
-    localObjects.put(name, nativeValue);
+    objects.put(name, nativeValue);
     return nativeValue;
   }
   
   @Override
   public boolean has(String name, Scriptable start) {
     log.debug("has "+name+" | "+start);
-    if ("console".equals(name)) {
-      return true;
-    }
-    if (localObjects.containsKey(name)) {
+    if (objects.containsKey(name)
+        || functions.containsKey(name)) {
       return true;
     }
     String variableId = mappings!=null ? mappings.get(name) : null;
@@ -107,7 +131,7 @@ public class RhinoVariableScope implements Scriptable {
   @Override
   public void put(String name, Scriptable start, Object value) {
     log.debug("put "+name+" | "+start+" | "+value);
-    localObjects.put(name, value);
+    objects.put(name, value);
     updated(name);
   }
 
@@ -133,7 +157,7 @@ public class RhinoVariableScope implements Scriptable {
   public Map<String,TypedValueImpl> getUpdatedVariableValues() {
     Map<String,TypedValueImpl> updatedValues = new HashMap<>();
     for (String scriptVariableName: updated) {
-      Object localObject = localObjects.get(scriptVariableName);
+      Object localObject = objects.get(scriptVariableName);
       String variableId = mappings!=null ? mappings.get(scriptVariableName) : null;
       if (variableId==null) {
         variableId = scriptVariableName;
@@ -192,6 +216,7 @@ public class RhinoVariableScope implements Scriptable {
   }
 
   public class DirtyCheckingNativeArray extends NativeArray {
+    private static final long serialVersionUID = 1L;
     String name;
     DataType elementType;
     List<Object> values;
@@ -295,8 +320,8 @@ public class RhinoVariableScope implements Scriptable {
     }
   }
 
-
   public class DirtyCheckingNativeObject extends NativeObject {
+    private static final long serialVersionUID = 1L;
     String name;
     DataType type;
     Object value;

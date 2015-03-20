@@ -13,31 +13,20 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.impl.file.File;
-import com.effektif.workflow.impl.file.FileService;
 
 
 /**
  * @author Tom Baeyens
  */
-public class FileTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
+public class FileTypeImpl extends JavaBeanTypeImpl<FileType> {
   
-  FileService fileService;
-
   public FileTypeImpl() {
+    super(FileType.INSTANCE, File.class);
   }
-  public void initialize(Configuration configuration) {
-    initialize(new JavaBeanType(File.class), File.class, configuration);
-    this.fileService = configuration.get(FileService.class);
-  }
-
-  public FileTypeImpl(Configuration configuration) {
-    initialize(configuration);
-  }
-
-  public FileTypeImpl(JavaBeanType typeApi, Configuration configuration) {
-    super(typeApi, configuration);
+  
+  @Override
+  public boolean isStatic() {
+    return true;
   }
 }

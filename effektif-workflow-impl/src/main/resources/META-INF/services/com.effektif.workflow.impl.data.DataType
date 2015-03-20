@@ -10,5 +10,6 @@ com.effektif.workflow.impl.data.types.JavaBeanTypeImpl
 com.effektif.workflow.impl.data.types.GroupIdTypeImpl
 com.effektif.workflow.impl.data.types.GroupTypeImpl
 com.effektif.workflow.impl.data.types.ListTypeImpl
+com.effektif.workflow.impl.data.types.MoneyTypeImpl
 com.effektif.workflow.impl.data.types.UserIdTypeImpl
 com.effektif.workflow.impl.data.types.UserTypeImpl

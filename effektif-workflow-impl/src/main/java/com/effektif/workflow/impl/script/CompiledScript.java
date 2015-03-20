@@ -21,5 +21,5 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 public interface CompiledScript {
 
-  ScriptResult evaluate(ScopeInstanceImpl scopeInstance);
+  ScriptResult run(ScopeInstanceImpl scopeInstance);
 }

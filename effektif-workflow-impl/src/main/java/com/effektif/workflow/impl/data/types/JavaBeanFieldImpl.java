@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import java.lang.reflect.Field;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.data.DataType;
 
 
@@ -28,23 +27,10 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
 
   protected Field field;
 
-  public JavaBeanFieldImpl(Class< ? > objectClass, String fieldName, DataType dataType) {
-    super(fieldName, dataType);
-    initializeField(objectClass);
-  }
-
-  public JavaBeanFieldImpl(Class< ? > objectClass, ObjectField fieldApi, Configuration configuration) {
-    super(objectClass, fieldApi, configuration);
-    initializeField(objectClass);
-  }
-
-  protected void initializeField(Class< ? > objectClass) {
-    try {
-      this.field = objectClass.getDeclaredField(name);
-      this.field.setAccessible(true);
-    } catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {
-      throw new RuntimeException(e);
-    }
+  public JavaBeanFieldImpl(Field field, DataType dataType) {
+    super(field.getName(), dataType);
+    this.field = field;
+    this.field.setAccessible(true);
   }
 
   public JavaBeanFieldImpl(String name) {

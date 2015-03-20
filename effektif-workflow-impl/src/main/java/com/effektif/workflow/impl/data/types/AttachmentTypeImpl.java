@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.impl.data.AbstractDataType;
 
@@ -24,16 +23,13 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 public class AttachmentTypeImpl extends AbstractDataType<AttachmentType> {
 
   public AttachmentTypeImpl() {
-  }
-  public void initialize(Configuration configuration) {
-    initialize(AttachmentType.INSTANCE, Attachment.class, configuration);
+    super(AttachmentType.INSTANCE, Attachment.class);
   }
 
-  public AttachmentTypeImpl(Configuration configuration) {
-    initialize(configuration);
+  @Override
+  public boolean isStatic() {
+    return super.isStatic();
   }
 
-  public AttachmentTypeImpl(AttachmentType attachmentType, Configuration configuration) {
-    initialize(attachmentType, Attachment.class, configuration);
-  }
+  
 }

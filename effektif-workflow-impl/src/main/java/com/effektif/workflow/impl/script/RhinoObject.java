@@ -21,8 +21,9 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
 /**
  * @author Tom Baeyens
  */
-@SuppressWarnings("restriction")
 public class RhinoObject extends org.mozilla.javascript.ScriptableObject {
+  
+  private static final long serialVersionUID = 1L;
   
   TypedValueImpl typedValue;
 

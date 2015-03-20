@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import java.util.List;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ChoiceOption;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
@@ -29,20 +28,19 @@ import com.effektif.workflow.impl.data.InvalidValueException;
  */
 public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   
-  protected List<ChoiceOption> options;
-
   public ChoiceTypeImpl() {
+    super(new ChoiceType(), String.class);
   }
 
-  public void initialize(Configuration configuration) {
-    initialize(new ChoiceType(), String.class, configuration);
+  public ChoiceTypeImpl(ChoiceType choiceType) {
+    super(choiceType, String.class);
   }
 
-  public ChoiceTypeImpl(ChoiceType choiceType, Configuration configuration) {
-    initialize(choiceType, String.class, configuration);
-    this.options = choiceType.getOptions();
+  @Override
+  public boolean isStatic() {
+    return false;
   }
-  
+
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     validateInternalValue(jsonValue);
@@ -54,6 +52,7 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
     if (internalValue==null) {
       return;
     }
+    List<ChoiceOption> options = type.getOptions();
     if (options!=null) {
       for (ChoiceOption option: options) {
         if (internalValue.equals(option.getId())) {

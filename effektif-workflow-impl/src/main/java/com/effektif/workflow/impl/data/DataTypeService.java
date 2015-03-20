@@ -32,11 +32,11 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.types.AnyType;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
+import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,14 +72,25 @@ public class DataTypeService implements Brewable {
     // dataTypes have String as a value type, 
     // we need to register the types we want to use 
     // during auto-creation first.
-    registerDataType(new BooleanTypeImpl(configuration));
-    registerDataType(new NumberTypeImpl(configuration));
-    registerDataType(new TextTypeImpl(configuration));
+    BooleanTypeImpl booleanTypeImpl = new BooleanTypeImpl();
+    booleanTypeImpl.setConfiguration(configuration);
+    registerDataType(booleanTypeImpl);
+    NumberTypeImpl numberTypeImpl = new NumberTypeImpl();
+    numberTypeImpl.setConfiguration(configuration);
+    registerDataType(numberTypeImpl);
+    TextTypeImpl textTypeImpl = new TextTypeImpl();
+    textTypeImpl.setConfiguration(configuration);
+    registerDataType(textTypeImpl);
+    ObjectTypeImpl objectTypeImpl = new ObjectTypeImpl();
+    objectTypeImpl.setConfiguration(configuration);
+    registerDataType(objectTypeImpl);
 
     ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
     for (DataType dataType: dataTypeLoader) {
-      dataType.initialize(configuration);
       registerDataType(dataType);
+    }
+    for (DataType dataType: dataTypeLoader) {
+      dataType.setConfiguration(configuration);
     }
   }
   
@@ -89,11 +100,14 @@ public class DataTypeService implements Brewable {
   
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
-    if (dataType.isStatic()) {
-      singletons.put(apiClass, dataType);
-    } else {
-      Constructor<?> constructor = findDataTypeConstructor(dataType.getClass());
-      dataTypeConstructors.put(apiClass, constructor);
+    if (apiClass!=null) {
+      if (dataType.isStatic()) {
+        singletons.put(apiClass, dataType);
+      } else {
+        Constructor< ? > constructor = findDataTypeConstructor(dataType.getClass());
+        dataTypeConstructors.put(apiClass, constructor);
+      }
+      objectMapper.registerSubtypes(apiClass);
     }
     Class valueClass = dataType.getValueClass();
     if (valueClass!=null) {
@@ -102,15 +116,13 @@ public class DataTypeService implements Brewable {
       }
       objectMapper.registerSubtypes(valueClass);
     }
-    objectMapper.registerSubtypes(apiClass);
   }
   
   protected Constructor< ? > findDataTypeConstructor(Class< ? extends DataType> dataTypeClass) {
     for (Constructor<?> constructor: dataTypeClass.getDeclaredConstructors()) {
       Class< ? >[] parameterTypes = constructor.getParameterTypes();
-      if (parameterTypes.length==2
-          && Type.class.isAssignableFrom(parameterTypes[0])
-          && Configuration.class.isAssignableFrom(parameterTypes[1])) {
+      if (parameterTypes.length==1
+          && Type.class.isAssignableFrom(parameterTypes[0])) {
         return constructor;
       }
     }
@@ -119,18 +131,20 @@ public class DataTypeService implements Brewable {
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {
     JavaBeanType javaBeanTypeApi = new JavaBeanType().javaClass(javaBeanClass);
-    JavaBeanTypeImpl javaBeanTypeImpl = new JavaBeanTypeImpl(javaBeanTypeApi, configuration);
+    JavaBeanTypeImpl javaBeanTypeImpl = new JavaBeanTypeImpl(javaBeanTypeApi, javaBeanClass);
+    javaBeanTypeImpl.setConfiguration(configuration);
     javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
     registerDataType(javaBeanTypeImpl);
   }
   
-  public DataType getDataTypeByValue(Object value) {
+  public DataType getDataTypeByValue(Class<?> valueClass) {
     DataType dataType = null;
-    if (value!=null) {
-      dataType = dataTypesByValueClass.get(value.getClass());
+    if (valueClass!=null) {
+      dataType = dataTypesByValueClass.get(valueClass);
     }
     if (dataType==null) {
-      dataType = new AnyTypeImpl(AnyType.INSTANCE, configuration);
+      dataType = new AnyTypeImpl();
+      dataType.setConfiguration(configuration);
     }
     return dataType;
   }
@@ -173,7 +187,9 @@ public class DataTypeService implements Brewable {
     Constructor<?> constructor = dataTypeConstructors.get(type.getClass());
     if (constructor!=null) {
       try {
-        return (DataType) constructor.newInstance(new Object[]{type, configuration});
+        DataType dataType = (DataType) constructor.newInstance(new Object[]{type});
+        dataType.setConfiguration(configuration);
+        return dataType;
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
         throw new RuntimeException("Couldn't instantiate data type "+constructor.getDeclaringClass()+": "+e.getMessage(), e);
       }

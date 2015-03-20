@@ -36,18 +36,20 @@ import com.effektif.workflow.impl.util.Exceptions;
 public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
   
   protected FileService fileService;
+  protected AttachmentTypeImpl attachmentTypeImpl;
+  protected FileTypeImpl fileTypeImpl;
   
   public FileIdTypeImpl() {
+    super(FileIdType.INSTANCE, FileId.class);
   }
-  public void initialize(Configuration configuration) {
-    initialize(FileIdType.INSTANCE,  FileId.class, configuration);
-    this.fileService = configuration.get(FileService.class);
+  
+  @Override
+  public void setConfiguration(Configuration configuration) {
+    super.setConfiguration(configuration);
+    this.attachmentTypeImpl = getSingletonDataType(AttachmentTypeImpl.class);
+    this.fileTypeImpl = getSingletonDataType(FileTypeImpl.class);
   }
-
-  public FileIdTypeImpl(FileIdType fileIdType, Configuration configuration) {
-    initialize(fileIdType, FileId.class, configuration);
-  }
-
+  
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     return jsonValue!=null ? new FileId((String)jsonValue) : null;
@@ -64,12 +66,12 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
     FileService fileService = configuration.get(FileService.class);
     File file = fileId!=null ? fileService.getFileById(fileId) : null;
     if ("*".equals(fieldName)) {
-      return new TypedValueImpl(new FileTypeImpl(configuration), file);
-    } else  if ("attachment".equals(fieldName)) {
+      return new TypedValueImpl(fileTypeImpl, file);
+    } else if ("attachment".equals(fieldName)) {
       FileAttachment fileAttachment = FileAttachment.createFileAttachment(file, fileService);
-      return new TypedValueImpl(new AttachmentTypeImpl(configuration), fileAttachment);
+      return new TypedValueImpl(attachmentTypeImpl, fileAttachment);
     }
-    return new FileTypeImpl(configuration).dereference(file, fieldName);
+    return fileTypeImpl.dereference(file, fieldName);
   }
 
   @Override

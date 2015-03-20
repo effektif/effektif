@@ -105,13 +105,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
 
   protected boolean meetsCondition(TransitionImpl outgoingTransition, ActivityInstanceImpl activityInstance) {
     CompiledCondition condition = outgoingTransition.condition;
-    if (condition!=null) {
-      ScriptResult scriptResult = condition.evaluate(activityInstance);
-      if (Boolean.TRUE.equals(scriptResult.getResult())) {
-        return true;
-      }
-    }
-    return false;
+    return condition!=null ? condition.evaluate(activityInstance) : false;
   }
 
   @Override

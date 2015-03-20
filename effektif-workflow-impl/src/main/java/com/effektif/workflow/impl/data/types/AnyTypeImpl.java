@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.data.AbstractDataType;
 
 
@@ -25,12 +24,6 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 public class AnyTypeImpl extends AbstractDataType<AnyType> {
 
   public AnyTypeImpl() {
-  }
-  public void initialize(Configuration configuration) {
-    initialize(AnyType.INSTANCE, Object.class, configuration);
-  }
-
-  public AnyTypeImpl(AnyType anyType, Configuration configuration) {
-    initialize(anyType, Object.class, configuration);
+    super(AnyType.INSTANCE, Object.class);
   }
 }

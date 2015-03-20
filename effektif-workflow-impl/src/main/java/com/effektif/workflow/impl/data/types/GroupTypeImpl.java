@@ -14,34 +14,20 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.impl.identity.Group;
 
 
 /**
  * @author Tom Baeyens
  */
-public class GroupTypeImpl extends JavaBeanTypeImpl<JavaBeanType> {
-
+public class GroupTypeImpl extends JavaBeanTypeImpl<GroupType> {
   
   public GroupTypeImpl() {
+    super(GroupType.INSTANCE, Group.class);
   }
-
-  public void initialize(Configuration configuration) {
-    initialize(new JavaBeanType(Group.class), Group.class, configuration);
-  }
-
-  public GroupTypeImpl(JavaBeanType type, Configuration configuration) {
-    initialize(type, Group.class, configuration);
-  }
-
-  public GroupTypeImpl(Configuration configuration) {
-    initialize(configuration);
-  }
-
+  
   @Override
-  protected void initializeFields(Configuration configuration) {
-    addField(new JavaBeanFieldImpl(Group.class, "id", new UserIdTypeImpl(configuration)));
-    addField(new JavaBeanFieldImpl(Group.class, "name", new TextTypeImpl(configuration)));
+  public boolean isStatic() {
+    return true;
   }
 }

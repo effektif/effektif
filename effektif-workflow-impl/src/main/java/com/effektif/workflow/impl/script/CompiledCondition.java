@@ -21,5 +21,5 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 public interface CompiledCondition {
 
-  ScriptResult evaluate(ScopeInstanceImpl scopeInstance);
+  boolean evaluate(ScopeInstanceImpl scopeInstance);
 }

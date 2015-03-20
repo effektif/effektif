@@ -33,7 +33,15 @@ public class ScriptImpl implements CompiledScript, CompiledCondition {
   public DataType expectedResultType;
   public boolean readOnly;
   
-  public ScriptResult evaluate(ScopeInstanceImpl scopeInstance) {
-    return scriptService.evaluate(scopeInstance, this);
+  public boolean evaluate(ScopeInstanceImpl scopeInstance) {
+    ScriptResult scriptResult = scriptService.run(scopeInstance, this);
+    Object resultValue = scriptResult!=null ? scriptResult.result : null;
+    return !Boolean.FALSE.equals(resultValue) && resultValue!=null;
+
+  }
+
+  @Override
+  public ScriptResult run(ScopeInstanceImpl scopeInstance) {
+    return scriptService.run(scopeInstance, this);
   }
 }

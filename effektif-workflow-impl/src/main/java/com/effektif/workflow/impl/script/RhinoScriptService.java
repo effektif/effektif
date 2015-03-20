@@ -18,13 +18,12 @@ package com.effektif.workflow.impl.script;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -36,7 +35,6 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-@SuppressWarnings("restriction")
 public class RhinoScriptService extends AbstractScriptService implements ScriptService, ConditionService, Brewable {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);
@@ -67,7 +65,7 @@ public class RhinoScriptService extends AbstractScriptService implements ScriptS
   }
 
   @Override
-  public ScriptResult evaluate(final ScopeInstanceImpl scopeInstance, final CompiledScript compiledScript) {
+  public ScriptResult run(final ScopeInstanceImpl scopeInstance, final CompiledScript compiledScript) {
     final ScriptImpl script = (ScriptImpl) compiledScript;
     return (ScriptResult) contextFactory.call(new ContextAction() {
       public Object run(Context context) {

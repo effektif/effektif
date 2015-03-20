@@ -24,7 +24,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 public abstract class AbstractScriptService implements ScriptService, ConditionService {
   
-  public abstract ScriptResult evaluate(ScopeInstanceImpl scopeInstance, CompiledScript compiledScript);
+  public abstract ScriptResult run(ScopeInstanceImpl scopeInstance, CompiledScript compiledScript);
 
   public CompiledCondition compile(Condition condition, WorkflowParser parser) {
     Script script = new Script();

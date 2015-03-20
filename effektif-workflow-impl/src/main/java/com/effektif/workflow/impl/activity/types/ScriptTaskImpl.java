@@ -79,7 +79,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     if (script!=null) {
-      ScriptResult scriptResult = script.evaluate(activityInstance);
+      ScriptResult scriptResult = script.run(activityInstance);
       Map<String, TypedValueImpl> updates = scriptResult!=null ? scriptResult.getUpdates() : null;
       if (scriptResult!=null && updates!=null) {
         for (String variableId: updates.keySet()) {

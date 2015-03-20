@@ -11,22 +11,37 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.data.types;
-
-import com.effektif.workflow.impl.identity.User;
+package com.effektif.workflow.api.model;
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserTypeImpl extends JavaBeanTypeImpl<UserType> {
-  
-  public UserTypeImpl() {
-    super(UserType.INSTANCE, User.class);
-  }
+public class Money {
 
-  @Override
-  public boolean isStatic() {
-    return true;
+  protected Double amount;
+
+  public Double getAmount() {
+    return this.amount;
+  }
+  public void setAmount(Double amount) {
+    this.amount = amount;
+  }
+  public Money amount(Double amount) {
+    this.amount = amount;
+    return this;
+  }
+  
+  protected String currency;
+
+  public String getCurrency() {
+    return this.currency;
+  }
+  public void setCurrency(String currency) {
+    this.currency = currency;
+  }
+  public Money currency(String currency) {
+    this.currency = currency;
+    return this;
   }
 }

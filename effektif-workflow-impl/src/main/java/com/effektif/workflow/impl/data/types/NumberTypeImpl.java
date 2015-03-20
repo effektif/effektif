@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
@@ -24,26 +23,16 @@ import com.effektif.workflow.impl.data.InvalidValueException;
 /**
  * @author Tom Baeyens
  */
-public class NumberTypeImpl extends AbstractDataType {
+public class NumberTypeImpl extends AbstractDataType<NumberType> {
 
   public NumberTypeImpl() {
-  }
-  public void initialize(Configuration configuration) {
-    initialize(NumberType.INSTANCE, Number.class, configuration);
-  }
-  public NumberTypeImpl(NumberType numberType, Configuration configuration) {
-    initialize(numberType, Number.class, configuration);
+    this(NumberType.INSTANCE);
   }
   
-  public NumberTypeImpl(Configuration configuration) {
-    initialize(configuration);
+  public NumberTypeImpl(NumberType numberType) {
+    super(numberType, Number.class);
   }
-
-  @Override
-  public boolean isStatic() {
-    return true;
-  }
-
+  
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue instanceof Double) {

@@ -20,9 +20,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.effektif.workflow.api.model.FileId;
+import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.FileIdType;
+import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -62,6 +64,24 @@ public class VariableTypesTest extends WorkflowTest {
       .data("v", new UserId("u2")));
     
     assertEquals(UserId.class, workflowInstance.getVariableValue("v").getClass());
+  }
+
+  @Test
+  public void testMoneyType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new MoneyType());
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", new Money().amount(5d).currency("USD")));
+    
+    Object value = workflowInstance.getVariableValue("v");
+    assertEquals(Money.class, value.getClass());
+    Money money = (Money) value;
+    assertEquals(new Double(5d), money.getAmount());
+    assertEquals("USD", money.getCurrency());
   }
 
   @Test

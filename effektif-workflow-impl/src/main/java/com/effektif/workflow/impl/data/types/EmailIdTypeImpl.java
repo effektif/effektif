@@ -35,14 +35,16 @@ import com.effektif.workflow.impl.util.Exceptions;
  */
 public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
   
+  protected EmailTypeImpl emailTypeImpl = null;
+  
   public EmailIdTypeImpl() {
+    super(EmailIdType.INSTANCE, EmailId.class);
   }
-  public void initialize(Configuration configuration) {
-    initialize(EmailIdType.INSTANCE, EmailId.class, configuration);
-  }
-
-  public EmailIdTypeImpl(EmailIdType emailIdType, Configuration configuration) {
-    initialize(emailIdType, EmailId.class, configuration);
+  
+  @Override
+  public void setConfiguration(Configuration configuration) {
+    super.setConfiguration(configuration);
+    this.emailTypeImpl = getSingletonDataType(EmailTypeImpl.class);
   }
 
   @Override
@@ -61,9 +63,9 @@ public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
     EmailStore emailStore = configuration.get(EmailStore.class);
     PersistentEmail email = emailId!=null ? emailStore.findEmailById(emailId) : null;
     if ("*".equals(fieldName)) {
-      return new TypedValueImpl(new EmailTypeImpl(configuration), email);
+      return new TypedValueImpl(emailTypeImpl, email);
     }
-    return new EmailTypeImpl(configuration).dereference(email, fieldName);
+    return emailTypeImpl.dereference(email, fieldName);
   }
 
   @Override

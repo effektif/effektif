@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.script;
+package com.effektif.workflow.api.types;
 
-import java.io.Writer;
-
-import javax.script.SimpleScriptContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.Money;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-public class StandardScriptContext extends SimpleScriptContext {
-  
-  public static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
-  
-  public StandardScriptContext(StandardScriptBindings scriptBindings, ScriptImpl script, Writer logWriter) {
-    setWriter(logWriter);
-    setErrorWriter(logWriter);
-    setBindings(scriptBindings, ENGINE_SCOPE);
-  }
+@JsonTypeName("money")
+public class MoneyType extends JavaBeanType {
 
+  public static final MoneyType INSTANCE = new MoneyType();
+
+  public MoneyType() {
+    super(Money.class);
+  } 
 }

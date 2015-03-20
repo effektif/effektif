@@ -60,7 +60,7 @@ public class RhinoTest {
         PrintWriter console = new PrintWriter(consoleData);
         RhinoVariableScope rhinoVariableScope = new RhinoVariableScope(null, null, console, scope);
         
-        rhinoVariableScope.localObjects.put("file", new MagicScriptableObject("file"));
+        rhinoVariableScope.objects.put("file", new MagicScriptableObject("file"));
         
         Object result = null;
         try {

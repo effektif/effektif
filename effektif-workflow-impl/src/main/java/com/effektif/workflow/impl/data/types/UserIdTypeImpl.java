@@ -32,19 +32,19 @@ import com.effektif.workflow.impl.identity.User;
  * @author Tom Baeyens
  */
 public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
+  
+  protected TextTypeImpl textTypeImpl;
+  protected UserTypeImpl userTypeImpl;
 
   public UserIdTypeImpl() {
+    super(UserIdType.INSTANCE, String.class);
   }
-  public void initialize(Configuration configuration) {
-    initialize(new UserIdType(), String.class, configuration);
-  }
-
-  public UserIdTypeImpl(UserIdType type, Configuration configuration) {
-    initialize(type, String.class, configuration);
-  }
-
-  public UserIdTypeImpl(Configuration configuration) {
-    initialize(configuration);
+  
+  @Override
+  public void setConfiguration(Configuration configuration) {
+    super.setConfiguration(configuration);
+    this.textTypeImpl = getSingletonDataType(TextTypeImpl.class);
+    this.userTypeImpl = getSingletonDataType(UserTypeImpl.class);
   }
   
   @Override
@@ -60,12 +60,15 @@ public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
     UserId userId = (UserId) value;
+    if ("id".equals(fieldName)) {
+      return new TypedValueImpl(textTypeImpl, userId.getInternal());
+    }
     IdentityService identityService = configuration.get(IdentityService.class);
     User user = userId!=null ? identityService.findUserById(userId) : null;
     if ("*".equals(fieldName)) {
-      return new TypedValueImpl(new UserTypeImpl(configuration), user);
+      return new TypedValueImpl(userTypeImpl, user);
     }
-    return new UserTypeImpl(configuration).dereference(user, fieldName);
+    return userTypeImpl.dereference(user, fieldName);
   }
 
   @Override

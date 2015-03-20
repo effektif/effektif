@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.impl.data;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
@@ -24,21 +27,37 @@ import com.effektif.workflow.impl.template.Hints;
 
 public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
-  private T typeApi;
+  protected T type;
   protected Class<? extends Type> apiClass;
   protected Class<?> valueClass;
   protected Configuration configuration;
 
-  public void initialize(T typeApi, Class< ? > valueClass, Configuration configuration) {
-    this.typeApi = typeApi;
-    this.apiClass = typeApi.getClass();
+  public AbstractDataType(T typeApi, Class< ? > valueClass) {
+    this.type = typeApi;
+    this.apiClass = typeApi!=null ? typeApi.getClass() : null;
     this.valueClass = valueClass;
+  }
+  
+  public void setConfiguration(Configuration configuration) {
     this.configuration = configuration;
+  }
+  
+  protected <D extends DataType> D getSingletonDataType(Class<D> dataTypeClass) {
+    DataTypeService dataTypeService = this.configuration.get(DataTypeService.class);
+    for (DataType dataType: dataTypeService.singletons.values()) {
+      if (dataTypeClass.equals(dataType.getClass())) {
+        return (D) dataType;
+      }
+    }
+    for (Entry<Class< ? extends Type>, DataType> entry: dataTypeService.singletons.entrySet()) {
+      System.err.println(entry.getKey().toString()+" -> "+entry.getValue().toString());
+    }
+    throw new RuntimeException("Couldn't find singleton "+dataTypeClass.getName());
   }
   
   @Override
   public boolean isStatic() {
-    return false;
+    return true;
   }
   
   public Class<? extends Type> getApiClass() {
@@ -73,7 +92,7 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
   
   @Override
   public T serialize() {
-    return typeApi;
+    return type;
   }
 
   @Override
