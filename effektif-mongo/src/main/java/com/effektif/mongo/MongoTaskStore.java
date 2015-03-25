@@ -31,6 +31,8 @@ import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
 import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.task.Task;
@@ -43,7 +45,6 @@ import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 
 
 public class MongoTaskStore implements TaskStore, Brewable {
@@ -63,6 +64,8 @@ public class MongoTaskStore implements TaskStore, Brewable {
     String COMPLETED = "completed";
     String ACTIVITY_NOTIFY = "activityNotify";
     String HAS_WORKFLOW_FORM = "hasWorkflowForm";
+    String WORKFLOW_ID = "workflowId";
+    String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
   }
 
   public interface FieldsUserReference {
@@ -168,9 +171,13 @@ public class MongoTaskStore implements TaskStore, Brewable {
     jsonTask.remove("id");
     jsonTask.remove(FieldsTask.ORGANIZATION_ID);
     jsonTask.remove(FieldsTask.LAST_UPDATED);
+    jsonTask.remove(FieldsTask.WORKFLOW_ID);
+    jsonTask.remove(FieldsTask.WORKFLOW_INSTANCE_ID);
     dbTask.putAll(jsonTask);
     writeId(dbTask, FieldsWorkflow._ID, task.getId());
-    writeIdOpt(dbTask, FieldsWorkflow.ORGANIZATION_ID, task.getOrganizationId());
+    writeIdOpt(dbTask, FieldsTask.ORGANIZATION_ID, task.getOrganizationId());
+    writeIdOptNew(dbTask, FieldsTask.WORKFLOW_ID, task.getWorkflowId());
+    writeIdOptNew(dbTask, FieldsTask.WORKFLOW_INSTANCE_ID, task.getWorkflowInstanceId());
     writeTimeOpt(dbTask, FieldsTask.LAST_UPDATED, task.getLastUpdated());
     List<String> subtaskIdStrings = (List<String>) dbTask.get(FieldsTask.SUBTASK_IDS);
     if (subtaskIdStrings!=null) {
@@ -187,6 +194,8 @@ public class MongoTaskStore implements TaskStore, Brewable {
     ObjectId taskId = (ObjectId) dbTask.remove(FieldsTask._ID);
     List<ObjectId> subtaskIdInternals = (List<ObjectId>) dbTask.remove(FieldsTask.SUBTASK_IDS);
     ObjectId organizationId = (ObjectId) dbTask.remove(FieldsTask.ORGANIZATION_ID);
+    ObjectId workflowId = (ObjectId) dbTask.remove(FieldsTask.WORKFLOW_ID);
+    ObjectId workflowInstanceId = (ObjectId) dbTask.remove(FieldsTask.WORKFLOW_INSTANCE_ID);
     Date lastUpdated = (Date) dbTask.remove(FieldsTask.LAST_UPDATED);
     Task task = jsonService.jsonMapToObject(dbTask, Task.class);
     if (taskId!=null) {
@@ -201,6 +210,12 @@ public class MongoTaskStore implements TaskStore, Brewable {
     }
     if (organizationId!=null) {
       task.setOrganizationId(organizationId.toString());
+    }
+    if (workflowId!=null) {
+      task.setWorkflowId(new WorkflowId(workflowId.toString()));
+    }
+    if (workflowInstanceId!=null) {
+      task.setWorkflowInstanceId(new WorkflowInstanceId(workflowInstanceId.toString()));
     }
     if (lastUpdated!=null) {
       task.setLastUpdated(new LocalDateTime(lastUpdated));
