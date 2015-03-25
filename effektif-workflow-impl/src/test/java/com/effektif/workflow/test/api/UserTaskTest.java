@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -77,8 +78,9 @@ public class UserTaskTest extends WorkflowTest {
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
     
-    taskService.assignTask(task.getId(), new UserId("joesmoe"));
-    taskService.completeTask(task.getId());
+    TaskId taskId = task.getId();
+    taskService.assignTask(taskId, new UserId("joesmoe"));
+    taskService.completeTask(taskId);
 
     task = taskService.findTasks(new TaskQuery().open()).get(0);
     assertEquals("2", task.getName());
