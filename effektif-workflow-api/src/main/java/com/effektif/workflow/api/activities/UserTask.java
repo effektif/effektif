@@ -150,17 +150,17 @@ public class UserTask extends NoneTask {
   }
   /** adds a candidate id value to the list */
   public UserTask candidateGroupId(String candidateGroupId) {
-    addCandidateBinding(new Binding().value(new GroupId(candidateGroupId)));
+    addCandidateGroupBinding(new Binding().value(new GroupId(candidateGroupId)));
     return this;
   }
   /** adds a candidate id value to the list */
   public UserTask candidateGroupId(GroupId candidateGroupId) {
-    addCandidateBinding(new Binding().value(candidateGroupId));
+    addCandidateGroupBinding(new Binding().value(candidateGroupId));
     return this;
   }
   /** adds a candidate id variable to the list */
   public UserTask candidateGroupExpression(String expression) {
-    addCandidateBinding(new Binding().expression(expression));
+    addCandidateGroupBinding(new Binding().expression(expression));
     return this;
   }
   protected void addCandidateGroupBinding(Binding<GroupId> candidateGroupBinding) {
