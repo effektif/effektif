@@ -37,6 +37,9 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.data.types.UserIdTypeImpl;
+import com.effektif.workflow.impl.identity.Group;
+import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
 import com.effektif.workflow.impl.job.types.TaskReminderJobType;
@@ -44,6 +47,7 @@ import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -57,10 +61,12 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
 
   protected TaskStore taskStore;
   protected CaseStore caseStore;
+  protected IdentityService identityService;
   protected TextTemplate taskName;
   protected BindingImpl<UserId> assigneeId;
   protected List<BindingImpl<UserId>> candidateIds;
   protected List<BindingImpl<GroupId>> candidateGroupIds;
+  protected VariableImpl roleVariable;
   protected BindingImpl<UserId> escalateTo;
   public FormBindings formBindings;
 
@@ -98,12 +104,21 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     super.parse(activityImpl, userTask, parser);
     this.taskStore = parser.getConfiguration(TaskStore.class);
     this.caseStore = parser.getConfiguration(CaseStore.class);
+    this.identityService = parser.getConfiguration(IdentityService.class);
     this.multiInstance = parser.parseMultiInstance(userTask.getMultiInstance());
     this.taskName = parser.parseTextTemplate(userTask.getTaskName(), Hint.TASK_NAME);
     this.assigneeId = parser.parseBinding(userTask.getAssigneeId(), "assigneeId");
     this.candidateIds = parser.parseBindings(userTask.getCandidateIds(), "candidateIds");
     this.candidateGroupIds = parser.parseBindings(userTask.getCandidateGroupIds(), "candidateGroupIds");
     this.escalateTo = parser.parseBinding(userTask.getEscalateToId(), "escalateTo");
+
+    String roleVariableId = 
+            assigneeId!=null
+            && assigneeId.value==null
+            && assigneeId.expression!=null
+            && assigneeId.expression.variableId!=null
+            && assigneeId.expression.fields==null ? assigneeId.expression.variableId : null;
+    this.roleVariable = roleVariableId!=null ? activityImpl.findVariableByIdRecursive(roleVariableId) : null; 
     
     Form form = userTask.getForm();
     if (form!=null) {
@@ -117,14 +132,33 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     String resolvedTaskName = resolveTaskName(activityInstance);
-    UserId assignee = activityInstance.getValue(assigneeId);
-    List<UserId> candidates = activityInstance.getValues(candidateIds);
-    if ( assignee==null 
-         && candidates!=null
-         && candidates.size()==1 ) {
-      assignee = candidates.get(0);
+    
+    UserId assigneeId = activityInstance.getValue(this.assigneeId);
+    List<UserId> candidateIds = null;
+    List<GroupId> candidateGroupIds = null;
+
+    if (roleVariable!=null) {
+      UserIdTypeImpl roleTypeImpl = (UserIdTypeImpl) roleVariable.type;
+      UserIdType roleType = roleTypeImpl!=null ? roleTypeImpl.getType() : null;
+      candidateIds = roleType.getCandidateIds();
+      candidateGroupIds = roleType.getCandidateGroupIds();
+      UserId roleValue = (UserId) activityInstance.getValue(roleVariable.id);
+      if (roleValue!=null) {
+        assigneeId = roleValue;
+      }
+    } else {
+      candidateIds = activityInstance.getValues(this.candidateIds);
+      candidateGroupIds = activityInstance.getValues(this.candidateGroupIds);
     }
 
+    if (assigneeId==null) {
+      assigneeId = findSingleUserId(candidateIds, candidateGroupIds);
+      if (assigneeId!=null && roleVariable!=null) {
+        // update the variable value
+        activityInstance.setVariableValue(roleVariable.id, assigneeId);
+      }
+    }
+    
     WorkflowInstanceImpl workflowInstance = activityInstance.workflowInstance;
     TaskId taskId = taskStore.generateTaskId();
     
@@ -133,8 +167,9 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setCaseId(workflowInstance.caseId);
     task.setName(resolvedTaskName);
     task.setDescription(activity.getDescription());
-    task.setAssigneeId(assignee);
-    task.setCandidateIds(candidates);
+    task.setAssigneeId(assigneeId);
+    task.setCandidateIds(candidateIds);
+    task.setCandidateGroupIds(candidateGroupIds);
     task.setActivityNotify(true);
     task.setActivityId(activity.getId());
     task.setActivityInstanceId(activityInstance.id);
@@ -142,6 +177,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     task.setWorkflowId(activityInstance.workflow.id);
     task.setSourceWorkflowId(activityInstance.workflow.sourceWorkflowId);
     task.setWorkflowForm(formBindings!=null ? true : null);
+    task.setRoleVariableId(roleVariable!=null ? roleVariable.id : null);
     
     TaskId parentTaskId = activityInstance.parent.findTaskIdRecursive();
     if (parentTaskId!=null) {
@@ -179,6 +215,37 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
         .taskId(task.getId())
         .activityInstance(activityInstance));
     }
+  }
+  
+  protected UserId findSingleUserId(List<UserId> candidateIds, List<GroupId> candidateGroupIds) {
+    UserId singleUserId = null;
+    if (candidateIds!=null) {
+      if (candidateIds.size()==1) {
+        singleUserId = candidateIds.get(0); 
+      } else if (candidateIds.size()>=1) {
+        return null;
+      }
+    }
+    if (candidateGroupIds!=null) {
+      List<Group> groups = identityService.findGroupByIds(candidateGroupIds);
+      if (groups!=null) {
+        for (Group group : groups) {
+          List<UserId> memberIds = group.getMemberIds();
+          if (memberIds!=null && !memberIds.isEmpty()) {
+            if (memberIds.size()==1) {
+              if (singleUserId==null) {
+                singleUserId = memberIds.get(0); 
+              } else {
+                return null;
+              }
+            } else {
+              return null;
+            }
+          }
+        }
+      }
+    }
+    return singleUserId;
   }
 
   protected String resolveTaskName(ActivityInstanceImpl activityInstance) {

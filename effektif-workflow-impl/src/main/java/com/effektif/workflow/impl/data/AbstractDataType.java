@@ -115,4 +115,9 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
 
   @Override
   public void writeValue(XmlElement xml, Object value) { }
+
+  
+  public T getType() {
+    return type;
+  }
 }

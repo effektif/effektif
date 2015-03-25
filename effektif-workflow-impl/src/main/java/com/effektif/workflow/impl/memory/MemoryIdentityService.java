@@ -76,6 +76,20 @@ public class MemoryIdentityService implements IdentityService {
   }
 
   @Override
+  public List<Group> findGroupByIds(List<GroupId> groupIds) {
+    List<Group> groups = new ArrayList<>();
+    if (groupIds!=null) {
+      for (GroupId groupId: groupIds) {
+        Group group = this.groups.get(groupId);
+        if (group!=null) {
+          groups.add(group);
+        }
+      }
+    }
+    return groups;
+  }
+
+  @Override
   public Group findGroupById(GroupId groupId) {
     return groups.get(groupId);
   }

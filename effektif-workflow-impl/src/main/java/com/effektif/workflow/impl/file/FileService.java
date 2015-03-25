@@ -14,6 +14,8 @@
 package com.effektif.workflow.impl.file;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
 
 import com.effektif.workflow.api.model.FileId;
 
@@ -39,6 +41,10 @@ public interface FileService {
   /** retrieves the file information by id.  */
   File getFileById(FileId fileId);
 
+  /** retrieves the information for files by a group of id.  */
+  List<File> getFilesByIds(Collection<FileId> fileIds);
+
   /** retrieves the file content by {@link File#getStreamId()}. */
   InputStream getFileStream(String fileStreamId);
+
 }

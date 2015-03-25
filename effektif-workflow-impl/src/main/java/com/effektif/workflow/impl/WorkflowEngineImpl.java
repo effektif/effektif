@@ -56,6 +56,7 @@ import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 /**
@@ -441,5 +442,16 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         }
       }
     }
+  }
+
+  public void setVariableValue(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String variableId, Object value) {
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
+    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
+    VariableInstanceImpl variableInstance = activityInstance.findVariableInstance(variableId);
+    if (variableInstance.type!=null) {
+      
+    }
+    activityInstance.setVariableValue(variableId, value);
+    workflowInstance.executeWork();
   }
 }

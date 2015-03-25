@@ -26,12 +26,12 @@ package com.effektif.workflow.api.workflow;
  */
 public class Transition extends Element {
 
+  protected String id;
   protected String from;
   protected String to;
   protected Condition condition;
   protected Boolean isToNext;
 
-  protected String id;
   public String getId() {
     return this.id;
   }

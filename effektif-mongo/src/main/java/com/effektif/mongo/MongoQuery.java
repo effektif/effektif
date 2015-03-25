@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +56,12 @@ public class MongoQuery {
     }
     return this;
   }
+  
+  public MongoQuery in(String fieldName, Collection<?> values) {
+    query.put(fieldName, new BasicDBObject("$in", values));
+    return this;
+  }
+
   
   public MongoQuery equal(String fieldName, Object dbValue) {
     query.put(fieldName, dbValue);

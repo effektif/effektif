@@ -14,6 +14,9 @@
 package com.effektif.mongo;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -28,6 +31,7 @@ import com.effektif.workflow.impl.file.FileService;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -116,5 +120,30 @@ public class MongoFileService implements FileService, Brewable {
     BasicDBObject dbFile = filesCollection.findOne("get-file", query);
 
     return mongoMapper.read(dbFile);
+  }
+  
+  @Override
+  public List<File> getFilesByIds(Collection<FileId> fileIds) {
+    List<File> files = new ArrayList<>();
+    if (fileIds!=null) {
+      List<ObjectId> dbFileIds = new ArrayList<>();
+      for (FileId fileId: fileIds) {
+        dbFileIds.add(new ObjectId(fileId.getInternal()));
+      }
+      Authentication authentication = Authentications.current();
+      String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
+      BasicDBObject query = new MongoQuery()
+        .in("_id", dbFileIds)
+        .equalOpt(FieldsFile.ORGANIZATION_ID, organizationId)
+        .get();
+  
+      DBCursor dbFiles = filesCollection.find("get-files", query);
+      while (dbFiles.hasNext()) {
+        BasicDBObject dbFile = (BasicDBObject) dbFiles.next();
+        File file = mongoMapper.read(dbFile);
+        files.add(file);
+      }
+    }
+    return files;
   }
 }

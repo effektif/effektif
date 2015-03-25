@@ -15,7 +15,10 @@ package com.effektif.workflow.impl.memory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.acl.Authentication;
@@ -88,6 +91,19 @@ public class MemoryFileService implements FileService {
   @Override
   public File getFileById(FileId fileId) {
     return files.get(fileId);
+  }
+  
+  @Override
+  public List<File> getFilesByIds(Collection<FileId> fileIds) {
+    if (fileIds==null) {
+      return null;
+    }
+    List<File> files = new ArrayList<>();
+    for (FileId fileId: fileIds) {
+      File file = getFileById(fileId);
+      files.add(file);
+    }
+    return files;
   }
 
   @Override

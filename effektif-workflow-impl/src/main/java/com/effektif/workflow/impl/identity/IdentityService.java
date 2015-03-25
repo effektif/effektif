@@ -31,4 +31,5 @@ public interface IdentityService {
   Group createGroup(Group group);
   List<String> getGroupsEmailAddresses(List<GroupId> groupIds);
   Group findGroupById(GroupId groupId);
+  List<Group> findGroupByIds(List<GroupId> groupIds);
 }

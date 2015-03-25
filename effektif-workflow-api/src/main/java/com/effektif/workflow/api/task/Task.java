@@ -93,7 +93,8 @@ public class Task extends Extensible implements AccessControlledObject {
   protected WorkflowInstanceId workflowInstanceId;
   protected String sourceWorkflowId;
   protected WorkflowId workflowId;
-  
+  protected String roleVariableId;
+
   public Task() {
   }
   
@@ -400,5 +401,12 @@ public class Task extends Extensible implements AccessControlledObject {
   public Task formInstance(FormInstance formInstance) {
     this.formInstance = formInstance;
     return this;
+  }
+
+  public String getRoleVariableId() {
+    return this.roleVariableId;
+  }
+  public void setRoleVariableId(String roleVariableId) {
+    this.roleVariableId = roleVariableId;
   }
 }

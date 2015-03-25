@@ -15,11 +15,13 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.model.Attachment;
+import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.GroupIdType;
@@ -33,6 +35,9 @@ import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.bpmn.ServiceTaskType;
 import com.effektif.workflow.impl.email.OutgoingEmail;
 import com.effektif.workflow.impl.email.OutgoingEmailService;
+import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.file.FileAttachment;
+import com.effektif.workflow.impl.file.FileService;
 import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
@@ -50,6 +55,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   
   protected OutgoingEmailService outgoingEmailService; 
   protected IdentityService identityService; 
+  protected FileService fileService; 
 
   protected BindingImpl<String> fromEmailAddress;
 
@@ -69,7 +75,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
   protected TextTemplate bodyText;
   protected TextTemplate bodyHtml;
   
-  protected List<BindingImpl<Attachment>> attachments;
+  protected List<BindingImpl<FileId>> attachmentFileIds;
 
   public EmailTaskImpl() {
     super(EmailTask.class);
@@ -89,7 +95,17 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
       .subject(resolve(subject, activityInstance))
       .bodyText(resolve(bodyText, activityInstance))
       .bodyHtml(resolve(bodyHtml, activityInstance));
-    email.setAttachments(activityInstance.getValues(attachments));
+    
+    List<FileId> fileIds = activityInstance.getValues(attachmentFileIds);
+    if (fileIds!=null && !fileIds.isEmpty()) {
+      List<File> files = fileService.getFilesByIds(fileIds);
+      List<Attachment> attachments = new ArrayList<>();
+      for (File file : files) {
+        FileAttachment fileAttachment = FileAttachment.createFileAttachment(file, fileService);
+        attachments.add(fileAttachment);
+      }
+      email.setAttachments(attachments);
+    }
     
     outgoingEmailService.send(email);
     
@@ -149,6 +165,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     
     outgoingEmailService = parser.getConfiguration(OutgoingEmailService.class);
     identityService = parser.getConfiguration(IdentityService.class);
+    fileService = parser.getConfiguration(FileService.class);
 
     fromEmailAddress = parser.parseBinding(activity.getFromEmailAddress(), "fromEmailAddress");
 
@@ -168,7 +185,7 @@ public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
     bodyText = parser.parseTextTemplate(activity.getBodyText(), Hint.EMAIL, Hint.EMAIL_BODY_TEXT);
     bodyHtml = parser.parseTextTemplate(activity.getBodyHtml(), Hint.EMAIL, Hint.EMAIL_BODY_HTML, Hint.HTML);
     
-    attachments = parser.parseBindings(activity.getAttachments(), "attachments");
+    attachmentFileIds = parser.parseBindings(activity.getAttachmentFileIds(), "attachmentFileIds");
   }
 
   @Override

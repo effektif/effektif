@@ -123,10 +123,17 @@ public class TaskServiceImpl implements TaskService, Brewable {
   }
 
   @Override
-  public Task assignTask(TaskId taskId, UserId assignee) {
-    Task task = taskStore.assignTask(taskId, assignee);
+  public Task assignTask(TaskId taskId, UserId assigneeId) {
+    Task task = taskStore.assignTask(taskId, assigneeId);
     if (notificationService!=null) {
       notificationService.taskAssigned(task);
+    }
+    if (task.getRoleVariableId()!=null) {
+      workflowEngine.setVariableValue(
+              task.getWorkflowInstanceId(), 
+              task.getActivityInstanceId(),
+              task.getRoleVariableId(),
+              assigneeId);
     }
     return task;
   }

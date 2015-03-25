@@ -48,5 +48,4 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
       throw new RuntimeException("Couldn't dereference "+name+": "+e.getMessage(), e);
     }
   }
-
 }

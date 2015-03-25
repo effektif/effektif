@@ -57,7 +57,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     String _ID = "_id";
     String NAME = "name";
     String ORGANIZATION_ID = "organizationId";
-    String ASSIGNEE = "assignee";
+    String ASSIGNEE_ID = "assigneeId";
     String SUBTASK_IDS = "subtaskIds";
     String LAST_UPDATED = "lastUpdated";
     String COMPLETED = "completed";
@@ -97,7 +97,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
       .get();
     BasicDBObject dbAssignee = new BasicDBObject(FieldsUserReference.ID, assignee.getInternal());
     BasicDBObject update = new MongoUpdate()
-      .set(FieldsTask.ASSIGNEE, dbAssignee)
+      .set(FieldsTask.ASSIGNEE_ID, dbAssignee)
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .get();
     BasicDBObject dbTask = tasksCollection.findAndModify("assign-task", query, update);

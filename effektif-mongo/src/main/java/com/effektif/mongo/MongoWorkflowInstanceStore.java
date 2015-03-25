@@ -469,8 +469,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
     resolveActivityReferences(workflowInstance, workflow, allActivityIds);
     
-    workflowInstance.variableInstances = readVariableInstances(dbWorkflowInstance, workflowInstance);
-    workflowInstance.updateVariableInstancesMap();
+    readVariableInstances(dbWorkflowInstance, workflowInstance);
     workflowInstance.work = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK, workflowInstance);
     workflowInstance.workAsync = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK_ASYNC, workflowInstance);
     workflowInstance.properties = readObjectMap(dbWorkflowInstance, WorkflowInstanceFields.PROPERTIES);
@@ -504,9 +503,9 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     return workQueue;
   }
 
-  private List<VariableInstanceImpl> readVariableInstances(BasicDBObject dbWorkflowInstance, ScopeInstanceImpl parent) {
+  private void readVariableInstances(BasicDBObject dbWorkflowInstance, ScopeInstanceImpl parent) {
     List<BasicDBObject> dbVariableInstances = readList(dbWorkflowInstance, WorkflowInstanceFields.VARIABLE_INSTANCES);
-    if (dbVariableInstances!=null) {
+    if (dbVariableInstances!=null && !dbVariableInstances.isEmpty()) {
       for (BasicDBObject dbVariableInstance: dbVariableInstances) {
         VariableInstanceImpl variableInstance = new VariableInstanceImpl();
         variableInstance.configuration = configuration;
@@ -533,7 +532,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         parent.addVariableInstance(variableInstance);
       }
     }
-    return null;
   }
 
   protected VariableImpl findVariableByIdRecurseParents(ScopeImpl scope, String variableId) {
@@ -611,8 +609,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     activityInstance.configuration = configuration;
     activityInstance.workflow = workflowInstance.workflow;
     activityInstance.workflowInstance = workflowInstance;
-    activityInstance.variableInstances = readVariableInstances(dbActivityInstance, activityInstance);
-    activityInstance.updateVariableInstancesMap();
+    readVariableInstances(dbActivityInstance, activityInstance);
     return activityInstance;
   }
 
