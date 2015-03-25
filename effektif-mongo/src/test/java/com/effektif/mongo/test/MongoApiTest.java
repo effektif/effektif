@@ -21,6 +21,7 @@ import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.email.TestOutgoingEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
+import com.effektif.workflow.test.api.UserTaskTest;
 import com.mongodb.DB;
 
 
@@ -33,9 +34,11 @@ public class MongoApiTest {
     DB db = configuration.get(DB.class);
     db.dropDatabase();
 
+    // this test runs the full API test suite with a mongo test configuration.
+    
     TestSuiteHelper.run(configuration
       // use the next line if you only want to run 1 test
-      // , UserTaskTest.class, "testTaskRole"
+       , UserTaskTest.class, "testTaskRole"
       );
   }
   
