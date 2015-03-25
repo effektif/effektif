@@ -15,6 +15,7 @@
  */
 package com.effektif.mongo.test;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.effektif.mongo.MongoMemoryConfiguration;
@@ -24,6 +25,7 @@ import com.effektif.workflow.test.TestSuiteHelper;
 import com.mongodb.DB;
 
 
+@Ignore
 public class MongoMemoryApiTest {
   
   @Test
