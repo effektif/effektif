@@ -26,7 +26,7 @@ public class Script {
 
   protected String language;
   protected String script;
-  /** maps script variable names to workflow variable ids */ 
+  /** Maps script variable names to workflow variable IDs. */
   protected Map<String, String> mappings;
 
   public String getLanguage() {

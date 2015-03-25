@@ -27,8 +27,13 @@ package com.effektif.workflow.api.workflow;
 public class Transition extends Element {
 
   protected String id;
+
+  /** The {@link com.effektif.workflow.api.workflow.Activity#id} for the activity this transition leaves from. */
   protected String from;
+
+  /** The {@link com.effektif.workflow.api.workflow.Activity#id} for the activity this transition goes to. */
   protected String to;
+
   protected Condition condition;
   protected Boolean isToNext;
 
