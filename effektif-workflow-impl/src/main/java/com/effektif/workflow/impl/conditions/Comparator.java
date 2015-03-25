@@ -57,7 +57,6 @@ public abstract class Comparator extends ConditionExpression {
     return this;
   }
   
-
   @Override
   public boolean eval(ActivityInstanceImpl activityInstance) {
     activityInstance.getTypedValue(left);
