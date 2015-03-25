@@ -184,49 +184,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowInstance.setVariableValues(triggerInstance.getData());
     }
     
-    if (workflow.enableCases || triggerInstance.getCase()!=null) {
-      Case caze = triggerInstance.getCase()!=null ? triggerInstance.getCase() : new Case();
-      
-      CaseId caseId = new CaseId(workflowInstanceId.getInternal());
-      caze.setId(caseId);
-      caze.setWorkflowInstanceId(new WorkflowInstanceId(caseId.getInternal()));
-      caze.setWorkflowId(workflowId);
-      caze.setSourceWorkflowId(workflow.getSourceWorkflowId());
-
-      AccessControlList workflowAccess = workflow.getAccess();
-      if (workflowAccess!=null) {
-        Authentication authentication = Authentications.current();
-        // check if the authenticated user has access to start this workflow
-        if (authentication!=null && !workflowAccess.hasPermission(authentication, Access.START)) {
-          throw new BadRequestException("Workflow doesn't exist or you don't have permission to start it");
-        }
-        // copy the case view and edit access from the worklfow to the case
-        AccessControlList.setAccessIdentities(caze, Access.VIEW, workflowAccess.getIdentities(Access.CASES_VIEW));
-        AccessControlList.setAccessIdentities(caze, Access.EDIT, workflowAccess.getIdentities(Access.CASES_EDIT));
-      }
-      
-      workflowInstance.caze = caze;
-      workflowInstance.caseId = caseId;
-      
-      if (caze.getName()==null) {
-        String caseName = null;
-        if (workflow.caseNameTemplate!=null) {
-          caseName = workflow.caseNameTemplate.resolve(workflowInstance);
-        }
-        if (caseName==null) {
-          caseName = generateName(workflow);
-        }
-        caze.setName(caseName);
-      }
-    }
-
     return workflowInstance;
-  }
-
-  static DateTimeFormatter formatter = DateTimeFormat.forPattern(" dd MMM yyyy HH:mm:ss");
-  public String generateName(WorkflowImpl workflow) {
-    String time = formatter.print(Time.now());
-    return workflow.name!=null ? workflow.name+time : "Unnamed case"+time;
   }
 
   /** second part of starting a new workflow instance: executing the start actvities */
