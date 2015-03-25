@@ -138,6 +138,7 @@ public class WorkflowParser {
   public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi) {
     WorkflowParser parser = new WorkflowParser(configuration);
     parser.workflow = new WorkflowImpl();
+    parser.workflow.id = workflowApi.getId();
     parser.pushContext("workflow", workflowApi, parser.workflow, null);
     parser.isSerialized = workflowApi instanceof SerializedWorkflow;
     parser.workflow.parse(workflowApi, parser);
