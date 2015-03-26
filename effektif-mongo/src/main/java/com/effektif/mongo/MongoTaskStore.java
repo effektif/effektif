@@ -98,9 +98,8 @@ public class MongoTaskStore implements TaskStore, Brewable {
       ._id(taskId.getInternal())
       .access(Access.EDIT)
       .get();
-    BasicDBObject dbAssignee = new BasicDBObject(FieldsUserReference.ID, assignee.getInternal());
     BasicDBObject update = new MongoUpdate()
-      .set(FieldsTask.ASSIGNEE_ID, dbAssignee)
+      .set(FieldsTask.ASSIGNEE_ID, assignee.getInternal())
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .get();
     BasicDBObject dbTask = tasksCollection.findAndModify("assign-task", query, update);
