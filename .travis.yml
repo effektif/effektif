@@ -3,5 +3,3 @@ jdk:
   - oraclejdk7
 services:
   - mongodb
-script:
-  - mongo -version
