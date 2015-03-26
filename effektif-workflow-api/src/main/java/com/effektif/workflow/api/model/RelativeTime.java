@@ -27,6 +27,8 @@ import org.joda.time.Years;
 
 
 /**
+ * A duration (length of time), with an integer length and units years, months, weeks, hours, minutes or seconds.
+ *
  * @author Tom Baeyens
  */
 public class RelativeTime {
@@ -188,5 +190,30 @@ public class RelativeTime {
 
   public static LocalDateTime getToEndOfDay(LocalDateTime duedate) {
     return duedate.withTime(23, 59, 59, 999);
+  }
+
+  @Override
+  public String toString() {
+    return time + " " + unit;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    RelativeTime that = (RelativeTime) o;
+    if (before != null ? !before.equals(that.before) : that.before != null) return false;
+    if (!time.equals(that.time)) return false;
+    if (!unit.equals(that.unit)) return false;
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = before != null ? before.hashCode() : 0;
+    result = 31 * result + time.hashCode();
+    result = 31 * result + unit.hashCode();
+    return result;
   }
 }

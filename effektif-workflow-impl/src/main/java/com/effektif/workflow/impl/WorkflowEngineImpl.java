@@ -406,9 +406,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
     VariableInstanceImpl variableInstance = activityInstance.findVariableInstance(variableId);
-    if (variableInstance.type!=null) {
-      
-    }
     activityInstance.setVariableValue(variableId, value);
     workflowInstance.executeWork();
   }
