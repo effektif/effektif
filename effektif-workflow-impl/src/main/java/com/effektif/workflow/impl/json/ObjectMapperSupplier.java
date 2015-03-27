@@ -29,6 +29,7 @@ import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.script.ConditionService;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -84,6 +85,9 @@ public class ObjectMapperSupplier implements Supplier {
       }
     });
     objectMapper.registerModule(module);
+    
+    ConditionService conditionService = brewery.get(ConditionService.class);
+    conditionService.registerSubclasses(objectMapper);
     
     return objectMapper;
   }

@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Condition;
 import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
@@ -40,12 +40,12 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.SerializedWorkflow;
-import com.effektif.workflow.impl.script.CompiledCondition;
-import com.effektif.workflow.impl.script.CompiledScript;
 import com.effektif.workflow.impl.script.ConditionService;
+import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
@@ -313,7 +313,7 @@ public class WorkflowParser {
     return multiInstanceImpl;
   }
 
-  public CompiledCondition parseCondition(Condition condition) {
+  public ConditionImpl parseCondition(Condition condition) {
     if (condition==null) {
       return null;
     }
@@ -327,7 +327,7 @@ public class WorkflowParser {
     return null;
   }
 
-  public CompiledScript parseScript(Script script) {
+  public ScriptImpl parseScript(Script script) {
     if (script==null) {
       return null;
     }
@@ -347,7 +347,7 @@ public class WorkflowParser {
     }
     return new TextTemplate(templateText, hints, this);
   }
-
+  
   public ScopeImpl getCurrentScope() {
     for (int i=contextStack.size()-1; i>=0; i--) {
       Object elementImpl = contextStack.get(i).elementImpl;

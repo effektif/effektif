@@ -22,6 +22,7 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
 import com.effektif.workflow.impl.CaseServiceImpl;
+import com.effektif.workflow.impl.ConditionServiceImpl;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.TaskServiceImpl;
@@ -49,6 +50,7 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(this);
     registerDefaultActivityTypeService();
     registerDefaultCaseService();
+    registerDefaultConditionService();
     registerDefaultDataTypeService();
     registerDefaultEmailService();
     registerDefaultExecutorService();
@@ -90,6 +92,10 @@ public abstract class DefaultConfiguration implements Configuration {
 
   protected void registerDefaultScriptService() {
     brewery.ingredient(new RhinoScriptService());
+  }
+
+  protected void registerDefaultConditionService() {
+    brewery.ingredient(new ConditionServiceImpl());
   }
 
   protected void registerDefaultJsonService() {

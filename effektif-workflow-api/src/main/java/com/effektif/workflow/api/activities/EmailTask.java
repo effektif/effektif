@@ -18,7 +18,6 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;

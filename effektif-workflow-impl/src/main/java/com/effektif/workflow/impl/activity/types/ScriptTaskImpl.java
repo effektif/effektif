@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.script.CompiledScript;
+import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.script.ScriptService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -41,7 +41,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;
   public Map<String, String> mappings;
-  public CompiledScript script;
+  public ScriptImpl script;
   
   public ScriptTaskImpl() {
     super(ScriptTask.class);

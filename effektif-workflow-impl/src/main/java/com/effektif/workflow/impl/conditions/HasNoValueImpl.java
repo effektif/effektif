@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.script;
+package com.effektif.workflow.impl.conditions;
 
-import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.api.condition.HasNoValue;
 
 
-public interface ScriptService {
-  
-  ScriptImpl compile(Script script, WorkflowParser parser);
 
-  ScriptResult run(ScopeInstanceImpl scopeInstance, ScriptImpl scriptImpl);
+/**
+ * @author Tom Baeyens
+ */
+public class HasNoValueImpl extends SingleBindingConditionImpl<HasNoValue> {
+
+  @Override
+  protected boolean eval(Object value) {
+    return value==null || "".equals(value);
+  }
 
 }

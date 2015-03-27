@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.script;
+package com.effektif.workflow.api.condition;
 
-import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.api.workflow.Binding;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
-public interface ScriptService {
+/**
+ * @author Tom Baeyens
+ */
+@JsonTypeName("hasValue")
+public class HasValue extends SingleBindingCondition {
   
-  ScriptImpl compile(Script script, WorkflowParser parser);
+  @Override
+  public String toString() {
+    return "("+toString(left)+" has value)";
+  }
 
-  ScriptResult run(ScopeInstanceImpl scopeInstance, ScriptImpl scriptImpl);
-
+  @Override
+  public HasValue left(Binding< ? > left) {
+    super.left(left);
+    return this;
+  }
 }

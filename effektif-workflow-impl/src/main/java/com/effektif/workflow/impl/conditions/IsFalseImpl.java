@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.script;
-
-import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+package com.effektif.workflow.impl.conditions;
 
 
-public interface ScriptService {
+
+/**
+ * @author Tom Baeyens
+ */
+public class IsFalseImpl extends SingleBindingConditionImpl {
   
-  ScriptImpl compile(Script script, WorkflowParser parser);
-
-  ScriptResult run(ScopeInstanceImpl scopeInstance, ScriptImpl scriptImpl);
-
+  @Override
+  protected boolean eval(Object expressionValue) {
+    return Boolean.FALSE.equals(expressionValue);
+  }
 }

@@ -18,6 +18,8 @@ package com.effektif.workflow.impl.script;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.script.CompiledScript;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
@@ -35,7 +37,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class RhinoScriptService extends AbstractScriptService implements ScriptService, ConditionService, Brewable {
+public class RhinoScriptService implements ScriptService, Brewable {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);
   
@@ -64,9 +66,7 @@ public class RhinoScriptService extends AbstractScriptService implements ScriptS
     return scriptImpl;
   }
 
-  @Override
-  public ScriptResult run(final ScopeInstanceImpl scopeInstance, final CompiledScript compiledScript) {
-    final ScriptImpl script = (ScriptImpl) compiledScript;
+  public ScriptResult run(final ScopeInstanceImpl scopeInstance, final ScriptImpl script) {
     return (ScriptResult) contextFactory.call(new ContextAction() {
       public Object run(Context context) {
         Scriptable scope = context.initStandardObjects();

@@ -19,18 +19,20 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.Contains;
+import com.effektif.workflow.api.condition.Equals;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.types.UserIdType;
-import com.effektif.workflow.api.workflow.Condition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.identity.IdentityService;
 import com.effektif.workflow.impl.identity.User;
-import com.effektif.workflow.impl.script.CompiledCondition;
 import com.effektif.workflow.impl.script.ConditionService;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
@@ -43,16 +45,28 @@ public class ConditionsTest extends WorkflowTest {
 
   @Test
   public void testConditionTextEquals() {
-    assertTrue(evaluate(TextType.INSTANCE, "v", "hello", "v == 'hello'"));
-    assertFalse(evaluate(TextType.INSTANCE, "v", "hello", "v == 'by'"));
-    assertFalse(evaluate(TextType.INSTANCE, "v", null, "v == 'hello'"));
+    assertTrue(evaluate(TextType.INSTANCE, "v", "hello", new Equals()
+      .leftExpression("v")
+      .rightValue("hello")));
+    assertFalse(evaluate(TextType.INSTANCE, "v", "hello", new Equals()
+      .leftExpression("v")
+      .rightValue("by")));
+    assertFalse(evaluate(TextType.INSTANCE, "v", null, new Equals()
+      .leftExpression("v")
+      .rightValue("hello")));
   }
 
   @Test
   public void testConditionTextContains() {
-    assertTrue(evaluate(TextType.INSTANCE, "v", "hello", "contains(v, 'ell')"));
-    assertFalse(evaluate(TextType.INSTANCE, "v", "hello", "contains(v, 'by')"));
-    assertFalse(evaluate(TextType.INSTANCE, "v", null, "contains(v,'hello')"));
+    assertTrue(evaluate(TextType.INSTANCE, "v", "hello", new Contains()
+      .leftExpression("v")
+      .rightValue("ell")));
+    assertFalse(evaluate(TextType.INSTANCE, "v", "hello", new Contains()
+      .leftExpression("v")
+      .rightValue("by")));
+    assertFalse(evaluate(TextType.INSTANCE, "v", null, new Contains()
+      .leftExpression("v")
+      .rightValue("hello")));
   }
 
   @Test
@@ -67,12 +81,18 @@ public class ConditionsTest extends WorkflowTest {
     
     UserId johndoeId = johndoe.getId();
 
-    assertTrue(evaluate(UserIdType.INSTANCE, "v", johndoeId, "v.id == 'johndoe'"));
-    assertFalse(evaluate(UserIdType.INSTANCE, "v", johndoeId, "v.id == 'superman'"));
-    assertFalse(evaluate(UserIdType.INSTANCE, "v", null, "v.id == 'johndoe'"));
+    assertTrue(evaluate(UserIdType.INSTANCE, "v", johndoeId, new Equals()
+      .leftExpression("v.id")
+      .rightValue("johndoe")));
+    assertFalse(evaluate(UserIdType.INSTANCE, "v", johndoeId, new Equals()
+      .leftExpression("v.id")
+      .rightValue("superman")));
+    assertFalse(evaluate(UserIdType.INSTANCE, "v", null, new Equals()
+      .leftExpression("v.id")
+      .rightValue("johndoe")));
   }
 
-  public boolean evaluate(Type type, String variableId, Object value, String expression) {
+  public boolean evaluate(Type type, String variableId, Object value, Condition condition) {
     Workflow workflow = new Workflow()
       .variable(variableId, type);
     
@@ -86,9 +106,7 @@ public class ConditionsTest extends WorkflowTest {
     WorkflowInstanceImpl workflowInstance = workflowEngineImpl.startInitialize(triggerInstance);
   
     ConditionService conditionService = configuration.get(ConditionService.class);
-    Condition condition = new Condition()
-      .expression(expression);
-    CompiledCondition compiledCondition = conditionService.compile(condition, new WorkflowParser(configuration));
-    return compiledCondition.evaluate(workflowInstance);
+    ConditionImpl conditionImpl = conditionService.compile(condition, new WorkflowParser(configuration));
+    return conditionImpl.eval(workflowInstance);
   }
 }

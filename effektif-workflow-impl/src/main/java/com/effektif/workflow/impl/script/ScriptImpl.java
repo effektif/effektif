@@ -24,9 +24,9 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class ScriptImpl implements CompiledScript, CompiledCondition {
+public class ScriptImpl {
 
-  public AbstractScriptService scriptService;
+  public ScriptService scriptService;
   public Object compiledScript;
   /** maps script variable names to workflow variable ids */ 
   public Map<String, String> mappings;
@@ -40,7 +40,6 @@ public class ScriptImpl implements CompiledScript, CompiledCondition {
 
   }
 
-  @Override
   public ScriptResult run(ScopeInstanceImpl scopeInstance) {
     return scriptService.run(scopeInstance, this);
   }

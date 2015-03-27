@@ -18,6 +18,7 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -80,9 +81,9 @@ public class Activity extends Scope {
     return this;
   }
   
-  public Activity transitionWithConditionTo(String conditionExpression, String toActivityId) {
+  public Activity transitionWithConditionTo(Condition condition, String toActivityId) {
     transitionTo(new Transition()
-      .condition(conditionExpression)
+      .condition(condition)
       .to(toActivityId));
     return this;
   }

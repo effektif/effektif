@@ -23,7 +23,7 @@ import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.script.CompiledCondition;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
 
 
 /**
@@ -40,7 +40,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
 
   public ActivityImpl from;
   public ActivityImpl to;
-  public CompiledCondition condition;
+  public ConditionImpl condition;
 
 //  public Transition serialize() {
 //    Transition transition = new Transition();

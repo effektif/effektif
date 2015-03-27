@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.condition.Condition;
+
 
 
 /**
@@ -89,11 +91,6 @@ public class Transition extends Element {
   }
   public void setCondition(Condition condition) {
     this.condition = condition;
-  }
-  public Transition condition(String expression) {
-    this.condition = new Condition()
-      .expression(expression);
-    return this;
   }
   public Transition condition(Condition condition) {
     this.condition = condition;

@@ -26,9 +26,8 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.script.CompiledCondition;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.script.ConditionService;
-import com.effektif.workflow.impl.script.ScriptResult;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -104,8 +103,8 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   protected boolean meetsCondition(TransitionImpl outgoingTransition, ActivityInstanceImpl activityInstance) {
-    CompiledCondition condition = outgoingTransition.condition;
-    return condition!=null ? condition.evaluate(activityInstance) : false;
+    ConditionImpl condition = outgoingTransition.condition;
+    return condition!=null ? condition.eval(activityInstance) : false;
   }
 
   @Override

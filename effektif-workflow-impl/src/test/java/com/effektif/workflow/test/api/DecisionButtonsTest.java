@@ -23,6 +23,7 @@ import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.condition.Equals;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.form.FormInstance;
@@ -65,8 +66,14 @@ public class DecisionButtonsTest extends WorkflowTest {
             .property("asButtons", true)))
         .transitionToNext())
       .activity("Approved?", new ExclusiveGateway()
-        .transitionWithConditionTo("Conclusion == 'Reject'", "Submit conclusion")
-        .transitionWithConditionTo("Conclusion == 'Approve'", "End"))
+        .transitionWithConditionTo(new Equals()
+          .leftExpression("Conclusion")
+          .rightValue("Reject"), 
+          "Submit conclusion")
+        .transitionWithConditionTo(new Equals()
+          .leftExpression("Conclusion")
+          .rightValue("Reject"), 
+          "End"))
       .activity("End", new EndEvent());
     
     deploy(workflow)

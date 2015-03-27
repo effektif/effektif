@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.condition.LessThan;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Transition;
@@ -42,10 +43,14 @@ public class ExclusiveGatewayTest extends WorkflowTest {
       .activity("?", new ExclusiveGateway()
         .defaultTransitionId("default"))
       .transition(new Transition()
-        .condition("v < 10")
+        .condition(new LessThan()
+          .leftExpression("v")
+          .rightValue(10))
         .from("?").to("t1"))
       .transition(new Transition()
-        .condition("v < 100")
+        .condition(new LessThan()
+          .leftExpression("v")
+          .rightValue(100))
         .from("?").to("t2"))
       .transition(new Transition()
         .id("default")

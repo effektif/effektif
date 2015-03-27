@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.script;
+package com.effektif.workflow.api.condition;
 
-import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
-public interface ScriptService {
+/**
+ * @author Tom Baeyens
+ */
+@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
+public abstract class Condition {
   
-  ScriptImpl compile(Script script, WorkflowParser parser);
-
-  ScriptResult run(ScopeInstanceImpl scopeInstance, ScriptImpl scriptImpl);
-
+  protected String toString(Object o) {
+    if (o==null) {
+      return "null";
+    }
+    return o.toString();
+  }
 }

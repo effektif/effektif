@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.script;
+package com.effektif.workflow.impl.conditions;
 
-import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
-public interface ScriptService {
-  
-  ScriptImpl compile(Script script, WorkflowParser parser);
+/**
+ * @author Tom Baeyens
+ */
+public class NotContainsIgnoreCaseImpl extends ContainsIgnoreCaseImpl {
 
-  ScriptResult run(ScopeInstanceImpl scopeInstance, ScriptImpl scriptImpl);
-
+  @Override
+  public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {
+    return !super.compare(leftValue, rightValue, scopeInstance);
+  }
 }
