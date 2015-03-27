@@ -23,7 +23,6 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -46,6 +45,7 @@ public class MessageResource {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public WorkflowInstance send(Message message) {
+    log.info("Message "+message.getWorkflowInstanceId()+" / "+message.getActivityInstanceId());
     return workflowEngine.send(message, true);
   }
 }
