@@ -139,9 +139,13 @@ public class TaskServiceImpl implements TaskService, Brewable {
     }
     return task;
   }
-  
+
   @Override
   public void saveFormInstance(TaskId taskId, FormInstance formInstance) {
+    saveFormInstance(taskId, formInstance, false); 
+  }
+
+  public void saveFormInstance(TaskId taskId, FormInstance formInstance, boolean deserialize) {
     List<Task> tasks = findTasks(new TaskQuery().taskId(taskId));
     if (tasks.isEmpty()) {
       return;
@@ -157,12 +161,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
     UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
     FormBindings formBindings = userTask.formBindings;
-
-    if (formInstance instanceof SerializedFormInstance) {
-      formBindings.deserializeFormInstance(formInstance);
-    }
-    
-    formBindings.applyFormInstanceData(formInstance, activityInstance);
+    formBindings.applyFormInstanceData(formInstance, activityInstance, deserialize);
     workflowEngine.workflowInstanceStore.flushAndUnlock(workflowInstance);
   }
   

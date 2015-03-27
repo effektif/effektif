@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -42,11 +42,9 @@ public class WorkflowServer {
   
   String baseUrl = "http://localhost:9999/";
   Configuration configuration;
-  WorkflowEngine workflowEngine;
   
   public WorkflowServer(Configuration configuration) {
     this.configuration = configuration;
-    this.workflowEngine = configuration.getWorkflowEngine();
   }
 
   public WorkflowServer baseUrl(String baseUrl) {
@@ -77,7 +75,7 @@ public class WorkflowServer {
   public static ResourceConfig buildRestApplication(Configuration configuration) {
     ResourceConfig config = new ResourceConfig();
 
-    WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
+    WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
     
     config.registerInstances(
             new DeployResource(workflowEngine),

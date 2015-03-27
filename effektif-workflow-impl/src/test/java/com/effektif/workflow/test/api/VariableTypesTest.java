@@ -17,12 +17,16 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
@@ -48,8 +52,15 @@ public class VariableTypesTest extends WorkflowTest {
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
       .data("v", 5));
-    
+
     assertEquals(new Long(5), workflowInstance.getVariableValueLong("v"));
+
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
+    
+    Map<String, Object> variableValues = new HashMap<>();
+    variableValues.put("v", 6l);
+    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
+    assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
   }
 
   @Test
@@ -64,6 +75,13 @@ public class VariableTypesTest extends WorkflowTest {
       .data("v", new UserId("u2")));
     
     assertEquals(UserId.class, workflowInstance.getVariableValue("v").getClass());
+
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
+
+    Map<String, Object> variableValues = new HashMap<>();
+    variableValues.put("v", new UserId("u3"));
+    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
+    assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
   }
 
   @Test

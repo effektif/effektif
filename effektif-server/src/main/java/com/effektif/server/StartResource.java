@@ -23,9 +23,9 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.json.SerializedTriggerInstance;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 
 
 /**
@@ -36,15 +36,15 @@ public class StartResource {
   
   public static final Logger log = LoggerFactory.getLogger(StartResource.class);
   
-  WorkflowEngine processEngine;
+  WorkflowEngineImpl workflowEngine;
   
-  public StartResource(WorkflowEngine processEngine) {
-    this.processEngine = processEngine;
+  public StartResource(WorkflowEngineImpl workflowEngine) {
+    this.workflowEngine = workflowEngine;
   }
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public WorkflowInstance startProcessInstance(SerializedTriggerInstance triggerInstance) {
-    return processEngine.start(triggerInstance);
+  public WorkflowInstance startProcessInstance(TriggerInstance triggerInstance) {
+    return workflowEngine.start(triggerInstance, true);
   }
 }

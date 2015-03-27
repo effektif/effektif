@@ -145,8 +145,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         String variableId = outputBindings.get(outputParameterKey);
         Object value = outputParameterValues.get(outputParameterKey);
         DataType dataType = outputParameterDataTypes.get(outputParameterKey);
-        Object deserializedValue = dataType.convertJsonToInternalValue(value);
-        activityInstance.setVariableValue(variableId, deserializedValue);
+        activityInstance.setVariableValue(variableId, value, true);
       }
     }
     

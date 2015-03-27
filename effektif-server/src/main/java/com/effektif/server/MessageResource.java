@@ -24,8 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.json.SerializedMessage;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 
 
 /**
@@ -36,15 +37,15 @@ public class MessageResource {
   
   public static final Logger log = LoggerFactory.getLogger(MessageResource.class);
   
-  WorkflowEngine workflowEngine;
+  WorkflowEngineImpl workflowEngine;
   
-  public MessageResource(WorkflowEngine processEngine) {
-    this.workflowEngine = processEngine;
+  public MessageResource(WorkflowEngineImpl workflowEngine) {
+    this.workflowEngine = workflowEngine;
   }
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public WorkflowInstance send(SerializedMessage message) {
-    return workflowEngine.send(message);
+  public WorkflowInstance send(Message message) {
+    return workflowEngine.send(message, true);
   }
 }

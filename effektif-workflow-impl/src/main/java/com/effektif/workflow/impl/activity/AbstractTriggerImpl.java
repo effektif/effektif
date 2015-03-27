@@ -55,17 +55,10 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
    * Copies the trigger data from the given {@link com.effektif.workflow.api.model.TriggerInstance} to the given
    * {@link com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl} when starting a workflow.
    */
-  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance, boolean deserialize) {
   }
 
   public DataType<?> getDataTypeForTriggerKey(String triggerKey) {
     return null;
-  }
-
-  /**
-   * Converts trigger data in the trigger instance from JSON format to the correct Java type,
-   * according to the corresponding {@link com.effektif.workflow.api.types.Type}.
-   */
-  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
   }
 }

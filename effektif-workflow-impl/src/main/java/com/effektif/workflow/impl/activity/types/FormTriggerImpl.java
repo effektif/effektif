@@ -57,20 +57,16 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
   }
 
   @Override
-  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
-    FormInstance formInstance = (FormInstance) triggerInstance.getData(FormTrigger.FORM_INSTANCE_KEY);
-    if (formBindings!=null) {
-      formBindings.applyFormInstanceData(formInstance, workflowInstance);
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance, boolean deserialize) {
+    FormInstance formInstance = null;
+    Object formInstanceObject = triggerInstance.getData(FormTrigger.FORM_INSTANCE_KEY);
+    if (deserialize) {
+      formInstance = jsonService.jsonMapToObject((Map)formInstanceObject, FormInstance.class);
+    } else {
+      formInstance = (FormInstance) formInstanceObject;
     }
-  }
-
-  @Override
-  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
-    Object serializedFormInstance = triggerInstance.getData(FormTrigger.FORM_INSTANCE_KEY);
-    if (serializedFormInstance instanceof Map) {
-      FormInstance formInstance = jsonService.jsonMapToObject((Map)serializedFormInstance, FormInstance.class);
-      triggerInstance.data(FormTrigger.FORM_INSTANCE_KEY, formInstance);
-      formBindings.deserializeFormInstance(formInstance);
+    if (formBindings!=null) {
+      formBindings.applyFormInstanceData(formInstance, workflowInstance, deserialize);
     }
   }
 }

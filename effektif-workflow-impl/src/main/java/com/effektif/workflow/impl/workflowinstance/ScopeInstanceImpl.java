@@ -58,6 +58,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public Long duration;
   public List<ActivityInstanceImpl> activityInstances;
   public List<VariableInstanceImpl> variableInstances;
+  /** maps variable.id's to variable instances */
   public Map<String, VariableInstanceImpl> variableInstancesMap;
   public List<TimerInstanceImpl> timerInstances;
   public Map<String,Object> properties;
@@ -280,7 +281,18 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }
   
-  
+  public void collectVariableValues(Map<String, Object> variableValues) {
+    // parent is added before the local variables to comply with scoping rules.
+    if (parent!=null) {
+      parent.collectVariableValues(variableValues);
+    }
+    if (variableInstancesMap!=null) {
+      for (String variableId: variableInstancesMap.keySet()) {
+        VariableInstanceImpl variableInstance = variableInstancesMap.get(variableId);
+        variableValues.put(variableId, variableInstance.value);
+      }
+    }
+  }
   
   public TypedValueImpl getTypedValue(String variableId) {
     VariableInstanceImpl variableInstance = findVariableInstance(variableId);
@@ -292,24 +304,32 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   /** sets all entries individually, variableValues maps variable ids to values */
   public void setVariableValues(Map<String,Object> variableValues) {
+    setVariableValues(variableValues, false);
+  }
+
+  public void setVariableValues(Map<String,Object> variableValues, boolean deserialize) {
     if (variableValues!=null) {
       for (String variableId: variableValues.keySet()) {
         Object value = variableValues.get(variableId);
-        setVariableValue(variableId, value);
+        setVariableValue(variableId, value, deserialize);
       }
     }
   }
 
   public void setVariableValue(String variableId, Object value) {
+    setVariableValue(variableId, value, false);
+  }
+
+  public void setVariableValue(String variableId, Object value, boolean deserialize) {
     if (variableInstances!=null) {
       VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableId);
       if (variableInstance!=null) {
-        setVariableValue(variableInstance, value);
+        setVariableValue(variableInstance, value, deserialize);
         return;
       }
     }
     if (parent!=null) {
-      parent.setVariableValue(variableId, value);
+      parent.setVariableValue(variableId, value, deserialize);
       return;
     }
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
@@ -319,10 +339,13 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       throw new RuntimeException("Couldn't determine data type dynamically for value "+value);
     }
     VariableInstanceImpl variableInstance = createVariableInstanceLocal(variableId, dataType);
-    setVariableValue(variableInstance, value);
+    setVariableValue(variableInstance, value, deserialize);
   }
 
-  public void setVariableValue(VariableInstanceImpl variableInstance, Object value) {
+  public void setVariableValue(VariableInstanceImpl variableInstance, Object value, boolean deserialize) {
+    if (deserialize) {
+      value = variableInstance.type.convertJsonToInternalValue(value);
+    }
     variableInstance.setValue(value);
     if (updates!=null) {
       updates.isVariableInstancesChanged = true;

@@ -18,6 +18,8 @@ package com.effektif.workflow.test.serialization;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.impl.TaskServiceImpl;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
@@ -33,8 +35,8 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
   
   public SerializingWorkflowEngineConfiguration() {
     TestConfiguration configuration = new TestConfiguration();
-    WorkflowEngine workflowEngine = configuration.getWorkflowEngine(); 
-    TaskService taskService = configuration.getTaskService(); 
+    WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class); 
+    TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
     JsonService jsonService = configuration.get(JsonService.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
     this.taskService = new SerializingTaskServiceImpl(taskService, jsonService);

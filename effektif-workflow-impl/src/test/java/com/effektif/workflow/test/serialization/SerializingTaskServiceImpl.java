@@ -24,6 +24,7 @@ import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.impl.TaskServiceImpl;
 import com.effektif.workflow.impl.json.JsonService;
 import com.effektif.workflow.impl.json.SerializedFormInstance;
 
@@ -33,9 +34,9 @@ import com.effektif.workflow.impl.json.SerializedFormInstance;
  */
 public class SerializingTaskServiceImpl extends AbstractSerializingService implements TaskService {
   
-  protected TaskService taskService;
+  protected TaskServiceImpl taskService;
 
-  public SerializingTaskServiceImpl(TaskService taskService, JsonService jsonService) {
+  public SerializingTaskServiceImpl(TaskServiceImpl taskService, JsonService jsonService) {
     super(jsonService);
     this.taskService = taskService;
   }
@@ -97,7 +98,7 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
 
   @Override
   public void saveFormInstance(TaskId taskId, FormInstance formInstance) {
-    formInstance = wireize("  >>formInstance>>", formInstance, SerializedFormInstance.class);
-    taskService.saveFormInstance(taskId, formInstance); 
+    formInstance = wireize("  >>formInstance>>", formInstance, FormInstance.class);
+    taskService.saveFormInstance(taskId, formInstance, true); 
   }
 }

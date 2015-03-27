@@ -43,18 +43,14 @@ public class EmailTriggerImpl extends AbstractTriggerImpl<EmailTrigger> {
   }
 
   @Override
-  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
-    EmailId emailId = (EmailId) triggerInstance.getData(EmailTrigger.EMAIL_ID_KEY);
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance, boolean deserialize) {
+    Object emailIdObject = triggerInstance.getData(EmailTrigger.EMAIL_ID_KEY);
+    if (deserialize) {
+      emailIdObject = new EmailId((String)emailIdObject);
+    }
+    EmailId emailId = (EmailId) emailIdObject;
     if (emailId!=null) {
       workflowInstance.setVariableValue(emailIdVariableId, emailId);
-    }
-  }
-
-  @Override
-  public void deserializeTriggerInstance(TriggerInstance triggerInstance, WorkflowImpl workflow) {
-    Object serializedEmailId = triggerInstance.getData(EmailTrigger.EMAIL_ID_KEY);
-    if (serializedEmailId instanceof String) {
-      triggerInstance.data(EmailTrigger.EMAIL_ID_KEY, new EmailId((String)serializedEmailId));
     }
   }
 }

@@ -84,7 +84,7 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
       if (scriptResult!=null && updates!=null) {
         for (String variableId: updates.keySet()) {
           TypedValueImpl typedValue = updates.get(variableId);
-          activityInstance.setVariableValue(variableId, typedValue.value);
+          activityInstance.setVariableValue(variableId, typedValue.value, true);
         }
       }
     }

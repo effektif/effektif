@@ -131,7 +131,7 @@ public class FormBindings {
     return fieldIds;
   }
 
-  public void applyFormInstanceData(FormInstance formInstance, ScopeInstanceImpl scopeInstance) {
+  public void applyFormInstanceData(FormInstance formInstance, ScopeInstanceImpl scopeInstance, boolean deserialize) {
     if (formInstance!=null && formInstance.getFields()!=null) {
       List<FormInstanceField> renderedFields = new ArrayList<>();
       for (FormInstanceField field: formInstance.getFields()) {
@@ -139,7 +139,7 @@ public class FormBindings {
         FormFieldBinding formFieldBinding = formFieldBindings.get(field.getId());
         if (isWritable(formFieldBinding)) {
           String variableId = formFieldBinding.binding.expression.variableId;
-          scopeInstance.setVariableValue(variableId, value);
+          scopeInstance.setVariableValue(variableId, value, deserialize);
           FormField formField = formFieldBinding.formField;
           // The name and type are copied from the form to the form instance
           // This is for the start form rendering

@@ -86,8 +86,10 @@ public class ObjectMapperSupplier implements Supplier {
     });
     objectMapper.registerModule(module);
     
-    ConditionService conditionService = brewery.get(ConditionService.class);
-    conditionService.registerSubclasses(objectMapper);
+    ConditionService conditionService = brewery.getOpt(ConditionService.class);
+    if (conditionService!=null) {
+      conditionService.registerSubclasses(objectMapper);
+    }
     
     return objectMapper;
   }

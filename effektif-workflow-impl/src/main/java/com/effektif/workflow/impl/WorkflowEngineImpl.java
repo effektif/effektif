@@ -16,21 +16,15 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.acl.Access;
-import com.effektif.workflow.api.acl.AccessControlList;
-import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -38,17 +32,14 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.exceptions.BadRequestException;
 import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.json.SerializedMessage;
-import com.effektif.workflow.impl.json.SerializedTriggerInstance;
+import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
@@ -56,6 +47,7 @@ import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -103,32 +95,36 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   /// Workflow methods ////////////////////////////////////////////////////////////
-  
+
   @Override
-  public Deployment deployWorkflow(Workflow workflowApi) {
+  public Deployment deployWorkflow(Workflow workflow) {
+    return deployWorkflow(workflow, false);
+  }
+
+  public Deployment deployWorkflow(Workflow workflow, boolean deserialize) {
     if (log.isDebugEnabled()) {
       log.debug("Deploying workflow");
     }
     
-    WorkflowParser parser = WorkflowParser.parse(configuration, workflowApi);
+    WorkflowParser parser = WorkflowParser.parse(configuration, workflow, deserialize);
 
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
       WorkflowId workflowId; 
-      if (workflowApi.getId()==null) {
+      if (workflow.getId()==null) {
         workflowId = workflowStore.generateWorkflowId();
-        workflowApi.setId(workflowId);
+        workflow.setId(workflowId);
       }
-      workflowApi.setCreateTime(Time.now());
-      workflowImpl.id = workflowApi.getId();
-      workflowStore.insertWorkflow(workflowApi);
+      workflow.setCreateTime(Time.now());
+      workflowImpl.id = workflow.getId();
+      workflowStore.insertWorkflow(workflow);
       if (workflowImpl.trigger!=null) {
         workflowImpl.trigger.published(workflowImpl);
       }
       workflowCache.put(workflowImpl);
     }
     
-    return new Deployment(workflowApi.getId(), parser.getIssues());
+    return new Deployment(workflow.getId(), parser.getIssues());
   }
   
   @Override
@@ -143,12 +139,21 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   /** caller has to ensure that start.variableValues is not serialized @see VariableRequestImpl#serialize & VariableRequestImpl#deserialize */
   public WorkflowInstance start(TriggerInstance triggerInstance) {
-    WorkflowInstanceImpl workflowInstance = startInitialize(triggerInstance);
+    return start(triggerInstance, false);
+  }
+  
+  public WorkflowInstance start(TriggerInstance triggerInstance, boolean deserialize) {
+    WorkflowInstanceImpl workflowInstance = startInitialize(triggerInstance, deserialize);
     return startExecute(workflowInstance);
   }
 
   /** first part of starting a new workflow instance: creating the workflow instance and applying the trigger data */
   public WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance) {
+    return startInitialize(triggerInstance, false);
+  }
+
+  /** first part of starting a new workflow instance: creating the workflow instance and applying the trigger data */
+  public WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance, boolean deserialize) {
     WorkflowId workflowId = getLatestWorkflowId(triggerInstance);
     WorkflowImpl workflow = getWorkflowImpl(workflowId);
 
@@ -170,18 +175,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
 
-    if (triggerInstance instanceof SerializedTriggerInstance) {
-      if (workflow.trigger!=null) {
-        workflow.trigger.deserializeTriggerInstance(triggerInstance, workflow);
-      } else {
-        deserializeTriggerInstanceData(triggerInstance, workflow);
-      }
-    }
-
     if (workflow.trigger!=null) {
-      workflow.trigger.applyTriggerData(workflowInstance, triggerInstance);
+      workflow.trigger.applyTriggerData(workflowInstance, triggerInstance, deserialize);
     } else {
-      workflowInstance.setVariableValues(triggerInstance.getData());
+      workflowInstance.setVariableValues(triggerInstance.getData(), deserialize);
     }
     
     return workflowInstance;
@@ -225,16 +222,15 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
     return workflowId;
   }
-  
+
   @Override
   public WorkflowInstance send(Message message) {
+    return send(message, false);
+  }
+
+  public WorkflowInstance send(Message message, boolean deserialize) {
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
-    
-    if (message instanceof SerializedMessage) {
-      deserializeMessage(message, workflowInstance.workflow);
-    }
-    
-    workflowInstance.setVariableValues(message.getData());
+    workflowInstance.setVariableValues(message.getData(), deserialize);
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(message.getActivityInstanceId());
     if (activityInstance.isEnded()) {
       throw new RuntimeException("Activity instance "+activityInstance+" is already ended");
@@ -263,7 +259,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
       Workflow workflow = workflowStore.loadWorkflowById(workflowId);
-      WorkflowParser parser = WorkflowParser.parse(configuration, workflow);
+      WorkflowParser parser = WorkflowParser.parse(configuration, workflow, true);
       workflowImpl = parser.getWorkflow();
       workflowCache.put(workflowImpl);
     }
@@ -366,6 +362,55 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
 
+  public Map<String,Object> getVariableValues(WorkflowInstanceId workflowInstanceId) {
+    return getVariableValues(workflowInstanceId, null);
+  }
+
+  public Map<String,Object> getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
+    WorkflowInstanceImpl workflowInstance = workflowInstanceStore.getWorkflowInstanceImplById(workflowInstanceId);
+    ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
+    Map<String,Object> variableValues = new HashMap<>();
+    scopeInstance.collectVariableValues(variableValues);
+    return variableValues;
+  }
+
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, Map<String,Object> variableValues) {
+    setVariableValues(workflowInstanceId, null, variableValues, false);
+  }
+
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, Map<String,Object> variableValues) {
+    setVariableValues(workflowInstanceId, activityInstanceId, variableValues, false);
+  }
+  
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, Map<String,Object> variableValues, boolean deserialize) {
+    if (workflowInstanceId==null || variableValues==null) {
+      return;
+    }
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
+    ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
+    for (String variableId: variableValues.keySet()) {
+      Object value = variableValues.get(variableId);
+      scopeInstance.setVariableValue(variableId, value, deserialize);
+    }
+    workflowInstanceStore.flushAndUnlock(workflowInstance);
+  }
+
+  public void setVariableValue(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String variableId, Object value) {
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
+    ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
+    scopeInstance.setVariableValue(variableId, value);
+    workflowInstanceStore.flushAndUnlock(workflowInstance);
+  }
+
+  protected ScopeInstanceImpl getScopeInstance(WorkflowInstanceImpl workflowInstance, String activityInstanceId) {
+    ScopeInstanceImpl scopeInstance = workflowInstance;
+    if (activityInstanceId!=null) {
+      scopeInstance = workflowInstance.findActivityInstance(activityInstanceId);
+      Exceptions.checkNotNull(scopeInstance);
+    }
+    return scopeInstance;
+  }
+
   /**
    * Default deserialization of trigger instance data.
    * This is called if there is no trigger defined and it will 
@@ -385,28 +430,23 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
   
-  public void deserializeMessage(Message message, WorkflowImpl workflow) {
-    deserializeVariableValues(message.getData(), workflow);
+  public void deserializeVariableValues(Map<String,Object> variableValues, WorkflowImpl workflow) {
   }
 
-  protected void deserializeVariableValues(Map<String,Object> variableValues, WorkflowImpl workflow) {
+  public void deserializeWorkflowInstance(WorkflowInstance workflowInstance) {
+  }
+
+  public void deserializeVariableValues(WorkflowInstanceId workflowInstanceId, Map<String, Object> variableValues) {
     if (variableValues!=null) {
+      WorkflowInstanceImpl workflowInstance = workflowInstanceStore.getWorkflowInstanceImplById(workflowInstanceId);
       for (String variableId: variableValues.keySet()) {
         Object jsonValue = variableValues.get(variableId);
-        VariableImpl variable = workflow.findVariableByIdLocal(variableId);
-        if (variable!=null && variable.type!=null) {
-          Object value = variable.type.convertJsonToInternalValue(jsonValue);
+        VariableInstanceImpl variableInstance = workflowInstance.findVariableInstance(variableId);
+        if (variableInstance!=null && variableInstance.type!=null) {
+          Object value = variableInstance.type.convertJsonToInternalValue(jsonValue);
           variableValues.put(variableId, value);
         }
       }
     }
-  }
-
-  public void setVariableValue(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String variableId, Object value) {
-    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
-    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
-    VariableInstanceImpl variableInstance = activityInstance.findVariableInstance(variableId);
-    activityInstance.setVariableValue(variableId, value);
-    workflowInstance.executeWork();
   }
 }
