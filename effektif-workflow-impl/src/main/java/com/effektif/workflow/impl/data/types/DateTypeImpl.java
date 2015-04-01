@@ -15,10 +15,13 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.types.BooleanType;
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
+import com.effektif.workflow.impl.json.LocalDateTimeDeserializer;
+import com.effektif.workflow.impl.json.LocalDateTimeSerializer;
 
 /**
  * @author Tom Baeyens
@@ -28,5 +31,21 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   public DateTypeImpl() {
     super(DateType.INSTANCE, Boolean.class);
   }
-  
+
+  @Override
+  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+    if (jsonValue==null) {
+      return null;
+    }
+    String timeString = (String) jsonValue;
+    return LocalDateTimeDeserializer.formatter.parseLocalDateTime(timeString);
+  }
+
+  @Override
+  public Object convertInternalToJsonValue(Object internalValue) {
+    if (internalValue==null) {
+      return null;
+    }
+    return LocalDateTimeSerializer.formatter.print((LocalDateTime)internalValue);
+  }
 }
