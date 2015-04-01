@@ -15,18 +15,16 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertEquals;
-
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Test;
 
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
@@ -35,6 +33,10 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.test.WorkflowTest;
+import org.joda.time.LocalDateTime;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -43,10 +45,33 @@ import com.effektif.workflow.test.WorkflowTest;
 public class VariableTypesTest extends WorkflowTest {
 
   @Test
+  public void testDateType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new DateType());
+    
+    deploy(workflow);
+
+    long time = new Date().getTime();
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", new LocalDateTime(time)));
+
+    assertEquals(new LocalDateTime(time), workflowInstance.getVariableValueDate("v"));
+
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
+    
+    Map<String, Object> variableValues = new HashMap<>();
+    variableValues.put("v", new LocalDateTime(time));
+    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
+    assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
+  }
+
+  @Test
   public void testNumberType() {
     Workflow workflow = new Workflow()
       .variable("v", new NumberType());
-    
+
     deploy(workflow);
 
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
@@ -56,7 +81,7 @@ public class VariableTypesTest extends WorkflowTest {
     assertEquals(new Long(5), workflowInstance.getVariableValueLong("v"));
 
     WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
-    
+
     Map<String, Object> variableValues = new HashMap<>();
     variableValues.put("v", 6l);
     workflowEngine.setVariableValues(workflowInstanceId, variableValues);

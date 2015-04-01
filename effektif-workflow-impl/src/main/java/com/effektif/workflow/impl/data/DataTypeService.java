@@ -34,6 +34,7 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
+import com.effektif.workflow.impl.data.types.DateTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
@@ -75,6 +76,9 @@ public class DataTypeService implements Brewable {
     BooleanTypeImpl booleanTypeImpl = new BooleanTypeImpl();
     booleanTypeImpl.setConfiguration(configuration);
     registerDataType(booleanTypeImpl);
+    DateTypeImpl dateTypeImpl = new DateTypeImpl();
+    dateTypeImpl.setConfiguration(configuration);
+    registerDataType(dateTypeImpl);
     NumberTypeImpl numberTypeImpl = new NumberTypeImpl();
     numberTypeImpl.setConfiguration(configuration);
     registerDataType(numberTypeImpl);

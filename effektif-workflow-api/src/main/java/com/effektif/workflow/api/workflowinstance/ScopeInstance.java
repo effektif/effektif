@@ -80,6 +80,17 @@ public abstract class ScopeInstance extends Extensible {
     throw new RuntimeException("Value is not a number: "+value+" ("+value.getClass().getName()+")");
   }
 
+  public LocalDateTime getVariableValueDate(String variableId) {
+    Object value = getVariableValue(variableId);
+    if (value==null) {
+      return null;
+    }
+    if (value instanceof LocalDateTime) {
+      return ((LocalDateTime)value);
+    }
+    throw new RuntimeException("Value is not a date: "+value+" ("+value.getClass().getName()+")");
+  }
+
   public Double getVariableValueDouble(String variableId) {
     Object value = getVariableValue(variableId);
     if (value==null) {
