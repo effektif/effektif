@@ -27,7 +27,7 @@ import com.effektif.workflow.api.xml.XmlElement;
  * 
  * @author Tom Baeyens
  */
-public class Element extends Extensible {
+public abstract class Element extends Extensible {
   
   public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
           "name", "description", "bpmn"));

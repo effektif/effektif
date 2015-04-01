@@ -58,7 +58,7 @@ public class RhinoScriptService implements ScriptService, Brewable {
         try {
           return context.compileString(script.getScript(), "script", 1, null);
         } catch (Exception e) {
-          parser.addError("Script doesn't compile: %s", e.getMessage());
+          parser.addWarning("Script doesn't compile: %s", e.getMessage());
           return null;
         }
       }

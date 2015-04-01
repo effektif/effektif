@@ -20,6 +20,7 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 
 
 /**
@@ -53,7 +54,8 @@ public class VariableImpl {
     if (typeApi!=null) {
       this.type = dataTypeService.createDataType(typeApi);
     } else {
-      parser.addError("Variable '%s' does not have a type", id);
+      parser.addWarning("Variable '%s' does not have a type", id);
+      this.type = new AnyTypeImpl();
     }
   }
 

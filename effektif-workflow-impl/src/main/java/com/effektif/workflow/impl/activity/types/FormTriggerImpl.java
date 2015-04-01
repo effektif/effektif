@@ -62,6 +62,7 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
     Object formInstanceObject = triggerInstance.getData(FormTrigger.FORM_INSTANCE_KEY);
     if (deserialize) {
       formInstance = jsonService.jsonMapToObject((Map)formInstanceObject, FormInstance.class);
+      triggerInstance.data(FormTrigger.FORM_INSTANCE_KEY, formInstance);
     } else {
       formInstance = (FormInstance) formInstanceObject;
     }

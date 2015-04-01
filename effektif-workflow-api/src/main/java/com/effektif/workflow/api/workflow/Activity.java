@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.json.JsonReader;
+import com.effektif.workflow.api.json.JsonWriter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -38,6 +40,24 @@ public class Activity extends Scope {
   protected List<Transition> outgoingTransitions;
   
   public Activity() {
+  }
+  
+  @Override
+  public void writeFields(JsonWriter w) {
+    w.writeString("id", id);
+    super.writeFields(w);
+    w.writeString("defaultTransitionId", defaultTransitionId);
+    w.writeObject("multiInstance", multiInstance);
+    w.writeList("outgoingTransitions", outgoingTransitions);
+  }
+  
+  @Override
+  public void readFields(JsonReader r) {
+    id = r.readString("id");
+    super.readFields(r);
+    defaultTransitionId = r.readString("defaultTransitionId");
+    // multiInstance = r.readObject("multiInstance", MultiInstance.class);
+    outgoingTransitions = r.readList("outgoingTransitions", Transition.class);
   }
 
   public String getId() {

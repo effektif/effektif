@@ -31,8 +31,12 @@ public class AccessIdentity {
   public AccessIdentity() {
   }
 
-  public AccessIdentity(String id) {
-    this.id = id;
+  public AccessIdentity(Object id) {
+    if (id instanceof String) {
+      this.id = (String) id;
+    } if (id!=null) {
+      this.id = id.toString();
+    }
   }
 
   public String getId() {

@@ -16,6 +16,8 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.acl.AccessControlList;
+import com.effektif.workflow.api.json.JsonReader;
+import com.effektif.workflow.api.json.JsonWriter;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.xml.XmlElement;
 
@@ -37,6 +39,18 @@ public abstract class AbstractWorkflow extends Scope {
   protected String caseNameTemplate;
   
   public abstract String getSourceWorkflowId();
+
+  @Override
+  public void writeFields(JsonWriter w) {
+    w.writeId(id);
+    super.writeFields(w);
+  }
+
+  @Override
+  public void readFields(JsonReader r) {
+    id = r.readId(WorkflowId.class);
+    super.readFields(r);
+  }
 
   public WorkflowId getId() {
     return this.id;

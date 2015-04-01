@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
@@ -28,6 +31,8 @@ public class BaseInstanceImpl {
   public WorkflowInstanceImpl workflowInstance;
   public WorkflowImpl workflow;
   public Configuration configuration;
+  public Map<String,Object> properties;
+  public Map<String,Object> transientProperties;
 
   public BaseInstanceImpl() {
   }
@@ -53,5 +58,55 @@ public class BaseInstanceImpl {
   
   public WorkflowImpl getWorkflow() {
     return workflow;
+  }
+
+  public Map<String,Object> getProperties() {
+    return this.properties;
+  }
+  public void setProperties(Map<String,Object> properties) {
+    this.properties = properties;
+  }
+  public Object getProperty(String key) {
+    return properties!=null ? properties.get(key) : null;
+  }
+  public void setProperty(String key,Object value) {
+    if (properties==null) {
+      properties = new HashMap<>();
+    }
+    this.properties.put(key, value);
+  }
+  public void setPropertyOpt(String key,Object value) {
+    if (value==null) {
+      return;
+    }
+    setProperty(key, value);
+  }
+  public Object removeProperty(String key) {
+    return properties!=null ? properties.remove(key) : null;
+  }
+
+  public Map<String,Object> getTransientProperties() {
+    return this.transientProperties;
+  }
+  public void setTransientProperties(Map<String,Object> transientProperties) {
+    this.transientProperties = transientProperties;
+  }
+  public Object getTransientProperty(String key) {
+    return transientProperties!=null ? transientProperties.get(key) : null;
+  }
+  public void setTransientProperty(String key,Object value) {
+    if (transientProperties==null) {
+      transientProperties = new HashMap<>();
+    }
+    this.transientProperties.put(key, value);
+  }
+  public void setTransientPropertyOpt(String key,Object value) {
+    if (value==null) {
+      return;
+    }
+    setTransientProperty(key, value);
+  }
+  public Object removeTransientProperty(String key) {
+    return transientProperties!=null ? transientProperties.remove(key) : null;
   }
 }

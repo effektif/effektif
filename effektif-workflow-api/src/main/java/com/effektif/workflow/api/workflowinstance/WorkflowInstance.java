@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.effektif.workflow.api.json.JsonWriter;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -35,6 +36,11 @@ public class WorkflowInstance extends ScopeInstance {
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
   protected String caseId;
+
+  @Override
+  public void writeFields(JsonWriter w) {
+    
+  }
 
   public WorkflowInstanceId getId() {
     return this.id;

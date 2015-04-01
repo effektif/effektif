@@ -18,18 +18,34 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.json.JsonReader;
+import com.effektif.workflow.api.json.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 
 /**
  * @author Tom Baeyens
  */
-public class Scope extends Element {
+public abstract class Scope extends Element {
 
   protected List<Activity> activities;
   protected List<Transition> transitions;
   protected List<Variable> variables;
   protected List<Timer> timers;
+
+  @Override
+  public void writeFields(JsonWriter w) {
+    w.writeList("activities", activities);
+    super.writeFields(w);
+  }
+  
+  @Override
+  public void readFields(JsonReader r) {
+    activities =  r.readList("activities", Activity.class);
+    super.readFields(r);
+  }
+
+
 
   public List<Activity> getActivities() {
     return this.activities;

@@ -61,7 +61,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   /** maps variable.id's to variable instances */
   public Map<String, VariableInstanceImpl> variableInstancesMap;
   public List<TimerInstanceImpl> timerInstances;
-  public Map<String,Object> properties;
 
   // As long as the workflow instance is not saved, the updates collection is null.
   // That means it's not yet necessary to collect the updates. 
@@ -80,31 +79,32 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public abstract boolean isWorkflowInstance();
   
-  protected void toScopeInstance(ScopeInstance scopeInstanceApi) {
-    scopeInstanceApi.setStart(start);
-    scopeInstanceApi.setEnd(end);
-    scopeInstanceApi.setDuration(duration);
+  protected void toScopeInstance(ScopeInstance scopeInstance) {
+    scopeInstance.setStart(start);
+    scopeInstance.setEnd(end);
+    scopeInstance.setDuration(duration);
     if (activityInstances!=null && !activityInstances.isEmpty()) {
       List<ActivityInstance> activityInstanceApis = new ArrayList<>();
       for (ActivityInstanceImpl activityInstanceImpl: this.activityInstances) {
         activityInstanceApis.add(activityInstanceImpl.toActivityInstance());
       }
-      scopeInstanceApi.setActivityInstances(activityInstanceApis);
+      scopeInstance.setActivityInstances(activityInstanceApis);
     }
     if (variableInstances!=null && !variableInstances.isEmpty()) {
       List<VariableInstance> variableInstanceApis = new ArrayList<>();
       for (VariableInstanceImpl variableInstanceImpl: this.variableInstances) {
         variableInstanceApis.add(variableInstanceImpl.toVariableInstance());
       }
-      scopeInstanceApi.setVariableInstances(variableInstanceApis);
+      scopeInstance.setVariableInstances(variableInstanceApis);
     }
     if (timerInstances!=null && !timerInstances.isEmpty()) {
       List<TimerInstance> timerInstanceApis = new ArrayList<>();
       for (TimerInstanceImpl timerInstanceImpl: this.timerInstances) {
         timerInstanceApis.add(timerInstanceImpl.toTimerInstance());
       }
-      scopeInstanceApi.setTimerInstances(timerInstanceApis);
+      scopeInstance.setTimerInstances(timerInstanceApis);
     }
+    scopeInstance.setProperties(this.properties);
   }
 
   public void execute(ActivityImpl activity) {
@@ -515,4 +515,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public TaskId findTaskIdRecursive() {
     return null;
   }
+  
+  
 }

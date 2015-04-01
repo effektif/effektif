@@ -15,18 +15,26 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.workflow.Extensible;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ScopeInstance {
-  
+public abstract class ScopeInstance extends Extensible {
+
+  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
+          "start", "end", "duration", "activityInstances", "variableInstances", 
+          "timerInstances", "taskId"));
+
   protected LocalDateTime start;
   protected LocalDateTime end;
   protected Long duration;
@@ -138,5 +146,10 @@ public class ScopeInstance {
   }
   public void setTaskId(TaskId taskId) {
     this.taskId = taskId;
+  }
+
+  @Override
+  protected void checkPropertyKey(String key) {
+    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 }

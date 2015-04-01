@@ -102,7 +102,8 @@ public class ConditionServiceImpl implements ConditionService {
     }
     Class<? extends ConditionImpl> implClass = impls.get(condition.getClass());
     if (implClass==null) {
-      parser.addError("Unknown condition type: %s", condition.getClass().getName());
+      parser.addWarning("Unknown condition type: %s", condition.getClass().getName());
+      return null;
     }
     try {
       ConditionImpl conditionImpl = implClass.newInstance();

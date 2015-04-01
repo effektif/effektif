@@ -102,7 +102,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
           parser.addWarning("Default transition '%s' does not leave from activity '%s'", id, activityHavingThisAsDefault.id);
         }
       } else {
-        parser.addError("Transition has an invalid value for 'from' (%s) : %s", fromId, parser.getExistingActivityIdsText(parentImpl));
+        parser.addWarning("Transition has an invalid value for 'from' (%s) : %s", fromId, parser.getExistingActivityIdsText(parentImpl));
       }
     }
     String toId = null;
@@ -124,7 +124,7 @@ public class TransitionImpl implements BpmnModel<Transition> {
         if (this.to!=null) {
           this.to.addIncomingTransition(this);
         } else {
-          parser.addError("Transition has an invalid value for 'to' (%s) : %s", toId, parser.getExistingActivityIdsText(parentImpl));
+          parser.addWarning("Transition has an invalid value for 'to' (%s) : %s", toId, parser.getExistingActivityIdsText(parentImpl));
         }
       }
     }

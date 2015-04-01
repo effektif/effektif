@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.json.JsonWriter;
 
 
 
@@ -38,6 +39,10 @@ public class Transition extends Element {
 
   protected Condition condition;
   protected Boolean isToNext;
+
+  @Override
+  public void writeFields(JsonWriter w) {
+  }
 
   public String getId() {
     return this.id;

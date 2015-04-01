@@ -200,13 +200,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);
     workflowInstance.executeWork();
     
-    if (workflowInstance.caze!=null) {
-      if (workflowInstance.isEnded()) {
-        workflowInstance.caze.setClosed(true);
-      }
-      caseService.createCase(workflowInstance.caze);
-    }
-
     return workflowInstance.toWorkflowInstance();
   }
 

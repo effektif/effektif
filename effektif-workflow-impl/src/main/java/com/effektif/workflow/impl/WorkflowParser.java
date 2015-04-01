@@ -322,7 +322,7 @@ public class WorkflowParser {
               .get(ConditionService.class)
               .compile(condition, this);
     } catch (Exception e) {
-      addError("Invalid condition '%s' : %s", condition, e.getMessage());
+      addWarning("Invalid condition '%s' : %s", condition, e.getMessage());
     }
     return null;
   }
@@ -336,7 +336,7 @@ public class WorkflowParser {
               .get(ScriptService.class)
               .compile(script, this);
     } catch (Exception e) {
-      addError("Invalid script '%s' : %s", script, e.getMessage());
+      addWarning("Invalid script '%s' : %s", script, e.getMessage());
     }
     return null;
   }

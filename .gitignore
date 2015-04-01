@@ -10,3 +10,4 @@ hs_err_pid*
 *.project
 *.classpath
 *.settings
+gatling-dist
