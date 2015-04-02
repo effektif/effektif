@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
 
 import java.io.IOException;
 
@@ -21,32 +21,29 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 
 /**
  * @author Tom Baeyens
  */
-public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
+public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
-  private static final long serialVersionUID = 1L;
-
-  public static DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
-
-  public LocalDateTimeDeserializer() {
+  public static DateTimeFormatter formatter = ISODateTimeFormat.dateTime();
+  
+  public LocalDateTimeSerializer() {
     super(LocalDateTime.class);
   }
-
+  
   @Override
-  public LocalDateTime deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    String timeString = jp.getText();
-    if (timeString!=null) {
-      return formatter.parseLocalDateTime(timeString);
+  public void serialize(LocalDateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonGenerationException {
+    if (value!=null) {
+      jgen.writeString(formatter.print(value));
     } else {
-      return null;
+      jgen.writeNull();
     }
   }
 }

@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
 
-import com.effektif.workflow.api.form.FormInstance;
+import com.effektif.workflow.api.model.GroupId;
 
 
 /**
  * @author Tom Baeyens
  */
-public class SerializedFormInstance extends FormInstance {
+public class GroupIdDeserializer extends IdDeserializer<GroupId> {
 
+  private static final long serialVersionUID = 1L;
+
+  public GroupIdDeserializer() {
+    super(GroupId.class);
+  }
+
+  @Override
+  protected GroupId instantiate(String idString) {
+    return new GroupId(idString);
+  }
 }

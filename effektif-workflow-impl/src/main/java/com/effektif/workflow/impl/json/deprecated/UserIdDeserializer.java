@@ -1,5 +1,6 @@
-/* Copyright (c) 2014, Effektif GmbH.
- * 
+/*
+ * Copyright 2014 Effektif GmbH.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,21 +11,26 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. */
-package com.effektif.workflow.impl.json;
+ * limitations under the License.
+ */
+package com.effektif.workflow.impl.json.deprecated;
 
+import com.effektif.workflow.api.model.UserId;
 
 
 /**
  * @author Tom Baeyens
  */
-public class RestJsonService extends AbstractJsonService {
-  
-  public RestJsonReader createJsonReader() {
-    return new RestJsonReader(jsonMappings);
+public class UserIdDeserializer extends IdDeserializer<UserId> {
+
+  private static final long serialVersionUID = 1L;
+
+  public UserIdDeserializer() {
+    super(UserId.class);
   }
 
-  public RestJsonWriter createJsonWriter() {
-    return new RestJsonWriter(jsonMappings);
+  @Override
+  protected UserId instantiate(String idString) {
+    return new UserId(idString);
   }
 }

@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
 
-import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.form.FormInstance;
 
 
 /**
  * @author Tom Baeyens
  */
-public class UserIdDeserializer extends IdDeserializer<UserId> {
+public class SerializedFormInstance extends FormInstance {
 
-  private static final long serialVersionUID = 1L;
-
-  public UserIdDeserializer() {
-    super(UserId.class);
-  }
-
-  @Override
-  protected UserId instantiate(String idString) {
-    return new UserId(idString);
-  }
 }

@@ -45,8 +45,6 @@ public abstract class Scope extends Element {
     super.readFields(r);
   }
 
-
-
   public List<Activity> getActivities() {
     return this.activities;
   }

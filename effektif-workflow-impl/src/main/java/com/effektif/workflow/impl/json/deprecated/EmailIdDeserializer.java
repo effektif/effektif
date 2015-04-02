@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
 
-import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.EmailId;
 
 
 /**
  * @author Tom Baeyens
  */
-public class GroupIdDeserializer extends IdDeserializer<GroupId> {
+public class EmailIdDeserializer extends IdDeserializer<EmailId> {
 
   private static final long serialVersionUID = 1L;
 
-  public GroupIdDeserializer() {
-    super(GroupId.class);
+  public EmailIdDeserializer() {
+    super(EmailId.class);
   }
 
   @Override
-  protected GroupId instantiate(String idString) {
-    return new GroupId(idString);
+  protected EmailId instantiate(String idString) {
+    return new EmailId(idString);
   }
 }

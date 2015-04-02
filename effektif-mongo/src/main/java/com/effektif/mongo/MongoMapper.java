@@ -21,9 +21,9 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.impl.json.JsonService;
-import com.effektif.workflow.impl.json.LocalDateTimeDeserializer;
-import com.effektif.workflow.impl.json.LocalDateTimeSerializer;
+import com.effektif.workflow.impl.json.deprecated.JsonService;
+import com.effektif.workflow.impl.json.deprecated.LocalDateTimeDeserializer;
+import com.effektif.workflow.impl.json.deprecated.LocalDateTimeSerializer;
 import com.mongodb.BasicDBObject;
 
 

@@ -34,7 +34,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
-import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.deprecated.JsonService;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 

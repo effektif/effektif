@@ -33,7 +33,7 @@ import com.effektif.workflow.impl.activity.types.UserTaskImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
-import com.effektif.workflow.impl.json.SerializedFormInstance;
+import com.effektif.workflow.impl.json.deprecated.SerializedFormInstance;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 

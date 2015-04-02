@@ -13,36 +13,27 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.effektif.workflow.api.json.JsonReader;
+import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.impl.json.deprecated.JsonMappings;
 
 
 /**
  * @author Tom Baeyens
  */
-public class SubclassMapping {
+public abstract class AbstractJsonService {
+  
+  protected JsonMappings jsonMappings = new JsonMappings();
 
-  String typeField;
-  Map<String,Class<?>> subclasses = new HashMap<>();
-  
-  public SubclassMapping() {
-    this.typeField = "type";
-  }
-
-  public SubclassMapping(String typeField) {
-    this.typeField = typeField;
-  }
-  
-  public void registerSubclass(String typeName, Class<?> subclass) {
-    subclasses.put(typeName, subclass);
-  }
-  
-  public Class<?> getSubclass(Map<String,Object> jsonObject) {
-    String typeName = (String) jsonObject.get(typeField);
-    return subclasses.get(typeName);
+  public JsonMappings getSubclassMappings() {
+    return jsonMappings;
   }
 
-  public String getTypeField() {
-    return typeField;
+  public void setJsonMappings(JsonMappings jsonMappings) {
+    this.jsonMappings = jsonMappings;
   }
+
+  public abstract JsonReader createJsonReader();
+
+  public abstract JsonWriter createJsonWriter();
 }

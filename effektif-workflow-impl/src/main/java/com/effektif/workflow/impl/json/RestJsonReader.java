@@ -16,34 +16,27 @@ package com.effektif.workflow.impl.json;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.json.JsonReadable;
-import com.effektif.workflow.api.json.JsonReader;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.impl.json.deprecated.JsonMappings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public class RestJsonReader implements JsonReader {
+public class RestJsonReader extends AbstractJsonReader {
   
   static ObjectMapper objectMapper = new ObjectMapper();
   
-  Map<String,Object> jsonObject;
-  SubclassMappings subclassMappings; 
-
   public RestJsonReader() {
-    this(new SubclassMappings());
+    this(new JsonMappings());
   }
 
-  public RestJsonReader(SubclassMappings subclassMappings) {
-    this.subclassMappings = subclassMappings;
+  public RestJsonReader(JsonMappings jsonMappings) {
+    this.jsonMappings = jsonMappings;
   }
 
   public <T extends JsonReadable> T toObject(String jsonString, Class<T> type) {
@@ -59,61 +52,8 @@ public class RestJsonReader implements JsonReader {
     }
   }
 
-  protected <T extends JsonReadable> T readCurrentObject(Class<T> type) {
-    try {
-      Class<T> concreteType = subclassMappings.getConcreteClass(jsonObject, type);
-      T o = concreteType.newInstance();
-      o.readFields(this);
-      return o;
-      
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   @Override
   public <T extends Id> T readId(Class<T> idType) {
-    try {
-      String internal = readString("id");
-      if (internal!=null) {
-        Constructor<T> c = idType.getDeclaredConstructor(new Class<?>[]{String.class});
-        return c.newInstance(new Object[]{internal});
-      }
-      return null;
-    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public String readString(String fieldName) {
-    return (String) jsonObject.get(fieldName);
-  }
-
-  @Override
-  public <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type) {
-    List<Map<String,Object>> jsons = (List<Map<String, Object>>) jsonObject.get(fieldName);
-    if (jsons==null) {
-      return null;
-    }
-    Map<String,Object> parentJson = jsonObject;
-    List<T> objects = new ArrayList<>();
-    for (Map<String,Object> jsonElement: jsons) {
-      jsonObject = jsonElement;
-      T object = readCurrentObject(type);
-      objects.add(object);
-    }
-    this.jsonObject = parentJson;
-    return objects;
-  }
-  
-  @Override
-  public <T extends JsonReadable> T readObject(String fieldName, Class<T> type) {
-    Map<String,Object> parentJson = jsonObject;
-    List<T> objects = new ArrayList<>();
-    jsonObject = (Map<String, Object>) parentJson.get(fieldName);
-    T object = readCurrentObject(type);
-    objects.add(object);
-    this.jsonObject = parentJson;
-    return object;
+    return readId("id", idType);
   }
 }

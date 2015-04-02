@@ -11,29 +11,37 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.json;
+package com.effektif.mongo;
 
-import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.json.JsonReadable;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.impl.json.AbstractJsonReader;
+import com.effektif.workflow.impl.json.deprecated.JsonMappings;
+import com.mongodb.BasicDBObject;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface JsonReader {
+public class MongoJsonReader extends AbstractJsonReader {
 
-  <T extends Id> T readId(Class<T> idType);
+  public MongoJsonReader() {
+    super();
+  }
 
-  <T extends Id> T readId(String fieldName, Class<T> idType);
+  public MongoJsonReader(JsonMappings jsonMappings) {
+    super(jsonMappings);
+  }
 
-  <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type);
+  public <T extends JsonReadable> T toObject(BasicDBObject dbObject, Class<T> type) {
+    this.jsonObject = dbObject;
+    return readCurrentObject(type);
+  }
 
-  <T extends JsonReadable> T readObject(String fieldName, Class<T> type);
-
-  <T> Map<String, T> readMap(String fieldName, Class<T> valueType);
-
-  String readString(String fieldName);
-
+  @Override
+  public <T extends Id> T readId(Class<T> idType) {
+    return readId("_id", idType);
+  }
 }

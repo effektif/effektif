@@ -11,29 +11,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.json;
+package com.effektif.mongo;
 
-import java.util.List;
-import java.util.Map;
-
-import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.impl.json.AbstractJsonService;
 
 
 /**
  * @author Tom Baeyens
  */
-public interface JsonReader {
+public class MongoJsonService extends AbstractJsonService {
+  
+  public MongoJsonReader createJsonReader() {
+    return new MongoJsonReader(jsonMappings);
+  }
 
-  <T extends Id> T readId(Class<T> idType);
-
-  <T extends Id> T readId(String fieldName, Class<T> idType);
-
-  <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type);
-
-  <T extends JsonReadable> T readObject(String fieldName, Class<T> type);
-
-  <T> Map<String, T> readMap(String fieldName, Class<T> valueType);
-
-  String readString(String fieldName);
-
+  public MongoJsonWriter createJsonWriter() {
+    return new MongoJsonWriter(jsonMappings);
+  }
 }

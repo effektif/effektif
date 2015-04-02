@@ -18,8 +18,11 @@ package com.effektif.workflow.api.activities;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.json.JsonReader;
+import com.effektif.workflow.api.json.JsonWriter;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Transition;
 
 
 /**
@@ -29,6 +32,20 @@ public class AbstractBindableActivity extends Activity {
 
   protected Map<String,Binding> inputBindings; 
   protected Map<String,String> outputBindings;
+  
+  @Override
+  public void writeFields(JsonWriter w) {
+    super.writeFields(w);
+    w.writeMap("inputBindings", inputBindings);
+    w.writeMap("outputBindings", outputBindings);
+  }
+  
+  @Override
+  public void readFields(JsonReader r) {
+    inputBindings = r.readMap("inputBindings", Binding.class);
+    outputBindings = r.readMap("outputBindings", String.class);
+    super.readFields(r);
+  }
   
   /** copies the static value to the adapter activity when it is invoked,
    * This method uses reflection and the data type service to find the type form the value. */

@@ -24,7 +24,7 @@ import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.impl.FormBindings;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
-import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.deprecated.JsonService;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 

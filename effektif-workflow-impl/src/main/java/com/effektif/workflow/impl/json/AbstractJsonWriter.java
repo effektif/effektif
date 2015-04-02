@@ -1,6 +1,5 @@
-/*
- * Copyright 2014 Effektif GmbH.
- *
+/* Copyright (c) 2014, Effektif GmbH.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,15 +10,26 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.impl.json.deprecated.JsonMappings;
 
 
 /**
  * @author Tom Baeyens
  */
-public class SerializedTriggerInstance extends TriggerInstance {
+public abstract class AbstractJsonWriter implements JsonWriter {
+
+  protected JsonMappings jsonMappings;
+
+  public AbstractJsonWriter() {
+    this(new JsonMappings());
+  }
+
+  public AbstractJsonWriter(JsonMappings jsonMappings) {
+    this.jsonMappings = jsonMappings;
+  }
+  
 }

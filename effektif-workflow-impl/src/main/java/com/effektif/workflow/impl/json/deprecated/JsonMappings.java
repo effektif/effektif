@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import com.effektif.workflow.api.json.TypeName;
 /**
  * @author Tom Baeyens
  */
-public class SubclassMappings {
+public class JsonMappings {
 
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
   Map<Class<?>, TypeField> typeFields = new HashMap<>();

@@ -16,6 +16,8 @@ package com.effektif.workflow.api.json;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.model.Id;
 
 
@@ -24,13 +26,23 @@ import com.effektif.workflow.api.model.Id;
  */
 public interface JsonWriter {
 
-  void writeId(Id id);
-
   void writeString(String fieldName, String stringValue);
+  
+  void writeBoolean(String fieldName, Boolean value);
+  
+  void writeNumber(String fieldName, Number value);
 
   void writeObject(String fieldName, JsonWritable o);
 
-  void writeList(String fieldName, List<? extends JsonWritable> elements);
+  void writeId(Id id);
 
-  void writeFields(Map<String, Object> fieldValues);
+  void writeId(String fieldName, Id id);
+
+  void writeDate(String fieldName, LocalDateTime value);
+
+  void writeList(String fieldName, List<? extends Object> elements);
+
+  void writeFields(Map<String,? extends Object> fieldValues);
+
+  void writeMap(String fieldName, Map<String,? extends Object> map);
 }

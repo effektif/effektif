@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.json.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 
 

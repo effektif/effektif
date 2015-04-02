@@ -61,6 +61,6 @@ public class Id {
 
   @Override
   public String toString() {
-    return internal instanceof String ? (String)internal : internal.toString();
+    return internal;
   }
 }

@@ -13,24 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
 
-import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.TriggerInstance;
 
 
 /**
  * @author Tom Baeyens
  */
-public class CaseIdDeserializer extends IdDeserializer<CaseId> {
-
-  private static final long serialVersionUID = 1L;
-
-  public CaseIdDeserializer() {
-    super(CaseId.class);
-  }
-
-  @Override
-  protected CaseId instantiate(String idString) {
-    return new CaseId(idString);
-  }
+public class SerializedTriggerInstance extends TriggerInstance {
 }

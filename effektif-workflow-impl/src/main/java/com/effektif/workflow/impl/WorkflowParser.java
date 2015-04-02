@@ -43,7 +43,7 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.json.SerializedWorkflow;
+import com.effektif.workflow.impl.json.deprecated.SerializedWorkflow;
 import com.effektif.workflow.impl.script.ConditionService;
 import com.effektif.workflow.impl.script.ScriptImpl;
 import com.effektif.workflow.impl.script.ScriptService;

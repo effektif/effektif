@@ -11,26 +11,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.deprecated;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TypeField {
+public class SubclassMapping {
 
-  protected String typeField;
-  protected String typeName;
+  String typeField;
+  Map<String,Class<?>> subclasses = new HashMap<>();
   
-  public TypeField(String typeField, String typeName) {
-    this.typeField = typeField;
-    this.typeName = typeName;
+  public SubclassMapping() {
+    this.typeField = "type";
   }
 
-  public String getTypeName() {
-    return this.typeName;
+  public SubclassMapping(String typeField) {
+    this.typeField = typeField;
   }
+  
+  public void registerSubclass(String typeName, Class<?> subclass) {
+    subclasses.put(typeName, subclass);
+  }
+  
+  public Class<?> getSubclass(Map<String,Object> jsonObject) {
+    String typeName = (String) jsonObject.get(typeField);
+    return subclasses.get(typeName);
+  }
+
   public String getTypeField() {
-    return this.typeField;
+    return typeField;
   }
 }

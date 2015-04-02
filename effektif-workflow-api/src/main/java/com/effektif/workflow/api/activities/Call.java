@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.json.JsonReader;
+import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
@@ -31,10 +34,25 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */ 
 @JsonTypeName("call")
+@TypeName("call")
 public class Call extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
-  protected String subWorkflowSource; 
+  protected String subWorkflowSource;
+  
+  @Override
+  public void writeFields(JsonWriter w) {
+    super.writeFields(w);
+    w.writeId("subWorkflowId", subWorkflowId);
+    w.writeString("subWorkflowSource", subWorkflowSource);
+  }
+
+  @Override
+  public void readFields(JsonReader r) {
+    subWorkflowId = r.readId("subWorkflowId", WorkflowId.class);
+    subWorkflowSource = r.readString("subWorkflowSource");
+    super.readFields(r);
+  }
 
   @Override
   public Call id(String id) {
