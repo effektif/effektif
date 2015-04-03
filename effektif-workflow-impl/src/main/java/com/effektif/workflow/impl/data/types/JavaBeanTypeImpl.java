@@ -26,7 +26,7 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeGenerator;
-import com.effektif.workflow.impl.json.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 

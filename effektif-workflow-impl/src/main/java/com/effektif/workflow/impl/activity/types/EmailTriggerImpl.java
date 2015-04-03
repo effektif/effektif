@@ -20,7 +20,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.email.EmailTrigger;
-import com.effektif.workflow.impl.json.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 

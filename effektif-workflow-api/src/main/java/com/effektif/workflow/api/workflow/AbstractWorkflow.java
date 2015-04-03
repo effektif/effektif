@@ -16,10 +16,9 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.acl.AccessControlList;
-import com.effektif.workflow.api.json.JsonReader;
-import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.xml.XmlElement;
 
 
 /**
@@ -30,7 +29,6 @@ public abstract class AbstractWorkflow extends Scope {
   protected WorkflowId id;
 
   protected Trigger trigger;
-  protected XmlElement bpmnDefinitions;
   
   protected AccessControlList access;
   protected String organizationId;
@@ -41,13 +39,13 @@ public abstract class AbstractWorkflow extends Scope {
   public abstract String getSourceWorkflowId();
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeFields(Writer w) {
     w.writeId(id);
     super.writeFields(w);
   }
 
   @Override
-  public void readFields(JsonReader r) {
+  public void readFields(Reader r) {
     id = r.readId(WorkflowId.class);
     super.readFields(r);
   }
@@ -72,15 +70,6 @@ public abstract class AbstractWorkflow extends Scope {
   public AbstractWorkflow trigger(Trigger trigger) {
     this.trigger = trigger;
     return this;
-  }
-  
-  /** stores the non-parsed BPMN portion of the definitions element */
-  public XmlElement getBpmnDefinitions() {
-    return this.bpmnDefinitions;
-  }
-  /** stores the non-parsed BPMN portion of the definitions element */
-  public void setBpmnDefinitions(XmlElement bpmnDefinitions) {
-    this.bpmnDefinitions = bpmnDefinitions;
   }
   
   /** the access control list specifies which actions are permitted by whom.

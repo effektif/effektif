@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.effektif.workflow.api.xml.XmlElement;
+import com.effektif.workflow.api.mapper.XmlElement;
 
 
 /** 

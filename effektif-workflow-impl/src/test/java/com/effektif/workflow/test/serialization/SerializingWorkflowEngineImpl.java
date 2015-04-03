@@ -30,10 +30,10 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.json.deprecated.JsonService;
-import com.effektif.workflow.impl.json.deprecated.SerializedMessage;
-import com.effektif.workflow.impl.json.deprecated.SerializedTriggerInstance;
-import com.effektif.workflow.impl.json.deprecated.SerializedWorkflow;
+import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.SerializedMessage;
+import com.effektif.workflow.impl.mapper.deprecated.SerializedTriggerInstance;
+import com.effektif.workflow.impl.mapper.deprecated.SerializedWorkflow;
 
 
 /**

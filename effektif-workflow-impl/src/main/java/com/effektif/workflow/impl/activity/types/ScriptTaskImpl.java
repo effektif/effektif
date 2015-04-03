@@ -18,8 +18,8 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;

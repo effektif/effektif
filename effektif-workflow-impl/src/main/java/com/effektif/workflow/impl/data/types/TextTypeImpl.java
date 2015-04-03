@@ -15,9 +15,9 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 

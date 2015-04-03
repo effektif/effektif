@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.json.JsonReader;
-import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.Writer;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  * @author Tom Baeyens
  */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public class Activity extends Scope {
+public abstract class Activity extends Scope {
   
   protected String id;
   protected String defaultTransitionId;
@@ -43,7 +43,7 @@ public class Activity extends Scope {
   }
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeFields(Writer w) {
     w.writeString("id", id);
     super.writeFields(w);
     w.writeString("defaultTransitionId", defaultTransitionId);
@@ -52,7 +52,7 @@ public class Activity extends Scope {
   }
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readFields(Reader r) {
     id = r.readString("id");
     super.readFields(r);
     defaultTransitionId = r.readString("defaultTransitionId");

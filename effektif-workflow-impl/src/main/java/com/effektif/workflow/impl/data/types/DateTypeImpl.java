@@ -20,8 +20,8 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.json.deprecated.LocalDateTimeDeserializer;
-import com.effektif.workflow.impl.json.deprecated.LocalDateTimeSerializer;
+import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeDeserializer;
+import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeSerializer;
 
 /**
  * @author Tom Baeyens

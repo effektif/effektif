@@ -21,6 +21,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.TaskId;
@@ -29,7 +30,6 @@ import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.types.GroupIdType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.CaseStore;
 import com.effektif.workflow.impl.FormBindings;
 import com.effektif.workflow.impl.TaskStore;

@@ -15,7 +15,8 @@
  */
 package com.effektif.workflow.api.activities;
 
-import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonTypeName("startEvent")
 @TypeName("startEvent")
+@BpmnElement("startEvent")
 public class StartEvent extends Activity {
 
   @Override

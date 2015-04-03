@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.effektif.workflow.api.json.JsonReadable;
-import com.effektif.workflow.api.json.JsonReader;
-import com.effektif.workflow.api.json.JsonWritable;
-import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.Writable;
+import com.effektif.workflow.api.mapper.Writer;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
@@ -38,17 +38,17 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * 
  * @author Tom Baeyens
  */
-public abstract class Extensible implements JsonWritable, JsonReadable {
+public abstract class Extensible implements Writable, Readable {
 
   protected Map<String,Object> properties;
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readFields(Reader r) {
     // properties = r.readOtherProperties();
   }
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeFields(Writer w) {
     // w.writeFields(properties);
   }
 

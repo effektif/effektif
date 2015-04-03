@@ -28,7 +28,7 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.impl.file.FileService;
-import com.effektif.workflow.impl.json.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;

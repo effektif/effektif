@@ -18,8 +18,8 @@ package com.effektif.workflow.api.activities;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.json.JsonReader;
-import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Transition;
@@ -34,14 +34,14 @@ public class AbstractBindableActivity extends Activity {
   protected Map<String,String> outputBindings;
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeFields(Writer w) {
     super.writeFields(w);
     w.writeMap("inputBindings", inputBindings);
     w.writeMap("outputBindings", outputBindings);
   }
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readFields(Reader r) {
     inputBindings = r.readMap("inputBindings", Binding.class);
     outputBindings = r.readMap("outputBindings", String.class);
     super.readFields(r);

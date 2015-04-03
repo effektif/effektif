@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.script.CompiledScript;
 
 import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.xml.XmlElement;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnReader;

@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.template.Hints;
 
 

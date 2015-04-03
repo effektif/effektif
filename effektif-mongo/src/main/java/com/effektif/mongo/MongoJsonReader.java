@@ -13,29 +13,27 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import java.util.Map;
-
-import com.effektif.workflow.api.json.JsonReadable;
+import com.effektif.workflow.api.mapper.Readable;
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.impl.json.AbstractJsonReader;
-import com.effektif.workflow.impl.json.deprecated.JsonMappings;
+import com.effektif.workflow.impl.mapper.AbstractReader;
+import com.effektif.workflow.impl.mapper.Mappings;
 import com.mongodb.BasicDBObject;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MongoJsonReader extends AbstractJsonReader {
+public class MongoJsonReader extends AbstractReader {
 
   public MongoJsonReader() {
     super();
   }
 
-  public MongoJsonReader(JsonMappings jsonMappings) {
-    super(jsonMappings);
+  public MongoJsonReader(Mappings mappings) {
+    super(mappings);
   }
 
-  public <T extends JsonReadable> T toObject(BasicDBObject dbObject, Class<T> type) {
+  public <T extends Readable> T toObject(BasicDBObject dbObject, Class<T> type) {
     this.jsonObject = dbObject;
     return readCurrentObject(type);
   }

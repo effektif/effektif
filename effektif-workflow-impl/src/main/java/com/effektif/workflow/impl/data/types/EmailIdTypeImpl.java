@@ -16,11 +16,11 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.EmailId;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.xml.XmlElement;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;

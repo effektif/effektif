@@ -15,36 +15,36 @@ package com.effektif.mongo.test;
 
 import org.junit.BeforeClass;
 
-import com.effektif.mongo.MongoJsonService;
-import com.effektif.workflow.api.json.JsonReadable;
-import com.effektif.workflow.test.implementation.AbstractJsonTest;
+import com.effektif.mongo.MongoJsonMapper;
+import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MongoJsonTest extends AbstractJsonTest {
+public class MongoJsonTest extends AbstractMapperTest {
 
-  static MongoJsonService mongoJsonService = new MongoJsonService();
+  static MongoJsonMapper mongoJsonMapper = new MongoJsonMapper();
 
   @BeforeClass
   public static void initialize() {
     initializeSubclassMappings();
-    mongoJsonService = new MongoJsonService();
-    mongoJsonService.setJsonMappings(jsonMappings);
+    mongoJsonMapper = new MongoJsonMapper();
+    mongoJsonMapper.setJsonMappings(mappings);
   }
 
   @Override
-  protected <T extends JsonReadable> T serialize(T o) {
-    BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonService
-      .createJsonWriter()
+  protected <T extends Readable> T serialize(T o) {
+    BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonMapper
+      .createWriter()
       .toDbObject(o);
     
     System.out.println(dbWorkflow);
     
-    return (T) mongoJsonService
-      .createJsonReader()
+    return (T) mongoJsonMapper
+      .createReader()
       .toObject(dbWorkflow, (Class<T>)o.getClass());
   }
 

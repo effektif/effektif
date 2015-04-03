@@ -16,7 +16,7 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.xml.XmlElement;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;

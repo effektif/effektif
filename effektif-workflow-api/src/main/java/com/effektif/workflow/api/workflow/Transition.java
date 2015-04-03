@@ -16,7 +16,10 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.mapper.BpmnMappable;
+import com.effektif.workflow.api.mapper.BpmnMappings;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.Writer;
 
 
 
@@ -27,7 +30,7 @@ import com.effektif.workflow.api.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class Transition extends Element {
+public class Transition extends Element implements BpmnMappable {
 
   protected String id;
 
@@ -39,9 +42,26 @@ public class Transition extends Element {
 
   protected Condition condition;
   protected Boolean isToNext;
+  
+  @Override
+  public void initializeBpmnMapping(BpmnMappings mapping) {
+    mapping.mapToBpmn("from", "sourceRef");
+    mapping.mapToBpmn("to", "toRef");
+  }
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void readFields(Reader r) {
+    id = r.readString("id");
+    from = r.readString("from");
+    to = r.readString("to");
+    super.readFields(r);
+  }
+
+  @Override
+  public void writeFields(Writer w) {
+    w.writeString("id", id);
+    w.writeString("from", id);
+    w.writeString("to", id);
   }
 
   public String getId() {

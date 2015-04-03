@@ -25,8 +25,8 @@ import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.TaskServiceImpl;
-import com.effektif.workflow.impl.json.deprecated.JsonService;
-import com.effektif.workflow.impl.json.deprecated.SerializedFormInstance;
+import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.SerializedFormInstance;
 
 
 /**

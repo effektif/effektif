@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.impl.json.deprecated.SerializedWorkflow;
+import com.effektif.workflow.impl.mapper.deprecated.SerializedWorkflow;
 
 
 /**

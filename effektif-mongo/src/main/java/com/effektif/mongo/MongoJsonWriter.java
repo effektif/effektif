@@ -22,12 +22,12 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.json.JsonWritable;
+import com.effektif.workflow.api.mapper.Writable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.effektif.workflow.impl.json.AbstractJsonWriter;
-import com.effektif.workflow.impl.json.deprecated.JsonMappings;
+import com.effektif.workflow.impl.mapper.AbstractWriter;
+import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -36,7 +36,7 @@ import com.mongodb.BasicDBObject;
 /**
  * @author Tom Baeyens
  */
-public class MongoJsonWriter extends AbstractJsonWriter {
+public class MongoJsonWriter extends AbstractWriter {
   
   BasicDBObject dbObject;
   
@@ -47,8 +47,8 @@ public class MongoJsonWriter extends AbstractJsonWriter {
   public MongoJsonWriter() {
   }
 
-  public MongoJsonWriter(JsonMappings jsonMappings) {
-    super(jsonMappings);
+  public MongoJsonWriter(Mappings mappings) {
+    super(mappings);
   }
 
   public Object toDbObject(Object o) {
@@ -58,8 +58,8 @@ public class MongoJsonWriter extends AbstractJsonWriter {
         || (o instanceof Number)) {
       return o;
     }
-    if (o instanceof JsonWritable) {
-      return toDbObject((JsonWritable)o);
+    if (o instanceof Writable) {
+      return toDbObject((Writable)o);
     }
     if (o instanceof LocalDateTime) {
       return toDbObject((LocalDateTime)o);
@@ -83,13 +83,13 @@ public class MongoJsonWriter extends AbstractJsonWriter {
     return date.toDate();
   }
   
-  public BasicDBObject toDbObject(JsonWritable o) {
+  public BasicDBObject toDbObject(Writable o) {
     if (o==null) {
       return null;
     }
     BasicDBObject parentDbObject = dbObject;
     dbObject = new BasicDBObject();
-    jsonMappings.writeTypeField(this, o);
+    mappings.writeTypeField(this, o);
     o.writeFields(this);
     BasicDBObject newDbObject = dbObject;
     dbObject = parentDbObject;
@@ -172,7 +172,7 @@ public class MongoJsonWriter extends AbstractJsonWriter {
   }
 
   @Override
-  public void writeObject(String fieldName, JsonWritable value) {
+  public void writeObject(String fieldName, Writable value) {
     if (value!=null) {
       BasicDBObject dbValue = toDbObject(value); 
       dbObject.put(fieldName, dbValue);

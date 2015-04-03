@@ -28,7 +28,7 @@ import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import com.effektif.workflow.api.xml.XmlElement;
+import com.effektif.workflow.api.mapper.XmlElement;
 
 
 /** Uses a SAX streaming parser to parse XML and

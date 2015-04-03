@@ -18,8 +18,8 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.json.JsonReader;
-import com.effektif.workflow.api.json.JsonWriter;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
@@ -54,12 +54,12 @@ public class Workflow extends AbstractWorkflow {
   protected UserId creatorId;
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeFields(Writer w) {
     super.writeFields(w);
   }
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readFields(Reader r) {
     super.readFields(r);
   }
 
