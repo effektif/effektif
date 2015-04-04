@@ -31,6 +31,7 @@ import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.ServiceTaskType;
@@ -49,7 +50,13 @@ public class BpmnWriter implements Writer {
   protected String bpmnPrefix;
   protected String effektifPrefix;
   protected DataTypeService dataTypeService;
-  protected XmlElement xmlElement;
+
+  /** current scope */
+  protected Scope scope;
+  /** current xml element */
+  protected XmlElement xml;
+  /** current field mappings to be applied */
+  protected BpmnFieldMappingsImpl bpmnFieldMappings;
 
   /** convenience method */
   public static String writeBpmnDocumentString(Workflow workflow, Configuration configuration) {
@@ -67,16 +74,16 @@ public class BpmnWriter implements Writer {
     dataTypeService = configuration.get(DataTypeService.class);
   }
 
-  public void write(Workflow workflow, OutputStream out) {
+  public void toBpmnStream(Workflow workflow, OutputStream out) {
     XmlElement bpmnDefinitions = writeDefinitions(workflow);
     XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
     xmlWriter.writeDocument(bpmnDefinitions);
     xmlWriter.flush();
   }
 
-  public String write(Workflow workflow) {
+  public String toBpmnString(Workflow workflow) {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    write(workflow, stream);
+    toBpmnStream(workflow, stream);
     return stream.toString();
   }
 
@@ -111,19 +118,14 @@ public class BpmnWriter implements Writer {
   }
   
   protected XmlElement writeWorkflow(Workflow workflow) {
-    xmlElement = getXmlElement(workflow.getBpmn());
+    scope = workflow;
+    xml = getXmlElement(workflow.getBpmn());
     setBpmnName("process");
     if (workflow.getSourceWorkflowId()==null && workflow.getId()!=null) {
       workflow.setSourceWorkflowId(workflow.getId().getInternal());
     }
     workflow.writeFields(this);
-    return xmlElement;
-  }
-
-  public void setBpmnAttribute(String name, String value) {
-    if (value!=null) {
-      xmlElement.addAttribute(getBpmnQName(name), value);
-    }
+    return xml;
   }
 
   protected void writeActivities(Scope scope, XmlElement scopeElement) {
@@ -136,7 +138,7 @@ public class BpmnWriter implements Writer {
       for (int i=activities.size()-1; i>=0; i--) {
         Activity activity = activities.get(i);
         activity.writeFields(this);
-        
+// TODO ensure all of these are covered in the writeFields 1 line above        
 //        ActivityType<Activity> activityType = activityTypeService.getActivityType(activity.getClass());
 //        XmlElement activityXml = getXmlElement(activity.getBpmn());
 //        writeBpmnAttribute(activityXml, "id", activity.getId());
@@ -147,17 +149,6 @@ public class BpmnWriter implements Writer {
       }
     }
   }
-
-//  private void writeTransitions(Workflow workflow, XmlElement processElement) {
-//    List<Transition> transitions = workflow.getTransitions();
-//    if (transitions != null) {
-//      for (Transition transition : transitions) {
-//        XmlElement transitionXml = getXmlElement(transition.getBpmn());
-//        new TransitionImpl().writeBpmn(transition, transitionXml, this);
-//        processElement.addElement(transitionXml);
-//      }
-//    }
-//  }
 
   protected XmlElement getXmlElement(Object source) {
     if (source==null) {
@@ -177,7 +168,19 @@ public class BpmnWriter implements Writer {
   }
 
   public void setBpmnName(String localPart) {
-    xmlElement.name = getBpmnQName(localPart);
+    xml.name = getBpmnQName(localPart);
+  }
+
+  public void writeEffektifAttribute(String effektifAttributeName, String value) {
+    if (value!=null) {
+      xml.addAttribute(getEffektifQName(effektifAttributeName), value);
+    }
+  }
+  
+  public void writeBpmnAttribute(String bpmnAttributeName, String value) {
+    if (value!=null) {
+      xml.addAttribute(getBpmnQName(bpmnAttributeName), value);
+    }
   }
 
   /**
@@ -224,7 +227,7 @@ public class BpmnWriter implements Writer {
   /**
    * Writes the given documentation string as a BPMN <code>documentation</code> element.
    */
-  public void writeDocumentation(XmlElement xml, String documentation) {
+  public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
       XmlElement newElement = new XmlElement(getBpmnQName("documentation"));
       newElement.addText(documentation);
@@ -280,26 +283,30 @@ public class BpmnWriter implements Writer {
     }
   }
 
-
-
   @Override
   public void writeString(String fieldName, String value) {
     if (value!=null) {
-      setBpmnAttribute(fieldName, value);
+      if ("description".equals(fieldName)) {
+        writeDocumentation(value);
+      } else if (bpmnFieldMappings!=null) {
+        bpmnFieldMappings.writeAttribute(this, fieldName, value);
+      } else {
+        writeBpmnAttribute(fieldName, value);
+      }
     }
   }
 
   @Override
   public void writeBoolean(String fieldName, Boolean value) {
     if (value!=null) {
-      setBpmnAttribute(fieldName, value.toString());
+      writeBpmnAttribute(fieldName, value.toString());
     }
   }
 
   @Override
   public void writeNumber(String fieldName, Number value) {
     if (value!=null) {
-      setBpmnAttribute(fieldName, value.toString());
+      writeBpmnAttribute(fieldName, value.toString());
     }
   }
 
@@ -325,29 +332,57 @@ public class BpmnWriter implements Writer {
 
   @Override
   public void writeList(String fieldName, List< ? extends Object> elements) {
-    if (elements==null) {
-      return;
-    }
     if ("activities".equals(fieldName)) {
-      XmlElement parent = xmlElement;
-      for (int i=elements.size()-1; i>=0; i--) {
-        Activity activity = (Activity) elements.get(i);
-        xmlElement = getXmlElement(activity.getBpmn());
-        BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(activity.getClass());
+      writeActivities();
+    } else if ("transitions".equals(fieldName)) {
+      writeTransitions();
+    } else {
+      // throw new RuntimeException("No support yet for "+fieldName);
+    }
+  }
+  
+  protected void writeActivities() {
+    XmlElement parentXml = xml;
+    Scope parentScope = scope;
+    List<Activity> activities = scope.getActivities();
+    if (activities!=null) {
+      // We loop backwards and then add each activity as the first
+      // This way all the parsed activities will be serialized first
+      // before the unknown elements and the parsed elements will
+      // appear in the order as they were parsed.
+      for (int i=activities.size()-1; i>=0; i--) {
+        scope = activities.get(i);
+        xml = getXmlElement(scope.getBpmn());
+        BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(scope.getClass());
+        bpmnFieldMappings = bpmnTypeMapping.getBpmnFieldMappings();
         setBpmnName(bpmnTypeMapping.getBpmnElementName());
         Map<String, String> bpmnTypeAttributes = bpmnTypeMapping.getBpmnTypeAttributes();
         if (bpmnTypeAttributes!=null) {
           for (String attribute: bpmnTypeAttributes.keySet()) {
             String value = bpmnTypeAttributes.get(attribute);
-            xmlElement.addAttribute(getEffektifQName(attribute), value);
+            xml.addAttribute(getEffektifQName(attribute), value);
           }
         }
-        activity.writeFields(this);
-        parent.addElement(xmlElement);
+        scope.writeFields(this);
+        parentXml.addElementFirst(xml);
+        bpmnFieldMappings = null;
       }
-      xmlElement = parent;
+    }
+    xml = parentXml;
+    scope = parentScope;
+  }
+
+  private void writeTransitions() {
+    List<Transition> transitions = scope.getTransitions();
+    if (transitions != null) {
+      for (Transition transition : transitions) {
+        XmlElement transitionXml = getXmlElement(transition.getBpmn());
+        transition.writeFields(this);
+        xml.addElement(transitionXml);
+      }
     }
   }
+
 
   @Override
   public void writeFields(Map<String, ? extends Object> fieldValues) {
@@ -356,5 +391,4 @@ public class BpmnWriter implements Writer {
   @Override
   public void writeMap(String fieldName, Map<String, ? extends Object> map) {
   }
-
 }

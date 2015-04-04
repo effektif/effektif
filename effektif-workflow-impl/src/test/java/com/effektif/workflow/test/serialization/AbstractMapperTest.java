@@ -34,11 +34,13 @@ public abstract class AbstractMapperTest {
   
   protected static Mappings mappings = null; 
           
-  public static void initializeSubclassMappings() {
+  public static void initializeMappings() {
     mappings = new Mappings();
     mappings.registerBaseClass(Activity.class);
     mappings.registerSubClass(StartEvent.class);
     mappings.registerSubClass(Call.class);
+    
+    // mappings.registerBpmnMappable(bpmnMappableType);
   }
 
   @Test

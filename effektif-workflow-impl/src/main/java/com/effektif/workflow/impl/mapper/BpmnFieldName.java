@@ -13,28 +13,29 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.effektif.workflow.api.mapper.BpmnMappings;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 
 
 /**
  * @author Tom Baeyens
  */
-public class BpmnMappingsImpl implements BpmnMappings {
-  
-  Map<String,BpmnMapping> bpmnMappings = new HashMap<>();
-  
-  @Override
-  public void mapToBpmn(String fieldName, String bpmnName) {
-    bpmnMappings.put(fieldName, new BpmnMapping(bpmnName, Bpmn.BPMN_URI));
+public class BpmnFieldName {
+
+  protected String name;
+  protected String namespaceUri;
+
+  public BpmnFieldName(String name, String namespaceUri) {
+    this.name = name;
+    if (Bpmn.BPMN_URI.equals(namespaceUri)) {
+      this.namespaceUri = Bpmn.BPMN_URI;
+    } else {
+      this.namespaceUri = namespaceUri;
+    }
   }
 
-  @Override
-  public void mapToEffektif(String fieldName, String effektifName) {
-    bpmnMappings.put(fieldName, new BpmnMapping(effektifName, Bpmn.EFFEKTIF_URI));
+  public boolean isBpmn() {
+    return Bpmn.BPMN_URI==namespaceUri;
   }
-
+  
+  
 }

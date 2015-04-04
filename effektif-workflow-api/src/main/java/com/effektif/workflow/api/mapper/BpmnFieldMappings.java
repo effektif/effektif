@@ -19,12 +19,15 @@ package com.effektif.workflow.api.mapper;
  * 
  * @author Tom Baeyens
  */
-public interface BpmnMappings {
+public interface BpmnFieldMappings {
   
   /** maps the fieldName to the bpmnName in the BPMN namespace */
   void mapToBpmn(String fieldName, String bpmnName);
 
   /** maps the fieldName to the effektifName in the Effektif namespace */
   void mapToEffektif(String fieldName, String effektifName);
+
+  /** maps the fieldName to the Effektif namespace */
+  void mapToEffektif(String fieldName);
 
 }

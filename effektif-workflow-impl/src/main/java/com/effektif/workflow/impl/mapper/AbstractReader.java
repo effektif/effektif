@@ -63,11 +63,15 @@ public abstract class AbstractReader implements Reader {
   @Override
   public <T extends Id> T readId(String fieldName, Class<T> idType) {
     Object id = jsonObject.get(fieldName);
-    if (id!=null) {
+    return createId(id, idType);
+  }
+
+  public static <T extends Id> T createId(Object idInternal, Class<T> idType) {
+    if (idInternal!=null) {
       try {
-        id = id.toString();
+        idInternal = idInternal.toString();
         Constructor<T> c = idType.getDeclaredConstructor(ID_CONSTRUCTOR_PARAMETERS);
-        return c.newInstance(new Object[] { id });
+        return (T) c.newInstance(new Object[] { idInternal });
       } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
               | InvocationTargetException e) {
         throw new RuntimeException(e);

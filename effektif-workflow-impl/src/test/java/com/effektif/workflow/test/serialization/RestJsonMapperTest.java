@@ -29,7 +29,7 @@ public class RestJsonMapperTest extends AbstractMapperTest {
   
   @BeforeClass
   public static void initialize() {
-    initializeSubclassMappings();
+    initializeMappings();
     restJsonMapper = new RestJsonMapper();
     restJsonMapper.setJsonMappings(mappings);
   }

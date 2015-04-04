@@ -55,24 +55,35 @@ public class BpmnReader implements Reader {
 
   public static DateTimeFormatter DATE_FORMAT = AbstractReader.DATE_FORMAT;
 
-  protected Mappings mappings; 
-  protected BpmnMappingsImpl bpmnMappings; 
+  /** global mappings */
+  protected Mappings mappings;
+  
+  /** current bpmnMappings */
+  protected BpmnFieldMappingsImpl bpmnFieldMappings; 
 
-  public BpmnReader() {
-    this(new Mappings());
-  }
+  protected XmlElement xmlRoot;
+  
+  protected ActivityTypeService activityTypeService;
+  
+  /** current xml element */
+  protected XmlElement xml; 
+
+  /** maps uri's to prefixes.
+   * Ideally this should be done in a stack so that each element can add new namespaces.
+   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
+   * The current implementation assumes that all namespaces are defined in the root element */
+  protected Map<String,String> prefixes = new HashMap<>();
+
+  private DataTypeService dataTypeService;
+
 
   public BpmnReader(Mappings mappings) {
     this.mappings = mappings;
   }
 
-  public Workflow toWorkflow(String workflowBpmnString) {
-    return null;
-  }
-
   @Override
   public <T extends Id> T readId(Class<T> idType) {
-    return null;
+    return AbstractReader.createId(readBpmnAttribute("id"), idType);
   }
 
   @Override
@@ -97,31 +108,26 @@ public class BpmnReader implements Reader {
 
   @Override
   public String readString(String fieldName) {
-    return null;
+    // TODO add default description to documentation mapping
+    if ("description".equals(fieldName)) {
+      return readBpmnDocumentation(xml);
+    }
+    if (bpmnFieldMappings!=null) {
+      return bpmnFieldMappings.readAttribute(this, fieldName);
+    }
+    return readBpmnAttribute(fieldName); 
   }
   
-  protected XmlElement xmlRoot;
-  
-  protected ActivityTypeService activityTypeService;
-
-  /** maps uri's to prefixes.
-   * Ideally this should be done in a stack so that each element can add new namespaces.
-   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
-   * The current implementation assumes that all namespaces are defined in the root element */
-  protected Map<String,String> prefixes = new HashMap<>();
-
-  private DataTypeService dataTypeService;
-
   public BpmnReader(Configuration configuration) {
     activityTypeService = configuration.get(ActivityTypeService.class);
     dataTypeService = configuration.get(DataTypeService.class);
   }
 
-  public Workflow read(String bpmnString) {
-    return read(new StringReader(bpmnString));
+  public Workflow toWorkflow(String bpmnString) {
+    return toWorkflow(new StringReader(bpmnString));
   }
 
-  public Workflow read(java.io.Reader reader) {
+  public Workflow toWorkflow(java.io.Reader reader) {
     this.xmlRoot = XmlReader.parseXml(reader);
     return readDefinitions(xmlRoot);
   }
@@ -138,7 +144,7 @@ public class BpmnReader implements Reader {
         XmlElement definitionElement = iterator.next();
         if (definitionElement.is(getQName(BPMN_URI, "process")) && workflow == null) {
           iterator.remove();
-          workflow = readProcess(definitionElement);
+          workflow = readWorkflow(definitionElement);
         }
       }
     }
@@ -150,29 +156,41 @@ public class BpmnReader implements Reader {
     return workflow;
   }
 
-  protected Workflow readProcess(XmlElement processXml) {
+  protected Workflow readWorkflow(XmlElement processXml) {
+    this.xml = processXml;
     Workflow workflow = new Workflow();
-    workflow.sourceWorkflowId(readBpmnAttribute(processXml, "id"));
-    workflow.setName(readBpmnAttribute(processXml, "name"));
+    workflow.readFields(this);
     readScope(processXml, workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;
   }
 
-  public String readBpmnAttribute(XmlElement xmlElement, String name) {
-    return xmlElement.removeAttribute(getQName(BPMN_URI, name));
+  public String readBpmnAttribute(String name) {
+    return xml.removeAttribute(getQName(BPMN_URI, name));
+  }
+
+  public String readEffektifAttribute(String name) {
+    return xml.removeAttribute(getQName(EFFEKTIF_URI, name));
+  }
+
+  public String getBpmnAttribute(String name) {
+    return xml.getAttribute(getQName(BPMN_URI, name));
+  }
+
+  public String getEffektifAttribute(String name) {
+    return xml.getAttribute(getQName(EFFEKTIF_URI, name));
   }
 
   public void readScope(XmlElement scopeElement, Scope scope) {
-    Collection<ActivityType> activityTypes = activityTypeService.getActivityTypes();
+    XmlElement parentXml = scopeElement;
     Iterator<XmlElement> iterator = scopeElement.elements.iterator();
     while (iterator.hasNext()) {
-      XmlElement childElement = iterator.next();
+      this.xml = iterator.next();
 
       // Check if the XML element can be parsed as a sequenceFlow.
-      if (childElement.is(getQName(BPMN_URI, "sequenceFlow"))) {
+      if (xml.is(getQName(BPMN_URI, "sequenceFlow"))) {
         Transition transition = new Transition();
-        bpmnMappings = mappings.getBpmnNameMappings(Transition.class);
+        bpmnFieldMappings = mappings.getBpmnNameMappings(Transition.class);
         transition.readFields(this);
         scope.transition(transition);
         // Remove the sequenceFlow as it has been parsed in the model.
@@ -180,25 +198,25 @@ public class BpmnReader implements Reader {
         
       } else {
         // Check if the XML element can be parsed as one of the activity types.
-        Activity activity = null;
-        Iterator<ActivityType> activityTypeIterator = activityTypes.iterator();
-        while (activity == null && activityTypeIterator.hasNext()) {
-          ActivityType activityType = activityTypeIterator.next();
-          // TODO
-          // activity = activityType.readBpmn(childElement, this);
-        }
-        
-        if (activity!=null) {
-          activity.setId(readBpmnAttribute(childElement, "id"));
-          activity.setName(readBpmnAttribute(childElement, "name"));
-          activity.setDescription(readBpmnDocumentation(childElement));
+        BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(xml, this);
+        if (bpmnTypeMapping!=null) {
+          Activity activity = (Activity) bpmnTypeMapping.instantiate();
+          // activate the activity's field mappings
+          bpmnFieldMappings = bpmnTypeMapping.getBpmnFieldMappings();
+          // read the fields
+          activity.readFields(this);
+          bpmnFieldMappings = null;
+//          activity.setId(readBpmnAttribute(childElement, "id"));
+//          activity.setName(readBpmnAttribute(childElement, "name"));
+//          activity.setDescription(readBpmnDocumentation(childElement));
           scope.activity(activity);
-          setUnparsedBpmn(activity, childElement);
+          setUnparsedBpmn(activity, xml);
           // Remove the activity XML element as it has been parsed in the model.
           iterator.remove();
         }
       }
     }
+    xml = parentXml;
   }
 
   protected void addPrefixes(XmlElement xmlElement) {

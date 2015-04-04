@@ -20,5 +20,5 @@ package com.effektif.workflow.api.mapper;
  */
 public interface BpmnMappable {
 
-  void initializeBpmnMapping(BpmnMappings mapping);
+  void initializeBpmnFieldMappings(BpmnFieldMappings fieldMappings);
 }

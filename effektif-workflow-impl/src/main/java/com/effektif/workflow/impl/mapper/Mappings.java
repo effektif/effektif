@@ -14,7 +14,10 @@
 package com.effektif.workflow.impl.mapper;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
@@ -23,6 +26,7 @@ import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.Writable;
 import com.effektif.workflow.api.mapper.Writer;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
@@ -36,8 +40,9 @@ public class Mappings {
 
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
-  Map<Class<?>, BpmnTypeMapping> bpmnTypeMappings = new HashMap<>();
-  Map<Class<?>, BpmnMappingsImpl> bpmnNameMappings = new HashMap<>();
+  Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
+  Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsbyElement = new HashMap<>();
+  Map<Class<?>, BpmnFieldMappingsImpl> bpmnFieldMappings = new HashMap<>();
 
   public Mappings() {
     registerBpmnMappable(Transition.class);
@@ -58,11 +63,18 @@ public class Mappings {
       throw new RuntimeException(subClass.getName()+" must declare "+TypeName.class.toString());
     }
     registerSubClass(subClass, typeName.value(), subClass);
+    BpmnFieldMappingsImpl bpmnFieldMappings = null;
+    if (BpmnMappable.class.isAssignableFrom(subClass)) {
+      bpmnFieldMappings = registerBpmnMappable(subClass);
+    }
     if (Activity.class.isAssignableFrom(subClass)) {
       BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
       if (bpmnElement!=null) {
         BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
-        bpmnTypeMapping.setBpmnElementName(bpmnElement.value());
+        String elementName = bpmnElement.value();
+        bpmnTypeMapping.setBpmnElementName(elementName);
+        bpmnTypeMapping.setType(subClass);
+        bpmnTypeMapping.setBpmnFieldMappings(bpmnFieldMappings);
         Annotation[] annotations = subClass.getAnnotations();
         for (Annotation annotation: annotations) {
           if (annotation instanceof BpmnTypeAttribute) {
@@ -70,7 +82,14 @@ public class Mappings {
             bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
           }
         }
-        bpmnTypeMappings.put(subClass, bpmnTypeMapping);
+        bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
+
+        List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsbyElement.get(elementName);
+        if (typeMappings==null) {
+          typeMappings = new ArrayList<>();
+          bpmnTypeMappingsbyElement.put(elementName, typeMappings);
+        }
+        typeMappings.add(bpmnTypeMapping);
       } else {
         // throw new RuntimeException("No bpmn element specified on "+subclass);
       }
@@ -80,20 +99,55 @@ public class Mappings {
     }
   }
 
-  protected void registerBpmnMappable(Class< ? > bpmnMappableType) {
+  protected BpmnFieldMappingsImpl registerBpmnMappable(Class< ? > bpmnMappableType) {
     try {
       BpmnMappable bpmnMappable = (BpmnMappable) bpmnMappableType.newInstance();
-      BpmnMappingsImpl bpmnMappings = new BpmnMappingsImpl();
-      bpmnMappable.initializeBpmnMapping(bpmnMappings);
-      bpmnNameMappings.put(bpmnMappableType, bpmnMappings);
+      BpmnFieldMappingsImpl bpmnFieldMappingsImpl = new BpmnFieldMappingsImpl();
+      bpmnMappable.initializeBpmnFieldMappings(bpmnFieldMappingsImpl);
+      this.bpmnFieldMappings.put(bpmnMappableType, bpmnFieldMappingsImpl);
+      return bpmnFieldMappingsImpl;
     } catch (InstantiationException | IllegalAccessException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public BpmnMappingsImpl getBpmnNameMappings(Class<?> type) {
-    return bpmnNameMappings.get(type);
-  } 
+  public BpmnFieldMappingsImpl getBpmnNameMappings(Class<?> type) {
+    return bpmnFieldMappings.get(type);
+  }
+  
+  public BpmnTypeMapping getBpmnTypeMapping(XmlElement activityXml, BpmnReader bpmnReader) {
+    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsbyElement.get(activityXml.getName());
+    if (typeMappings!=null) {
+      if (typeMappings.size()==1) {
+        return typeMappings.get(0);
+      } else if (!typeMappings.isEmpty()) {
+        for (BpmnTypeMapping typeMapping: typeMappings) {
+          if (isBpmnTypeAttributeMatch(activityXml, typeMapping, bpmnReader)) {
+            return typeMapping;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private boolean isBpmnTypeAttributeMatch(XmlElement xmlElement, BpmnTypeMapping typeMapping, BpmnReader bpmnReader) {
+    Map<String, String> bpmnTypeAttributes = typeMapping.getBpmnTypeAttributes();
+    if (bpmnTypeAttributes==null) {
+      return true;
+    }
+    for (String attributeName: bpmnTypeAttributes.keySet()) {
+      String typeValue = bpmnTypeAttributes.get(attributeName);
+      // get leaves the attribute value in the xml element
+      String xmlValue = bpmnReader.getEffektifAttribute(attributeName);
+      if (typeValue.equals(xmlValue)) {
+        // only if there is a match we read (==remove) the the attribute from the xml element
+        bpmnReader.readEffektifAttribute(attributeName);
+        return true;
+      }
+    }
+    return false;
+  }
 
   public void registerSubClass(Class<?> baseClass, String typeName, Class<?> subClass) {
     SubclassMapping subclassMapping = subclassMappings.get(baseClass);
@@ -116,7 +170,7 @@ public class Mappings {
   }
 
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
-    return bpmnTypeMappings.get(subClass);
+    return bpmnTypeMappingsByClass.get(subClass);
   }
 
   public void writeTypeField(Writer writer, Writable o) {

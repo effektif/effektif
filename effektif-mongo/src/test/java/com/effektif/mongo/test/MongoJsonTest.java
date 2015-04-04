@@ -30,7 +30,7 @@ public class MongoJsonTest extends AbstractMapperTest {
 
   @BeforeClass
   public static void initialize() {
-    initializeSubclassMappings();
+    initializeMappings();
     mongoJsonMapper = new MongoJsonMapper();
     mongoJsonMapper.setJsonMappings(mappings);
   }

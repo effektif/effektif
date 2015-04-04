@@ -17,7 +17,7 @@ package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnMappable;
-import com.effektif.workflow.api.mapper.BpmnMappings;
+import com.effektif.workflow.api.mapper.BpmnFieldMappings;
 import com.effektif.workflow.api.mapper.Reader;
 import com.effektif.workflow.api.mapper.Writer;
 
@@ -44,7 +44,7 @@ public class Transition extends Element implements BpmnMappable {
   protected Boolean isToNext;
   
   @Override
-  public void initializeBpmnMapping(BpmnMappings mapping) {
+  public void initializeBpmnFieldMappings(BpmnFieldMappings mapping) {
     mapping.mapToBpmn("from", "sourceRef");
     mapping.mapToBpmn("to", "toRef");
   }

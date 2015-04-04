@@ -29,7 +29,7 @@ import java.util.Map;
 public class XmlElement {
 
   public String name;
-  public Map<String,String> attributes;
+  public Map<String, String> attributes;
   /** maps prefixes to namespace uris */
   public Map<String,String> namespaces;
   public List<XmlElement> elements;
@@ -118,5 +118,29 @@ public class XmlElement {
 
   public String removeAttribute(String name) {
     return attributes!=null ? attributes.remove(name) : null;
+  }
+
+  public String getAttribute(String name) {
+    return attributes!=null ? attributes.get(name) : null;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Map<String, String> getAttributes() {
+    return attributes;
+  }
+  
+  public Map<String, String> getNamespaces() {
+    return namespaces;
+  }
+
+  public List<XmlElement> getElements() {
+    return elements;
+  }
+
+  public String getText() {
+    return text;
   }
 }

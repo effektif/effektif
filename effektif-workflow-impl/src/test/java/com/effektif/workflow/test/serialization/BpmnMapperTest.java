@@ -14,9 +14,11 @@
 package com.effektif.workflow.test.serialization;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 
+import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.BpmnMapper;
 
@@ -24,28 +26,41 @@ import com.effektif.workflow.impl.mapper.BpmnMapper;
 /**
  * @author Tom Baeyens
  */
-@Ignore
 public class BpmnMapperTest extends AbstractMapperTest {
 
   static BpmnMapper bpmnMapper = new BpmnMapper();
   
   @BeforeClass
   public static void initialize() {
-    initializeSubclassMappings();
+    initializeMappings();
     bpmnMapper = new BpmnMapper();
     bpmnMapper.setJsonMappings(mappings);
   }
   
   @Override
   protected <T extends Readable> T serialize(T o) {
+    Workflow w = null;
+    if (o instanceof Activity) {
+      w = new Workflow()
+      .activity((Activity)o);
+    } else {
+      w = (Workflow) o;
+    }
+    
     String jsonString = bpmnMapper
       .createWriter()
-      .write((Workflow)o);
+      .toBpmnString(w);
     
     System.out.println(jsonString);
     
-    return (T) bpmnMapper
+    w = bpmnMapper
       .createReader()
       .toWorkflow(jsonString);
+    
+    if (o instanceof Activity) {
+      return (T) w.getActivities().get(0);
+    } else {
+      return (T) w;
+    }
   }
 }

@@ -16,6 +16,8 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnFieldMappings;
+import com.effektif.workflow.api.mapper.BpmnMappable;
 import com.effektif.workflow.api.mapper.Reader;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.Writer;
@@ -37,11 +39,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 @TypeName("call")
 @BpmnElement("callActivity")
-public class Call extends AbstractBindableActivity {
+public class Call extends AbstractBindableActivity implements BpmnMappable {
 
   protected WorkflowId subWorkflowId; 
   protected String subWorkflowSource;
   
+  @Override
+  public void initializeBpmnFieldMappings(BpmnFieldMappings fieldMappings) {
+    fieldMappings.mapToEffektif("subWorkflowId");
+    fieldMappings.mapToEffektif("subWorkflowSource");
+  }
+
   @Override
   public void writeFields(Writer w) {
     super.writeFields(w);
