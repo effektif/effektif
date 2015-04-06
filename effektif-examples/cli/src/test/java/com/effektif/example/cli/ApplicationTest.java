@@ -89,6 +89,7 @@ public class ApplicationTest {
   public void test() throws IOException {
     readLines(Application.WELCOME);
     execute("start release");
+    readLines("Started workflow release");
 
     // List tasks (first task)
     execute("tasks");
