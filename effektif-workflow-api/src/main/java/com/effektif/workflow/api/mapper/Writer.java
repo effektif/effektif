@@ -19,6 +19,7 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.workflow.Binding;
 
 
 /**
@@ -45,4 +46,8 @@ public interface Writer {
   void writeFields(Map<String,? extends Object> fieldValues);
 
   void writeMap(String fieldName, Map<String,? extends Object> map);
+
+  <T> void writeBinding(String fieldName, Binding<T> binding);
+
+  <T> void writeBindings(String fieldName, List<Binding<T>> bindings);
 }

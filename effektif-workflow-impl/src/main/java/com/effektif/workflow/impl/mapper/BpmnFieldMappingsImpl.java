@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.mapper.BpmnFieldMappings;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 
 
@@ -28,7 +27,9 @@ public class BpmnFieldMappingsImpl implements BpmnFieldMappings {
   
   /** maps fieldNames to the correct namespace + local name */
   Map<String,BpmnFieldName> bpmnFieldNames = new HashMap<>();
-  
+  Map<String,String> extensionElements = new HashMap<>();
+  Map<String,String> extensionCdatas = new HashMap<>();
+
   @Override
   public void mapToBpmn(String fieldName, String bpmnName) {
     bpmnFieldNames.put(fieldName, new BpmnFieldName(bpmnName, Bpmn.BPMN_URI));
@@ -64,5 +65,15 @@ public class BpmnFieldMappingsImpl implements BpmnFieldMappings {
     } else {
       bpmnWriter.writeEffektifAttribute(fieldName, value);
     }
+  }
+
+  @Override
+  public void mapToExtensionElement(String fieldName) {
+    extensionElements.put(fieldName, fieldName);
+  }
+
+  @Override
+  public void mapToExtensionElementCdata(String fieldName) {
+    extensionCdatas.put(fieldName, fieldName);
   }
 }

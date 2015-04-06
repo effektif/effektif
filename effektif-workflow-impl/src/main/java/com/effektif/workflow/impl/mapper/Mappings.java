@@ -41,7 +41,7 @@ public class Mappings {
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
-  Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsbyElement = new HashMap<>();
+  Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
   Map<Class<?>, BpmnFieldMappingsImpl> bpmnFieldMappings = new HashMap<>();
 
   public Mappings() {
@@ -84,10 +84,10 @@ public class Mappings {
         }
         bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
 
-        List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsbyElement.get(elementName);
+        List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
         if (typeMappings==null) {
           typeMappings = new ArrayList<>();
-          bpmnTypeMappingsbyElement.put(elementName, typeMappings);
+          bpmnTypeMappingsByElement.put(elementName, typeMappings);
         }
         typeMappings.add(bpmnTypeMapping);
       } else {
@@ -116,7 +116,7 @@ public class Mappings {
   }
   
   public BpmnTypeMapping getBpmnTypeMapping(XmlElement activityXml, BpmnReader bpmnReader) {
-    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsbyElement.get(activityXml.getName());
+    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(activityXml.getName());
     if (typeMappings!=null) {
       if (typeMappings.size()==1) {
         return typeMappings.get(0);

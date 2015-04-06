@@ -15,14 +15,16 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.Mappings;
 
@@ -39,6 +41,7 @@ public abstract class AbstractMapperTest {
     mappings.registerBaseClass(Activity.class);
     mappings.registerSubClass(StartEvent.class);
     mappings.registerSubClass(Call.class);
+    mappings.registerSubClass(EmailTask.class);
     
     // mappings.registerBpmnMappable(bpmnMappableType);
   }
@@ -72,19 +75,30 @@ public abstract class AbstractMapperTest {
 
   protected abstract <T extends Readable> T serialize(T o);
 
-//  @Test
-//  public void testEmailTask() {
-//    EmailTask activity = new EmailTask()
-//      .id("sendEmail")
-//      // .attachmentId(new FileId("releaseNotes"))
-//      .bcc("archive@example.org")
-//      .bodyText("A new version has been deployed on production.")
-//      .cc("dev@example.org")
-//      .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
-//      .subject("New release")
-//      .to("releases@example.org").toGroupId("releases");
-//    print(activity);
-//  }
+  // @Test
+  public void testEmailTask() {
+    EmailTask activity = new EmailTask()
+      .id("sendEmail")
+      .from("effektif@example.org")
+      .to("releases@example.org")
+      .toExpression("v1")
+      .toUserId("johndoe")
+      .toGroupId("releases")
+      .cc("dev@example.org")
+      .ccUserId("joesmoe")
+      .ccGroupId("support")
+      .bcc("archive@example.org")
+      .bccUserId("jackblack")
+      .bccGroupId("management@example.org")
+      .subject("New release")
+      .bodyText("A new version has been deployed on production.")
+      .bodyHtml("<b>A new version has been deployed on production.</b>")
+      .attachment(new FileId("releaseNotes"));
+    
+    activity = serialize(activity);
+    
+    assertEquals(EmailTask.class, activity.getClass());
+  }
 //
 //  @Test
 //  public void testEmbeddedSubprocess() {

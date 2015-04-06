@@ -18,6 +18,13 @@ package com.effektif.workflow.api.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnFieldMappings;
+import com.effektif.workflow.api.mapper.BpmnMappable;
+import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
+import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
@@ -40,7 +47,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("email")
-public class EmailTask extends Activity {
+@TypeName("email")
+@BpmnElement("serviceTask")
+@BpmnTypeAttribute(attribute="type", value="email")
+public class EmailTask extends Activity implements BpmnMappable {
 
   protected Binding<String> fromEmailAddress;
 
@@ -60,9 +70,55 @@ public class EmailTask extends Activity {
   protected String bodyText;
   protected String bodyHtml;
   
-  // TODO transform to List<Binding<FileId>> attachmentFileIds
   protected List<Binding<FileId>> attachmentFileIds;
   
+  @Override
+  public void initializeBpmnFieldMappings(BpmnFieldMappings fieldMappings) {
+    fieldMappings.mapToExtensionElement("fromEmailAddress");
+    fieldMappings.mapToExtensionElement("toEmailAddresses");
+    fieldMappings.mapToExtensionElementCdata("subject");
+    fieldMappings.mapToExtensionElementCdata("bodyText");
+    fieldMappings.mapToExtensionElementCdata("bodyHtml");
+  }
+
+  @Override
+  public void writeFields(Writer w) {
+    super.writeFields(w);
+    w.writeBinding("fromEmailAddress", fromEmailAddress);
+    w.writeBindings("toEmailAddresses", toEmailAddresses);
+    w.writeBindings("toUserIds", toUserIds);
+    w.writeBindings("toGroupIds", toGroupIds);
+    w.writeBindings("ccEmailAddresses", ccEmailAddresses);
+    w.writeBindings("ccUserIds", ccUserIds);
+    w.writeBindings("ccGroupIds", ccGroupIds);
+    w.writeBindings("bccEmailAddresses", bccEmailAddresses);
+    w.writeBindings("bccUserIds", bccUserIds);
+    w.writeBindings("bccGroupIds", bccGroupIds);
+    w.writeString("subject", subject);
+    w.writeString("bodyText", bodyText);
+    w.writeString("bodyHtml", bodyHtml);
+    w.writeBindings("attachmentFileIds", attachmentFileIds);
+  }
+
+  @Override
+  public void readFields(Reader r) {
+    fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
+    toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
+    toUserIds = r.readBindings("toUserIds", UserId.class);
+    toGroupIds = r.readBindings("toGroupIds", GroupId.class);
+    ccEmailAddresses = r.readBindings("ccEmailAddresses", String.class);
+    ccUserIds = r.readBindings("ccUserIds", UserId.class);
+    ccGroupIds = r.readBindings("ccGroupIds", GroupId.class);
+    bccEmailAddresses = r.readBindings("bccEmailAddresses", String.class);
+    bccUserIds = r.readBindings("bccUserIds", UserId.class);
+    bccGroupIds = r.readBindings("bccGroupIds", GroupId.class);
+    subject = r.readString("subject");
+    bodyText = r.readString("bodyText");
+    bodyHtml = r.readString("bodyHtml");
+    attachmentFileIds = r.readBindings("attachmentFileIds", FileId.class);
+    super.readFields(r);
+  }
+
   @Override
   public EmailTask id(String id) {
     super.id(id);
@@ -78,6 +134,10 @@ public class EmailTask extends Activity {
   /** optional email address to be used as the sender of the email. */  
   public EmailTask fromEmailAddress(Binding<String> fromEmailAddress) {
     this.fromEmailAddress = fromEmailAddress;
+    return this;
+  }
+  public EmailTask from(String fromEmailAddress) {
+    fromEmailAddress(new Binding<String>().value(fromEmailAddress));
     return this;
   }
 

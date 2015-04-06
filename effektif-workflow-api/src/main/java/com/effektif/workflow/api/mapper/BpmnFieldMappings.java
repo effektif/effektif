@@ -30,4 +30,8 @@ public interface BpmnFieldMappings {
   /** maps the fieldName to the Effektif namespace */
   void mapToEffektif(String fieldName);
 
+  void mapToExtensionElement(String fieldName);
+
+  void mapToExtensionElementCdata(String fieldName);
+
 }

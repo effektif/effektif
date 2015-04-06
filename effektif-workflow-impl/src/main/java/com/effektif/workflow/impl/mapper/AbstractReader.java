@@ -27,6 +27,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.effektif.workflow.api.mapper.Readable;
 import com.effektif.workflow.api.mapper.Reader;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.workflow.Binding;
 
 
 /**
@@ -136,6 +137,9 @@ public abstract class AbstractReader implements Reader {
         || Number.class.isAssignableFrom(type)) {
       return (T) json;
     }
+    if (Id.class.isAssignableFrom(type)) {
+      return (T) createId(json, (Class<Id>)type);
+    }
     if (Readable.class.isAssignableFrom(type)) {
       Map<String,Object> parentJson = jsonObject;
       jsonObject = (Map<String, Object>) json;
@@ -149,4 +153,42 @@ public abstract class AbstractReader implements Reader {
     throw new RuntimeException("Couldn't parse "+json+" ("+json.getClass().getName()+")");
   }
 
+  @Override
+  public <T> Binding<T> readBinding(String fieldName, Class<T> type) {
+    Map<String,Object> jsonBinding = (Map<String, Object>) jsonObject.get(fieldName);
+    if (jsonBinding==null || jsonBinding.isEmpty()) {
+      return null;
+    }
+    return readBinding(jsonBinding, type);
+  }
+
+  protected <T> Binding<T> readBinding(Map<String, Object> jsonBinding, Class<T> type) {
+    Binding<T> binding = new Binding();
+    Object jsonValue = jsonBinding.get("value");
+    if (jsonValue!=null) {
+      Object value = readAny(jsonValue, type);
+      binding.setValue((T) value);
+    }
+    String expression = (String) jsonBinding.get("expression");
+    if (expression!=null) {
+      binding.setExpression(expression);
+    }
+    return binding;
+  }
+
+  @Override
+  public <T> List<Binding<T>> readBindings(String fieldName, Class<T> type) {
+    List<Map<String,Object>> jsonBindings = (List<Map<String, Object>>) jsonObject.get(fieldName);
+    if (jsonBindings==null) {
+      return null;
+    }
+    Map<String,Object> parentJson = jsonObject;
+    List<Binding<T>> bindings = new ArrayList<>();
+    for (Map<String,Object> jsonBinding: jsonBindings) {
+      Binding<T> binding = readBinding(jsonBinding, type);
+      bindings.add(binding);
+    }
+    this.jsonObject = parentJson;
+    return bindings;
+  }
 }

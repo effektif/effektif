@@ -26,8 +26,10 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.mapper.Writable;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 
 
 /**
@@ -38,6 +40,7 @@ public class RestJsonWriter extends AbstractWriter {
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTime();
 
   JsonGenerator jgen;
+  boolean pretty;
 
   public RestJsonWriter() {
   }
@@ -46,20 +49,105 @@ public class RestJsonWriter extends AbstractWriter {
     super(mappings);
   }
 
+  public String toString(Writable o) {
+    StringWriter stringWriter = new StringWriter();
+    toStream(o, stringWriter);
+    return stringWriter.toString(); 
+  }
+
+  public String toStringPretty(Writable o) {
+    pretty = true;
+    return toString(o); 
+  }
+  
+  public RestJsonWriter pretty() {
+    pretty = true;
+    return this;
+  }
+
   public void toStream(Writable o, Writer writer) {
     try {
       jgen = new JsonFactory().createGenerator(writer);
+      if (pretty) {
+        jgen.setPrettyPrinter(new DefaultPrettyPrinter());
+      }
       writeObject(o);
       jgen.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
+  
+  @Override
+  public <T> void writeBindings(String fieldName, List<Binding<T>> bindings) {
+    if (bindings==null || bindings.isEmpty()) {
+      return;
+    }
+    try {
+      jgen.writeFieldName(fieldName);
+      jgen.writeStartArray();
+      for (Binding<T> binding: bindings) {
+        writeBinding(binding);
+      }
+      jgen.writeEndArray();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-  public String toString(Writable o) {
-    StringWriter stringWriter = new StringWriter();
-    toStream(o, stringWriter);
-    return stringWriter.toString(); 
+  @Override
+  public <T> void writeBinding(String fieldName, Binding<T> binding) {
+    if (binding!=null) {
+      try {
+        jgen.writeFieldName(fieldName);
+        writeBinding(binding);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  public <T> void writeBinding(Binding<T> binding) {
+    if (binding==null) {
+      return;
+    }
+    try {
+      jgen.writeStartObject();
+      if (binding.getValue()!=null) {
+        jgen.writeFieldName("value");
+        writeAny(binding.getValue());
+      }
+      if (binding.getExpression()!=null) {
+        jgen.writeStringField("expression", binding.getExpression());
+      }
+      
+      jgen.writeEndObject();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  public void writeAny(Object o) {
+    if (o==null) {
+      return;
+    }
+    try {
+      if (o instanceof String) {
+        jgen.writeString((String) o);
+      } else if (o instanceof LocalDateTime) {
+        writeDate((LocalDateTime) o);
+      } else if (o instanceof Number) {
+        writeNumber((Number) o);
+      } else if (o instanceof Boolean) {
+        jgen.writeBoolean((Boolean) o);
+      } else if (o instanceof Id) {
+        writeIdValue((Id) o);
+      } else if (o instanceof Writable) {
+        writeObject((Writable)o);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   protected void writeNumber(Number value) {
@@ -83,24 +171,6 @@ public class RestJsonWriter extends AbstractWriter {
   protected void writeDate(LocalDateTime value) {
     try {
       jgen.writeString(DATE_FORMAT.print(value));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void writeObject(Object o) {
-    try {
-      if (o instanceof String) {
-        jgen.writeString((String) o);
-      } else if (o instanceof LocalDateTime) {
-        writeDate((LocalDateTime) o);
-      } else if (o instanceof Number) {
-        writeNumber((Number) o);
-      } else if (o instanceof Boolean) {
-        jgen.writeBoolean((Boolean) o);
-      } else if (o instanceof Writable) {
-        writeObject((Writable)o);
-      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -177,10 +247,23 @@ public class RestJsonWriter extends AbstractWriter {
   public void writeId(String fieldName, Id id) {
     if (id!=null) {
       try {
-        jgen.writeStringField(fieldName, id.getInternal());
+        jgen.writeFieldName(fieldName);
+        writeIdValue(id);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
+    }
+  }
+
+  protected void writeIdValue(Id id) {
+    try {
+      if (id==null) {
+        jgen.writeNull();
+      } else {
+        jgen.writeString(id.getInternal());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -203,7 +286,7 @@ public class RestJsonWriter extends AbstractWriter {
         jgen.writeFieldName(fieldName);
         jgen.writeStartArray();
         for (Object element: elements) {
-          writeObject(element);
+          writeAny(element);
         }
         jgen.writeEndArray();
       } catch (IOException e) {
@@ -220,7 +303,7 @@ public class RestJsonWriter extends AbstractWriter {
         if (value!=null) {
           try {
             jgen.writeFieldName(key);
-            writeObject(value);
+            writeAny(value);
           } catch (IOException e) {
             throw new RuntimeException(e);
           }

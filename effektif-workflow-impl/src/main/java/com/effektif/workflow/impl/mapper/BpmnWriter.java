@@ -23,6 +23,7 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.Writable;
 import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.mapper.XmlElement;
@@ -354,6 +355,9 @@ public class BpmnWriter implements Writer {
         scope = activities.get(i);
         xml = getXmlElement(scope.getBpmn());
         BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(scope.getClass());
+        if (bpmnTypeMapping==null) {
+          throw new RuntimeException("Register "+scope.getClass()+" in class "+Mappings.class.getName()+" with method registerSubClass and ensure annotation "+BpmnElement.class+" is set");
+        }
         bpmnFieldMappings = bpmnTypeMapping.getBpmnFieldMappings();
         setBpmnName(bpmnTypeMapping.getBpmnElementName());
         Map<String, String> bpmnTypeAttributes = bpmnTypeMapping.getBpmnTypeAttributes();
@@ -383,12 +387,20 @@ public class BpmnWriter implements Writer {
     }
   }
 
-
   @Override
   public void writeFields(Map<String, ? extends Object> fieldValues) {
   }
 
   @Override
   public void writeMap(String fieldName, Map<String, ? extends Object> map) {
+  }
+
+  @Override
+  public <T> void writeBinding(String fieldName, Binding<T> binding) {
+    
+  }
+
+  @Override
+  public <T> void writeBindings(String fieldName, List<Binding<T>> bindings) {
   }
 }

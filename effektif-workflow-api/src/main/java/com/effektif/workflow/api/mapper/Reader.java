@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.workflow.Binding;
 
 
 /**
@@ -35,5 +36,9 @@ public interface Reader {
   <T> Map<String, T> readMap(String fieldName, Class<T> valueType);
 
   String readString(String fieldName);
+
+  <T> Binding<T> readBinding(String fieldName, Class<T> type);
+
+  <T> List<Binding<T>> readBindings(String fieldName, Class<T> type);
 
 }

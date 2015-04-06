@@ -38,7 +38,7 @@ public class RestJsonMapperTest extends AbstractMapperTest {
   protected <T extends Readable> T serialize(T o) {
     String jsonString = restJsonMapper
       .createWriter()
-      .toString((Writable)o);
+      .toStringPretty((Writable)o);
     
     System.out.println(jsonString);
     

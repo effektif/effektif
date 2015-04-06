@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.effektif.workflow.api.mapper.Writable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.mapper.AbstractWriter;
 import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.util.Lists;
@@ -52,25 +54,26 @@ public class MongoJsonWriter extends AbstractWriter {
   }
 
   public Object toDbObject(Object o) {
+    Class<?> type = o.getClass();
     if (o==null
-        || (o instanceof String)
-        || (o instanceof Boolean)
-        || (o instanceof Number)) {
+        || (String.class.isAssignableFrom(type))
+        || (Boolean.class.isAssignableFrom(type))
+        || (Number.class.isAssignableFrom(type))) {
       return o;
     }
-    if (o instanceof Writable) {
+    if (Writable.class.isAssignableFrom(type)) {
       return toDbObject((Writable)o);
     }
-    if (o instanceof LocalDateTime) {
+    if (LocalDateTime.class.isAssignableFrom(type)) {
       return toDbObject((LocalDateTime)o);
     }
-    if (o instanceof Id) {
+    if (Id.class.isAssignableFrom(type)) {
       return toDbObject((Id)o);
     }
-    if (o instanceof List) {
+    if (List.class.isAssignableFrom(type)) {
       return toDbObject((List<Object>)o);
     }
-    if (o instanceof Map) {
+    if (Map.class.isAssignableFrom(type)) {
       return toDbObject((Map<String,Object>)o);
     }
     throw new RuntimeException("Don't know how to map to db object "+o+" ("+o.getClass().getName()+")");
@@ -208,4 +211,38 @@ public class MongoJsonWriter extends AbstractWriter {
       dbObject.put(fieldName, dbMap);
     }
   }
+  
+  @Override
+  public <T> void writeBindings(String fieldName, List<Binding<T>> bindings) {
+    if (bindings==null || bindings.isEmpty()) {
+      return;
+    }
+    BasicDBList dbList = new BasicDBList();
+    for (Binding<T> binding: bindings) {
+      dbList.add(toDbObject(binding));
+    }
+    dbObject.put(fieldName, dbList);
+  }
+
+  @Override
+  public <T> void writeBinding(String fieldName, Binding<T> binding) {
+    if (binding!=null) {
+      dbObject.put(fieldName, toDbObject(binding));
+    }
+  }
+
+  public <T> Object toDbObject(Binding<T> binding, Class<T> type) {
+    if (binding==null) {
+      return null;
+    }
+    BasicDBObject dbBinding = new BasicDBObject();
+    if (binding.getValue()!=null) {
+      dbBinding.put("value", toDbObject(binding.getValue()));
+    }
+    if (binding.getExpression()!=null) {
+      dbBinding.put("expression", binding.getExpression());
+    }
+    return dbBinding;
+  }
+
 }

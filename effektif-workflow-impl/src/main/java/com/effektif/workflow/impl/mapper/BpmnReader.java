@@ -401,4 +401,13 @@ public class BpmnReader implements Reader {
     return mappings;
   }
 
+  @Override
+  public <T> Binding<T> readBinding(String fieldName, Class<T> type) {
+    return null;
+  }
+
+  @Override
+  public <T> List<Binding<T>> readBindings(String fieldName, Class<T> type) {
+    return null;
+  }
 }
