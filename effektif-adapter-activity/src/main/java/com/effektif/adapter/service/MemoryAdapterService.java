@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.memory;
+package com.effektif.adapter.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.effektif.workflow.impl.adapter.AbstractAdapterService;
-import com.effektif.workflow.impl.adapter.Adapter;
-import com.effektif.workflow.impl.adapter.AdapterQuery;
 
 
 /**

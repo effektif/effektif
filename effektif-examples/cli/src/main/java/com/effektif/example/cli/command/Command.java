@@ -15,9 +15,11 @@
  */
 package com.effektif.example.cli.command;
 
+import java.io.PrintWriter;
+
 import com.effektif.workflow.api.Configuration;
 
-import java.io.PrintWriter;
+
 
 /**
  * A collection of CLI commands, each of which has a Java implementation.

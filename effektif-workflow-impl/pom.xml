@@ -44,15 +44,6 @@
     </dependency>
     
     <dependency>
-      <!-- Should be optional in case you don't use any of the http functionality
-           But since most users need this, I want to include this as a transitive dependency.  
-           If you don't want it, you can exclude it -->
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.3.6</version>
-    </dependency>
-    
-    <dependency>
   	  <groupId>org.mozilla</groupId>
       <artifactId>rhino</artifactId>
       <version>1.7R3</version>

@@ -22,14 +22,15 @@ import java.util.List;
 import org.junit.Test;
 
 import com.effektif.adapter.AdapterServer;
+import com.effektif.adapter.activity.AdapterActivity;
+import com.effektif.adapter.service.Adapter;
+import com.effektif.adapter.service.AdapterService;
+import com.effektif.adapter.service.FindItemsRequest;
+import com.effektif.adapter.service.MemoryAdapterService;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.activities.AdapterActivity;
 import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.adapter.Adapter;
-import com.effektif.workflow.impl.adapter.AdapterService;
-import com.effektif.workflow.impl.adapter.FindItemsRequest;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
@@ -55,7 +56,9 @@ public class AdapterTest {
     
     // The user opens the settings in the Effektif product and 
     // adds the adapter by configuring the URL
-    TestConfiguration configuration = new TestConfiguration();
+    TestConfiguration configuration = new TestConfiguration()
+      .registerIngredient(new MemoryAdapterService());
+
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     AdapterService adapterService = configuration.get(AdapterService.class);
     Adapter adapter = adapterService.saveAdapter(new Adapter().url("http://localhost:"+port+"/"));

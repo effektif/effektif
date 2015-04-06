@@ -20,9 +20,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.adapter.service.ExecuteRequest;
+import com.effektif.adapter.service.ExecuteResponse;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.adapter.ExecuteRequest;
-import com.effektif.workflow.impl.adapter.ExecuteResponse;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 

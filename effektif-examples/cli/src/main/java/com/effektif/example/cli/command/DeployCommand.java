@@ -15,12 +15,12 @@
  */
 package com.effektif.example.cli.command;
 
+import java.io.PrintWriter;
+
 import com.effektif.example.cli.SoftwareRelease;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
-
-import java.io.PrintWriter;
 
 /**
  * Deploys a workflow to the engine.

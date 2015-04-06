@@ -15,17 +15,16 @@
  */
 package com.effektif.example.cli.command;
 
+import java.io.PrintWriter;
+import java.util.List;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-
-import java.io.PrintWriter;
-import java.util.List;
 
 /**
  * Lists workflows.

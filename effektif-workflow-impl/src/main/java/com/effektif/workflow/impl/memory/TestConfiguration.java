@@ -34,4 +34,9 @@ public class TestConfiguration extends MemoryConfiguration {
   protected void registerDefaultEmailService() {
     brewery.ingredient(new TestOutgoingEmailService());
   }
+  
+  public TestConfiguration registerIngredient(Object ingredient) {
+    brewery.ingredient(ingredient);
+    return this;
+  }
 }

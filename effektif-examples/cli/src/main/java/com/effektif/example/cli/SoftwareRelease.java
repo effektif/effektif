@@ -19,6 +19,7 @@ import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.workflow.Workflow;
 
+
 /**
  * Defines a software release workflow programmatically.
  */

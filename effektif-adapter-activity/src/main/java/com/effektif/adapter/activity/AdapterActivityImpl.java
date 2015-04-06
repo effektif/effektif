@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.activity.types;
+package com.effektif.adapter.activity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.activities.AdapterActivity;
+import com.effektif.adapter.service.Adapter;
+import com.effektif.adapter.service.AdapterService;
+import com.effektif.adapter.service.ExecuteRequest;
+import com.effektif.adapter.service.ExecuteResponse;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.activity.OutputParameter;
-import com.effektif.workflow.impl.adapter.Adapter;
-import com.effektif.workflow.impl.adapter.AdapterService;
-import com.effektif.workflow.impl.adapter.ExecuteRequest;
-import com.effektif.workflow.impl.adapter.ExecuteResponse;
+import com.effektif.workflow.impl.activity.types.AbstractBindableActivityImpl;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;

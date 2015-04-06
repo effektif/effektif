@@ -27,8 +27,8 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.adapter.service.FindItemsRequest;
 import com.effektif.workflow.api.datasource.ItemReference;
-import com.effektif.workflow.impl.adapter.FindItemsRequest;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
 
 

@@ -15,13 +15,10 @@
  */
 package com.effektif.example.cli.command;
 
-import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
-
 import java.io.PrintWriter;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.model.TriggerInstance;
 
 /**
  * Starts the workflow with the given source ID.

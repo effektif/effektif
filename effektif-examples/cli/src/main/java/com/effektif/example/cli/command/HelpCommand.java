@@ -15,9 +15,11 @@
  */
 package com.effektif.example.cli.command;
 
+import java.io.PrintWriter;
+
 import com.effektif.workflow.api.Configuration;
 
-import java.io.PrintWriter;
+
 
 /**
  * Outputs a list of commands.

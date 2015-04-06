@@ -20,8 +20,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.effektif.adapter.service.AdapterDescriptors;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
-import com.effektif.workflow.impl.adapter.AdapterDescriptors;
 import com.effektif.workflow.impl.data.source.DataSourceDescriptor;
 
 

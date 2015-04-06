@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.activities;
+package com.effektif.adapter.activity;
 
+import com.effektif.workflow.api.activities.AbstractBindableActivity;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;

@@ -15,15 +15,15 @@
  */
 package com.effektif.example.cli;
 
-import com.effektif.example.cli.command.Command;
-import com.effektif.example.cli.command.CommandLine;
-import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.memory.MemoryConfiguration;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+
+import com.effektif.example.cli.command.Command;
+import com.effektif.example.cli.command.CommandLine;
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 /**
  * A workflow engine example with a command-line interface.

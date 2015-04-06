@@ -5,7 +5,6 @@ com.effektif.workflow.impl.activity.types.StartEventImpl
 com.effektif.workflow.impl.activity.types.EndEventImpl
 com.effektif.workflow.impl.activity.types.EmailTaskImpl
 com.effektif.workflow.impl.activity.types.ScriptTaskImpl
-com.effektif.workflow.impl.activity.types.AdapterActivityImpl
 com.effektif.workflow.impl.activity.types.CallImpl
 com.effektif.workflow.impl.activity.types.EmbeddedSubprocessImpl
 com.effektif.workflow.impl.activity.types.JavaServiceTaskImpl

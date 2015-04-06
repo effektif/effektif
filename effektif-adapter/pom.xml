@@ -18,7 +18,7 @@
 
     <dependency> 
       <groupId>com.effektif</groupId>
-      <artifactId>effektif-workflow-impl</artifactId>
+      <artifactId>effektif-adapter-activity</artifactId>
       <version>3.0.0-alpha2-SNAPSHOT</version>
     </dependency>
     

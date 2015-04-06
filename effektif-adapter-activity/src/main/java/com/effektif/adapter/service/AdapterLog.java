@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.adapter;
+package com.effektif.adapter.service;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
 
 
 /**
@@ -44,8 +42,4 @@ public class AdapterLog {
 
   public AdapterLog(ExecuteRequest request, ExecuteResponse response) {
   }
-
-  public AdapterLog(HttpPost request, CloseableHttpResponse response) {
-  }
-
 }

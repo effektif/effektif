@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.adapter;
+package com.effektif.adapter.service;
 
 
-public enum AdapterStatus {
+/**
+ * @author Tom Baeyens
+ */
+public class AdapterQuery {
 
-  UNKNOWN,
-  OK,
-  ERROR
+  protected String adapterId;
+
+  public String getAdapterId() {
+    return this.adapterId;
+  }
+  public void setAdapterId(String adapterId) {
+    this.adapterId = adapterId;
+  }
+  public AdapterQuery adapterId(String adapterId) {
+    this.adapterId = adapterId;
+    return this;
+  }
 }
