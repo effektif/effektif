@@ -84,6 +84,7 @@ public class XmlWriter {
       }
       if (xmlElement.namespaces!=null) {
         for (String prefix: xmlElement.namespaces.keySet()) {
+          String uri = xmlElement.namespaces.get(prefix);
           writer.write(' ');
           if ("".equals(prefix)) {
             writer.write("xmlns");
@@ -92,7 +93,7 @@ public class XmlWriter {
             writer.write(prefix);
           }
           writer.write("=\"");
-          writer.write(xmlElement.namespaces.get(prefix));
+          writer.write(uri);
           writer.write("\"");
         }
       }

@@ -24,7 +24,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.effektif.workflow.api.mapper.Writable;
+import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -49,13 +49,13 @@ public class RestJsonWriter extends AbstractWriter {
     super(mappings);
   }
 
-  public String toString(Writable o) {
+  public String toString(JsonWritable o) {
     StringWriter stringWriter = new StringWriter();
     toStream(o, stringWriter);
     return stringWriter.toString(); 
   }
 
-  public String toStringPretty(Writable o) {
+  public String toStringPretty(JsonWritable o) {
     pretty = true;
     return toString(o); 
   }
@@ -65,7 +65,7 @@ public class RestJsonWriter extends AbstractWriter {
     return this;
   }
 
-  public void toStream(Writable o, Writer writer) {
+  public void toStream(JsonWritable o, Writer writer) {
     try {
       jgen = new JsonFactory().createGenerator(writer);
       if (pretty) {
@@ -142,8 +142,8 @@ public class RestJsonWriter extends AbstractWriter {
         jgen.writeBoolean((Boolean) o);
       } else if (o instanceof Id) {
         writeIdValue((Id) o);
-      } else if (o instanceof Writable) {
-        writeObject((Writable)o);
+      } else if (o instanceof JsonWritable) {
+        writeObject((JsonWritable)o);
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -176,7 +176,7 @@ public class RestJsonWriter extends AbstractWriter {
     }
   }
 
-  public void writeObject(Writable o) {
+  public void writeObject(JsonWritable o) {
     try {
       if (o!=null) {
         jgen.writeStartObject();
@@ -268,7 +268,7 @@ public class RestJsonWriter extends AbstractWriter {
   }
 
   @Override
-  public void writeObject(String fieldName, Writable o) {
+  public void writeObject(String fieldName, JsonWritable o) {
     if (o!=null) {
       try {
         jgen.writeFieldName(fieldName);

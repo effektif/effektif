@@ -13,26 +13,23 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import com.effektif.workflow.api.mapper.Reader;
-import com.effektif.workflow.api.mapper.Writer;
-
 
 /**
  * @author Tom Baeyens
  */
-public abstract class AbstractMapper {
+public abstract class AbstractMapper<R,W> {
   
   protected Mappings mappings = new Mappings();
 
-  public Mappings getSubclassMappings() {
+  public Mappings getMappings() {
     return mappings;
   }
 
-  public void setJsonMappings(Mappings mappings) {
+  public void setMappings(Mappings mappings) {
     this.mappings = mappings;
   }
 
-  public abstract Reader createReader();
+  public abstract R createReader();
 
-  public abstract Writer createWriter();
+  public abstract W createWriter();
 }

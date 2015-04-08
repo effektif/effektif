@@ -17,8 +17,8 @@ package com.effektif.workflow.api.mapper;
 /**
  * @author Tom Baeyens
  */
-public interface Readable {
+public interface JsonWritable {
 
-  void readFields(Reader r);
+  void writeFields(JsonWriter w);
 
 }

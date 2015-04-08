@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.mapper;
 /**
  * @author Tom Baeyens
  */
-public class RestJsonMapper extends AbstractMapper {
+public class RestJsonMapper extends AbstractMapper<RestJsonReader,RestJsonWriter> {
   
   public RestJsonReader createReader() {
     return new RestJsonReader(mappings);

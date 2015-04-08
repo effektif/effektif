@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.effektif.workflow.api.mapper.Writer;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -31,7 +31,7 @@ public class Variable extends Element {
   }
   
   @Override
-  public void writeFields(Writer w) {
+  public void writeFields(JsonWriter w) {
   }
 
   public String getId() {

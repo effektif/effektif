@@ -23,15 +23,15 @@ import com.effektif.workflow.api.workflow.Binding;
 /**
  * @author Tom Baeyens
  */
-public interface Reader {
+public interface JsonReader {
 
   <T extends Id> T readId(Class<T> idType);
 
   <T extends Id> T readId(String fieldName, Class<T> idType);
 
-  <T extends Readable> List<T> readList(String fieldName, Class<T> type);
+  <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type);
 
-  <T extends Readable> T readObject(String fieldName, Class<T> type);
+  <T extends JsonReadable> T readObject(String fieldName, Class<T> type);
 
   <T> Map<String, T> readMap(String fieldName, Class<T> valueType);
 

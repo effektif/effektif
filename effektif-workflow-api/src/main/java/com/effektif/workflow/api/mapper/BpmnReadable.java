@@ -14,11 +14,11 @@
 package com.effektif.workflow.api.mapper;
 
 
-
 /**
  * @author Tom Baeyens
  */
-public interface BpmnMappable {
+public interface BpmnReadable {
 
-  void initializeBpmnFieldMappings(BpmnFieldMappings fieldMappings);
+  void readBpmn(BpmnReader r);
+
 }

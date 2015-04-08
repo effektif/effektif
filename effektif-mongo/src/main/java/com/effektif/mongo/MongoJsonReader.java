@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.impl.mapper.AbstractReader;
 import com.effektif.workflow.impl.mapper.Mappings;
@@ -33,7 +33,7 @@ public class MongoJsonReader extends AbstractReader {
     super(mappings);
   }
 
-  public <T extends Readable> T toObject(BasicDBObject dbObject, Class<T> type) {
+  public <T extends JsonReadable> T toObject(BasicDBObject dbObject, Class<T> type) {
     this.jsonObject = dbObject;
     return readCurrentObject(type);
   }

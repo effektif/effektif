@@ -19,6 +19,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.XmlElement;
 
 
@@ -27,7 +33,7 @@ import com.effektif.workflow.api.mapper.XmlElement;
  * 
  * @author Tom Baeyens
  */
-public abstract class Element extends Extensible {
+public abstract class Element extends Extensible implements BpmnReadable, BpmnWritable {
   
   public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
           "name", "description", "bpmn"));
@@ -35,6 +41,29 @@ public abstract class Element extends Extensible {
   protected String name;
   protected String description;
   protected XmlElement bpmn;
+  
+  @Override
+  public void readBpmn(BpmnReader r) {
+    name = r.readStringAttributeBpmn("name");
+    description = r.readDocumentation();
+    bpmn = r.getUnparsedXml();
+  }
+  
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeStringAttributeBpmn("name", name);
+    w.writeDocumentation(description);
+  }
+  
+  @Override
+  public void readFields(JsonReader r) {
+    super.readFields(r);
+  }
+
+  @Override
+  public void writeFields(JsonWriter w) {
+    super.writeFields(w);
+  }
 
   /** human readable label used when visually displaying the element.
    * This corresponds to the BPMN name attribute. */

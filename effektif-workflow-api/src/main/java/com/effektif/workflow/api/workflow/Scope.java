@@ -18,8 +18,10 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.mapper.Reader;
-import com.effektif.workflow.api.mapper.Writer;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -34,13 +36,25 @@ public abstract class Scope extends Element {
   protected List<Timer> timers;
 
   @Override
-  public void writeFields(Writer w) {
+  public void readBpmn(BpmnReader r) {
+    r.readScope();
+    super.readBpmn(r);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeScope();
+    super.writeBpmn(w);
+  }
+
+  @Override
+  public void writeFields(JsonWriter w) {
     w.writeList("activities", activities);
     super.writeFields(w);
   }
   
   @Override
-  public void readFields(Reader r) {
+  public void readFields(JsonReader r) {
     activities =  r.readList("activities", Activity.class);
     super.readFields(r);
   }

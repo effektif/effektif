@@ -13,19 +13,32 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.impl.data.DataTypeService;
+
 
 
 
 /**
  * @author Tom Baeyens
  */
-public class BpmnMapper extends AbstractMapper {
+public class BpmnMapper extends AbstractMapper<BpmnReaderImpl, BpmnWriter> {
   
-  public BpmnReader createReader() {
-    return new BpmnReader(mappings);
+  protected DataTypeService dataTypeService;
+  
+  public DataTypeService getDataTypeService() {
+    return dataTypeService;
+  }
+  
+  public void setDataTypeService(DataTypeService dataTypeService) {
+    this.dataTypeService = dataTypeService;
   }
 
-  public BpmnWriter createWriter() {
-    return new BpmnWriter(mappings);
+  public BpmnReaderImpl createReader() {
+    return new BpmnReaderImpl(mappings);
+  }
+
+  public BpmnWriterImpl createWriter() {
+    return new BpmnWriterImpl(mappings);
   }
 }

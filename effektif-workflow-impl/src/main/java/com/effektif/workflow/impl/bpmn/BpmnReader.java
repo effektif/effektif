@@ -64,12 +64,6 @@ public class BpmnReader extends Bpmn {
   
   protected ActivityTypeService activityTypeService;
 
-  /** maps uri's to prefixes.
-   * Ideally this should be done in a stack so that each element can add new namespaces.
-   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
-   * The current implementation assumes that all namespaces are defined in the root element */
-  protected Map<String,String> prefixes = new HashMap<>();
-
   private DataTypeService dataTypeService;
 
   public BpmnReader(Configuration configuration) {
@@ -84,9 +78,6 @@ public class BpmnReader extends Bpmn {
 
   protected Workflow readDefinitions(XmlElement definitionsXml) {
     Workflow workflow = null;
-    
-    // see #prefixes for more details about the limitations of namespaces
-    addPrefixes(definitionsXml);
     
     if (definitionsXml.elements!=null) {
       Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
@@ -149,15 +140,6 @@ public class BpmnReader extends Bpmn {
           // Remove the activity XML element as it has been parsed in the model.
           iterator.remove();
         }
-      }
-    }
-  }
-
-  protected void addPrefixes(XmlElement xmlElement) {
-    Map<String, String> namespaces = xmlElement.namespaces;
-    if (namespaces!=null) {
-      for (String prefix: namespaces.keySet()) {
-        prefixes.put(namespaces.get(prefix), prefix);
       }
     }
   }

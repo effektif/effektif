@@ -25,7 +25,7 @@ import com.effektif.workflow.api.workflow.Binding;
 /**
  * @author Tom Baeyens
  */
-public interface Writer {
+public interface JsonWriter {
 
   void writeString(String fieldName, String stringValue);
   
@@ -33,7 +33,7 @@ public interface Writer {
   
   void writeNumber(String fieldName, Number value);
 
-  void writeObject(String fieldName, Writable o);
+  void writeObject(String fieldName, JsonWritable o);
 
   void writeId(Id id);
 

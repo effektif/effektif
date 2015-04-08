@@ -25,7 +25,6 @@ public class BpmnTypeMapping {
   String bpmnElementName;
   Map<String,String> bpmnTypeAttributes;
   Class<?> type;
-  BpmnFieldMappingsImpl bpmnFieldMappings;
 
   public String getBpmnElementName() {
     return bpmnElementName;
@@ -60,14 +59,5 @@ public class BpmnTypeMapping {
     } catch (InstantiationException | IllegalAccessException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  public BpmnFieldMappingsImpl getBpmnFieldMappings() {
-    return bpmnFieldMappings;
-  }
-
-  
-  public void setBpmnFieldMappings(BpmnFieldMappingsImpl bpmnFieldMappings) {
-    this.bpmnFieldMappings = bpmnFieldMappings;
   }
 }

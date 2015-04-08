@@ -16,7 +16,7 @@ package com.effektif.mongo.test;
 import org.junit.BeforeClass;
 
 import com.effektif.mongo.MongoJsonMapper;
-import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
 
@@ -32,11 +32,11 @@ public class MongoJsonTest extends AbstractMapperTest {
   public static void initialize() {
     initializeMappings();
     mongoJsonMapper = new MongoJsonMapper();
-    mongoJsonMapper.setJsonMappings(mappings);
+    mongoJsonMapper.setMappings(mappings);
   }
 
   @Override
-  protected <T extends Readable> T serialize(T o) {
+  protected <T extends JsonReadable> T serialize(T o) {
     BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonMapper
       .createWriter()
       .toDbObject(o);

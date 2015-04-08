@@ -18,7 +18,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
 
-import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,11 +38,11 @@ public class RestJsonReader extends AbstractReader {
     this.mappings = mappings;
   }
 
-  public <T extends Readable> T toObject(String jsonString, Class<T> type) {
+  public <T extends JsonReadable> T toObject(String jsonString, Class<T> type) {
     return toObject(new StringReader(jsonString), type);
   }
 
-  public <T extends Readable> T toObject(Reader jsonStream, Class<T> type) {
+  public <T extends JsonReadable> T toObject(Reader jsonStream, Class<T> type) {
     try {
       this.jsonObject = objectMapper.readValue(jsonStream, Map.class);
       return readCurrentObject(type);

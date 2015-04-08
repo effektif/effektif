@@ -54,10 +54,12 @@ public class XmlReader {
       XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(reader);
       while (xmlEventReader.hasNext()) {
         XMLEvent xmlEvent = xmlEventReader.nextEvent();
-        if (xmlEvent.isStartDocument()){
+        
+        /*if (xmlEvent.isStartDocument()){
           StartDocument startDocument = (StartDocument) xmlEvent;
-          
-        } else if (xmlEvent.isStartElement()){
+        } else */
+        
+        if (xmlEvent.isStartElement()){
           StartElement startElement = (StartElement)xmlEvent;
           XmlElement xmlElement = readXmlElement(startElement);
           if (elementStack.isEmpty()) {
@@ -81,11 +83,10 @@ public class XmlReader {
   private XmlElement readXmlElement(StartElement startElement) {
     XmlElement xmlElement = new XmlElement();
     xmlElement.name = toString(startElement.getName());
-
     Iterator namespaces = startElement.getNamespaces();
     while (namespaces.hasNext()) {
       Namespace namespace = (Namespace) namespaces.next();
-      xmlElement.addNamespace(namespace.getPrefix(), namespace.getNamespaceURI());
+      xmlElement.addNamespace(namespace.getNamespaceURI(), namespace.getPrefix());
     }
     Iterator attributes = startElement.getAttributes();
     while (attributes.hasNext()) {

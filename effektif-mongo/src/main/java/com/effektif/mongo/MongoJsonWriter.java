@@ -23,7 +23,7 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.mapper.Writable;
+import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -61,8 +61,8 @@ public class MongoJsonWriter extends AbstractWriter {
         || (Number.class.isAssignableFrom(type))) {
       return o;
     }
-    if (Writable.class.isAssignableFrom(type)) {
-      return toDbObject((Writable)o);
+    if (JsonWritable.class.isAssignableFrom(type)) {
+      return toDbObject((JsonWritable)o);
     }
     if (LocalDateTime.class.isAssignableFrom(type)) {
       return toDbObject((LocalDateTime)o);
@@ -86,7 +86,7 @@ public class MongoJsonWriter extends AbstractWriter {
     return date.toDate();
   }
   
-  public BasicDBObject toDbObject(Writable o) {
+  public BasicDBObject toDbObject(JsonWritable o) {
     if (o==null) {
       return null;
     }
@@ -175,7 +175,7 @@ public class MongoJsonWriter extends AbstractWriter {
   }
 
   @Override
-  public void writeObject(String fieldName, Writable value) {
+  public void writeObject(String fieldName, JsonWritable value) {
     if (value!=null) {
       BasicDBObject dbValue = toDbObject(value); 
       dbObject.put(fieldName, dbValue);

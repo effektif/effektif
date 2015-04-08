@@ -16,7 +16,7 @@ package com.effektif.workflow.test.serialization;
 import org.junit.BeforeClass;
 
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.mapper.Readable;
+import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -34,11 +34,11 @@ public class BpmnMapperTest extends AbstractMapperTest {
   public static void initialize() {
     initializeMappings();
     bpmnMapper = new BpmnMapper();
-    bpmnMapper.setJsonMappings(mappings);
+    bpmnMapper.setMappings(mappings);
   }
   
   @Override
-  protected <T extends Readable> T serialize(T o) {
+  protected <T extends JsonReadable> T serialize(T o) {
     Workflow w = null;
     if (o instanceof Activity) {
       w = new Workflow()

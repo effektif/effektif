@@ -16,8 +16,10 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.acl.AccessControlList;
-import com.effektif.workflow.api.mapper.Reader;
-import com.effektif.workflow.api.mapper.Writer;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.model.WorkflowId;
 
 
@@ -37,15 +39,27 @@ public abstract class AbstractWorkflow extends Scope {
   protected String caseNameTemplate;
   
   public abstract String getSourceWorkflowId();
+  
+  @Override
+  public void readBpmn(BpmnReader r) {
+    id = r.readIdAttributeBpmn("id", WorkflowId.class);
+    super.readBpmn(r);
+  }
 
   @Override
-  public void writeFields(Writer w) {
+  public void writeBpmn(BpmnWriter w) {
+    w.writeIdAttributeBpmn("id", id);
+    super.writeBpmn(w);
+  }
+
+  @Override
+  public void writeFields(JsonWriter w) {
     w.writeId(id);
     super.writeFields(w);
   }
 
   @Override
-  public void readFields(Reader r) {
+  public void readFields(JsonReader r) {
     id = r.readId(WorkflowId.class);
     super.readFields(r);
   }

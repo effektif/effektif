@@ -44,8 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BpmnWriter extends Bpmn {
   
   protected ActivityTypeService activityTypeService;
-  protected String bpmnPrefix;
-  protected String effektifPrefix;
   protected DataTypeService dataTypeService;
 
   /** convenience method */
@@ -70,25 +68,14 @@ public class BpmnWriter extends Bpmn {
   protected XmlElement writeDefinitions(Workflow workflow) {
     XmlElement definitionsElement = getXmlElement(workflow.getProperty(KEY_DEFINITIONS));
     
-    if (definitionsElement.namespaces!=null) {
-      for (String prefix : definitionsElement.namespaces.keySet()) {
-        String uri = definitionsElement.namespaces.get(prefix);
-        if (BPMN_URI.equals(uri)) {
-          bpmnPrefix = prefix;
-        } else if (EFFEKTIF_URI.equals(uri)) {
-          effektifPrefix = prefix;
-        }
-      }
-    }
-    if (bpmnPrefix==null) {
-      bpmnPrefix = "";
-      definitionsElement.addNamespace(bpmnPrefix, BPMN_URI);
-    } if (effektifPrefix==null) {
-      effektifPrefix = "effektif";
-      definitionsElement.addNamespace(effektifPrefix, EFFEKTIF_URI);
+    if (!definitionsElement.hasNamespace(BPMN_URI)) {
+      definitionsElement.addNamespace(BPMN_URI, null);
+    } 
+    if (!definitionsElement.hasNamespace(EFFEKTIF_URI)) {
+      definitionsElement.addNamespace(EFFEKTIF_URI, "e");
     }
     
-    definitionsElement.name = getBpmnQName("definitions"); 
+    definitionsElement.setName(BPMN_URI, "definitions"); 
     
     XmlElement processElement = writeWorkflow(workflow);
     // let's add the process we write as the first process element inside the definitions

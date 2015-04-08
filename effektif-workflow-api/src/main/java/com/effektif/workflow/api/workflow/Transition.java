@@ -16,10 +16,10 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.mapper.BpmnMappable;
-import com.effektif.workflow.api.mapper.BpmnFieldMappings;
-import com.effektif.workflow.api.mapper.Reader;
-import com.effektif.workflow.api.mapper.Writer;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 
 
 
@@ -30,7 +30,7 @@ import com.effektif.workflow.api.mapper.Writer;
  *
  * @author Tom Baeyens
  */
-public class Transition extends Element implements BpmnMappable {
+public class Transition extends Element {
 
   protected String id;
 
@@ -42,15 +42,25 @@ public class Transition extends Element implements BpmnMappable {
 
   protected Condition condition;
   protected Boolean isToNext;
-  
+
   @Override
-  public void initializeBpmnFieldMappings(BpmnFieldMappings mapping) {
-    mapping.mapToBpmn("from", "sourceRef");
-    mapping.mapToBpmn("to", "toRef");
+  public void readBpmn(BpmnReader r) {
+    id = r.readStringAttributeBpmn("id");
+    from = r.readStringAttributeBpmn("sourceRef");
+    to = r.readStringAttributeBpmn("destinationRef");
+    super.readBpmn(r);
   }
 
   @Override
-  public void readFields(Reader r) {
+  public void writeBpmn(BpmnWriter w) {
+    w.writeStringAttributeBpmn("id", id);
+    w.writeStringAttributeBpmn("sourceRef", from);
+    w.writeStringAttributeBpmn("destinationRef", to);
+    super.writeBpmn(w);
+  }
+
+  @Override
+  public void readFields(JsonReader r) {
     id = r.readString("id");
     from = r.readString("from");
     to = r.readString("to");
@@ -58,10 +68,11 @@ public class Transition extends Element implements BpmnMappable {
   }
 
   @Override
-  public void writeFields(Writer w) {
+  public void writeFields(JsonWriter w) {
     w.writeString("id", id);
     w.writeString("from", id);
     w.writeString("to", id);
+    super.writeFields(w);
   }
 
   public String getId() {

@@ -11,24 +11,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.mapper;
-
-import com.effektif.workflow.api.mapper.JsonWriter;
+package com.effektif.workflow.api.mapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public abstract class AbstractWriter implements JsonWriter {
+public interface BpmnWritable {
 
-  protected Mappings mappings;
+  void writeBpmn(BpmnWriter w);
 
-  public AbstractWriter() {
-    this(new Mappings());
-  }
-
-  public AbstractWriter(Mappings mappings) {
-    this.mappings = mappings;
-  }
-  
 }

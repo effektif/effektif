@@ -30,44 +30,106 @@ public class XmlElement {
 
   public String name;
   public Map<String, String> attributes;
-  /** maps prefixes to namespace uris */
+  /** maps namespace uris to prefixes, null value represents the default namespace */
   public Map<String,String> namespaces;
   public List<XmlElement> elements;
   public String text;
+  
+  public XmlElement parent;
+  public String namespaceUri;
 
   public XmlElement() {
   }
-
-  public XmlElement(String name) {
-    this.name = name;
+  
+  public XmlElement(String namespaceUri, String localPart) {
+    setName(namespaceUri, localPart);
+  }
+  
+  public void setName(String namespaceUri, String localPart) {
+    this.name = getNamespacePrefix(namespaceUri)+localPart;
+    this.namespaceUri = namespaceUri;
   }
 
-  public void addNamespace(String prefix, String namespaceUri) {
+  public void addNamespace(String namespaceUri, String prefix) {
     if (namespaces==null) {
       namespaces = new LinkedHashMap<>();
     }
-    namespaces.put(prefix, namespaceUri);
+    namespaces.put(namespaceUri, prefix);
+  }
+  
+  public boolean hasNamespace(String namespaceUri) {
+    if (this.namespaces!=null && this.namespaces.containsKey(namespaceUri)) {
+      return true;
+    }
+    if (parent!=null) {
+      return parent.hasNamespace(namespaceUri);
+    }
+    return false;
   }
 
-  public void addAttribute(String name, String value) {
+  protected String getNamespacePrefix(String namespaceUri) {
+    if (this.namespaces!=null && this.namespaces.containsKey(namespaceUri)) {
+      String prefix = this.namespaces.get(namespaceUri);
+      if (prefix==null) {
+        return "";
+      } else {
+        return prefix+":";
+      }
+    }
+    if (parent!=null) {
+      return parent.getNamespacePrefix(namespaceUri);
+    }
+    return "";
+  }
+
+  public void addAttribute(String namespaceUri, String localPart, String value) {
     if (attributes==null) {
       attributes = new LinkedHashMap<>();
     }
-    attributes.put(name, value);
+    String attributeName = null; 
+    if (this.namespaceUri==null || this.namespaceUri.equals(namespaceUri)) {
+      attributeName = getNamespacePrefix(namespaceUri)+localPart;
+    } else {
+      attributeName = localPart;
+    }
+    attributes.put(attributeName, value);
+  }
+
+  public XmlElement createElement(String namespaceUri, String localPart) {
+    return createElement(namespaceUri, localPart, null);
+  }
+
+  public XmlElement createElementFirst(String namespaceUri, String localPart) {
+    return createElement(namespaceUri, localPart, 0);
+  }
+
+  public XmlElement createElement(String namespaceUri, String localPart, Integer index) {
+    XmlElement element = new XmlElement(namespaceUri, localPart);
+    element.namespaceUri = namespaceUri;
+    addElement(element, index);
+    return element;
   }
 
   public void addElement(XmlElement xmlElement) {
-    if (elements==null) {
-      this.elements = new ArrayList<>();
-    }
-    this.elements.add(xmlElement);
+    addElement(xmlElement, null);
   }
 
   public void addElementFirst(XmlElement xmlElement) {
-    if (elements==null) {
-      elements = new ArrayList<>();
+    addElement(xmlElement, 0);
+  }
+
+  public void addElement(XmlElement xmlElement, Integer index) {
+    if (xmlElement!=null) {
+      if (elements==null) {
+        this.elements = new ArrayList<>();
+      }
+      if (index!=null) {
+        this.elements.add(index, xmlElement);
+      } else {
+        this.elements.add(xmlElement);
+      }
+      xmlElement.parent = this;
     }
-    elements.add(0, xmlElement);
   }
 
   /**
@@ -132,6 +194,7 @@ public class XmlElement {
     return attributes;
   }
   
+  /** maps namespace uris to prefixes */
   public Map<String, String> getNamespaces() {
     return namespaces;
   }

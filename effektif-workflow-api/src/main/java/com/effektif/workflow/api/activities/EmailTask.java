@@ -19,15 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnFieldMappings;
-import com.effektif.workflow.api.mapper.BpmnMappable;
+import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
-import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -50,7 +51,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @TypeName("email")
 @BpmnElement("serviceTask")
 @BpmnTypeAttribute(attribute="type", value="email")
-public class EmailTask extends Activity implements BpmnMappable {
+public class EmailTask extends Activity {
 
   protected Binding<String> fromEmailAddress;
 
@@ -73,16 +74,47 @@ public class EmailTask extends Activity implements BpmnMappable {
   protected List<Binding<FileId>> attachmentFileIds;
   
   @Override
-  public void initializeBpmnFieldMappings(BpmnFieldMappings fieldMappings) {
-    fieldMappings.mapToExtensionElement("fromEmailAddress");
-    fieldMappings.mapToExtensionElement("toEmailAddresses");
-    fieldMappings.mapToExtensionElementCdata("subject");
-    fieldMappings.mapToExtensionElementCdata("bodyText");
-    fieldMappings.mapToExtensionElementCdata("bodyHtml");
+  public void readBpmn(BpmnReader r) {
+    fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
+    toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
+    toUserIds = r.readBindings("toUserIds", UserId.class);
+    toGroupIds = r.readBindings("toGroupIds", GroupId.class);
+    ccEmailAddresses = r.readBindings("ccEmailAddresses", String.class);
+    ccUserIds = r.readBindings("ccUserIds", UserId.class);
+    ccGroupIds = r.readBindings("ccGroupIds", GroupId.class);
+    bccEmailAddresses = r.readBindings("bccEmailAddresses", String.class);
+    bccUserIds = r.readBindings("bccUserIds", UserId.class);
+    bccGroupIds = r.readBindings("bccGroupIds", GroupId.class);
+    subject = r.readTextEffektif("subject");
+    bodyText = r.readTextEffektif("bodyText");
+    bodyHtml = r.readTextEffektif("bodyHtml");
+    attachmentFileIds = r.readBindings("attachmentFileIds", FileId.class);
+    super.readBpmn(r);
   }
 
   @Override
-  public void writeFields(Writer w) {
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.startExtensionElements();
+    w.writeBinding("fromEmailAddress", fromEmailAddress);
+    w.writeBindings("toEmailAddresses", toEmailAddresses);
+    w.writeBindings("toUserIds", toUserIds);
+    w.writeBindings("toGroupIds", toGroupIds);
+    w.writeBindings("ccEmailAddresses", ccEmailAddresses);
+    w.writeBindings("ccUserIds", ccUserIds);
+    w.writeBindings("ccGroupIds", ccGroupIds);
+    w.writeBindings("bccEmailAddresses", bccEmailAddresses);
+    w.writeBindings("bccUserIds", bccUserIds);
+    w.writeBindings("bccGroupIds", bccGroupIds);
+    w.writeTextEffektif("subject", subject);
+    w.writeTextEffektif("bodyText", bodyText);
+    w.writeTextEffektif("bodyHtml", bodyHtml);
+    w.writeBindings("attachmentFileIds", attachmentFileIds);
+    w.endExtensionElements();
+  }
+
+  @Override
+  public void writeFields(JsonWriter w) {
     super.writeFields(w);
     w.writeBinding("fromEmailAddress", fromEmailAddress);
     w.writeBindings("toEmailAddresses", toEmailAddresses);
@@ -101,7 +133,7 @@ public class EmailTask extends Activity implements BpmnMappable {
   }
 
   @Override
-  public void readFields(Reader r) {
+  public void readFields(JsonReader r) {
     fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
     toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
     toUserIds = r.readBindings("toUserIds", UserId.class);

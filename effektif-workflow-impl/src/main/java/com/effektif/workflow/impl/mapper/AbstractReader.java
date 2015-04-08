@@ -24,8 +24,8 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.effektif.workflow.api.mapper.Readable;
-import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
@@ -33,7 +33,7 @@ import com.effektif.workflow.api.workflow.Binding;
 /**
  * @author Tom Baeyens
  */
-public abstract class AbstractReader implements Reader {
+public abstract class AbstractReader implements JsonReader {
   
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTimeParser();
 
@@ -48,7 +48,7 @@ public abstract class AbstractReader implements Reader {
     this.mappings = mappings;
   }
 
-  protected <T extends Readable> T readCurrentObject(Class<T> type) {
+  protected <T extends JsonReadable> T readCurrentObject(Class<T> type) {
     try {
       Class<T> concreteType = mappings.getConcreteClass(jsonObject, type);
       T o = concreteType.newInstance();
@@ -86,7 +86,7 @@ public abstract class AbstractReader implements Reader {
   }
 
   @Override
-  public <T extends Readable> List<T> readList(String fieldName, Class<T> type) {
+  public <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type) {
     List<Map<String,Object>> jsons = (List<Map<String, Object>>) jsonObject.get(fieldName);
     if (jsons==null) {
       return null;
@@ -103,7 +103,7 @@ public abstract class AbstractReader implements Reader {
   }
   
   @Override
-  public <T extends Readable> T readObject(String fieldName, Class<T> type) {
+  public <T extends JsonReadable> T readObject(String fieldName, Class<T> type) {
     Map<String,Object> parentJson = jsonObject;
     List<T> objects = new ArrayList<>();
     jsonObject = (Map<String, Object>) parentJson.get(fieldName);
@@ -140,10 +140,10 @@ public abstract class AbstractReader implements Reader {
     if (Id.class.isAssignableFrom(type)) {
       return (T) createId(json, (Class<Id>)type);
     }
-    if (Readable.class.isAssignableFrom(type)) {
+    if (JsonReadable.class.isAssignableFrom(type)) {
       Map<String,Object> parentJson = jsonObject;
       jsonObject = (Map<String, Object>) json;
-      T object = (T) readCurrentObject((Class<Readable>)type);
+      T object = (T) readCurrentObject((Class<JsonReadable>)type);
       jsonObject = parentJson;
       return object;
     }

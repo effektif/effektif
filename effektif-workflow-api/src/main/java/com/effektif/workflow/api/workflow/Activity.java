@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.mapper.Reader;
-import com.effektif.workflow.api.mapper.Writer;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -43,7 +45,19 @@ public abstract class Activity extends Scope {
   }
   
   @Override
-  public void writeFields(Writer w) {
+  public void readBpmn(BpmnReader r) {
+    id = r.readStringAttributeBpmn("id");
+    super.readBpmn(r);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeStringAttributeBpmn("id", id);
+    super.writeBpmn(w);
+  }
+  
+  @Override
+  public void writeFields(JsonWriter w) {
     w.writeString("id", id);
     super.writeFields(w);
     w.writeString("defaultTransitionId", defaultTransitionId);
@@ -52,7 +66,7 @@ public abstract class Activity extends Scope {
   }
   
   @Override
-  public void readFields(Reader r) {
+  public void readFields(JsonReader r) {
     id = r.readString("id");
     super.readFields(r);
     defaultTransitionId = r.readString("defaultTransitionId");

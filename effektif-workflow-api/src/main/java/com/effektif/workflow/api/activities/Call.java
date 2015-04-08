@@ -16,11 +16,11 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnFieldMappings;
-import com.effektif.workflow.api.mapper.BpmnMappable;
-import com.effektif.workflow.api.mapper.Reader;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.effektif.workflow.api.mapper.Writer;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
@@ -39,26 +39,34 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("call")
 @TypeName("call")
 @BpmnElement("callActivity")
-public class Call extends AbstractBindableActivity implements BpmnMappable {
+public class Call extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
   protected String subWorkflowSource;
   
   @Override
-  public void initializeBpmnFieldMappings(BpmnFieldMappings fieldMappings) {
-    fieldMappings.mapToEffektif("subWorkflowId");
-    fieldMappings.mapToEffektif("subWorkflowSource");
+  public void readBpmn(BpmnReader r) {
+    subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
+    subWorkflowSource = r.readStringAttributeEffektif("subWorkflowSource");
+    super.readBpmn(r);
   }
 
   @Override
-  public void writeFields(Writer w) {
+  public void writeBpmn(BpmnWriter w) {
+    w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
+    w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
+    super.writeBpmn(w);
+  }
+
+  @Override
+  public void writeFields(JsonWriter w) {
     super.writeFields(w);
     w.writeId("subWorkflowId", subWorkflowId);
     w.writeString("subWorkflowSource", subWorkflowSource);
   }
 
   @Override
-  public void readFields(Reader r) {
+  public void readFields(JsonReader r) {
     subWorkflowId = r.readId("subWorkflowId", WorkflowId.class);
     subWorkflowSource = r.readString("subWorkflowSource");
     super.readFields(r);
