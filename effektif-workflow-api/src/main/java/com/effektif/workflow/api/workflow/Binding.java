@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.workflow;
 
 
+
 /**
  * A binding stores a value for an activity input parameter, such as a process
  * variable.

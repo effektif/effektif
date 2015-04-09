@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
@@ -41,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("userTask")
+@BpmnElement("userTask")
 public class UserTask extends NoneTask {
   
   protected AccessControlList access;
@@ -72,6 +74,40 @@ public class UserTask extends NoneTask {
 
   /** User to assign the task to when escalating. */
   protected Binding<UserId> escalateToId;
+
+  @Override
+  public void readBpmn(com.effektif.workflow.api.mapper.BpmnReader r) {
+    super.readBpmn(r);
+  }
+//  @Override
+//  public UserTask readBpmn(XmlElement xml, BpmnReader reader) {
+//    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+//      return null;
+//    }
+//    UserTask task = new UserTask();
+//
+//    task.setTaskName(reader.readStringValue(xml, "taskName"));
+//    task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
+//    task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
+//    task.setCandidateGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "candidate"));
+//    task.setForm(reader.readForm(xml));
+//    
+//    return task;
+//  }
+
+  @Override
+  public void writeBpmn(com.effektif.workflow.api.mapper.BpmnWriter w) {
+    super.writeBpmn(w);
+  }
+//  @Override
+//  public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
+//    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+//    writer.writeStringValue(xml, "taskName", task.getTaskName());
+//    writer.writeBinding(xml, "assignee", task.getAssigneeId(), UserIdType.INSTANCE);
+//    writer.writeBindings(xml, "candidate", (List) task.getCandidateIds(), UserIdType.INSTANCE);
+//    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
+//  }
+  
 
   @Override
   public UserTask id(String id) {

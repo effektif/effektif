@@ -22,7 +22,6 @@ import java.util.Map;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -32,8 +31,6 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -45,29 +42,12 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
  */
 public class CallImpl extends AbstractBindableActivityImpl<Call> {
 
-  private static final String BPMN_ELEMENT_NAME = "callActivity";
-
   // IDEA Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   protected WorkflowId subWorkflowId;
   protected String subWorkflowSource;
 
   public CallImpl() {
     super(Call.class);
-  }
-
-  @Override
-  public Call readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-      return null;
-    }
-    Call activity = new Call();
-    return activity;
-  }
-
-  @Override
-  public void writeBpmn(Call activity, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", activity.getId());
   }
 
   @Override

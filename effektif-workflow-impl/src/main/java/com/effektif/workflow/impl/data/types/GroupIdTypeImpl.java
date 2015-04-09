@@ -52,17 +52,4 @@ public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
     }
     return groupTypeImpl.dereference(group, fieldName);
   }
-
-  @Override
-  public Binding readValue(XmlElement xml) {
-    String value = readStringValue(xml, "groupId");
-    return value == null ? null : new Binding().value(new GroupId(value));
-  }
-
-  @Override
-  public void writeValue(XmlElement xml, Object value) {
-    if (value != null) {
-      xml.addAttribute("groupId", value.toString());
-    }
-  }
 }

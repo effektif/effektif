@@ -79,14 +79,19 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   protected void startElementBpmn(String localpart, Object source) {
-    startElementBpmn(localpart, source, false);
+    startElementBpmn(localpart, source, null);
   }
 
-  protected void startElementBpmn(String localpart, Object source, boolean asFirst) {
+  protected void startElementBpmn(String localpart, Object source, Integer index) {
     if (source==null) {
-      startElementBpmn(localpart, asFirst);
+      startElementBpmn(localpart, index);
     } else if (source instanceof XmlElement) {
-      startElement((XmlElement) source, asFirst);
+      XmlElement childElement = (XmlElement) source;
+      if (xml!=null) {
+        xml.addElement(childElement, index);
+      }
+      startElement(childElement);
+      
     } else {
       throw new RuntimeException("Unknown BPMN source: "+source);
     }
@@ -99,23 +104,33 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   @Override
   public void startElementBpmn(String localPart, Integer index) {
-    startElement(xml.createElement(BPMN_URI, localPart), index);
+    XmlElement newXmlElement = null;
+    if (xml!=null) {
+      newXmlElement = xml.createElement(BPMN_URI, localPart, index);
+    } else {
+      newXmlElement = new XmlElement();
+      newXmlElement.setName(BPMN_URI, localPart);
+    }
+    startElement(newXmlElement);
   }
 
   @Override
   public void startElementEffektif(String localPart) {
     startElementEffektif(localPart, null);
   }
-
+  
   @Override
   public void startElementEffektif(String localPart, Integer index) {
-    startElement(xml.createElement(EFFEKTIF_URI, localPart), index);
+    startElement(xml.createElement(EFFEKTIF_URI, localPart, index));
   }
 
-  protected void startElement(XmlElement nestedXml, Integer index) {
+  public void startOrGetElement(String namespaceUri, String localPart) {
+    startElement(xml.getOrCreateChildElement(namespaceUri, localPart));
+  }
+
+  protected void startElement(XmlElement nestedXml) {
     if (xml!=null) {
       xmlStack.push(xml);
-      xml.addElement(nestedXml, index);
     }
     xml = nestedXml;
   }
@@ -127,7 +142,11 @@ public class BpmnWriterImpl implements BpmnWriter {
   
   @Override
   public void startExtensionElements() {
-    startElementBpmn("extensionElements");
+    // start or get is used as extensionElements might be added 
+    // multiple times by different levels in the class hierarchy
+    // eg: a call activity might add stuff and it s super class activity might 
+    //     also add extensionElements
+    startOrGetElement(BPMN_URI, "extensionElements");
   }
 
   @Override
@@ -166,16 +185,6 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
   
-  @Override
-  public String getQNameBpmn(String localPart) {
-    return bpmnPrefix==null || "".equals(bpmnPrefix) ? localPart : bpmnPrefix+":"+localPart;
-  }
-
-  @Override
-  public String getQNameEffektif(String localPart) {
-    return effektifPrefix==null || "".equals(effektifPrefix) ? localPart : effektifPrefix+":"+localPart;
-  }
-  
   protected XmlElement writeDefinitions(Workflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
@@ -186,7 +195,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   protected void writeWorkflow(Workflow workflow) {
     startScope(workflow);
     // let's add the process we write as the first process element inside the definitions
-    startElementBpmn("process", workflow.getBpmn(), true);
+    startElementBpmn("process", workflow.getBpmn(), 0);
     writeDocumentation(workflow.getDescription());
     if (workflow.getSourceWorkflowId()==null && workflow.getId()!=null) {
       workflow.setSourceWorkflowId(workflow.getId().getInternal());
@@ -196,8 +205,11 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
   
   public void writeScope() {
-    writeActivities(scope.getActivities());
+    // transitions and activities are added as the first elements, that's
+    // why they are written in reverse order.  the activities will appear
+    // first, then the transitions and then the rest of the unknown bpmn xml.
     writeTransitions(scope.getTransitions());
+    writeActivities(scope.getActivities());
   }
 
   protected void writeActivities(List<Activity> activities) {
@@ -213,12 +225,12 @@ public class BpmnWriterImpl implements BpmnWriter {
         if (bpmnTypeMapping==null) {
           throw new RuntimeException("Register "+activity.getClass()+" in class "+Mappings.class.getName()+" with method registerSubClass and ensure annotation "+BpmnElement.class+" is set");
         }
-        startElementBpmn(bpmnTypeMapping.getBpmnElementName(), activity.getBpmn(), true);
+        startElementBpmn(bpmnTypeMapping.getBpmnElementName(), activity.getBpmn(), 0);
         Map<String, String> bpmnTypeAttributes = bpmnTypeMapping.getBpmnTypeAttributes();
         if (bpmnTypeAttributes!=null) {
-          for (String attribute: bpmnTypeAttributes.keySet()) {
-            String value = bpmnTypeAttributes.get(attribute);
-            xml.addAttribute(getQNameEffektif(attribute), value);
+          for (String attributeLocalPart: bpmnTypeAttributes.keySet()) {
+            String value = bpmnTypeAttributes.get(attributeLocalPart);
+            xml.addAttribute(EFFEKTIF_URI, attributeLocalPart, value);
           }
         }
         activity.writeBpmn(this);
@@ -236,7 +248,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       // appear in the order as they were parsed.
       for (int i=transitions.size()-1; i>=0; i--) {
         Transition transition = transitions.get(i);
-        startElementBpmn("sequenceFlow", transition.getBpmn(), true);
+        startElementBpmn("sequenceFlow", transition.getBpmn(), 0);
         transition.writeBpmn(this);
         endElement();
       }
@@ -280,37 +292,37 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   public void writeStringAttributeBpmn(String localPart, String value) {
     if (value!=null) {
-      xml.addAttribute(getQNameBpmn(localPart), value);
+      xml.addAttribute(BPMN_URI, localPart, value);
     } 
   }
   
   public void writeStringAttributeEffektif(String localPart, String value) {
     if (value!=null) {
-      xml.addAttribute(getQNameEffektif(localPart), value);
+      xml.addAttribute(EFFEKTIF_URI, localPart, value);
     } 
   }
   
   public void writeIdAttributeBpmn(String localPart, Id value) {
     if (value!=null) {
-      xml.addAttribute(getQNameBpmn(localPart), value.getInternal());
+      xml.addAttribute(BPMN_URI, localPart, value.getInternal());
     } 
   }
   
   public void writeIdAttributeEffektif(String localPart, Id value) {
     if (value!=null) {
-      xml.addAttribute(getQNameEffektif(localPart), value.getInternal());
+      xml.addAttribute(EFFEKTIF_URI, localPart, value.getInternal());
     } 
   }
 
   public void writeDateAttributeBpmn(String localPart, LocalDateTime value) {
     if (value!=null) {
-      xml.addAttribute(getQNameBpmn(localPart), DATE_FORMAT.print(value));
+      xml.addAttribute(BPMN_URI, localPart, DATE_FORMAT.print(value));
     } 
   }
   
   public void writeDateAttributeEffektif(String localPart, LocalDateTime value) {
     if (value!=null) {
-      xml.addAttribute(getQNameEffektif(localPart), DATE_FORMAT.print(value));
+      xml.addAttribute(EFFEKTIF_URI, localPart, DATE_FORMAT.print(value));
     } 
   }
 

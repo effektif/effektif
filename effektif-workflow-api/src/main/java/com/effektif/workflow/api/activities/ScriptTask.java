@@ -15,6 +15,14 @@
  */
 package com.effektif.workflow.api.activities;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Script;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -26,10 +34,55 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("scriptTask")
+@BpmnElement("scriptTask")
 public class ScriptTask extends NoneTask {
 
   protected Script script;
   
+  @Override
+  public void readBpmn(BpmnReader r) {
+    r.startExtensionElements();
+    script = new Script();
+    script.setLanguage(r.readTextEffektif("language"));
+    script.setScript(r.readTextEffektif("script"));
+    List<XmlElement> mappingElements = r.readElementsEffektif("mapping");
+    Map<String, String> mappings = null;
+    for (XmlElement mappingElement: mappingElements) {
+      r.startElement(mappingElement);
+      if (mappings==null) {
+        mappings = new HashMap<>();
+      }
+      String scriptVariableName = r.readStringAttributeEffektif("scriptVariableName");
+      String workflowVariableId = r.readStringAttributeEffektif("workflowVariableId");
+      mappings.put(scriptVariableName, workflowVariableId);
+      r.endElement();
+    }
+    script.setMappings(mappings);
+    r.endExtensionElements();
+    super.readBpmn(r);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    if (script!=null) {
+      w.startExtensionElements();
+      w.writeTextEffektif("language", script.getLanguage());
+      w.writeTextEffektif("script", script.getScript());
+      Map<String, String> mappings = script.getMappings();
+      if (mappings!=null) {
+        for (String scriptVariableName: mappings.keySet()) {
+          String workflowVariableId = mappings.get(scriptVariableName);
+          w.startElementEffektif("mapping");
+          w.writeStringAttributeEffektif("scriptVariableName", scriptVariableName);
+          w.writeStringAttributeEffektif("workflowVariableId", workflowVariableId);
+          w.endElement();
+        }
+      }
+      w.endExtensionElements();
+    }
+    super.writeBpmn(w);
+  }
+
   @Override
   public ScriptTask id(String id) {
     super.id(id);

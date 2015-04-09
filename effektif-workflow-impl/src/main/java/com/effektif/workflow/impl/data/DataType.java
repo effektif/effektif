@@ -41,11 +41,11 @@ public interface DataType<T extends Type> extends Plugin {
 
   String convertInternalToText(Object value, Hints hints);
 
-  /** Read the a binding value from the given XML element. */
-  Binding readValue(XmlElement value);
-
-  /** Write the given value as an attribute on the given XML element. */
-  void writeValue(XmlElement xml, Object value);
+//  /** Read the a binding value from the given XML element. */
+//  Binding readValue(XmlElement value);
+//
+//  /** Write the given value as an attribute on the given XML element. */
+//  void writeValue(XmlElement xml, Object value);
   
   /** The returned value is never null. */
   TypedValueImpl dereference(Object value, String field);

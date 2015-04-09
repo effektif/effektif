@@ -21,13 +21,11 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.types.GroupIdType;
 import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.CaseStore;
@@ -35,8 +33,6 @@ import com.effektif.workflow.impl.FormBindings;
 import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.data.types.UserIdTypeImpl;
 import com.effektif.workflow.impl.identity.Group;
 import com.effektif.workflow.impl.identity.IdentityService;
@@ -57,8 +53,6 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
  */
 public class UserTaskImpl extends AbstractActivityType<UserTask> {
   
-  private static final String BPMN_ELEMENT_NAME = "userTask";
-
   protected TaskStore taskStore;
   protected CaseStore caseStore;
   protected IdentityService identityService;
@@ -74,31 +68,6 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     super(UserTask.class);
   }
 
-  @Override
-  public UserTask readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-      return null;
-    }
-    UserTask task = new UserTask();
-
-    task.setTaskName(reader.readStringValue(xml, "taskName"));
-    task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
-    task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
-    task.setCandidateGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "candidate"));
-    task.setForm(reader.readForm(xml));
-    
-    return task;
-  }
-
-  @Override
-  public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeStringValue(xml, "taskName", task.getTaskName());
-    writer.writeBinding(xml, "assignee", task.getAssigneeId(), UserIdType.INSTANCE);
-    writer.writeBindings(xml, "candidate", (List) task.getCandidateIds(), UserIdType.INSTANCE);
-    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
-  }
-  
   @Override
   public void parse(ActivityImpl activityImpl, UserTask userTask, WorkflowParser parser) {
     super.parse(activityImpl, userTask, parser);

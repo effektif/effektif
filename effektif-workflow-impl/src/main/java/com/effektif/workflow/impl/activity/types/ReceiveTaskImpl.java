@@ -16,9 +16,7 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -27,8 +25,6 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class ReceiveTaskImpl extends AbstractActivityType<ReceiveTask> {
 
-  private static final String BPMN_ELEMENT_NAME = "receiveTask";
-
   public ReceiveTaskImpl() {
     super(ReceiveTask.class);
   }
@@ -36,11 +32,4 @@ public class ReceiveTaskImpl extends AbstractActivityType<ReceiveTask> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
   }
-
-  @Override
-  public void writeBpmn(ReceiveTask activity, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", activity.getId());
-  }
-
 }

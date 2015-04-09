@@ -16,11 +16,7 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.bpmn.ServiceTaskType;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -33,26 +29,8 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
 
-  private static final String BPMN_ELEMENT_NAME = "serviceTask";
-
   public JavaServiceTaskImpl() {
     super(JavaServiceTask.class);
-  }
-
-  @Override
-  public JavaServiceTask readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME) || !reader.hasServiceTaskType(xml, ServiceTaskType.JAVA)) {
-      return null;
-    }
-    JavaServiceTask task = new JavaServiceTask();
-    return task;
-  }
-
-  @Override
-  public void writeBpmn(JavaServiceTask task, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", task.getId());
-    writer.writeEffektifType(xml, ServiceTaskType.JAVA);
   }
 
   @Override

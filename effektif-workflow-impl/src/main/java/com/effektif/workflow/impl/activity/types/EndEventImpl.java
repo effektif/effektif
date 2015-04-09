@@ -16,10 +16,7 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -28,24 +25,8 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class EndEventImpl extends AbstractActivityType<EndEvent> {
 
-  private static final String BPMN_ELEMENT_NAME = "endEvent";
-
   public EndEventImpl() {
     super(EndEvent.class);
-  }
-
-  @Override
-  public EndEvent readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-      return null;
-    }
-    EndEvent event = new EndEvent();
-    return event;
-  }
-
-  @Override
-  public void writeBpmn(EndEvent event, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
   }
 
   @Override

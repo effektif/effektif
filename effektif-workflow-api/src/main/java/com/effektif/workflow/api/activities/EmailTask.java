@@ -75,41 +75,43 @@ public class EmailTask extends Activity {
   
   @Override
   public void readBpmn(BpmnReader r) {
+    r.startExtensionElements();
     fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
-    toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
-    toUserIds = r.readBindings("toUserIds", UserId.class);
-    toGroupIds = r.readBindings("toGroupIds", GroupId.class);
-    ccEmailAddresses = r.readBindings("ccEmailAddresses", String.class);
-    ccUserIds = r.readBindings("ccUserIds", UserId.class);
-    ccGroupIds = r.readBindings("ccGroupIds", GroupId.class);
-    bccEmailAddresses = r.readBindings("bccEmailAddresses", String.class);
-    bccUserIds = r.readBindings("bccUserIds", UserId.class);
-    bccGroupIds = r.readBindings("bccGroupIds", GroupId.class);
+    toEmailAddresses = r.readBindings("toEmailAddress", String.class);
+    toUserIds = r.readBindings("toUserId", UserId.class);
+    toGroupIds = r.readBindings("toGroupId", GroupId.class);
+    ccEmailAddresses = r.readBindings("ccEmailAddress", String.class);
+    ccUserIds = r.readBindings("ccUserId", UserId.class);
+    ccGroupIds = r.readBindings("ccGroupId", GroupId.class);
+    bccEmailAddresses = r.readBindings("bccEmailAddress", String.class);
+    bccUserIds = r.readBindings("bccUserId", UserId.class);
+    bccGroupIds = r.readBindings("bccGroupId", GroupId.class);
     subject = r.readTextEffektif("subject");
     bodyText = r.readTextEffektif("bodyText");
     bodyHtml = r.readTextEffektif("bodyHtml");
-    attachmentFileIds = r.readBindings("attachmentFileIds", FileId.class);
+    attachmentFileIds = r.readBindings("attachmentFileId", FileId.class);
+    r.endExtensionElements();
     super.readBpmn(r);
   }
-
+  
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.startExtensionElements();
     w.writeBinding("fromEmailAddress", fromEmailAddress);
-    w.writeBindings("toEmailAddresses", toEmailAddresses);
-    w.writeBindings("toUserIds", toUserIds);
-    w.writeBindings("toGroupIds", toGroupIds);
-    w.writeBindings("ccEmailAddresses", ccEmailAddresses);
-    w.writeBindings("ccUserIds", ccUserIds);
-    w.writeBindings("ccGroupIds", ccGroupIds);
-    w.writeBindings("bccEmailAddresses", bccEmailAddresses);
-    w.writeBindings("bccUserIds", bccUserIds);
-    w.writeBindings("bccGroupIds", bccGroupIds);
+    w.writeBindings("toEmailAddress", toEmailAddresses);
+    w.writeBindings("toUserId", toUserIds);
+    w.writeBindings("toGroupId", toGroupIds);
+    w.writeBindings("ccEmailAddress", ccEmailAddresses);
+    w.writeBindings("ccUserId", ccUserIds);
+    w.writeBindings("ccGroupId", ccGroupIds);
+    w.writeBindings("bccEmailAddress", bccEmailAddresses);
+    w.writeBindings("bccUserId", bccUserIds);
+    w.writeBindings("bccGroupId", bccGroupIds);
     w.writeTextEffektif("subject", subject);
     w.writeTextEffektif("bodyText", bodyText);
     w.writeTextEffektif("bodyHtml", bodyHtml);
-    w.writeBindings("attachmentFileIds", attachmentFileIds);
+    w.writeBindings("attachmentFileId", attachmentFileIds);
     w.endExtensionElements();
   }
 

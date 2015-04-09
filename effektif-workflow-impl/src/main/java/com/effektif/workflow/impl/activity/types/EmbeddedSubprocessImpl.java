@@ -32,27 +32,10 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubprocess> {
 
-  private static final String BPMN_ELEMENT_NAME = "subProcess";
-
   protected List<ActivityImpl> startActivities;
   
   public EmbeddedSubprocessImpl() {
     super(EmbeddedSubprocess.class);
-  }
-
-  @Override
-  public EmbeddedSubprocess readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-      return null;
-    }
-    EmbeddedSubprocess activity = new EmbeddedSubprocess();
-    return activity;
-  }
-
-  @Override
-  public void writeBpmn(EmbeddedSubprocess activity, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", activity.getId());
   }
 
   @Override

@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -25,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("javaServiceTask")
+@BpmnElement("serviceTask")
+@BpmnTypeAttribute(attribute="type", value="java")
 public class JavaServiceTask extends ServiceTask {
 
 }

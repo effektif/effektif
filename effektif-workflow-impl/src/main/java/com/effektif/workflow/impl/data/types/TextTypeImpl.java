@@ -42,17 +42,4 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
     }
     throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getSimpleName());
   }
-
-  @Override
-  public Binding readValue(XmlElement xml) {
-    String value = readStringValue(xml, "value");
-    return value == null ? null : new Binding().value(value);
-  }
-
-  @Override
-  public void writeValue(XmlElement xml, Object value) {
-    if (value != null) {
-      xml.addAttribute("value", value.toString());
-    }
-  }
 }

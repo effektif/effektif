@@ -26,6 +26,7 @@ import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
 import com.effektif.workflow.impl.mapper.deprecated.TypeField;
 
@@ -107,11 +108,10 @@ public class Mappings {
     for (String localPart: bpmnTypeAttributes.keySet()) {
       String typeValue = bpmnTypeAttributes.get(localPart);
       // get the attribute value in the xml element
-      String attributeName = bpmnReaderImpl.getQNameEffektif(localPart);
-      String xmlValue = xmlElement.getAttribute(attributeName);
+      String xmlValue = xmlElement.getAttribute(Bpmn.EFFEKTIF_URI, localPart);
       if (typeValue.equals(xmlValue)) {
         // only if there is a match we read (==remove) the the attribute from the xml element
-        xmlElement.removeAttribute(attributeName);
+        xmlElement.removeAttribute(Bpmn.EFFEKTIF_URI, localPart);
         return true;
       }
     }

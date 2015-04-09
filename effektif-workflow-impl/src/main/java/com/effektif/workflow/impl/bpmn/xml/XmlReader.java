@@ -59,51 +59,49 @@ public class XmlReader {
           StartDocument startDocument = (StartDocument) xmlEvent;
         } else */
         
+        XmlElement parent = !elementStack.isEmpty() ? elementStack.peek() : null;
         if (xmlEvent.isStartElement()){
           StartElement startElement = (StartElement)xmlEvent;
-          XmlElement xmlElement = readXmlElement(startElement);
-          if (elementStack.isEmpty()) {
+          
+          // create the xml element
+          XmlElement xmlElement = new XmlElement();
+          if (parent==null) {
             root = xmlElement;
           } else {
-            elementStack.peek().addElement(xmlElement);
+            // establish parent-child relation
+            parent.addElement(xmlElement);
+            xmlElement.parent = parent;
           }
+
+          // initialize namespaces
+          Iterator namespaces = startElement.getNamespaces();
+          while (namespaces.hasNext()) {
+            Namespace namespace = (Namespace) namespaces.next();
+            xmlElement.addNamespace(namespace.getNamespaceURI(), namespace.getPrefix());
+          }
+
+          // set the name (depends on the namespaces being initialized)
+          QName qname = startElement.getName();
+          xmlElement.setName(qname.getNamespaceURI(), qname.getLocalPart());
+          
+          // set the attributes (depends on the namespaces being initialized)
+          Iterator attributes = startElement.getAttributes();
+          while (attributes.hasNext()) {
+            Attribute attribute = (Attribute) attributes.next();
+            QName attributeQname = attribute.getName();
+            xmlElement.addAttribute(attributeQname.getNamespaceURI(), attributeQname.getLocalPart(), attribute.getValue());
+          }
+
           elementStack.push(xmlElement);
         } else if (xmlEvent.isEndElement()){
           elementStack.pop();
         } else if (xmlEvent.isCharacters()){
-          elementStack.peek().addText(xmlEvent.asCharacters().getData()); 
+          parent.addText(xmlEvent.asCharacters().getData()); 
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException("XML parsing error: "+e.getMessage());
+      throw new RuntimeException("XML parsing error: "+e.getMessage(), e);
     }
     return root;
-  }
-
-  private XmlElement readXmlElement(StartElement startElement) {
-    XmlElement xmlElement = new XmlElement();
-    xmlElement.name = toString(startElement.getName());
-    Iterator namespaces = startElement.getNamespaces();
-    while (namespaces.hasNext()) {
-      Namespace namespace = (Namespace) namespaces.next();
-      xmlElement.addNamespace(namespace.getNamespaceURI(), namespace.getPrefix());
-    }
-    Iterator attributes = startElement.getAttributes();
-    while (attributes.hasNext()) {
-      Attribute attribute = (Attribute) attributes.next();
-      xmlElement.addAttribute(toString(attribute.getName()), attribute.getValue());
-    }
-    return xmlElement;
-  }
-  
-  public static String toString(QName qname) {
-    if (qname==null) {
-      return null;
-    }
-    String prefix = qname.getPrefix();
-    if (prefix!=null && !"".equals(qname.getPrefix())) {
-      return prefix+":"+qname.getLocalPart();
-    }
-    return qname.getLocalPart();
   }
 }

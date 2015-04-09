@@ -70,17 +70,4 @@ public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
     }
     return userTypeImpl.dereference(user, fieldName);
   }
-
-  @Override
-  public Binding readValue(XmlElement xml) {
-    String value = readStringValue(xml, "userId");
-    return value == null ? null : new Binding().value(new UserId(value));
-  }
-
-  @Override
-  public void writeValue(XmlElement xml, Object value) {
-    if (value != null) {
-      xml.addAttribute("userId", value.toString());
-    }
-  }
 }

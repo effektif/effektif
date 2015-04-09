@@ -206,7 +206,7 @@ public class DocumentationExamplesTest extends TestCase {
     printJson(activity);
 
     Workflow workflow = new Workflow().activity(activity);
-    System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
+    // System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
   }
 
   private void print(Form form) {

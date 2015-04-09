@@ -17,6 +17,7 @@ import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -90,7 +91,7 @@ public class BpmnReaderImpl implements BpmnReader {
       Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
       while (iterator.hasNext()) {
         XmlElement definitionElement = iterator.next();
-        if (definitionElement.is(getQName(BPMN_URI, "process")) && workflow == null) {
+        if (definitionElement.is(BPMN_URI, "process") && workflow == null) {
           iterator.remove();
           workflow = readWorkflow(definitionElement);
         }
@@ -129,7 +130,7 @@ public class BpmnReaderImpl implements BpmnReader {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
         // Check if the XML element can be parsed as a sequenceFlow.
-        if (scopeElement.is(getQName(BPMN_URI, "sequenceFlow"))) {
+        if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
           scope.transition(transition);
@@ -162,27 +163,18 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public List<XmlElement> readElementsBpmn(String localPart) {
-    return readElements(getQNameBpmn(localPart));
+    if (xml==null) {
+      return Collections.EMPTY_LIST;
+    }
+    return xml.removeElements(BPMN_URI, localPart);
   }
   
   @Override
   public List<XmlElement> readElementsEffektif(String localPart) {
-    return readElements(getQNameEffektif(localPart));
-  }
-  
-  public List<XmlElement> readElements(String elementName) {
-    List<XmlElement> elements = new ArrayList<>();
-    if (xml.getElements()!=null) {
-      Iterator<XmlElement> iterator = xml.getElements().iterator();
-      while (iterator.hasNext()) {
-        XmlElement xmlElement = iterator.next();
-        if (elementName.equals(xmlElement.getName())) {
-          iterator.remove();
-          elements.add(xmlElement);
-        }
-      }
+    if (xml==null) {
+      return Collections.EMPTY_LIST;
     }
-    return elements;
+    return xml.removeElements(EFFEKTIF_URI, localPart);
   }
   
   @Override
@@ -209,25 +201,25 @@ public class BpmnReaderImpl implements BpmnReader {
     this.scope = scopeStack.pop();
   }
   
-  @Override
-  public String getQNameBpmn(String localPart) {
-    return getQName(BPMN_URI, localPart);
-  }
-  
-  @Override
-  public String getQNameEffektif(String localPart) {
-    return getQName(EFFEKTIF_URI, localPart);
-  }
-  
-  public String getQName(String namespaceUri, String localName) {
-    String prefix = prefixes.get(namespaceUri);
-    return "".equals(prefix) ? localName : prefix + ":" + localName;
-  }
+//  @Override
+//  public String getQNameBpmn(String localPart) {
+//    return getQName(BPMN_URI, localPart);
+//  }
+//  
+//  @Override
+//  public String getQNameEffektif(String localPart) {
+//    return getQName(EFFEKTIF_URI, localPart);
+//  }
+//  
+//  public String getQName(String namespaceUri, String localName) {
+//    String prefix = prefixes.get(namespaceUri);
+//    return "".equals(prefix) ? localName : prefix + ":" + localName;
+//  }
   
   @Override
   public void startExtensionElements() {
-    List<XmlElement> elements = readElementsBpmn("extensionElements");
-    startElement(!elements.isEmpty() ? elements.get(0) : null);
+    XmlElement extensionsXmlElement = xml.getElement(BPMN_URI, "extensionElements");
+    startElement(extensionsXmlElement);
   }
 
   @Override
@@ -237,28 +229,43 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public String readStringAttributeBpmn(String localPart) {
-    return xml.removeAttribute(getQNameBpmn(localPart));
+    if (xml==null) {
+      return null;
+    }
+    return xml.removeAttribute(BPMN_URI, localPart);
   }
 
   @Override
   public String readStringAttributeEffektif(String localPart) {
-    return xml.removeAttribute(getQNameEffektif(localPart));
+    if (xml==null) {
+      return null;
+    }
+    return xml.removeAttribute(EFFEKTIF_URI, localPart);
   }
 
   @Override
   public <T extends Id> T readIdAttributeBpmn(String localPart, Class<T> idType) {
+    if (xml==null) {
+      return null;
+    }
     return AbstractReader.createId(readStringAttributeBpmn(localPart), idType);
   }
 
   @Override
   public <T extends Id> T readIdAttributeEffektif(String localPart, Class<T> idType) {
+    if (xml==null) {
+      return null;
+    }
     return AbstractReader.createId(readStringAttributeEffektif(localPart), idType);
   }
 
   /** Returns a binding from the first extension element with the given name. */
   @Override
-  public <T> Binding<T> readBinding(String elementName, Class<T>  type) {
-    List<Binding<T>> bindings = readBindings(elementName, type);
+  public <T> Binding<T> readBinding(String localPart, Class<T>  type) {
+    if (xml==null) {
+      return null;
+    }
+    List<Binding<T>> bindings = readBindings(localPart, type);
     if (bindings.isEmpty()) {
       return new Binding<T>();
     } else {
@@ -268,24 +275,22 @@ public class BpmnReaderImpl implements BpmnReader {
 
   /** Returns a list of bindings from the extension elements with the given name. */
   @Override
-  public <T> List<Binding<T>> readBindings(String elementName, Class<T> type) {
+  public <T> List<Binding<T>> readBindings(String localPart, Class<T> type) {
+    if (xml==null) {
+      return null;
+    }
     List<Binding<T>> bindings = new ArrayList<>();
-    if (xml.elements!=null) {
-      Iterator<XmlElement> iterator = xml.elements.iterator();
-      while (iterator.hasNext()) {
-        XmlElement element = iterator.next();
-        if (element.is(getQName(EFFEKTIF_URI, elementName))) {
-          Binding<T> binding = new Binding<T>();
-          String value = element.getAttribute(getQNameEffektif("value"));
-          binding.setValue(readAttributeValue(value, type));
-          iterator.remove();
-        }
-      }
+    for (XmlElement element: xml.removeElements(EFFEKTIF_URI, localPart)) {
+      Binding<T> binding = new Binding<T>();
+      String value = element.getAttribute(EFFEKTIF_URI, "value");
+      binding.setValue(parseText(value, type));
+      binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
+      bindings.add(binding);
     }
     return bindings;
   }
   
-  protected <T> T readAttributeValue(String value, Class<T> type) {
+  protected <T> T parseText(String value, Class<T> type) {
     if (value==null) {
       return null;
     }
@@ -314,15 +319,12 @@ public class BpmnReaderImpl implements BpmnReader {
   /** Returns the contents of the BPMN <code>documentation</code> element. */
   @Override
   public String readDocumentation() {
-    if (xml.elements!=null) {
-      Iterator<XmlElement> elements = xml.elements.iterator();
-      while (elements.hasNext()) {
-        XmlElement element = elements.next();
-        if (element.is(getQName(BPMN_URI, "documentation"))) {
-          elements.remove();
-          return element.text;
-        }
-      }
+    if (xml==null) {
+      return null;
+    }
+    XmlElement documentationElement = xml.removeElement(BPMN_URI, "documentation");
+    if (documentationElement!=null) {
+      return documentationElement.getText();
     }
     return null;
   }
@@ -338,15 +340,9 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public String readTextEffektif(String localPart) {
-    if (xml.elements!=null) {
-      Iterator<XmlElement> iterator = xml.elements.iterator();
-      while (iterator.hasNext()) {
-        XmlElement element = iterator.next();
-        if (element.is(getQName(EFFEKTIF_URI, localPart))) {
-          iterator.remove();
-          return element.getText();
-        }
-      }
+    XmlElement textElement = xml!=null ? xml.removeElement(EFFEKTIF_URI, localPart) : null;
+    if (textElement!=null) {
+      return textElement.getText();
     }
     return null;
   }

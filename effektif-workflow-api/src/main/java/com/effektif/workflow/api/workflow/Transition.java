@@ -47,15 +47,15 @@ public class Transition extends Element {
   public void readBpmn(BpmnReader r) {
     id = r.readStringAttributeBpmn("id");
     from = r.readStringAttributeBpmn("sourceRef");
-    to = r.readStringAttributeBpmn("destinationRef");
+    to = r.readStringAttributeBpmn("targetRef");
     super.readBpmn(r);
   }
-
+  
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.writeStringAttributeBpmn("id", id);
     w.writeStringAttributeBpmn("sourceRef", from);
-    w.writeStringAttributeBpmn("destinationRef", to);
+    w.writeStringAttributeBpmn("targetRef", to);
     super.writeBpmn(w);
   }
 

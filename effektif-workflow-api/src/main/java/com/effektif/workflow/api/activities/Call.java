@@ -21,6 +21,7 @@ import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
@@ -43,7 +44,7 @@ public class Call extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
   protected String subWorkflowSource;
-  
+
   @Override
   public void readBpmn(BpmnReader r) {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
@@ -53,9 +54,9 @@ public class Call extends AbstractBindableActivity {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
     w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
-    super.writeBpmn(w);
   }
 
   @Override

@@ -28,15 +28,11 @@ public interface BpmnReader {
 
   List<XmlElement> readElementsBpmn(String localPart);
   List<XmlElement> readElementsEffektif(String localPart);
-  List<XmlElement> readElements(String elementName);
   void startElement(XmlElement xmlElement);
   void endElement();
   
   void startExtensionElements();
   void endExtensionElements();
-  
-  String getQNameBpmn(String localPart);
-  String getQNameEffektif(String localPart);
   
   void readScope();
 

@@ -100,9 +100,6 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return value!=null ? value.toString() : null;
   }
 
-  @Override
-  public Binding readValue(XmlElement xml) { return null; }
-
   /**
    * Returns a <code>String</code> binding with the value read from the attribute with the given name.
    */
@@ -112,10 +109,6 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     }
     return xml.attributes.get(attributeName);
   }
-
-  @Override
-  public void writeValue(XmlElement xml, Object value) { }
-
   
   public T getType() {
     return type;

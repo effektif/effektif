@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 
 import junit.framework.TestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
@@ -40,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 /**
  * @author Tom Baeyens
  */
+@Ignore
 public class BpmnTest extends TestCase {
 
   private static Configuration configuration;
@@ -67,23 +69,23 @@ public class BpmnTest extends TestCase {
       for (File file : directory.listFiles()) {
         // System.err.println("scanning "+file.getCanonicalPath());
         if (file.isFile() && file.getName().endsWith(".bpmn.xml")) {
-          byte[] encoded = Files.readAllBytes(Paths.get(file.getPath()));
-          String bpmnXmlString = new String(encoded, StandardCharsets.UTF_8);
-          System.err.println("=== SOURCE " + file.getPath()+" ========================================== ");
-          System.err.println(bpmnXmlString);
-          BpmnReader bpmnReader = new BpmnReader(configuration);
-          Workflow workflow = bpmnReader.readBpmnDocument(new StringReader(bpmnXmlString));
-          
-          System.err.println("--- JSON " + file.getPath()+" ------------------------------------------ ");
-          ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
-          String workflowJsonString = writer.writeValueAsString(workflow);
-          System.err.println(workflowJsonString);
-          workflow = objectMapper.readValue(workflowJsonString, Workflow.class);
-          
-          System.err.println("--- BPMN " + file.getPath()+" ------------------------------------------ ");
-          System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
-          System.err.println();
-          System.err.println();
+//          byte[] encoded = Files.readAllBytes(Paths.get(file.getPath()));
+//          String bpmnXmlString = new String(encoded, StandardCharsets.UTF_8);
+//          System.err.println("=== SOURCE " + file.getPath()+" ========================================== ");
+//          System.err.println(bpmnXmlString);
+//          BpmnReader bpmnReader = new BpmnReader(configuration);
+//          Workflow workflow = bpmnReader.readBpmnDocument(new StringReader(bpmnXmlString));
+//          
+//          System.err.println("--- JSON " + file.getPath()+" ------------------------------------------ ");
+//          ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+//          String workflowJsonString = writer.writeValueAsString(workflow);
+//          System.err.println(workflowJsonString);
+//          workflow = objectMapper.readValue(workflowJsonString, Workflow.class);
+//          
+//          System.err.println("--- BPMN " + file.getPath()+" ------------------------------------------ ");
+//          System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
+//          System.err.println();
+//          System.err.println();
         } else if (file.isDirectory()) {
           scan(file);
         }
@@ -97,17 +99,17 @@ public class BpmnTest extends TestCase {
   
   @Test
   public void testBpmnSerializationFromNewWorkflow() throws Exception {
-    TestConfiguration testConfiguration = new TestConfiguration();
-    testConfiguration.getWorkflowEngine(); // to ensure initialization of the object mapper
-    ActivityTypeService activityTypeService = testConfiguration.get(ActivityTypeService.class);
-
-    Workflow workflow = new Workflow()
-      .activity("s", new StartEvent()
-        .transitionTo("t"))
-      .activity("t", new UserTask()
-        .transitionTo("e"))
-      .activity("e", new EndEvent());
-
-    System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
+//    TestConfiguration testConfiguration = new TestConfiguration();
+//    testConfiguration.getWorkflowEngine(); // to ensure initialization of the object mapper
+//    ActivityTypeService activityTypeService = testConfiguration.get(ActivityTypeService.class);
+//
+//    Workflow workflow = new Workflow()
+//      .activity("s", new StartEvent()
+//        .transitionTo("t"))
+//      .activity("t", new UserTask()
+//        .transitionTo("e"))
+//      .activity("e", new EndEvent());
+//
+//    System.err.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
   }
 }

@@ -73,18 +73,4 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
     }
     return fileTypeImpl.dereference(file, fieldName);
   }
-
-  @Override
-  public Binding readValue(XmlElement xml) {
-    Exceptions.checkNotNullParameter(xml, "xml");
-    String value = xml.attributes.get("fileId");
-    return value == null ? null : new Binding().value(new FileId(value.toString()));
-  }
-
-  @Override
-  public void writeValue(XmlElement xml, Object value) {
-    if (value != null) {
-      xml.addAttribute("fileId", value.toString());
-    }
-  }
 }

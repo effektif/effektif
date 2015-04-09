@@ -18,20 +18,15 @@ package com.effektif.workflow.impl.workflow;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class TransitionImpl implements BpmnModel<Transition> {
-
-  private static final String BPMN_ELEMENT_NAME = "sequenceFlow";
+public class TransitionImpl {
 
   public String id;
   public ScopeImpl parent;
@@ -41,35 +36,6 @@ public class TransitionImpl implements BpmnModel<Transition> {
   public ActivityImpl from;
   public ActivityImpl to;
   public ConditionImpl condition;
-
-//  public Transition serialize() {
-//    Transition transition = new Transition();
-//    if (from!=null) transition.setFrom(from.id);
-//    if (to!=null) transition.setFrom(to.id);
-//    transition.setCondition(conditionScript);
-//    return transition;
-//  }
-
-  @Override
-  public Transition readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-      return null;
-    }
-    Transition transition = new Transition();
-    transition.id(reader.readBpmnAttribute(xml, "id"));
-    transition.setName(reader.readBpmnAttribute(xml, "name"));
-    transition.setFrom(reader.readBpmnAttribute(xml, "sourceRef"));
-    transition.setTo(reader.readBpmnAttribute(xml, "targetRef"));
-    return transition;
-  }
-
-  @Override
-  public void writeBpmn(Transition transition, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-    writer.writeBpmnAttribute(xml, "id", transition.getId());
-    writer.writeBpmnAttribute(xml, "sourceRef", transition.getFrom());
-    writer.writeBpmnAttribute(xml, "targetRef", transition.getTo());
-  }
 
   public void parse(Transition transition, ScopeImpl parentImpl, Map<String, ActivityImpl> activitiesByDefaultTransitionId, WorkflowParser parser) {
     this.id = transition.getId();

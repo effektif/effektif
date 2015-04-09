@@ -54,6 +54,9 @@ public class MongoJsonWriter extends AbstractWriter {
   }
 
   public Object toDbObject(Object o) {
+    if (o==null) {
+      return null;
+    }
     Class<?> type = o.getClass();
     if (o==null
         || (String.class.isAssignableFrom(type))
@@ -217,32 +220,31 @@ public class MongoJsonWriter extends AbstractWriter {
     if (bindings==null || bindings.isEmpty()) {
       return;
     }
-    BasicDBList dbList = new BasicDBList();
+    BasicDBList dbBindings = new BasicDBList();
     for (Binding<T> binding: bindings) {
-      dbList.add(toDbObject(binding));
+      BasicDBObject dbBinding = toDbObject(binding);
+      dbBindings.add(dbBinding);
     }
-    dbObject.put(fieldName, dbList);
+    dbObject.put(fieldName, dbBindings);
   }
 
   @Override
   public <T> void writeBinding(String fieldName, Binding<T> binding) {
     if (binding!=null) {
-      dbObject.put(fieldName, toDbObject(binding));
+      BasicDBObject dbBinding = toDbObject(binding);
+      dbObject.put(fieldName, dbBinding);
     }
   }
 
-  public <T> Object toDbObject(Binding<T> binding, Class<T> type) {
-    if (binding==null) {
-      return null;
-    }
+  protected <T> BasicDBObject toDbObject(Binding<T> binding) {
     BasicDBObject dbBinding = new BasicDBObject();
-    if (binding.getValue()!=null) {
-      dbBinding.put("value", toDbObject(binding.getValue()));
+    Object value = toDbObject(binding.getValue());
+    if (value!=null) {
+      dbBinding.put("value", value);
     }
     if (binding.getExpression()!=null) {
       dbBinding.put("expression", binding.getExpression());
     }
     return dbBinding;
   }
-
 }

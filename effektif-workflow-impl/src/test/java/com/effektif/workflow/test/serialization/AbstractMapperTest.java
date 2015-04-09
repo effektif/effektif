@@ -43,8 +43,6 @@ public abstract class AbstractMapperTest {
     mappings.registerSubClass(StartEvent.class);
     mappings.registerSubClass(Call.class);
     mappings.registerSubClass(EmailTask.class);
-    
-    // mappings.registerBpmnMappable(bpmnMappableType);
   }
 
   @Test
@@ -69,8 +67,10 @@ public abstract class AbstractMapperTest {
       .subWorkflowName("Run tests")
       .subWorkflowId(new WorkflowId("551d4f5803649532d21f223f"));
     activity.setSubWorkflowSource("releaseTests");
+    
     activity = serialize(activity);
     
+    assertEquals(new WorkflowId("551d4f5803649532d21f223f"), activity.getSubWorkflowId());
     assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 

@@ -28,16 +28,13 @@ import com.effektif.workflow.api.workflow.Binding;
 public interface BpmnWriter {
 
   void startElementBpmn(String localPart);
-  void startElementBpmn(String localPart, boolean asFirst);
+  void startElementBpmn(String localPart, Integer index);
   void startElementEffektif(String localPart);
-  void startElementEffektif(String localPart, boolean asFirst);
+  void startElementEffektif(String localPart, Integer index);
   void endElement();
   
   void startExtensionElements();
   void endExtensionElements();
-  
-  String getQNameBpmn(String localPart);
-  String getQNameEffektif(String localPart);
   
   void writeScope();
 

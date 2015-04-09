@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -26,6 +27,23 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("embeddedSubprocess")
+@BpmnElement("subProcess")
 public class EmbeddedSubprocess extends Activity {
+
+//  @Override
+//  public EmbeddedSubprocess readBpmn(XmlElement xml, BpmnReader reader) {
+//    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
+//      return null;
+//    }
+//    EmbeddedSubprocess activity = new EmbeddedSubprocess();
+//    return activity;
+//  }
+//
+//  @Override
+//  public void writeBpmn(EmbeddedSubprocess activity, XmlElement xml, BpmnWriter writer) {
+//    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
+//    writer.writeBpmnAttribute(xml, "id", activity.getId());
+//  }
+
 
 }

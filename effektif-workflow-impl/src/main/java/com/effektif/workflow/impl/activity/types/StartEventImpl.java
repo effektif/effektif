@@ -16,10 +16,7 @@
 package com.effektif.workflow.impl.activity.types;
 
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -28,26 +25,10 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  */
 public class StartEventImpl extends AbstractActivityType<StartEvent> {
 
-  private static final String BPMN_ELEMENT_NAME = "startEvent";
-
   public StartEventImpl() {
     super(StartEvent.class);
   }
   
-  @Override
-  public StartEvent readBpmn(XmlElement xml, BpmnReader reader) {
-    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-      return null;
-    }
-    StartEvent event = new StartEvent();
-    return event;
-  }
-
-  @Override
-  public void writeBpmn(StartEvent event, XmlElement xml, BpmnWriter writer) {
-    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-  }
-
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     activityInstance.onwards();

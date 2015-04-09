@@ -83,10 +83,10 @@ public class XmlWriter {
         }
       }
       if (xmlElement.namespaces!=null) {
-        for (String prefix: xmlElement.namespaces.keySet()) {
-          String uri = xmlElement.namespaces.get(prefix);
+        for (String uri: xmlElement.namespaces.keySet()) {
+          String prefix = xmlElement.namespaces.get(uri);
           writer.write(' ');
-          if ("".equals(prefix)) {
+          if (prefix==null) {
             writer.write("xmlns");
           } else {
             writer.write("xmlns:");
