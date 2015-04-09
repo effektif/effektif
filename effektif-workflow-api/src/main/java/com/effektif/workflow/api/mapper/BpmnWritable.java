@@ -14,7 +14,8 @@
 package com.effektif.workflow.api.mapper;
 
 
-/**
+/** indicates a class can serialize it's state into a BPMN format.
+ * 
  * @author Tom Baeyens
  */
 public interface BpmnWritable {

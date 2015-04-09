@@ -56,13 +56,13 @@ public abstract class Element extends Extensible implements BpmnReadable, BpmnWr
   }
   
   @Override
-  public void readFields(JsonReader r) {
-    super.readFields(r);
+  public void readJson(JsonReader r) {
+    super.readJson(r);
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
-    super.writeFields(w);
+  public void writeJson(JsonWriter w) {
+    super.writeJson(w);
   }
 
   /** human readable label used when visually displaying the element.

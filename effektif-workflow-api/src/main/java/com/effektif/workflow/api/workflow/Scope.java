@@ -48,15 +48,15 @@ public abstract class Scope extends Element {
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
     w.writeList("activities", activities);
-    super.writeFields(w);
+    super.writeJson(w);
   }
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     activities =  r.readList("activities", Activity.class);
-    super.readFields(r);
+    super.readJson(r);
   }
 
   public List<Activity> getActivities() {

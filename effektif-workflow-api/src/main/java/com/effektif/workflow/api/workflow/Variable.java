@@ -31,7 +31,7 @@ public class Variable extends Element {
   }
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
   }
 
   public String getId() {

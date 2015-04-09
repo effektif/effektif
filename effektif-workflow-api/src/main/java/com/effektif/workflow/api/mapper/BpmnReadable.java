@@ -14,7 +14,8 @@
 package com.effektif.workflow.api.mapper;
 
 
-/**
+/** indicates a class can deserialize it's state from a BPMN source.
+ * 
  * @author Tom Baeyens
  */
 public interface BpmnReadable {

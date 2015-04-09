@@ -66,13 +66,13 @@ public class Workflow extends AbstractWorkflow {
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
-    super.writeFields(w);
+  public void writeJson(JsonWriter w) {
+    super.writeJson(w);
   }
   
   @Override
-  public void readFields(JsonReader r) {
-    super.readFields(r);
+  public void readJson(JsonReader r) {
+    super.readJson(r);
   }
 
   /** refers to the id in the source (or authoring) form of this workflow.

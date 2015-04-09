@@ -14,11 +14,15 @@
 package com.effektif.workflow.api.mapper;
 
 
-/**
+/** indicates a class can be serialized to json.
+ * 
+ * This abstraction allows to map api objects to different 
+ * json technologies like eg Jackson and MongoDB's json model.  
+ * 
  * @author Tom Baeyens
  */
 public interface JsonWritable {
 
-  void writeFields(JsonWriter w);
+  void writeJson(JsonWriter w);
 
 }

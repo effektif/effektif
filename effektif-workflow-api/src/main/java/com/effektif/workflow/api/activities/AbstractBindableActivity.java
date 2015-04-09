@@ -34,17 +34,17 @@ public class AbstractBindableActivity extends Activity {
   protected Map<String,String> outputBindings;
   
   @Override
-  public void writeFields(JsonWriter w) {
-    super.writeFields(w);
+  public void writeJson(JsonWriter w) {
+    super.writeJson(w);
     w.writeMap("inputBindings", inputBindings);
     w.writeMap("outputBindings", outputBindings);
   }
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     inputBindings = r.readMap("inputBindings", Binding.class);
     outputBindings = r.readMap("outputBindings", String.class);
-    super.readFields(r);
+    super.readJson(r);
   }
   
   /** copies the static value to the adapter activity when it is invoked,

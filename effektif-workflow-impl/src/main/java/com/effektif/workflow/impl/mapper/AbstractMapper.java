@@ -14,7 +14,8 @@
 package com.effektif.workflow.impl.mapper;
 
 
-/**
+/** a mapper is an object that can read and write API objects.
+ * 
  * @author Tom Baeyens
  */
 public abstract class AbstractMapper<R,W> {

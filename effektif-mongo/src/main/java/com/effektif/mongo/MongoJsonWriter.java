@@ -96,7 +96,7 @@ public class MongoJsonWriter extends AbstractWriter {
     BasicDBObject parentDbObject = dbObject;
     dbObject = new BasicDBObject();
     mappings.writeTypeField(this, o);
-    o.writeFields(this);
+    o.writeJson(this);
     BasicDBObject newDbObject = dbObject;
     dbObject = parentDbObject;
     return newDbObject;

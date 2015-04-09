@@ -52,7 +52,7 @@ public abstract class AbstractReader implements JsonReader {
     try {
       Class<T> concreteType = mappings.getConcreteClass(jsonObject, type);
       T o = concreteType.newInstance();
-      o.readFields(this);
+      o.readJson(this);
       return o;
       
     } catch (InstantiationException | IllegalAccessException e) {

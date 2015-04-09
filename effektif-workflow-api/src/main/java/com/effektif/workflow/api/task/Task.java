@@ -130,7 +130,7 @@ public class Task extends Extensible implements AccessControlledObject {
   }
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
     // TODO
   }
   

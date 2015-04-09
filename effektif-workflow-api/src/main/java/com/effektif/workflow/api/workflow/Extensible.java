@@ -43,12 +43,12 @@ public abstract class Extensible implements JsonWritable, JsonReadable {
   protected Map<String,Object> properties;
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     // properties = r.readOtherProperties();
   }
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
     // w.writeFields(properties);
   }
 

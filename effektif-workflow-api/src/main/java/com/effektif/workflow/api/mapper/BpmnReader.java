@@ -21,19 +21,58 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/**
+/** an abstraction that allows {@link BpmnReadable}s to read 
+ * their internal data from any BPMN reader.
+ * 
+ * The goal is to make it easy to implement BPMN (de)serialization 
+ * by offering an API that is similar to the JSON abstractions.
+ * 
+ * The methods in this BPMN reader apply to the current element.
+ * 
  * @author Tom Baeyens
  */
 public interface BpmnReader {
 
+  /** extracts and removes elements in the BPMN namespace from the current element.
+   * Typical use:
+   * <pre>
+   * for (XmlElement nestedElement: r.readElementsBpmn("nested")) {
+   *   r.startElement(nestedElement);
+   *   ... read stuff from the nested elements with the r.readXxxx methods ...
+   *   r.endElement(nestedElement);
+   * }
+   * </pre> 
+   */
   List<XmlElement> readElementsBpmn(String localPart);
+
+  /** extracts and removes elements in the Effektif namespace from the current element.
+   * Typical use:
+   * <pre>
+   * for (XmlElement nestedElement: r.readElementsBpmn("nested")) {
+   *   r.startElement(nestedElement);
+   *   ... read stuff from the nested elements with the r.readXxxx methods ...
+   *   r.endElement(nestedElement);
+   * }
+   * </pre> 
+   */
   List<XmlElement> readElementsEffektif(String localPart);
+
+  /** set the current element on which the other readXxxx methods apply.
+   * Always ensure there is a matching endElement() called afterwards.*/
   void startElement(XmlElement xmlElement);
+  /** restores the previous element as the current element on which the other readXxxx methods apply.
+   * This should be matching an earlier startElement(XmlElement).*/
   void endElement();
   
+  /** set the BPMN extensionsElements as the current element on which the other readXxxx methods apply.
+   * Always ensure there is a matching endExtensionElements() called afterwards.*/
   void startExtensionElements();
+  /** restores the previous element as the current element on which the other readXxxx methods apply.
+   * This should be matching an earlier startExtensionElements().*/
   void endExtensionElements();
   
+  /** reads all scope information like nested activities (flowNodes), transitions (sequenceFlows)
+   * variables and timers.*/
   void readScope();
 
   /** Reads a binding like
@@ -65,5 +104,6 @@ public interface BpmnReader {
   /** Reads a string as content text in the current xml element */
   String readTextEffektif(String localPart);
   
+  /** TODO */
   XmlElement getUnparsedXml();
 }

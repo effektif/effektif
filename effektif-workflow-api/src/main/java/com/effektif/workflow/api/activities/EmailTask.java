@@ -116,8 +116,8 @@ public class EmailTask extends Activity {
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
-    super.writeFields(w);
+  public void writeJson(JsonWriter w) {
+    super.writeJson(w);
     w.writeBinding("fromEmailAddress", fromEmailAddress);
     w.writeBindings("toEmailAddresses", toEmailAddresses);
     w.writeBindings("toUserIds", toUserIds);
@@ -135,7 +135,7 @@ public class EmailTask extends Activity {
   }
 
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
     toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
     toUserIds = r.readBindings("toUserIds", UserId.class);
@@ -150,7 +150,7 @@ public class EmailTask extends Activity {
     bodyText = r.readString("bodyText");
     bodyHtml = r.readString("bodyHtml");
     attachmentFileIds = r.readBindings("attachmentFileIds", FileId.class);
-    super.readFields(r);
+    super.readJson(r);
   }
 
   @Override

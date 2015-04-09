@@ -22,7 +22,12 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/**
+/** an abstraction that allows objects to write their internal 
+ * state to a json source.
+ * 
+ * The goal is to support multiple 
+ * json technologies like eg Jackson and MongoDB.
+ *   
  * @author Tom Baeyens
  */
 public interface JsonWriter {

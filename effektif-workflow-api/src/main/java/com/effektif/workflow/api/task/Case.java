@@ -91,7 +91,7 @@ public class Case extends Extensible implements AccessControlledObject {
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
   }
 
   public Case name(String name) {

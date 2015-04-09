@@ -33,7 +33,7 @@ public class MultiInstance implements JsonWritable {
   protected List<Binding<Object>> values;
 
   @Override
-  public void writeFields(JsonWriter jsonWriter) {
+  public void writeJson(JsonWriter jsonWriter) {
 //    writeObject("variable", variable);
 //    writeList("values", values);
   }

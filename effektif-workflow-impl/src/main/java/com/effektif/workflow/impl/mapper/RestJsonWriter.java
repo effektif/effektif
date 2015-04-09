@@ -181,7 +181,7 @@ public class RestJsonWriter extends AbstractWriter {
       if (o!=null) {
         jgen.writeStartObject();
         mappings.writeTypeField(this, o);
-        o.writeFields(this);
+        o.writeJson(this);
         jgen.writeEndObject();
       } else {
         jgen.writeNull();

@@ -53,15 +53,15 @@ public abstract class AbstractWorkflow extends Scope {
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
     w.writeId(id);
-    super.writeFields(w);
+    super.writeJson(w);
   }
 
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     id = r.readId(WorkflowId.class);
-    super.readFields(r);
+    super.readJson(r);
   }
 
   public WorkflowId getId() {

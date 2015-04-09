@@ -17,8 +17,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 
-/** Specifies the bpmn element name (the local part without namespace) 
- * for an activity.
+/** Used to specify the mapping between a 
+ * bpmn element name (the local part without namespace) 
+ * and the activity-type on which the annotation is defined.
  * 
  * @author Tom Baeyens
  */

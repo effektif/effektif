@@ -57,18 +57,18 @@ public abstract class Activity extends Scope {
   }
   
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
     w.writeString("id", id);
-    super.writeFields(w);
+    super.writeJson(w);
     w.writeString("defaultTransitionId", defaultTransitionId);
     w.writeObject("multiInstance", multiInstance);
     w.writeList("outgoingTransitions", outgoingTransitions);
   }
   
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     id = r.readString("id");
-    super.readFields(r);
+    super.readJson(r);
     defaultTransitionId = r.readString("defaultTransitionId");
     // multiInstance = r.readObject("multiInstance", MultiInstance.class);
     outgoingTransitions = r.readList("outgoingTransitions", Transition.class);

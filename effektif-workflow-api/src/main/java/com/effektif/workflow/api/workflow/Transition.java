@@ -60,19 +60,19 @@ public class Transition extends Element {
   }
 
   @Override
-  public void readFields(JsonReader r) {
+  public void readJson(JsonReader r) {
     id = r.readString("id");
     from = r.readString("from");
     to = r.readString("to");
-    super.readFields(r);
+    super.readJson(r);
   }
 
   @Override
-  public void writeFields(JsonWriter w) {
+  public void writeJson(JsonWriter w) {
     w.writeString("id", id);
     w.writeString("from", id);
     w.writeString("to", id);
-    super.writeFields(w);
+    super.writeJson(w);
   }
 
   public String getId() {
