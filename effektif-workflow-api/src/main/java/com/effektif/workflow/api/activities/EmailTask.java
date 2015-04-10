@@ -116,41 +116,41 @@ public class EmailTask extends Activity {
   }
 
   @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-    w.writeBinding("fromEmailAddress", fromEmailAddress);
-    w.writeBindings("toEmailAddresses", toEmailAddresses);
-    w.writeBindings("toUserIds", toUserIds);
-    w.writeBindings("toGroupIds", toGroupIds);
-    w.writeBindings("ccEmailAddresses", ccEmailAddresses);
-    w.writeBindings("ccUserIds", ccUserIds);
-    w.writeBindings("ccGroupIds", ccGroupIds);
-    w.writeBindings("bccEmailAddresses", bccEmailAddresses);
-    w.writeBindings("bccUserIds", bccUserIds);
-    w.writeBindings("bccGroupIds", bccGroupIds);
-    w.writeString("subject", subject);
-    w.writeString("bodyText", bodyText);
-    w.writeString("bodyHtml", bodyHtml);
-    w.writeBindings("attachmentFileIds", attachmentFileIds);
-  }
-
-  @Override
   public void readJson(JsonReader r) {
-    fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
-    toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
-    toUserIds = r.readBindings("toUserIds", UserId.class);
-    toGroupIds = r.readBindings("toGroupIds", GroupId.class);
-    ccEmailAddresses = r.readBindings("ccEmailAddresses", String.class);
-    ccUserIds = r.readBindings("ccUserIds", UserId.class);
-    ccGroupIds = r.readBindings("ccGroupIds", GroupId.class);
-    bccEmailAddresses = r.readBindings("bccEmailAddresses", String.class);
-    bccUserIds = r.readBindings("bccUserIds", UserId.class);
-    bccGroupIds = r.readBindings("bccGroupIds", GroupId.class);
+    fromEmailAddress = r.readBinding("fromEmailAddress");
+    toEmailAddresses = r.readList("toEmailAddresses");
+    toUserIds = r.readList("toUserIds");
+    toGroupIds = r.readList("toGroupIds");
+    ccEmailAddresses = r.readList("ccEmailAddresses");
+    ccUserIds = r.readList("ccUserIds");
+    ccGroupIds = r.readList("ccGroupIds");
+    bccEmailAddresses = r.readList("bccEmailAddresses");
+    bccUserIds = r.readList("bccUserIds");
+    bccGroupIds = r.readList("bccGroupIds");
     subject = r.readString("subject");
     bodyText = r.readString("bodyText");
     bodyHtml = r.readString("bodyHtml");
-    attachmentFileIds = r.readBindings("attachmentFileIds", FileId.class);
+    attachmentFileIds = r.readList("attachmentFileIds");
     super.readJson(r);
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    super.writeJson(w);
+    w.writeBinding("fromEmailAddress", fromEmailAddress);
+    w.writeList("toEmailAddresses", toEmailAddresses);
+    w.writeList("toUserIds", toUserIds);
+    w.writeList("toGroupIds", toGroupIds);
+    w.writeList("ccEmailAddresses", ccEmailAddresses);
+    w.writeList("ccUserIds", ccUserIds);
+    w.writeList("ccGroupIds", ccGroupIds);
+    w.writeList("bccEmailAddresses", bccEmailAddresses);
+    w.writeList("bccUserIds", bccUserIds);
+    w.writeList("bccGroupIds", bccGroupIds);
+    w.writeString("subject", subject);
+    w.writeString("bodyText", bodyText);
+    w.writeString("bodyHtml", bodyHtml);
+    w.writeList("attachmentFileIds", attachmentFileIds);
   }
 
   @Override

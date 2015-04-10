@@ -16,6 +16,8 @@ package com.effektif.workflow.api.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
@@ -30,20 +32,17 @@ import com.effektif.workflow.api.workflow.Binding;
  */
 public interface JsonReader {
 
-  <T extends Id> T readId(Class<T> idType);
-
-  <T extends Id> T readId(String fieldName, Class<T> idType);
-
-  <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type);
-
-  <T extends JsonReadable> T readObject(String fieldName, Class<T> type);
-
-  <T> Map<String, T> readMap(String fieldName, Class<T> valueType);
-
+  <T extends Id> T readId();
+  <T extends Id> T readId(String fieldName);
   String readString(String fieldName);
+  Boolean readBoolean(String fieldName);
+  Long readLong(String fieldName);
+  Double readDouble(String fieldName);
+  LocalDateTime readDate(String fieldName);
 
-  <T> Binding<T> readBinding(String fieldName, Class<T> type);
-
-  <T> List<Binding<T>> readBindings(String fieldName, Class<T> type);
-
+  <T extends JsonReadable> T readReadable(String fieldName);
+  <T> Binding<T> readBinding(String fieldName);
+  
+  <T> List<T> readList(String fieldName);
+  <T> Map<String, T> readMap(String fieldName);
 }

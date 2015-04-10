@@ -20,6 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWritable;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 
@@ -27,33 +31,44 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  *  
  * @author Tom Baeyens 
  */
-public class AccessControlList {
+public class AccessControlList implements JsonWritable, JsonReadable {
   
+  /** maps actions to lists of identities */
   @JsonUnwrapped
-  protected Map<String,List<AccessIdentity>> identitiesByAction;
+  protected Map<String,List<AccessIdentity>> permissions;
 
-  public Map<String,List<AccessIdentity>> getIdentitiesByAction() {
-    return this.identitiesByAction;
+  @Override
+  public void readJson(JsonReader r) {
+    permissions = r.readMap("permissions");
   }
-  public void setIdentitiesByAction(Map<String,List<AccessIdentity>> identitiesByAction) {
-    this.identitiesByAction = identitiesByAction;
+  
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeMap("permissions", permissions);
+  }
+  
+  public Map<String,List<AccessIdentity>> getPermissions() {
+    return this.permissions;
+  }
+  public void setPermissions(Map<String,List<AccessIdentity>> identitiesByAction) {
+    this.permissions = identitiesByAction;
   }
   
   public AccessControlList permissions(Map<String,List<AccessIdentity>> identitiesByAction) {
-    this.identitiesByAction = identitiesByAction;
+    this.permissions = identitiesByAction;
     return this;
   }
   /** grants the identity permission for 'action'.
    * Only adds the permission if it is not already included. 
    * For action values, see {@link Access}. */
   public AccessControlList permission(AccessIdentity identity, String action) {
-    if (identitiesByAction==null) {
-      identitiesByAction = new HashMap<>();
+    if (permissions==null) {
+      permissions = new HashMap<>();
     }
-    List<AccessIdentity> identities = identitiesByAction.get(action);
+    List<AccessIdentity> identities = permissions.get(action);
     if (identities==null) {
       identities = new ArrayList<>();
-      identitiesByAction.put(action, identities);
+      permissions.put(action, identities);
     }
     if (!identities.contains(identity)) {
       identities.add(identity);
@@ -65,7 +80,7 @@ public class AccessControlList {
     if (authentication==null) {
       return false;
     }
-    List<AccessIdentity> identitiesHavingAction = identitiesByAction.get(action);
+    List<AccessIdentity> identitiesHavingAction = permissions.get(action);
     if (identitiesHavingAction!=null) {
       String userId = authentication.getUserId();
       if (userId!=null && identitiesHavingAction.contains(new UserIdentity(userId))) {
@@ -89,7 +104,7 @@ public class AccessControlList {
   
   
   public List<AccessIdentity> getIdentities(String action) {
-    return identitiesByAction.get(action);
+    return permissions.get(action);
   }
   
   /** overwrites the access on the task for the action with the given identities if identities!=null. */
@@ -106,13 +121,13 @@ public class AccessControlList {
   }
 
   public void setIdentities(String action, List<AccessIdentity> identities) {
-    if (identitiesByAction==null) {
-      identitiesByAction = new HashMap<>();
+    if (permissions==null) {
+      permissions = new HashMap<>();
     }
-    identitiesByAction.put(action, identities);
+    permissions.put(action, identities);
   }
   
   public boolean isEmpty() {
-    return identitiesByAction==null || identitiesByAction.isEmpty();
+    return permissions==null || permissions.isEmpty();
   }
 }

@@ -42,8 +42,8 @@ public class AbstractBindableActivity extends Activity {
   
   @Override
   public void readJson(JsonReader r) {
-    inputBindings = r.readMap("inputBindings", Binding.class);
-    outputBindings = r.readMap("outputBindings", String.class);
+    inputBindings = r.readMap("inputBindings");
+    outputBindings = r.readMap("outputBindings");
     super.readJson(r);
   }
   

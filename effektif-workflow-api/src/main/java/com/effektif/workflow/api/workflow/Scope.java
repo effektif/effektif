@@ -55,7 +55,7 @@ public abstract class Scope extends Element {
   
   @Override
   public void readJson(JsonReader r) {
-    activities =  r.readList("activities", Activity.class);
+    activities =  r.readList("activities");
     super.readJson(r);
   }
 

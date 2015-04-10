@@ -16,7 +16,8 @@ package com.effektif.workflow.impl.mapper;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.math.BigDecimal;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public class RestJsonWriter extends AbstractWriter {
 
   JsonGenerator jgen;
   boolean pretty;
+  Class<?> writableClass;
 
   public RestJsonWriter() {
   }
@@ -71,7 +73,7 @@ public class RestJsonWriter extends AbstractWriter {
       if (pretty) {
         jgen.setPrettyPrinter(new DefaultPrettyPrinter());
       }
-      writeObject(o);
+      writeWritable(o);
       jgen.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -79,115 +81,19 @@ public class RestJsonWriter extends AbstractWriter {
   }
   
   @Override
-  public <T> void writeBindings(String fieldName, List<Binding<T>> bindings) {
-    if (bindings==null || bindings.isEmpty()) {
-      return;
-    }
-    try {
-      jgen.writeFieldName(fieldName);
-      jgen.writeStartArray();
-      for (Binding<T> binding: bindings) {
-        writeBinding(binding);
-      }
-      jgen.writeEndArray();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public void writeId(Id id) {
+    writeId("id", id);
   }
-
+  
   @Override
-  public <T> void writeBinding(String fieldName, Binding<T> binding) {
-    if (binding!=null) {
+  public void writeId(String fieldName, Id id) {
+    if (id!=null) {
       try {
         jgen.writeFieldName(fieldName);
-        writeBinding(binding);
+        writeIdValue(id);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
-    }
-  }
-
-  public <T> void writeBinding(Binding<T> binding) {
-    if (binding==null) {
-      return;
-    }
-    try {
-      jgen.writeStartObject();
-      if (binding.getValue()!=null) {
-        jgen.writeFieldName("value");
-        writeAny(binding.getValue());
-      }
-      if (binding.getExpression()!=null) {
-        jgen.writeStringField("expression", binding.getExpression());
-      }
-      
-      jgen.writeEndObject();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-  
-  public void writeAny(Object o) {
-    if (o==null) {
-      return;
-    }
-    try {
-      if (o instanceof String) {
-        jgen.writeString((String) o);
-      } else if (o instanceof LocalDateTime) {
-        writeDate((LocalDateTime) o);
-      } else if (o instanceof Number) {
-        writeNumber((Number) o);
-      } else if (o instanceof Boolean) {
-        jgen.writeBoolean((Boolean) o);
-      } else if (o instanceof Id) {
-        writeIdValue((Id) o);
-      } else if (o instanceof JsonWritable) {
-        writeObject((JsonWritable)o);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  protected void writeNumber(Number value) {
-    try {
-      if (value==null) {
-        jgen.writeNull();
-      } else if (value instanceof Long) {
-        jgen.writeNumber(value.longValue());
-      } else if (value instanceof Double) {
-        jgen.writeNumber(value.doubleValue());
-      } else if (value instanceof BigDecimal) {
-        jgen.writeNumber((BigDecimal) value);
-      } else {
-        throw new RuntimeException("Unknown number "+value+" ("+value.getClass().getName()+")");
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  protected void writeDate(LocalDateTime value) {
-    try {
-      jgen.writeString(DATE_FORMAT.print(value));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void writeObject(JsonWritable o) {
-    try {
-      if (o!=null) {
-        jgen.writeStartObject();
-        mappings.writeTypeField(this, o);
-        o.writeJson(this);
-        jgen.writeEndObject();
-      } else {
-        jgen.writeNull();
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 
@@ -214,12 +120,25 @@ public class RestJsonWriter extends AbstractWriter {
     }
   }
   
+
   @Override
-  public void writeNumber(String fieldName, Number value) {
+  public void writeLong(String fieldName, Long value) {
     if (value!=null) {
       try {
         jgen.writeFieldName(fieldName);
-        writeNumber(value);
+        jgen.writeNumber(value);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Override
+  public void writeDouble(String fieldName, Double value) {
+    if (value!=null) {
+      try {
+        jgen.writeFieldName(fieldName);
+        jgen.writeNumber(value);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -237,25 +156,157 @@ public class RestJsonWriter extends AbstractWriter {
       }
     }
   }
-
+  
   @Override
-  public void writeId(Id id) {
-    writeId("id", id);
+  public void writeWritable(String fieldName, JsonWritable o) {
+    if (o!=null) {
+      try {
+        jgen.writeFieldName(fieldName);
+        writeWritable(o);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
   
   @Override
-  public void writeId(String fieldName, Id id) {
-    if (id!=null) {
+  public void writeMap(String fieldName, Map<String,?> map) {
+    if (map!=null) {
       try {
+        ParameterizedType type = (ParameterizedType) mappings.getFieldType(writableClass, fieldName);
+        Type valueType = type.getActualTypeArguments()[1];
         jgen.writeFieldName(fieldName);
-        writeIdValue(id);
+        writeMap(map, valueType);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }
   }
 
-  protected void writeIdValue(Id id) {
+  @Override
+  public void writeList(String fieldName, List<?> elements) {
+    if (elements!=null) {
+      try {
+        ParameterizedType type = (ParameterizedType) mappings.getFieldType(writableClass, fieldName);
+        jgen.writeFieldName(fieldName);
+        writeList(elements, type.getActualTypeArguments()[0]);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Override
+  public <T> void writeBinding(String fieldName, Binding<T> binding) {
+    if (binding!=null) {
+      try {
+        ParameterizedType type = (ParameterizedType) mappings.getFieldType(writableClass, fieldName);
+        jgen.writeFieldName(fieldName);
+        writeBinding(binding, type.getActualTypeArguments()[0]);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  
+  
+  
+  public <T> void writeBinding(Binding<T> binding, Type valueType) {
+    if (binding==null) {
+      return;
+    }
+    try {
+      jgen.writeStartObject();
+      if (binding.getValue()!=null) {
+        jgen.writeFieldName("value");
+        writeObject(binding.getValue(), valueType);
+      }
+      if (binding.getExpression()!=null) {
+        jgen.writeStringField("expression", binding.getExpression());
+      }
+      
+      jgen.writeEndObject();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  public void writeObject(Object o, Type type) {
+    if (o==null) {
+      return;
+    }
+    try {
+      if (o instanceof String) {
+        jgen.writeString((String) o);
+      } else if (o instanceof LocalDateTime) {
+        writeDate((LocalDateTime) o);
+      } else if (o instanceof Number) {
+        writeNumber((Number) o, type);
+      } else if (o instanceof Boolean) {
+        jgen.writeBoolean((Boolean) o);
+      } else if (o instanceof Id) {
+        writeIdValue((Id) o);
+      } else if (o instanceof JsonWritable) {
+        writeWritable((JsonWritable)o);
+      } else if (o instanceof Map) {
+        ParameterizedType mapType = (ParameterizedType) type; 
+        writeMap((Map) o, mapType.getActualTypeArguments()[1]);
+      } else if (o instanceof List) {
+        ParameterizedType mapType = (ParameterizedType) type; 
+        writeList((List) o, mapType.getActualTypeArguments()[0]);
+      } else if (o instanceof Binding) {
+        ParameterizedType bindingType = (ParameterizedType) type; 
+        writeBinding((Binding) o, bindingType.getActualTypeArguments()[0]);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeNumber(Number value, Type type) {
+    try {
+      if (value==null) {
+        jgen.writeNull();
+      } else if (Long.class.isAssignableFrom((Class<?>)type)) {
+        jgen.writeNumber(value.longValue());
+      } else if (Double.class.isAssignableFrom((Class<?>)type)) {
+        jgen.writeNumber(value.doubleValue());
+      } else {
+        throw new RuntimeException("Unknown number "+value+" ("+value.getClass().getName()+")");
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeDate(LocalDateTime value) {
+    try {
+      jgen.writeString(DATE_FORMAT.print(value));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeWritable(JsonWritable o) {
+    try {
+      if (o!=null) {
+        Class<?> parentWritableClass = writableClass;
+        writableClass = o.getClass();
+        jgen.writeStartObject();
+        mappings.writeTypeField(this, o);
+        o.writeJson(this);
+        jgen.writeEndObject();
+        writableClass = parentWritableClass;
+      } else {
+        jgen.writeNull();
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeIdValue(Id id) {
     try {
       if (id==null) {
         jgen.writeNull();
@@ -267,43 +318,24 @@ public class RestJsonWriter extends AbstractWriter {
     }
   }
 
-  @Override
-  public void writeObject(String fieldName, JsonWritable o) {
-    if (o!=null) {
-      try {
-        jgen.writeFieldName(fieldName);
-        writeObject(o);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+  public void writeMap(Map<String,?> map, Type valueType) {
+    try {
+      jgen.writeStartObject();
+      writeMapFields(map, valueType);
+      jgen.writeEndObject();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
-  @Override
-  public void writeList(String fieldName, List<? extends Object> elements) {
-    if (elements!=null) {
-      try {
-        jgen.writeFieldName(fieldName);
-        jgen.writeStartArray();
-        for (Object element: elements) {
-          writeAny(element);
-        }
-        jgen.writeEndArray();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  @Override
-  public void writeFields(Map<String,? extends Object> map) {
+  public void writeMapFields(Map<String,?> map, Type valueType) {
     if (map!=null) {
       for (String key: map.keySet()) {
         Object value = map.get(key);
         if (value!=null) {
           try {
             jgen.writeFieldName(key);
-            writeAny(value);
+            writeObject(value, valueType);
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
@@ -312,17 +344,15 @@ public class RestJsonWriter extends AbstractWriter {
     }
   }
   
-  @Override
-  public void writeMap(String fieldName, Map<String,? extends Object> map) {
-    if (map!=null) {
-      try {
-        jgen.writeFieldName(fieldName);
-        jgen.writeStartObject();
-        writeFields(map);
-        jgen.writeEndObject();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
+  public void writeList(List< ? > elements, Type elementType) {
+    try {
+      jgen.writeStartArray();
+      for (Object element: elements) {
+        writeObject(element, elementType);
       }
+      jgen.writeEndArray();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 }

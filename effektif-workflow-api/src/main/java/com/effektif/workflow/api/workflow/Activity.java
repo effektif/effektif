@@ -61,7 +61,7 @@ public abstract class Activity extends Scope {
     w.writeString("id", id);
     super.writeJson(w);
     w.writeString("defaultTransitionId", defaultTransitionId);
-    w.writeObject("multiInstance", multiInstance);
+    w.writeWritable("multiInstance", multiInstance);
     w.writeList("outgoingTransitions", outgoingTransitions);
   }
   
@@ -71,7 +71,7 @@ public abstract class Activity extends Scope {
     super.readJson(r);
     defaultTransitionId = r.readString("defaultTransitionId");
     // multiInstance = r.readObject("multiInstance", MultiInstance.class);
-    outgoingTransitions = r.readList("outgoingTransitions", Transition.class);
+    outgoingTransitions = r.readList("outgoingTransitions");
   }
 
   public String getId() {

@@ -13,10 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.mapper.JsonWritable;
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.impl.mapper.RestJsonMapper;
 
 
@@ -45,5 +50,20 @@ public class RestJsonMapperTest extends AbstractMapperTest {
     return (T) restJsonMapper
       .createReader()
       .toObject(jsonString, (Class<JsonReadable>) o.getClass());
+  }
+  
+  // NOT READY TO MOVE TO ABSTRACT MAPPER TEST
+  @Test
+  public void testCall() {
+    Call activity = new Call()
+      .id("runTests")
+      .subWorkflowName("Run tests")
+      .subWorkflowId(new WorkflowId("551d4f5803649532d21f223f"));
+    activity.setSubWorkflowSource("releaseTests");
+    
+    activity = serialize(activity);
+    
+    assertEquals(new WorkflowId("551d4f5803649532d21f223f"), activity.getSubWorkflowId());
+    assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 }

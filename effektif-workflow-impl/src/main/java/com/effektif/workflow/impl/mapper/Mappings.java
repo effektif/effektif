@@ -14,6 +14,8 @@
 package com.effektif.workflow.impl.mapper;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ public class Mappings {
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
+  Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
 
   public void registerBaseClass(Class<?> baseClass) {
     registerBaseClass(baseClass, "type");
@@ -147,5 +150,48 @@ public class Mappings {
     if (typeField!=null) {
       jsonWriter.writeString(typeField.getTypeField(), typeField.getTypeName());
     }
+  }
+  
+  public synchronized Type getFieldType(Class< ? > clazz, String fieldName) {
+    // could be cached in this mappings object
+    Type fieldType = getFieldTypeFromCache(clazz, fieldName);
+    if (fieldType!=null) {
+      return fieldType;
+    }
+    Map<String,Type> fieldTypesForClass = fieldTypes.get(clazz);
+    if (fieldTypesForClass==null) {
+      fieldTypesForClass = new HashMap<>();
+      fieldTypes.put(clazz, fieldTypesForClass);
+    }
+    fieldType = findFieldType(clazz, fieldName);
+    if (fieldType==null) {
+      throw new RuntimeException("Field "+clazz.getName()+"."+fieldName+" not found");
+    }
+    fieldTypesForClass.put(fieldName, fieldType);
+    return fieldType;
+  }
+
+  private Type findFieldType(Class< ? > clazz, String fieldName) {
+    try {
+      for (Field field: clazz.getDeclaredFields()) {
+        if (field.getName().equals(fieldName)) {
+          return field.getGenericType();
+        }
+      }
+      if (clazz.getSuperclass()!=Object.class) {
+        return findFieldType(clazz.getSuperclass(), fieldName);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return null;
+  }
+
+  private Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
+    Map<String,Type> types = fieldTypes.get(type);
+    if (types==null) {
+      return null;
+    }
+    return types.get(fieldName);
   }
 }

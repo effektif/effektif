@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("receiveTask")
+@TypeName("receiveTask")
 @BpmnElement("receiveTask")
 public class ReceiveTask extends Activity {
 

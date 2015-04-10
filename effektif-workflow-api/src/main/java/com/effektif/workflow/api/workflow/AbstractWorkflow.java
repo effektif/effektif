@@ -60,7 +60,7 @@ public abstract class AbstractWorkflow extends Scope {
 
   @Override
   public void readJson(JsonReader r) {
-    id = r.readId(WorkflowId.class);
+    id = r.readId();
     super.readJson(r);
   }
 

@@ -13,6 +13,10 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import java.util.Date;
+
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.impl.mapper.AbstractReader;
@@ -34,12 +38,15 @@ public class MongoJsonReader extends AbstractReader {
   }
 
   public <T extends JsonReadable> T toObject(BasicDBObject dbObject, Class<T> type) {
-    this.jsonObject = dbObject;
-    return readCurrentObject(type);
+    return readReadable(dbObject, type);
   }
 
   @Override
-  public <T extends Id> T readId(Class<T> idType) {
-    return readId("_id", idType);
+  public <T extends Id> T readId() {
+    return readId("_id");
+  }
+
+  public LocalDateTime readDateValue(Object jsonDate) {
+    return new LocalDateTime((Date)jsonDate);
   }
 }

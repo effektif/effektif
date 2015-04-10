@@ -44,7 +44,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
  */
 public class BpmnReaderImpl implements BpmnReader {
 
-  public static DateTimeFormatter DATE_FORMAT = AbstractReader.DATE_FORMAT;
+  public static DateTimeFormatter DATE_FORMAT = RestJsonReader.DATE_FORMAT;
 
   /** global mappings */
   protected Mappings mappings;
@@ -248,7 +248,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (xml==null) {
       return null;
     }
-    return AbstractReader.createId(readStringAttributeBpmn(localPart), idType);
+    return AbstractReader.readId(readStringAttributeBpmn(localPart), idType);
   }
 
   @Override
@@ -256,7 +256,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (xml==null) {
       return null;
     }
-    return AbstractReader.createId(readStringAttributeEffektif(localPart), idType);
+    return AbstractReader.readId(readStringAttributeEffektif(localPart), idType);
   }
 
   /** Returns a binding from the first extension element with the given name. */
@@ -307,7 +307,7 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) Long.valueOf(value);
     }
     if (Id.class.isAssignableFrom(type)) {
-      return (T) AbstractReader.createId(value, (Class<Id>)type);
+      return (T) AbstractReader.readId(value, (Class<Id>)type);
     }
     if (type==LocalDateTime.class) {
       return (T) DATE_FORMAT.parseLocalDateTime(value);

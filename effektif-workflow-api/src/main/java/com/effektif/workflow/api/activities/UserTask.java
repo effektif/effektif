@@ -21,6 +21,10 @@ import java.util.List;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
@@ -42,6 +46,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("userTask")
+@TypeName("userTask")
 @BpmnElement("userTask")
 public class UserTask extends NoneTask {
   
@@ -76,7 +81,7 @@ public class UserTask extends NoneTask {
   protected Binding<UserId> escalateToId;
 
   @Override
-  public void readBpmn(com.effektif.workflow.api.mapper.BpmnReader r) {
+  public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
   }
 //  @Override
@@ -108,6 +113,16 @@ public class UserTask extends NoneTask {
 //    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
 //  }
   
+  @Override
+  public void readJson(JsonReader r) {
+    super.readJson(r);
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeWritable("access", access);
+    super.writeJson(w);
+  }
 
   @Override
   public UserTask id(String id) {

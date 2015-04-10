@@ -27,7 +27,7 @@ import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.json.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 /**

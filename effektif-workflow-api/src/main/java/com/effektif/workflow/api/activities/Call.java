@@ -60,17 +60,17 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
+  public void readJson(JsonReader r) {
+    subWorkflowId = r.readId("subWorkflowId");
+    subWorkflowSource = r.readString("subWorkflowSource");
+    super.readJson(r);
+  }
+
+  @Override
   public void writeJson(JsonWriter w) {
     super.writeJson(w);
     w.writeId("subWorkflowId", subWorkflowId);
     w.writeString("subWorkflowSource", subWorkflowSource);
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    subWorkflowId = r.readId("subWorkflowId", WorkflowId.class);
-    subWorkflowSource = r.readString("subWorkflowSource");
-    super.readJson(r);
   }
 
   @Override

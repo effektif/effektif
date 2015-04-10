@@ -178,7 +178,7 @@ public class MongoJsonWriter extends AbstractWriter {
   }
 
   @Override
-  public void writeObject(String fieldName, JsonWritable value) {
+  public void writeWritable(String fieldName, JsonWritable value) {
     if (value!=null) {
       BasicDBObject dbValue = toDbObject(value); 
       dbObject.put(fieldName, dbValue);
@@ -195,7 +195,7 @@ public class MongoJsonWriter extends AbstractWriter {
   }
 
   @Override
-  public void writeFields(Map<String,? extends Object> map) {
+  public void writeMapFields(Map<String,? extends Object> map) {
     if (map!=null) {
       for (String key: map.keySet()) {
         Object value = map.get(key);

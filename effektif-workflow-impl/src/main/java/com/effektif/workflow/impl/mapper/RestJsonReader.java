@@ -18,6 +18,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
 
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class RestJsonReader extends AbstractReader {
   
+  public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTimeParser();
+
   static ObjectMapper objectMapper = new ObjectMapper();
   
   public RestJsonReader() {
@@ -44,15 +50,19 @@ public class RestJsonReader extends AbstractReader {
 
   public <T extends JsonReadable> T toObject(Reader jsonStream, Class<T> type) {
     try {
-      this.jsonObject = objectMapper.readValue(jsonStream, Map.class);
-      return readCurrentObject(type);
+      Map<String,Object> jsonMap = objectMapper.readValue(jsonStream, Map.class);
+      return readReadable(jsonMap, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
   @Override
-  public <T extends Id> T readId(Class<T> idType) {
-    return readId("id", idType);
+  public <T extends Id> T readId() {
+    return readId("id");
+  }
+
+  public LocalDateTime readDateValue(Object jsonDate) {
+    return DATE_FORMAT.parseLocalDateTime((String)jsonDate);
   }
 }
