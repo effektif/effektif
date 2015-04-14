@@ -20,11 +20,13 @@ import java.util.List;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
@@ -82,27 +84,57 @@ public class UserTask extends NoneTask {
 
   @Override
   public void readBpmn(BpmnReader r) {
-//    task.setTaskName(reader.readStringValue(xml, "taskName"));
-//    task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
-//    task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
-//    task.setForm(reader.readForm(xml));
     super.readBpmn(r);
     r.startExtensionElements();
     candidateGroupIds = r.readBindings("candidateGroupId", GroupId.class);
     duedate = r.readRelativeTimeEffektif("dueDate");
+    reminder = r.readRelativeTimeEffektif("reminder");
+    reminderRepeat = r.readRelativeTimeEffektif("reminderRepeat");
+    escalate = r.readRelativeTimeEffektif("escalate");
+    escalateToId = r.readBinding("escalateToId", UserId.class);
+
+    // TODO form
+    // TODO form / description
+    // TODO form / field
+    // TODO form / field / ID
+    // TODO form / field / name
+    // TODO form / field / binding expression
+
     r.endExtensionElements();
   }
 
   @Override
   public void writeBpmn(com.effektif.workflow.api.mapper.BpmnWriter w) {
-//    writer.writeStringValue(xml, "taskName", task.getTaskName());
-//    writer.writeBinding(xml, "assignee", task.getAssigneeId(), UserIdType.INSTANCE);
-//    writer.writeBindings(xml, "candidate", (List) task.getCandidateIds(), UserIdType.INSTANCE);
-//    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
     super.writeBpmn(w);
     w.startExtensionElements();
     w.writeBindings("candidateGroupId", candidateGroupIds);
     w.writeRelativeTimeEffektif("dueDate", duedate);
+    w.writeRelativeTimeEffektif("reminder", reminder);
+    w.writeRelativeTimeEffektif("reminderRepeat", reminderRepeat);
+    w.writeRelativeTimeEffektif("escalate", escalate);
+    w.writeBinding("escalateToId", escalateToId);
+
+    if (form != null) {
+      w.startElementEffektif("form");
+      w.writeTextEffektif("description", form.getDescription());
+
+      for (FormField field : form.getFields()) {
+        w.startElementEffektif("field");
+        w.writeStringAttributeEffektif("id", field.getId());
+        w.writeStringAttributeEffektif("name", field.getName());
+        Binding<?> binding = field.getBinding();
+        if (binding != null) {
+          w.writeStringAttributeEffektif("expression", binding.getExpression());
+          if (binding.getValue() != null) {
+            w.writeStringAttributeEffektif("value", binding.getValue().toString());
+          }
+        }
+        w.endElement();
+      }
+
+      w.endElement();
+    }
+
     w.endExtensionElements();
   }
 

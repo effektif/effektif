@@ -283,5 +283,11 @@ public abstract class AbstractMapperTest {
     assertEquals("Smoke test", activity.getName());
     assertEquals("dev", activity.getCandidateGroupIds().get(0).getValue().getInternal());
     assertEquals(RelativeTime.hours(1), activity.getDuedate());
+    assertEquals(RelativeTime.hours(2), activity.getReminder());
+    assertEquals(RelativeTime.minutes(30), activity.getReminderRepeat());
+    assertEquals(RelativeTime.hours(4), activity.getEscalate());
+    assertEquals(new UserId("bofh"), activity.getEscalateToId().getValue());
+
+    assertEquals(Form.class, activity.getForm().getClass());
   }
 }
