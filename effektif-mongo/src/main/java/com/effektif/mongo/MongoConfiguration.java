@@ -42,7 +42,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected List<MongoCredential> credentials;
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
-  protected String tasksCollectionName = "tasks";
+  protected String tasksCollectionName = "tasks-v3";
   protected String casesCollectionName = "cases";
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
