@@ -41,6 +41,9 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     this.variable = variable;
   }
 
+  /**
+   * TODO Decide whether variable instance IDs are needed, and copy the id if so.
+   */
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setVariableId(variable.id);
