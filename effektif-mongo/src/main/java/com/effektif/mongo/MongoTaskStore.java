@@ -233,7 +233,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
       mongoQuery.access(accessActions);
     }
     if (query.getTaskId()!=null) {
-      mongoQuery.equal(FieldsTask._ID, query.getTaskId().getInternal());
+      mongoQuery.equal(FieldsTask._ID, new ObjectId(query.getTaskId().getInternal()));
     }
     if (query.getTaskName()!=null) {
       mongoQuery.equal(FieldsTask.NAME, Pattern.compile(query.getTaskName()));
