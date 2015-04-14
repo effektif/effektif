@@ -15,6 +15,7 @@ package com.effektif.workflow.api.mapper;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
@@ -70,6 +71,9 @@ public interface BpmnWriter {
   
   /** write a date field as an attribute on the current xml element in the Effektif namespace */
   void writeDateAttributeEffektif(String localPart, LocalDateTime value);
+
+  /** Writes a {@link RelativeTime} as an element in the Effektif namespace. */
+  void writeRelativeTimeEffektif(String localPart, RelativeTime value);
 
   /** write an element in the BPMN namespace with the value as content text.  if necessary, the value will be wrapped 
    * automatic in a CDATA section */

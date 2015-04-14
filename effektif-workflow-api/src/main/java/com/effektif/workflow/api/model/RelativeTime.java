@@ -192,6 +192,32 @@ public class RelativeTime {
     return duedate.withTime(23, 59, 59, 999);
   }
 
+  /**
+   * Parses a string formatted using {@link #toString()} as a relative time.
+   */
+  public static RelativeTime parse(String value) {
+    if (value == null) {
+      throw new IllegalArgumentException("Cannot parse relative time from value ‘" + value + "’");
+    }
+    String[] parts = value.trim().split(" ");
+    if (parts.length != 2) {
+      throw new IllegalArgumentException("Cannot parse relative time from value ‘" + value + "’");
+    }
+    try {
+      int time = Integer.parseInt(parts[0]);
+      RelativeTime t = new RelativeTime().time(time).unit(parts[1]);
+      boolean validUnit = t.isUnitYears() || t.isUnitMonths() || t.isUnitWeeks() || t.isUnitDays() || t.isUnitHours() ||
+        t.isUnitMinutes() || t.isUnitSeconds();
+      if (!validUnit) {
+        throw new IllegalArgumentException("Invalid time unit in relative time ‘" + value + "’");
+      }
+      return t;
+    }
+    catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Invalid time value in relative time ‘" + value + "’");
+    }
+  }
+
   @Override
   public String toString() {
     return time + " " + unit;

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -323,8 +324,15 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void writeDateAttributeEffektif(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, DATE_FORMAT.print(value));
-    } 
+    }
   }
+
+  public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
+    if (value!=null) {
+      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, "after", value.toString());
+    }
+  }
+
 
   @Override
   public void writeTextBpmn(String localPart, String value) {

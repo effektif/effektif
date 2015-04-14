@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -334,9 +335,20 @@ public class BpmnReaderImpl implements BpmnReader {
   public LocalDateTime readDateAttributeEffektif(String localPart) {
     return readDate(readStringAttributeEffektif(localPart));
   }
-
   private LocalDateTime readDate(String readStringAttributeEffektif) {
     throw new RuntimeException("TODO");
+  }
+
+  @Override
+  public RelativeTime readRelativeTimeEffektif(String localPart) {
+    XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
+    if (element != null) {
+      String value = element.getAttribute(EFFEKTIF_URI, "after");
+      if (value != null) {
+        return RelativeTime.parse(value);
+      }
+    }
+    return null;
   }
 
   @Override
