@@ -82,37 +82,30 @@ public class UserTask extends NoneTask {
 
   @Override
   public void readBpmn(BpmnReader r) {
-    super.readBpmn(r);
-  }
-//  @Override
-//  public UserTask readBpmn(XmlElement xml, BpmnReader reader) {
-//    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-//      return null;
-//    }
-//    UserTask task = new UserTask();
-//
 //    task.setTaskName(reader.readStringValue(xml, "taskName"));
 //    task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
 //    task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
-//    task.setCandidateGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "candidate"));
 //    task.setForm(reader.readForm(xml));
-//    
-//    return task;
-//  }
+    super.readBpmn(r);
+    r.startExtensionElements();
+    candidateGroupIds = r.readBindings("candidateGroupId", GroupId.class);
+    duedate = r.readRelativeTimeEffektif("dueDate");
+    r.endExtensionElements();
+  }
 
   @Override
   public void writeBpmn(com.effektif.workflow.api.mapper.BpmnWriter w) {
-    super.writeBpmn(w);
-  }
-//  @Override
-//  public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
-//    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
 //    writer.writeStringValue(xml, "taskName", task.getTaskName());
 //    writer.writeBinding(xml, "assignee", task.getAssigneeId(), UserIdType.INSTANCE);
 //    writer.writeBindings(xml, "candidate", (List) task.getCandidateIds(), UserIdType.INSTANCE);
 //    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
-//  }
-  
+    super.writeBpmn(w);
+    w.startExtensionElements();
+    w.writeBindings("candidateGroupId", candidateGroupIds);
+    w.writeRelativeTimeEffektif("dueDate", duedate);
+    w.endExtensionElements();
+  }
+
 //  @Override
 //  public void readJson(JsonReader r) {
 //    super.readJson(r);

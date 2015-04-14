@@ -15,6 +15,11 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.assertEquals;
 
+import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.workflow.Binding;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -251,27 +256,32 @@ public abstract class AbstractMapperTest {
 //        .required());
 //    print(form);
 //  }
-//
-//  @Test
-//  public void testUserTask() {
-//    Form form = new Form()
-//      .description("Form description")
-//      .field(new FormField()
-//        .id("f1")
-//        .name("The first field in the form")
-//        .bindingExpression("v1"));
-//    UserTask activity = new UserTask()
-//      .id("smokeTest")
-//      .name("Smoke test")
-//      .candidateGroupId("dev")
-//      .form(form)
-//      .duedate(RelativeTime.hours(1))
-//      .reminder(RelativeTime.hours(2))
-//      .reminderRepeat(RelativeTime.minutes(30))
-//      .escalate(RelativeTime.hours(4))
-//      .escalateTo(new Binding().value(new UserId("bofh")));
-//    print(activity);
-//  }
-//
 
+  @Test
+  public void testUserTask() {
+    Form form = new Form()
+      .description("Form description")
+      .field(new FormField()
+        .id("f1")
+        .name("The first field in the form")
+        .bindingExpression("v1"));
+    UserTask activity = new UserTask()
+      .id("smokeTest")
+      .name("Smoke test")
+      .candidateGroupId("dev")
+      .form(form)
+      .duedate(RelativeTime.hours(1))
+      .reminder(RelativeTime.hours(2))
+      .reminderRepeat(RelativeTime.minutes(30))
+      .escalate(RelativeTime.hours(4))
+      .escalateTo(new Binding().value(new UserId("bofh")));
+
+    activity = serialize(activity);
+
+    assertEquals(UserTask.class, activity.getClass());
+    assertEquals("smokeTest", activity.getId());
+    assertEquals("Smoke test", activity.getName());
+    assertEquals("dev", activity.getCandidateGroupIds().get(0).getValue().getInternal());
+    assertEquals(RelativeTime.hours(1), activity.getDuedate());
+  }
 }
