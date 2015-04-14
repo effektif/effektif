@@ -50,8 +50,8 @@ public class RestJsonReader extends AbstractReader {
 
   public <T> T toObject(Reader jsonStream, Class<T> type) {
     try {
-      Map<String,Object> jsonMap = objectMapper.readValue(jsonStream, Map.class);
-      return readObject(jsonMap, type);
+      Object jsonObject = objectMapper.readValue(jsonStream, Object.class);
+      return (T) toObject(jsonObject, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

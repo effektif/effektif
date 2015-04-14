@@ -249,7 +249,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return AbstractReader.readId(readStringAttributeBpmn(localPart), idType);
+    return AbstractReader.toId(readStringAttributeBpmn(localPart), idType);
   }
 
   @Override
@@ -257,7 +257,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return AbstractReader.readId(readStringAttributeEffektif(localPart), idType);
+    return AbstractReader.toId(readStringAttributeEffektif(localPart), idType);
   }
 
   /** Returns a binding from the first extension element with the given name. */
@@ -308,7 +308,7 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) Long.valueOf(value);
     }
     if (Id.class.isAssignableFrom(type)) {
-      return (T) AbstractReader.readId(value, (Class<Id>)type);
+      return (T) AbstractReader.toId(value, (Class<Id>)type);
     }
     if (type==LocalDateTime.class) {
       return (T) DATE_FORMAT.parseLocalDateTime(value);

@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("notContainsIgnoreCase")
+@TypeName("notContainsIgnoreCase")
 public class NotContainsIgnoreCase extends ContainsIgnoreCase {
 
   @Override

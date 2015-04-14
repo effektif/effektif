@@ -17,6 +17,7 @@ package com.effektif.workflow.api.condition;
 
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("not")
+@TypeName("not")
 public class Not extends Condition {
 
   protected Condition condition;

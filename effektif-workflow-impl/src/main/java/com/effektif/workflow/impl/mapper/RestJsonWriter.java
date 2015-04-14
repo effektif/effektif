@@ -19,8 +19,11 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -269,6 +272,14 @@ public class RestJsonWriter extends AbstractWriter {
       } else if (is(Binding.class, type) || o instanceof Binding) {
         Type valueType = getTypeArg(type, 0);
         writeBinding((Binding) o, valueType);
+      } else if (is(Class.class, type) || o instanceof Class) {
+        jgen.writeString(((Class)o).getName());
+      } else if (o.getClass().isEnum()) {
+        jgen.writeString(o.toString());
+      } else if (o.getClass().isArray()) {
+        List<Object> list = Arrays.asList((Object[])o);
+        Class< ? > elementType = o.getClass().getComponentType();
+        writeList(list, elementType);
       } else {
         writeObjectDefault(o, type);
       }
@@ -283,6 +294,9 @@ public class RestJsonWriter extends AbstractWriter {
                   && (baseType.isAssignableFrom((Class<?>)type)) 
                 ) || ( type instanceof ParameterizedType 
                        && is(baseType, ((ParameterizedType)type).getRawType())
+                     )
+                  || ( type instanceof WildcardType 
+                       && is(baseType, ((WildcardType)type).getUpperBounds()[0])
                      )
               );
   }
@@ -345,6 +359,7 @@ public class RestJsonWriter extends AbstractWriter {
     try {
       Object fieldValue = field.get(o);
       if (fieldValue!=null) {
+        log.debug("Writing field "+field);
         jgen.writeFieldName(field.getName());
         writeObject(fieldValue, field.getGenericType());
       }

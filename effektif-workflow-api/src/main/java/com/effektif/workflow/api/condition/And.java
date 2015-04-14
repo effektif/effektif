@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("and")
+@TypeName("and")
 public class And extends Condition {
 
   protected List<Condition> conditions;

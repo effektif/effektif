@@ -15,10 +15,6 @@
  */
 package com.effektif.workflow.api.form;
 
-import com.effektif.workflow.api.mapper.JsonReadable;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWritable;
-import com.effektif.workflow.api.mapper.JsonWriter;
 
 
 
@@ -26,7 +22,7 @@ import com.effektif.workflow.api.mapper.JsonWriter;
 /**
  * @author Tom Baeyens
  */
-public class AbstractForm implements JsonReadable, JsonWritable {
+public class AbstractForm {
 
   protected String description;
   // TODO Map<String,String> descriptionI18n;
@@ -39,16 +35,6 @@ public class AbstractForm implements JsonReadable, JsonWritable {
     this.description = other.description;
   }
   
-  @Override
-  public void readJson(JsonReader r) {
-    description = r.readObject("description");
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("description", description);
-  }
-
   public String getDescription() {
     return this.description;
   }

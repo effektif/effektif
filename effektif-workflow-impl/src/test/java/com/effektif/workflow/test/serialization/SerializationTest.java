@@ -15,23 +15,22 @@
  */
 package com.effektif.workflow.test.serialization;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.model.InitializationError;
 
 import com.effektif.workflow.test.TestSuiteHelper;
+import com.effektif.workflow.test.api.FormTriggerTest;
 
 /**
  * @author Tom Baeyens
  */
-@Ignore
 public class SerializationTest {
   
   @Test
   public void testSerialization() throws InitializationError {
     TestSuiteHelper.run(new SerializingWorkflowEngineConfiguration()
       // use the next line if you only want to run 1 test
-      // , ExclusiveGatewayTest.class, "testExclusiveGateway"
+      // , FormTriggerTest.class, "testFormTriggerDecision"
       );
   }
 }

@@ -39,6 +39,7 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class); 
     TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
     RestJsonMapper restJsonMapper = configuration.get(RestJsonMapper.class);
+    restJsonMapper.getMappings().pretty();
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, restJsonMapper);
     this.taskService = new SerializingTaskServiceImpl(taskService, restJsonMapper);
     this.configuration = configuration;

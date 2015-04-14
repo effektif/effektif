@@ -13,6 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.mapper.JsonWriter;
 
 
@@ -21,6 +24,8 @@ import com.effektif.workflow.api.mapper.JsonWriter;
  */
 public abstract class AbstractWriter implements JsonWriter {
 
+  protected static final Logger log = LoggerFactory.getLogger(AbstractWriter.class);
+  
   protected Boolean isPretty;
   protected Mappings mappings;
 

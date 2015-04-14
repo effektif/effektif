@@ -80,5 +80,4 @@ public abstract class Comparator extends Condition {
   }
   
   protected abstract String getName();
-
 }

@@ -36,20 +36,6 @@ public class UserIdType extends Type {
   protected List<UserId> candidateIds;
   protected List<GroupId> candidateGroupIds;
   
-//  @Override
-//  public void readJson(JsonReader r) {
-//    candidateIds = r.readList("candidateIds");
-//    candidateGroupIds = r.readList("candidateGroupIds");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeList("candidateIds", candidateIds);
-//    w.writeList("candidateGroupIds", candidateGroupIds);
-//  }
-
   public List<UserId> getCandidateIds() {
     return this.candidateIds;
   }

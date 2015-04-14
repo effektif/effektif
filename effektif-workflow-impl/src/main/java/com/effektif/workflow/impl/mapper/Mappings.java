@@ -19,10 +19,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +30,32 @@ import com.effektif.workflow.api.acl.GroupIdentity;
 import com.effektif.workflow.api.acl.OrganizationIdentity;
 import com.effektif.workflow.api.acl.PublicIdentity;
 import com.effektif.workflow.api.acl.UserIdentity;
+import com.effektif.workflow.api.condition.And;
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.Contains;
+import com.effektif.workflow.api.condition.ContainsIgnoreCase;
+import com.effektif.workflow.api.condition.Equals;
+import com.effektif.workflow.api.condition.GreaterThan;
+import com.effektif.workflow.api.condition.GreaterThanOrEqual;
+import com.effektif.workflow.api.condition.HasNoValue;
+import com.effektif.workflow.api.condition.HasValue;
+import com.effektif.workflow.api.condition.IsFalse;
+import com.effektif.workflow.api.condition.IsTrue;
+import com.effektif.workflow.api.condition.LessThan;
+import com.effektif.workflow.api.condition.LessThanOrEqual;
+import com.effektif.workflow.api.condition.Not;
+import com.effektif.workflow.api.condition.NotContains;
+import com.effektif.workflow.api.condition.NotContainsIgnoreCase;
+import com.effektif.workflow.api.condition.NotEquals;
+import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
-import com.effektif.workflow.api.mapper.JsonWritable;
+import com.effektif.workflow.api.mapper.JsonIgnore;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
 import com.effektif.workflow.impl.mapper.deprecated.TypeField;
 
@@ -71,6 +85,25 @@ public class Mappings {
     registerSubClass(OrganizationIdentity.class);
     registerSubClass(PublicIdentity.class);
     registerSubClass(UserIdentity.class);
+    
+    registerBaseClass(Condition.class);
+    registerSubClass(And.class);
+    registerSubClass(Or.class);
+    registerSubClass(Not.class);
+    registerSubClass(Contains.class);
+    registerSubClass(NotContains.class);
+    registerSubClass(ContainsIgnoreCase.class);
+    registerSubClass(NotContainsIgnoreCase.class);
+    registerSubClass(Equals.class);
+    registerSubClass(NotEquals.class);
+    registerSubClass(GreaterThan.class);
+    registerSubClass(GreaterThanOrEqual.class);
+    registerSubClass(LessThan.class);
+    registerSubClass(LessThanOrEqual.class);
+    registerSubClass(HasNoValue.class);
+    registerSubClass(HasValue.class);
+    registerSubClass(IsFalse.class);
+    registerSubClass(IsTrue.class);
   }
 
   public void registerBaseClass(Class<?> baseClass) {
@@ -244,7 +277,8 @@ public class Mappings {
     Field[] declaredFields = type.getDeclaredFields();
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
-        if (!Modifier.isStatic(field.getModifiers())) {
+        if (!Modifier.isStatic(field.getModifiers())
+            && field.getAnnotation(JsonIgnore.class)==null) {
           field.setAccessible(true);
           allFields.add(field);
         }

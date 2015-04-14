@@ -42,8 +42,10 @@ public class XmlElement {
   public String text;
   
   /** not persisted in the db */
+  @JsonIgnore
   public XmlElement parent;
   /** not persisted in the db */
+  @JsonIgnore
   public String namespaceUri;
 
   // name ///////////////////////////////////////////////////////////////////////////

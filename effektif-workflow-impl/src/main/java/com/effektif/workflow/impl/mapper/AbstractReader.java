@@ -13,18 +13,19 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.LocalDateTime;
-import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public abstract class AbstractReader implements JsonReader {
   public <T extends Id> T readId(String fieldName) {
     Object id = jsonObject.remove(fieldName);
     Class<T> idType = (Class<T>) mappings.getFieldType(readableClass, fieldName);
-    return readId(id, idType);
+    return toId(id, idType);
   }
 
   public String readString(String fieldName) {
@@ -100,7 +101,7 @@ public abstract class AbstractReader implements JsonReader {
   public <T> T readObject(String fieldName) {
     Map<String, Object> json = (Map<String, Object>) jsonObject.remove(fieldName);
     Class<T> readableType = (Class<T>) mappings.getFieldType(readableClass, fieldName);
-    return readObject(json, readableType);
+    return toObject(json, readableType);
   }
 
   @Override
@@ -110,7 +111,7 @@ public abstract class AbstractReader implements JsonReader {
       return null;
     }
     ParameterizedType mapType = (ParameterizedType) mappings.getFieldType(readableClass, fieldName);
-    return readMap(jsonMap, mapType.getActualTypeArguments()[1]);
+    return toMap(jsonMap, mapType.getActualTypeArguments()[1]);
   }
   
   @Override
@@ -120,7 +121,7 @@ public abstract class AbstractReader implements JsonReader {
       return null;
     }
     ParameterizedType listType = (ParameterizedType) mappings.getFieldType(readableClass, fieldName);
-    return readList(jsons, listType.getActualTypeArguments()[0]);
+    return toList(jsons, listType.getActualTypeArguments()[0]);
   }
 
   @Override
@@ -130,7 +131,7 @@ public abstract class AbstractReader implements JsonReader {
       return null;
     }
     ParameterizedType bindingType = (ParameterizedType) mappings.getFieldType(readableClass, fieldName);
-    return readBinding(jsonBinding, bindingType.getActualTypeArguments()[0]);
+    return toBinding(jsonBinding, bindingType.getActualTypeArguments()[0]);
   }
   
   @Override
@@ -138,58 +139,105 @@ public abstract class AbstractReader implements JsonReader {
     return jsonObject;
   }
 
-  public Object readObject(Object json, Type type) {
+  public Object toObject(Object json, Type type) {
     if (json==null) {
       return null;
     }
+    
+    Class<?> clazz = null;
+    ParameterizedType parameterizedType = null;
+    WildcardType wildcardType = null;
+    
+    if (type instanceof Class) {
+      clazz = (Class< ? >) type;
+    } 
+
+    if (clazz==Boolean.class) {
+      if (!(json instanceof Boolean)) {
+        throw new RuntimeException("Expected boolean, but was "+json+" ("+json.getClass().getName()+")"); 
+      }
+      return json;
+    
+    } else if (clazz==String.class) {
+      if (!(json instanceof String)) {
+        throw new RuntimeException("Expected string, but was "+json+" ("+json.getClass().getName()+")"); 
+      }
+      return json;
+    
+    } else if (clazz==LocalDateTime.class) {
+      return readDateValue(json);
+    }
+    
     if (type instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType)type;
-      if (Map.class.equals(parameterizedType.getRawType())) {
-        return readMap((Map<String,Object>) json, parameterizedType.getActualTypeArguments()[1]);
+      parameterizedType = (ParameterizedType) type;
+      clazz = (Class) parameterizedType.getRawType();
+    } else if (type instanceof WildcardType) {
+      wildcardType = (WildcardType) type;
+      clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
+    }
+
+    if (clazz==null || clazz==Object.class) {
+      return json;
+      
+    } else if (Id.class.isAssignableFrom(clazz)) {
+      return toId(json, (Class<Id>)type);
+    
+    } else if (Number.class.isAssignableFrom(clazz)) {
+      if (!(json instanceof Number)) {
+        throw new RuntimeException("Expected number, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-      if (List.class.equals(parameterizedType.getRawType())) {
-        return readList((List<Object>) json, parameterizedType.getActualTypeArguments()[0]);
+      return toNumber(json, type);
+    
+    } else if (clazz==Map.class) {
+      if (!(json instanceof Map)) {
+        throw new RuntimeException("Expected object, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-      if (Binding.class.equals(parameterizedType.getRawType())) {
-        return readBinding((Map<String,Object>) json, parameterizedType.getActualTypeArguments()[0]);
+      Type elementType = parameterizedType!=null ? parameterizedType.getActualTypeArguments()[1] : null;
+      return toMap((Map<String,Object>) json, elementType);
+    
+    } else if (clazz==List.class) {
+      if (!(json instanceof List)) {
+        throw new RuntimeException("Expected array, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-      if (Class.class.equals(parameterizedType.getRawType())) {
-        return readClass((String) json);
+      Type elementType = parameterizedType!=null ? parameterizedType.getActualTypeArguments()[0] : null;
+      return toList((List<Object>) json, elementType);
+    
+    } else if (clazz==Binding.class) {
+      Type valueType = parameterizedType!=null ? parameterizedType.getActualTypeArguments()[0] : null;
+      return toBinding((Map<String,Object>) json, valueType);
+    
+    } else if (clazz.isEnum()) {
+      if (!(json instanceof String)) {
+        throw new RuntimeException("Expected enum string, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-    } else { // type is a class (not parameterized)
-      Class<?> clazz = (Class< ? >) type;
-      if (json==null
-          || type==Object.class
-          || type==String.class
-          || type==Boolean.class) {
-        return json;
+      return Enum.valueOf((Class)clazz, (String)json);
+      
+    } else if (clazz.isArray()) {
+      if (!(json instanceof List)) {
+        throw new RuntimeException("Expected array, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-      if (Number.class.isAssignableFrom(clazz)) {
-        return readNumber(json, type);
-      }
-      if (Id.class.isAssignableFrom(clazz)) {
-        return readId(json, (Class<Id>)type);
-      }
-      if (type==LocalDateTime.class) {
-        return readDateValue(json);
-      }
-      if (Binding.class.equals(clazz)) {
-        return readBinding((Map<String,Object>) json, null);
-      }
-      if (json instanceof Map) {
-        Map<String, Object> jsonMap = (Map<String, Object>) json;
-        if (JsonReadable.class.isAssignableFrom(clazz)) {
-          return readReadable(jsonMap, (Class<JsonReadable>)clazz);
-        } else {
-          return readObject(jsonMap, clazz);
-        }
+      List<Object> list = toList((List<Object>) json, clazz.getComponentType());
+      return list.toArray((Object[]) Array.newInstance(clazz.getComponentType(), list.size()));
+
+    } else if (clazz==Class.class) {
+      return readClass((String) json);
+    } 
+
+    if (json instanceof Map) {
+      Map<String, Object> jsonMap = (Map<String, Object>) json;
+      if (JsonReadable.class.isAssignableFrom(clazz)) {
+        return toReadable(jsonMap, (Class<JsonReadable>)clazz);
+      } else if (Map.class.isAssignableFrom(clazz)){
+        return toMap(jsonMap, Object.class);
+      } else {
+        return toObject(jsonMap, clazz);
       }
     }
     
     throw new RuntimeException("Couldn't parse "+json+" ("+json.getClass().getName()+")");
   }
 
-  protected Object readNumber(Object json, Type type) {
+  protected Object toNumber(Object json, Type type) {
     if (json==null) {
       return null;
     }
@@ -200,18 +248,23 @@ public abstract class AbstractReader implements JsonReader {
     if (type==null) {
       return json;
     }
-    if (type==Long.class) {
+    if (type==Long.class
+        || type==long.class) {
       return number.longValue();
+    }
+    if (type==Integer.class
+        || type==int.class) {
+      return number.intValue();
     }
     if (type==Double.class) {
       return number.doubleValue();
     }
-    throw new RuntimeException("The model should only contain Long and Double fields");
+    throw new RuntimeException("The model should not contain fields with other number types than Long, Integer or Double: "+type);
   }
 
   public abstract LocalDateTime readDateValue(Object jsonDate);
   
-  public static <T extends Id> T readId(Object jsonId, Class<T> idType) {
+  public static <T extends Id> T toId(Object jsonId, Class<T> idType) {
     if (jsonId==null) {
       return null;
     }
@@ -225,7 +278,7 @@ public abstract class AbstractReader implements JsonReader {
     }
   }
   
-  public <T extends JsonReadable> T readReadable(Map<String, Object> json, Class<T> clazz) {
+  public <T extends JsonReadable> T toReadable(Map<String, Object> json, Class<T> clazz) {
     if (json==null) {
       return null;
     }
@@ -233,9 +286,8 @@ public abstract class AbstractReader implements JsonReader {
       Map<String,Object> parentJson = jsonObject;
       Class<?> parentClass = readableClass; 
       jsonObject = json;
-      readableClass = clazz;
-      Class<T> concreteType = mappings.getConcreteClass(jsonObject, clazz);
-      T object = concreteType.newInstance();
+      readableClass = mappings.getConcreteClass(jsonObject, clazz);
+      T object = (T) readableClass.newInstance();
       object.readJson(this);
       this.jsonObject = parentJson;
       this.readableClass = parentClass;
@@ -245,7 +297,7 @@ public abstract class AbstractReader implements JsonReader {
     }
   }
   
-  public <T> T readObject(Map<String, Object> json, Class<T> clazz) {
+  public <T> T toObject(Map<String, Object> json, Class<T> clazz) {
     if (json==null) {
       return null;
     }
@@ -253,9 +305,8 @@ public abstract class AbstractReader implements JsonReader {
       Map<String,Object> parentJson = jsonObject;
       Class<?> parentClass = readableClass; 
       jsonObject = json;
-      readableClass = clazz;
-      Class<T> concreteType = mappings.getConcreteClass(jsonObject, clazz);
-      T object = concreteType.newInstance();
+      readableClass = mappings.getConcreteClass(jsonObject, clazz);
+      T object = (T) readableClass.newInstance();
       readFieldsInto(object, clazz);
       this.jsonObject = parentJson;
       this.readableClass = parentClass;
@@ -266,7 +317,7 @@ public abstract class AbstractReader implements JsonReader {
   }
 
   public void readFieldsInto(Object o, Class<?> clazz) {
-    List<Field> fields = mappings.getAllFields(clazz);
+    List<Field> fields = mappings.getAllFields(o.getClass());
     if (fields!=null) {
       for (Field field : fields) {
         readFieldInto(o, field);
@@ -278,8 +329,12 @@ public abstract class AbstractReader implements JsonReader {
     try {
       Type fieldType = field.getGenericType();
       Object fieldJson = jsonObject.get(getJsonFieldName(field));
-      Object fieldValue = readObject(fieldJson, fieldType);
-      field.set(o, fieldValue);
+      if (fieldJson!=null) {
+        // log.debug("Parsing json "+fieldJson+" for "+field);
+        Object fieldValue = toObject(fieldJson, fieldType);
+        // log.debug("Setting parsed value "+fieldValue+" into "+field);
+        field.set(o, fieldValue);
+      }
     } catch (Exception e) {
       throw new RuntimeException("Problem reading field "+field.toString()+": "+e.getMessage(), e);
     }
@@ -289,39 +344,39 @@ public abstract class AbstractReader implements JsonReader {
     return field.getName();
   }
 
-  public <T> Map<String, T> readMap(Map<String, Object> jsonMap, Type valueType) {
+  public <T> Map<String, T> toMap(Map<String, Object> jsonMap, Type valueType) {
     if (jsonMap==null) {
       return null;
     }
     Map<String,T> map = new HashMap<>();
     for (String key: jsonMap.keySet()) {
       Object jsonFieldValue = jsonMap.get(key);
-      T fieldValue = (T) readObject(jsonFieldValue, valueType);
+      T fieldValue = (T) toObject(jsonFieldValue, valueType);
       map.put(key, fieldValue);
     }
     return map;
   }
 
-  public <T> List<T> readList(List<Object> jsonList, Type elementType) {
+  public <T> List<T> toList(List<Object> jsonList, Type elementType) {
     if (jsonList==null) {
       return null;
     }
     List<T> objects = new ArrayList<>();
     for (Object jsonElement: jsonList) {
-      T object = (T) readObject(jsonElement, elementType);
+      T object = (T) toObject(jsonElement, elementType);
       objects.add(object);
     }
     return objects;
   }
 
-  public <T> Binding<T> readBinding(Map<String, Object> jsonBinding, Type valueType) {
+  public <T> Binding<T> toBinding(Map<String, Object> jsonBinding, Type valueType) {
     if (jsonBinding==null) {
       return null;
     }
     Binding<T> binding = new Binding();
     Object jsonValue = jsonBinding.get("value");
     if (jsonValue!=null) {
-      Object value = readObject(jsonValue, valueType);
+      Object value = toObject(jsonValue, valueType);
       binding.setValue((T) value);
     }
     String expression = (String) jsonBinding.get("expression");

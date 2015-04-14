@@ -115,7 +115,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //  }
 
   public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
-    return mongoJsonMapper.createReader().readObject(dbWorkflow, workflowClass);
+    return mongoJsonMapper.createReader().toObject(dbWorkflow, workflowClass);
   }
 
 //  public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {

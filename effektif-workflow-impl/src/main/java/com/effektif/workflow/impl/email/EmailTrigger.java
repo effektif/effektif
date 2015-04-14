@@ -40,16 +40,6 @@ public class EmailTrigger extends Trigger {
   /** Optional variable that specifies the name to use for the process variable, instead of <code>EMAIL_ID_KEY</code>. */
   protected String emailIdVariableId;
 
-  @Override
-  public void readJson(JsonReader r) {
-    emailIdVariableId = r.readString("emailIdVariableId");
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("emailIdVariableId", emailIdVariableId);
-  }
-
   /**
    * Returns the variable ID to use to look up the {@link com.effektif.workflow.api.model.EmailId},
    * using {@link #EMAIL_ID_KEY} as a default value.

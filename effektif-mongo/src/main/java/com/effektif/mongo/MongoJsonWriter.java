@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -175,6 +176,14 @@ public class MongoJsonWriter extends AbstractWriter {
       ParameterizedType bindingType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
       Type bindingValueType = bindingType!=null ? bindingType.getActualTypeArguments()[0] : null;
       return toDbObject((Binding) o, bindingValueType);
+    } else if (o instanceof Class) {
+      return ((Class)o).getName();
+    } else if (o.getClass().isEnum()) {
+      return o.toString();
+    } else if (o.getClass().isArray()) {
+      List<Object> list = Arrays.asList((Object[])o);
+      Class< ? > elementType = o.getClass().getComponentType();
+      return toDbObject(list, elementType);
     } else {
       return toDbObjectDefault(o);
     }

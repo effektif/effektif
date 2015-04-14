@@ -36,10 +36,6 @@ public class MongoJsonReader extends AbstractReader {
     this.mongoJsonMapper = mongoJsonMapper;
   }
 
-  public <T> T toObject(BasicDBObject dbObject, Class<T> type) {
-    return readObject(dbObject, type);
-  }
-
   public LocalDateTime readDateValue(Object jsonDate) {
     if (jsonDate==null) {
       return null;
@@ -56,6 +52,6 @@ public class MongoJsonReader extends AbstractReader {
   public <T extends Id> T readId() {
     Object id = jsonObject.get("_id");
     Class<T> idType = (Class<T>) mappings.getFieldType(readableClass, "id");
-    return readId(id, idType);
+    return toId(id, idType);
   }
 }

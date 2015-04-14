@@ -17,8 +17,6 @@ package com.effektif.workflow.api.triggers;
 
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,16 +36,6 @@ public class FormTrigger extends Trigger {
   public static final String FORM_INSTANCE_KEY = "formInstance";
 
   protected Form form;
-
-  @Override
-  public void readJson(JsonReader r) {
-    form = r.readObject("form");
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeWritable("form", form);
-  }
 
   public Form getForm() {
     return this.form;
