@@ -15,9 +15,14 @@
  */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.joda.time.LocalDateTime;
+import org.junit.Test;
 
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.Money;
@@ -33,10 +38,6 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.test.WorkflowTest;
-import org.joda.time.LocalDateTime;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 
 /**

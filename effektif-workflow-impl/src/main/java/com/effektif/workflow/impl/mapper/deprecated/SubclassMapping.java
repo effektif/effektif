@@ -13,13 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper.deprecated;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
-import com.effektif.workflow.api.workflow.Activity;
 
 
 /**

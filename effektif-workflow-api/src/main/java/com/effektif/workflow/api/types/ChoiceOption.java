@@ -15,14 +15,29 @@
  */
 package com.effektif.workflow.api.types;
 
+import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWritable;
+import com.effektif.workflow.api.mapper.JsonWriter;
+
 
 /**
  * @author Tom Baeyens
  */
-public class ChoiceOption {
+public class ChoiceOption implements JsonReadable, JsonWritable {
   
   protected String id;
 
+  @Override
+  public void readJson(JsonReader r) {
+    id = r.readString("id");
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeString("id", id);
+  }
+  
   public String getId() {
     return this.id;
   }

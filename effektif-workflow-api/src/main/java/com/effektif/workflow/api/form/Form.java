@@ -18,6 +18,9 @@ package com.effektif.workflow.api.form;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
+
 
 /**
  * A form definition (aka declaration) that specifies the fields to display for 
@@ -30,7 +33,19 @@ import java.util.List;
 public class Form extends AbstractForm {
 
   protected List<FormField> fields;
+  
+  @Override
+  public void readJson(JsonReader r) {
+    fields = r.readList("fields");
+    super.readJson(r);
+  }
 
+  @Override
+  public void writeJson(JsonWriter w) {
+    super.writeJson(w);
+    w.writeList("fields", fields);
+  }
+  
   public List<FormField> getFields() {
     return this.fields;
   }

@@ -39,6 +39,7 @@ import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
+import com.effektif.workflow.impl.mapper.Mappings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -53,6 +54,7 @@ public class DataTypeService implements Brewable {
   
   protected Configuration configuration;
   protected ObjectMapper objectMapper;
+  protected Mappings mappings;
   
   protected Map<Class<? extends Type>,DataType> singletons = new ConcurrentHashMap<>();
   protected Map<Class<? extends Type>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
@@ -63,6 +65,7 @@ public class DataTypeService implements Brewable {
   public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     this.objectMapper = brewery.get(ObjectMapper.class);
+    this.mappings = brewery.get(Mappings.class);
     initializeDataTypes();
   }
 
@@ -112,6 +115,7 @@ public class DataTypeService implements Brewable {
         dataTypeConstructors.put(apiClass, constructor);
       }
       objectMapper.registerSubtypes(apiClass);
+      mappings.registerSubClass(apiClass);
     }
     Class valueClass = dataType.getValueClass();
     if (valueClass!=null) {
@@ -119,6 +123,7 @@ public class DataTypeService implements Brewable {
         dataTypesByValueClass.put(valueClass, dataType);
       }
       objectMapper.registerSubtypes(valueClass);
+      mappings.registerSubClass(valueClass);
     }
   }
   

@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.slack;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Element;
@@ -30,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("slackPost")
+@TypeName("slackPost")
 public class SlackPost extends Activity {
 
   protected String slackAccountId;

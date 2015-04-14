@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.bpmn;
+package com.effektif.workflow.impl.mapper;
 
 /** constants used in both the BpmnReader and BpmnWriter */
 public class Bpmn {

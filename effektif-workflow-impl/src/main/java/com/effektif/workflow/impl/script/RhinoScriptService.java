@@ -18,8 +18,6 @@ package com.effektif.workflow.impl.script;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.script.CompiledScript;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;

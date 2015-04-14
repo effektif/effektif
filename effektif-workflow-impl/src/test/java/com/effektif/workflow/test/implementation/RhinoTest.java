@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.junit.Test;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;

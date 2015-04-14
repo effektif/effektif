@@ -38,19 +38,19 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * 
  * @author Tom Baeyens
  */
-public abstract class Extensible implements JsonWritable, JsonReadable {
+public abstract class Extensible {
 
   protected Map<String,Object> properties;
   
-  @Override
-  public void readJson(JsonReader r) {
-    // properties = r.readOtherProperties();
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-    // w.writeFields(properties);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    properties = r.readProperties();
+//  }
+//  
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeProperties(properties);
+//  }
 
   /** @see Extensible */
   @JsonAnyGetter

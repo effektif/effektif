@@ -43,6 +43,26 @@ public class Transition extends Element {
   protected Condition condition;
   protected Boolean isToNext;
 
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    from = r.readString("from");
+//    to = r.readString("to");
+//    condition = r.readObject("condition");
+//    isToNext = r.readBoolean("isToNext");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    w.writeString("from", id);
+//    w.writeString("to", id);
+//    w.writeWritable("condition", condition);
+//    w.writeBoolean("isToNext", isToNext);
+//    super.writeJson(w);
+//  }
+
   @Override
   public void readBpmn(BpmnReader r) {
     id = r.readStringAttributeBpmn("id");
@@ -57,22 +77,6 @@ public class Transition extends Element {
     w.writeStringAttributeBpmn("sourceRef", from);
     w.writeStringAttributeBpmn("targetRef", to);
     super.writeBpmn(w);
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readString("id");
-    from = r.readString("from");
-    to = r.readString("to");
-    super.readJson(r);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("id", id);
-    w.writeString("from", id);
-    w.writeString("to", id);
-    super.writeJson(w);
   }
 
   public String getId() {

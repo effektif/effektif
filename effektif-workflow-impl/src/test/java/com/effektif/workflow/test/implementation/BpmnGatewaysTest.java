@@ -23,7 +23,6 @@ import org.junit.Test;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 
 /**
  * Test BPMN parsing and generation for basic gateways.

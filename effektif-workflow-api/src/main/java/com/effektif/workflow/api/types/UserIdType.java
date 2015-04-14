@@ -18,6 +18,7 @@ package com.effektif.workflow.api.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -27,12 +28,27 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("userId")
+@TypeName("userId")
 public class UserIdType extends Type {
 
   public static final UserIdType INSTANCE = new UserIdType();
   
   protected List<UserId> candidateIds;
   protected List<GroupId> candidateGroupIds;
+  
+//  @Override
+//  public void readJson(JsonReader r) {
+//    candidateIds = r.readList("candidateIds");
+//    candidateGroupIds = r.readList("candidateGroupIds");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeList("candidateIds", candidateIds);
+//    w.writeList("candidateGroupIds", candidateGroupIds);
+//  }
 
   public List<UserId> getCandidateIds() {
     return this.candidateIds;

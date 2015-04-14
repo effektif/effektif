@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.LocalDateTime;
@@ -127,11 +126,6 @@ public class Task extends Extensible implements AccessControlledObject {
     this.workflowInstanceId = other.workflowInstanceId;
     this.sourceWorkflowId = other.sourceWorkflowId;
     this.workflowId = other.workflowId;
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-    // TODO
   }
   
   public boolean isCase() {

@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.impl.email;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -29,12 +32,23 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Peter Hilton
  */
 @JsonTypeName("email")
+@TypeName("email")
 public class EmailTrigger extends Trigger {
 
   public static final String EMAIL_ID_KEY = "emailId";
 
   /** Optional variable that specifies the name to use for the process variable, instead of <code>EMAIL_ID_KEY</code>. */
   protected String emailIdVariableId;
+
+  @Override
+  public void readJson(JsonReader r) {
+    emailIdVariableId = r.readString("emailIdVariableId");
+  }
+  
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeString("emailIdVariableId", emailIdVariableId);
+  }
 
   /**
    * Returns the variable ID to use to look up the {@link com.effektif.workflow.api.model.EmailId},

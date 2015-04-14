@@ -90,10 +90,6 @@ public class Case extends Extensible implements AccessControlledObject {
     this.workflowId = other.workflowId;
   }
 
-  @Override
-  public void writeJson(JsonWriter w) {
-  }
-
   public Case name(String name) {
     this.name = name;
     return this;

@@ -13,14 +13,22 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
+import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
+
 
 /** a mapper is an object that can read and write API objects.
  * 
  * @author Tom Baeyens
  */
-public abstract class AbstractMapper<R,W> {
+public abstract class AbstractMapper<R,W> implements Brewable {
   
-  protected Mappings mappings = new Mappings();
+  protected Mappings mappings;
+
+  @Override
+  public void brew(Brewery brewery) {
+    this.mappings = brewery.get(Mappings.class);
+  }
 
   public Mappings getMappings() {
     return mappings;

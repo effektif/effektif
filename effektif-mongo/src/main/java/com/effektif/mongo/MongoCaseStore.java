@@ -33,7 +33,6 @@ import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.task.CaseQuery;
 import com.effektif.workflow.impl.CaseStore;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.mapper.deprecated.JsonService;

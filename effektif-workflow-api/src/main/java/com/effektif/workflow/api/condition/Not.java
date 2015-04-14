@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -26,6 +28,16 @@ public class Not extends Condition {
 
   protected Condition condition;
   
+  @Override
+  public void readJson(JsonReader r) {
+    condition = r.readObject("condition");
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeWritable("condition", condition);
+  }
+
   public Condition getCondition() {
     return this.condition;
   }

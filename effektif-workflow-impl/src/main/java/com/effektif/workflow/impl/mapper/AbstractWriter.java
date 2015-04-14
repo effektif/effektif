@@ -21,6 +21,7 @@ import com.effektif.workflow.api.mapper.JsonWriter;
  */
 public abstract class AbstractWriter implements JsonWriter {
 
+  protected Boolean isPretty;
   protected Mappings mappings;
 
   public AbstractWriter() {
@@ -31,4 +32,15 @@ public abstract class AbstractWriter implements JsonWriter {
     this.mappings = mappings;
   }
   
+  public Boolean isPretty() {
+    return Boolean.TRUE.equals(isPretty) || mappings.isPretty();
+  }
+
+  public void setPretty(Boolean isPretty) {
+    this.isPretty = isPretty;
+  }
+
+  public void pretty() {
+    this.isPretty = true;
+  }
 }

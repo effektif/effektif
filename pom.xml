@@ -30,7 +30,7 @@
     <module>effektif-mongo</module>
     <module>effektif-adapter-activity</module>
     <module>effektif-adapter</module>
-    <module>effektif-server</module>
+    <!-- module>effektif-server</module -->
   </modules>
 
   <dependencies>

@@ -143,7 +143,7 @@ public class CallTest extends WorkflowTest {
     
     Workflow superWorkflow = new Workflow()
       .activity("call", new Call()
-        .inputValue("performer", new UserId("johndoe"))
+        .inputValue("performer", new UserId("552ce4fdc2e610a6a3dedb83"))
         .subWorkflowId(subWorkflow.getId()));
     
     deploy(superWorkflow);
@@ -151,7 +151,7 @@ public class CallTest extends WorkflowTest {
     start(superWorkflow);
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssigneeId().getInternal());
+    assertEquals("552ce4fdc2e610a6a3dedb83", task.getAssigneeId().getInternal());
   }
 
   @Test
@@ -174,11 +174,11 @@ public class CallTest extends WorkflowTest {
     
     workflowEngine.start(new TriggerInstance()
       .workflowId(superWorkflow.getId())
-      .data("guineapig", new UserId("johndoe"))
+      .data("guineapig", new UserId("552ce4fdc2e610a6a3dedb83"))
     );
 
     Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("johndoe", task.getAssigneeId().getInternal());
+    assertEquals("552ce4fdc2e610a6a3dedb83", task.getAssigneeId().getInternal());
   }
 
 }

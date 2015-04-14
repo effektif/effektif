@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.workflow.api.mapper.JsonWritable;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -24,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  * @author Tom Baeyens
  */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public abstract class Condition {
+public abstract class Condition implements JsonReadable, JsonWritable {
   
   protected String toString(Object o) {
     if (o==null) {

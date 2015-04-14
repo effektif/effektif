@@ -20,6 +20,7 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.TaskServiceImpl;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
+import com.effektif.workflow.impl.mapper.RestJsonMapper;
 import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
@@ -37,9 +38,9 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     TestConfiguration configuration = new TestConfiguration();
     WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class); 
     TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
-    JsonService jsonService = configuration.get(JsonService.class);
-    this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonService);
-    this.taskService = new SerializingTaskServiceImpl(taskService, jsonService);
+    RestJsonMapper restJsonMapper = configuration.get(RestJsonMapper.class);
+    this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, restJsonMapper);
+    this.taskService = new SerializingTaskServiceImpl(taskService, restJsonMapper);
     this.configuration = configuration;
   }
   

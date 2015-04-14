@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBDecoderFactory;

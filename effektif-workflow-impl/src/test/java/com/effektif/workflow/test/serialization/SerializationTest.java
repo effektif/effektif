@@ -15,15 +15,16 @@
  */
 package com.effektif.workflow.test.serialization;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.model.InitializationError;
 
 import com.effektif.workflow.test.TestSuiteHelper;
-import com.effektif.workflow.test.api.ExclusiveGatewayTest;
 
 /**
  * @author Tom Baeyens
  */
+@Ignore
 public class SerializationTest {
   
   @Test

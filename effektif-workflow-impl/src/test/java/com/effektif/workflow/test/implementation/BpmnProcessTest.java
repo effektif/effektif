@@ -34,7 +34,6 @@ import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 
 /**
  * Test BPMN parsing and generation for all activity types in one process.

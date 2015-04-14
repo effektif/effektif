@@ -29,6 +29,7 @@ import com.effektif.workflow.impl.activity.types.FormTriggerImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
+import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +42,7 @@ public class ActivityTypeService implements Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
   
+  protected Mappings mappings;
   protected ObjectMapper objectMapper;
   protected Configuration configuration;
 
@@ -59,6 +61,7 @@ public class ActivityTypeService implements Brewable {
   @Override
   public void brew(Brewery brewery) {
     this.objectMapper = brewery.get(ObjectMapper.class);
+    this.mappings = brewery.get(Mappings.class);
     this.configuration = brewery.get(Configuration.class);
     initializeActivityTypes();
     initializeTriggerTypes();
@@ -90,6 +93,7 @@ public class ActivityTypeService implements Brewable {
     
     // log.debug("Registering "+activityTypeApiClass);
     objectMapper.registerSubtypes(activityTypeApiClass);
+    mappings.registerSubClass(activityTypeApiClass);
   }
   
   public ActivityDescriptor getActivityDescriptor(String jsonTypeName) {
@@ -100,6 +104,7 @@ public class ActivityTypeService implements Brewable {
     Class triggerApiClass = trigger.getTriggerApiClass();
     triggerClasses.put(triggerApiClass, trigger.getClass());
     objectMapper.registerSubtypes(triggerApiClass);
+    mappings.registerSubClass(triggerApiClass);
   }
 
   public ActivityType instantiateActivityType(Activity activityApi) {

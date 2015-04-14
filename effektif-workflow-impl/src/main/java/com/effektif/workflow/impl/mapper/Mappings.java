@@ -15,20 +15,33 @@ package com.effektif.workflow.impl.mapper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.effektif.workflow.api.acl.AccessIdentity;
+import com.effektif.workflow.api.acl.GroupIdentity;
+import com.effektif.workflow.api.acl.OrganizationIdentity;
+import com.effektif.workflow.api.acl.PublicIdentity;
+import com.effektif.workflow.api.acl.UserIdentity;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
 import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.impl.bpmn.Bpmn;
+import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
 import com.effektif.workflow.impl.mapper.deprecated.TypeField;
 
@@ -37,12 +50,28 @@ import com.effektif.workflow.impl.mapper.deprecated.TypeField;
  * @author Tom Baeyens
  */
 public class Mappings {
+  
+  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
 
+  Boolean isPretty;
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
   Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
+  Map<Class<?>, List<Field>> fields = new HashMap<>();
+  
+  public Mappings() {
+    registerBaseClass(Activity.class);
+    registerBaseClass(com.effektif.workflow.api.types.Type.class);
+    registerBaseClass(Trigger.class);
+    
+    registerBaseClass(AccessIdentity.class);
+    registerSubClass(GroupIdentity.class);
+    registerSubClass(OrganizationIdentity.class);
+    registerSubClass(PublicIdentity.class);
+    registerSubClass(UserIdentity.class);
+  }
 
   public void registerBaseClass(Class<?> baseClass) {
     registerBaseClass(baseClass, "type");
@@ -55,34 +84,39 @@ public class Mappings {
 
   public void registerSubClass(Class<?> subClass) {
     TypeName typeName = subClass.getAnnotation(TypeName.class);
-    if (typeName==null) {
-      throw new RuntimeException(subClass.getName()+" must declare "+TypeName.class.toString());
-    }
-    registerSubClass(subClass, typeName.value(), subClass);
-    if (Activity.class.isAssignableFrom(subClass)) {
-      BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
-      if (bpmnElement!=null) {
-        BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
-        String elementName = bpmnElement.value();
-        bpmnTypeMapping.setBpmnElementName(elementName);
-        bpmnTypeMapping.setType(subClass);
-        Annotation[] annotations = subClass.getAnnotations();
-        for (Annotation annotation: annotations) {
-          if (annotation instanceof BpmnTypeAttribute) {
-            BpmnTypeAttribute bpmnTypeAttribute = (BpmnTypeAttribute) annotation;
-            bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
+    if (typeName!=null) {
+      registerSubClass(subClass, typeName.value(), subClass);
+      if (Activity.class.isAssignableFrom(subClass)) {
+        BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
+        if (bpmnElement!=null) {
+          BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
+          String elementName = bpmnElement.value();
+          bpmnTypeMapping.setBpmnElementName(elementName);
+          bpmnTypeMapping.setType(subClass);
+          Annotation[] annotations = subClass.getAnnotations();
+          for (Annotation annotation: annotations) {
+            if (annotation instanceof BpmnTypeAttribute) {
+              BpmnTypeAttribute bpmnTypeAttribute = (BpmnTypeAttribute) annotation;
+              bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
+            }
           }
+          bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
+  
+          List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
+          if (typeMappings==null) {
+            typeMappings = new ArrayList<>();
+            bpmnTypeMappingsByElement.put(elementName, typeMappings);
+          }
+          typeMappings.add(bpmnTypeMapping);
+        } else {
+          // throw new RuntimeException("No bpmn element specified on "+subclass);
         }
-        bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
-
-        List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
-        if (typeMappings==null) {
-          typeMappings = new ArrayList<>();
-          bpmnTypeMappingsByElement.put(elementName, typeMappings);
+      }
+    } else {
+      for (Class<?> baseClass: subclassMappings.keySet()) {
+        if (baseClass.isAssignableFrom(subClass)) {
+          throw new RuntimeException(subClass.getName()+" does not declare "+TypeName.class.toString());
         }
-        typeMappings.add(bpmnTypeMapping);
-      } else {
-        // throw new RuntimeException("No bpmn element specified on "+subclass);
       }
     }
   }
@@ -145,7 +179,7 @@ public class Mappings {
     return bpmnTypeMappingsByClass.get(subClass);
   }
 
-  public void writeTypeField(JsonWriter jsonWriter, JsonWritable o) {
+  public void writeTypeField(JsonWriter jsonWriter, Object o) {
     TypeField typeField = typeFields.get(o.getClass());
     if (typeField!=null) {
       jsonWriter.writeString(typeField.getTypeField(), typeField.getTypeName());
@@ -193,5 +227,44 @@ public class Mappings {
       return null;
     }
     return types.get(fieldName);
+  }
+
+  public List<Field> getAllFields(Class<?> type) {
+    List<Field> allFields = fields.get(type);
+    if (allFields!=null) {
+      return allFields;
+    }
+    allFields = new ArrayList<>();
+    scanFields(allFields, type);
+    fields.put(type, allFields);
+    return allFields;
+  }
+
+  public void scanFields(List<Field> allFields, Class< ? > type) {
+    Field[] declaredFields = type.getDeclaredFields();
+    if (declaredFields!=null) {
+      for (Field field: declaredFields) {
+        if (!Modifier.isStatic(field.getModifiers())) {
+          field.setAccessible(true);
+          allFields.add(field);
+        }
+      }
+    }
+    Class< ? > superclass = type.getSuperclass();
+    if (Object.class!=superclass) {
+      scanFields(allFields, superclass);
+    }
+  }
+
+  public boolean isPretty() {
+    return Boolean.TRUE.equals(isPretty);
+  }
+
+  public void setPretty(Boolean isPretty) {
+    this.isPretty = isPretty;
+  }
+
+  public void pretty() {
+    this.isPretty = true;
   }
 }

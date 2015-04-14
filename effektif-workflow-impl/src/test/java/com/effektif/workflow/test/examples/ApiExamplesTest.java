@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import javassist.expr.NewArray;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
@@ -34,9 +32,7 @@ import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
-import com.effektif.workflow.impl.mapper.BpmnWriterImpl;
 import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 

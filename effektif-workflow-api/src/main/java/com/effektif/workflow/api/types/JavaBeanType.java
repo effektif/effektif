@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.api.types;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -24,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("javaBean")
+@TypeName("javaBean")
 public class JavaBeanType extends Type {
 
   protected Class<?> javaClass;
@@ -34,6 +38,18 @@ public class JavaBeanType extends Type {
   public JavaBeanType(Class javaClass) {
     javaClass(javaClass);
   }
+  
+//  @Override
+//  public void readJson(JsonReader r) {
+//    javaClass = r.readClass("javaClass");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeClass("javaClass", javaClass);
+//  }
 
   public Class<?> getJavaClass() {
     return this.javaClass;

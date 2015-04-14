@@ -44,14 +44,14 @@ public class RestJsonReader extends AbstractReader {
     this.mappings = mappings;
   }
 
-  public <T extends JsonReadable> T toObject(String jsonString, Class<T> type) {
+  public <T> T toObject(String jsonString, Class<T> type) {
     return toObject(new StringReader(jsonString), type);
   }
 
-  public <T extends JsonReadable> T toObject(Reader jsonStream, Class<T> type) {
+  public <T> T toObject(Reader jsonStream, Class<T> type) {
     try {
       Map<String,Object> jsonMap = objectMapper.readValue(jsonStream, Map.class);
-      return readReadable(jsonMap, type);
+      return readObject(jsonMap, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -63,6 +63,9 @@ public class RestJsonReader extends AbstractReader {
   }
 
   public LocalDateTime readDateValue(Object jsonDate) {
+    if (jsonDate==null) {
+      return null;
+    }
     return DATE_FORMAT.parseLocalDateTime((String)jsonDate);
   }
 }

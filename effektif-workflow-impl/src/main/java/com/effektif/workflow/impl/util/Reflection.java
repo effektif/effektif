@@ -20,6 +20,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.impl.mapper.AbstractReader;
+
 
 /**
  * @author Tom Baeyens
@@ -56,5 +58,22 @@ public class Reflection {
     } catch (Exception e) {
       throw new RuntimeException("Couldn't instantiate "+type+" with the default constructor: "+e.getMessage(), e);
     }
+  }
+
+  public static Class< ? > loadClass(String className) {
+    Class<?> clazz = null;
+    if (className!=null) {
+      try {
+        clazz = Class.forName(className);
+      } catch (ClassNotFoundException e) {
+        AbstractReader.log.debug("Class not found with effektif classloader: "+className+". Trying context classloader...");
+        try {
+          clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+        } catch (ClassNotFoundException e1) {
+          AbstractReader.log.debug("Class not found with context classloader: "+className+". Giving up.");
+        }
+      }
+    }
+    return clazz;
   }
 }

@@ -16,8 +16,11 @@ package com.effektif.workflow.impl.mapper;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +44,6 @@ public class RestJsonWriter extends AbstractWriter {
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTime();
 
   JsonGenerator jgen;
-  boolean pretty;
   Class<?> writableClass;
 
   public RestJsonWriter() {
@@ -51,29 +53,24 @@ public class RestJsonWriter extends AbstractWriter {
     super(mappings);
   }
 
-  public String toString(JsonWritable o) {
+  public String toString(Object o) {
     StringWriter stringWriter = new StringWriter();
     toStream(o, stringWriter);
     return stringWriter.toString(); 
   }
 
-  public String toStringPretty(JsonWritable o) {
-    pretty = true;
+  public String toStringPretty(Object o) {
+    pretty();
     return toString(o); 
   }
   
-  public RestJsonWriter pretty() {
-    pretty = true;
-    return this;
-  }
-
-  public void toStream(JsonWritable o, Writer writer) {
+  public void toStream(Object o, Writer writer) {
     try {
       jgen = new JsonFactory().createGenerator(writer);
-      if (pretty) {
+      if (isPretty()) {
         jgen.setPrettyPrinter(new DefaultPrettyPrinter());
       }
-      writeWritable(o);
+      writeObject(o, o.getClass());
       jgen.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -158,6 +155,18 @@ public class RestJsonWriter extends AbstractWriter {
   }
   
   @Override
+  public void writeClass(String fieldName, Class< ? > value) {
+    if (value!=null) {
+      try {
+        jgen.writeFieldName(fieldName);
+        jgen.writeString(value.getName());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  
+  @Override
   public void writeWritable(String fieldName, JsonWritable o) {
     if (o!=null) {
       try {
@@ -209,9 +218,11 @@ public class RestJsonWriter extends AbstractWriter {
     }
   }
 
-  
-  
-  
+  @Override
+  public void writeProperties(Map<String, Object> properties) {
+    writeMapFields(properties, null);
+  }
+
   public <T> void writeBinding(Binding<T> binding, Type valueType) {
     if (binding==null) {
       return;
@@ -237,55 +248,52 @@ public class RestJsonWriter extends AbstractWriter {
       return;
     }
     try {
-      if (o instanceof String) {
+      if (is(String.class, type) || o instanceof String) {
         jgen.writeString((String) o);
-      } else if (o instanceof LocalDateTime) {
+      } else if (is(LocalDateTime.class, type) || o instanceof LocalDateTime) {
         writeDate((LocalDateTime) o);
-      } else if (o instanceof Number) {
+      } else if (is(Number.class, type) || o instanceof Number) {
         writeNumber((Number) o, type);
-      } else if (o instanceof Boolean) {
+      } else if (Boolean.class==type || o instanceof Boolean) {
         jgen.writeBoolean((Boolean) o);
-      } else if (o instanceof Id) {
+      } else if (is(Id.class, type) || o instanceof Id) {
         writeIdValue((Id) o);
-      } else if (o instanceof JsonWritable) {
+      } else if (is(JsonWritable.class, type) || o instanceof JsonWritable) {
         writeWritable((JsonWritable)o);
-      } else if (o instanceof Map) {
-        ParameterizedType mapType = (ParameterizedType) type; 
-        writeMap((Map) o, mapType.getActualTypeArguments()[1]);
-      } else if (o instanceof List) {
-        ParameterizedType mapType = (ParameterizedType) type; 
-        writeList((List) o, mapType.getActualTypeArguments()[0]);
-      } else if (o instanceof Binding) {
-        ParameterizedType bindingType = (ParameterizedType) type; 
-        writeBinding((Binding) o, bindingType.getActualTypeArguments()[0]);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void writeNumber(Number value, Type type) {
-    try {
-      if (value==null) {
-        jgen.writeNull();
-      } else if (Long.class.isAssignableFrom((Class<?>)type)) {
-        jgen.writeNumber(value.longValue());
-      } else if (Double.class.isAssignableFrom((Class<?>)type)) {
-        jgen.writeNumber(value.doubleValue());
+      } else if (is(List.class, type) || o instanceof List) {
+        Type elementType = getTypeArg(type, 0);
+        writeList((List) o, elementType);
+      } else if (is(Map.class, type) || o instanceof Map) {
+        Type valueType = getTypeArg(type, 1);
+        writeMap((Map) o, valueType);
+      } else if (is(Binding.class, type) || o instanceof Binding) {
+        Type valueType = getTypeArg(type, 0);
+        writeBinding((Binding) o, valueType);
       } else {
-        throw new RuntimeException("Unknown number "+value+" ("+value.getClass().getName()+")");
+        writeObjectDefault(o, type);
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void writeDate(LocalDateTime value) {
-    try {
-      jgen.writeString(DATE_FORMAT.print(value));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  protected static boolean is(Class<?> baseType, Type type) {
+    return type!=null 
+           && ( ( type instanceof Class
+                  && (baseType.isAssignableFrom((Class<?>)type)) 
+                ) || ( type instanceof ParameterizedType 
+                       && is(baseType, ((ParameterizedType)type).getRawType())
+                     )
+              );
+  }
+
+  protected Type getTypeArg(Type type, int index) {
+    if (type==null || ! (type instanceof ParameterizedType)) {
+      return null;
     }
+    ParameterizedType mapType = (ParameterizedType) type; 
+    Type valueType = mapType.getActualTypeArguments()[index];
+    return valueType;
   }
 
   public void writeWritable(JsonWritable o) {
@@ -301,6 +309,74 @@ public class RestJsonWriter extends AbstractWriter {
       } else {
         jgen.writeNull();
       }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected void writeObjectDefault(Object o, Type type) {
+    try {
+      if (o!=null) {
+        Class<?> parentWritableClass = writableClass;
+        writableClass = o.getClass();
+        jgen.writeStartObject();
+        mappings.writeTypeField(this, o);
+        writeFields(o, writableClass);
+        jgen.writeEndObject();
+        writableClass = parentWritableClass;
+      } else {
+        jgen.writeNull();
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeFields(Object o, Class<?> clazz) {
+    List<Field> fields = mappings.getAllFields(clazz);
+    if (fields!=null) {
+      for (Field field : fields) {
+        writeField(o, field);
+      }
+    }
+  }
+  
+  public void writeField(Object o, Field field) {
+    try {
+      Object fieldValue = field.get(o);
+      if (fieldValue!=null) {
+        jgen.writeFieldName(field.getName());
+        writeObject(fieldValue, field.getGenericType());
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeNumber(Number value, Type type) {
+    try {
+      if (value==null) {
+        jgen.writeNull();
+      } else if (value instanceof Long 
+                 || value instanceof Integer
+                 || value instanceof Short
+                 || value instanceof BigInteger) {
+        jgen.writeNumber(value.longValue());
+      } else if (value instanceof Double
+                 || value instanceof Float
+                 || value instanceof BigDecimal) {
+        jgen.writeNumber(value.doubleValue());
+      } else {
+        throw new RuntimeException("Unknown number "+value+" ("+value.getClass().getName()+")");
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void writeDate(LocalDateTime value) {
+    try {
+      jgen.writeString(DATE_FORMAT.print(value));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

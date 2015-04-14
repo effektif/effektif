@@ -13,10 +13,12 @@
  * limitations under the License. */
 package com.effektif.mongo.test;
 
+import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.effektif.mongo.MongoJsonMapper;
-import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.mongo.PrettyPrinter;
 import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
 
@@ -34,14 +36,27 @@ public class MongoJsonTest extends AbstractMapperTest {
     mongoJsonMapper = new MongoJsonMapper();
     mongoJsonMapper.setMappings(mappings);
   }
+  
+//  @Test
+//  public void testPrintObjectIds() {
+//    for (int i=0; i<20; i++) {
+//      System.out.println(ObjectId.get().toString());
+//    }
+//  }
 
   @Override
-  protected <T extends JsonReadable> T serialize(T o) {
+  protected <T> T serialize(T o) {
     BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonMapper
       .createWriter()
       .toDbObject(o);
     
-    System.out.println(dbWorkflow);
+    String json = null; 
+    if (mappings.isPretty()) {
+      json = PrettyPrinter.toJsonPrettyPrint(dbWorkflow);
+    } else {
+      json = dbWorkflow.toString();
+    }
+    System.out.println(json);
     
     return (T) mongoJsonMapper
       .createReader()

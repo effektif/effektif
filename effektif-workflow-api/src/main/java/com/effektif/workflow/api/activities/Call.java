@@ -21,7 +21,6 @@ import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
@@ -59,19 +58,19 @@ public class Call extends AbstractBindableActivity {
     w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
   }
 
-  @Override
-  public void readJson(JsonReader r) {
-    subWorkflowId = r.readId("subWorkflowId");
-    subWorkflowSource = r.readString("subWorkflowSource");
-    super.readJson(r);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-    w.writeId("subWorkflowId", subWorkflowId);
-    w.writeString("subWorkflowSource", subWorkflowSource);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    subWorkflowId = r.readId("subWorkflowId");
+//    subWorkflowSource = r.readString("subWorkflowSource");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeId("subWorkflowId", subWorkflowId);
+//    w.writeString("subWorkflowSource", subWorkflowSource);
+//  }
 
   @Override
   public Call id(String id) {

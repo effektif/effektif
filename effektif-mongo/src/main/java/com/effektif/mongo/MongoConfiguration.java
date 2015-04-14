@@ -65,6 +65,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoJobStore());
     brewery.ingredient(new MongoFileService());
     brewery.ingredient(new MongoEmailStore());
+    brewery.ingredient(new MongoJsonMapper());
     
     // TODO replace this with a default mongo identity service
     brewery.ingredient(new MemoryIdentityService());

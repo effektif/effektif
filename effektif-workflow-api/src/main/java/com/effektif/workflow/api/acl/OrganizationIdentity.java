@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.acl;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("organization")
+@TypeName("organization")
 public class OrganizationIdentity extends AccessIdentity {
 
   public OrganizationIdentity() {

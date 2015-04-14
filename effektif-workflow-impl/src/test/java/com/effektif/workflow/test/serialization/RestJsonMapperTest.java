@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.mapper.JsonReadable;
-import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.impl.mapper.RestJsonMapper;
 
@@ -40,10 +39,10 @@ public class RestJsonMapperTest extends AbstractMapperTest {
   }
   
   @Override
-  protected <T extends JsonReadable> T serialize(T o) {
+  protected <T> T serialize(T o) {
     String jsonString = restJsonMapper
       .createWriter()
-      .toStringPretty((JsonWritable)o);
+      .toStringPretty(o);
     
     System.out.println(jsonString);
     

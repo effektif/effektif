@@ -13,11 +13,11 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.impl.mapper.AbstractReader;
 import com.effektif.workflow.impl.mapper.Mappings;
@@ -29,24 +29,33 @@ import com.mongodb.BasicDBObject;
  */
 public class MongoJsonReader extends AbstractReader {
 
-  public MongoJsonReader() {
-    super();
-  }
+  MongoJsonMapper mongoJsonMapper;
 
-  public MongoJsonReader(Mappings mappings) {
+  public MongoJsonReader(Mappings mappings, MongoJsonMapper mongoJsonMapper) {
     super(mappings);
+    this.mongoJsonMapper = mongoJsonMapper;
   }
 
-  public <T extends JsonReadable> T toObject(BasicDBObject dbObject, Class<T> type) {
-    return readReadable(dbObject, type);
+  public <T> T toObject(BasicDBObject dbObject, Class<T> type) {
+    return readObject(dbObject, type);
+  }
+
+  public LocalDateTime readDateValue(Object jsonDate) {
+    if (jsonDate==null) {
+      return null;
+    }
+    return new LocalDateTime((Date)jsonDate);
+  }
+
+  @Override
+  protected String getJsonFieldName(Field field) {
+    return mongoJsonMapper.getFieldName(field);
   }
 
   @Override
   public <T extends Id> T readId() {
-    return readId("_id");
-  }
-
-  public LocalDateTime readDateValue(Object jsonDate) {
-    return new LocalDateTime((Date)jsonDate);
+    Object id = jsonObject.get("_id");
+    Class<T> idType = (Class<T>) mappings.getFieldType(readableClass, "id");
+    return readId(id, idType);
   }
 }

@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Extensible;
 
@@ -52,6 +54,26 @@ public class AbstractFormField extends Extensible {
     this.readOnly = other.readOnly;
     this.required = other.required;
   }
+  
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    name = r.readString("name");
+//    type = r.readObject("type");
+//    readOnly = r.readBoolean("readOnly");
+//    required = r.readBoolean("required");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    w.writeString("name", name);
+//    w.writeWritable("type", type);
+//    w.writeBoolean("readOnly", readOnly);
+//    w.writeBoolean("required", required);
+//    super.writeJson(w);
+//  }
 
   public String getId() {
     return this.id;

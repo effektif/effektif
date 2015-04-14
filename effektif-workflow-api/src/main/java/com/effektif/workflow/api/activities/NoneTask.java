@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Task">Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("task")
+@JsonTypeName("noneTask")
 @TypeName("task")
 @BpmnElement("task")
 public class NoneTask extends Activity {

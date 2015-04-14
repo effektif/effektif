@@ -33,16 +33,18 @@ import com.effektif.workflow.api.workflow.Binding;
 public interface JsonWriter {
 
   void writeId(Id id);
-  void writeId(String fieldName, Id id);
-  void writeString(String fieldName, String stringValue);
+  void writeId(String fieldName, Id value);
+  void writeString(String fieldName, String value);
   void writeBoolean(String fieldName, Boolean value);
   void writeLong(String fieldName, Long value);
   void writeDouble(String fieldName, Double value);
   void writeDate(String fieldName, LocalDateTime value);
+  void writeClass(String fieldName, Class< ? > value);
 
-  void writeWritable(String fieldName, JsonWritable o);
-  <T> void writeBinding(String fieldName, Binding<T> binding);
+  void writeWritable(String fieldName, JsonWritable value);
+  <T> void writeBinding(String fieldName, Binding<T> value);
 
-  void writeList(String fieldName, List<?> elements);
-  void writeMap(String fieldName, Map<String,?> map);
+  void writeList(String fieldName, List<?> value);
+  void writeMap(String fieldName, Map<String,?> value);
+  void writeProperties(Map<String, Object> value);
 }

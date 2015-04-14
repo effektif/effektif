@@ -33,6 +33,8 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceSupplier;
 import com.effektif.workflow.impl.job.JobServiceImpl;
+import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.mapper.RestJsonMapper;
 import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.mapper.deprecated.ObjectMapperSupplier;
 import com.effektif.workflow.impl.script.RhinoScriptService;
@@ -57,7 +59,9 @@ public abstract class DefaultConfiguration implements Configuration {
     registerDefaultJobService();
     registerDefaultJsonFactory();
     registerDefaultJsonService();
+    registerDefaultMappings();
     registerDefaultObjectMapper();
+    registerDefaultRestJsonMapper();
     registerDefaultScriptManager();
     registerDefaultScriptService();
     registerDefaultTaskService();
@@ -120,6 +124,14 @@ public abstract class DefaultConfiguration implements Configuration {
 
   protected void registerDefaultJsonFactory() {
     brewery.ingredient(new JsonFactory());
+  }
+
+  protected void registerDefaultRestJsonMapper() {
+    brewery.ingredient(new RestJsonMapper());
+  }
+
+  protected void registerDefaultMappings() {
+    brewery.ingredient(new Mappings());
   }
 
   protected void registerDefaultScriptManager() {

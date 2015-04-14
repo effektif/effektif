@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
@@ -27,12 +28,19 @@ public class Variable extends Element {
   protected String id;
   protected Type type;
 
-  public Variable() {
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    type = r.readObject("type");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    w.writeWritable("type", type);
+//    super.writeJson(w);
+//  }
 
   public String getId() {
     return this.id;

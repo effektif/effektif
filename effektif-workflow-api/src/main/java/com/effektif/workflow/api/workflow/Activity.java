@@ -41,8 +41,23 @@ public abstract class Activity extends Scope {
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
   
-  public Activity() {
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    super.readJson(r);
+//    defaultTransitionId = r.readString("defaultTransitionId");
+//    // multiInstance = r.readObject("multiInstance", MultiInstance.class);
+//    outgoingTransitions = r.readList("outgoingTransitions");
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    super.writeJson(w);
+//    w.writeString("defaultTransitionId", defaultTransitionId);
+//    w.writeWritable("multiInstance", multiInstance);
+//    w.writeList("outgoingTransitions", outgoingTransitions);
+//  }
   
   @Override
   public void readBpmn(BpmnReader r) {
@@ -56,24 +71,6 @@ public abstract class Activity extends Scope {
     super.writeBpmn(w);
   }
   
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("id", id);
-    super.writeJson(w);
-    w.writeString("defaultTransitionId", defaultTransitionId);
-    w.writeWritable("multiInstance", multiInstance);
-    w.writeList("outgoingTransitions", outgoingTransitions);
-  }
-  
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readString("id");
-    super.readJson(r);
-    defaultTransitionId = r.readString("defaultTransitionId");
-    // multiInstance = r.readObject("multiInstance", MultiInstance.class);
-    outgoingTransitions = r.readList("outgoingTransitions");
-  }
-
   public String getId() {
     return this.id;
   }

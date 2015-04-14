@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import static com.effektif.workflow.impl.bpmn.Bpmn.*;
+import static com.effektif.workflow.impl.mapper.Bpmn.*;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -58,7 +58,8 @@ public class BpmnReaderImpl implements BpmnReader {
   /** stack of xml elements */ 
   protected Stack<XmlElement> xmlStack = new Stack<XmlElement>();
   /** current xml element */ 
-  protected XmlElement xml; 
+  protected XmlElement currentXml; 
+  protected Class<?> currentClass; 
   
   protected DataTypeService dataTypeService;
 
@@ -116,7 +117,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
   protected Workflow readWorkflow(XmlElement processXml) {
     Workflow workflow = new Workflow();
-    this.xml = processXml;
+    this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
     setUnparsedBpmn(workflow, processXml);
@@ -124,8 +125,8 @@ public class BpmnReaderImpl implements BpmnReader {
   }
   
   public void readScope() {
-    if (xml.elements!=null) {
-      Iterator<XmlElement> iterator = xml.elements.iterator();
+    if (currentXml.elements!=null) {
+      Iterator<XmlElement> iterator = currentXml.elements.iterator();
       while (iterator.hasNext()) {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
@@ -139,13 +140,13 @@ public class BpmnReaderImpl implements BpmnReader {
 
         } else {
           // Check if the XML element can be parsed as one of the activity types.
-          BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(xml, this);
+          BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(currentXml, this);
           if (bpmnTypeMapping != null) {
             Activity activity = (Activity) bpmnTypeMapping.instantiate();
             // read the fields
             activity.readBpmn(this);
             scope.activity(activity);
-            setUnparsedBpmn(activity, xml);
+            setUnparsedBpmn(activity, currentXml);
             // Remove the activity XML element as it has been parsed in the model.
             iterator.remove();
           }
@@ -163,31 +164,31 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public List<XmlElement> readElementsBpmn(String localPart) {
-    if (xml==null) {
+    if (currentXml==null) {
       return Collections.EMPTY_LIST;
     }
-    return xml.removeElements(BPMN_URI, localPart);
+    return currentXml.removeElements(BPMN_URI, localPart);
   }
   
   @Override
   public List<XmlElement> readElementsEffektif(String localPart) {
-    if (xml==null) {
+    if (currentXml==null) {
       return Collections.EMPTY_LIST;
     }
-    return xml.removeElements(EFFEKTIF_URI, localPart);
+    return currentXml.removeElements(EFFEKTIF_URI, localPart);
   }
   
   @Override
   public void startElement(XmlElement xmlElement) {
-    if (xml!=null) {
-      xmlStack.push(xml);
+    if (currentXml!=null) {
+      xmlStack.push(currentXml);
     }
-    xml = xmlElement;
+    currentXml = xmlElement;
   }
   
   @Override
   public void endElement() {
-    xml = xmlStack.pop();
+    currentXml = xmlStack.pop();
   }
   
   public void startScope(Scope scope) {
@@ -218,7 +219,7 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public void startExtensionElements() {
-    XmlElement extensionsXmlElement = xml.getElement(BPMN_URI, "extensionElements");
+    XmlElement extensionsXmlElement = currentXml.getElement(BPMN_URI, "extensionElements");
     startElement(extensionsXmlElement);
   }
 
@@ -229,23 +230,23 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public String readStringAttributeBpmn(String localPart) {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
-    return xml.removeAttribute(BPMN_URI, localPart);
+    return currentXml.removeAttribute(BPMN_URI, localPart);
   }
 
   @Override
   public String readStringAttributeEffektif(String localPart) {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
-    return xml.removeAttribute(EFFEKTIF_URI, localPart);
+    return currentXml.removeAttribute(EFFEKTIF_URI, localPart);
   }
 
   @Override
   public <T extends Id> T readIdAttributeBpmn(String localPart, Class<T> idType) {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
     return AbstractReader.readId(readStringAttributeBpmn(localPart), idType);
@@ -253,7 +254,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public <T extends Id> T readIdAttributeEffektif(String localPart, Class<T> idType) {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
     return AbstractReader.readId(readStringAttributeEffektif(localPart), idType);
@@ -262,7 +263,7 @@ public class BpmnReaderImpl implements BpmnReader {
   /** Returns a binding from the first extension element with the given name. */
   @Override
   public <T> Binding<T> readBinding(String localPart, Class<T>  type) {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
     List<Binding<T>> bindings = readBindings(localPart, type);
@@ -276,11 +277,11 @@ public class BpmnReaderImpl implements BpmnReader {
   /** Returns a list of bindings from the extension elements with the given name. */
   @Override
   public <T> List<Binding<T>> readBindings(String localPart, Class<T> type) {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
     List<Binding<T>> bindings = new ArrayList<>();
-    for (XmlElement element: xml.removeElements(EFFEKTIF_URI, localPart)) {
+    for (XmlElement element: currentXml.removeElements(EFFEKTIF_URI, localPart)) {
       Binding<T> binding = new Binding<T>();
       String value = element.getAttribute(EFFEKTIF_URI, "value");
       binding.setValue(parseText(value, type));
@@ -319,10 +320,10 @@ public class BpmnReaderImpl implements BpmnReader {
   /** Returns the contents of the BPMN <code>documentation</code> element. */
   @Override
   public String readDocumentation() {
-    if (xml==null) {
+    if (currentXml==null) {
       return null;
     }
-    XmlElement documentationElement = xml.removeElement(BPMN_URI, "documentation");
+    XmlElement documentationElement = currentXml.removeElement(BPMN_URI, "documentation");
     if (documentationElement!=null) {
       return documentationElement.getText();
     }
@@ -340,7 +341,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public String readTextEffektif(String localPart) {
-    XmlElement textElement = xml!=null ? xml.removeElement(EFFEKTIF_URI, localPart) : null;
+    XmlElement textElement = currentXml!=null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
     if (textElement!=null) {
       return textElement.getText();
     }
@@ -349,7 +350,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public XmlElement getUnparsedXml() {
-    return xml;
+    return currentXml;
   }
 
 //  @Override

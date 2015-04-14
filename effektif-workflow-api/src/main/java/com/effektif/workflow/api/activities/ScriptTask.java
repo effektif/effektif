@@ -22,6 +22,8 @@ import java.util.Map;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Script;
@@ -41,6 +43,18 @@ public class ScriptTask extends NoneTask {
 
   protected Script script;
   
+//  @Override
+//  public void readJson(JsonReader r) {
+//    script = r.readObject("script");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeWritable("script", script);
+//  }
+
   @Override
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();

@@ -18,6 +18,8 @@ package com.effektif.workflow.api.condition;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -28,6 +30,16 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class And extends Condition {
 
   protected List<Condition> conditions;
+  
+  @Override
+  public void readJson(JsonReader r) {
+    conditions = r.readList("conditions");
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeList("conditions", conditions);
+  }
 
   public List<Condition> getConditions() {
     return this.conditions;

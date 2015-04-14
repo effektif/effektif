@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -26,6 +28,18 @@ public abstract class Comparator extends Condition {
   protected Binding<?> left;
   protected Binding<?> right;
 
+  @Override
+  public void readJson(JsonReader r) {
+    left = r.readBinding("left");
+    right = r.readBinding("right");
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeBinding("left", left);
+    w.writeBinding("right", right);
+  }
+  
   public Binding<?> getLeft() {
     return this.left;
   }

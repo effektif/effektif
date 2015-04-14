@@ -15,33 +15,16 @@
  */
 package com.effektif.workflow.impl.bpmn;
 
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.mapper.XmlElement;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.activity.ActivityTypeService;
-import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
-import com.effektif.workflow.impl.data.DataType;
-import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.effektif.workflow.impl.mapper.Bpmn;
 
 
 /** Parses BPMN XML from
  * {@link XmlElement our own jsonnable xml dom structure}
  * to {@link Workflow}.
  * Not thread safe, use one BpmnReader object per serialization. */
-public class BpmnWriter extends Bpmn {
+public class DeprecatedBpmnWriter extends Bpmn {
   
 //  protected ActivityTypeService activityTypeService;
 //  protected DataTypeService dataTypeService;

@@ -18,8 +18,6 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.mapper.JsonWritable;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -27,16 +25,22 @@ import com.effektif.workflow.api.types.Type;
  * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
  * @author Tom Baeyens
  */
-public class MultiInstance implements JsonWritable {
+public class MultiInstance {
 
   protected Variable variable;
   protected List<Binding<Object>> values;
 
-  @Override
-  public void writeJson(JsonWriter jsonWriter) {
-//    writeObject("variable", variable);
-//    writeList("values", values);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    variable = r.readObject("variable");
+//    values = r.readList("values");
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeWritable("variable", variable);
+//    w.writeList("values", values);
+//  }
 
   public Variable getVariable() {
     return this.variable;

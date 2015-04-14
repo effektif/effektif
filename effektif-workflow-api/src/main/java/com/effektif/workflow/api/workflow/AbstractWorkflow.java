@@ -40,6 +40,20 @@ public abstract class AbstractWorkflow extends Scope {
   
   public abstract String getSourceWorkflowId();
   
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readId();
+//    trigger = r.readObject("trigger");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeId(id);
+//    w.writeWritable("trigger", trigger);
+//    super.writeJson(w);
+//  }
+
   @Override
   public void readBpmn(BpmnReader r) {
     id = r.readIdAttributeBpmn("id", WorkflowId.class);
@@ -50,18 +64,6 @@ public abstract class AbstractWorkflow extends Scope {
   public void writeBpmn(BpmnWriter w) {
     w.writeIdAttributeBpmn("id", id);
     super.writeBpmn(w);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeId(id);
-    super.writeJson(w);
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readId();
-    super.readJson(r);
   }
 
   public WorkflowId getId() {

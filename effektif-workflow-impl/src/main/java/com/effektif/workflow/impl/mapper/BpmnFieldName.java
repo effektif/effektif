@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import com.effektif.workflow.impl.bpmn.Bpmn;
 
 
 /**

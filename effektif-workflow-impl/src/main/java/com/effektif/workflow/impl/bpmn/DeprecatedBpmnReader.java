@@ -15,31 +15,7 @@
  */
 package com.effektif.workflow.impl.bpmn;
 
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.form.FormField;
-import com.effektif.workflow.api.mapper.XmlElement;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.activity.ActivityTypeService;
-import com.effektif.workflow.impl.bpmn.xml.XmlReader;
-import com.effektif.workflow.impl.data.DataType;
-import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.workflow.TransitionImpl;
+import com.effektif.workflow.impl.mapper.Bpmn;
 
 
 /** Reads an BPMN XML document and parses it to a Workflow API model.
@@ -58,7 +34,8 @@ import com.effektif.workflow.impl.workflow.TransitionImpl;
  * When writing these workflows back to XML, the unknown parts are 
  * merged back into the XML.
  **/
-public class BpmnReader extends Bpmn {
+@Deprecated
+public class DeprecatedBpmnReader extends Bpmn {
   
 //  protected XmlElement xmlRoot;
 //  

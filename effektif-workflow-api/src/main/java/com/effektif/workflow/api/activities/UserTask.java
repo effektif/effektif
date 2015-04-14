@@ -113,16 +113,16 @@ public class UserTask extends NoneTask {
 //    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
 //  }
   
-  @Override
-  public void readJson(JsonReader r) {
-    super.readJson(r);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeWritable("access", access);
-    super.writeJson(w);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeWritable("access", access);
+//    super.writeJson(w);
+//  }
 
   @Override
   public UserTask id(String id) {

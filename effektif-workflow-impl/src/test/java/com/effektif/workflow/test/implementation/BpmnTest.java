@@ -16,10 +16,6 @@
 package com.effektif.workflow.test.implementation;
 
 import java.io.File;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import junit.framework.TestCase;
 
@@ -27,16 +23,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
  * @author Tom Baeyens

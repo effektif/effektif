@@ -18,6 +18,9 @@ package com.effektif.workflow.api.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -29,10 +32,23 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("decision")
+@TypeName("decision")
 public class ChoiceType extends TextType {
 
   protected List<ChoiceOption> options;
   
+//  @Override
+//  public void readJson(JsonReader r) {
+//    options = r.readList("options");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeList("options", options);
+//  }
+
   public List<ChoiceOption> getOptions() {
     return options;
   }

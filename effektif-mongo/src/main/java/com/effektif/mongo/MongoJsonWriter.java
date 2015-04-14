@@ -14,6 +14,9 @@
 package com.effektif.mongo;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -41,102 +44,14 @@ import com.mongodb.BasicDBObject;
 public class MongoJsonWriter extends AbstractWriter {
   
   BasicDBObject dbObject;
+  Class<?> objectClass;
+  MongoJsonMapper mongoJsonMapper;
   
-  Set<Class<?>> entityIdClasses = new HashSet<Class<?>>(Lists.of(
-          WorkflowId.class,
-          WorkflowInstanceId.class));
-  
-  public MongoJsonWriter() {
-  }
-
-  public MongoJsonWriter(Mappings mappings) {
+  public MongoJsonWriter(Mappings mappings, MongoJsonMapper mongoJsonMapper) {
     super(mappings);
+    this.mongoJsonMapper = mongoJsonMapper;
   }
 
-  public Object toDbObject(Object o) {
-    if (o==null) {
-      return null;
-    }
-    Class<?> type = o.getClass();
-    if (o==null
-        || (String.class.isAssignableFrom(type))
-        || (Boolean.class.isAssignableFrom(type))
-        || (Number.class.isAssignableFrom(type))) {
-      return o;
-    }
-    if (JsonWritable.class.isAssignableFrom(type)) {
-      return toDbObject((JsonWritable)o);
-    }
-    if (LocalDateTime.class.isAssignableFrom(type)) {
-      return toDbObject((LocalDateTime)o);
-    }
-    if (Id.class.isAssignableFrom(type)) {
-      return toDbObject((Id)o);
-    }
-    if (List.class.isAssignableFrom(type)) {
-      return toDbObject((List<Object>)o);
-    }
-    if (Map.class.isAssignableFrom(type)) {
-      return toDbObject((Map<String,Object>)o);
-    }
-    throw new RuntimeException("Don't know how to map to db object "+o+" ("+o.getClass().getName()+")");
-  }
-
-  protected Date toDbObject(LocalDateTime date) {
-    if (date==null) {
-      return null;
-    }
-    return date.toDate();
-  }
-  
-  public BasicDBObject toDbObject(JsonWritable o) {
-    if (o==null) {
-      return null;
-    }
-    BasicDBObject parentDbObject = dbObject;
-    dbObject = new BasicDBObject();
-    mappings.writeTypeField(this, o);
-    o.writeJson(this);
-    BasicDBObject newDbObject = dbObject;
-    dbObject = parentDbObject;
-    return newDbObject;
-  }
-
-  protected Object toDbObject(Id id) {
-    if (id==null) {
-      return null;
-    }
-    if (entityIdClasses.contains(id.getClass())) {
-      return new ObjectId(id.getInternal());
-    }
-    return id.getInternal();
-  }
-
-  protected BasicDBList toDbObject(List<? extends Object> list) {
-    if (list==null) {
-      return null;
-    }
-    BasicDBList dbList = new BasicDBList();
-    for (Object element: list) {
-      Object dbElement = toDbObject(element); 
-      dbList.add(dbElement);
-    }
-    return dbList;
-  }
-
-  protected BasicDBObject toDbObject(Map<String,? extends Object> map) {
-    if (map==null) {
-      return null;
-    }
-    BasicDBObject dbMap = new BasicDBObject();
-    for (String key: map.keySet()) {
-      Object value = map.get(key);
-      Object dbValue = toDbObject(value);
-      dbMap.put(key, dbValue);
-    }
-    return dbMap;
-  }
-  
   @Override
   public void writeId(Id id) {
     writeId("_id", id);
@@ -164,7 +79,14 @@ public class MongoJsonWriter extends AbstractWriter {
   }
   
   @Override
-  public void writeNumber(String fieldName, Number value) {
+  public void writeLong(String fieldName, Long value) {
+    if (value!=null) {
+      dbObject.put(fieldName, value);
+    }
+  }
+
+  @Override
+  public void writeDouble(String fieldName, Double value) {
     if (value!=null) {
       dbObject.put(fieldName, value);
     }
@@ -178,6 +100,13 @@ public class MongoJsonWriter extends AbstractWriter {
   }
 
   @Override
+  public void writeClass(String fieldName, Class< ? > value) {
+    if (value!=null) {
+      dbObject.put(fieldName, value.getName());
+    }
+  }
+
+  @Override
   public void writeWritable(String fieldName, JsonWritable value) {
     if (value!=null) {
       BasicDBObject dbValue = toDbObject(value); 
@@ -185,62 +114,174 @@ public class MongoJsonWriter extends AbstractWriter {
     }
   }
 
-  
   @Override
-  public void writeList(String fieldName, List< ? extends Object> list) {
-    if (list!=null && !list.isEmpty()) {
-      BasicDBList dbList = toDbObject(list);
-      dbObject.put(fieldName, dbList);
-    }
-  }
-
-  @Override
-  public void writeMapFields(Map<String,? extends Object> map) {
+  public void writeMap(String fieldName, Map<String, ?> map) {
     if (map!=null) {
-      for (String key: map.keySet()) {
-        Object value = map.get(key);
-        if (value!=null) {
-          Object dbValue = toDbObject(value); 
-          dbObject.put(key, dbValue);
-        }
-      }
-    }
-  }
-
-  @Override
-  public void writeMap(String fieldName, Map<String, ? extends Object> map) {
-    if (map!=null) {
-      BasicDBObject dbMap = toDbObject(map);
+      ParameterizedType mapType = (ParameterizedType) mappings.getFieldType(objectClass, fieldName);
+      BasicDBObject dbMap = toDbObject(map, mapType.getActualTypeArguments()[1]);
       dbObject.put(fieldName, dbMap);
     }
   }
   
   @Override
-  public <T> void writeBindings(String fieldName, List<Binding<T>> bindings) {
-    if (bindings==null || bindings.isEmpty()) {
-      return;
+  public void writeList(String fieldName, List<?> list) {
+    if (list!=null && !list.isEmpty()) {
+      ParameterizedType listType = (ParameterizedType) mappings.getFieldType(objectClass, fieldName);
+      BasicDBList dbList = toDbObject(list, listType.getActualTypeArguments()[0]);
+      dbObject.put(fieldName, dbList);
     }
-    BasicDBList dbBindings = new BasicDBList();
-    for (Binding<T> binding: bindings) {
-      BasicDBObject dbBinding = toDbObject(binding);
-      dbBindings.add(dbBinding);
-    }
-    dbObject.put(fieldName, dbBindings);
   }
 
   @Override
   public <T> void writeBinding(String fieldName, Binding<T> binding) {
     if (binding!=null) {
-      BasicDBObject dbBinding = toDbObject(binding);
+      ParameterizedType bindingType = (ParameterizedType) mappings.getFieldType(objectClass, fieldName);
+      BasicDBObject dbBinding = toDbObject(binding, bindingType.getActualTypeArguments()[0]);
       dbObject.put(fieldName, dbBinding);
     }
   }
 
-  protected <T> BasicDBObject toDbObject(Binding<T> binding) {
+  @Override
+  public void writeProperties(Map<String, Object> properties) {
+    if (properties!=null) {
+      dbObject.putAll(properties);
+    }
+  }
+  
+  public Object toDbObject(Object o) {
+    return toDbObject(o, o.getClass());
+  }
+    
+  public Object toDbObject(Object o, Type type) {
+    if (o==null
+        || o instanceof String
+        || o instanceof Boolean
+        || o instanceof Number) {
+      return o;
+    }
+    if (o instanceof LocalDateTime) {
+      return toDbObject((LocalDateTime) o);
+    } else if (o instanceof Id) {
+      return toDbObject((Id) o);
+    } else if (o instanceof JsonWritable) {
+      return toDbObject((JsonWritable) o);
+    } else if (o instanceof Map) {
+      ParameterizedType mapType = (ParameterizedType) type;
+      return toDbObject((Map<String,Object>)o, mapType.getActualTypeArguments()[1]);
+    } else if (o instanceof List) {
+      ParameterizedType listType = (ParameterizedType) type;
+      return toDbObject((List) o, listType.getActualTypeArguments()[0]);
+    } else if (o instanceof Binding) {
+      ParameterizedType bindingType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
+      Type bindingValueType = bindingType!=null ? bindingType.getActualTypeArguments()[0] : null;
+      return toDbObject((Binding) o, bindingValueType);
+    } else {
+      return toDbObjectDefault(o);
+    }
+  }
+
+  protected Date toDbObject(LocalDateTime date) {
+    if (date==null) {
+      return null;
+    }
+    return date.toDate();
+  }
+  
+  public BasicDBObject toDbObject(JsonWritable o) {
+    if (o==null) {
+      return null;
+    }
+    BasicDBObject parentDbObject = dbObject;
+    Class<?> parentObjectClass = objectClass;
+    dbObject = new BasicDBObject();
+    objectClass = o.getClass();
+    mappings.writeTypeField(this, o);
+    o.writeJson(this);
+    BasicDBObject newDbObject = dbObject;
+    dbObject = parentDbObject;
+    objectClass = parentObjectClass;
+    return newDbObject;
+  }
+
+  public BasicDBObject toDbObjectDefault(Object o) {
+    if (o==null) {
+      return null;
+    }
+    BasicDBObject parentDbObject = dbObject;
+    Class<?> parentObjectClass = objectClass;
+    dbObject = new BasicDBObject();
+    objectClass = o.getClass();
+    mappings.writeTypeField(this, o);
+    writeFields(o, o.getClass());
+    BasicDBObject newDbObject = dbObject;
+    dbObject = parentDbObject;
+    objectClass = parentObjectClass;
+    return newDbObject;
+  }
+  
+  public void writeFields(Object o, Class<?> clazz) {
+    List<Field> fields = mappings.getAllFields(clazz);
+    if (fields!=null) {
+      for (Field field : fields) {
+        writeField(o, field);
+      }
+    }
+  }
+  
+  public void writeField(Object o, Field field) {
+    try {
+      Object fieldValue = field.get(o);
+      if (fieldValue!=null) {
+        Object dbFieldValue = toDbObject(fieldValue, field.getGenericType());
+        String fieldName = mongoJsonMapper.getFieldName(field);
+        dbObject.put(fieldName, dbFieldValue);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected Object toDbObject(Id id) {
+    if (id==null) {
+      return null;
+    }
+    if (mongoJsonMapper.isObjectIdClass(id.getClass())) {
+      return new ObjectId(id.getInternal());
+    }
+    return id.getInternal();
+  }
+
+  protected BasicDBList toDbObject(List<?> list, Type elementType) {
+    if (list==null) {
+      return null;
+    }
+    BasicDBList dbList = new BasicDBList();
+    for (Object element: list) {
+      Object dbElement = toDbObject(element, elementType); 
+      dbList.add(dbElement);
+    }
+    return dbList;
+  }
+
+  protected BasicDBObject toDbObject(Map<String,?> map, Type valueType) {
+    if (map==null) {
+      return null;
+    }
+    BasicDBObject dbMap = new BasicDBObject();
+    for (String key: map.keySet()) {
+      Object value = map.get(key);
+      Object dbValue = toDbObject(value, valueType);
+      dbMap.put(key, dbValue);
+    }
+    return dbMap;
+  }
+  
+  protected <T> BasicDBObject toDbObject(Binding<T> binding, Type valueType) {
     BasicDBObject dbBinding = new BasicDBObject();
-    Object value = toDbObject(binding.getValue());
+    T value = binding.getValue();
     if (value!=null) {
-      dbBinding.put("value", value);
+      Object dbValue = toDbObject(value, valueType);
+      dbBinding.put("value", dbValue);
     }
     if (binding.getExpression()!=null) {
       dbBinding.put("expression", binding.getExpression());

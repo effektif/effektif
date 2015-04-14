@@ -39,10 +39,12 @@ public interface JsonReader {
   Long readLong(String fieldName);
   Double readDouble(String fieldName);
   LocalDateTime readDate(String fieldName);
+  Class< ? > readClass(String fieldName);
 
-  <T extends JsonReadable> T readReadable(String fieldName);
+  <T> T readObject(String fieldName);
   <T> Binding<T> readBinding(String fieldName);
   
   <T> List<T> readList(String fieldName);
   <T> Map<String, T> readMap(String fieldName);
+  Map<String, Object> readProperties();
 }

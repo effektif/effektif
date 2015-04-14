@@ -37,11 +37,6 @@ public class WorkflowInstance extends ScopeInstance {
   protected String callerActivityInstanceId;
   protected String caseId;
 
-  @Override
-  public void writeJson(JsonWriter w) {
-    
-  }
-
   public WorkflowInstanceId getId() {
     return this.id;
   }

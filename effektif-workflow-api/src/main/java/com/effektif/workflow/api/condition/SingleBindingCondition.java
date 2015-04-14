@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -24,6 +26,16 @@ import com.effektif.workflow.api.workflow.Binding;
 public abstract class SingleBindingCondition extends Condition {
   
   protected Binding<?> left;
+
+  @Override
+  public void readJson(JsonReader r) {
+    left = r.readBinding("left");
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeBinding("left", left);
+  }
 
   public Binding<?> getLeft() {
     return this.left;

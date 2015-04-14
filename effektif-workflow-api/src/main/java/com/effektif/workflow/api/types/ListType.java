@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.api.types;
 
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -22,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Tom Baeyens
  */
 @JsonTypeName("list")
+@TypeName("list")
 public class ListType extends Type {
 
   protected Type elementType;
@@ -31,6 +35,18 @@ public class ListType extends Type {
   public ListType(Type elementType) {
     this.elementType = elementType;
   }
+
+//  @Override
+//  public void readJson(JsonReader r) {
+//    elementType = r.readObject("elementType");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeWritable("elementType", elementType);
+//  }
 
   public Type getElementType() {
     return this.elementType;

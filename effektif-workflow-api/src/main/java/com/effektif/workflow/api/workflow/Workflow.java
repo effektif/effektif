@@ -55,6 +55,22 @@ public class Workflow extends AbstractWorkflow {
   protected LocalDateTime createTime;
   protected UserId creatorId;
 
+//  @Override
+//  public void readJson(JsonReader r) {
+//    sourceWorkflowId = r.readString("sourceWorkflowId");
+//    createTime = r.readDate("createTime");
+//    creatorId = r.readId("creatorId");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeString("sourceWorkflowId", sourceWorkflowId);
+//    w.writeDate("createTime", createTime);
+//    w.writeId("creatorId", creatorId);
+//  }
+  
   @Override
   public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
@@ -63,16 +79,6 @@ public class Workflow extends AbstractWorkflow {
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-  }
-  
-  @Override
-  public void readJson(JsonReader r) {
-    super.readJson(r);
   }
 
   /** refers to the id in the source (or authoring) form of this workflow.

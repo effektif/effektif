@@ -13,7 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import static com.effektif.workflow.impl.bpmn.Bpmn.*;
+import static com.effektif.workflow.impl.mapper.Bpmn.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

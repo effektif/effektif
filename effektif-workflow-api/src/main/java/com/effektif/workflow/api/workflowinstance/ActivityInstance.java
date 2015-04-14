@@ -32,10 +32,6 @@ public class ActivityInstance extends ScopeInstance {
   protected WorkflowInstanceId calledWorkflowInstanceId;
   protected TaskId taskId;
 
-  @Override
-  public void writeJson(JsonWriter w) {
-  }
-
   public String getId() {
     return id;
   }

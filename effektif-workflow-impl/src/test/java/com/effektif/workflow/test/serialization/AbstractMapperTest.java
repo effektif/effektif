@@ -25,7 +25,18 @@ import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.types.BooleanType;
+import com.effektif.workflow.api.types.ChoiceType;
+import com.effektif.workflow.api.types.DateType;
+import com.effektif.workflow.api.types.EmailIdType;
+import com.effektif.workflow.api.types.FileIdType;
+import com.effektif.workflow.api.types.GroupIdType;
+import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.MoneyType;
+import com.effektif.workflow.api.types.NumberType;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.Mappings;
 
@@ -39,25 +50,56 @@ public abstract class AbstractMapperTest {
           
   public static void initializeMappings() {
     mappings = new Mappings();
-    mappings.registerBaseClass(Activity.class);
+    
     mappings.registerSubClass(StartEvent.class);
     mappings.registerSubClass(Call.class);
     mappings.registerSubClass(EmailTask.class);
+
+    mappings.registerSubClass(BooleanType.class);
+    mappings.registerSubClass(ChoiceType.class);
+    mappings.registerSubClass(DateType.class);
+    mappings.registerSubClass(EmailIdType.class);
+    mappings.registerSubClass(FileIdType.class);
+    mappings.registerSubClass(GroupIdType.class);
+    mappings.registerSubClass(JavaBeanType.class);
+    mappings.registerSubClass(ListType.class);
+    mappings.registerSubClass(MoneyType.class);
+    mappings.registerSubClass(NumberType.class);
+    mappings.registerSubClass(TextType.class);
+    mappings.registerSubClass(UserIdType.class);
+    
+    mappings.pretty();
   }
 
+  // valid object ids
+  //  
+  //  552ce4fdc2e610a6a3dedb84
+  //  552ce4fdc2e610a6a3dedb85
+  //  552ce4fdc2e610a6a3dedb86
+  //  552ce4fdc2e610a6a3dedb87
+  //  552ce4fdc2e610a6a3dedb88
+  //  552ce4fdc2e610a6a3dedb89
+  //  552ce4fdc2e610a6a3dedb8a
+  //  552ce4fdc2e610a6a3dedb8b
+  
   @Test
   public void testWorkflowJson() {
     Workflow workflow = new Workflow()
-      .id(new WorkflowId("551d4f5803649532d21f223f"))
+      .id(new WorkflowId("552ce4fdc2e610a6a3dedb78"))
+      .variable("v", TextType.INSTANCE)
       .activity(new StartEvent()
         .id("s")
       );
     
     workflow = serialize(workflow);
     
-    assertEquals("551d4f5803649532d21f223f", workflow.getId().getInternal());
+    assertEquals("552ce4fdc2e610a6a3dedb78", workflow.getId().getInternal());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
+
+// variables not yet supported by bpmn
+//    assertEquals("v", workflow.getVariables().get(0).getId());
+//    assertEquals(TextType.class, workflow.getVariables().get(0).getType().getClass());
   }
 
   @Test
@@ -74,7 +116,7 @@ public abstract class AbstractMapperTest {
     assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 
-  protected abstract <T extends JsonReadable> T serialize(T o);
+  protected abstract <T> T serialize(T o);
 
   @Test
   public void testEmailTask() {
@@ -83,18 +125,18 @@ public abstract class AbstractMapperTest {
       .from("effektif@example.org")
       .to("releases@example.org")
       .toExpression("v1.email")
-      .toUserId("johndoe")
-      .toGroupId("releases")
+      .toUserId("552ce4fdc2e610a6a3dedb7b")
+      .toGroupId("552ce4fdc2e610a6a3dedb7e")
       .cc("dev@example.org")
-      .ccUserId("joesmoe")
-      .ccGroupId("support")
+      .ccUserId("552ce4fdc2e610a6a3dedb7c")
+      .ccGroupId("552ce4fdc2e610a6a3dedb7f")
       .bcc("archive@example.org")
-      .bccUserId("jackblack")
-      .bccGroupId("management")
+      .bccUserId("552ce4fdc2e610a6a3dedb7d")
+      .bccGroupId("552ce4fdc2e610a6a3dedb80")
       .subject("New release")
       .bodyText("A new version has been deployed on production.")
       .bodyHtml("<b>A new version has been deployed on production.</b>")
-      .attachment(new FileId("releaseNotes"));
+      .attachment(new FileId("552ce4fdc2e610a6a3dedb82"));
     
     activity = serialize(activity);
     
@@ -104,22 +146,22 @@ public abstract class AbstractMapperTest {
     assertEquals("effektif@example.org", activity.getFromEmailAddress().getValue());
     assertEquals("releases@example.org", activity.getToEmailAddresses().get(0).getValue());
     assertEquals("v1.email", activity.getToEmailAddresses().get(1).getExpression());
-    assertEquals(new UserId("johndoe"), activity.getToUserIds().get(0).getValue());
-    assertEquals(new GroupId("releases"), activity.getToGroupIds().get(0).getValue());
+    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7b"), activity.getToUserIds().get(0).getValue());
+    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb7e"), activity.getToGroupIds().get(0).getValue());
 
     assertEquals("dev@example.org", activity.getCcEmailAddresses().get(0).getValue());
-    assertEquals(new UserId("joesmoe"), activity.getCcUserIds().get(0).getValue());
-    assertEquals(new GroupId("support"), activity.getCcGroupIds().get(0).getValue());
+    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7c"), activity.getCcUserIds().get(0).getValue());
+    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb7f"), activity.getCcGroupIds().get(0).getValue());
 
     assertEquals("archive@example.org", activity.getBccEmailAddresses().get(0).getValue());
-    assertEquals(new UserId("jackblack"), activity.getBccUserIds().get(0).getValue());
-    assertEquals(new GroupId("management"), activity.getBccGroupIds().get(0).getValue());
+    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7d"), activity.getBccUserIds().get(0).getValue());
+    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb80"), activity.getBccGroupIds().get(0).getValue());
 
     assertEquals("New release", activity.getSubject());
     assertEquals("A new version has been deployed on production.", activity.getBodyText());
     assertEquals("<b>A new version has been deployed on production.</b>", activity.getBodyHtml());
 
-    assertEquals(new FileId("releaseNotes"), activity.getAttachmentFileIds().get(0).getValue());
+    assertEquals(new FileId("552ce4fdc2e610a6a3dedb82"), activity.getAttachmentFileIds().get(0).getValue());
   }
 
 //  @Test

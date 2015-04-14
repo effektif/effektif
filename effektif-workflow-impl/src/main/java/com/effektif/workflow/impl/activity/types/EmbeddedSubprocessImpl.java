@@ -18,11 +18,8 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 

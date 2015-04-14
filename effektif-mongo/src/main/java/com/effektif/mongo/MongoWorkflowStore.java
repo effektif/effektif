@@ -15,15 +15,10 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoHelper.*;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
@@ -31,7 +26,6 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowStore;
@@ -58,6 +52,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   protected ActivityTypeService activityTypeService;
   protected Configuration configuration;
   protected ScriptService scriptService;
+  protected MongoJsonMapper mongoJsonMapper;
   
   public interface FieldsWorkflow {
     String _ID = "_id";
@@ -90,63 +85,55 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     this.jsonService = brewery.get(JsonService.class);
     this.scriptService = brewery.get(ScriptService.class);
     this.activityTypeService = brewery.get(ActivityTypeService.class);
+    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
 
   public BasicDBObject workflowApiToMongo(Workflow workflow) {
-    BasicDBObject dbWorkflow = workflowApiToMongoAbstract(workflow);
-    Workflow w = (Workflow) workflow;
-    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, w.getCreateTime());
-    return dbWorkflow;
+    return (BasicDBObject) mongoJsonMapper.createWriter().toDbObject(workflow);
   }
 
-  public BasicDBObject workflowApiToMongoAbstract(AbstractWorkflow workflow) {
-    // We use jackson to serialize the Workflow into workflow json
-    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
-    
-    // But there are 3 exceptions that jackson doesn't convert as it should 
-    BasicDBObject dbWorkflow = new BasicDBObject(); 
-
-    // here we remove the id and below we set the _id field on the dbWorkflow 
-    jsonWorkflow.remove("id");
-    jsonWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
-
-    dbWorkflow.putAll(jsonWorkflow);
-
-    // convert the id
-    writeId(dbWorkflow, FieldsWorkflow._ID, workflow.getId());
-    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, workflow.getOrganizationId());
-
-    return dbWorkflow;
-  }
+//  public BasicDBObject workflowApiToMongoAbstract(AbstractWorkflow workflow) {
+//    // We use jackson to serialize the Workflow into workflow json
+//    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
+//
+//    mongoJsonMapper.createReader().readObject(jsonWorkflow, clazz)
+//
+//    // But there are 3 exceptions that jackson doesn't convert as it should 
+//    BasicDBObject dbWorkflow = new BasicDBObject(); 
+//
+//    // here we remove the id and below we set the _id field on the dbWorkflow 
+//    jsonWorkflow.remove("id");
+//    jsonWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
+//
+//    dbWorkflow.putAll(jsonWorkflow);
+//
+//    // convert the id
+//    writeId(dbWorkflow, FieldsWorkflow._ID, workflow.getId());
+//    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, workflow.getOrganizationId());
+//
+//    return dbWorkflow;
+//  }
 
   public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
-    if (dbWorkflow==null) {
-      return null;
-    }
-    Date deployedTime = (Date) dbWorkflow.remove(FieldsWorkflow.DEPLOYED_TIME);
-    T workflow = mongoToWorkflowApiAbstract(dbWorkflow, workflowClass);
-    if (deployedTime!=null) {
-      workflow.createTime(new LocalDateTime(deployedTime));
-    }
-    return workflow;
+    return mongoJsonMapper.createReader().readObject(dbWorkflow, workflowClass);
   }
 
-  public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {
-    if (dbWorkflow==null) {
-      return null;
-    }
-    // convert id
-    ObjectId workflowId = (ObjectId) dbWorkflow.remove(FieldsWorkflow._ID);
-    ObjectId organizationId = (ObjectId) dbWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
-    T workflow = jsonService.jsonMapToObject(dbWorkflow, workflowClass);
-    if (workflowId!=null) {
-      workflow.id(new WorkflowId(workflowId.toString()));
-    }
-    if (organizationId!=null) {
-      workflow.organizationId(organizationId.toString());
-    }
-    return workflow;
-  }
+//  public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {
+//    if (dbWorkflow==null) {
+//      return null;
+//    }
+//    // convert id
+//    ObjectId workflowId = (ObjectId) dbWorkflow.remove(FieldsWorkflow._ID);
+//    ObjectId organizationId = (ObjectId) dbWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
+//    T workflow = jsonService.jsonMapToObject(dbWorkflow, workflowClass);
+//    if (workflowId!=null) {
+//      workflow.id(new WorkflowId(workflowId.toString()));
+//    }
+//    if (organizationId!=null) {
+//      workflow.organizationId(organizationId.toString());
+//    }
+//    return workflow;
+//  }
   
   @Override
   public WorkflowId generateWorkflowId() {
