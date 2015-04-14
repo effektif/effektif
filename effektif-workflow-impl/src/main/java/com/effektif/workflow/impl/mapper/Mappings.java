@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.activities.UserTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,8 @@ public class Mappings {
   
   public Mappings() {
     registerBaseClass(Activity.class);
+    registerSubClass(UserTask.class);
+
     registerBaseClass(com.effektif.workflow.api.types.Type.class);
     registerBaseClass(Trigger.class);
     

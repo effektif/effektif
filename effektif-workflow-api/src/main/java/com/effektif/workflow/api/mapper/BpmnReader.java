@@ -15,6 +15,7 @@ package com.effektif.workflow.api.mapper;
 
 import java.util.List;
 
+import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
@@ -100,6 +101,9 @@ public interface BpmnReader {
 
   /** Reads a date field as an attribute on the current xml element in the Effektif namespace */
   LocalDateTime readDateAttributeEffektif(String localPart);
+
+  /** Reads a {@link RelativeTime} from an element in the Effektif namespace. */
+  RelativeTime readRelativeTimeEffektif(String localPart);
 
   /** Reads a string as content text in the current xml element */
   String readTextEffektif(String localPart);

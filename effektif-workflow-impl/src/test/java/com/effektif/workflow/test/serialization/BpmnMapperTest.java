@@ -44,15 +44,16 @@ public class BpmnMapperTest extends AbstractMapperTest {
       w = (Workflow) o;
     }
     
-    String jsonString = bpmnMapper
+    String xmlString = bpmnMapper
       .createWriter()
       .toBpmnString(w);
     
-    System.out.println(jsonString);
-    
+    System.out.println(xmlString);
+    System.out.println();
+
     w = bpmnMapper
       .createReader()
-      .toWorkflow(jsonString);
+      .toWorkflow(xmlString);
     
     if (o instanceof Activity) {
       return (T) w.getActivities().get(0);
