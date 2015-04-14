@@ -353,9 +353,9 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
-  static Pattern nonCdataPattern = Pattern.compile("[a-zA-Z0-9_\\- ]"); 
+  static Pattern cdataPattern = Pattern.compile("[<>&]");
   protected boolean containsCdataChars(String value) {
-    return !nonCdataPattern.matcher(value).matches();
+    return cdataPattern.matcher(value).find();
   }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
