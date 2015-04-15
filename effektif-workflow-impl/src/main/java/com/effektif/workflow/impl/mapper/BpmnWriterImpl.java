@@ -164,7 +164,8 @@ public class BpmnWriterImpl implements BpmnWriter {
     if (bpmnPrefix==null) {
       bpmnPrefix = "";
       xml.addNamespace(BPMN_URI, bpmnPrefix);
-    } if (effektifPrefix==null) {
+    }
+    if (effektifPrefix==null) {
       effektifPrefix = "e";
       xml.addNamespace(EFFEKTIF_URI, effektifPrefix);
     }
@@ -173,6 +174,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   protected XmlElement writeDefinitions(Workflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
+    xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
     writeWorkflow(workflow);
     return xml;
   }

@@ -13,15 +13,26 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.test.implementation.BpmnProcessTest;
 import org.junit.BeforeClass;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.BpmnMapper;
-
+import org.xml.sax.SAXException;
 
 /**
  * @author Tom Baeyens
@@ -55,6 +66,8 @@ public class BpmnMapperTest extends AbstractMapperTest {
     System.out.println(xmlString);
     System.out.println();
 
+    validateBpmnXml(xmlString);
+
     w = bpmnMapper
       .readFromString(xmlString);
     
@@ -64,6 +77,25 @@ public class BpmnMapperTest extends AbstractMapperTest {
       return (T) ((UserTask) w.getActivities().get(0)).getForm();
     } else {
       return (T) w;
+    }
+  }
+
+  /**
+   * Performs XML schema validation on the generated XML using the BPMN 2.0 schema.
+   */
+  protected void validateBpmnXml(String bpmnDocument) {
+    String directory = BpmnMapperTest.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
+    File schemaFile = new File(directory, "bpmn/xsd/BPMN20.xsd");
+    Source xml = new StreamSource(new StringReader(bpmnDocument));
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    try {
+      Schema schema = schemaFactory.newSchema(schemaFile);
+      Validator validator = schema.newValidator();
+      validator.validate(xml);
+    } catch (SAXException e) {
+      throw new RuntimeException("BPMN XML validation error: " + e.getMessage());
+    } catch (IOException e) {
+      throw new RuntimeException("IOException during BPMN XML validation: " + e.getMessage());
     }
   }
 }

@@ -88,6 +88,8 @@ public abstract class AbstractMapperTest {
     mappings.pretty();
   }
 
+  // ID values for tests, overridden by valid Object IDs in MongoDB JSON tests.
+
   protected String fileId() {
     return "file-attachment";
   }
@@ -211,11 +213,11 @@ public abstract class AbstractMapperTest {
   @Test
   public void testExclusiveGateway() {
     ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway()
-      .id("ok?")
+      .id("test-ok")
       .defaultTransitionId("proceed");
     activity = serialize(activity);
     assertEquals(ExclusiveGateway.class, activity.getClass());
-    assertEquals("ok?", activity.getId());
+    assertEquals("test-ok", activity.getId());
     assertEquals("proceed", activity.getDefaultTransitionId());
   }
 
