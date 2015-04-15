@@ -87,15 +87,18 @@ public interface BpmnReader {
   /** Reads the given documentation string as a BPMN <code>documentation</code> element. */
   String readDocumentation();
 
+  /** Reads a boolean string field as an attribute on the current xml element in the Effektif namespace */
+  Boolean readBooleanAttributeEffektif(String localPart);
+
   /** Reads a string field as an attribute on the current xml element in the BPMN namespace */
   String readStringAttributeBpmn(String localPart);
-  
+
   /** Reads a string field as an attribute on the current xml element in the Effektif namespace */
   String readStringAttributeEffektif(String localPart);
-  
+
   /** Reads an id as an attribute on the current xml element in the BPMN namespace */
   <T extends Id> T readIdAttributeBpmn(String localPart, Class<T> idType);
-  
+
   /** Reads an id as an attribute on the current xml element in the Effektif namespace */
   <T extends Id> T readIdAttributeEffektif(String localPart, Class<T> idType);
 
@@ -105,9 +108,12 @@ public interface BpmnReader {
   /** Reads a {@link RelativeTime} from an element in the Effektif namespace. */
   RelativeTime readRelativeTimeEffektif(String localPart);
 
+  /** Reads a string from the ‘value’ attribute in the current XML element in the Effektif namespace. */
+  String readStringValue(String localPart);
+
   /** Reads a string as content text in the current xml element */
   String readTextEffektif(String localPart);
-  
+
   /** TODO */
   XmlElement getUnparsedXml();
 }

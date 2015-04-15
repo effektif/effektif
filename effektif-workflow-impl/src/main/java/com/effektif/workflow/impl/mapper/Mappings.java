@@ -22,6 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.activities.EmbeddedSubprocess;
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.activities.UserTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +88,15 @@ public class Mappings {
   public Mappings() {
     registerBaseClass(Activity.class);
     registerSubClass(UserTask.class);
+    registerSubClass(EmbeddedSubprocess.class);
+    registerSubClass(EndEvent.class);
+    registerSubClass(ExclusiveGateway.class);
+    registerSubClass(HttpServiceTask.class);
+    registerSubClass(JavaServiceTask.class);
+    registerSubClass(NoneTask.class);
+    registerSubClass(ParallelGateway.class);
+    registerSubClass(ReceiveTask.class);
+    registerSubClass(ScriptTask.class);
 
     registerBaseClass(com.effektif.workflow.api.types.Type.class);
     registerBaseClass(Trigger.class);

@@ -14,12 +14,26 @@
 package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import com.effektif.workflow.api.activities.EmbeddedSubprocess;
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.api.workflow.Transition;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -76,37 +90,46 @@ public abstract class AbstractMapperTest {
     mappings.pretty();
   }
 
-  // valid object ids
-  //  
-  //  552ce4fdc2e610a6a3dedb84
-  //  552ce4fdc2e610a6a3dedb85
-  //  552ce4fdc2e610a6a3dedb86
-  //  552ce4fdc2e610a6a3dedb87
-  //  552ce4fdc2e610a6a3dedb88
-  //  552ce4fdc2e610a6a3dedb89
-  //  552ce4fdc2e610a6a3dedb8a
-  //  552ce4fdc2e610a6a3dedb8b
-  
-  public String getJohnDoeId() {
-    return "johndoe";
+  // ID values for tests, overridden by valid Object IDs in MongoDB JSON tests.
+
+  protected String fileId() {
+    return "file-attachment";
   }
-  
-  public String getJoeSmoeId() {
-    return "joesmoe";
+
+  protected String groupId() { return groupId(0); }
+  protected String groupId(int index) {
+    String[] ids = { "dev", "ops", "testing" };
+    return ids[index];
   }
-  
+
+  protected String userId() { return userId(0); }
+  protected String userId(int index) {
+    String[] ids = { "alice", "ben", "charlie" };
+    return ids[index];
+  }
+
+  protected String workflowId() {
+    return "software-release";
+  }
+
+  // Test disabled pending ordering issue.
   @Test
-  public void testWorkflowJson() {
+  public void testWorkflow() {
     Workflow workflow = new Workflow()
-      .id(new WorkflowId(getJohnDoeId()))
-      .variable("v", TextType.INSTANCE)
-      .activity(new StartEvent()
+      .id(new WorkflowId(workflowId()))
+      .name("Software release")
+      .description("Regular software production release process.")
+      .sourceWorkflowId(workflowId())
+      .variable("v", TextType.INSTANCE).activity(new StartEvent()
         .id("s")
       );
     
     workflow = serialize(workflow);
     
-    assertEquals(getJohnDoeId(), workflow.getId().getInternal());
+    assertEquals(workflowId(), workflow.getId().getInternal());
+    assertEquals("Software release", workflow.getName());
+    assertEquals("Regular software production release process.", workflow.getDescription());
+    assertEquals(workflowId(), workflow.getSourceWorkflowId());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
 
@@ -120,12 +143,12 @@ public abstract class AbstractMapperTest {
     Call activity = new Call()
       .id("runTests")
       .subWorkflowName("Run tests")
-      .subWorkflowId(new WorkflowId("551d4f5803649532d21f223f"));
+      .subWorkflowId(new WorkflowId(workflowId()));
     activity.setSubWorkflowSource("releaseTests");
     
     activity = serialize(activity);
     
-    assertEquals(new WorkflowId("551d4f5803649532d21f223f"), activity.getSubWorkflowId());
+    assertEquals(new WorkflowId(workflowId()), activity.getSubWorkflowId());
     assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 
@@ -135,167 +158,249 @@ public abstract class AbstractMapperTest {
   public void testEmailTask() {
     EmailTask activity = new EmailTask()
       .id("sendEmail")
+      .name("Announce release")
+      .description("Announce the new software release.")
       .from("effektif@example.org")
       .to("releases@example.org")
       .toExpression("v1.email")
-      .toUserId("552ce4fdc2e610a6a3dedb7b")
-      .toGroupId("552ce4fdc2e610a6a3dedb7e")
-      .cc("dev@example.org")
-      .ccUserId("552ce4fdc2e610a6a3dedb7c")
-      .ccGroupId("552ce4fdc2e610a6a3dedb7f")
+      .toUserId(userId(0))
+      .toGroupId(groupId(0))
+      .cc("Developers <dev@example.org>")
+      .ccUserId(userId(1))
+      .ccGroupId(groupId(1))
       .bcc("archive@example.org")
-      .bccUserId("552ce4fdc2e610a6a3dedb7d")
-      .bccGroupId("552ce4fdc2e610a6a3dedb80")
+      .bccUserId(userId(2))
+      .bccGroupId(groupId(2))
       .subject("New release")
       .bodyText("A new version has been deployed on production.")
       .bodyHtml("<b>A new version has been deployed on production.</b>")
-      .attachment(new FileId("552ce4fdc2e610a6a3dedb82"));
+      .attachment(new FileId(fileId()));
     
     activity = serialize(activity);
     
     assertEquals(EmailTask.class, activity.getClass());
     
     assertEquals("sendEmail", activity.getId());
+    assertEquals("Announce release", activity.getName());
+    assertEquals("Announce the new software release.", activity.getDescription());
     assertEquals("effektif@example.org", activity.getFromEmailAddress().getValue());
     assertEquals("releases@example.org", activity.getToEmailAddresses().get(0).getValue());
     assertEquals("v1.email", activity.getToEmailAddresses().get(1).getExpression());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7b"), activity.getToUserIds().get(0).getValue());
-    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb7e"), activity.getToGroupIds().get(0).getValue());
+    assertEquals(new UserId(userId(0)), activity.getToUserIds().get(0).getValue());
+    assertEquals(new GroupId(groupId(0)), activity.getToGroupIds().get(0).getValue());
 
-    assertEquals("dev@example.org", activity.getCcEmailAddresses().get(0).getValue());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7c"), activity.getCcUserIds().get(0).getValue());
-    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb7f"), activity.getCcGroupIds().get(0).getValue());
+    assertEquals("Developers <dev@example.org>", activity.getCcEmailAddresses().get(0).getValue());
+    assertEquals(new UserId(userId(1)), activity.getCcUserIds().get(0).getValue());
+    assertEquals(new GroupId(groupId(1)), activity.getCcGroupIds().get(0).getValue());
 
     assertEquals("archive@example.org", activity.getBccEmailAddresses().get(0).getValue());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7d"), activity.getBccUserIds().get(0).getValue());
-    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb80"), activity.getBccGroupIds().get(0).getValue());
+    assertEquals(new UserId(userId(2)), activity.getBccUserIds().get(0).getValue());
+    assertEquals(new GroupId(groupId(2)), activity.getBccGroupIds().get(0).getValue());
 
     assertEquals("New release", activity.getSubject());
     assertEquals("A new version has been deployed on production.", activity.getBodyText());
     assertEquals("<b>A new version has been deployed on production.</b>", activity.getBodyHtml());
 
-    assertEquals(new FileId("552ce4fdc2e610a6a3dedb82"), activity.getAttachmentFileIds().get(0).getValue());
+    assertEquals(new FileId(fileId()), activity.getAttachmentFileIds().get(0).getValue());
   }
 
-//  @Test
-//  public void testEmbeddedSubprocess() {
-//    EmbeddedSubprocess activity = new EmbeddedSubprocess();
-//    activity.setId("phase1");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testEndEvent() {
-//    EndEvent activity = new EndEvent();
-//    activity.setId("releaseComplete");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testExclusiveGateway() {
-//    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway()
-//      .id("ok?")
-//      .defaultTransitionId("proceed");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testHttpServiceTask() {
-//    HttpServiceTask activity = new HttpServiceTask();
-//    activity.setId("publishReleaseNotes");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testJavaServiceTask() {
-//    JavaServiceTask activity = new JavaServiceTask();
-//    activity.setId("profilePerformance");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testNoneTask() {
-//    NoneTask activity = new NoneTask();
-//    activity.setId("verifyRequirements");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testParallelGateway() {
-//    ParallelGateway activity = new ParallelGateway();
-//    activity.setId("fork");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testReceiveTask() {
-//    ReceiveTask activity = new ReceiveTask();
-//    activity.setId("buildComplete");
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testScriptTask() {
-//    ScriptTask activity = new ScriptTask()
-//      .id("postToTeamChat")
-//      .script(new Script()
-//        .language("javascript")
-//        .script("console.log('TODO');")
-//        .mapping("Version", "version"));
-//    print(activity);
-//  }
-//
-//  @Test
-//  public void testStartEvent() {
-//    StartEvent activity = new StartEvent();
-//    activity.setId("codeComplete");
-//    print(activity);
-//  }
-//
-//  /** this shows what properties to set when setting or updating a form in a workflow */
-//  @Test
-//  public void testFormInput() {
-//    Form form = new Form()
-//      .description("Form description")
-//      .field("v1")
-//      .field(new FormField()
-//        .bindingExpression("v2")
-//        .readOnly()
-//        .required());
-//    print(form);
-//  }
+  @Test
+  public void testEmbeddedSubprocess() {
+    EmbeddedSubprocess activity = new EmbeddedSubprocess();
+    activity.setId("phase1");
+    activity = serialize(activity);
+    assertEquals(EmbeddedSubprocess.class, activity.getClass());
+    assertEquals("phase1", activity.getId());
+  }
 
-  // @Test
-  public void testUserTask() {
+  @Test
+  public void testEndEvent() {
+    EndEvent activity = new EndEvent();
+    activity.setId("releaseComplete");
+    activity.setName("software released");
+    activity.setDescription("Ends the process when the release is complete.");
+    activity = serialize(activity);
+    assertEquals(EndEvent.class, activity.getClass());
+    assertEquals("releaseComplete", activity.getId());
+    assertEquals("software released", activity.getName());
+    assertEquals("Ends the process when the release is complete.", activity.getDescription());
+    assertNull(activity.getOutgoingTransitions());
+  }
+
+  @Test
+  public void testExclusiveGateway() {
+    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway()
+      .id("test-ok")
+      .defaultTransitionId("proceed");
+    activity = serialize(activity);
+    assertEquals(ExclusiveGateway.class, activity.getClass());
+    assertEquals("test-ok", activity.getId());
+    assertEquals("proceed", activity.getDefaultTransitionId());
+  }
+
+  @Test
+  public void testHttpServiceTask() {
+    HttpServiceTask activity = new HttpServiceTask();
+    activity.setId("publishReleaseNotes");
+    activity = serialize(activity);
+    assertEquals(HttpServiceTask.class, activity.getClass());
+    assertEquals("publishReleaseNotes", activity.getId());
+  }
+
+  @Test
+  public void testJavaServiceTask() {
+    JavaServiceTask activity = new JavaServiceTask();
+    activity.setId("profilePerformance");
+    activity = serialize(activity);
+    assertEquals(JavaServiceTask.class, activity.getClass());
+    assertEquals("profilePerformance", activity.getId());
+  }
+
+  @Test
+  public void testNoneTask() {
+    NoneTask activity = new NoneTask();
+    activity.setId("verifyRequirements");
+    activity = serialize(activity);
+    assertEquals(NoneTask.class, activity.getClass());
+    assertEquals("verifyRequirements", activity.getId());
+  }
+
+  @Test
+  public void testParallelGateway() {
+    ParallelGateway activity = new ParallelGateway();
+    activity.setId("fork");
+    activity = serialize(activity);
+    assertEquals(ParallelGateway.class, activity.getClass());
+    assertEquals("fork", activity.getId());
+  }
+
+  @Test
+  public void testReceiveTask() {
+    ReceiveTask activity = new ReceiveTask();
+    activity.setId("buildComplete");
+    activity = serialize(activity);
+    assertEquals(ReceiveTask.class, activity.getClass());
+    assertEquals("buildComplete", activity.getId());
+  }
+
+  @Test
+  public void testScriptTask() {
+    ScriptTask activity = new ScriptTask()
+      .id("postToTeamChat")
+      .script(new Script()
+        .language("javascript")
+        .script("console.log('TODO');")
+        .mapping("Version", "version"));
+    activity.name("Announce release in chat room")
+      .description("Announce the release in the developer chat room.");
+
+    activity = serialize(activity);
+
+    assertEquals(ScriptTask.class, activity.getClass());
+    assertEquals("postToTeamChat", activity.getId());
+    assertEquals("Announce release in chat room", activity.getName());
+    assertEquals("Announce the release in the developer chat room.", activity.getDescription());
+    assertNotNull(activity.getScript());
+    assertEquals("javascript", activity.getScript().getLanguage());
+    assertEquals("console.log('TODO');", activity.getScript().getScript());
+    assertEquals(1, activity.getScript().getMappings().size());
+    assertEquals("version", activity.getScript().getMappings().get("Version"));
+  }
+
+  @Test
+  public void testStartEvent() {
+    StartEvent activity = new StartEvent();
+    activity.setId("codeComplete");
+    activity.setName("code complete");
+    activity.setDescription("Starts the process when the code is ready to release.");
+    activity = serialize(activity);
+    assertEquals(StartEvent.class, activity.getClass());
+    assertEquals("codeComplete", activity.getId());
+    assertEquals("code complete", activity.getName());
+    assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
+  }
+
+  /** this shows what properties to set when setting or updating a form in a workflow */
+  @Test
+  public void testFormInput() {
     Form form = new Form()
       .description("Form description")
+      .field("v1")
+      .field(new FormField()
+        .bindingExpression("v2")
+        .readOnly()
+        .required());
+    form = serialize(form);
+    assertEquals(Form.class, form.getClass());
+    assertEquals("Form description", form.getDescription());
+    assertEquals(2, form.getFields().size());
+    assertEquals("v1", form.getFields().get(0).getBinding().getExpression());
+    assertEquals("v2", form.getFields().get(1).getBinding().getExpression());
+    assertTrue(form.getFields().get(1).isReadOnly());
+    assertTrue(form.getFields().get(1).isRequired());
+  }
+
+  // Test disabled pending ordering issue.
+  @Test
+  public void testTransition() {
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent())
+      .activity("smokeTest", new UserTask())
+      .activity("end", new EndEvent())
+      .transition("t1", new Transition().from("start").to("smokeTest"))
+      .transition("t2", new Transition().from("smokeTest").to("end"));
+
+    workflow = serialize(workflow);
+
+    assertEquals(2, workflow.getTransitions().size());
+    assertEquals("t1", workflow.getTransitions().get(0).getId());
+    assertEquals("start", workflow.getTransitions().get(0).getFrom());
+    assertEquals("smokeTest", workflow.getTransitions().get(0).getTo());
+  }
+
+  @Test
+  public void testUserTask() {
+    Form form = new Form()
+      .description("Test results & comments")
       .field(new FormField()
         .id("f1")
-        .name("The first field in the form")
+        .name("Test summary")
         .bindingExpression("v1"));
     UserTask activity = new UserTask()
       .id("smokeTest")
       .name("Smoke test")
-      .candidateGroupId("dev")
+      .description("Quick check to make sure it isn’t obviously broken.")
+      .taskName("Release version {{version}}")
+      .assigneeId(userId())
+      .candidateGroupId(groupId())
       .form(form)
       .duedate(RelativeTime.hours(1))
       .reminder(RelativeTime.hours(2))
       .reminderRepeat(RelativeTime.minutes(30))
       .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId("bofh")));
+      .escalateTo(new Binding().value(new UserId(userId())));
 
     activity = serialize(activity);
 
     assertEquals(UserTask.class, activity.getClass());
     assertEquals("smokeTest", activity.getId());
     assertEquals("Smoke test", activity.getName());
-    assertEquals("dev", activity.getCandidateGroupIds().get(0).getValue().getInternal());
+    assertEquals("Quick check to make sure it isn’t obviously broken.", activity.getDescription());
+    assertEquals("Release version {{version}}", activity.getTaskName());
+    assertEquals(userId(), activity.getAssigneeId().getValue().getInternal());
+    assertEquals(groupId(), activity.getCandidateGroupIds().get(0).getValue().getInternal());
     assertEquals(RelativeTime.hours(1), activity.getDuedate());
     assertEquals(RelativeTime.hours(2), activity.getReminder());
     assertEquals(RelativeTime.minutes(30), activity.getReminderRepeat());
     assertEquals(RelativeTime.hours(4), activity.getEscalate());
-    assertEquals(new UserId("bofh"), activity.getEscalateToId().getValue());
+    assertEquals(new UserId(userId()), activity.getEscalateToId().getValue());
 
     assertEquals(Form.class, activity.getForm().getClass());
+    assertEquals("Test results & comments", activity.getForm().getDescription());
+
+    assertEquals(1, activity.getForm().getFields().size());
+    assertEquals("f1", activity.getForm().getFields().get(0).getId());
+    assertEquals("Test summary", activity.getForm().getFields().get(0).getName());
+    assertEquals("v1", activity.getForm().getFields().get(0).getBinding().getExpression());
   }
 }

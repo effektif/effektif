@@ -86,19 +86,37 @@ public class UserTask extends NoneTask {
   public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
     r.startExtensionElements();
+    assigneeId = r.readBinding("assigneeId", UserId.class);
     candidateGroupIds = r.readBindings("candidateGroupId", GroupId.class);
     duedate = r.readRelativeTimeEffektif("dueDate");
     reminder = r.readRelativeTimeEffektif("reminder");
     reminderRepeat = r.readRelativeTimeEffektif("reminderRepeat");
     escalate = r.readRelativeTimeEffektif("escalate");
     escalateToId = r.readBinding("escalateToId", UserId.class);
+    taskName = r.readStringValue("taskName");
 
-    // TODO form
-    // TODO form / description
-    // TODO form / field
-    // TODO form / field / ID
-    // TODO form / field / name
-    // TODO form / field / binding expression
+    for (XmlElement formElement : r.readElementsEffektif("form")) {
+      form = new Form();
+      r.startElement(formElement);
+      form.setDescription(r.readTextEffektif("description"));
+
+      for (XmlElement fieldElement : r.readElementsEffektif("field")) {
+        FormField field = new FormField();
+        r.startElement(fieldElement);
+        field.setId(r.readStringAttributeEffektif("id"));
+        field.setName(r.readStringAttributeEffektif("name"));
+        field.setReadOnly(r.readBooleanAttributeEffektif("readonly"));
+        field.setRequired(r.readBooleanAttributeEffektif("required"));
+
+        Binding<String> binding = new Binding<>();
+        binding.setValue(r.readStringAttributeEffektif("value"));
+        binding.setExpression(r.readStringAttributeEffektif("expression"));
+        field.setBinding(binding);
+        r.endElement();
+        form.field(field);
+      }
+      r.endElement();
+    }
 
     r.endExtensionElements();
   }
@@ -107,12 +125,14 @@ public class UserTask extends NoneTask {
   public void writeBpmn(com.effektif.workflow.api.mapper.BpmnWriter w) {
     super.writeBpmn(w);
     w.startExtensionElements();
+    w.writeBinding("assigneeId", assigneeId);
     w.writeBindings("candidateGroupId", candidateGroupIds);
     w.writeRelativeTimeEffektif("dueDate", duedate);
     w.writeRelativeTimeEffektif("reminder", reminder);
     w.writeRelativeTimeEffektif("reminderRepeat", reminderRepeat);
     w.writeRelativeTimeEffektif("escalate", escalate);
     w.writeBinding("escalateToId", escalateToId);
+    w.writeStringValue("taskName", "value", taskName);
 
     if (form != null) {
       w.startElementEffektif("form");
@@ -122,6 +142,15 @@ public class UserTask extends NoneTask {
         w.startElementEffektif("field");
         w.writeStringAttributeEffektif("id", field.getId());
         w.writeStringAttributeEffektif("name", field.getName());
+
+        // Only write Boolean fields that default to false if necessary.
+        if (field.isReadOnly()) {
+          w.writeStringAttributeBpmn("readonly", field.isReadOnly());
+        }
+        if (field.isRequired()) {
+          w.writeStringAttributeBpmn("required", field.isRequired());
+        }
+
         Binding<?> binding = field.getBinding();
         if (binding != null) {
           w.writeStringAttributeEffektif("expression", binding.getExpression());

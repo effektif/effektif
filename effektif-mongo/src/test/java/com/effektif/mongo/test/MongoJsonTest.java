@@ -21,14 +21,34 @@ import com.effektif.mongo.MongoJsonMapper;
 import com.effektif.mongo.PrettyPrinter;
 import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens
  */
 public class MongoJsonTest extends AbstractMapperTest {
 
+  protected static final Logger log = LoggerFactory.getLogger(MongoJsonTest.class);
   static MongoJsonMapper mongoJsonMapper = new MongoJsonMapper();
+
+  protected String fileId() {
+    return "552ce4fdc2e610a6a3dedb10";
+  }
+
+  protected String groupId(int index) {
+    String[] ids = { "552ce4fdc2e610a6a3dedb20", "552ce4fdc2e610a6a3dedb21", "552ce4fdc2e610a6a3dedb22" };
+    return ids[index];
+  }
+
+  protected String userId(int index) {
+    String[] ids = { "552ce4fdc2e610a6a3dedb30", "552ce4fdc2e610a6a3dedb31", "552ce4fdc2e610a6a3dedb32" };
+    return ids[index];
+  }
+
+  protected String workflowId() {
+    return "552ce4fdc2e610a6a3dedb40";
+  }
 
   @BeforeClass
   public static void initialize() {
@@ -55,10 +75,10 @@ public class MongoJsonTest extends AbstractMapperTest {
     } else {
       json = dbWorkflow.toString();
     }
-    System.out.println(json);
+    log.info("\n" + json + "\n");
     
     return (T) mongoJsonMapper
-      .readFromDbObject(dbWorkflow, (Class<T>)o.getClass());
+      .readFromDbObject(dbWorkflow, (Class<T>) o.getClass());
   }
 
 }

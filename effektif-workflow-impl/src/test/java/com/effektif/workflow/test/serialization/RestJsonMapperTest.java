@@ -21,13 +21,15 @@ import org.junit.Test;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.impl.mapper.JsonMapper;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens
  */
 public class RestJsonMapperTest extends AbstractMapperTest {
 
+  protected static final Logger log = LoggerFactory.getLogger(RestJsonMapperTest.class);
   static JsonMapper jsonMapper = new JsonMapper();
   
   @BeforeClass
@@ -42,7 +44,7 @@ public class RestJsonMapperTest extends AbstractMapperTest {
     String jsonString = jsonMapper
       .writeToStringPretty(o);
     
-    System.out.println(jsonString);
+    log.info("\n" + jsonString + "\n");
     
     return (T) jsonMapper
       .readFromString(jsonString, o.getClass());

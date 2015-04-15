@@ -76,7 +76,6 @@ public class BpmnWriterImpl implements BpmnWriter {
         xml.addElement(childElement, index);
       }
       startElement(childElement);
-      
     } else {
       throw new RuntimeException("Unknown BPMN source: "+source);
     }
@@ -164,7 +163,8 @@ public class BpmnWriterImpl implements BpmnWriter {
     if (bpmnPrefix==null) {
       bpmnPrefix = "";
       xml.addNamespace(BPMN_URI, bpmnPrefix);
-    } if (effektifPrefix==null) {
+    }
+    if (effektifPrefix==null) {
       effektifPrefix = "e";
       xml.addNamespace(EFFEKTIF_URI, effektifPrefix);
     }
@@ -173,6 +173,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   protected XmlElement writeDefinitions(Workflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
+    xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
     writeWorkflow(workflow);
     return xml;
   }
@@ -181,11 +182,12 @@ public class BpmnWriterImpl implements BpmnWriter {
     startScope(workflow);
     // let's add the process we write as the first process element inside the definitions
     startElementBpmn("process", workflow.getBpmn(), 0);
-    writeDocumentation(workflow.getDescription());
     if (workflow.getSourceWorkflowId()==null && workflow.getId()!=null) {
       workflow.setSourceWorkflowId(workflow.getId().getInternal());
     }
+    writeScope();
     workflow.writeBpmn(this);
+    writeDocumentation(workflow.getDescription());
     endElement();
   }
   
@@ -248,7 +250,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementEffektif(localPart);
       T value = binding.getValue();
       if (value!=null) {
-        writeStringAttributeEffektif("value", value.toString());
+        writeStringAttributeEffektif("value", value);
       }
       if (binding.getExpression()!=null) {
         writeStringAttributeEffektif("expression", binding.getExpression());
@@ -267,79 +269,90 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
+  @Override
   public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
-      startElementBpmn("documentation", true);
+      startElementBpmn("documentation", null, 0);
       xml.addText(documentation);
       endElement();
     }
   }
 
-  public void writeStringAttributeBpmn(String localPart, String value) {
+  @Override
+  public void writeStringAttributeBpmn(String localPart, Object value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value);
-    } 
+    }
   }
-  
-  public void writeStringAttributeEffektif(String localPart, String value) {
+
+  @Override
+  public void writeStringAttributeEffektif(String localPart, Object value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value);
-    } 
+    }
   }
-  
+
+  @Override
   public void writeIdAttributeBpmn(String localPart, Id value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value.getInternal());
-    } 
+    }
   }
-  
+
+  @Override
   public void writeIdAttributeEffektif(String localPart, Id value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value.getInternal());
-    } 
+    }
   }
 
+  @Override
+  public void writeCDataTextEffektif(String localPart, String value) {
+    if (value != null) {
+      xml.createElement(EFFEKTIF_URI, localPart).addCDataText(value);
+    }
+  }
+
+  @Override
   public void writeDateAttributeBpmn(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, DATE_FORMAT.print(value));
-    } 
+    }
   }
-  
+
+  @Override
   public void writeDateAttributeEffektif(String localPart, LocalDateTime value) {
-    if (value!=null) {
+    if (value != null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, DATE_FORMAT.print(value));
     }
   }
 
+  @Override
   public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
+    writeStringValue(localPart, "after", value);
+  }
+
+  @Override
+  public void writeStringValue(String localPart, String attributeName, Object value) {
     if (value!=null) {
-      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, "after", value.toString());
+      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, attributeName, value);
     }
   }
 
-
   @Override
-  public void writeTextBpmn(String localPart, String value) {
+  public void writeTextBpmn(String localPart, Object value) {
     writeText(BPMN_URI, localPart, value);
   }
-  
+
   @Override
-  public void writeTextEffektif(String localPart, String value) {
+  public void writeTextEffektif(String localPart, Object value) {
     writeText(EFFEKTIF_URI, localPart, value);
   }
-  
-  protected void writeText(String namespaceUri, String localPart, String value) {
+
+  protected void writeText(String namespaceUri, String localPart, Object value) {
     if (value!=null) {
-      if (containsCdataChars(value)) {
-        value = "<![CDATA[" + value + "]]>";
-      }
       xml.createElement(namespaceUri, localPart).addText(value);
     }
-  }
-
-  static Pattern cdataPattern = Pattern.compile("[<>&]");
-  protected boolean containsCdataChars(String value) {
-    return cdataPattern.matcher(value).find();
   }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

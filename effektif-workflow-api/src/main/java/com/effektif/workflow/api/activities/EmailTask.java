@@ -108,8 +108,8 @@ public class EmailTask extends Activity {
     w.writeBindings("bccUserId", bccUserIds);
     w.writeBindings("bccGroupId", bccGroupIds);
     w.writeTextEffektif("subject", subject);
-    w.writeTextEffektif("bodyText", bodyText);
-    w.writeTextEffektif("bodyHtml", bodyHtml);
+    w.writeCDataTextEffektif("bodyText", bodyText);
+    w.writeCDataTextEffektif("bodyHtml", bodyHtml);
     w.writeBindings("attachmentFileId", attachmentFileIds);
     w.endExtensionElements();
   }
