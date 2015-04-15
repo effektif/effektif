@@ -32,6 +32,8 @@ import org.junit.BeforeClass;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.BpmnMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -39,6 +41,7 @@ import org.xml.sax.SAXException;
  */
 public class BpmnMapperTest extends AbstractMapperTest {
 
+  protected static final Logger log = LoggerFactory.getLogger(BpmnMapperTest.class);
   static BpmnMapper bpmnMapper = new BpmnMapper();
   
   @BeforeClass
@@ -63,8 +66,7 @@ public class BpmnMapperTest extends AbstractMapperTest {
     String xmlString = bpmnMapper
       .writeToString(w);
     
-    System.out.println(xmlString);
-    System.out.println();
+    log.info("\n" + xmlString + "\n");
 
     validateBpmnXml(xmlString);
 

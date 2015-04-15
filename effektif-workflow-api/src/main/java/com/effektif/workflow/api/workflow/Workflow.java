@@ -73,11 +73,17 @@ public class Workflow extends AbstractWorkflow {
   
   @Override
   public void readBpmn(BpmnReader r) {
+    r.startExtensionElements();
+    sourceWorkflowId = r.readStringValue("sourceWorkflowId");
+    r.endExtensionElements();
     super.readBpmn(r);
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
+    w.startExtensionElements();
+    w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
+    w.endExtensionElements();
     super.writeBpmn(w);
   }
 

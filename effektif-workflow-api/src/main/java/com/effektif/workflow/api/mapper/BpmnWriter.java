@@ -78,11 +78,13 @@ public interface BpmnWriter {
   /** Writes a {@link RelativeTime} as an element in the Effektif namespace. */
   void writeRelativeTimeEffektif(String localPart, RelativeTime value);
 
+  /** Writes an element in the Effektif namespace with the value as a text attribute. */
+  void writeStringValue(String localPart, String attributeName, Object value);
+
   /** write an element in the BPMN namespace with the value as content text.  if necessary, the value will be wrapped
    * automatic in a CDATA section */
   void writeTextBpmn(String localPart, Object value);
 
-  /** write an element in the Effektif namespace with the value as content text.  if necessary, the value will be wrapped
-   * automatic in a CDATA section */
+  /** write an element in the Effektif namespace with the value as content text. */
   void writeTextEffektif(String localPart, Object value);
 }

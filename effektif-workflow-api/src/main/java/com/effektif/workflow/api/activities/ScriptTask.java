@@ -80,6 +80,7 @@ public class ScriptTask extends NoneTask {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
     if (script!=null) {
       w.startExtensionElements();
       w.writeTextEffektif("language", script.getLanguage());
@@ -96,7 +97,6 @@ public class ScriptTask extends NoneTask {
       }
       w.endExtensionElements();
     }
-    super.writeBpmn(w);
   }
 
   @Override

@@ -108,6 +108,9 @@ public interface BpmnReader {
   /** Reads a {@link RelativeTime} from an element in the Effektif namespace. */
   RelativeTime readRelativeTimeEffektif(String localPart);
 
+  /** Reads a string from the ‘value’ attribute in the current XML element in the Effektif namespace. */
+  String readStringValue(String localPart);
+
   /** Reads a string as content text in the current xml element */
   String readTextEffektif(String localPart);
 

@@ -350,6 +350,15 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   @Override
+  public String readStringValue(String localPart) {
+    XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
+    if (element != null) {
+      return element.getAttribute(EFFEKTIF_URI, "value");
+    }
+    return null;
+  }
+
+  @Override
   public String readTextEffektif(String localPart) {
     XmlElement textElement = currentXml!=null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
     if (textElement!=null) {

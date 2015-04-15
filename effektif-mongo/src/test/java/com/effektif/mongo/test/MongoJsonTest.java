@@ -21,13 +21,15 @@ import com.effektif.mongo.MongoJsonMapper;
 import com.effektif.mongo.PrettyPrinter;
 import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens
  */
 public class MongoJsonTest extends AbstractMapperTest {
 
+  protected static final Logger log = LoggerFactory.getLogger(MongoJsonTest.class);
   static MongoJsonMapper mongoJsonMapper = new MongoJsonMapper();
 
   protected String fileId() {
@@ -73,10 +75,10 @@ public class MongoJsonTest extends AbstractMapperTest {
     } else {
       json = dbWorkflow.toString();
     }
-    System.out.println(json);
+    log.info("\n" + json + "\n");
     
     return (T) mongoJsonMapper
-      .readFromDbObject(dbWorkflow, (Class<T>)o.getClass());
+      .readFromDbObject(dbWorkflow, (Class<T>) o.getClass());
   }
 
 }

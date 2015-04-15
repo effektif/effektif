@@ -86,12 +86,14 @@ public class UserTask extends NoneTask {
   public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
     r.startExtensionElements();
+    assigneeId = r.readBinding("assigneeId", UserId.class);
     candidateGroupIds = r.readBindings("candidateGroupId", GroupId.class);
     duedate = r.readRelativeTimeEffektif("dueDate");
     reminder = r.readRelativeTimeEffektif("reminder");
     reminderRepeat = r.readRelativeTimeEffektif("reminderRepeat");
     escalate = r.readRelativeTimeEffektif("escalate");
     escalateToId = r.readBinding("escalateToId", UserId.class);
+    taskName = r.readStringValue("taskName");
 
     for (XmlElement formElement : r.readElementsEffektif("form")) {
       form = new Form();
@@ -123,12 +125,14 @@ public class UserTask extends NoneTask {
   public void writeBpmn(com.effektif.workflow.api.mapper.BpmnWriter w) {
     super.writeBpmn(w);
     w.startExtensionElements();
+    w.writeBinding("assigneeId", assigneeId);
     w.writeBindings("candidateGroupId", candidateGroupIds);
     w.writeRelativeTimeEffektif("dueDate", duedate);
     w.writeRelativeTimeEffektif("reminder", reminder);
     w.writeRelativeTimeEffektif("reminderRepeat", reminderRepeat);
     w.writeRelativeTimeEffektif("escalate", escalate);
     w.writeBinding("escalateToId", escalateToId);
+    w.writeStringValue("taskName", "value", taskName);
 
     if (form != null) {
       w.startElementEffektif("form");

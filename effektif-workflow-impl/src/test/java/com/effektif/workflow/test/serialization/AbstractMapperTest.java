@@ -15,6 +15,7 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
@@ -32,6 +33,7 @@ import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.api.workflow.Transition;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -110,18 +112,24 @@ public abstract class AbstractMapperTest {
     return "software-release";
   }
 
+  // Test disabled pending ordering issue.
   @Test
-  public void testWorkflowJson() {
+  public void testWorkflow() {
     Workflow workflow = new Workflow()
       .id(new WorkflowId(workflowId()))
-      .variable("v", TextType.INSTANCE)
-      .activity(new StartEvent()
+      .name("Software release")
+      .description("Regular software production release process.")
+      .sourceWorkflowId(workflowId())
+      .variable("v", TextType.INSTANCE).activity(new StartEvent()
         .id("s")
       );
     
     workflow = serialize(workflow);
     
     assertEquals(workflowId(), workflow.getId().getInternal());
+    assertEquals("Software release", workflow.getName());
+    assertEquals("Regular software production release process.", workflow.getDescription());
+    assertEquals(workflowId(), workflow.getSourceWorkflowId());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
 
@@ -150,6 +158,8 @@ public abstract class AbstractMapperTest {
   public void testEmailTask() {
     EmailTask activity = new EmailTask()
       .id("sendEmail")
+      .name("Announce release")
+      .description("Announce the new software release.")
       .from("effektif@example.org")
       .to("releases@example.org")
       .toExpression("v1.email")
@@ -171,6 +181,8 @@ public abstract class AbstractMapperTest {
     assertEquals(EmailTask.class, activity.getClass());
     
     assertEquals("sendEmail", activity.getId());
+    assertEquals("Announce release", activity.getName());
+    assertEquals("Announce the new software release.", activity.getDescription());
     assertEquals("effektif@example.org", activity.getFromEmailAddress().getValue());
     assertEquals("releases@example.org", activity.getToEmailAddresses().get(0).getValue());
     assertEquals("v1.email", activity.getToEmailAddresses().get(1).getExpression());
@@ -205,9 +217,14 @@ public abstract class AbstractMapperTest {
   public void testEndEvent() {
     EndEvent activity = new EndEvent();
     activity.setId("releaseComplete");
+    activity.setName("software released");
+    activity.setDescription("Ends the process when the release is complete.");
     activity = serialize(activity);
     assertEquals(EndEvent.class, activity.getClass());
     assertEquals("releaseComplete", activity.getId());
+    assertEquals("software released", activity.getName());
+    assertEquals("Ends the process when the release is complete.", activity.getDescription());
+    assertNull(activity.getOutgoingTransitions());
   }
 
   @Test
@@ -274,9 +291,15 @@ public abstract class AbstractMapperTest {
         .language("javascript")
         .script("console.log('TODO');")
         .mapping("Version", "version"));
+    activity.name("Announce release in chat room")
+      .description("Announce the release in the developer chat room.");
+
     activity = serialize(activity);
+
     assertEquals(ScriptTask.class, activity.getClass());
     assertEquals("postToTeamChat", activity.getId());
+    assertEquals("Announce release in chat room", activity.getName());
+    assertEquals("Announce the release in the developer chat room.", activity.getDescription());
     assertNotNull(activity.getScript());
     assertEquals("javascript", activity.getScript().getLanguage());
     assertEquals("console.log('TODO');", activity.getScript().getScript());
@@ -288,9 +311,13 @@ public abstract class AbstractMapperTest {
   public void testStartEvent() {
     StartEvent activity = new StartEvent();
     activity.setId("codeComplete");
+    activity.setName("code complete");
+    activity.setDescription("Starts the process when the code is ready to release.");
     activity = serialize(activity);
     assertEquals(StartEvent.class, activity.getClass());
     assertEquals("codeComplete", activity.getId());
+    assertEquals("code complete", activity.getName());
+    assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
   }
 
   /** this shows what properties to set when setting or updating a form in a workflow */
@@ -313,6 +340,24 @@ public abstract class AbstractMapperTest {
     assertTrue(form.getFields().get(1).isRequired());
   }
 
+  // Test disabled pending ordering issue.
+  //  @Test
+  public void testTransition() {
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent())
+      .activity("smokeTest", new UserTask())
+      .activity("end", new EndEvent())
+      .transition("t1", new Transition().from("start").to("smokeTest"))
+      .transition("t2", new Transition().from("smokeTest").to("end"));
+
+    workflow = serialize(workflow);
+
+    assertEquals(2, workflow.getTransitions().size());
+    assertEquals("t1", workflow.getTransitions().get(0).getId());
+    assertEquals("start", workflow.getTransitions().get(0).getFrom());
+    assertEquals("smokeTest", workflow.getTransitions().get(0).getTo());
+  }
+
   @Test
   public void testUserTask() {
     Form form = new Form()
@@ -324,6 +369,9 @@ public abstract class AbstractMapperTest {
     UserTask activity = new UserTask()
       .id("smokeTest")
       .name("Smoke test")
+      .description("Quick check to make sure it isn’t obviously broken.")
+      .taskName("Release version {{version}}")
+      .assigneeId(userId())
       .candidateGroupId(groupId())
       .form(form)
       .duedate(RelativeTime.hours(1))
@@ -337,6 +385,9 @@ public abstract class AbstractMapperTest {
     assertEquals(UserTask.class, activity.getClass());
     assertEquals("smokeTest", activity.getId());
     assertEquals("Smoke test", activity.getName());
+    assertEquals("Quick check to make sure it isn’t obviously broken.", activity.getDescription());
+    assertEquals("Release version {{version}}", activity.getTaskName());
+    assertEquals(userId(), activity.getAssigneeId().getValue().getInternal());
     assertEquals(groupId(), activity.getCandidateGroupIds().get(0).getValue().getInternal());
     assertEquals(RelativeTime.hours(1), activity.getDuedate());
     assertEquals(RelativeTime.hours(2), activity.getReminder());

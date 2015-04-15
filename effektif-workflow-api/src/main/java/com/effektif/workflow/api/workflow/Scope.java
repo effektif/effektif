@@ -55,8 +55,8 @@ public abstract class Scope extends Element {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.writeScope();
     super.writeBpmn(w);
+    w.writeScope();
   }
 
   public List<Activity> getActivities() {

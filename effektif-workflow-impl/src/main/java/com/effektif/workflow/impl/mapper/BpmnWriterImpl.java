@@ -272,7 +272,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   @Override
   public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
-      startElementBpmn("documentation", true);
+      startElementBpmn("documentation", null);
       xml.addText(documentation);
       endElement();
     }
@@ -329,8 +329,13 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   @Override
   public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
+    writeStringValue(localPart, "after", value);
+  }
+
+  @Override
+  public void writeStringValue(String localPart, String attributeName, Object value) {
     if (value!=null) {
-      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, "after", value);
+      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, attributeName, value);
     }
   }
 
