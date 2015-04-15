@@ -93,12 +93,25 @@ public class UserTask extends NoneTask {
     escalate = r.readRelativeTimeEffektif("escalate");
     escalateToId = r.readBinding("escalateToId", UserId.class);
 
-    // TODO form
-    // TODO form / description
-    // TODO form / field
-    // TODO form / field / ID
-    // TODO form / field / name
-    // TODO form / field / binding expression
+    for (XmlElement formElement : r.readElementsEffektif("form")) {
+      form = new Form();
+      r.startElement(formElement);
+      form.setDescription(r.readTextEffektif("description"));
+
+      for (XmlElement fieldElement : r.readElementsEffektif("field")) {
+        FormField field = new FormField();
+        r.startElement(fieldElement);
+        field.setId(r.readStringAttributeEffektif("id"));
+        field.setName(r.readStringAttributeEffektif("name"));
+        Binding<String> binding = new Binding<>();
+        binding.setValue(r.readStringAttributeEffektif("value"));
+        binding.setExpression(r.readStringAttributeEffektif("expression"));
+        field.setBinding(binding);
+        r.endElement();
+        form.field(field);
+      }
+      r.endElement();
+    }
 
     r.endExtensionElements();
   }

@@ -257,7 +257,7 @@ public abstract class AbstractMapperTest {
 //    print(form);
 //  }
 
-  // @Test
+  @Test
   public void testUserTask() {
     Form form = new Form()
       .description("Form description")
@@ -289,5 +289,11 @@ public abstract class AbstractMapperTest {
     assertEquals(new UserId("bofh"), activity.getEscalateToId().getValue());
 
     assertEquals(Form.class, activity.getForm().getClass());
+    assertEquals("Form description", activity.getForm().getDescription());
+
+    assertEquals(1, activity.getForm().getFields().size());
+    assertEquals("f1", activity.getForm().getFields().get(0).getId());
+    assertEquals("The first field in the form", activity.getForm().getFields().get(0).getName());
+    assertEquals("v1", activity.getForm().getFields().get(0).getBinding().getExpression());
   }
 }
