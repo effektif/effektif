@@ -83,7 +83,7 @@ public class ScriptTask extends NoneTask {
     if (script!=null) {
       w.startExtensionElements();
       w.writeTextEffektif("language", script.getLanguage());
-      w.writeTextEffektif("script", script.getScript());
+      w.writeCDataTextEffektif("script", script.getScript());
       Map<String, String> mappings = script.getMappings();
       if (mappings!=null) {
         for (String scriptVariableName: mappings.keySet()) {

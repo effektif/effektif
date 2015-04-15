@@ -305,6 +305,13 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   @Override
+  public void writeCDataTextEffektif(String localPart, String value) {
+    if (value != null) {
+      xml.createElement(EFFEKTIF_URI, localPart).addCDataText(value);
+    }
+  }
+
+  @Override
   public void writeDateAttributeBpmn(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, DATE_FORMAT.print(value));
@@ -313,7 +320,7 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   @Override
   public void writeDateAttributeEffektif(String localPart, LocalDateTime value) {
-    if (value!=null) {
+    if (value != null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, DATE_FORMAT.print(value));
     }
   }
@@ -329,6 +336,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void writeTextBpmn(String localPart, Object value) {
     writeText(BPMN_URI, localPart, value);
   }
+
   @Override
   public void writeTextEffektif(String localPart, Object value) {
     writeText(EFFEKTIF_URI, localPart, value);

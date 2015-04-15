@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** 
  * XML DOM structure that is jsonnable with Jackson
@@ -251,6 +252,22 @@ public class XmlElement {
   
   // text ///////////////////////////////////////////////////////////////////////////
 
+  private static Pattern specialCharacters = Pattern.compile("[<>&]");
+
+  /**
+   * Adds text to the current element’s text node, wrapping the text in CDATA section if necessary, instead of escaping.
+   */
+  public void addCDataText(String value) {
+    if (value != null) {
+      boolean containsSpecialCharacters = specialCharacters.matcher(value).find();
+      String wrappedText = containsSpecialCharacters ? "<![CDATA[" + value + "]]>" : value;
+      this.text = this.text != null ? this.text + wrappedText : wrappedText;
+    }
+  }
+
+  /**
+   * Adds text to the current element’s text node, escaping XML special characters.
+   */
   public void addText(Object value) {
     if (value != null) {
       String text = value.toString();

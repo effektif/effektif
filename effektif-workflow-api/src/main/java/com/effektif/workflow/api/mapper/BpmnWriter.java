@@ -66,6 +66,9 @@ public interface BpmnWriter {
   /** write an id field as an attribute on the current xml element in the Effektif namespace */
   void writeIdAttributeEffektif(String localPart, Id value);
 
+  /** Writes an element in the Effektif namespace with the value as content text, wrapped in a CDATA section. */
+  void writeCDataTextEffektif(String localPart, String value);
+
   /** write a date field as an attribute on the current xml element in the BPMN namespace */
   void writeDateAttributeBpmn(String localPart, LocalDateTime value);
 
