@@ -18,7 +18,6 @@ package com.effektif.server;
 import java.net.URI;
 
 import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 
 
 /**
@@ -83,11 +82,10 @@ public class WorkflowServer {
             new MessageResource(workflowEngine),
             new PingResource() );
 
-    ObjectMapper objectMapper = configuration.get(ObjectMapper.class);
+    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
 
     config.registerInstances(
-            new JacksonFeature(),
-            new ObjectMapperResolver(objectMapper),
+            new EffektifJsonProvider(jsonMapper),
             new RequestLogger(),
             new DefaultExceptionMapper() );
     

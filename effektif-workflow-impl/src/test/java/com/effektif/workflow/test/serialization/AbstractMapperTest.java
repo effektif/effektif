@@ -87,10 +87,18 @@ public abstract class AbstractMapperTest {
   //  552ce4fdc2e610a6a3dedb8a
   //  552ce4fdc2e610a6a3dedb8b
   
+  public String getJohnDoeId() {
+    return "johndoe";
+  }
+  
+  public String getJoeSmoeId() {
+    return "joesmoe";
+  }
+  
   @Test
   public void testWorkflowJson() {
     Workflow workflow = new Workflow()
-      .id(new WorkflowId("552ce4fdc2e610a6a3dedb78"))
+      .id(new WorkflowId(getJohnDoeId()))
       .variable("v", TextType.INSTANCE)
       .activity(new StartEvent()
         .id("s")
@@ -98,7 +106,7 @@ public abstract class AbstractMapperTest {
     
     workflow = serialize(workflow);
     
-    assertEquals("552ce4fdc2e610a6a3dedb78", workflow.getId().getInternal());
+    assertEquals(getJohnDoeId(), workflow.getId().getInternal());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
 

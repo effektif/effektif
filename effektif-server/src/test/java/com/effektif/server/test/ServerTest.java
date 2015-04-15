@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.mongo.MongoConfiguration;
+import com.effektif.server.EffektifJsonProvider;
 import com.effektif.server.ObjectMapperResolver;
 import com.effektif.server.WorkflowServer;
 import com.effektif.workflow.api.Configuration;
@@ -47,6 +48,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -84,8 +86,8 @@ public class ServerTest extends JerseyTest {
   
   @Override
   protected void configureClient(ClientConfig clientConfig) {
-    ObjectMapper objectMapper = getConfiguration().get(ObjectMapper.class);
-    clientConfig.register(new ObjectMapperResolver(objectMapper));
+    JsonMapper jsonMapper = getConfiguration().get(JsonMapper.class);
+    clientConfig.register(new EffektifJsonProvider(jsonMapper));
   }
 
   @Test
@@ -103,7 +105,7 @@ public class ServerTest extends JerseyTest {
         .transitionToNext())
       .activity("Five", new EndEvent());
 
-    String str = getConfiguration().get(JsonService.class).objectToJsonString(workflow);
+    // String str = getConfiguration().get(JsonService.class).objectToJsonString(workflow);
 
     Deployment deployment = target("deploy").request()
             .post(Entity.entity(workflow, MediaType.APPLICATION_JSON))
@@ -129,8 +131,6 @@ public class ServerTest extends JerseyTest {
     TriggerInstance start = new TriggerInstance()
       .sourceWorkflowId("Server test workflow");
 
-    String str = getConfiguration().get(JsonService.class).objectToJsonString(start);
-    
     WorkflowInstance workflowInstance = target("start").request()
             .post(Entity.entity(start, MediaType.APPLICATION_JSON))
             .readEntity(WorkflowInstance.class);
