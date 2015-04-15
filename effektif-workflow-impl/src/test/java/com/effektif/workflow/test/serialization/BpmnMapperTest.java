@@ -13,6 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
+import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.triggers.FormTrigger;
 import org.junit.BeforeClass;
 
 import com.effektif.workflow.api.workflow.Activity;
@@ -40,10 +43,12 @@ public class BpmnMapperTest extends AbstractMapperTest {
     if (o instanceof Activity) {
       w = new Workflow()
       .activity((Activity)o);
+    } else if (o instanceof Form) {
+      w = new Workflow().activity(new UserTask().form((Form) o));
     } else {
       w = (Workflow) o;
     }
-    
+
     String xmlString = bpmnMapper
       .writeToString(w);
     
@@ -55,6 +60,8 @@ public class BpmnMapperTest extends AbstractMapperTest {
     
     if (o instanceof Activity) {
       return (T) w.getActivities().get(0);
+    } else if (o instanceof Form) {
+      return (T) ((UserTask) w.getActivities().get(0)).getForm();
     } else {
       return (T) w;
     }

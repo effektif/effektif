@@ -275,41 +275,50 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
+  @Override
+  public void writeBooleanAttributeEffektif(String localPart, Boolean value) {
+    if (value!=null) {
+      xml.addAttribute(BPMN_URI, localPart, value.toString());
+    }
+
+  }
+
   public void writeStringAttributeBpmn(String localPart, String value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value);
-    } 
+    }
   }
-  
+
   public void writeStringAttributeEffektif(String localPart, String value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value);
-    } 
+    }
   }
-  
+
   public void writeIdAttributeBpmn(String localPart, Id value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value.getInternal());
-    } 
+    }
   }
-  
+
   public void writeIdAttributeEffektif(String localPart, Id value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value.getInternal());
-    } 
+    }
   }
 
   public void writeDateAttributeBpmn(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, DATE_FORMAT.print(value));
-    } 
+    }
   }
-  
+
   public void writeDateAttributeEffektif(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, DATE_FORMAT.print(value));
     }
   }
+
 
   public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
     if (value!=null) {
@@ -317,17 +326,15 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
-
   @Override
   public void writeTextBpmn(String localPart, String value) {
     writeText(BPMN_URI, localPart, value);
   }
-  
   @Override
   public void writeTextEffektif(String localPart, String value) {
     writeText(EFFEKTIF_URI, localPart, value);
   }
-  
+
   protected void writeText(String namespaceUri, String localPart, String value) {
     if (value!=null) {
       if (containsCdataChars(value)) {

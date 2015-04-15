@@ -54,32 +54,35 @@ public interface BpmnWriter {
   /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
   void writeDocumentation(String documentation);
 
+  /** Writes a Boolean field as an attribute on the current xml element in the BPMN namespace. */
+  void writeBooleanAttributeEffektif(String localPart, Boolean value);
+
   /** write a string field as an attribute on the current xml element in the BPMN namespace */
   void writeStringAttributeBpmn(String localPart, String value);
-  
+
   /** write a string field as an attribute on the current xml element in the Effektif namespace */
   void writeStringAttributeEffektif(String localPart, String value);
-  
+
   /** write an id field as an attribute on the current xml element in the BPMN namespace */
   void writeIdAttributeBpmn(String localPart, Id value);
-  
+
   /** write an id field as an attribute on the current xml element in the Effektif namespace */
   void writeIdAttributeEffektif(String localPart, Id value);
 
   /** write a date field as an attribute on the current xml element in the BPMN namespace */
   void writeDateAttributeBpmn(String localPart, LocalDateTime value);
-  
+
   /** write a date field as an attribute on the current xml element in the Effektif namespace */
   void writeDateAttributeEffektif(String localPart, LocalDateTime value);
 
   /** Writes a {@link RelativeTime} as an element in the Effektif namespace. */
   void writeRelativeTimeEffektif(String localPart, RelativeTime value);
 
-  /** write an element in the BPMN namespace with the value as content text.  if necessary, the value will be wrapped 
+  /** write an element in the BPMN namespace with the value as content text.  if necessary, the value will be wrapped
    * automatic in a CDATA section */
   void writeTextBpmn(String localPart, String value);
 
-  /** write an element in the Effektif namespace with the value as content text.  if necessary, the value will be wrapped 
+  /** write an element in the Effektif namespace with the value as content text.  if necessary, the value will be wrapped
    * automatic in a CDATA section */
   void writeTextEffektif(String localPart, String value);
 }

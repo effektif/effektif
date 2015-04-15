@@ -15,6 +15,7 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
@@ -281,18 +282,25 @@ public abstract class AbstractMapperTest {
     assertEquals("codeComplete", activity.getId());
   }
 
-//  /** this shows what properties to set when setting or updating a form in a workflow */
-//  @Test
-//  public void testFormInput() {
-//    Form form = new Form()
-//      .description("Form description")
-//      .field("v1")
-//      .field(new FormField()
-//        .bindingExpression("v2")
-//        .readOnly()
-//        .required());
-//    print(form);
-//  }
+  /** this shows what properties to set when setting or updating a form in a workflow */
+  @Test
+  public void testFormInput() {
+    Form form = new Form()
+      .description("Form description")
+      .field("v1")
+      .field(new FormField()
+        .bindingExpression("v2")
+        .readOnly()
+        .required());
+    form = serialize(form);
+    assertEquals(Form.class, form.getClass());
+    assertEquals("Form description", form.getDescription());
+    assertEquals(2, form.getFields().size());
+    assertEquals("v1", form.getFields().get(0).getBinding().getExpression());
+    assertEquals("v2", form.getFields().get(1).getBinding().getExpression());
+    assertTrue(form.getFields().get(1).isReadOnly());
+    assertTrue(form.getFields().get(1).isRequired());
+  }
 
   @Test
   public void testUserTask() {
@@ -305,25 +313,25 @@ public abstract class AbstractMapperTest {
     UserTask activity = new UserTask()
       .id("smokeTest")
       .name("Smoke test")
-      .candidateGroupId("dev")
+      .candidateGroupId("552ce4fdc2e610a6a3dedb84")
       .form(form)
       .duedate(RelativeTime.hours(1))
       .reminder(RelativeTime.hours(2))
       .reminderRepeat(RelativeTime.minutes(30))
       .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId("bofh")));
+      .escalateTo(new Binding().value(new UserId("552ce4fdc2e610a6a3dedb85")));
 
     activity = serialize(activity);
 
     assertEquals(UserTask.class, activity.getClass());
     assertEquals("smokeTest", activity.getId());
     assertEquals("Smoke test", activity.getName());
-    assertEquals("dev", activity.getCandidateGroupIds().get(0).getValue().getInternal());
+    assertEquals("552ce4fdc2e610a6a3dedb84", activity.getCandidateGroupIds().get(0).getValue().getInternal());
     assertEquals(RelativeTime.hours(1), activity.getDuedate());
     assertEquals(RelativeTime.hours(2), activity.getReminder());
     assertEquals(RelativeTime.minutes(30), activity.getReminderRepeat());
     assertEquals(RelativeTime.hours(4), activity.getEscalate());
-    assertEquals(new UserId("bofh"), activity.getEscalateToId().getValue());
+    assertEquals(new UserId("552ce4fdc2e610a6a3dedb85"), activity.getEscalateToId().getValue());
 
     assertEquals(Form.class, activity.getForm().getClass());
     assertEquals("Form description", activity.getForm().getDescription());

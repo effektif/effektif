@@ -220,6 +220,14 @@ public class BpmnReaderImpl implements BpmnReader {
   }
   
   @Override
+  public Boolean readBooleanAttributeEffektif(String localPart) {
+    if (currentXml==null) {
+      return null;
+    }
+    return Boolean.valueOf(currentXml.removeAttribute(BPMN_URI, localPart));
+  }
+
+  @Override
   public String readStringAttributeBpmn(String localPart) {
     if (currentXml==null) {
       return null;
@@ -299,7 +307,7 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) Long.valueOf(value);
     }
     if (Id.class.isAssignableFrom(type)) {
-      return (T) AbstractReader.toId(value, (Class<Id>)type);
+      return (T) AbstractReader.toId(value, (Class<Id>) type);
     }
     if (type==LocalDateTime.class) {
       return (T) DATE_FORMAT.parseLocalDateTime(value);

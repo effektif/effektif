@@ -103,6 +103,9 @@ public class UserTask extends NoneTask {
         r.startElement(fieldElement);
         field.setId(r.readStringAttributeEffektif("id"));
         field.setName(r.readStringAttributeEffektif("name"));
+        field.setReadOnly(r.readBooleanAttributeEffektif("readonly"));
+        field.setRequired(r.readBooleanAttributeEffektif("required"));
+
         Binding<String> binding = new Binding<>();
         binding.setValue(r.readStringAttributeEffektif("value"));
         binding.setExpression(r.readStringAttributeEffektif("expression"));
@@ -135,6 +138,15 @@ public class UserTask extends NoneTask {
         w.startElementEffektif("field");
         w.writeStringAttributeEffektif("id", field.getId());
         w.writeStringAttributeEffektif("name", field.getName());
+
+        // Only write Boolean fields that default to false if necessary.
+        if (field.isReadOnly()) {
+          w.writeBooleanAttributeEffektif("readonly", field.isReadOnly());
+        }
+        if (field.isRequired()) {
+          w.writeBooleanAttributeEffektif("required", field.isRequired());
+        }
+
         Binding<?> binding = field.getBinding();
         if (binding != null) {
           w.writeStringAttributeEffektif("expression", binding.getExpression());
