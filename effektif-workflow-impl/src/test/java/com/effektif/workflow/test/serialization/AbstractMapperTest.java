@@ -112,32 +112,6 @@ public abstract class AbstractMapperTest {
     return "software-release";
   }
 
-  // Test disabled pending ordering issue.
-  @Test
-  public void testWorkflow() {
-    Workflow workflow = new Workflow()
-      .id(new WorkflowId(workflowId()))
-      .name("Software release")
-      .description("Regular software production release process.")
-      .sourceWorkflowId(workflowId())
-      .variable("v", TextType.INSTANCE).activity(new StartEvent()
-        .id("s")
-      );
-    
-    workflow = serialize(workflow);
-    
-    assertEquals(workflowId(), workflow.getId().getInternal());
-    assertEquals("Software release", workflow.getName());
-    assertEquals("Regular software production release process.", workflow.getDescription());
-    assertEquals(workflowId(), workflow.getSourceWorkflowId());
-    assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
-    assertEquals("s", workflow.getActivities().get(0).getId());
-
-// variables not yet supported by bpmn
-//    assertEquals("v", workflow.getVariables().get(0).getId());
-//    assertEquals(TextType.class, workflow.getVariables().get(0).getType().getClass());
-  }
-
   @Test
   public void testCall() {
     Call activity = new Call()
@@ -145,9 +119,9 @@ public abstract class AbstractMapperTest {
       .subWorkflowName("Run tests")
       .subWorkflowId(new WorkflowId(workflowId()));
     activity.setSubWorkflowSource("releaseTests");
-    
+
     activity = serialize(activity);
-    
+
     assertEquals(new WorkflowId(workflowId()), activity.getSubWorkflowId());
     assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
@@ -175,11 +149,11 @@ public abstract class AbstractMapperTest {
       .bodyText("A new version has been deployed on production.")
       .bodyHtml("<b>A new version has been deployed on production.</b>")
       .attachment(new FileId(fileId()));
-    
+
     activity = serialize(activity);
-    
+
     assertEquals(EmailTask.class, activity.getClass());
-    
+
     assertEquals("sendEmail", activity.getId());
     assertEquals("Announce release", activity.getName());
     assertEquals("Announce the new software release.", activity.getDescription());
@@ -287,10 +261,9 @@ public abstract class AbstractMapperTest {
   public void testScriptTask() {
     ScriptTask activity = new ScriptTask()
       .id("postToTeamChat")
-      .script(new Script()
-        .language("javascript")
-        .script("console.log('TODO');")
-        .mapping("Version", "version"));
+      .script(new Script().language("javascript")
+      .script("console.log('TODO');")
+      .mapping("Version", "version"));
     activity.name("Announce release in chat room")
       .description("Announce the release in the developer chat room.");
 
@@ -326,10 +299,7 @@ public abstract class AbstractMapperTest {
     Form form = new Form()
       .description("Form description")
       .field("v1")
-      .field(new FormField()
-        .bindingExpression("v2")
-        .readOnly()
-        .required());
+      .field(new FormField().bindingExpression("v2").readOnly().required());
     form = serialize(form);
     assertEquals(Form.class, form.getClass());
     assertEquals("Form description", form.getDescription());
@@ -340,7 +310,6 @@ public abstract class AbstractMapperTest {
     assertTrue(form.getFields().get(1).isRequired());
   }
 
-  // Test disabled pending ordering issue.
   @Test
   public void testTransition() {
     Workflow workflow = new Workflow()
@@ -362,10 +331,7 @@ public abstract class AbstractMapperTest {
   public void testUserTask() {
     Form form = new Form()
       .description("Test results & comments")
-      .field(new FormField()
-        .id("f1")
-        .name("Test summary")
-        .bindingExpression("v1"));
+      .field(new FormField().id("f1").name("Test summary").bindingExpression("v1"));
     UserTask activity = new UserTask()
       .id("smokeTest")
       .name("Smoke test")
@@ -402,5 +368,31 @@ public abstract class AbstractMapperTest {
     assertEquals("f1", activity.getForm().getFields().get(0).getId());
     assertEquals("Test summary", activity.getForm().getFields().get(0).getName());
     assertEquals("v1", activity.getForm().getFields().get(0).getBinding().getExpression());
+  }
+
+  @Test
+  public void testWorkflow() {
+    Workflow workflow = new Workflow()
+      .id(new WorkflowId(workflowId()))
+      .name("Software release")
+      .description("Regular software production release process.")
+      .sourceWorkflowId(workflowId())
+      .variable("v", TextType.INSTANCE)
+      .activity("s", new StartEvent())
+      .activity("task", new UserTask())
+      .transition(new Transition().from("s").to("task"));
+
+    workflow = serialize(workflow);
+
+    assertEquals(workflowId(), workflow.getId().getInternal());
+    assertEquals("Software release", workflow.getName());
+    assertEquals("Regular software production release process.", workflow.getDescription());
+    assertEquals(workflowId(), workflow.getSourceWorkflowId());
+    assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
+    assertEquals("s", workflow.getActivities().get(0).getId());
+
+    // variables not yet supported by bpmn
+    //    assertEquals("v", workflow.getVariables().get(0).getId());
+    //    assertEquals(TextType.class, workflow.getVariables().get(0).getType().getClass());
   }
 }

@@ -56,12 +56,12 @@ public class RestJsonMapperTest extends AbstractMapperTest {
     Call activity = new Call()
       .id("runTests")
       .subWorkflowName("Run tests")
-      .subWorkflowId(new WorkflowId("551d4f5803649532d21f223f"));
+      .subWorkflowId(new WorkflowId(workflowId()));
     activity.setSubWorkflowSource("releaseTests");
     
     activity = serialize(activity);
     
-    assertEquals(new WorkflowId("551d4f5803649532d21f223f"), activity.getSubWorkflowId());
+    assertEquals(new WorkflowId(workflowId()), activity.getSubWorkflowId());
     assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 }

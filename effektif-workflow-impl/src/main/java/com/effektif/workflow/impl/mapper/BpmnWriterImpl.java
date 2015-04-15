@@ -180,11 +180,15 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   protected void writeWorkflow(Workflow workflow) {
     startScope(workflow);
-    // let's add the process we write as the first process element inside the definitions
+    // Add the ‘process’ element as the first child element of the ‘definitions’ element.
     startElementBpmn("process", workflow.getBpmn(), 0);
     if (workflow.getSourceWorkflowId()==null && workflow.getId()!=null) {
       workflow.setSourceWorkflowId(workflow.getId().getInternal());
     }
+
+    // Output documentation, workflow BPMN (extension elements) and scope (activities/transitions) in that order, as
+    // required by the BPMN schema. The write methods are called here in the reverse order because they use index 0 in
+    // calls to startElementBpmn, in order to write each one as the first child element of the ‘process’ element.
     writeScope();
     workflow.writeBpmn(this);
     writeDocumentation(workflow.getDescription());
@@ -201,17 +205,12 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   protected void writeActivities(List<Activity> activities) {
     if (activities!=null) {
-      // We loop backwards and then add each activity as the first
-      // This way all the parsed activities will be serialized first
-      // before the unknown elements and the parsed elements will
-      // appear in the order as they were parsed.
+      // Loop backwards adding each activity as the first, serialising the parsed activities in the order they were
+      // parsed, followed by any unknown elements.
       for (int i=activities.size()-1; i>=0; i--) {
         Activity activity = activities.get(i);
         startScope(activity);
-        BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(activity.getClass());
-        if (bpmnTypeMapping==null) {
-          throw new RuntimeException("Register "+activity.getClass()+" in class "+Mappings.class.getName()+" with method registerSubClass and ensure annotation "+BpmnElement.class+" is set");
-        }
+        BpmnTypeMapping bpmnTypeMapping = getBpmnTypeMapping(activity.getClass());
         startElementBpmn(bpmnTypeMapping.getBpmnElementName(), activity.getBpmn(), 0);
         Map<String, String> bpmnTypeAttributes = bpmnTypeMapping.getBpmnTypeAttributes();
         if (bpmnTypeAttributes!=null) {
@@ -226,7 +225,16 @@ public class BpmnWriterImpl implements BpmnWriter {
       }
     }
   }
-  
+
+  private BpmnTypeMapping getBpmnTypeMapping(Class<? extends Activity> activityClass) {
+    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(activityClass);
+    if (bpmnTypeMapping == null) {
+      throw new RuntimeException("Register " + activityClass + " in class " + Mappings.class.getName() +
+        " with method registerSubClass and ensure annotation " + BpmnElement.class + " is set");
+    }
+    return bpmnTypeMapping;
+  }
+
   protected void writeTransitions(List<Transition> transitions) {
     if (transitions!=null) {
       // We loop backwards and then add each transition as the first
