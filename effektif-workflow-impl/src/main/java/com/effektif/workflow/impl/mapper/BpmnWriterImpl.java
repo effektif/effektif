@@ -275,17 +275,9 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
-  @Override
-  public void writeBooleanAttributeEffektif(String localPart, Boolean value) {
+  public void writeStringAttributeBpmn(String localPart, Object value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value.toString());
-    }
-
-  }
-
-  public void writeStringAttributeBpmn(String localPart, String value) {
-    if (value!=null) {
-      xml.addAttribute(BPMN_URI, localPart, value);
     }
   }
 

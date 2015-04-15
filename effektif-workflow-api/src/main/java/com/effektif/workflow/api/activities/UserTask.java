@@ -141,10 +141,10 @@ public class UserTask extends NoneTask {
 
         // Only write Boolean fields that default to false if necessary.
         if (field.isReadOnly()) {
-          w.writeBooleanAttributeEffektif("readonly", field.isReadOnly());
+          w.writeStringAttributeBpmn("readonly", field.isReadOnly());
         }
         if (field.isRequired()) {
-          w.writeBooleanAttributeEffektif("required", field.isRequired());
+          w.writeStringAttributeBpmn("required", field.isRequired());
         }
 
         Binding<?> binding = field.getBinding();

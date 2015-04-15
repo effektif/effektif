@@ -54,11 +54,8 @@ public interface BpmnWriter {
   /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
   void writeDocumentation(String documentation);
 
-  /** Writes a Boolean field as an attribute on the current xml element in the BPMN namespace. */
-  void writeBooleanAttributeEffektif(String localPart, Boolean value);
-
   /** write a string field as an attribute on the current xml element in the BPMN namespace */
-  void writeStringAttributeBpmn(String localPart, String value);
+  void writeStringAttributeBpmn(String localPart, Object value);
 
   /** write a string field as an attribute on the current xml element in the Effektif namespace */
   void writeStringAttributeEffektif(String localPart, String value);
