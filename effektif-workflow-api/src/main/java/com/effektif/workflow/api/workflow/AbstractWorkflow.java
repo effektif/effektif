@@ -63,7 +63,7 @@ public abstract class AbstractWorkflow extends Scope {
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.writeIdAttributeBpmn("id", id);
-    super.writeBpmn(w);
+    w.writeStringAttributeBpmn("name", name);
   }
 
   public WorkflowId getId() {

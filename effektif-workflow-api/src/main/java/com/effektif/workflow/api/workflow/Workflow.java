@@ -81,10 +81,10 @@ public class Workflow extends AbstractWorkflow {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startExtensionElements();
+    super.writeBpmn(w);
+    w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
     w.endExtensionElements();
-    super.writeBpmn(w);
   }
 
   /** refers to the id in the source (or authoring) form of this workflow.

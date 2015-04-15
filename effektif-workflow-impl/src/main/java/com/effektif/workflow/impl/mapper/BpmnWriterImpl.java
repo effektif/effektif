@@ -76,7 +76,6 @@ public class BpmnWriterImpl implements BpmnWriter {
         xml.addElement(childElement, index);
       }
       startElement(childElement);
-      
     } else {
       throw new RuntimeException("Unknown BPMN source: "+source);
     }
@@ -183,11 +182,12 @@ public class BpmnWriterImpl implements BpmnWriter {
     startScope(workflow);
     // let's add the process we write as the first process element inside the definitions
     startElementBpmn("process", workflow.getBpmn(), 0);
-    writeDocumentation(workflow.getDescription());
     if (workflow.getSourceWorkflowId()==null && workflow.getId()!=null) {
       workflow.setSourceWorkflowId(workflow.getId().getInternal());
     }
+    writeScope();
     workflow.writeBpmn(this);
+    writeDocumentation(workflow.getDescription());
     endElement();
   }
   
@@ -272,7 +272,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   @Override
   public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
-      startElementBpmn("documentation", null);
+      startElementBpmn("documentation", null, 0);
       xml.addText(documentation);
       endElement();
     }

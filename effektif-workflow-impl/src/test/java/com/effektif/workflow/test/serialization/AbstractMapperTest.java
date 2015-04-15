@@ -341,7 +341,7 @@ public abstract class AbstractMapperTest {
   }
 
   // Test disabled pending ordering issue.
-  //  @Test
+  @Test
   public void testTransition() {
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent())

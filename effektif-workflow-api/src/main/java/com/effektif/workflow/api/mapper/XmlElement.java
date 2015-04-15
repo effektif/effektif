@@ -115,7 +115,7 @@ public class XmlElement {
   
   public List<XmlElement> removeElements(String namespaceUri, String localPart) {
     List<XmlElement> result = new ArrayList<>();
-    if (result!=null) {
+    if (this.elements != null) {
       Iterator<XmlElement> iterator = this.elements.iterator();
       while (iterator.hasNext()) {
         XmlElement xmlElement = iterator.next();
