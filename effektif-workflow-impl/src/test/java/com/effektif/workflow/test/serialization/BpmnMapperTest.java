@@ -45,15 +45,13 @@ public class BpmnMapperTest extends AbstractMapperTest {
     }
     
     String xmlString = bpmnMapper
-      .createWriter()
-      .toBpmnString(w);
+      .writeToString(w);
     
     System.out.println(xmlString);
     System.out.println();
 
     w = bpmnMapper
-      .createReader()
-      .toWorkflow(xmlString);
+      .readFromString(xmlString);
     
     if (o instanceof Activity) {
       return (T) w.getActivities().get(0);

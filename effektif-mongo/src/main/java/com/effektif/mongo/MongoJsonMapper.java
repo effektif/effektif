@@ -15,6 +15,7 @@ package com.effektif.mongo;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.effektif.workflow.api.model.CaseId;
@@ -28,6 +29,7 @@ import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.AbstractMapper;
+import com.mongodb.BasicDBObject;
 
 
 /**
@@ -60,12 +62,16 @@ public class MongoJsonMapper extends AbstractMapper {
     }
   }
   
-  public MongoJsonReader createReader() {
-    return new MongoJsonReader(mappings, this);
+  public <T> T readFromDbObject(Map<String,Object> dbObject, Class<T> clazz) {
+    return new MongoJsonReader(mappings, this).toObject(dbObject, clazz);
+  }
+  
+  public Object writeToObject(Object o) {
+    return new MongoJsonWriter(mappings, this).toDbObject(o, o.getClass());
   }
 
-  public MongoJsonWriter createWriter() {
-    return new MongoJsonWriter(mappings, this);
+  public BasicDBObject writeToDbObject(Object o) {
+    return (BasicDBObject) writeToObject(o);
   }
 
   public String getFieldName(Field field) {

@@ -14,15 +14,12 @@
 package com.effektif.workflow.impl.mapper;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,52 +31,27 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 
 
 /**
  * @author Tom Baeyens
  */
-public class RestJsonWriter extends AbstractWriter {
+public class JsonWriter extends AbstractWriter {
   
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTime();
 
   JsonGenerator jgen;
   Class<?> writableClass;
 
-  public RestJsonWriter() {
+  public JsonWriter() {
   }
 
-  public RestJsonWriter(Mappings mappings) {
+  public JsonWriter(Mappings mappings, JsonGenerator jgen) {
     super(mappings);
+    this.jgen = jgen;
   }
 
-  public String toString(Object o) {
-    StringWriter stringWriter = new StringWriter();
-    toStream(o, stringWriter);
-    return stringWriter.toString(); 
-  }
-
-  public String toStringPretty(Object o) {
-    pretty();
-    return toString(o); 
-  }
-  
-  public void toStream(Object o, Writer writer) {
-    try {
-      jgen = new JsonFactory().createGenerator(writer);
-      if (isPretty()) {
-        jgen.setPrettyPrinter(new DefaultPrettyPrinter());
-      }
-      writeObject(o, o.getClass());
-      jgen.flush();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-  
   @Override
   public void writeId(Id id) {
     writeId("id", id);

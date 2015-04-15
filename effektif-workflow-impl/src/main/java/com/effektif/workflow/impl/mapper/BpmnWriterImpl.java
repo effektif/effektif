@@ -15,14 +15,11 @@ package com.effektif.workflow.impl.mapper;
 
 import static com.effektif.workflow.impl.mapper.Bpmn.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -31,12 +28,12 @@ import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 
 
 /**
@@ -64,19 +61,6 @@ public class BpmnWriterImpl implements BpmnWriter {
   
   public BpmnWriterImpl(Mappings mappings) {
     this.mappings = mappings;
-  }
-
-  public void toBpmnStream(Workflow workflow, OutputStream out) {
-    XmlElement bpmnDefinitions = writeDefinitions(workflow);
-    XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
-    xmlWriter.writeDocument(bpmnDefinitions);
-    xmlWriter.flush();
-  }
-
-  public String toBpmnString(Workflow workflow) {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    toBpmnStream(workflow, stream);
-    return stream.toString();
   }
 
   protected void startElementBpmn(String localpart, Object source) {

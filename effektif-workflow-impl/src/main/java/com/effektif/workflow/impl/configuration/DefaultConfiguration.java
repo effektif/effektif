@@ -34,7 +34,7 @@ import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceSupplier;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.mapper.Mappings;
-import com.effektif.workflow.impl.mapper.RestJsonMapper;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.mapper.deprecated.ObjectMapperSupplier;
 import com.effektif.workflow.impl.script.RhinoScriptService;
@@ -127,7 +127,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
 
   protected void registerDefaultRestJsonMapper() {
-    brewery.ingredient(new RestJsonMapper());
+    brewery.ingredient(new JsonMapper());
   }
 
   protected void registerDefaultMappings() {

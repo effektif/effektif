@@ -21,7 +21,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
  * 
  * @author Tom Baeyens
  */
-public abstract class AbstractMapper<R,W> implements Brewable {
+public abstract class AbstractMapper implements Brewable {
   
   protected Mappings mappings;
 
@@ -37,8 +37,4 @@ public abstract class AbstractMapper<R,W> implements Brewable {
   public void setMappings(Mappings mappings) {
     this.mappings = mappings;
   }
-
-  public abstract R createReader();
-
-  public abstract W createWriter();
 }

@@ -89,7 +89,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
 
   public BasicDBObject workflowApiToMongo(Workflow workflow) {
-    return (BasicDBObject) mongoJsonMapper.createWriter().toDbObject(workflow);
+    return (BasicDBObject) mongoJsonMapper.writeToDbObject(workflow);
   }
 
 //  public BasicDBObject workflowApiToMongoAbstract(AbstractWorkflow workflow) {
@@ -115,7 +115,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //  }
 
   public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
-    return mongoJsonMapper.createReader().toObject(dbWorkflow, workflowClass);
+    return mongoJsonMapper.readFromDbObject(dbWorkflow, workflowClass);
   }
 
 //  public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {

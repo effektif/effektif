@@ -47,8 +47,7 @@ public class MongoJsonTest extends AbstractMapperTest {
   @Override
   protected <T> T serialize(T o) {
     BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonMapper
-      .createWriter()
-      .toDbObject(o);
+      .writeToDbObject(o);
     
     String json = null; 
     if (mappings.isPretty()) {
@@ -59,8 +58,7 @@ public class MongoJsonTest extends AbstractMapperTest {
     System.out.println(json);
     
     return (T) mongoJsonMapper
-      .createReader()
-      .toObject(dbWorkflow, (Class<T>)o.getClass());
+      .readFromDbObject(dbWorkflow, (Class<T>)o.getClass());
   }
 
 }

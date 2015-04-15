@@ -30,31 +30,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author Tom Baeyens
  */
-public class RestJsonReader extends AbstractReader {
+public class JsonReader extends AbstractReader {
   
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTimeParser();
 
-  static ObjectMapper objectMapper = new ObjectMapper();
-  
-  public RestJsonReader() {
+  public JsonReader() {
     this(new Mappings());
   }
 
-  public RestJsonReader(Mappings mappings) {
+  public JsonReader(Mappings mappings) {
     this.mappings = mappings;
-  }
-
-  public <T> T toObject(String jsonString, Class<T> type) {
-    return toObject(new StringReader(jsonString), type);
-  }
-
-  public <T> T toObject(Reader jsonStream, Class<T> type) {
-    try {
-      Object jsonObject = objectMapper.readValue(jsonStream, Object.class);
-      return (T) toObject(jsonObject, type);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   @Override

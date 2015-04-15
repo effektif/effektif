@@ -19,9 +19,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.impl.mapper.RestJsonMapper;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 
 
 /**
@@ -29,26 +28,24 @@ import com.effektif.workflow.impl.mapper.RestJsonMapper;
  */
 public class RestJsonMapperTest extends AbstractMapperTest {
 
-  static RestJsonMapper restJsonMapper = new RestJsonMapper();
+  static JsonMapper jsonMapper = new JsonMapper();
   
   @BeforeClass
   public static void initialize() {
     initializeMappings();
-    restJsonMapper = new RestJsonMapper();
-    restJsonMapper.setMappings(mappings);
+    jsonMapper = new JsonMapper();
+    jsonMapper.setMappings(mappings);
   }
   
   @Override
   protected <T> T serialize(T o) {
-    String jsonString = restJsonMapper
-      .createWriter()
-      .toStringPretty(o);
+    String jsonString = jsonMapper
+      .writeToStringPretty(o);
     
     System.out.println(jsonString);
     
-    return (T) restJsonMapper
-      .createReader()
-      .toObject(jsonString, (Class<JsonReadable>) o.getClass());
+    return (T) jsonMapper
+      .readFromString(jsonString, o.getClass());
   }
   
   // NOT READY TO MOVE TO ABSTRACT MAPPER TEST

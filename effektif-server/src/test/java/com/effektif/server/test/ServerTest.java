@@ -104,8 +104,6 @@ public class ServerTest extends JerseyTest {
       .activity("Five", new EndEvent());
 
     String str = getConfiguration().get(JsonService.class).objectToJsonString(workflow);
-    System.out.println("XXXXXXXXXX");
-    System.out.println(str);
 
     Deployment deployment = target("deploy").request()
             .post(Entity.entity(workflow, MediaType.APPLICATION_JSON))
@@ -132,8 +130,6 @@ public class ServerTest extends JerseyTest {
       .sourceWorkflowId("Server test workflow");
 
     String str = getConfiguration().get(JsonService.class).objectToJsonString(start);
-    System.out.println("YYYYYYYYYYYYYY");
-    System.out.println(str);
     
     WorkflowInstance workflowInstance = target("start").request()
             .post(Entity.entity(start, MediaType.APPLICATION_JSON))

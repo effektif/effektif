@@ -45,11 +45,10 @@ import com.effektif.workflow.impl.data.DataTypeService;
  */
 public class BpmnReaderImpl implements BpmnReader {
 
-  public static DateTimeFormatter DATE_FORMAT = RestJsonReader.DATE_FORMAT;
+  public static DateTimeFormatter DATE_FORMAT = JsonReader.DATE_FORMAT;
 
   /** global mappings */
   protected Mappings mappings;
-  protected XmlElement xmlRoot;
 
   /** stack of scopes */ 
   protected Stack<Scope> scopeStack = new Stack<Scope>();
@@ -74,15 +73,6 @@ public class BpmnReaderImpl implements BpmnReader {
     this.mappings = mappings;
   }
   
-  public Workflow toWorkflow(String bpmnString) {
-    return toWorkflow(new StringReader(bpmnString));
-  }
-
-  public Workflow toWorkflow(java.io.Reader reader) {
-    this.xmlRoot = XmlReader.parseXml(reader);
-    return readDefinitions(xmlRoot);
-  }
-
   protected Workflow readDefinitions(XmlElement definitionsXml) {
     Workflow workflow = null;
 

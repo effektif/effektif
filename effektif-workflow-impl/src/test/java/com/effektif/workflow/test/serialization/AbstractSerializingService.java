@@ -18,7 +18,7 @@ package com.effektif.workflow.test.serialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.mapper.RestJsonMapper;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 
 
 /**
@@ -28,16 +28,16 @@ public class AbstractSerializingService {
   
   protected static final Logger log = LoggerFactory.getLogger(SerializationTest.class+".JSON");
 
-  protected RestJsonMapper restJsonMapper;
+  protected JsonMapper jsonMapper;
   
-  public AbstractSerializingService(RestJsonMapper restJsonMapper) {
-    this.restJsonMapper = restJsonMapper;
+  public AbstractSerializingService(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
   }
 
   protected <T> T wireize(String name, Object o, Class<T> type) {
     if (o==null) return null;
-    String jsonString = restJsonMapper.createWriter().toString(o);
+    String jsonString = jsonMapper.writeToString(o);
     log.debug(name+jsonString);
-    return restJsonMapper.createReader().toObject(jsonString, type);
+    return jsonMapper.readFromString(jsonString, type);
   }
 }

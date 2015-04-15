@@ -13,8 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.impl.data.DataTypeService;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+
+import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.bpmn.xml.XmlReader;
+import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 
 
 
@@ -22,23 +28,37 @@ import com.effektif.workflow.impl.data.DataTypeService;
 /**
  * @author Tom Baeyens
  */
-public class BpmnMapper extends AbstractMapper<BpmnReaderImpl, BpmnWriter> {
+public class BpmnMapper extends AbstractMapper {
   
-  protected DataTypeService dataTypeService;
-  
-  public DataTypeService getDataTypeService() {
-    return dataTypeService;
-  }
-  
-  public void setDataTypeService(DataTypeService dataTypeService) {
-    this.dataTypeService = dataTypeService;
+//  protected DataTypeService dataTypeService;
+//  
+//  public DataTypeService getDataTypeService() {
+//    return dataTypeService;
+//  }
+//  
+//  public void setDataTypeService(DataTypeService dataTypeService) {
+//    this.dataTypeService = dataTypeService;
+//  }
+
+  public Workflow readFromString(String bpmnString) {
+    return readFromReader(new StringReader(bpmnString));
   }
 
-  public BpmnReaderImpl createReader() {
-    return new BpmnReaderImpl(mappings);
+  public Workflow readFromReader(java.io.Reader reader) {
+    XmlElement xmlRoot = XmlReader.parseXml(reader);
+    return new BpmnReaderImpl(mappings).readDefinitions(xmlRoot);
   }
 
-  public BpmnWriterImpl createWriter() {
-    return new BpmnWriterImpl(mappings);
+  public void writeToStream(Workflow workflow, OutputStream out) {
+    XmlElement bpmnDefinitions = new BpmnWriterImpl(mappings).writeDefinitions(workflow);
+    XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
+    xmlWriter.writeDocument(bpmnDefinitions);
+    xmlWriter.flush();
+  }
+
+  public String writeToString(Workflow workflow) {
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    writeToStream(workflow, stream);
+    return stream.toString();
   }
 }

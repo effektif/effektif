@@ -25,7 +25,7 @@ import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.TaskServiceImpl;
-import com.effektif.workflow.impl.mapper.RestJsonMapper;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 
 
 /**
@@ -35,8 +35,8 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   
   protected TaskServiceImpl taskService;
 
-  public SerializingTaskServiceImpl(TaskServiceImpl taskService, RestJsonMapper restJsonMapper) {
-    super(restJsonMapper);
+  public SerializingTaskServiceImpl(TaskServiceImpl taskService, JsonMapper jsonMapper) {
+    super(jsonMapper);
     this.taskService = taskService;
   }
 
