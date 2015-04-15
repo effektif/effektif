@@ -30,6 +30,24 @@ public class MongoJsonTest extends AbstractMapperTest {
 
   static MongoJsonMapper mongoJsonMapper = new MongoJsonMapper();
 
+  protected String fileId() {
+    return "552ce4fdc2e610a6a3dedb10";
+  }
+
+  protected String groupId(int index) {
+    String[] ids = { "552ce4fdc2e610a6a3dedb20", "552ce4fdc2e610a6a3dedb21", "552ce4fdc2e610a6a3dedb22" };
+    return ids[index];
+  }
+
+  protected String userId(int index) {
+    String[] ids = { "552ce4fdc2e610a6a3dedb30", "552ce4fdc2e610a6a3dedb31", "552ce4fdc2e610a6a3dedb32" };
+    return ids[index];
+  }
+
+  protected String workflowId() {
+    return "552ce4fdc2e610a6a3dedb40";
+  }
+
   @BeforeClass
   public static void initialize() {
     initializeMappings();

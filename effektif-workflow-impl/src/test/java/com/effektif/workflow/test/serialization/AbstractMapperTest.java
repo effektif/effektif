@@ -88,21 +88,30 @@ public abstract class AbstractMapperTest {
     mappings.pretty();
   }
 
-  // valid object ids
-  //  
-  //  552ce4fdc2e610a6a3dedb84
-  //  552ce4fdc2e610a6a3dedb85
-  //  552ce4fdc2e610a6a3dedb86
-  //  552ce4fdc2e610a6a3dedb87
-  //  552ce4fdc2e610a6a3dedb88
-  //  552ce4fdc2e610a6a3dedb89
-  //  552ce4fdc2e610a6a3dedb8a
-  //  552ce4fdc2e610a6a3dedb8b
-  
+  protected String fileId() {
+    return "file-attachment";
+  }
+
+  protected String groupId() { return groupId(0); }
+  protected String groupId(int index) {
+    String[] ids = { "dev", "ops", "testing" };
+    return ids[index];
+  }
+
+  protected String userId() { return userId(0); }
+  protected String userId(int index) {
+    String[] ids = { "alice", "ben", "charlie" };
+    return ids[index];
+  }
+
+  protected String workflowId() {
+    return "software-release";
+  }
+
   @Test
   public void testWorkflowJson() {
     Workflow workflow = new Workflow()
-      .id(new WorkflowId("552ce4fdc2e610a6a3dedb78"))
+      .id(new WorkflowId(workflowId()))
       .variable("v", TextType.INSTANCE)
       .activity(new StartEvent()
         .id("s")
@@ -110,7 +119,7 @@ public abstract class AbstractMapperTest {
     
     workflow = serialize(workflow);
     
-    assertEquals("552ce4fdc2e610a6a3dedb78", workflow.getId().getInternal());
+    assertEquals(workflowId(), workflow.getId().getInternal());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
 
@@ -124,12 +133,12 @@ public abstract class AbstractMapperTest {
     Call activity = new Call()
       .id("runTests")
       .subWorkflowName("Run tests")
-      .subWorkflowId(new WorkflowId("551d4f5803649532d21f223f"));
+      .subWorkflowId(new WorkflowId(workflowId()));
     activity.setSubWorkflowSource("releaseTests");
     
     activity = serialize(activity);
     
-    assertEquals(new WorkflowId("551d4f5803649532d21f223f"), activity.getSubWorkflowId());
+    assertEquals(new WorkflowId(workflowId()), activity.getSubWorkflowId());
     assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 
@@ -142,18 +151,18 @@ public abstract class AbstractMapperTest {
       .from("effektif@example.org")
       .to("releases@example.org")
       .toExpression("v1.email")
-      .toUserId("552ce4fdc2e610a6a3dedb7b")
-      .toGroupId("552ce4fdc2e610a6a3dedb7e")
+      .toUserId(userId(0))
+      .toGroupId(groupId(0))
       .cc("dev@example.org")
-      .ccUserId("552ce4fdc2e610a6a3dedb7c")
-      .ccGroupId("552ce4fdc2e610a6a3dedb7f")
+      .ccUserId(userId(1))
+      .ccGroupId(groupId(1))
       .bcc("archive@example.org")
-      .bccUserId("552ce4fdc2e610a6a3dedb7d")
-      .bccGroupId("552ce4fdc2e610a6a3dedb80")
+      .bccUserId(userId(2))
+      .bccGroupId(groupId(2))
       .subject("New release")
       .bodyText("A new version has been deployed on production.")
       .bodyHtml("<b>A new version has been deployed on production.</b>")
-      .attachment(new FileId("552ce4fdc2e610a6a3dedb82"));
+      .attachment(new FileId(fileId()));
     
     activity = serialize(activity);
     
@@ -163,22 +172,22 @@ public abstract class AbstractMapperTest {
     assertEquals("effektif@example.org", activity.getFromEmailAddress().getValue());
     assertEquals("releases@example.org", activity.getToEmailAddresses().get(0).getValue());
     assertEquals("v1.email", activity.getToEmailAddresses().get(1).getExpression());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7b"), activity.getToUserIds().get(0).getValue());
-    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb7e"), activity.getToGroupIds().get(0).getValue());
+    assertEquals(new UserId(userId(0)), activity.getToUserIds().get(0).getValue());
+    assertEquals(new GroupId(groupId(0)), activity.getToGroupIds().get(0).getValue());
 
     assertEquals("dev@example.org", activity.getCcEmailAddresses().get(0).getValue());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7c"), activity.getCcUserIds().get(0).getValue());
-    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb7f"), activity.getCcGroupIds().get(0).getValue());
+    assertEquals(new UserId(userId(1)), activity.getCcUserIds().get(0).getValue());
+    assertEquals(new GroupId(groupId(1)), activity.getCcGroupIds().get(0).getValue());
 
     assertEquals("archive@example.org", activity.getBccEmailAddresses().get(0).getValue());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb7d"), activity.getBccUserIds().get(0).getValue());
-    assertEquals(new GroupId("552ce4fdc2e610a6a3dedb80"), activity.getBccGroupIds().get(0).getValue());
+    assertEquals(new UserId(userId(2)), activity.getBccUserIds().get(0).getValue());
+    assertEquals(new GroupId(groupId(2)), activity.getBccGroupIds().get(0).getValue());
 
     assertEquals("New release", activity.getSubject());
     assertEquals("A new version has been deployed on production.", activity.getBodyText());
     assertEquals("<b>A new version has been deployed on production.</b>", activity.getBodyHtml());
 
-    assertEquals(new FileId("552ce4fdc2e610a6a3dedb82"), activity.getAttachmentFileIds().get(0).getValue());
+    assertEquals(new FileId(fileId()), activity.getAttachmentFileIds().get(0).getValue());
   }
 
   @Test
@@ -313,25 +322,25 @@ public abstract class AbstractMapperTest {
     UserTask activity = new UserTask()
       .id("smokeTest")
       .name("Smoke test")
-      .candidateGroupId("552ce4fdc2e610a6a3dedb84")
+      .candidateGroupId(groupId())
       .form(form)
       .duedate(RelativeTime.hours(1))
       .reminder(RelativeTime.hours(2))
       .reminderRepeat(RelativeTime.minutes(30))
       .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId("552ce4fdc2e610a6a3dedb85")));
+      .escalateTo(new Binding().value(new UserId(userId())));
 
     activity = serialize(activity);
 
     assertEquals(UserTask.class, activity.getClass());
     assertEquals("smokeTest", activity.getId());
     assertEquals("Smoke test", activity.getName());
-    assertEquals("552ce4fdc2e610a6a3dedb84", activity.getCandidateGroupIds().get(0).getValue().getInternal());
+    assertEquals(groupId(), activity.getCandidateGroupIds().get(0).getValue().getInternal());
     assertEquals(RelativeTime.hours(1), activity.getDuedate());
     assertEquals(RelativeTime.hours(2), activity.getReminder());
     assertEquals(RelativeTime.minutes(30), activity.getReminderRepeat());
     assertEquals(RelativeTime.hours(4), activity.getEscalate());
-    assertEquals(new UserId("552ce4fdc2e610a6a3dedb85"), activity.getEscalateToId().getValue());
+    assertEquals(new UserId(userId()), activity.getEscalateToId().getValue());
 
     assertEquals(Form.class, activity.getForm().getClass());
     assertEquals("Form description", activity.getForm().getDescription());
