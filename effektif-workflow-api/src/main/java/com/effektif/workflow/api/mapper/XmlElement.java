@@ -208,7 +208,7 @@ public class XmlElement {
 
   // attributes ///////////////////////////////////////////////////////////////////////////
 
-  public void addAttribute(String namespaceUri, String localPart, String value) {
+  public void addAttribute(String namespaceUri, String localPart, Object value) {
     if (attributes==null) {
       attributes = new LinkedHashMap<>();
     }
@@ -218,7 +218,7 @@ public class XmlElement {
     } else {
       attributeName = getNamespacePrefix(namespaceUri)+localPart;
     }
-    attributes.put(attributeName, value);
+    attributes.put(attributeName, escapeAttributeValue(value));
   }
 
   public String removeAttribute(String namespaceUri, String localPart) {
@@ -230,7 +230,7 @@ public class XmlElement {
       return attributes.remove(localPart);
     }
     String attributeName = getNamespacePrefix(namespaceUri)+localPart;
-    return attributes.remove(attributeName);
+    return unescapeXml(attributes.remove(attributeName));
   }
 
   public String getAttribute(String namespaceUri, String localPart) {
@@ -239,10 +239,10 @@ public class XmlElement {
     }
     if ( this.namespaceUri.equals(namespaceUri)
          && attributes.containsKey(localPart) ) {
-      return attributes.get(localPart);
+      return unescapeXml(attributes.get(localPart));
     }
     String attributeName = getNamespacePrefix(namespaceUri)+localPart;
-    return attributes.get(attributeName);
+    return unescapeXml(attributes.get(attributeName));
   }
 
   public Map<String, String> getAttributes() {
@@ -251,14 +251,17 @@ public class XmlElement {
   
   // text ///////////////////////////////////////////////////////////////////////////
 
-  public void addText(String text) {
-    if (text!=null && !"".equals(text.trim())) {
-      this.text = this.text!=null ? this.text+text : text;
+  public void addText(Object value) {
+    if (value != null) {
+      String text = value.toString();
+      if (!"".equals(text.trim())) {
+        this.text = this.text != null ? this.text + escapeTextNode(text) : escapeTextNode(text);
+      }
     }
   }
 
   public String getText() {
-    return text;
+    return unescapeXml(text);
   }
   
   // other ///////////////////////////////////////////////////////////////////////////
@@ -271,5 +274,28 @@ public class XmlElement {
       return false;
     }
     return true;
+  }
+
+  private static String escapeTextNode(Object value) { return escapeXml(value, false); }
+  private static String escapeAttributeValue(Object value) { return escapeXml(value, true); }
+
+  private static String escapeXml(Object value, boolean replaceQuotes) {
+    if (value == null) {
+      return null;
+    }
+    String text = value.toString();
+    String result = text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    if (replaceQuotes) {
+      result = result.replaceAll("\"", "&#034;").replaceAll("'", "&#039;");
+    }
+    return result;
+  }
+
+  private static String unescapeXml(String value) {
+    if (value == null) {
+      return null;
+    }
+    return value.replaceAll("&#034;", "\"").replaceAll("&#039;", "'").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+      .replaceAll("&amp;", "&");
   }
 }

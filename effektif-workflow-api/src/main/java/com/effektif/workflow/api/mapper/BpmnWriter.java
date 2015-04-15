@@ -58,7 +58,7 @@ public interface BpmnWriter {
   void writeStringAttributeBpmn(String localPart, Object value);
 
   /** write a string field as an attribute on the current xml element in the Effektif namespace */
-  void writeStringAttributeEffektif(String localPart, String value);
+  void writeStringAttributeEffektif(String localPart, Object value);
 
   /** write an id field as an attribute on the current xml element in the BPMN namespace */
   void writeIdAttributeBpmn(String localPart, Id value);
@@ -77,9 +77,9 @@ public interface BpmnWriter {
 
   /** write an element in the BPMN namespace with the value as content text.  if necessary, the value will be wrapped
    * automatic in a CDATA section */
-  void writeTextBpmn(String localPart, String value);
+  void writeTextBpmn(String localPart, Object value);
 
   /** write an element in the Effektif namespace with the value as content text.  if necessary, the value will be wrapped
    * automatic in a CDATA section */
-  void writeTextEffektif(String localPart, String value);
+  void writeTextEffektif(String localPart, Object value);
 }

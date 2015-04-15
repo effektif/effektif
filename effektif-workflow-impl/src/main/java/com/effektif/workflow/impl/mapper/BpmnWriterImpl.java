@@ -248,7 +248,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementEffektif(localPart);
       T value = binding.getValue();
       if (value!=null) {
-        writeStringAttributeEffektif("value", value.toString());
+        writeStringAttributeEffektif("value", value);
       }
       if (binding.getExpression()!=null) {
         writeStringAttributeEffektif("expression", binding.getExpression());
@@ -267,6 +267,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
+  @Override
   public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
       startElementBpmn("documentation", true);
@@ -275,70 +276,68 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
+  @Override
   public void writeStringAttributeBpmn(String localPart, Object value) {
     if (value!=null) {
-      xml.addAttribute(BPMN_URI, localPart, value.toString());
+      xml.addAttribute(BPMN_URI, localPart, value);
     }
   }
 
-  public void writeStringAttributeEffektif(String localPart, String value) {
+  @Override
+  public void writeStringAttributeEffektif(String localPart, Object value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value);
     }
   }
 
+  @Override
   public void writeIdAttributeBpmn(String localPart, Id value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value.getInternal());
     }
   }
 
+  @Override
   public void writeIdAttributeEffektif(String localPart, Id value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value.getInternal());
     }
   }
 
+  @Override
   public void writeDateAttributeBpmn(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, DATE_FORMAT.print(value));
     }
   }
 
+  @Override
   public void writeDateAttributeEffektif(String localPart, LocalDateTime value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, DATE_FORMAT.print(value));
     }
   }
 
-
+  @Override
   public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
     if (value!=null) {
-      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, "after", value.toString());
+      xml.createElement(EFFEKTIF_URI, localPart).addAttribute(EFFEKTIF_URI, "after", value);
     }
   }
 
   @Override
-  public void writeTextBpmn(String localPart, String value) {
+  public void writeTextBpmn(String localPart, Object value) {
     writeText(BPMN_URI, localPart, value);
   }
   @Override
-  public void writeTextEffektif(String localPart, String value) {
+  public void writeTextEffektif(String localPart, Object value) {
     writeText(EFFEKTIF_URI, localPart, value);
   }
 
-  protected void writeText(String namespaceUri, String localPart, String value) {
+  protected void writeText(String namespaceUri, String localPart, Object value) {
     if (value!=null) {
-      if (containsCdataChars(value)) {
-        value = "<![CDATA[" + value + "]]>";
-      }
       xml.createElement(namespaceUri, localPart).addText(value);
     }
-  }
-
-  static Pattern cdataPattern = Pattern.compile("[<>&]");
-  protected boolean containsCdataChars(String value) {
-    return cdataPattern.matcher(value).find();
   }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

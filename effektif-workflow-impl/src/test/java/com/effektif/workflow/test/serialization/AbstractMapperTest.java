@@ -153,7 +153,7 @@ public abstract class AbstractMapperTest {
       .toExpression("v1.email")
       .toUserId(userId(0))
       .toGroupId(groupId(0))
-      .cc("dev@example.org")
+      .cc("Developers <dev@example.org>")
       .ccUserId(userId(1))
       .ccGroupId(groupId(1))
       .bcc("archive@example.org")
@@ -175,7 +175,7 @@ public abstract class AbstractMapperTest {
     assertEquals(new UserId(userId(0)), activity.getToUserIds().get(0).getValue());
     assertEquals(new GroupId(groupId(0)), activity.getToGroupIds().get(0).getValue());
 
-    assertEquals("dev@example.org", activity.getCcEmailAddresses().get(0).getValue());
+    assertEquals("Developers <dev@example.org>", activity.getCcEmailAddresses().get(0).getValue());
     assertEquals(new UserId(userId(1)), activity.getCcUserIds().get(0).getValue());
     assertEquals(new GroupId(groupId(1)), activity.getCcGroupIds().get(0).getValue());
 
@@ -314,10 +314,10 @@ public abstract class AbstractMapperTest {
   @Test
   public void testUserTask() {
     Form form = new Form()
-      .description("Form description")
+      .description("Test results & comments")
       .field(new FormField()
         .id("f1")
-        .name("The first field in the form")
+        .name("Test summary")
         .bindingExpression("v1"));
     UserTask activity = new UserTask()
       .id("smokeTest")
@@ -343,11 +343,11 @@ public abstract class AbstractMapperTest {
     assertEquals(new UserId(userId()), activity.getEscalateToId().getValue());
 
     assertEquals(Form.class, activity.getForm().getClass());
-    assertEquals("Form description", activity.getForm().getDescription());
+    assertEquals("Test results & comments", activity.getForm().getDescription());
 
     assertEquals(1, activity.getForm().getFields().size());
     assertEquals("f1", activity.getForm().getFields().get(0).getId());
-    assertEquals("The first field in the form", activity.getForm().getFields().get(0).getName());
+    assertEquals("Test summary", activity.getForm().getFields().get(0).getName());
     assertEquals("v1", activity.getForm().getFields().get(0).getBinding().getExpression());
   }
 }
