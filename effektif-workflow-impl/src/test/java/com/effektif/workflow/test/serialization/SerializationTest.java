@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.test.serialization;
 
+import com.effektif.workflow.test.api.VariableTypesTest;
 import org.junit.Test;
 import org.junit.runners.model.InitializationError;
 
@@ -30,7 +31,7 @@ public class SerializationTest {
   public void testSerialization() throws InitializationError {
     TestSuiteHelper.run(new SerializingWorkflowEngineConfiguration()
       // use the next line if you only want to run 1 test
-      // , FormTriggerTest.class, "testFormTriggerDecision"
+       , VariableTypesTest.class, "testEmailAddressType"
       );
   }
 }
