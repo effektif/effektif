@@ -24,6 +24,7 @@ public class MongoMemoryConfiguration extends MongoConfiguration {
 
   public MongoMemoryConfiguration() {
     brewery.ingredient(new MemoryWorkflowStore());
+    storeWorkflowIdsAsStrings();
   }
 
 }

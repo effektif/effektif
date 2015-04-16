@@ -45,7 +45,6 @@ public class MongoMemoryApiTest {
     return new MongoMemoryConfiguration()
       .ingredient(new TestOutgoingEmailService())
       .prettyPrint()
-      .synchronous()
-      .storeWorkflowIdsAsStrings();
+      .synchronous();
   }
 }
