@@ -13,16 +13,14 @@
  * limitations under the License. */
 package com.effektif.mongo.test;
 
-import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.mongo.MongoJsonMapper;
 import com.effektif.mongo.PrettyPrinter;
 import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens

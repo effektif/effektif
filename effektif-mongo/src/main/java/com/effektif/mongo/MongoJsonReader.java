@@ -21,7 +21,6 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.impl.mapper.AbstractReader;
 import com.effektif.workflow.impl.mapper.Mappings;
-import com.mongodb.BasicDBObject;
 
 
 /**

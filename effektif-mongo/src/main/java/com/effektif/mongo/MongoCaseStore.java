@@ -15,11 +15,8 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoHelper.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -27,7 +24,6 @@ import org.slf4j.Logger;
 import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.task.Case;
@@ -35,7 +31,6 @@ import com.effektif.workflow.api.task.CaseQuery;
 import com.effektif.workflow.impl.CaseStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;

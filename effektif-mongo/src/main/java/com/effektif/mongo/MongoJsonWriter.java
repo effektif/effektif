@@ -13,28 +13,22 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.mapper.AbstractWriter;
 import com.effektif.workflow.impl.mapper.Mappings;
-import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
@@ -170,8 +164,24 @@ public class MongoJsonWriter extends AbstractWriter {
       ParameterizedType mapType = (ParameterizedType) type;
       return toDbObject((Map<String,Object>)o, mapType.getActualTypeArguments()[1]);
     } else if (o instanceof List) {
-      ParameterizedType listType = (ParameterizedType) type;
-      return toDbObject((List) o, listType.getActualTypeArguments()[0]);
+      Type elementType = null;
+      if (type instanceof ParameterizedType) {
+        elementType = ((ParameterizedType)type).getActualTypeArguments()[0];
+      } else if (o instanceof List) {
+        List list = (List) o;
+        if (!list.isEmpty()) {
+          Class<?> elementClass = list.get(0).getClass();
+          for (Object element: list) {
+            if (elementClass!=element.getClass()) {
+              while (elementClass!=null && !elementClass.isAssignableFrom(element.getClass())) {
+                elementClass = elementClass.getSuperclass();
+              }
+            }
+          }
+          elementType = elementClass;
+        }
+      }
+      return toDbObject((List) o, elementType);
     } else if (o instanceof Binding) {
       ParameterizedType bindingType = type instanceof ParameterizedType ? (ParameterizedType) type : null;
       Type bindingValueType = bindingType!=null ? bindingType.getActualTypeArguments()[0] : null;
@@ -187,6 +197,10 @@ public class MongoJsonWriter extends AbstractWriter {
     } else {
       return toDbObjectDefault(o);
     }
+  }
+
+  private boolean is(Class< ? extends Object> class1, Class< ? > elementClass) {
+    return false;
   }
 
   protected Date toDbObject(LocalDateTime date) {

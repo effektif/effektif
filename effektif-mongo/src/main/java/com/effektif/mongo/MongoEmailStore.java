@@ -24,7 +24,6 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.email.EmailStore;
 import com.effektif.workflow.impl.email.PersistentEmail;
-import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.mongodb.BasicDBObject;
 
 

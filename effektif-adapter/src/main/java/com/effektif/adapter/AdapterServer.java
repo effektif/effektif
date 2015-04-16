@@ -28,7 +28,7 @@ import com.effektif.adapter.helpers.DefaultExceptionMapper;
 import com.effektif.adapter.helpers.ObjectMapperResolver;
 import com.effektif.adapter.helpers.RequestLogger;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.mapper.deprecated.JsonMapper;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
