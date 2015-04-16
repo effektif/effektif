@@ -20,7 +20,7 @@ import com.effektif.workflow.api.mapper.TypeName;
 /**
  * @author Peter Hilton
  */
-@TypeName("link")
+@TypeName("emailAddress")
 public class EmailAddressType extends JavaBeanType {
 
   public static final EmailAddressType INSTANCE = new EmailAddressType();

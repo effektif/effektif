@@ -21,6 +21,9 @@ public class EmailAddress {
 
   protected String value;
 
+  public EmailAddress() {
+  }
+
   public EmailAddress(String value) {
     this.value = value;
   }

@@ -22,19 +22,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 
-<<<<<<< HEAD
-=======
-import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.model.RelativeTime;
->>>>>>> 8c3e17532c2d22c8bb1e65f769323b265d2f241b
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Id;
@@ -45,8 +42,6 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.data.DataTypeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens
