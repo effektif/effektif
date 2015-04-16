@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.model.Link;
+import com.effektif.workflow.api.types.LinkType;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
@@ -108,6 +110,24 @@ public class VariableTypesTest extends WorkflowTest {
     variableValues.put("v", new UserId("u3"));
     workflowEngine.setVariableValues(workflowInstanceId, variableValues);
     assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
+  }
+
+  @Test
+  public void testLinkType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new LinkType());
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId())
+        .data("v", new Link().name("Effektif").url("http://www.effektif.com/")));
+    
+    Object value = workflowInstance.getVariableValue("v");
+    assertEquals(Link.class, value.getClass());
+    Link link = (Link) value;
+    assertEquals("Effektif", link.getName());
+    assertEquals("http://www.effektif.com/", link.getUrl());
   }
 
   @Test
