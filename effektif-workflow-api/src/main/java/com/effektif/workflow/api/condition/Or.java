@@ -21,17 +21,13 @@ import java.util.List;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("or")
 @TypeName("or")
 @BpmnElement("or")
 public class Or extends Condition {
@@ -41,16 +37,6 @@ public class Or extends Condition {
   @Override
   public boolean isEmpty() {
     return conditions == null || conditions.isEmpty();
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    conditions = r.readList("conditions");
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeList("conditions", conditions);
   }
 
   @Override

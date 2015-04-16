@@ -48,6 +48,8 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests BPMN serialisation for conditions.
+ *
+ * @author Peter Hilton
  */
 public class ConditionMapperTest {
 

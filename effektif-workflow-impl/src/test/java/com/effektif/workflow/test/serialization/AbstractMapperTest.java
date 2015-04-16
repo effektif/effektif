@@ -13,11 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.EmailTask;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -27,23 +24,15 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.IsTrue;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
-import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Script;
-import com.effektif.workflow.api.workflow.Transition;
-import org.junit.Test;
-
-import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.BooleanType;
@@ -58,8 +47,17 @@ import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.UserIdType;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Script;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.Mappings;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**

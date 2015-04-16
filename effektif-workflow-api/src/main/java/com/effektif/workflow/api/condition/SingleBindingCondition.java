@@ -17,8 +17,6 @@ package com.effektif.workflow.api.condition;
 
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -32,16 +30,6 @@ public abstract class SingleBindingCondition extends Condition {
   @Override
   public boolean isEmpty() {
     return left == null || left.isEmpty();
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    left = r.readBinding("left");
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeBinding("left", left);
   }
 
   @Override

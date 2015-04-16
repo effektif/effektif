@@ -17,13 +17,11 @@ package com.effektif.workflow.api.condition;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("lessThanOrEqual")
 @TypeName("lessThanOrEqual")
 @BpmnElement("lessThanOrEqual")
 public class LessThanOrEqual extends Comparator {
