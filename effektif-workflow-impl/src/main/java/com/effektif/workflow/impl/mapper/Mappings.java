@@ -32,6 +32,8 @@ import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.condition.EqualsIgnoreCase;
+import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +117,8 @@ public class Mappings {
     registerSubClass(NotContains.class);
     registerSubClass(ContainsIgnoreCase.class);
     registerSubClass(NotContainsIgnoreCase.class);
+    registerSubClass(EqualsIgnoreCase.class);
+    registerSubClass(NotEqualsIgnoreCase.class);
     registerSubClass(Equals.class);
     registerSubClass(NotEquals.class);
     registerSubClass(GreaterThan.class);
@@ -140,7 +144,7 @@ public class Mappings {
     TypeName typeName = subClass.getAnnotation(TypeName.class);
     if (typeName!=null) {
       registerSubClass(subClass, typeName.value(), subClass);
-      if (Activity.class.isAssignableFrom(subClass)) {
+      if (Activity.class.isAssignableFrom(subClass) || Condition.class.isAssignableFrom(subClass)) {
         BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
         if (bpmnElement!=null) {
           BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
@@ -230,6 +234,9 @@ public class Mappings {
   }
 
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
+    if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
+      throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
+    }
     return bpmnTypeMappingsByClass.get(subClass);
   }
 

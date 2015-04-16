@@ -104,6 +104,13 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
   
   @Override
+  public void startElementEffektif(Class modelClass) {
+    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    String localPart = bpmnTypeMapping.getBpmnElementName();
+    startElementEffektif(localPart, null);
+  }
+
+  @Override
   public void startElementEffektif(String localPart, Integer index) {
     startElement(xml.createElement(EFFEKTIF_URI, localPart, index));
   }
@@ -248,6 +255,15 @@ public class BpmnWriterImpl implements BpmnWriter {
         endElement();
       }
     }
+  }
+
+  /** Writes binding values as extension elements with the given local name and attribute name,
+   * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
+  @Override
+  public <T> void writeBinding(Class modelClass, Binding<T> binding) {
+    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    String localPart = bpmnTypeMapping.getBpmnElementName();
+    writeBinding(localPart, binding);
   }
 
   /** Writes binding values as extension elements with the given local name and attribute name,

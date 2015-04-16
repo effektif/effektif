@@ -15,7 +15,11 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -24,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonTypeName("contains")
 @TypeName("contains")
+@BpmnElement("contains")
 public class Contains extends Comparator {
 
   @Override

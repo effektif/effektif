@@ -15,8 +15,11 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -27,6 +30,11 @@ public abstract class Comparator extends Condition {
   
   protected Binding<?> left;
   protected Binding<?> right;
+
+  @Override
+  public boolean isEmpty() {
+    return left == null && right == null;
+  }
 
   @Override
   public void readJson(JsonReader r) {
@@ -80,4 +88,20 @@ public abstract class Comparator extends Condition {
   }
   
   protected abstract String getName();
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement containsElement : r.readElementsEffektif(getClass())) {
+      r.startElement(containsElement);
+      left = r.readBinding("left", String.class);
+      right = r.readBinding("right", String.class);
+      r.endElement();
+    }
+  }
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif(getClass());
+    w.writeBinding("left", getLeft());
+    w.writeBinding("right", getRight());
+    w.endElement();
+  }
 }

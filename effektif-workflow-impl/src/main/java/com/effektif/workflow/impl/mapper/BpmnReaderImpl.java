@@ -18,12 +18,17 @@ import static com.effektif.workflow.impl.mapper.Bpmn.*;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -38,13 +43,15 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.data.DataTypeService;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens
  */
 public class BpmnReaderImpl implements BpmnReader {
 
+  private static final Logger log = LoggerFactory.getLogger(BpmnReaderImpl.class);
   public static DateTimeFormatter DATE_FORMAT = JsonReader.DATE_FORMAT;
 
   /** global mappings */
@@ -162,6 +169,13 @@ public class BpmnReaderImpl implements BpmnReader {
   }
   
   @Override
+  public List<XmlElement> readElementsEffektif(Class modelClass) {
+    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    String localPart = bpmnTypeMapping.getBpmnElementName();
+    return readElementsEffektif(localPart);
+  }
+
+  @Override
   public List<XmlElement> readElementsEffektif(String localPart) {
     if (currentXml==null) {
       return Collections.EMPTY_LIST;
@@ -259,9 +273,16 @@ public class BpmnReaderImpl implements BpmnReader {
     return AbstractReader.toId(readStringAttributeEffektif(localPart), idType);
   }
 
+  @Override
+  public <T> Binding<T> readBinding(Class modelClass, Class<T> type) {
+    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    String localPart = bpmnTypeMapping.getBpmnElementName();
+    return readBinding(localPart, type);
+  }
+
   /** Returns a binding from the first extension element with the given name. */
   @Override
-  public <T> Binding<T> readBinding(String localPart, Class<T>  type) {
+  public <T> Binding<T> readBinding(String localPart, Class<T> type) {
     if (currentXml==null) {
       return null;
     }
@@ -372,7 +393,45 @@ public class BpmnReaderImpl implements BpmnReader {
     return currentXml;
   }
 
-//  @Override
+  public Condition readCondition() {
+    List<Condition> conditions = readConditions();
+    if (conditions.size() > 0) {
+      return conditions.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * Returns a list of {@link Condition} instances by using this reader to read BPMN for all of the condition types.
+   */
+  @Override
+  public List<Condition> readConditions() {
+    List<Condition> conditions = new ArrayList<>();
+
+    SortedSet<Class<?>> sortedTypes = new TreeSet(new Comparator<Class>() {
+      public int compare(Class c1, Class c2) {
+        return c1.getName().compareTo(c2.getName());
+      }
+    });
+    sortedTypes.addAll(mappings.bpmnTypeMappingsByClass.keySet());
+
+    for (Class type : sortedTypes) {
+      if (Condition.class.isAssignableFrom(type)) {
+        try {
+          Condition condition = (Condition) type.newInstance();
+          condition.readBpmn(this);
+          if (!condition.isEmpty()) {
+            conditions.add(condition);
+          }
+        } catch (Exception e) {
+          throw new RuntimeException("Could not read condition type " + type.getName());
+        }
+      }
+    }
+    return conditions;
+  }
+
+  //  @Override
 //  public <T extends Id> T readId(Class<T> idType) {
 //    return AbstractReader.createId(readBpmnAttribute("id"), idType);
 //  }

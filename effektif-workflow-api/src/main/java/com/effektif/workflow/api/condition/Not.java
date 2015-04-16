@@ -15,9 +15,15 @@
  */
 package com.effektif.workflow.api.condition;
 
+import java.util.List;
+
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -26,10 +32,16 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonTypeName("not")
 @TypeName("not")
+@BpmnElement("not")
 public class Not extends Condition {
 
   protected Condition condition;
-  
+
+  @Override
+  public boolean isEmpty() {
+    return condition == null || condition.isEmpty();
+  }
+
   @Override
   public void readJson(JsonReader r) {
     condition = r.readObject("condition");
@@ -38,6 +50,22 @@ public class Not extends Condition {
   @Override
   public void writeJson(JsonWriter w) {
     w.writeWritable("condition", condition);
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement andElement : r.readElementsEffektif(getClass())) {
+      r.startElement(andElement);
+      condition = r.readCondition();
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif(getClass());
+    condition.writeBpmn(w);
+    w.endElement();
   }
 
   public Condition getCondition() {
