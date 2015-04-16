@@ -21,7 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.model.EmailAddress;
 import com.effektif.workflow.api.model.Link;
+import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.api.types.LinkType;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -68,6 +70,22 @@ public class VariableTypesTest extends WorkflowTest {
     variableValues.put("v", new LocalDateTime(time));
     workflowEngine.setVariableValues(workflowInstanceId, variableValues);
     assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
+  }
+
+  @Test
+  public void testEmailAddressType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new EmailAddressType());
+
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance().workflowId(workflow.getId())
+      .data("v", new EmailAddress("info@effektif.com")));
+
+    Object value = workflowInstance.getVariableValue("v");
+    assertEquals(EmailAddress.class, value.getClass());
+    EmailAddress address = (EmailAddress) value;
+    assertEquals("info@effektif.com", address.getValue());
   }
 
   @Test
