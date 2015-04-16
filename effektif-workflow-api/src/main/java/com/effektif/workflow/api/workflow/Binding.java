@@ -48,7 +48,7 @@ public class Binding<T> {
   /**
    * the fixed value. When serializing and deserializing, the type for this
    * value will be automatically initialized. This value is mutually exclusive
-   * with variableId and expression
+   * with expression
    */
   public void setValue(T value) {
     this.value = value;
@@ -78,5 +78,9 @@ public class Binding<T> {
   public Binding expression(String expression) {
     this.expression = expression;
     return this;
+  }
+
+  public boolean isEmpty() {
+    return value == null && expression == null;
   }
 }

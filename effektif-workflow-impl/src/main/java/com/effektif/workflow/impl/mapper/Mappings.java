@@ -45,6 +45,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Contains;
 import com.effektif.workflow.api.condition.ContainsIgnoreCase;
 import com.effektif.workflow.api.condition.Equals;
+import com.effektif.workflow.api.condition.EqualsIgnoreCase;
 import com.effektif.workflow.api.condition.GreaterThan;
 import com.effektif.workflow.api.condition.GreaterThanOrEqual;
 import com.effektif.workflow.api.condition.HasNoValue;
@@ -57,6 +58,7 @@ import com.effektif.workflow.api.condition.Not;
 import com.effektif.workflow.api.condition.NotContains;
 import com.effektif.workflow.api.condition.NotContainsIgnoreCase;
 import com.effektif.workflow.api.condition.NotEquals;
+import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
 import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
@@ -118,6 +120,8 @@ public class Mappings {
     registerSubClass(NotContains.class);
     registerSubClass(ContainsIgnoreCase.class);
     registerSubClass(NotContainsIgnoreCase.class);
+    registerSubClass(EqualsIgnoreCase.class);
+    registerSubClass(NotEqualsIgnoreCase.class);
     registerSubClass(Equals.class);
     registerSubClass(NotEquals.class);
     registerSubClass(GreaterThan.class);
@@ -147,7 +151,7 @@ public class Mappings {
     TypeName typeName = subClass.getAnnotation(TypeName.class);
     if (typeName!=null) {
       registerSubClass(subClass, typeName.value(), subClass);
-      if (Activity.class.isAssignableFrom(subClass)) {
+      if (Activity.class.isAssignableFrom(subClass) || Condition.class.isAssignableFrom(subClass)) {
         BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
         if (bpmnElement!=null) {
           BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
@@ -237,6 +241,9 @@ public class Mappings {
   }
 
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
+    if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
+      throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
+    }
     return bpmnTypeMappingsByClass.get(subClass);
   }
 

@@ -27,7 +27,10 @@ public interface DataType<T extends Type> extends Plugin {
 
   Class<?> getValueClass();
   Class<? extends Type> getApiClass();
+
+  /** Indicates that this type doesn’t have to be serialised. */
   boolean isStatic();
+
   T serialize();
 
   TypeGenerator getTypeGenerator();

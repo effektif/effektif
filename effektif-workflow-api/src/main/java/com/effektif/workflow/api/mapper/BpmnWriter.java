@@ -36,6 +36,7 @@ public interface BpmnWriter {
   void startElementBpmn(String localPart, Integer index);
   void startElementEffektif(String localPart);
   void startElementEffektif(String localPart, Integer index);
+  void startElementEffektif(Class modelClass);
   void endElement();
   
   void startExtensionElements();
@@ -43,10 +44,13 @@ public interface BpmnWriter {
   
   void writeScope();
 
+  /** Writes a binding using the model class’ defined BPMN element name. */
+  <T> void writeBinding(Class modelClass, Binding<T> binding);
+
   /** Writes a binding like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> void writeBinding(String localPart, Binding<T> binding);
-  
+
   /** Writes a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> void writeBindings(String fieldName, List<Binding<T>> bindings);

@@ -15,15 +15,15 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("greaterThanOrEqual")
 @TypeName("greaterThanOrEqual")
+@BpmnElement("greaterThanOrEqual")
 public class GreaterThanOrEqual extends Comparator {
 
   @Override

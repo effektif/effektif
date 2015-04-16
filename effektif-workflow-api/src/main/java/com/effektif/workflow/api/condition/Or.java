@@ -18,29 +18,43 @@ package com.effektif.workflow.api.condition;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("or")
 @TypeName("or")
+@BpmnElement("or")
 public class Or extends Condition {
 
   protected List<Condition> conditions;
 
   @Override
-  public void readJson(JsonReader r) {
-    conditions = r.readList("conditions");
+  public boolean isEmpty() {
+    return conditions == null || conditions.isEmpty();
   }
 
   @Override
-  public void writeJson(JsonWriter w) {
-    w.writeList("conditions", conditions);
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement andElement : r.readElementsEffektif(getClass())) {
+      r.startElement(andElement);
+      conditions = r.readConditions();
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif(getClass());
+    for (Condition condition: conditions) {
+      condition.writeBpmn(w);
+    }
+    w.endElement();
   }
 
   public List<Condition> getConditions() {

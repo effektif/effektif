@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.condition;
+package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.TypeName;
-
+import com.effektif.workflow.api.model.EmailAddress;
+import com.effektif.workflow.api.types.EmailAddressType;
 
 /**
- * @author Tom Baeyens
+ * @author Peter Hilton
  */
-@TypeName("lessThan")
-@BpmnElement("lessThan")
-public class LessThan extends Comparator {
+public class EmailAddressTypeImpl extends JavaBeanTypeImpl<EmailAddressType> {
 
-  @Override
-  protected String getName() {
-    return "lessThan";
+  public EmailAddressTypeImpl() {
+    super(EmailAddressType.INSTANCE, EmailAddress.class);
+  }
+
+  public EmailAddressTypeImpl(EmailAddressType linkType) {
+    super(linkType, EmailAddress.class);
   }
 }

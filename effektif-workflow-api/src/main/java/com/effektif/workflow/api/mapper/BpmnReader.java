@@ -15,6 +15,7 @@ package com.effektif.workflow.api.mapper;
 
 import java.util.List;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 
@@ -58,6 +59,9 @@ public interface BpmnReader {
    */
   List<XmlElement> readElementsEffektif(String localPart);
 
+  /** Extracts and removes elements whose name corresponds to the given model class name. */
+  List<XmlElement> readElementsEffektif(Class modelClass);
+
   /** set the current element on which the other readXxxx methods apply.
    * Always ensure there is a matching endElement() called afterwards.*/
   void startElement(XmlElement xmlElement);
@@ -75,6 +79,9 @@ public interface BpmnReader {
   /** reads all scope information like nested activities (flowNodes), transitions (sequenceFlows)
    * variables and timers.*/
   void readScope();
+
+  /** Reads a binding from the element whose name corresponds to the given model class. */
+  <T> Binding<T> readBinding(Class modelClass, Class<T> type);
 
   /** Reads a binding like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
@@ -116,4 +123,10 @@ public interface BpmnReader {
 
   /** TODO */
   XmlElement getUnparsedXml();
+
+  /** Reads the first condition from the available condition elements. */
+  Condition readCondition();
+
+  /** Reads a list of condition instances from their various XML elements. */
+  List<Condition> readConditions();
 }

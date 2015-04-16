@@ -30,6 +30,8 @@ import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.IsTrue;
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.model.FileId;
@@ -308,19 +310,30 @@ public abstract class AbstractMapperTest {
 
   @Test
   public void testTransition() {
+    Condition condition = new IsTrue().left(new Binding().expression("testsPassed"));
+
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent())
       .activity("smokeTest", new UserTask())
-      .activity("end", new EndEvent())
-      .transition("t1", new Transition().from("start").to("smokeTest"))
-      .transition("t2", new Transition().from("smokeTest").to("end"));
+      .activity("checkTestResult", new ExclusiveGateway().defaultTransitionId("to-failed"))
+      .activity("passed", new EndEvent())
+      .activity("failed", new EndEvent())
+      .transition("to-smokeTest", new Transition().from("start").to("smokeTest").description("Starting the process"))
+      .transition("to-checkTestResult", new Transition().from("smokeTest").to("checkTestResult"))
+      .transition("to-passed", new Transition().from("checkTestResult").to("passed").condition(condition))
+      .transition("to-failed", new Transition().from("checkTestResult").to("failed"));
 
     workflow = serialize(workflow);
 
-    assertEquals(2, workflow.getTransitions().size());
-    assertEquals("t1", workflow.getTransitions().get(0).getId());
+    assertEquals(4, workflow.getTransitions().size());
+    assertEquals("to-smokeTest", workflow.getTransitions().get(0).getId());
+    assertEquals("Starting the process", workflow.getTransitions().get(0).getDescription());
     assertEquals("start", workflow.getTransitions().get(0).getFrom());
     assertEquals("smokeTest", workflow.getTransitions().get(0).getTo());
+
+    assertEquals("to-passed", workflow.getTransitions().get(2).getId());
+    IsTrue deserialisedCondition = (IsTrue) workflow.getTransitions().get(2).getCondition();
+    assertEquals("testsPassed", deserialisedCondition.getLeft().getExpression());
   }
 
   @Test

@@ -17,6 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.mapper.BpmnWritable;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
@@ -59,6 +61,42 @@ public class BpmnMapper extends AbstractMapper {
   public String writeToString(Workflow workflow) {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     writeToStream(workflow, stream);
+    return stream.toString();
+  }
+
+  /**
+   * Work in progress for testing conditions.
+   */
+  public <T extends Condition> T readCondition(String xml, Class<T> conditionClass) {
+    XmlElement xmlRoot = XmlReader.parseXml(new StringReader(xml));
+    if (xmlRoot != null && xmlRoot.elements != null) {
+      try {
+        T condition = conditionClass.newInstance();
+        BpmnReaderImpl reader = new BpmnReaderImpl(mappings);
+        reader.currentXml = xmlRoot;
+        condition.readBpmn(reader);
+        return condition;
+      } catch (Exception e) {
+        throw new RuntimeException("Could not read condition: " + e.getMessage(), e);
+      }
+    }
+    else {
+      return null;
+    }
+  }
+
+  /**
+   * Work in progress for testing conditions.
+   */
+  public String writeToString(BpmnWritable model) {
+    BpmnWriterImpl writer = new BpmnWriterImpl(mappings);
+    writer.startElementBpmn("conditionsTest");
+    model.writeBpmn(writer);
+
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    XmlWriter xmlWriter = new XmlWriter(stream, "UTF-8");
+    xmlWriter.writeDocument(writer.xml);
+    xmlWriter.flush();
     return stream.toString();
   }
 }

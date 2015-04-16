@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.condition;
+package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.TypeName;
-
+import com.effektif.workflow.api.model.Link;
+import com.effektif.workflow.api.model.Money;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * @author Tom Baeyens
+ * @author Peter Hilton
  */
-@TypeName("lessThan")
-@BpmnElement("lessThan")
-public class LessThan extends Comparator {
+@TypeName("link")
+public class LinkType extends JavaBeanType {
 
-  @Override
-  protected String getName() {
-    return "lessThan";
-  }
+  public static final LinkType INSTANCE = new LinkType();
 }

@@ -1,6 +1,5 @@
-/*
- * Copyright 2014 Effektif GmbH.
- *
+package com.effektif.workflow.api.model;/* Copyright (c) 2015, Effektif GmbH.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,23 +10,22 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.effektif.workflow.api.condition;
-
-import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.TypeName;
-
+ * limitations under the License. */
 
 /**
- * @author Tom Baeyens
+ * An email address.
+ *
+ * @author Peter Hilton
  */
-@TypeName("lessThan")
-@BpmnElement("lessThan")
-public class LessThan extends Comparator {
+public class EmailAddress {
 
-  @Override
-  protected String getName() {
-    return "lessThan";
+  protected String value;
+
+  public EmailAddress(String value) {
+    this.value = value;
+  }
+
+  public String getValue() {
+    return this.value;
   }
 }

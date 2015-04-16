@@ -16,12 +16,14 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.IsTrue;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWriter;
-
-
+import com.effektif.workflow.api.mapper.XmlElement;
 
 /**
  * A sequence flow that connects two activities in a workflow.
@@ -65,18 +67,35 @@ public class Transition extends Element {
 
   @Override
   public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
     id = r.readStringAttributeBpmn("id");
     from = r.readStringAttributeBpmn("sourceRef");
     to = r.readStringAttributeBpmn("targetRef");
-    super.readBpmn(r);
+
+    r.startExtensionElements();
+    for (XmlElement conditionElement : r.readElementsEffektif("condition")) {
+      r.startElement(conditionElement);
+      condition = r.readCondition();
+      r.endElement();
+    }
+
+    r.endExtensionElements();
   }
   
   @Override
   public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
     w.writeStringAttributeBpmn("id", id);
     w.writeStringAttributeBpmn("sourceRef", from);
     w.writeStringAttributeBpmn("targetRef", to);
-    super.writeBpmn(w);
+
+    if (condition != null) {
+      w.startExtensionElements();
+      w.startElementEffektif("condition");
+      condition.writeBpmn(w);
+      w.endElement();
+      w.endExtensionElements();
+    }
   }
 
   public String getId() {
