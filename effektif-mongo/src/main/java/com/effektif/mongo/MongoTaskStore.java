@@ -40,7 +40,6 @@ import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.impl.TaskStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -51,7 +50,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
   
   public static final Logger log = MongoDb.log;
   
-  protected JsonService jsonService;
+  protected MongoJsonMapper mongoJsonMapper;
   protected MongoCollection tasksCollection;
   
   public interface FieldsTask {
@@ -77,7 +76,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.tasksCollection = mongoDb.createCollection(mongoConfiguration.getTasksCollectionName());
-    this.jsonService = brewery.get(JsonService.class);
+    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
 
   @Override
@@ -165,7 +164,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
 
   public BasicDBObject taskToMongo(Task task) {
-    Map<String,Object> jsonTask = jsonService.objectToJsonMap(task);
+    Map<String,Object> jsonTask = mongoJsonMapper.writeToDbObject(task);
     BasicDBObject dbTask = new BasicDBObject(); 
     jsonTask.remove("id");
     jsonTask.remove(FieldsTask.ORGANIZATION_ID);
@@ -196,7 +195,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     ObjectId workflowId = (ObjectId) dbTask.remove(FieldsTask.WORKFLOW_ID);
     ObjectId workflowInstanceId = (ObjectId) dbTask.remove(FieldsTask.WORKFLOW_INSTANCE_ID);
     Date lastUpdated = (Date) dbTask.remove(FieldsTask.LAST_UPDATED);
-    Task task = jsonService.jsonMapToObject(dbTask, Task.class);
+    Task task = mongoJsonMapper.readFromDbObject(dbTask, Task.class);
     if (taskId!=null) {
       task.setId(new TaskId(taskId.toString()));
     }

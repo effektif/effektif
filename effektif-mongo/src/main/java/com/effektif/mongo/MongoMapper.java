@@ -21,7 +21,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeDeserializer;
 import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeSerializer;
 import com.mongodb.BasicDBObject;
@@ -31,17 +31,18 @@ import com.mongodb.BasicDBObject;
  *  
  * @author Tom Baeyens
  */
+@Deprecated
 public class MongoMapper<T> {
 
   Class<T> type;
-  JsonService jsonService;
+  JsonMapper jsonMapper;
   boolean convertId;
   List<String> userIdFields = new ArrayList<>();
   List<String> timeFields = new ArrayList<>();
 
-  public MongoMapper(Class<T> type, JsonService jsonService) {
+  public MongoMapper(Class<T> type, JsonMapper jsonMapper) {
     this.type = type;
-    this.jsonService = jsonService;
+    this.jsonMapper = jsonMapper;
   }
 
   public MongoMapper convertId() {
@@ -85,7 +86,8 @@ public class MongoMapper<T> {
       }
     }
 
-    return jsonService.jsonMapToObject(dbObject, type);
+    // return jsonMapper.jsonMapToObject(dbObject, type);
+    throw new RuntimeException("TODO i didn't expect this was still used");
   }
 
   public BasicDBObject write(Object object) {
@@ -93,7 +95,9 @@ public class MongoMapper<T> {
       return null;
     }
     
-    Map<String,Object> jsonMap = jsonService.objectToJsonMap(object);
+    Map<String,Object> jsonMap = null; // jsonMapper.objectToJsonMap(object);
+    if (true) throw new RuntimeException("TODO i didn't expect this was still used");
+    
     BasicDBObject dbObject = new BasicDBObject(jsonMap);
 
     if (convertId) {

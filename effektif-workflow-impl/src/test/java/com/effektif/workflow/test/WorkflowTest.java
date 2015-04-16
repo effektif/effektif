@@ -58,7 +58,7 @@ import com.effektif.workflow.impl.file.FileService;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
@@ -203,7 +203,7 @@ public class WorkflowTest {
   protected void logWorkflowEngineContents() {
     log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
     
-    JsonService jsonService = configuration.get(JsonService.class);
+    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
     WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
@@ -235,7 +235,7 @@ public class WorkflowTest {
         cleanLog.append("--- Job ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(job));
+        cleanLog.append(jsonMapper.writeToStringPretty(job));
         cleanLog.append("\n");
         i++;
       }
@@ -249,7 +249,7 @@ public class WorkflowTest {
         cleanLog.append("--- Task ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(task));
+        cleanLog.append(jsonMapper.writeToStringPretty(task));
         cleanLog.append("\n");
         i++;
       }
@@ -263,7 +263,7 @@ public class WorkflowTest {
         cleanLog.append("--- Workflow instance ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(workflowInstance.toWorkflowInstance()));
+        cleanLog.append(jsonMapper.writeToStringPretty(workflowInstance.toWorkflowInstance()));
         cleanLog.append("\n");
         i++;
       }
@@ -277,7 +277,7 @@ public class WorkflowTest {
         cleanLog.append("--- Deleted workflow ");
         cleanLog.append(i);
         cleanLog.append(" ---\n");
-        cleanLog.append(jsonService.objectToJsonStringPretty(workflow));
+        cleanLog.append(jsonMapper.writeToStringPretty(workflow));
         cleanLog.append("\n");
         i++;
       }

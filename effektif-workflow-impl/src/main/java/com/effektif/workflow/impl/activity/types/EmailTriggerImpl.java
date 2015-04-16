@@ -20,7 +20,6 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.email.EmailTrigger;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -30,7 +29,6 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 public class EmailTriggerImpl extends AbstractTriggerImpl<EmailTrigger> {
 
   public String emailIdVariableId;
-  public JsonService jsonService;
 
   public EmailTriggerImpl() {
     super(EmailTrigger.class);
@@ -39,7 +37,6 @@ public class EmailTriggerImpl extends AbstractTriggerImpl<EmailTrigger> {
   @Override
   public void parse(WorkflowImpl workflow, EmailTrigger triggerApi, WorkflowParser parser) {
     this.emailIdVariableId = triggerApi.getEmailIdVariableId();
-    this.jsonService = parser.getConfiguration(JsonService.class);
   }
 
   @Override

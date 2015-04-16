@@ -331,7 +331,7 @@ public class JsonWriter extends AbstractWriter {
     try {
       Object fieldValue = field.get(o);
       if (fieldValue!=null) {
-        log.debug("Writing field "+field);
+        // log.debug("Writing field "+field);
         jgen.writeFieldName(field.getName());
         writeObject(fieldValue, field.getGenericType());
       }

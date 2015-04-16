@@ -22,6 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.effektif.workflow.api.acl.AccessIdentity;
+import com.effektif.workflow.api.acl.GroupIdentity;
+import com.effektif.workflow.api.acl.OrganizationIdentity;
+import com.effektif.workflow.api.acl.PublicIdentity;
+import com.effektif.workflow.api.acl.UserIdentity;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -32,14 +40,6 @@ import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.ScriptTask;
 import com.effektif.workflow.api.activities.UserTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.effektif.workflow.api.acl.AccessIdentity;
-import com.effektif.workflow.api.acl.GroupIdentity;
-import com.effektif.workflow.api.acl.OrganizationIdentity;
-import com.effektif.workflow.api.acl.PublicIdentity;
-import com.effektif.workflow.api.acl.UserIdentity;
 import com.effektif.workflow.api.condition.And;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Contains;
@@ -66,6 +66,9 @@ import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
+import com.effektif.workflow.impl.job.types.TaskReminderJobType;
 import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
 import com.effektif.workflow.impl.mapper.deprecated.TypeField;
 
@@ -125,6 +128,10 @@ public class Mappings {
     registerSubClass(HasValue.class);
     registerSubClass(IsFalse.class);
     registerSubClass(IsTrue.class);
+
+    registerBaseClass(JobType.class);
+    registerSubClass(TaskEscalateJobType.class);
+    registerSubClass(TaskReminderJobType.class);
   }
 
   public void registerBaseClass(Class<?> baseClass) {

@@ -26,7 +26,7 @@ import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeGenerator;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  */
 public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
   
-  public JsonService jsonService;
+  public JsonMapper jsonMapper;
   
   public JavaBeanTypeImpl() {
     super(null, null);
@@ -48,7 +48,7 @@ public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
 
   public void setConfiguration(Configuration configuration) {
     super.setConfiguration(configuration);
-    this.jsonService = configuration.get(JsonService.class);
+    this.jsonMapper = configuration.get(JsonMapper.class);
     initializeFields();
   }
   
@@ -111,15 +111,16 @@ public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue==null) return null;
     if (Map.class.isAssignableFrom(jsonValue.getClass())) {
-      return jsonService.jsonMapToObject((Map<String,Object>)jsonValue, valueClass);
+      return jsonMapper.readFromJsonObject(jsonValue, valueClass);
     }
     throw new InvalidValueException("Couldn't convert json: "+jsonValue+" ("+jsonValue.getClass().getName()+")");
   }
   
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-    if (internalValue==null) return null;
-    return jsonService.objectToJsonMap(internalValue);
+//    if (internalValue==null) return null;
+//    return jsonMapper.readFromJsonObject(internalValue);
+    return internalValue;
   }
   
   @Override
@@ -127,11 +128,7 @@ public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
     return valueClass;
   }
   
-  public JsonService getJsonService() {
-    return jsonService;
-  }
-  
-  public void setJsonService(JsonService jsonService) {
-    this.jsonService = jsonService;
+  public void setJsonService(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
   }
 }

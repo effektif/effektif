@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.email;
 
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.fasterxml.jackson.annotation.JsonTypeName;

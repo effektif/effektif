@@ -75,9 +75,13 @@ public class JsonMapper extends AbstractMapper {
   public <T> T readFromReader(Reader jsonStream, Class<T> type) {
     try {
       Object jsonObject = objectMapper.readValue(jsonStream, Object.class);
-      return (T) new JsonReader(mappings).toObject(jsonObject, type);
+      return readFromJsonObject(jsonObject, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public <T> T readFromJsonObject(Object jsonObject, Class<T> type) {
+    return (T) new JsonReader(mappings).toObject(jsonObject, type);
   }
 }

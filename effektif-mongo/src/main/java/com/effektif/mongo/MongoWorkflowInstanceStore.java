@@ -32,15 +32,12 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.Job;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -50,7 +47,6 @@ import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
 import com.mongodb.BasicDBObject;
@@ -69,7 +65,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   protected MongoJobStore mongoJobsStore;
   protected boolean storeWorkflowIdsAsStrings;
   protected DataTypeService dataTypeService;
-  protected JsonService jsonService;
   
   interface ScopeInstanceFields {
     String _ID = "id";
@@ -128,7 +123,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     this.storeWorkflowIdsAsStrings = mongoConfiguration.getStoreWorkflowIdsAsString();
     this.mongoJobsStore = brewery.get(MongoJobStore.class);
     this.dataTypeService = brewery.get(DataTypeService.class);
-    this.jsonService = brewery.get(JsonService.class);
   }
   
   @Override
@@ -504,34 +498,35 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   private void readVariableInstances(BasicDBObject dbWorkflowInstance, ScopeInstanceImpl parent) {
-    List<BasicDBObject> dbVariableInstances = readList(dbWorkflowInstance, WorkflowInstanceFields.VARIABLE_INSTANCES);
-    if (dbVariableInstances!=null && !dbVariableInstances.isEmpty()) {
-      for (BasicDBObject dbVariableInstance: dbVariableInstances) {
-        VariableInstanceImpl variableInstance = new VariableInstanceImpl();
-        variableInstance.configuration = configuration;
-        variableInstance.id = readString(dbVariableInstance, VariableInstanceFields._ID);
-        variableInstance.parent = parent;
-        variableInstance.workflowInstance = parent.workflowInstance;
-        variableInstance.workflow = parent.workflow;
-        String variableId = readString(dbVariableInstance, VariableInstanceFields.VARIABLE_ID);
-        variableInstance.variable = findVariableByIdRecurseParents(parent.scope, variableId);
-        if (variableInstance.variable!=null) {
-          variableInstance.type = variableInstance.variable.type;
-        } else {
-          variableInstance.variable = new VariableImpl();
-          Map<String, Object> typeJson = readObjectMap(dbVariableInstance, VariableInstanceFields.TYPE);
-          if (typeJson!=null) {
-            Type type = jsonService.jsonMapToObject(typeJson, Type.class);
-            variableInstance.type = dataTypeService.createDataType(type);
-          }
-        }
-        Object jsonValue = dbVariableInstance.get(VariableInstanceFields.VALUE);
-        if (jsonValue!=null) {
-          variableInstance.value = variableInstance.type.convertJsonToInternalValue(jsonValue);
-        }
-        parent.addVariableInstance(variableInstance);
-      }
-    }
+    throw new RuntimeException("TODO investigate");
+//    List<BasicDBObject> dbVariableInstances = readList(dbWorkflowInstance, WorkflowInstanceFields.VARIABLE_INSTANCES);
+//    if (dbVariableInstances!=null && !dbVariableInstances.isEmpty()) {
+//      for (BasicDBObject dbVariableInstance: dbVariableInstances) {
+//        VariableInstanceImpl variableInstance = new VariableInstanceImpl();
+//        variableInstance.configuration = configuration;
+//        variableInstance.id = readString(dbVariableInstance, VariableInstanceFields._ID);
+//        variableInstance.parent = parent;
+//        variableInstance.workflowInstance = parent.workflowInstance;
+//        variableInstance.workflow = parent.workflow;
+//        String variableId = readString(dbVariableInstance, VariableInstanceFields.VARIABLE_ID);
+//        variableInstance.variable = findVariableByIdRecurseParents(parent.scope, variableId);
+//        if (variableInstance.variable!=null) {
+//          variableInstance.type = variableInstance.variable.type;
+//        } else {
+//          variableInstance.variable = new VariableImpl();
+//          Map<String, Object> typeJson = readObjectMap(dbVariableInstance, VariableInstanceFields.TYPE);
+//          if (typeJson!=null) {
+//            Type type = jsonMapper.jsonMapToObject(typeJson, Type.class);
+//            variableInstance.type = dataTypeService.createDataType(type);
+//          }
+//        }
+//        Object jsonValue = dbVariableInstance.get(VariableInstanceFields.VALUE);
+//        if (jsonValue!=null) {
+//          variableInstance.value = variableInstance.type.convertJsonToInternalValue(jsonValue);
+//        }
+//        parent.addVariableInstance(variableInstance);
+//      }
+//    }
   }
 
   protected VariableImpl findVariableByIdRecurseParents(ScopeImpl scope, String variableId) {
@@ -614,25 +609,27 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   protected void writeVariables(BasicDBObject dbScope, ScopeInstanceImpl scope) {
-    if (scope.variableInstances!=null) {
-      for (VariableInstanceImpl variableInstance: scope.variableInstances) {
-        BasicDBObject dbVariable = new BasicDBObject();
-        writeString(dbVariable, VariableInstanceFields._ID, variableInstance.id);
-        String variableId = variableInstance.variable.id;
-        writeString(dbVariable, VariableInstanceFields.VARIABLE_ID, variableId);
-        
-        if (findVariableByIdRecurseParents(scope.scope, variableId)==null) {
-          DataType dataType = variableInstance.type;
-          Type type = dataType.serialize();
-          Map<String,Object> dbType = jsonService.objectToJsonMap(type);
-          writeObject(dbVariable, VariableInstanceFields.TYPE, dbType);
-        }
-        
-        Object jsonValue = variableInstance.type.convertInternalToJsonValue(variableInstance.value);
-        writeObjectOpt(dbVariable, VariableInstanceFields.VALUE, jsonValue);
-        writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
-      }
-    }
+    throw new RuntimeException("TODO investigate");
+// TODO: I think this might get replaced
+//    if (scope.variableInstances!=null) {
+//      for (VariableInstanceImpl variableInstance: scope.variableInstances) {
+//        BasicDBObject dbVariable = new BasicDBObject();
+//        writeString(dbVariable, VariableInstanceFields._ID, variableInstance.id);
+//        String variableId = variableInstance.variable.id;
+//        writeString(dbVariable, VariableInstanceFields.VARIABLE_ID, variableId);
+//        
+//        if (findVariableByIdRecurseParents(scope.scope, variableId)==null) {
+//          DataType dataType = variableInstance.type;
+//          Type type = dataType.serialize();
+//          Map<String,Object> dbType = jsonMapper.objectToJsonMap(type);
+//          writeObject(dbVariable, VariableInstanceFields.TYPE, dbType);
+//        }
+//        
+//        Object jsonValue = variableInstance.type.convertInternalToJsonValue(variableInstance.value);
+//        writeObjectOpt(dbVariable, VariableInstanceFields.VALUE, jsonValue);
+//        writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
+//      }
+//    }
   }
 
   protected List<BasicDBObject> writeJobs(List<Job> jobs) {

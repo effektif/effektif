@@ -28,7 +28,7 @@ import com.effektif.adapter.helpers.DefaultExceptionMapper;
 import com.effektif.adapter.helpers.ObjectMapperResolver;
 import com.effektif.adapter.helpers.RequestLogger;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -40,7 +40,7 @@ public class AdapterServer {
   protected ObjectMapper objectMapper;
   protected ResourceConfig config;
   protected Server server;
-  protected JsonService jsonService;
+  protected JsonMapper jsonMapper;
   protected DescriptorsResource descriptorsResource;
   protected ExecuteResource executeResource;
   protected FindItemsResource findItemsResource;

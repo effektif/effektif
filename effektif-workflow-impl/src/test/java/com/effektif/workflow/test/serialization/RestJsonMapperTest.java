@@ -17,12 +17,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.impl.mapper.JsonMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Tom Baeyens

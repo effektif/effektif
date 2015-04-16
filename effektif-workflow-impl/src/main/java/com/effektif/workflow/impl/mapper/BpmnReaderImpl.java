@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.mapper;
 
 import static com.effektif.workflow.impl.mapper.Bpmn.*;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,19 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 

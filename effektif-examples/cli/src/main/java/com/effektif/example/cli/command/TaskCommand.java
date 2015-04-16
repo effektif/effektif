@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonMapper;
 
 /**
  * Outputs details of the task with the given ID, in JSON format.
@@ -31,8 +31,8 @@ public class TaskCommand implements CommandImpl {
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     final String taskId = command.getArgument();
     final Task task = configuration.getTaskService().findTaskById(new TaskId(taskId));
-    final JsonService jsonService = configuration.get(JsonService.class);
-    out.println(jsonService.objectToJsonStringPretty(task));
+    final JsonMapper jsonMapper = configuration.get(JsonMapper.class);
+    out.println(jsonMapper.writeToStringPretty(task));
     out.println();
   }
 }

@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
@@ -43,6 +44,7 @@ public class JobServiceTest extends JobWorkflowTest {
   public static final Logger log = LoggerFactory.getLogger(JobServiceTest.class);
 
   @JsonTypeName("tst")
+  @TypeName("tst")
   public static class TestJob extends AbstractJobType {
     static List<JobExecution> jobExecutions;
     static boolean throwException;

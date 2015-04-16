@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
@@ -31,7 +31,7 @@ public class DescriptorSender {
   public static final Logger log = LoggerFactory.getLogger(DescriptorSender.class);
 
   protected ActivityTypeService activityTypeService;
-  protected JsonService jsonService;
+  protected JsonMapper jsonMapper;
   protected String authenticationToken;
   protected String authenticationUsername;
   protected String authenticationPassword;
@@ -43,9 +43,9 @@ public class DescriptorSender {
   public DescriptorSender() {
   }
 
-  public DescriptorSender(ActivityTypeService activityTypeService, JsonService jsonService) {
+  public DescriptorSender(ActivityTypeService activityTypeService, JsonMapper jsonMapper) {
     this.activityTypeService = activityTypeService;
-    this.jsonService = jsonService;
+    this.jsonMapper = jsonMapper;
   }
 
   public String send() {
@@ -56,7 +56,7 @@ public class DescriptorSender {
       log.debug(">>> PUT "+getUrl());
     // TODO send over HTTP to the server
     if (log.isDebugEnabled())
-      log.debug(">>> "+jsonService.objectToJsonStringPretty(activityTypeService));
+      log.debug(">>> "+jsonMapper.writeToStringPretty(activityTypeService));
     return "the http response, which is hopefully 200 OK";
   }
   

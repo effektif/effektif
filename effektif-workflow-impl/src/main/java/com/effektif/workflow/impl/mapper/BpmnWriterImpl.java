@@ -18,7 +18,6 @@ import static com.effektif.workflow.impl.mapper.Bpmn.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;

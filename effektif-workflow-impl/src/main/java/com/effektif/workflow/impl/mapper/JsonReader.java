@@ -13,18 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.Map;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.model.Id;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**

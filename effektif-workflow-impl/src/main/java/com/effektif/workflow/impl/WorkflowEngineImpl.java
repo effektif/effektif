@@ -42,7 +42,6 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -68,7 +67,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowStore workflowStore;
   public WorkflowInstanceStore workflowInstanceStore;
   public CaseServiceImpl caseService;
-  public JsonService jsonService;
   public Brewery brewery;
   public Configuration configuration;
   public List<WorkflowExecutionListener> workflowExecutionListeners;
@@ -78,7 +76,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public void brew(Brewery brewery) {
     this.id = brewery.get(WorkflowEngineConfiguration.class).getWorkflowEngineId();
     this.configuration = brewery.get(Configuration.class);
-    this.jsonService = brewery.get(JsonService.class);
     this.executorService = brewery.get(ExecutorService.class);
     this.workflowCache = brewery.get(WorkflowCache.class);
     this.workflowStore = brewery.get(WorkflowStore.class);

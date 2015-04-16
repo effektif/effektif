@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runners.model.InitializationError;
 
 import com.effektif.workflow.test.TestSuiteHelper;
-import com.effektif.workflow.test.api.FormTriggerTest;
 
 /**
  * @author Tom Baeyens

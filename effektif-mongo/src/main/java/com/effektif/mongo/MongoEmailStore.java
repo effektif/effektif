@@ -24,7 +24,7 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.email.EmailStore;
 import com.effektif.workflow.impl.email.PersistentEmail;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.mongodb.BasicDBObject;
 
 
@@ -36,7 +36,7 @@ public class MongoEmailStore implements EmailStore, Brewable {
   public static final Logger log = MongoDb.log;
   
   public MongoCollection emailsCollection;
-  public MongoMapper<PersistentEmail> mongoMapper;
+  public MongoJsonMapper mongoJsonMapper;
   
   public interface FieldsEmail {
     String _ID = "_id";
@@ -48,17 +48,15 @@ public class MongoEmailStore implements EmailStore, Brewable {
     MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.emailsCollection = mongoDb.createCollection(mongoConfiguration.getFilesCollectionName());
-    JsonService jsonService = brewery.get(JsonService.class);
-    this.mongoMapper = new MongoMapper<>(PersistentEmail.class, jsonService)
-        .convertId();
+    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
   
   @Override
   public void insertEmail(PersistentEmail email) {
     if (email!=null) {
-      BasicDBObject dbFile = mongoMapper.write(email);
-      emailsCollection.insert("insert-email", dbFile);
-      ObjectId id = (ObjectId) dbFile.get("_id");
+      BasicDBObject dbEmail = mongoJsonMapper.writeToDbObject(email);
+      emailsCollection.insert("insert-email", dbEmail);
+      ObjectId id = (ObjectId) dbEmail.get("_id");
       email.setId(new EmailId(id.toString()));
     }
   }
@@ -73,8 +71,8 @@ public class MongoEmailStore implements EmailStore, Brewable {
       .equalOpt(FieldsFile.ORGANIZATION_ID, organizationId)
       .get();
   
-    BasicDBObject dbFile = emailsCollection.findOne("get-email", query);
+    BasicDBObject dbEmail = emailsCollection.findOne("get-email", query);
   
-    return mongoMapper.read(dbFile);
+    return mongoJsonMapper.readFromDbObject(dbEmail, PersistentEmail.class);
   }
 }

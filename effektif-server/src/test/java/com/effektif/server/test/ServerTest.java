@@ -49,7 +49,7 @@ import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.JsonMapper;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.deprecated.JsonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**

@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
  *
  * @author Tom Baeyens
  */
-public class JsonService implements Brewable {
+public class JsonMapperDeprecated implements Brewable {
   
   // private static final Logger log = LoggerFactory.getLogger(JsonService.class);
   
@@ -56,7 +56,7 @@ public class JsonService implements Brewable {
     return stringWriter.toString();
   }
 
-  public String objectToJsonStringPretty(Object object) {
+  public String writeToStringPretty(Object object) {
     StringWriter stringWriter = new StringWriter();
     objectToJson(object, stringWriter, objectMapper.writerWithDefaultPrettyPrinter());
     return stringWriter.toString();

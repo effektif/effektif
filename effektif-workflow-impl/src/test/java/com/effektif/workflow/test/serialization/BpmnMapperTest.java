@@ -16,6 +16,7 @@ package com.effektif.workflow.test.serialization;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -23,18 +24,16 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import com.effektif.workflow.api.activities.UserTask;
-import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.triggers.FormTrigger;
-import com.effektif.workflow.test.implementation.BpmnProcessTest;
 import org.junit.BeforeClass;
-
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.mapper.BpmnMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.mapper.BpmnMapper;
 
 /**
  * @author Tom Baeyens

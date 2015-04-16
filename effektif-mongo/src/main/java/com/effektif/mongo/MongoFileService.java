@@ -28,7 +28,6 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.impl.file.FileService;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -46,7 +45,7 @@ public class MongoFileService implements FileService, Brewable {
   
   public MongoCollection filesCollection;
   public GridFS gridFs;
-  public MongoMapper<File> mongoMapper;
+  public MongoJsonMapper mongoJsonMapper;
   
   public interface FieldsFile {
     String _ID = "_id";
@@ -61,11 +60,7 @@ public class MongoFileService implements FileService, Brewable {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.filesCollection = mongoDb.createCollection(mongoConfiguration.getFilesCollectionName());
     this.gridFs = brewery.get(GridFS.class);
-    JsonService jsonService = brewery.get(JsonService.class);
-    this.mongoMapper = new MongoMapper<>(File.class, jsonService)
-        .convertId()
-        .convertUserId("creatorId")
-        .convertTime("createTime");
+    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
   
   @Override
@@ -94,7 +89,7 @@ public class MongoFileService implements FileService, Brewable {
   }
 
   protected void insertFile(File file) {
-    BasicDBObject dbFile = mongoMapper.write(file);
+    BasicDBObject dbFile = mongoJsonMapper.writeToDbObject(file);
     filesCollection.insert("insert-file", dbFile);
     ObjectId id = (ObjectId) dbFile.get("_id");
     file.setId(new FileId(id.toString()));
@@ -119,7 +114,7 @@ public class MongoFileService implements FileService, Brewable {
 
     BasicDBObject dbFile = filesCollection.findOne("get-file", query);
 
-    return mongoMapper.read(dbFile);
+    return mongoJsonMapper.readFromDbObject(dbFile, File.class);
   }
   
   @Override
@@ -140,7 +135,7 @@ public class MongoFileService implements FileService, Brewable {
       DBCursor dbFiles = filesCollection.find("get-files", query);
       while (dbFiles.hasNext()) {
         BasicDBObject dbFile = (BasicDBObject) dbFiles.next();
-        File file = mongoMapper.read(dbFile);
+        File file = mongoJsonMapper.readFromDbObject(dbFile, File.class);
         files.add(file);
       }
     }

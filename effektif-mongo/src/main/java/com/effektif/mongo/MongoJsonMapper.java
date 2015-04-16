@@ -66,12 +66,12 @@ public class MongoJsonMapper extends AbstractMapper {
     return new MongoJsonReader(mappings, this).toObject(dbObject, clazz);
   }
   
-  public Object writeToObject(Object o) {
+  public Object writeToDbObjectAny(Object o) {
     return new MongoJsonWriter(mappings, this).toDbObject(o, o.getClass());
   }
 
   public BasicDBObject writeToDbObject(Object o) {
-    return (BasicDBObject) writeToObject(o);
+    return (BasicDBObject) writeToDbObjectAny(o);
   }
 
   public String getFieldName(Field field) {
