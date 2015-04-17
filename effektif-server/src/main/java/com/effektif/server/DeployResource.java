@@ -23,9 +23,9 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.impl.mapper.deprecated.SerializedWorkflow;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 
 
 /**
@@ -36,15 +36,15 @@ public class DeployResource {
   
   public static final Logger log = LoggerFactory.getLogger(DeployResource.class);
   
-  WorkflowEngine workflowEngine;
+  WorkflowEngineImpl workflowEngine;
   
-  public DeployResource(WorkflowEngine workflow) {
-    this.workflowEngine = workflow;
+  public DeployResource(WorkflowEngineImpl workflowEngine) {
+    this.workflowEngine = workflowEngine;
   }
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public Deployment deploy(SerializedWorkflow workflow) {
-    return workflowEngine.deployWorkflow(workflow);
+  public Deployment deploy(Workflow workflow) {
+    return workflowEngine.deployWorkflow(workflow, true);
   }
 }

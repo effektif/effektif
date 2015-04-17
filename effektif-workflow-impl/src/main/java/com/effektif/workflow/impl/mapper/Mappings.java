@@ -73,8 +73,6 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
 import com.effektif.workflow.impl.job.types.TaskReminderJobType;
-import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
-import com.effektif.workflow.impl.mapper.deprecated.TypeField;
 
 
 /**

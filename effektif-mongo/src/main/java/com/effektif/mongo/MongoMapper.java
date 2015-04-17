@@ -21,9 +21,8 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.impl.data.types.DateTypeImpl;
 import com.effektif.workflow.impl.mapper.JsonMapper;
-import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeDeserializer;
-import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeSerializer;
 import com.mongodb.BasicDBObject;
 
 
@@ -82,7 +81,7 @@ public class MongoMapper<T> {
     for (String timeField: timeFields) {
       Date value = (Date) dbObject.get(timeField);
       if (value!=null) {
-        dbObject.put(timeField, LocalDateTimeSerializer.formatter.print(new LocalDateTime(value)));
+        dbObject.put(timeField, DateTypeImpl.printer.print(new LocalDateTime(value)));
       }
     }
 
@@ -117,7 +116,7 @@ public class MongoMapper<T> {
     for (String timeField: timeFields) {
       String value = (String) dbObject.get(timeField);
       if (value!=null) {
-        dbObject.put(timeField, LocalDateTimeDeserializer.formatter.parseLocalDateTime(value));
+        dbObject.put(timeField, DateTypeImpl.formatter.parseLocalDateTime(value));
       }
     }
 
