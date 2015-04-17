@@ -12,6 +12,13 @@ package com.effektif.workflow.test.serialization;/* Copyright (c) 2015, Effektif
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 
+import static org.junit.Assert.*;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.condition.And;
 import com.effektif.workflow.api.condition.Comparator;
 import com.effektif.workflow.api.condition.Condition;
@@ -37,14 +44,6 @@ import com.effektif.workflow.api.condition.SingleBindingCondition;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.mapper.BpmnMapper;
 import com.effektif.workflow.impl.mapper.Mappings;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests BPMN serialisation for conditions.

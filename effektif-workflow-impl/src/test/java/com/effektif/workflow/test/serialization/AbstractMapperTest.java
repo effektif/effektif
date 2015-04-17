@@ -102,7 +102,7 @@ public abstract class AbstractMapperTest {
 
   protected String userId() { return userId(0); }
   protected String userId(int index) {
-    String[] ids = { "alice", "ben", "charlie" };
+    String[] ids = { "john", "mary", "jack" };
     return ids[index];
   }
 

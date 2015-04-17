@@ -20,8 +20,6 @@ import java.util.List;
 
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 

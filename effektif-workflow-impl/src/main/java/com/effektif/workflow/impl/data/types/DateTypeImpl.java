@@ -37,8 +37,12 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
     if (jsonValue==null) {
       return null;
     }
-    String timeString = (String) jsonValue;
-    return LocalDateTimeDeserializer.formatter.parseLocalDateTime(timeString);
+    try {
+      String timeString = (String) jsonValue;
+      return LocalDateTimeDeserializer.formatter.parseLocalDateTime(timeString);
+    } catch (ClassCastException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

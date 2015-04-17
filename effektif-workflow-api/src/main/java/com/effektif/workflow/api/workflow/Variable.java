@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 

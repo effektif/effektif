@@ -22,8 +22,6 @@ import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;

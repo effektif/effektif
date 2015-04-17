@@ -16,13 +16,8 @@
 package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.condition.IsTrue;
-import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.XmlElement;
 
 /**

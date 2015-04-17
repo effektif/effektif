@@ -16,7 +16,6 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.fasterxml.jackson.annotation.JsonTypeName;

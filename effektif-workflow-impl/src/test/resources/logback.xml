@@ -5,7 +5,7 @@
     <encoder>
       <pattern>%date{ss.SSS} %-5level %logger{0} %msg%n</pattern>
     </encoder>
-    <target>System.out</target>
+    <target>System.err</target>
   </appender>
   
   <logger name="org.eclipse.jetty" level="ERROR" />

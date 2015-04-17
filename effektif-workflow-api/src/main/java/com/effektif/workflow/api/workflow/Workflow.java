@@ -20,8 +20,6 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;

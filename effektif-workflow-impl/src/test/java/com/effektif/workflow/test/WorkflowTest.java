@@ -27,6 +27,8 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +69,13 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 /** Base class that allows to reuse tests and run them on different process engines. */
 public class WorkflowTest {
   
+  public static String JOHN_ID = "john";
+  public static String MARY_ID = "mary";
+  public static String JACK_ID = "jack";
+  public static String DEV_ID = "dev";
+  public static String OPS_ID = "ops";
+  public static String TESTING_ID = "testing";
+
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
   public static Configuration cachedConfiguration = null;
@@ -200,18 +209,22 @@ public class WorkflowTest {
     return file;
   }
 
+  
+  @Rule public TestName name = new TestName();
+  
   protected void logWorkflowEngineContents() {
-    log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
-    
-    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
-    WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
-    WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
-    JobStore jobStore = configuration.get(JobStore.class);
-    TaskStore taskStore = configuration.get(TaskStore.class);
+    try {
+      log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
+      
+      JsonMapper jsonMapper = configuration.get(JsonMapper.class);
+      WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
+      WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
+      JobStore jobStore = configuration.get(JobStore.class);
+      TaskStore taskStore = configuration.get(TaskStore.class);
 
-    StringBuilder cleanLog = new StringBuilder();
-    cleanLog.append("Workflow engine contents\n");
-    
+      StringBuilder cleanLog = new StringBuilder();
+      cleanLog.append("Workflow engine contents\n");
+      
 //    List<Job> jobs = jobService.newJobQuery().asList();
 //    if (jobs != null && !jobs.isEmpty()) {
 //      int i = 0;
@@ -227,62 +240,65 @@ public class WorkflowTest {
 //      }
 //    }
 
-    List<Job> jobs = jobStore.findJobs(new JobQuery());
-    if (jobs != null && !jobs.isEmpty()) {
-      int i = 0;
-      cleanLog.append("\n### jobs ######################################################## \n");
-      for (Job job : jobs) {
-        cleanLog.append("--- Job ");
-        cleanLog.append(i);
-        cleanLog.append(" ---\n");
-        cleanLog.append(jsonMapper.writeToStringPretty(job));
-        cleanLog.append("\n");
-        i++;
+      List<Job> jobs = jobStore.findJobs(new JobQuery());
+      if (jobs != null && !jobs.isEmpty()) {
+        int i = 0;
+        cleanLog.append("\n### jobs ######################################################## \n");
+        for (Job job : jobs) {
+          cleanLog.append("--- Job ");
+          cleanLog.append(i);
+          cleanLog.append(" ---\n");
+          cleanLog.append(jsonMapper.writeToStringPretty(job));
+          cleanLog.append("\n");
+          i++;
+        }
       }
-    }
 
-    List<Task> tasks = taskStore.findTasks(new TaskQuery());
-    if (tasks != null && !tasks.isEmpty()) {
-      int i = 0;
-      cleanLog.append("\n### tasks ######################################################## \n");
-      for (Task task : tasks) {
-        cleanLog.append("--- Task ");
-        cleanLog.append(i);
-        cleanLog.append(" ---\n");
-        cleanLog.append(jsonMapper.writeToStringPretty(task));
-        cleanLog.append("\n");
-        i++;
+      List<Task> tasks = taskStore.findTasks(new TaskQuery());
+      if (tasks != null && !tasks.isEmpty()) {
+        int i = 0;
+        cleanLog.append("\n### tasks ######################################################## \n");
+        for (Task task : tasks) {
+          cleanLog.append("--- Task ");
+          cleanLog.append(i);
+          cleanLog.append(" ---\n");
+          cleanLog.append(jsonMapper.writeToStringPretty(task));
+          cleanLog.append("\n");
+          i++;
+        }
       }
-    }
 
-    List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery());
-    if (workflowInstances != null && !workflowInstances.isEmpty()) {
-      int i = 0;
-      cleanLog.append("\n\n### workflowInstances ################################################ \n");
-      for (WorkflowInstanceImpl workflowInstance : workflowInstances) {
-        cleanLog.append("--- Workflow instance ");
-        cleanLog.append(i);
-        cleanLog.append(" ---\n");
-        cleanLog.append(jsonMapper.writeToStringPretty(workflowInstance.toWorkflowInstance()));
-        cleanLog.append("\n");
-        i++;
+      List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery());
+      if (workflowInstances != null && !workflowInstances.isEmpty()) {
+        int i = 0;
+        cleanLog.append("\n\n### workflowInstances ################################################ \n");
+        for (WorkflowInstanceImpl workflowInstance : workflowInstances) {
+          cleanLog.append("--- Workflow instance ");
+          cleanLog.append(i);
+          cleanLog.append(" ---\n");
+          cleanLog.append(jsonMapper.writeToStringPretty(workflowInstance.toWorkflowInstance()));
+          cleanLog.append("\n");
+          i++;
+        }
       }
-    }
 
-    List<Workflow> workflows = workflowStore.findWorkflows(new WorkflowQuery());
-    if (workflows != null && !workflows.isEmpty()) {
-      int i = 0;
-      cleanLog.append("\n### workflows ######################################################## \n");
-      for (Workflow workflow : workflows) {
-        cleanLog.append("--- Deleted workflow ");
-        cleanLog.append(i);
-        cleanLog.append(" ---\n");
-        cleanLog.append(jsonMapper.writeToStringPretty(workflow));
-        cleanLog.append("\n");
-        i++;
+      List<Workflow> workflows = workflowStore.findWorkflows(new WorkflowQuery());
+      if (workflows != null && !workflows.isEmpty()) {
+        int i = 0;
+        cleanLog.append("\n### workflows ######################################################## \n");
+        for (Workflow workflow : workflows) {
+          cleanLog.append("--- Deleted workflow ");
+          cleanLog.append(i);
+          cleanLog.append(" ---\n");
+          cleanLog.append(jsonMapper.writeToStringPretty(workflow));
+          cleanLog.append("\n");
+          i++;
+        }
       }
+      log.debug(cleanLog.toString());
+    } catch (Exception e) {
+      log.error("ERROR in test "+getClass().getName()+"."+name, e);
     }
-    log.debug(cleanLog.toString());
   }
   
   protected void deleteWorkflowEngineContents() {

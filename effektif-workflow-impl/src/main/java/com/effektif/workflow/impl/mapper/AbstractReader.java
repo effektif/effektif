@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,7 +165,7 @@ public abstract class AbstractReader implements JsonReader {
       }
       return json;
     
-    } else if (clazz==LocalDateTime.class) {
+    } else if (clazz==LocalDateTime.class || json instanceof Date) {
       return readDateValue(json);
     }
     

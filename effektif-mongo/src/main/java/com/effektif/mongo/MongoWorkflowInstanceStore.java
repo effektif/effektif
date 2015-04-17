@@ -18,6 +18,7 @@ package com.effektif.mongo;
 import static com.effektif.mongo.MongoHelper.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import org.bson.types.ObjectId;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.workflow.api.Configuration;
@@ -524,7 +526,14 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         }
         Object jsonValue = dbVariableInstance.get(VariableInstanceFields.VALUE);
         if (jsonValue!=null) {
-          variableInstanceImpl.value = variableInstanceImpl.type.convertJsonToInternalValue(jsonValue);
+          if (jsonValue instanceof Date) {
+            variableInstanceImpl.value = new LocalDateTime(jsonValue);
+          } else {
+            if (jsonValue instanceof ObjectId) {
+              jsonValue = jsonValue.toString();
+            }
+            variableInstanceImpl.value = variableInstanceImpl.type.convertJsonToInternalValue(jsonValue);
+          }
         }
 
         variableInstanceImpl.configuration = configuration;

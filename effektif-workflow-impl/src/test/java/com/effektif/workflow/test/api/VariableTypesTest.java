@@ -21,20 +21,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.model.EmailAddress;
-import com.effektif.workflow.api.model.Link;
-import com.effektif.workflow.api.types.EmailAddressType;
-import com.effektif.workflow.api.types.LinkType;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
+import com.effektif.workflow.api.model.EmailAddress;
 import com.effektif.workflow.api.model.FileId;
+import com.effektif.workflow.api.model.Link;
 import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.types.DateType;
+import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.api.types.FileIdType;
+import com.effektif.workflow.api.types.LinkType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.UserIdType;
@@ -118,14 +118,14 @@ public class VariableTypesTest extends WorkflowTest {
 
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data("v", new UserId("u2")));
+      .data("v", new UserId(JOHN_ID)));
     
     assertEquals(UserId.class, workflowInstance.getVariableValue("v").getClass());
 
     WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
 
     Map<String, Object> variableValues = new HashMap<>();
-    variableValues.put("v", new UserId("u3"));
+    variableValues.put("v", new UserId(MARY_ID));
     workflowEngine.setVariableValues(workflowInstanceId, variableValues);
     assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
   }

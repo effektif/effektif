@@ -18,8 +18,6 @@ package com.effektif.workflow.api.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 

@@ -50,9 +50,9 @@ public class MultiInstanceTest extends WorkflowTest {
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
       .data("reviewers", Lists.of(
-              new UserId("John"),
-              new UserId("Jack"), 
-              new UserId("Mary"))));
+              new UserId(JOHN_ID),
+              new UserId(MARY_ID), 
+              new UserId(JACK_ID))));
 
     // TODO make it so that the parent activity 
     // instance doesn't have a name and doesn't have the empty variable declaration

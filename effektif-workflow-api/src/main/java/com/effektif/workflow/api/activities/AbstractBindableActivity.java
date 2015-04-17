@@ -18,8 +18,6 @@ package com.effektif.workflow.api.activities;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 

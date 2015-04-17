@@ -43,9 +43,9 @@ public class UserTaskTest extends WorkflowTest {
     Workflow workflow = new Workflow()
       .activity("1", new UserTask()
         .name("release")
-        .assigneeId("552ce4fdc2e610a6a3dedb84")
-        .candidateId("552ce4fdc2e610a6a3dedb85")
-        .candidateId("552ce4fdc2e610a6a3dedb86")
+        .assigneeId(JOHN_ID)
+        .candidateId(MARY_ID)
+        .candidateId(JACK_ID)
         .duedate(RelativeTime.minutes(5)));
     
     deploy(workflow);
@@ -54,9 +54,9 @@ public class UserTaskTest extends WorkflowTest {
     
     Task task = taskService.findTasks(new TaskQuery()).get(0);
     assertEquals("release", task.getName());
-    assertEquals("552ce4fdc2e610a6a3dedb84", task.getAssigneeId().getInternal());
-    assertEquals("552ce4fdc2e610a6a3dedb85", task.getCandidateIds().get(0).getInternal());
-    assertEquals("552ce4fdc2e610a6a3dedb86", task.getCandidateIds().get(1).getInternal());
+    assertEquals(JOHN_ID, task.getAssigneeId().getInternal());
+    assertEquals(MARY_ID, task.getCandidateIds().get(0).getInternal());
+    assertEquals(JACK_ID, task.getCandidateIds().get(1).getInternal());
     assertTrue(dueDateEarliest<=task.getDuedate().toDate().getTime());
     long dueDateLatest = new LocalDateTime().plusMinutes(5).toDate().getTime();
     assertTrue(task.getDuedate().toDate().getTime()<=dueDateLatest);
@@ -79,19 +79,19 @@ public class UserTaskTest extends WorkflowTest {
     Task task = taskService.findTasks(new TaskQuery()).get(0);
     
     TaskId taskId = task.getId();
-    taskService.assignTask(taskId, new UserId("joesmoe"));
+    taskService.assignTask(taskId, new UserId(JOHN_ID));
     taskService.completeTask(taskId);
 
     task = taskService.findTasks(new TaskQuery().open()).get(0);
     assertEquals("2", task.getName());
-    assertEquals(new UserId("joesmoe"), task.getAssigneeId());
+    assertEquals(new UserId(JOHN_ID), task.getAssigneeId());
   }
 
   @Test
   public void testTaskRoleAutoAssign() throws Exception {
     Workflow workflow = new Workflow()
       .variable("manager", new UserIdType()
-        .candidateId("552ce4fdc2e610a6a3dedb84"))
+        .candidateId(JOHN_ID))
       .activity("1", new UserTask()
         .name("release")
         .assigneeExpression("manager"));

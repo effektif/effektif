@@ -49,9 +49,7 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
   
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    // the internal value is not casted, but toString is used because it can be an objectid when the mongo persistence is used
-    String internal = jsonValue.toString();
-    return jsonValue!=null ? new FileId(internal) : null;
+    return jsonValue!=null ? new FileId((String)jsonValue) : null;
   }
 
   @Override

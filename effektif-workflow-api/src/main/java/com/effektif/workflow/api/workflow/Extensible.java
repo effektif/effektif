@@ -19,10 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.effektif.workflow.api.mapper.JsonReadable;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWritable;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 

@@ -52,7 +52,7 @@ public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
   public Object convertInternalToJsonValue(Object internalValue) {
     return internalValue!=null ? ((EmailId)internalValue).getInternal() : null;
   }
-  
+
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
     EmailId emailId = (EmailId) value;

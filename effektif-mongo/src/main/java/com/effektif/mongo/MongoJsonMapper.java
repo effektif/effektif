@@ -26,6 +26,8 @@ import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.task.Case;
+import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.AbstractMapper;
@@ -43,6 +45,8 @@ public class MongoJsonMapper extends AbstractMapper {
   public MongoJsonMapper() {
     documentIdFields.add(getField(AbstractWorkflow.class, "id"));
     documentIdFields.add(getField(WorkflowInstance.class, "id"));
+    documentIdFields.add(getField(Task.class, "id"));
+    documentIdFields.add(getField(Case.class, "id"));
     
     objectIdClasses.add(WorkflowId.class);
     objectIdClasses.add(WorkflowInstanceId.class);

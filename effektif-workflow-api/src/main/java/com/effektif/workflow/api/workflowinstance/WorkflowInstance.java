@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;

@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.TriggerInstance;

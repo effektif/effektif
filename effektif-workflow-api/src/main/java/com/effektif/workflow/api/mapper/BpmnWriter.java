@@ -15,10 +15,10 @@ package com.effektif.workflow.api.mapper;
 
 import java.util.List;
 
-import com.effektif.workflow.api.model.RelativeTime;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.workflow.Binding;
 
 
