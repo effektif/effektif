@@ -20,6 +20,7 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
@@ -73,6 +74,15 @@ public class Workflow extends AbstractWorkflow {
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
     sourceWorkflowId = r.readStringValue("sourceWorkflowId");
+
+    for (XmlElement variableElement: r.readElementsEffektif("variable")) {
+      r.startElement(variableElement);
+      Variable variable = new Variable();
+      variable.readBpmn(r);
+      variable(variable);
+      r.endElement();
+    }
+
     r.endExtensionElements();
     super.readBpmn(r);
   }
@@ -82,6 +92,11 @@ public class Workflow extends AbstractWorkflow {
     super.writeBpmn(w);
     w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
+
+    for (Variable variable : variables) {
+      variable.writeBpmn(w);
+    }
+
     w.endExtensionElements();
   }
 

@@ -20,6 +20,7 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -41,7 +42,7 @@ public interface BpmnReader {
    * for (XmlElement nestedElement: r.readElementsBpmn("nested")) {
    *   r.startElement(nestedElement);
    *   ... read stuff from the nested elements with the r.readXxxx methods ...
-   *   r.endElement(nestedElement);
+   *   r.endElement();
    * }
    * </pre> 
    */
@@ -50,10 +51,10 @@ public interface BpmnReader {
   /** extracts and removes elements in the Effektif namespace from the current element.
    * Typical use:
    * <pre>
-   * for (XmlElement nestedElement: r.readElementsBpmn("nested")) {
+   * for (XmlElement nestedElement: r.readElementsEffektif("nested")) {
    *   r.startElement(nestedElement);
    *   ... read stuff from the nested elements with the r.readXxxx methods ...
-   *   r.endElement(nestedElement);
+   *   r.endElement();
    * }
    * </pre> 
    */
@@ -90,7 +91,10 @@ public interface BpmnReader {
   /** Returns a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> List<Binding<T>> readBindings(String elementName, Class<T> type);
-  
+
+  /** Returns a the {@link Type} instance specified by the Effektif <code>type</code> parameter. */
+  Type readTypeEffektif();
+
   /** Reads the given documentation string as a BPMN <code>documentation</code> element. */
   String readDocumentation();
 

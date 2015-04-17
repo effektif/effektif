@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnWritable;
 import com.effektif.workflow.api.mapper.XmlElement;
@@ -31,7 +32,13 @@ import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
  * @author Tom Baeyens
  */
 public class BpmnMapper extends AbstractMapper {
-  
+
+  private Configuration configuration;
+
+  public BpmnMapper(Configuration configuration) {
+    this.configuration = configuration;
+  }
+
 //  protected DataTypeService dataTypeService;
 //  
 //  public DataTypeService getDataTypeService() {
@@ -48,7 +55,7 @@ public class BpmnMapper extends AbstractMapper {
 
   public Workflow readFromReader(java.io.Reader reader) {
     XmlElement xmlRoot = XmlReader.parseXml(reader);
-    return new BpmnReaderImpl(mappings).readDefinitions(xmlRoot);
+    return new BpmnReaderImpl(configuration, mappings).readDefinitions(xmlRoot);
   }
 
   public void writeToStream(Workflow workflow, OutputStream out) {
@@ -72,7 +79,7 @@ public class BpmnMapper extends AbstractMapper {
     if (xmlRoot != null && xmlRoot.elements != null) {
       try {
         T condition = conditionClass.newInstance();
-        BpmnReaderImpl reader = new BpmnReaderImpl(mappings);
+        BpmnReaderImpl reader = new BpmnReaderImpl(configuration, mappings);
         reader.currentXml = xmlRoot;
         condition.readBpmn(reader);
         return condition;

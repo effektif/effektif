@@ -25,6 +25,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
@@ -144,7 +145,40 @@ public class DataTypeService implements Initializable {
     javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
     registerDataType(javaBeanTypeImpl);
   }
-  
+
+  public Type getTypeByName(String typeName) {
+    // Search singletons
+    for (Class<? extends Type> typeClass : singletons.keySet()) {
+      try {
+        // TODO call a getInstance() that returns a singleton instance.
+        Type type = typeClass.newInstance();
+        String name = type.getClass().getAnnotation(TypeName.class).value();
+        if (name.equals(typeName)) {
+          return type;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
+      }
+    }
+
+    // Search dataTypeConstructors
+    for (Class<? extends Type> typeClass : dataTypeConstructors.keySet()) {
+      try {
+        // TODO call a getInstance() that returns a singleton instance.
+        Constructor<?> constructor = dataTypeConstructors.get(typeClass);
+        Type type = (Type) constructor.newInstance();
+        String name = type.getClass().getAnnotation(TypeName.class).value();
+        if (name.equals(typeName)) {
+          return type;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
+      }
+    }
+
+    throw new IllegalArgumentException("No Type class for name: " + typeName);
+  }
+
   public DataType getDataTypeByValue(Class<?> valueClass) {
     DataType dataType = null;
     if (valueClass!=null) {

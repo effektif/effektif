@@ -54,6 +54,7 @@ import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.Mappings;
 
@@ -399,9 +400,21 @@ public abstract class AbstractMapperTest {
     assertEquals(workflowId(), workflow.getSourceWorkflowId());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
+  }
 
-    // variables not yet supported by bpmn
-    //    assertEquals("v", workflow.getVariables().get(0).getId());
-    //    assertEquals(TextType.class, workflow.getVariables().get(0).getType().getClass());
+  @Test
+  public void testVariables() {
+    Workflow workflow = new Workflow()
+      .variable(new Variable().type(TextType.INSTANCE).id("v").name("version").description("Release version"));
+
+    workflow = serialize(workflow);
+
+    assertNotNull(workflow.getVariables());
+    assertEquals(1, workflow.getVariables().size());
+
+    assertEquals("v", workflow.getVariables().get(0).getId());
+    assertEquals("version", workflow.getVariables().get(0).getName());
+    assertEquals("Release version", workflow.getVariables().get(0).getDescription());
+    assertEquals(TextType.class, workflow.getVariables().get(0).getType().getClass());
   }
 }
