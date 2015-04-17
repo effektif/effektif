@@ -99,6 +99,7 @@ public class Variable extends Element {
     super.readBpmn(r);
     id = r.readStringAttributeEffektif("id");
     type = r.readTypeEffektif();
+    type.readBpmn(r);
   }
 
   @Override

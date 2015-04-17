@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWritable;
@@ -24,9 +26,16 @@ import com.effektif.workflow.api.mapper.JsonWriter;
 /**
  * @author Tom Baeyens
  */
-public class ChoiceOption implements JsonReadable, JsonWritable {
+public class ChoiceOption implements JsonReadable, JsonWritable, BpmnWritable {
   
   protected String id;
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("option");
+    w.writeStringAttributeEffektif("id", id);
+    w.endElement();
+  }
 
   @Override
   public void readJson(JsonReader r) {

@@ -93,8 +93,10 @@ public class Workflow extends AbstractWorkflow {
     w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
 
-    for (Variable variable : variables) {
-      variable.writeBpmn(w);
+    if (variables != null) {
+      for (Variable variable : variables) {
+        variable.writeBpmn(w);
+      }
     }
 
     w.endExtensionElements();

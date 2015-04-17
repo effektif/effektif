@@ -19,9 +19,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
@@ -146,27 +148,19 @@ public class DataTypeService implements Initializable {
     registerDataType(javaBeanTypeImpl);
   }
 
+  /**
+   * Returns the {@link Type} instance whose {@link TypeName} annotation value matches the given type name.
+   */
   public Type getTypeByName(String typeName) {
-    // Search singletons
-    for (Class<? extends Type> typeClass : singletons.keySet()) {
+
+    Set<Class> typeClasses = new HashSet<>();
+    typeClasses.addAll(singletons.keySet());
+    typeClasses.addAll(dataTypeConstructors.keySet());
+
+    for (Class<? extends Type> typeClass : typeClasses) {
       try {
         // TODO call a getInstance() that returns a singleton instance.
         Type type = typeClass.newInstance();
-        String name = type.getClass().getAnnotation(TypeName.class).value();
-        if (name.equals(typeName)) {
-          return type;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
-      }
-    }
-
-    // Search dataTypeConstructors
-    for (Class<? extends Type> typeClass : dataTypeConstructors.keySet()) {
-      try {
-        // TODO call a getInstance() that returns a singleton instance.
-        Constructor<?> constructor = dataTypeConstructors.get(typeClass);
-        Type type = (Type) constructor.newInstance();
         String name = type.getClass().getAnnotation(TypeName.class).value();
         if (name.equals(typeName)) {
           return type;
