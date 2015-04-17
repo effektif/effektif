@@ -15,13 +15,40 @@
  */
 package com.effektif.workflow.api.types;
 
-
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.workflow.Variable;
 
 /**
  * Indicates the type of workflow instance variable data.
  *
  * @author Tom Baeyens
  */
-public class Type {
+public class Type implements BpmnReadable, BpmnWritable {
 
+  protected String typeName = getClass().getAnnotation(TypeName.class).value();
+
+  /**
+   * Default implementation, which is a no-op because the <code>type</code> attribute has to be read by the
+   * {@link Variable} instance to instance this object first. This method exists so that types with additional
+   * parameters can override in order to read nested XML elements.
+   */
+  @Override
+  public void readBpmn(BpmnReader r) {
+  }
+
+  /**
+   * Default implementation, which just adds a <code>type</code> attribute.
+   * Types with additional parameters will need to override and write additional XML.
+   */
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    if (typeName == null) {
+      throw new RuntimeException("No @TypeName annotation for class " + getClass().getName());
+    }
+    w.writeStringAttributeBpmn("type", typeName);
+  }
 }

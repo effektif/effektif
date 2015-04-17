@@ -34,6 +34,7 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.BpmnMapper;
+import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
  * @author Tom Baeyens
@@ -41,12 +42,12 @@ import com.effektif.workflow.impl.mapper.BpmnMapper;
 public class BpmnMapperTest extends AbstractMapperTest {
 
   protected static final Logger log = LoggerFactory.getLogger(BpmnMapperTest.class);
-  static BpmnMapper bpmnMapper = new BpmnMapper();
+  static BpmnMapper bpmnMapper;
   
   @BeforeClass
   public static void initialize() {
     initializeMappings();
-    bpmnMapper = new BpmnMapper();
+    bpmnMapper = new BpmnMapper(new TestConfiguration());
     bpmnMapper.setMappings(mappings);
   }
   

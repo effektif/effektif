@@ -15,6 +15,14 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -84,5 +92,22 @@ public class Variable extends Element {
   public Variable propertyOpt(String key, Object value) {
     super.propertyOpt(key, value);
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+    id = r.readStringAttributeEffektif("id");
+    type = r.readTypeEffektif();
+    type.readBpmn(r);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("variable");
+    w.writeStringAttributeEffektif("id", id);
+    type.writeBpmn(w);
+    super.writeBpmn(w);
+    w.endElement();
   }
 }

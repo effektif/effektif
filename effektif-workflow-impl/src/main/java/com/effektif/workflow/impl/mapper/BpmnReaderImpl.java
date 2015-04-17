@@ -31,11 +31,13 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
@@ -73,8 +75,9 @@ public class BpmnReaderImpl implements BpmnReader {
    * The current implementation assumes that all namespaces are defined in the root element */
   protected Map<String,String> prefixes = new HashMap<>();
 
-  public BpmnReaderImpl(Mappings mappings) {
+  public BpmnReaderImpl(Configuration configuration, Mappings mappings) {
     this.mappings = mappings;
+    dataTypeService = configuration.get(DataTypeService.class);
   }
   
   protected Workflow readDefinitions(XmlElement definitionsXml) {
@@ -383,6 +386,12 @@ public class BpmnReaderImpl implements BpmnReader {
       return textElement.getText();
     }
     return null;
+  }
+
+  @Override
+  public Type readTypeEffektif() {
+    String typeName = readStringAttributeEffektif("type");
+    return dataTypeService.getTypeByName(typeName);
   }
 
   @Override
