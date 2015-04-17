@@ -17,15 +17,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 
-/** Used to specify the mapping between a 
- * bpmn element and the activity-type on which the annotation is defined.
+/**
+ * Used to specify the mapping between a BPMN element and the activity type on which the annotation is defined.
  * 
- * When multiple activity classes match the same 
- * bpmn element name, an activity must specify a BpmnTypeAttribute
- * to ensure each BPMN activity element is mapped to 
- * a java class in a unique way. 
- *    
- * The attribute is defined in the Effektif namespace.   
+ * When multiple activity classes match the same BPMN element name, an activity must specify a BpmnTypeAttribute
+ * to ensure each BPMN activity element is mapped to a Java class in a unique way. The attribute is defined in the
+ * Effektif namespace.
  * 
  * @author Tom Baeyens
  */

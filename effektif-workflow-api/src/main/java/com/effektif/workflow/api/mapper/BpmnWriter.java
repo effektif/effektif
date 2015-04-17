@@ -21,10 +21,10 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/** an abstraction that allows {@link BpmnWritable}s to write 
- * their internal data to any BPMN writer.
+/**
+ * An abstraction that allows a {@link BpmnWritable} to write its internal data to any BPMN writer.
  * 
- * The goal is to make it easy to implement BPMN (de)serialization 
+ * The goal of this interface is to make it easy to implement BPMN (de)serialization
  * by offering an API that is similar to the JSON abstractions.
  * 
  * @author Tom Baeyens

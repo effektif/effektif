@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * Logical <em>and</em>, for combining {@link Condition} instances.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("and")

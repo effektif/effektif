@@ -19,6 +19,8 @@ import com.effektif.workflow.api.workflow.Binding;
 
 
 /**
+ * A {@link Condition} based on a binary operator.
+ *
  * @author Tom Baeyens
  */
 public abstract class Comparator extends Condition {

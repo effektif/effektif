@@ -21,6 +21,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /**
+ * The process engine uses a <code>Condition</code> subclass to determine which
+ * {@link com.effektif.workflow.api.workflow.Transition} to take after an
+ * {@link com.effektif.workflow.api.activities.ExclusiveGateway}.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")

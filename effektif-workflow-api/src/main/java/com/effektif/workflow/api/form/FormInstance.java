@@ -20,13 +20,12 @@ import java.util.List;
 
 
 /**
- * A form instance (aka runtime form, rendered form) that is used for rendering 
- * a form or submit the values.  The fields in form instance can contain a value,
- * and (in contrast to form fields) no link to the workflow variables. 
+ * A form instance (aka ‘runtime form’, or ‘rendered form’) that is used for rendering
+ * a form or submitting its values. Each field in a form instance can contain a value,
+ * but (in contrast to form fields) no link to the workflow variables.
  * 
- * Also see <a href="https://github.com/effektif/effektif/wiki/Forms">The Forms wiki page</a>
- * for more documentation on Forms.
- * 
+ * @see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>
+ *
  * @author Tom Baeyens
  */
 public class FormInstance extends AbstractForm {

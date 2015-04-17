@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A {@link Condition} based on whether a single value is present.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("hasValue")

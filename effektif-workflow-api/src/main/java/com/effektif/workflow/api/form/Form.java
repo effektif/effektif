@@ -20,10 +20,11 @@ import java.util.List;
 
 
 /**
- * A form definition (aka declaration) that specifies the fields to display for 
+ * A form definition (aka ‘declaration’) that specifies the fields to display for a
  * {@link com.effektif.workflow.api.activities.UserTask} or
- * {@link com.effektif.workflow.api.triggers.FormTrigger} -
- * see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>.
+ * {@link com.effektif.workflow.api.triggers.FormTrigger}.
+ *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>
  *
  * @author Tom Baeyens
  */

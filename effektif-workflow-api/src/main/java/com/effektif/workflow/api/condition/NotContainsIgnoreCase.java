@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * Negated case-insensitive string comparison.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("notContainsIgnoreCase")

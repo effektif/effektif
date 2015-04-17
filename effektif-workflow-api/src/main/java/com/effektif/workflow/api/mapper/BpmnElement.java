@@ -17,10 +17,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 
-/** Used to specify the mapping between a 
- * bpmn element name (the local part without namespace) 
- * and the activity-type on which the annotation is defined.
- * 
+/**
+ * Used to specify the mapping between a BPMN element name (the local part without namespace)
+ * and the activity type on which the annotation is defined.
+ *
+ * @see BpmnTypeAttribute
  * @author Tom Baeyens
  */
 @Retention(RetentionPolicy.RUNTIME)

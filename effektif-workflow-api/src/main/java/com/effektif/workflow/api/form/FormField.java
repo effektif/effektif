@@ -20,12 +20,13 @@ import com.effektif.workflow.api.workflow.Binding;
 
 /**
  * Represents one input field on a {@link com.effektif.workflow.api.form.Form},
- * also specifying how it’s connected to the workflow variables -
- * see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>.
+ * also specifying how its connected to the workflow variables.
  *
  * You don’t have to specify a form field’s type when you define a workflow.
  * The type is derived from the binding expression and is passed to the form rendering engines.
- * 
+ *
+ * @see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>
+ *
  * @author Tom Baeyens
  */
 public class FormField extends AbstractFormField {

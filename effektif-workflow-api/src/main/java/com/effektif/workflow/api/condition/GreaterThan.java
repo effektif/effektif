@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * Numeric comparison.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("greaterThan")

@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * Logical <em>not</em>, used to transform a {@link Condition}.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("not")

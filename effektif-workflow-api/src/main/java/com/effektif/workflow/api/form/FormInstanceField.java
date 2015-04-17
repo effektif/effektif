@@ -16,7 +16,8 @@
 package com.effektif.workflow.api.form;
 
 
-/** One field in a form instance and it's value.
+/**
+ * One field in a form instance and its value.
  * 
  * @author Tom Baeyens
  */

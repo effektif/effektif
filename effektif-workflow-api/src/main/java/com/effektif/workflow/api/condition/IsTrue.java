@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
+ * A {@link Condition} based on a boolean value.
+ *
  * @author Tom Baeyens
  */
 @JsonTypeName("isTrue")

@@ -21,8 +21,8 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/** an abstraction that allows {@link BpmnReadable}s to read 
- * their internal data from any BPMN reader.
+/**
+ * An abstraction that allows a {@link BpmnReadable} to read its internal data from any BPMN reader.
  * 
  * The goal is to make it easy to implement BPMN (de)serialization 
  * by offering an API that is similar to the JSON abstractions.
