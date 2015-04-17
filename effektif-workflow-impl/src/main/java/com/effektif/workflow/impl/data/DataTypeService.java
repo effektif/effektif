@@ -30,8 +30,8 @@ import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
@@ -42,7 +42,6 @@ import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
 import com.effektif.workflow.impl.mapper.Mappings;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
@@ -50,12 +49,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Tom Baeyens
  */
-public class DataTypeService implements Brewable {
+public class DataTypeService implements Initializable {
   
   // private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);
   
   protected Configuration configuration;
-  protected ObjectMapper objectMapper;
   protected Mappings mappings;
   
   protected Map<Class<? extends Type>,DataType> singletons = new ConcurrentHashMap<>();
@@ -64,9 +62,8 @@ public class DataTypeService implements Brewable {
   protected Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
 
   @Override
-  public void brew(Brewery brewery) {
+  public void initialize(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
-    this.objectMapper = brewery.get(ObjectMapper.class);
     this.mappings = brewery.get(Mappings.class);
     initializeDataTypes();
   }
@@ -109,10 +106,6 @@ public class DataTypeService implements Brewable {
     }
   }
   
-  public void setObjectMapper(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
-  }
-  
   public void registerDataType(DataType dataType) {
     Class apiClass = dataType.getApiClass();
     if (apiClass!=null) {
@@ -122,7 +115,6 @@ public class DataTypeService implements Brewable {
         Constructor< ? > constructor = findDataTypeConstructor(dataType.getClass());
         dataTypeConstructors.put(apiClass, constructor);
       }
-      objectMapper.registerSubtypes(apiClass);
       mappings.registerSubClass(apiClass);
     }
     Class valueClass = dataType.getValueClass();
@@ -130,7 +122,6 @@ public class DataTypeService implements Brewable {
       if (!dataTypesByValueClass.containsKey(valueClass)) {
         dataTypesByValueClass.put(valueClass, dataType);
       }
-      objectMapper.registerSubtypes(valueClass);
       mappings.registerSubClass(valueClass);
     }
   }
@@ -214,7 +205,4 @@ public class DataTypeService implements Brewable {
     throw new RuntimeException("No DataType defined for "+type.getClass().getName());
   }
 
-  public ObjectMapper getObjectMapper() {
-    return objectMapper;
-  }
 }

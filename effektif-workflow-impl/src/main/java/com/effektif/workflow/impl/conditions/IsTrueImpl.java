@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.IsTrue;
+
 
 
 /**
@@ -22,6 +25,11 @@ package com.effektif.workflow.impl.conditions;
  */
 public class IsTrueImpl extends SingleBindingConditionImpl {
   
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return IsTrue.class;
+  }
+
   protected boolean eval(Object value) {
     return Boolean.TRUE.equals(value);
   }

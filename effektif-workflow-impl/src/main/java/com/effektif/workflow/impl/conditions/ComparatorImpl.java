@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public abstract class ComparatorImpl extends ConditionImpl<Comparator> {
+public abstract class ComparatorImpl implements ConditionImpl<Comparator> {
   
   protected BindingImpl<?> left;
   protected BindingImpl<?> right;

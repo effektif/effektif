@@ -18,6 +18,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -61,18 +62,18 @@ public class JsonMapper extends AbstractMapper {
       if (pretty) {
         jgen.setPrettyPrinter(new DefaultPrettyPrinter());
       }
-      new JsonWriter(mappings, jgen).writeObject(o, o.getClass());
+      new JsonWriterImpl(mappings, jgen).writeObject(o, o.getClass());
       jgen.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
   
-  public <T> T readFromString(String jsonString, Class<T> type) {
+  public <T> T readFromString(String jsonString, Type type) {
     return readFromReader(new StringReader(jsonString), type);
   }
 
-  public <T> T readFromReader(Reader jsonStream, Class<T> type) {
+  public <T> T readFromReader(Reader jsonStream, Type type) {
     try {
       Object jsonObject = objectMapper.readValue(jsonStream, Object.class);
       return readFromJsonObject(jsonObject, type);
@@ -81,7 +82,7 @@ public class JsonMapper extends AbstractMapper {
     }
   }
 
-  public <T> T readFromJsonObject(Object jsonObject, Class<T> type) {
-    return (T) new JsonReader(mappings).toObject(jsonObject, type);
+  public <T> T readFromJsonObject(Object jsonObject, Type type) {
+    return (T) new JsonReaderImpl(mappings).toObject(jsonObject, type);
   }
 }

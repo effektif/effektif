@@ -16,7 +16,6 @@
 package com.effektif.workflow.api.types;
 
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** 
@@ -24,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeName("javaBean")
 @TypeName("javaBean")
 public class JavaBeanType extends Type {
 

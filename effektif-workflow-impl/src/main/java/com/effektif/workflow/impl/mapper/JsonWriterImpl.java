@@ -37,17 +37,17 @@ import com.fasterxml.jackson.core.JsonGenerator;
 /**
  * @author Tom Baeyens
  */
-public class JsonWriter extends AbstractWriter {
+public class JsonWriterImpl extends AbstractWriter {
   
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTime();
 
   JsonGenerator jgen;
   Class<?> writableClass;
 
-  public JsonWriter() {
+  public JsonWriterImpl() {
   }
 
-  public JsonWriter(Mappings mappings, JsonGenerator jgen) {
+  public JsonWriterImpl(Mappings mappings, JsonGenerator jgen) {
     super(mappings);
     this.jgen = jgen;
   }

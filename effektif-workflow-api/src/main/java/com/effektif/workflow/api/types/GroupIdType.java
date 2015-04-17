@@ -16,13 +16,11 @@
 package com.effektif.workflow.api.types;
 
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Peter Hilton
  */
-@JsonTypeName("groupId")
 @TypeName("groupId")
 public class GroupIdType extends Type {
 

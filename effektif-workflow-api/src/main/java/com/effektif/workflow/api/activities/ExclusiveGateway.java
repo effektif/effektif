@@ -20,7 +20,6 @@ import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -29,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Exclusive-Gateway">Exclusive Gateway</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("exclusiveGateway")
 @TypeName("exclusiveGateway")
 @BpmnElement("exclusiveGateway")
 public class ExclusiveGateway extends Activity {

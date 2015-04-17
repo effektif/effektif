@@ -17,13 +17,11 @@ package com.effektif.workflow.api.types;
 
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.Money;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("money")
 @TypeName("money")
 public class MoneyType extends JavaBeanType {
 

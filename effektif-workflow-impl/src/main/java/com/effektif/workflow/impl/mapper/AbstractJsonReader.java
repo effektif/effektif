@@ -30,6 +30,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.mapper.GenericType;
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.model.Id;
@@ -40,19 +41,19 @@ import com.effektif.workflow.impl.util.Reflection;
 /**
  * @author Tom Baeyens
  */
-public abstract class AbstractReader implements JsonReader {
+public abstract class AbstractJsonReader implements JsonReader {
   
-  public static final Logger log = LoggerFactory.getLogger(AbstractReader.class);
+  public static final Logger log = LoggerFactory.getLogger(AbstractJsonReader.class);
   
   protected Map<String,Object> jsonObject;
   protected Class<?> readableClass;
   protected Mappings mappings; 
 
-  public AbstractReader() {
+  public AbstractJsonReader() {
     this(new Mappings());
   }
 
-  public AbstractReader(Mappings mappings) {
+  public AbstractJsonReader(Mappings mappings) {
     this.mappings = mappings;
   }
 
@@ -146,14 +147,12 @@ public abstract class AbstractReader implements JsonReader {
     }
     
     Class<?> clazz = null;
-    ParameterizedType parameterizedType = null;
-    WildcardType wildcardType = null;
     
     if (type instanceof Class) {
       clazz = (Class< ? >) type;
     } 
 
-    if (clazz==Boolean.class) {
+    if (clazz==Boolean.class || json instanceof Boolean) {
       if (!(json instanceof Boolean)) {
         throw new RuntimeException("Expected boolean, but was "+json+" ("+json.getClass().getName()+")"); 
       }
@@ -169,12 +168,20 @@ public abstract class AbstractReader implements JsonReader {
       return readDateValue(json);
     }
     
+    Type[] typeArgs = null;
+    WildcardType wildcardType = null;
+
     if (type instanceof ParameterizedType) {
-      parameterizedType = (ParameterizedType) type;
+      ParameterizedType parameterizedType = (ParameterizedType) type;
       clazz = (Class) parameterizedType.getRawType();
+      typeArgs = parameterizedType.getActualTypeArguments();
     } else if (type instanceof WildcardType) {
       wildcardType = (WildcardType) type;
       clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
+    } else if (type instanceof GenericType) {
+      GenericType genericType = (GenericType) type;
+      clazz = (Class) genericType.getBaseType();
+      typeArgs = genericType.getTypeArgs();
     }
 
     if (clazz==null || clazz==Object.class) {
@@ -193,19 +200,16 @@ public abstract class AbstractReader implements JsonReader {
       if (!(json instanceof Map)) {
         throw new RuntimeException("Expected object, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-      Type elementType = parameterizedType!=null ? parameterizedType.getActualTypeArguments()[1] : null;
-      return toMap((Map<String,Object>) json, elementType);
+      return toMap((Map<String,Object>) json, typeArgs!=null ? typeArgs[1] : null);
     
     } else if (clazz==List.class) {
       if (!(json instanceof List)) {
         throw new RuntimeException("Expected array, but was "+json+" ("+json.getClass().getName()+")"); 
       }
-      Type elementType = parameterizedType!=null ? parameterizedType.getActualTypeArguments()[0] : null;
-      return toList((List<Object>) json, elementType);
+      return toList((List<Object>) json, typeArgs!=null ? typeArgs[0] : null);
     
     } else if (clazz==Binding.class) {
-      Type valueType = parameterizedType!=null ? parameterizedType.getActualTypeArguments()[0] : null;
-      return toBinding((Map<String,Object>) json, valueType);
+      return toBinding((Map<String,Object>) json, typeArgs!=null ? typeArgs[0] : null);
     
     } else if (clazz.isEnum()) {
       if (!(json instanceof String)) {

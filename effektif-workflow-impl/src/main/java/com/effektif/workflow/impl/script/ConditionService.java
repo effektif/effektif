@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.script;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
@@ -27,7 +26,5 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public interface ConditionService {
 
   ConditionImpl compile(Condition condition, WorkflowParser parser);
-
-  void registerSubclasses(ObjectMapper objectMapper);
 
 }

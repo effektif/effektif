@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.NotContains;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -22,6 +24,11 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  * @author Tom Baeyens
  */
 public class NotContainsImpl extends ContainsImpl {
+
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return NotContains.class;
+  }
 
   @Override
   public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {

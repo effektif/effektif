@@ -16,9 +16,9 @@ package com.effektif.workflow.impl.mapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,9 +63,11 @@ import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
 import com.effektif.workflow.api.mapper.JsonIgnore;
+import com.effektif.workflow.api.mapper.JsonPropertyOrder;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.job.JobType;
@@ -87,10 +89,13 @@ public class Mappings {
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
-  Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
+  Map<Class<?>, Map<String,java.lang.reflect.Type>> fieldTypes = new HashMap<>();
   Map<Class<?>, List<Field>> fields = new HashMap<>();
   
   public Mappings() {
+    registerBaseClass(Type.class, "name");
+    registerBaseClass(Trigger.class);
+    
     registerBaseClass(Activity.class);
     registerSubClass(UserTask.class);
     registerSubClass(EmbeddedSubprocess.class);
@@ -103,9 +108,6 @@ public class Mappings {
     registerSubClass(ReceiveTask.class);
     registerSubClass(ScriptTask.class);
 
-    registerBaseClass(com.effektif.workflow.api.types.Type.class);
-    registerBaseClass(Trigger.class);
-    
     registerBaseClass(AccessIdentity.class);
     registerSubClass(GroupIdentity.class);
     registerSubClass(OrganizationIdentity.class);
@@ -254,13 +256,13 @@ public class Mappings {
     }
   }
   
-  public synchronized Type getFieldType(Class< ? > clazz, String fieldName) {
+  public synchronized java.lang.reflect.Type getFieldType(Class< ? > clazz, String fieldName) {
     // could be cached in this mappings object
-    Type fieldType = getFieldTypeFromCache(clazz, fieldName);
+    java.lang.reflect.Type fieldType = getFieldTypeFromCache(clazz, fieldName);
     if (fieldType!=null) {
       return fieldType;
     }
-    Map<String,Type> fieldTypesForClass = fieldTypes.get(clazz);
+    Map<String,java.lang.reflect.Type> fieldTypesForClass = fieldTypes.get(clazz);
     if (fieldTypesForClass==null) {
       fieldTypesForClass = new HashMap<>();
       fieldTypes.put(clazz, fieldTypesForClass);
@@ -273,7 +275,7 @@ public class Mappings {
     return fieldType;
   }
 
-  private Type findFieldType(Class< ? > clazz, String fieldName) {
+  private java.lang.reflect.Type findFieldType(Class< ? > clazz, String fieldName) {
     try {
       for (Field field: clazz.getDeclaredFields()) {
         if (field.getName().equals(fieldName)) {
@@ -289,8 +291,8 @@ public class Mappings {
     return null;
   }
 
-  private Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
-    Map<String,Type> types = fieldTypes.get(type);
+  private java.lang.reflect.Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
+    Map<String,java.lang.reflect.Type> types = fieldTypes.get(type);
     if (types==null) {
       return null;
     }
@@ -304,8 +306,33 @@ public class Mappings {
     }
     allFields = new ArrayList<>();
     scanFields(allFields, type);
+    
+    JsonPropertyOrder jsonPropertyOrder = type.getAnnotation(JsonPropertyOrder.class);
+    if (jsonPropertyOrder!=null) {
+      String[] fieldNamesOrder = jsonPropertyOrder.value();
+      for (int i=fieldNamesOrder.length-1; i>=0; i--) {
+        String fieldName = fieldNamesOrder[i];
+        Field field = removeField(allFields, fieldName);
+        if (field!=null) {
+          allFields.add(0, field);
+        }
+      }
+    }
+    
     fields.put(type, allFields);
     return allFields;
+  }
+
+  private Field removeField(List<Field> allFields, String fieldName) {
+    Iterator<Field> iterator = allFields.iterator();
+    while (iterator.hasNext()) {
+      Field field = iterator.next();
+      if (field.getName().equals(fieldName)) {
+        iterator.remove();
+        return field;
+      }
+    }
+    return null;
   }
 
   public void scanFields(List<Field> allFields, Class< ? > type) {

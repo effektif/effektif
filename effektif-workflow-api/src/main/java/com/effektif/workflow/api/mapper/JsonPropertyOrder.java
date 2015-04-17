@@ -1,6 +1,5 @@
-/*
- * Copyright 2014 Effektif GmbH.
- *
+/* Copyright (c) 2014, Effektif GmbH.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,16 +10,18 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License. */
+package com.effektif.workflow.api.mapper;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+
+/**
+ * @author Tom Baeyens
  */
-package com.effektif.workflow.impl.data;
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JsonPropertyOrder {
 
-import com.effektif.workflow.api.types.Type;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
-
-public interface TypeGenerator<T extends Type> {
-
-  JavaType createJavaType(T type, TypeFactory typeFactory, DataTypeService dataTypeService);
+  String[] value();
 }

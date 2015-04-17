@@ -83,10 +83,10 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return null;
   }
 
-  @Override
-  public TypeGenerator getTypeGenerator() {
-    return null;
-  }
+//  @Override
+//  public TypeGenerator getTypeGenerator() {
+//    return null;
+//  }
   
   @Override
   public T serialize() {

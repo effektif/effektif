@@ -25,7 +25,6 @@ import org.junit.Test;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Tom Baeyens
@@ -52,7 +51,6 @@ public class BpmnTest extends TestCase {
   private void scan(File directory) throws Exception {
     configuration.getWorkflowEngine(); // to ensure initialization of the object mapper
     ActivityTypeService activityTypeService = configuration.get(ActivityTypeService.class);
-    ObjectMapper objectMapper = configuration.get(ObjectMapper.class);
     
     try {
       for (File file : directory.listFiles()) {

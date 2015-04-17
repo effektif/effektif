@@ -33,7 +33,7 @@ public interface DataType<T extends Type> extends Plugin {
 
   T serialize();
 
-  TypeGenerator getTypeGenerator();
+//  TypeGenerator getTypeGenerator();
 
   /** only returns valid internal values. */
   Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;

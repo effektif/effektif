@@ -33,7 +33,6 @@ import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.job.JobExecution;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.test.JobWorkflowTest;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -43,7 +42,6 @@ public class JobServiceTest extends JobWorkflowTest {
   
   public static final Logger log = LoggerFactory.getLogger(JobServiceTest.class);
 
-  @JsonTypeName("tst")
   @TypeName("tst")
   public static class TestJob extends AbstractJobType {
     static List<JobExecution> jobExecutions;

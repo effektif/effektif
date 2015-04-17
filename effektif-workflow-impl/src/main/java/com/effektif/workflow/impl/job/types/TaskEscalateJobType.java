@@ -30,13 +30,11 @@ import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("taskEscalate")
 @TypeName("taskEscalate")
 public class TaskEscalateJobType extends AbstractJobType {
 

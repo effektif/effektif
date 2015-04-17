@@ -25,7 +25,6 @@ import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Script;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -34,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Script-Task">Script Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("scriptTask")
 @TypeName("scriptTask")
 @BpmnElement("scriptTask")
 public class ScriptTask extends NoneTask {

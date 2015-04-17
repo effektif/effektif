@@ -38,7 +38,6 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Set-up and convenience methods for BPMN reader and writer test cases.
@@ -51,7 +50,6 @@ public abstract class BpmnTestCase extends TestCase {
   protected static Configuration configuration;
   protected static File testResources;
   private static ActivityTypeService activityTypeService;
-  private static ObjectMapper objectMapper;
 
   static {
     String dir = BpmnProcessTest.class.getProtectionDomain().getCodeSource().getLocation().toString();
@@ -65,7 +63,6 @@ public abstract class BpmnTestCase extends TestCase {
       configuration = new TestConfiguration();
       configuration.getWorkflowEngine(); // to ensure initialization of the object mapper
       activityTypeService = configuration.get(ActivityTypeService.class);
-      objectMapper = configuration.get(ObjectMapper.class);
     }
   }
 

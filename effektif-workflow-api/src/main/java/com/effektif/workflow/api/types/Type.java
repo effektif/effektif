@@ -15,17 +15,13 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /**
- * A type used for serialisation, for data such as process variables.
+ * Indicates the type of workflow instance variable data.
  *
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="name")
 public class Type {
 
 }

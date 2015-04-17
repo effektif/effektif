@@ -22,28 +22,26 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.activity.types.EmailTriggerImpl;
 import com.effektif.workflow.impl.activity.types.FormTriggerImpl;
-import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.util.Exceptions;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ActivityTypeService implements Brewable {
+public class ActivityTypeService implements Initializable {
   
   // private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
   
   protected Mappings mappings;
-  protected ObjectMapper objectMapper;
   protected Configuration configuration;
 
   // maps json type names to activity descriptors
@@ -59,8 +57,7 @@ public class ActivityTypeService implements Brewable {
   }
 
   @Override
-  public void brew(Brewery brewery) {
-    this.objectMapper = brewery.get(ObjectMapper.class);
+  public void initialize(Brewery brewery) {
     this.mappings = brewery.get(Mappings.class);
     this.configuration = brewery.get(Configuration.class);
     initializeActivityTypes();
@@ -85,14 +82,13 @@ public class ActivityTypeService implements Brewable {
     activityTypeClasses.put(activityTypeApiClass, activityType.getClass());
     activityTypes.put(activityTypeApiClass, activityType);
     
-    JsonTypeName jsonTypeName = activityTypeApiClass.getAnnotation(JsonTypeName.class);
+    TypeName jsonTypeName = activityTypeApiClass.getAnnotation(TypeName.class);
     if (jsonTypeName==null) {
       throw new RuntimeException("Please add @JsonTypeName annotation to "+activityTypeApiClass);
     }
     activityTypeDescriptors.put(jsonTypeName.value(), descriptor);
     
     // log.debug("Registering "+activityTypeApiClass);
-    objectMapper.registerSubtypes(activityTypeApiClass);
     mappings.registerSubClass(activityTypeApiClass);
   }
   
@@ -103,7 +99,6 @@ public class ActivityTypeService implements Brewable {
   public void registerTriggerType(AbstractTriggerImpl trigger) {
     Class triggerApiClass = trigger.getTriggerApiClass();
     triggerClasses.put(triggerApiClass, trigger.getClass());
-    objectMapper.registerSubtypes(triggerApiClass);
     mappings.registerSubClass(triggerApiClass);
   }
 

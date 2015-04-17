@@ -26,7 +26,6 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /** 
  * Invokes another workflow and ends when the other workflow instance completes.
@@ -34,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Call-Activity">Call Activity</a>
  * @author Tom Baeyens
  */ 
-@JsonTypeName("call")
 @TypeName("call")
 @BpmnElement("callActivity")
 public class Call extends AbstractBindableActivity {

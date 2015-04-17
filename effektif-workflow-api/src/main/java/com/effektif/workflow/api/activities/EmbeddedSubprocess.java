@@ -18,7 +18,6 @@ package com.effektif.workflow.api.activities;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -27,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Embedded-Subprocess">Embedded Subprocess</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("embeddedSubprocess")
 @TypeName("subProcess")
 @BpmnElement("subProcess")
 public class EmbeddedSubprocess extends Activity {

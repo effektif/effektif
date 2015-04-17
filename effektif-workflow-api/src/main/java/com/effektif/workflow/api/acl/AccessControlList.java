@@ -24,7 +24,6 @@ import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.mapper.JsonWriter;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 
 /** Specifies which actions are permitted by whom on a given entity.
@@ -34,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 public class AccessControlList implements JsonWritable, JsonReadable {
   
   /** maps actions to lists of identities */
-  @JsonUnwrapped
   protected Map<String,List<AccessIdentity>> permissions;
 
   @Override

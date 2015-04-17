@@ -35,7 +35,6 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -45,7 +44,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/User-Task">User Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("userTask")
 @TypeName("userTask")
 @BpmnElement("userTask")
 public class UserTask extends NoneTask {

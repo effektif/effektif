@@ -23,15 +23,15 @@ import com.effektif.workflow.api.model.Id;
 /**
  * @author Tom Baeyens
  */
-public class JsonReader extends AbstractReader {
+public class JsonReaderImpl extends AbstractJsonReader {
   
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTimeParser();
 
-  public JsonReader() {
+  public JsonReaderImpl() {
     this(new Mappings());
   }
 
-  public JsonReader(Mappings mappings) {
+  public JsonReaderImpl(Mappings mappings) {
     this.mappings = mappings;
   }
 

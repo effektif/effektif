@@ -28,7 +28,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class AndImpl extends ConditionImpl<And> {
+public class AndImpl implements ConditionImpl<And> {
 
   protected List<ConditionImpl> conditions;
 
@@ -37,6 +37,11 @@ public class AndImpl extends ConditionImpl<And> {
   }
   public void setConditions(List<ConditionImpl> conditions) {
     this.conditions = conditions;
+  }
+  
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return And.class;
   }
 
   @Override

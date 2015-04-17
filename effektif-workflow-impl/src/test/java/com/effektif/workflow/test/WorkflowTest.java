@@ -88,8 +88,12 @@ public class WorkflowTest {
   protected EmailStore emailStore = null;
   protected FileService fileService = null;
   
+  @Rule public TestName name = new TestName();
+
   @Before
   public void initializeWorkflowEngine() {
+    log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name+" starting ######################################################## \n");
+
     if (workflowEngine==null || taskService==null) {
       if (cachedConfiguration==null) {
         cachedConfiguration = new TestConfiguration();
@@ -209,12 +213,9 @@ public class WorkflowTest {
     return file;
   }
 
-  
-  @Rule public TestName name = new TestName();
-  
   protected void logWorkflowEngineContents() {
     try {
-      log.debug("\n\n###### Test ended, logging workflow engine contents ######################################################## \n");
+      log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name+" ending ######################################################## \n");
       
       JsonMapper jsonMapper = configuration.get(JsonMapper.class);
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
@@ -228,7 +229,7 @@ public class WorkflowTest {
 //    List<Job> jobs = jobService.newJobQuery().asList();
 //    if (jobs != null && !jobs.isEmpty()) {
 //      int i = 0;
-//      cleanLog.append("\n### jobs ######################################################## \n");
+//      cleanLog.append("\n=== jobs ======================================================== \n");
 //      for (Job job : jobs) {
 //        jobService.deleteJob(job.getId());
 //        cleanLog.append("--- Deleted job ");
@@ -243,7 +244,7 @@ public class WorkflowTest {
       List<Job> jobs = jobStore.findJobs(new JobQuery());
       if (jobs != null && !jobs.isEmpty()) {
         int i = 0;
-        cleanLog.append("\n### jobs ######################################################## \n");
+        cleanLog.append("\n=== jobs ======================================================== \n");
         for (Job job : jobs) {
           cleanLog.append("--- Job ");
           cleanLog.append(i);
@@ -257,7 +258,7 @@ public class WorkflowTest {
       List<Task> tasks = taskStore.findTasks(new TaskQuery());
       if (tasks != null && !tasks.isEmpty()) {
         int i = 0;
-        cleanLog.append("\n### tasks ######################################################## \n");
+        cleanLog.append("\n=== tasks ======================================================== \n");
         for (Task task : tasks) {
           cleanLog.append("--- Task ");
           cleanLog.append(i);
@@ -271,7 +272,7 @@ public class WorkflowTest {
       List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery());
       if (workflowInstances != null && !workflowInstances.isEmpty()) {
         int i = 0;
-        cleanLog.append("\n\n### workflowInstances ################################################ \n");
+        cleanLog.append("\n\n=== workflowInstances ================================================ \n");
         for (WorkflowInstanceImpl workflowInstance : workflowInstances) {
           cleanLog.append("--- Workflow instance ");
           cleanLog.append(i);
@@ -285,7 +286,7 @@ public class WorkflowTest {
       List<Workflow> workflows = workflowStore.findWorkflows(new WorkflowQuery());
       if (workflows != null && !workflows.isEmpty()) {
         int i = 0;
-        cleanLog.append("\n### workflows ######################################################## \n");
+        cleanLog.append("\n=== workflows ======================================================== \n");
         for (Workflow workflow : workflows) {
           cleanLog.append("--- Deleted workflow ");
           cleanLog.append(i);

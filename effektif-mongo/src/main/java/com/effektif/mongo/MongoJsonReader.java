@@ -19,14 +19,14 @@ import java.util.Date;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.impl.mapper.AbstractReader;
+import com.effektif.workflow.impl.mapper.AbstractJsonReader;
 import com.effektif.workflow.impl.mapper.Mappings;
 
 
 /**
  * @author Tom Baeyens
  */
-public class MongoJsonReader extends AbstractReader {
+public class MongoJsonReader extends AbstractJsonReader {
 
   MongoJsonMapper mongoJsonMapper;
 

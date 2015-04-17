@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.IsFalse;
+
 
 
 /**
@@ -22,6 +25,11 @@ package com.effektif.workflow.impl.conditions;
  */
 public class IsFalseImpl extends SingleBindingConditionImpl {
   
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return IsFalse.class;
+  }
+
   @Override
   protected boolean eval(Object expressionValue) {
     return Boolean.FALSE.equals(expressionValue);

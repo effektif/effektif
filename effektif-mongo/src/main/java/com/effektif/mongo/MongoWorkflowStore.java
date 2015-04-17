@@ -26,6 +26,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowStore;
@@ -86,7 +87,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
 
-  public BasicDBObject workflowApiToMongo(Workflow workflow) {
+  public BasicDBObject workflowApiToMongo(AbstractWorkflow workflow) {
     return (BasicDBObject) mongoJsonMapper.writeToDbObject(workflow);
   }
 
@@ -112,7 +113,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //    return dbWorkflow;
 //  }
 
-  public <T extends Workflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
+  public <T extends AbstractWorkflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
     return mongoJsonMapper.readFromDbObject(dbWorkflow, workflowClass);
   }
 

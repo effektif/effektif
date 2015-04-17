@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.ContainsIgnoreCase;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -23,6 +25,11 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 public class ContainsIgnoreCaseImpl extends ComparatorImpl {
 
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return ContainsIgnoreCase.class;
+  }
+  
   @Override
   public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {
     if (leftValue==null && rightValue==null) return true;

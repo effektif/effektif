@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.HasValue;
+
 
 
 /**
@@ -23,8 +26,12 @@ package com.effektif.workflow.impl.conditions;
 public class HasValueImpl extends SingleBindingConditionImpl {
   
   @Override
+  public Class< ? extends Condition> getApiType() {
+    return HasValue.class;
+  }
+  
+  @Override
   public boolean eval(Object value) {
     return value!=null && !"".equals(value);
   }
-
 }

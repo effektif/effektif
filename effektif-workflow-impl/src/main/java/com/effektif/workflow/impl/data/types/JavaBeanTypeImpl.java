@@ -20,15 +20,11 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.data.TypeGenerator;
 import com.effektif.workflow.impl.mapper.JsonMapper;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
 /**
@@ -82,19 +78,19 @@ public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
     return false;
   }
 
-  @Override
-  public TypeGenerator getTypeGenerator() {
-    return new TypeGenerator<JavaBeanType>() {
-      @Override
-      public JavaType createJavaType(JavaBeanType javaBeanType, TypeFactory typeFactory, DataTypeService dataTypeService) {
-        Class< ? > javaClass = javaBeanType.getJavaClass();
-        if (javaClass==null) {
-          return null;
-        }
-        return typeFactory.constructType(javaClass);
-      }
-    };
-  }
+//  @Override
+//  public TypeGenerator getTypeGenerator() {
+//    return new TypeGenerator<JavaBeanType>() {
+//      @Override
+//      public JavaType createJavaType(JavaBeanType javaBeanType, TypeFactory typeFactory, DataTypeService dataTypeService) {
+//        Class< ? > javaClass = javaBeanType.getJavaClass();
+//        if (javaClass==null) {
+//          return null;
+//        }
+//        return typeFactory.constructType(javaClass);
+//      }
+//    };
+//  }
 
   @Override
   public void validateInternalValue(Object internalValue) throws InvalidValueException {

@@ -33,7 +33,6 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -44,7 +43,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Email-Task">Email Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("email")
 @TypeName("email")
 @BpmnElement("serviceTask")
 @BpmnTypeAttribute(attribute="type", value="email")

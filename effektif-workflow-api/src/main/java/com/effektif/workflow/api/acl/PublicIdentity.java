@@ -16,7 +16,6 @@
 package com.effektif.workflow.api.acl;
 
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** TODO check if this can be removed
@@ -26,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeName("public")
 @TypeName("public")
 @Deprecated 
 public class PublicIdentity extends AccessIdentity {

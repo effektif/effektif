@@ -21,9 +21,6 @@ import java.util.List;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /** Base class containing the configuration data for 
@@ -31,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public abstract class Activity extends Scope {
   
   protected String id;

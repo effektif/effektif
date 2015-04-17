@@ -19,9 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 
 /** Base class for extensible objects that can store user-defined properties.
  * 
@@ -49,7 +46,6 @@ public abstract class Extensible {
 //  }
 
   /** @see Extensible */
-  @JsonAnyGetter
   public Map<String,Object> getProperties() {
     return this.properties;
   }
@@ -79,7 +75,6 @@ public abstract class Extensible {
     return properties!=null ? properties.get(key) : null;
   }
   /** @see Extensible */
-  @JsonAnySetter
   public void setProperty(String key,Object value) {
     checkPropertyKey(key);
     if (properties==null) {

@@ -18,18 +18,16 @@ package com.effektif.adapter;
 import java.net.URI;
 
 import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.adapter.helpers.DefaultExceptionMapper;
-import com.effektif.adapter.helpers.ObjectMapperResolver;
 import com.effektif.adapter.helpers.RequestLogger;
+import com.effektif.server.EffektifJsonProvider;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.mapper.JsonMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class AdapterServer {
@@ -37,7 +35,6 @@ public class AdapterServer {
   public static final Logger log = LoggerFactory.getLogger(AdapterServer.class);
   
   protected Integer port;
-  protected ObjectMapper objectMapper;
   protected ResourceConfig config;
   protected Server server;
   protected JsonMapper jsonMapper;
@@ -47,7 +44,7 @@ public class AdapterServer {
   
   public AdapterServer() {
     Configuration configuration = new DefaultAdapterConfiguration();
-    objectMapper = configuration.get(ObjectMapper.class);
+    jsonMapper = configuration.get(JsonMapper.class);
     
     descriptorsResource = new DescriptorsResource();
     executeResource = new ExecuteResource(configuration);
@@ -55,8 +52,7 @@ public class AdapterServer {
     
     config = new ResourceConfig();
     config.registerInstances(
-            new JacksonFeature(),
-            new ObjectMapperResolver(objectMapper),
+            new EffektifJsonProvider(jsonMapper),
             new RequestLogger(),
             new DefaultExceptionMapper(),
             descriptorsResource,

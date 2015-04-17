@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -29,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeName("decision")
 @TypeName("decision")
 public class ChoiceType extends TextType {
 

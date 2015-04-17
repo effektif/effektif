@@ -17,12 +17,10 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.Type;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 // kept this type in the impl as i don't know yet if it is a good idea 
 // to expose it
-@JsonTypeName("any")
 @TypeName("any")
 public class AnyType extends Type {
   

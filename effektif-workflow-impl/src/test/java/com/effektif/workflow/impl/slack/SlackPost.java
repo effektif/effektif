@@ -24,13 +24,11 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("slackPost")
 @TypeName("slackPost")
 public class SlackPost extends Activity {
 

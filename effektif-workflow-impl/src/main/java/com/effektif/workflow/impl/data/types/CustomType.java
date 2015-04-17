@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.mapper.TypeName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** this is just an idea for now. moves to api when mature.
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeName("custom")
 @TypeName("custom")
 public class CustomType extends ObjectType {
 

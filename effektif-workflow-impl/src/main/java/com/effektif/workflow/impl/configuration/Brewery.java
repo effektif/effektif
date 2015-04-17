@@ -15,7 +15,9 @@
  */
 package com.effektif.workflow.impl.configuration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.impl.util.Exceptions;
@@ -26,6 +28,12 @@ import com.effektif.workflow.impl.util.Exceptions;
 public class Brewery {
   
    // private static final Logger log = LoggerFactory.getLogger(Brewery.class);
+  
+  /** initializables will be notified when all the ingredients, brews and 
+   * suppliers are registered
+   * @see #initialize */
+  List<Initializable> initializables = new ArrayList<>();
+  boolean isInitialized = false;
 
   /** maps aliases to object names. 
    * aliases are typically interface or superclass names. 
@@ -79,7 +87,17 @@ public class Brewery {
     throw new RuntimeException(name+" is not in registry: \n"+contents);
   }
 
+  protected synchronized void ensureInitialized() {
+    if (!isInitialized) {
+      isInitialized = true;
+      for (Initializable initializable: initializables) {
+        initializable.initialize(this);
+      }
+    }
+  }
+
   public synchronized Object getOpt(String name) {
+    ensureInitialized();
     // log.debug("getting("+name+")");
     if (aliases.containsKey(name)) {
       name = aliases.get(name);
@@ -123,6 +141,9 @@ public class Brewery {
     String name = ingredient.getClass().getName();
     alias(name, ingredient.getClass());
     ingredient(ingredient, name);
+    if (ingredient instanceof Initializable) {
+      initializables.add((Initializable)ingredient);
+    }
   }
 
   public void ingredient(Object ingredient, String name) {
@@ -138,6 +159,9 @@ public class Brewery {
 
   public void supplier(Supplier supplier, String name) {
     suppliers.put(name, supplier);
+    if (supplier instanceof Initializable) {
+      initializables.add((Initializable)supplier);
+    }
   }
 
   public void alias(String alias, String name) {

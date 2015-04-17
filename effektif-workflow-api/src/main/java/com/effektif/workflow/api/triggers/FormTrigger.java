@@ -19,7 +19,6 @@ import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -29,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Tom Baeyens
  */
-@JsonTypeName("form")
 @TypeName("form")
 public class FormTrigger extends Trigger {
   

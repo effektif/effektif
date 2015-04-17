@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.impl.mapper.AbstractReader;
+import com.effektif.workflow.impl.mapper.AbstractJsonReader;
 
 
 /**
@@ -66,11 +66,11 @@ public class Reflection {
       try {
         clazz = Class.forName(className);
       } catch (ClassNotFoundException e) {
-        AbstractReader.log.debug("Class not found with effektif classloader: "+className+". Trying context classloader...");
+        AbstractJsonReader.log.debug("Class not found with effektif classloader: "+className+". Trying context classloader...");
         try {
           clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e1) {
-          AbstractReader.log.debug("Class not found with context classloader: "+className+". Giving up.");
+          AbstractJsonReader.log.debug("Class not found with context classloader: "+className+". Giving up.");
         }
       }
     }

@@ -49,7 +49,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
 public class BpmnReaderImpl implements BpmnReader {
 
   private static final Logger log = LoggerFactory.getLogger(BpmnReaderImpl.class);
-  public static DateTimeFormatter DATE_FORMAT = JsonReader.DATE_FORMAT;
+  public static DateTimeFormatter DATE_FORMAT = JsonReaderImpl.DATE_FORMAT;
 
   /** global mappings */
   protected Mappings mappings;
@@ -259,7 +259,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return AbstractReader.toId(readStringAttributeBpmn(localPart), idType);
+    return AbstractJsonReader.toId(readStringAttributeBpmn(localPart), idType);
   }
 
   @Override
@@ -267,7 +267,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return AbstractReader.toId(readStringAttributeEffektif(localPart), idType);
+    return AbstractJsonReader.toId(readStringAttributeEffektif(localPart), idType);
   }
 
   @Override
@@ -325,7 +325,7 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) Long.valueOf(value);
     }
     if (Id.class.isAssignableFrom(type)) {
-      return (T) AbstractReader.toId(value, (Class<Id>) type);
+      return (T) AbstractJsonReader.toId(value, (Class<Id>) type);
     }
     if (type==LocalDateTime.class) {
       return (T) DATE_FORMAT.parseLocalDateTime(value);

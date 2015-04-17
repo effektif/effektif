@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Not;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.script.ConditionService;
@@ -24,7 +25,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class NotImpl extends ConditionImpl<Not> {
+public class NotImpl implements ConditionImpl<Not> {
 
   protected ConditionImpl condition;
 
@@ -39,6 +40,11 @@ public class NotImpl extends ConditionImpl<Not> {
     return this;
   }
   
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return Not.class;
+  }
+
   @Override
   public boolean eval(ScopeInstanceImpl scopeInstance) {
     return !condition.eval(scopeInstance);
