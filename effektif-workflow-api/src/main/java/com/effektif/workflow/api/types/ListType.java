@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.util.List;
+
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
@@ -59,7 +61,8 @@ public class ListType extends Type {
 
   @Override
   public void readBpmn(BpmnReader r) {
-    for (XmlElement element : r.readElementsEffektif("element")) {
+    XmlElement element = r.readElementEffektif("element");
+    if (element!=null) {
       r.startElement(element);
       elementType = r.readTypeEffektif();
       r.endElement();
@@ -69,10 +72,12 @@ public class ListType extends Type {
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-    w.startElementEffektif("element");
-    String typeName = elementType.getClass().getAnnotation(TypeName.class).value();
-    w.writeStringAttributeEffektif("type", typeName);
-    w.endElement();
+    if (elementType!=null) {
+      w.startElementEffektif("element");
+      w.writeTypeAttribute(elementType);
+      elementType.writeBpmn(w);
+      w.endElement();
+    }
   }
 
 }

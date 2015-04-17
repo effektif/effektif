@@ -182,7 +182,17 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return currentXml.removeElements(EFFEKTIF_URI, localPart);
   }
+
+  @Override
+  public XmlElement readElementEffektif(String localPart) {
+    if (currentXml==null) {
+      return null;
+    }
+    List<XmlElement> xmlElements = currentXml.removeElements(EFFEKTIF_URI, localPart);
+    return !xmlElements.isEmpty() ? xmlElements.get(0) : null;
+  }
   
+
   @Override
   public void startElement(XmlElement xmlElement) {
     if (currentXml!=null) {
@@ -351,6 +361,18 @@ public class BpmnReaderImpl implements BpmnReader {
   }
   
   @Override
+  public Type readTypeEffektif() {
+    try {
+      Class<?> typeClass = mappings.getConcreteClass(this, Type.class);
+      Type type = (Type) typeClass.newInstance();
+      type.readBpmn(this);
+      return type;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
   public LocalDateTime readDateAttributeEffektif(String localPart) {
     return readDate(readStringAttributeEffektif(localPart));
   }
@@ -386,12 +408,6 @@ public class BpmnReaderImpl implements BpmnReader {
       return textElement.getText();
     }
     return null;
-  }
-
-  @Override
-  public Type readTypeEffektif() {
-    String typeName = readStringAttributeEffektif("type");
-    return dataTypeService.getTypeByName(typeName);
   }
 
   @Override

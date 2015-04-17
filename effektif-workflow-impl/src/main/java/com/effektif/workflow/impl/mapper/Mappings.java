@@ -61,7 +61,9 @@ import com.effektif.workflow.api.condition.NotEquals;
 import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
 import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonIgnore;
 import com.effektif.workflow.api.mapper.JsonPropertyOrder;
 import com.effektif.workflow.api.mapper.JsonWriter;
@@ -240,6 +242,11 @@ public class Mappings {
     return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(jsonObject) : baseClass;
   }
 
+  public <T> Class<T> getConcreteClass(BpmnReader bpmnReader, Class<T> baseClass) {
+    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
+    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(bpmnReader) : baseClass;
+  }
+
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
     if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
       throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
@@ -251,6 +258,13 @@ public class Mappings {
     TypeField typeField = typeFields.get(o.getClass());
     if (typeField!=null) {
       jsonWriter.writeString(typeField.getTypeField(), typeField.getTypeName());
+    }
+  }
+  
+  public void writeTypeAttribute(BpmnWriter bpmnWriter, Object o) {
+    TypeField typeField = typeFields.get(o.getClass());
+    if (typeField!=null) {
+      bpmnWriter.writeStringAttributeEffektif(typeField.getTypeField(), typeField.getTypeName());
     }
   }
   
@@ -361,4 +375,5 @@ public class Mappings {
   public void pretty() {
     this.isPretty = true;
   }
+
 }

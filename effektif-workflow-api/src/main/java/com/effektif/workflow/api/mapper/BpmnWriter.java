@@ -91,4 +91,6 @@ public interface BpmnWriter {
 
   /** write an element in the Effektif namespace with the value as content text. */
   void writeTextEffektif(String localPart, Object value);
+  
+  void writeTypeAttribute(Object o);
 }

@@ -16,6 +16,8 @@ package com.effektif.workflow.impl.mapper;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+
 
 /**
  * @author Tom Baeyens
@@ -42,7 +44,13 @@ public class SubclassMapping {
     return subclasses.get(typeName);
   }
 
+  public Class<?> getSubclass(BpmnReader r) {
+    String typeName = r.readStringAttributeEffektif(typeField);
+    return subclasses.get(typeName);
+  }
+
   public String getTypeField() {
     return typeField;
   }
+
 }

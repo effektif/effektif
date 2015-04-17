@@ -38,9 +38,7 @@ import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
-import com.effektif.workflow.impl.data.types.EmailAddressTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
-import com.effektif.workflow.impl.data.types.LinkTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
@@ -84,12 +82,6 @@ public class DataTypeService implements Initializable {
     DateTypeImpl dateTypeImpl = new DateTypeImpl();
     dateTypeImpl.setConfiguration(configuration);
     registerDataType(dateTypeImpl);
-    EmailAddressTypeImpl emailAddressTypeImpl = new EmailAddressTypeImpl();
-    emailAddressTypeImpl.setConfiguration(configuration);
-    registerDataType(emailAddressTypeImpl);
-    LinkTypeImpl linkTypeImpl = new LinkTypeImpl();
-    linkTypeImpl.setConfiguration(configuration);
-    registerDataType(linkTypeImpl);
     NumberTypeImpl numberTypeImpl = new NumberTypeImpl();
     numberTypeImpl.setConfiguration(configuration);
     registerDataType(numberTypeImpl);
@@ -102,6 +94,7 @@ public class DataTypeService implements Initializable {
 
     ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
     for (DataType dataType: dataTypeLoader) {
+      // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
       registerDataType(dataType);
     }
     for (DataType dataType: dataTypeLoader) {
@@ -148,30 +141,30 @@ public class DataTypeService implements Initializable {
     registerDataType(javaBeanTypeImpl);
   }
 
-  /**
-   * Returns the {@link Type} instance whose {@link TypeName} annotation value matches the given type name.
-   */
-  public Type getTypeByName(String typeName) {
-
-    Set<Class> typeClasses = new HashSet<>();
-    typeClasses.addAll(singletons.keySet());
-    typeClasses.addAll(dataTypeConstructors.keySet());
-
-    for (Class<? extends Type> typeClass : typeClasses) {
-      try {
-        // TODO call a getInstance() that returns a singleton instance.
-        Type type = typeClass.newInstance();
-        String name = type.getClass().getAnnotation(TypeName.class).value();
-        if (name.equals(typeName)) {
-          return type;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
-      }
-    }
-
-    throw new IllegalArgumentException("No Type class for name: " + typeName);
-  }
+//  /**
+//   * Returns the {@link Type} instance whose {@link TypeName} annotation value matches the given type name.
+//   */
+//  public Type getTypeByName(String typeName) {
+//
+//    Set<Class> typeClasses = new HashSet<>();
+//    typeClasses.addAll(singletons.keySet());
+//    typeClasses.addAll(dataTypeConstructors.keySet());
+//
+//    for (Class<? extends Type> typeClass : typeClasses) {
+//      try {
+//        // TODO call a getInstance() that returns a singleton instance.
+//        Type type = typeClass.newInstance();
+//        String name = type.getClass().getAnnotation(TypeName.class).value();
+//        if (name.equals(typeName)) {
+//          return type;
+//        }
+//      } catch (Exception e) {
+//        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
+//      }
+//    }
+//
+//    throw new IllegalArgumentException("No Type class for name: " + typeName);
+//  }
 
   public DataType getDataTypeByValue(Class<?> valueClass) {
     DataType dataType = null;

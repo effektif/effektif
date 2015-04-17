@@ -60,6 +60,9 @@ public interface BpmnReader {
    */
   List<XmlElement> readElementsEffektif(String localPart);
 
+  /** extracts and removes the single element in the Effektif namespace from the current element. */
+  XmlElement readElementEffektif(String localPart);
+
   /** Extracts and removes elements whose name corresponds to the given model class name. */
   List<XmlElement> readElementsEffektif(Class modelClass);
 

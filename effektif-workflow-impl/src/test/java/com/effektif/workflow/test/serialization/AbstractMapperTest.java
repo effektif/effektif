@@ -39,14 +39,11 @@ import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.ChoiceType;
-import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.GroupIdType;
-import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.LinkType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.MoneyType;
@@ -59,6 +56,7 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
 /**
@@ -69,25 +67,7 @@ public abstract class AbstractMapperTest {
   protected static Mappings mappings = null; 
           
   public static void initializeMappings() {
-    mappings = new Mappings();
-    
-    mappings.registerSubClass(StartEvent.class);
-    mappings.registerSubClass(Call.class);
-    mappings.registerSubClass(EmailTask.class);
-
-    mappings.registerSubClass(BooleanType.class);
-    mappings.registerSubClass(ChoiceType.class);
-    mappings.registerSubClass(DateType.class);
-    mappings.registerSubClass(EmailIdType.class);
-    mappings.registerSubClass(FileIdType.class);
-    mappings.registerSubClass(GroupIdType.class);
-    mappings.registerSubClass(JavaBeanType.class);
-    mappings.registerSubClass(ListType.class);
-    mappings.registerSubClass(MoneyType.class);
-    mappings.registerSubClass(NumberType.class);
-    mappings.registerSubClass(TextType.class);
-    mappings.registerSubClass(UserIdType.class);
-    
+    mappings = new TestConfiguration().get(Mappings.class);
     mappings.pretty();
   }
 

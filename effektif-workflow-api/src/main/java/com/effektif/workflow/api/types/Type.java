@@ -19,7 +19,6 @@ import com.effektif.workflow.api.mapper.BpmnReadable;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWritable;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Variable;
 
 /**
@@ -29,7 +28,7 @@ import com.effektif.workflow.api.workflow.Variable;
  */
 public class Type implements BpmnReadable, BpmnWritable {
 
-  protected String typeName = getClass().getAnnotation(TypeName.class).value();
+  // protected String typeName = getClass().getAnnotation(TypeName.class).value();
 
   /**
    * Default implementation, which is a no-op because the <code>type</code> attribute has to be read by the
@@ -46,9 +45,5 @@ public class Type implements BpmnReadable, BpmnWritable {
    */
   @Override
   public void writeBpmn(BpmnWriter w) {
-    if (typeName == null) {
-      throw new RuntimeException("No @TypeName annotation for class " + getClass().getName());
-    }
-    w.writeStringAttributeBpmn("type", typeName);
   }
 }
