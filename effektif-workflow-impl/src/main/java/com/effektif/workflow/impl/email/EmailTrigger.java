@@ -55,11 +55,16 @@ public class EmailTrigger extends Trigger {
 
   @Override
   public void readBpmn(BpmnReader r) {
-
+    emailIdVariableId = r.readStringAttributeEffektif("emailIdVariableId");
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-
+    w.startElementEffektif("trigger");
+    w.writeTypeAttribute(this);
+    if (emailIdVariableId != null) {
+      w.writeStringAttributeEffektif("emailIdVariableId", emailIdVariableId);
+    }
+    w.endElement();
   }
 }
