@@ -17,9 +17,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.mapper.BpmnReader;
-
+import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.workflow.Trigger;
 
 /**
+ * A mapping from a ‘base class’, e.g. {@link Trigger},
+ * to its subclasses (e.g. {@link FormTrigger}.
+ *
  * @author Tom Baeyens
  */
 public class SubclassMapping {

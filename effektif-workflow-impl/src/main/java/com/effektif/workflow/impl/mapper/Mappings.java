@@ -69,9 +69,11 @@ import com.effektif.workflow.api.mapper.JsonPropertyOrder;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.email.EmailTrigger;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
 import com.effektif.workflow.impl.job.types.TaskReminderJobType;
@@ -85,7 +87,10 @@ public class Mappings {
   private static final Logger log = LoggerFactory.getLogger(Mappings.class);
 
   Boolean isPretty;
+
+  /** Maps registered base classes (e.g. <code>Trigger</code> to their subclass mappings. */
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
+
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
@@ -95,7 +100,9 @@ public class Mappings {
   public Mappings() {
     registerBaseClass(Type.class, "name");
     registerBaseClass(Trigger.class);
-    
+    registerSubClass(FormTrigger.class);
+    registerSubClass(EmailTrigger.class);
+
     registerBaseClass(Activity.class);
     registerSubClass(UserTask.class);
     registerSubClass(EmbeddedSubprocess.class);

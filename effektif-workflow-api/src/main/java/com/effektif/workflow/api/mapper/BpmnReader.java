@@ -22,9 +22,9 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Trigger;
 
-
-/** an abstraction that allows {@link BpmnReadable}s to read 
+/** an abstraction that allows {@link BpmnReadable}s to read
  * their internal data from any BPMN reader.
  * 
  * The goal is to make it easy to implement BPMN (de)serialization 
@@ -94,6 +94,9 @@ public interface BpmnReader {
   /** Returns a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> List<Binding<T>> readBindings(String elementName, Class<T> type);
+
+  /** Returns a the {@link Trigger} instance specified by the Effektif <code>type</code> parameter. */
+  Trigger readTriggerEffektif();
 
   /** Returns a the {@link Type} instance specified by the Effektif <code>type</code> parameter. */
   Type readTypeEffektif();
