@@ -23,6 +23,7 @@ import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -75,11 +76,17 @@ public class Workflow extends AbstractWorkflow {
     r.startExtensionElements();
     sourceWorkflowId = r.readStringValue("sourceWorkflowId");
 
-    for (XmlElement variableElement: r.readElementsEffektif("variable")) {
-      r.startElement(variableElement);
+    for (XmlElement nestedElement: r.readElementsEffektif("variable")) {
+      r.startElement(nestedElement);
       Variable variable = new Variable();
       variable.readBpmn(r);
       variable(variable);
+      r.endElement();
+    }
+
+    for (XmlElement nestedElement: r.readElementsEffektif("trigger")) {
+      r.startElement(nestedElement);
+      trigger = r.readTriggerEffektif();
       r.endElement();
     }
 
@@ -97,6 +104,10 @@ public class Workflow extends AbstractWorkflow {
       for (Variable variable : variables) {
         variable.writeBpmn(w);
       }
+    }
+
+    if (trigger != null) {
+      trigger.writeBpmn(w);
     }
 
     w.endExtensionElements();

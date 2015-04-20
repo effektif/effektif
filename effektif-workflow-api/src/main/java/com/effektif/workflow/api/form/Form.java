@@ -18,6 +18,12 @@ package com.effektif.workflow.api.form;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.workflow.Binding;
 
 /**
  * A form definition (aka declaration) that specifies the fields to display for 
@@ -27,7 +33,7 @@ import java.util.List;
  *
  * @author Tom Baeyens
  */
-public class Form extends AbstractForm {
+public class Form extends AbstractForm implements BpmnReadable, BpmnWritable {
 
   protected List<FormField> fields;
   
@@ -53,5 +59,29 @@ public class Form extends AbstractForm {
   public Form description(String description) {
     super.description(description);
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    description = r.readDocumentation();
+    for (XmlElement nestedElement : r.readElementsEffektif("field")) {
+      r.startElement(nestedElement);
+      FormField field = new FormField();
+      field.readBpmn(r);
+      field(field);
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("form");
+    w.writeDocumentation(description);
+
+    for (FormField field : getFields()) {
+      field.writeBpmn(w);
+    }
+
+    w.endElement();
   }
 }

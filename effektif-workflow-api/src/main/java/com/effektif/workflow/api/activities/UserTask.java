@@ -92,25 +92,9 @@ public class UserTask extends NoneTask {
     taskName = r.readStringValue("taskName");
 
     for (XmlElement formElement : r.readElementsEffektif("form")) {
-      form = new Form();
       r.startElement(formElement);
-      form.setDescription(r.readTextEffektif("description"));
-
-      for (XmlElement fieldElement : r.readElementsEffektif("field")) {
-        FormField field = new FormField();
-        r.startElement(fieldElement);
-        field.setId(r.readStringAttributeEffektif("id"));
-        field.setName(r.readStringAttributeEffektif("name"));
-        field.setReadOnly(r.readBooleanAttributeEffektif("readonly"));
-        field.setRequired(r.readBooleanAttributeEffektif("required"));
-
-        Binding<String> binding = new Binding<>();
-        binding.setValue(r.readStringAttributeEffektif("value"));
-        binding.setExpression(r.readStringAttributeEffektif("expression"));
-        field.setBinding(binding);
-        r.endElement();
-        form.field(field);
-      }
+      form = new Form();
+      form.readBpmn(r);
       r.endElement();
     }
 
@@ -131,33 +115,7 @@ public class UserTask extends NoneTask {
     w.writeStringValue("taskName", "value", taskName);
 
     if (form != null) {
-      w.startElementEffektif("form");
-      w.writeTextEffektif("description", form.getDescription());
-
-      for (FormField field : form.getFields()) {
-        w.startElementEffektif("field");
-        w.writeStringAttributeEffektif("id", field.getId());
-        w.writeStringAttributeEffektif("name", field.getName());
-
-        // Only write Boolean fields that default to false if necessary.
-        if (field.isReadOnly()) {
-          w.writeStringAttributeBpmn("readonly", field.isReadOnly());
-        }
-        if (field.isRequired()) {
-          w.writeStringAttributeBpmn("required", field.isRequired());
-        }
-
-        Binding<?> binding = field.getBinding();
-        if (binding != null) {
-          w.writeStringAttributeEffektif("expression", binding.getExpression());
-          if (binding.getValue() != null) {
-            w.writeStringAttributeEffektif("value", binding.getValue().toString());
-          }
-        }
-        w.endElement();
-      }
-
-      w.endElement();
+      form.writeBpmn(w);
     }
 
     w.endExtensionElements();

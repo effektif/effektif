@@ -37,11 +37,14 @@ import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.data.DataTypeService;
 
@@ -359,7 +362,19 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return null;
   }
-  
+
+  @Override
+  public Trigger readTriggerEffektif() {
+    try {
+      Class<Trigger> triggerClass = mappings.getConcreteClass(this, Trigger.class);
+      Trigger type = triggerClass.newInstance();
+      type.readBpmn(this);
+      return type;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
   public Type readTypeEffektif() {
     try {

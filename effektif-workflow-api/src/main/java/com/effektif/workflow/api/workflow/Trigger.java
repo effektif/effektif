@@ -15,11 +15,12 @@
  */
 package com.effektif.workflow.api.workflow;
 
-
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnWritable;
 
 /**
  * @author Tom Baeyens
  */
-public abstract class Trigger {
+public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
 }

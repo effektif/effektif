@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.email;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
 
@@ -49,5 +51,15 @@ public class EmailTrigger extends Trigger {
   public EmailTrigger emailIdVariableId(String emailIdVariableId) {
     this.emailIdVariableId = emailIdVariableId;
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+
   }
 }
