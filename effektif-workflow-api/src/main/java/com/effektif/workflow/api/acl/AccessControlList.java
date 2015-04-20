@@ -15,22 +15,27 @@
  */
 package com.effektif.workflow.api.acl;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.mapper.JsonWriter;
-
+import com.effektif.workflow.api.mapper.XmlElement;
 
 /** Specifies which actions are permitted by whom on a given entity.
  *  
  * @author Tom Baeyens 
  */
-public class AccessControlList implements JsonWritable, JsonReadable {
+public class AccessControlList implements BpmnReadable, BpmnWritable, JsonWritable, JsonReadable {
   
   /** maps actions to lists of identities */
   protected Map<String,List<AccessIdentity>> permissions;
@@ -127,5 +132,30 @@ public class AccessControlList implements JsonWritable, JsonReadable {
   
   public boolean isEmpty() {
     return permissions==null || permissions.isEmpty();
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement nestedElement: r.readElementsEffektif("permission")) {
+      r.startElement(nestedElement);
+      String action = r.readStringAttributeEffektif("action");
+      AccessIdentity identity = r.readAccessIdentity();
+      permission(identity, action);
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("access");
+    for (String action : permissions.keySet()) {
+      for (AccessIdentity identity : permissions.get(action)) {
+        w.startElementEffektif("permission");
+        w.writeStringAttributeEffektif("action", action);
+        identity.writeBpmn(w);
+        w.endElement();
+      }
+    }
+    w.endElement();
   }
 }

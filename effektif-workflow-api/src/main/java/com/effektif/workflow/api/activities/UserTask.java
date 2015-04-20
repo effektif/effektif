@@ -91,6 +91,12 @@ public class UserTask extends NoneTask {
     escalateToId = r.readBinding("escalateToId", UserId.class);
     taskName = r.readStringValue("taskName");
 
+    for (XmlElement nestedElemenet : r.readElementsEffektif("access")) {
+      r.startElement(nestedElemenet);
+      access = new AccessControlList();
+      access.readBpmn(r);
+      r.endElement();
+    }
     for (XmlElement formElement : r.readElementsEffektif("form")) {
       r.startElement(formElement);
       form = new Form();
@@ -114,6 +120,9 @@ public class UserTask extends NoneTask {
     w.writeBinding("escalateToId", escalateToId);
     w.writeStringValue("taskName", "value", taskName);
 
+    if (access != null) {
+      access.writeBpmn(w);
+    }
     if (form != null) {
       form.writeBpmn(w);
     }

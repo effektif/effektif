@@ -15,6 +15,10 @@
  */
 package com.effektif.workflow.api.acl;
 
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.JsonReadable;
 import com.effektif.workflow.api.mapper.JsonReader;
 import com.effektif.workflow.api.mapper.JsonWritable;
@@ -24,7 +28,7 @@ import com.effektif.workflow.api.mapper.JsonWriter;
 /**
  * @author Tom Baeyens
  */
-public class AccessIdentity implements JsonReadable, JsonWritable {
+public class AccessIdentity implements BpmnReadable, BpmnWritable, JsonReadable, JsonWritable {
   
   protected String id;
 
@@ -79,5 +83,16 @@ public class AccessIdentity implements JsonReadable, JsonWritable {
     } else if (!id.equals(other.id))
       return false;
     return true;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    id = r.readStringAttributeEffektif("id");
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeTypeAttribute(this);
+    w.writeStringAttributeEffektif("id", id);
   }
 }

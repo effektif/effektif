@@ -15,8 +15,10 @@
  */
 package com.effektif.workflow.api.acl;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
-
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /** TODO check if this can be removed
  * 
@@ -29,4 +31,13 @@ import com.effektif.workflow.api.mapper.TypeName;
 @Deprecated 
 public class PublicIdentity extends AccessIdentity {
 
+  @Override
+  public void readBpmn(BpmnReader r) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    throw new NotImplementedException();
+  }
 }

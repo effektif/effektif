@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.acl;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 
 
@@ -33,5 +35,4 @@ public class OrganizationIdentity extends AccessIdentity {
   public OrganizationIdentity(String id) {
     super(id);
   }
-
 }

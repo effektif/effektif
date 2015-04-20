@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.acl.AccessIdentity;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
@@ -83,6 +84,9 @@ public interface BpmnReader {
   /** reads all scope information like nested activities (flowNodes), transitions (sequenceFlows)
    * variables and timers.*/
   void readScope();
+
+  /** Reads the access identity from a permission element’s <code>type</code> and <code>id</code> attributes. */
+  AccessIdentity readAccessIdentity();
 
   /** Reads a binding from the element whose name corresponds to the given model class. */
   <T> Binding<T> readBinding(Class modelClass, Class<T> type);

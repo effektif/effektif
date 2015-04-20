@@ -18,6 +18,7 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.mapper.XmlElement;
@@ -76,6 +77,12 @@ public class Workflow extends AbstractWorkflow {
     r.startExtensionElements();
     sourceWorkflowId = r.readStringValue("sourceWorkflowId");
 
+    for (XmlElement nestedElemenet : r.readElementsEffektif("access")) {
+      r.startElement(nestedElemenet);
+      access = new AccessControlList();
+      access.readBpmn(r);
+      r.endElement();
+    }
     for (XmlElement nestedElement: r.readElementsEffektif("variable")) {
       r.startElement(nestedElement);
       Variable variable = new Variable();
@@ -83,7 +90,6 @@ public class Workflow extends AbstractWorkflow {
       variable(variable);
       r.endElement();
     }
-
     for (XmlElement nestedElement: r.readElementsEffektif("trigger")) {
       r.startElement(nestedElement);
       trigger = r.readTriggerEffektif();
@@ -100,12 +106,14 @@ public class Workflow extends AbstractWorkflow {
     w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
 
+    if (access != null) {
+      access.writeBpmn(w);
+    }
     if (variables != null) {
       for (Variable variable : variables) {
         variable.writeBpmn(w);
       }
     }
-
     if (trigger != null) {
       trigger.writeBpmn(w);
     }

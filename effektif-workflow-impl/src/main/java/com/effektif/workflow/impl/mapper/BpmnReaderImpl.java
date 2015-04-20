@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.acl.AccessIdentity;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.XmlElement;
@@ -347,6 +348,19 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) DATE_FORMAT.parseLocalDateTime(value);
     }
     throw new RuntimeException("Couldn't parse "+value+" ("+value.getClass().getName()+") as a "+type.getName());
+  }
+
+
+  @Override
+  public AccessIdentity readAccessIdentity() {
+    try {
+      Class<AccessIdentity> identityClass = mappings.getConcreteClass(this, AccessIdentity.class);
+      AccessIdentity identity = identityClass.newInstance();
+      identity.readBpmn(this);
+      return identity;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
 
