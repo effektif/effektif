@@ -18,11 +18,11 @@ package com.effektif.workflow.impl.memory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.model.EmailId;
-import com.effektif.workflow.impl.email.EmailStore;
-import com.effektif.workflow.impl.email.PersistentEmail;
+import com.effektif.workflow.api.deprecated.acl.Authentication;
+import com.effektif.workflow.api.deprecated.acl.Authentications;
+import com.effektif.workflow.api.deprecated.model.EmailId;
+import com.effektif.workflow.impl.deprecated.email.EmailStore;
+import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
 
 
 /**

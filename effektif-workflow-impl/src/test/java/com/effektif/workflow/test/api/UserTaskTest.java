@@ -20,13 +20,13 @@ import static org.junit.Assert.*;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskQuery;
+import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.test.WorkflowTest;
 

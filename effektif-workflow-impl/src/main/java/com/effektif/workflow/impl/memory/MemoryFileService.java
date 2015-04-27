@@ -23,14 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.model.FileId;
-import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.deprecated.acl.Authentication;
+import com.effektif.workflow.api.deprecated.acl.Authentications;
+import com.effektif.workflow.api.deprecated.model.FileId;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.impl.deprecated.file.File;
+import com.effektif.workflow.impl.deprecated.file.FileService;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
 import com.effektif.workflow.impl.exceptions.NotFoundException;
-import com.effektif.workflow.impl.file.File;
-import com.effektif.workflow.impl.file.FileService;
 import com.effektif.workflow.impl.util.Streams;
 import com.effektif.workflow.impl.util.Time;
 

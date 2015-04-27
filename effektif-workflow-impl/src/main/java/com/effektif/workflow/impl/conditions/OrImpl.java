@@ -21,7 +21,6 @@ import java.util.List;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.script.ConditionService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 

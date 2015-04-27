@@ -17,11 +17,11 @@ package com.effektif.workflow.test.api;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;

@@ -18,13 +18,13 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.acl.AccessControlList;
-import com.effektif.workflow.api.mapper.BpmnReader;
-import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.XmlElement;
-import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.deprecated.acl.AccessControlList;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.types.Type;
 
 

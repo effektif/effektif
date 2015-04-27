@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.api;
 
-import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.api.deprecated.task.TaskService;
 
 
 /**
@@ -32,6 +32,7 @@ public interface Configuration {
   
   WorkflowEngine getWorkflowEngine();
   
+  @Deprecated
   TaskService getTaskService();
   
   <T> T get(Class<T> type);

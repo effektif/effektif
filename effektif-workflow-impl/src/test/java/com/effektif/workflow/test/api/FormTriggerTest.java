@@ -21,10 +21,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.form.Form;
-import com.effektif.workflow.api.form.FormField;
-import com.effektif.workflow.api.form.FormInstance;
-import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.deprecated.form.Form;
+import com.effektif.workflow.api.deprecated.form.FormField;
+import com.effektif.workflow.api.deprecated.form.FormInstance;
+import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;

@@ -19,8 +19,8 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.activities.UserTask;
 import com.effektif.workflow.api.condition.LessThan;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Transition;

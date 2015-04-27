@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.memory;
 
-import com.effektif.workflow.impl.email.TestOutgoingEmailService;
+import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
 
 
 

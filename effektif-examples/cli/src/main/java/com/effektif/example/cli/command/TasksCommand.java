@@ -18,9 +18,9 @@ package com.effektif.example.cli.command;
 import java.io.PrintWriter;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskQuery;
+import com.effektif.workflow.api.deprecated.task.TaskService;
 
 /**
  * Returns a list of open tasks for the running workflows.

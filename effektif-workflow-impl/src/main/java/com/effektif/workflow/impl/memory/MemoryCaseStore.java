@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.effektif.workflow.api.model.CaseId;
-import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.CaseQuery;
-import com.effektif.workflow.impl.CaseStore;
+import com.effektif.workflow.api.deprecated.model.CaseId;
+import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.deprecated.task.Case;
+import com.effektif.workflow.api.deprecated.task.CaseQuery;
+import com.effektif.workflow.impl.deprecated.CaseStore;
 
 
 /**

@@ -15,8 +15,8 @@
  */
 package com.effektif.workflow.impl;
 
-import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.deprecated.task.Case;
+import com.effektif.workflow.api.deprecated.task.Task;
 
 
 /**

@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.serialization.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.impl.activity.types.EmailTriggerImpl;
-import com.effektif.workflow.impl.activity.types.FormTriggerImpl;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
+import com.effektif.workflow.impl.deprecated.activity.types.EmailTriggerImpl;
+import com.effektif.workflow.impl.deprecated.activity.types.FormTriggerImpl;
 import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.util.Exceptions;
 

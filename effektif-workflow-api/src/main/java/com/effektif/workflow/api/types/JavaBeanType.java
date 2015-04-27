@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.serialization.json.TypeName;
 
 
 /** 

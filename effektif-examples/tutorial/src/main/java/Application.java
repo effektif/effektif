@@ -19,13 +19,13 @@ import java.io.InputStreamReader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskQuery;
+import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;

@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.conditions;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Not;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.script.ConditionService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 

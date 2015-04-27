@@ -18,13 +18,13 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.form.FormInstance;
-import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.task.TaskService;
-import com.effektif.workflow.impl.TaskServiceImpl;
+import com.effektif.workflow.api.deprecated.form.FormInstance;
+import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskQuery;
+import com.effektif.workflow.api.deprecated.task.TaskService;
+import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
 import com.effektif.workflow.impl.mapper.JsonMapper;
 
 

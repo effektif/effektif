@@ -17,13 +17,13 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
 import com.effektif.mongo.MongoFileService.FieldsFile;
-import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.api.deprecated.acl.Authentication;
+import com.effektif.workflow.api.deprecated.acl.Authentications;
+import com.effektif.workflow.api.deprecated.model.EmailId;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.email.EmailStore;
-import com.effektif.workflow.impl.email.PersistentEmail;
+import com.effektif.workflow.impl.deprecated.email.EmailStore;
+import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
 import com.mongodb.BasicDBObject;
 
 

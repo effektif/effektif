@@ -16,7 +16,7 @@
 package com.effektif.adapter.activity;
 
 import com.effektif.workflow.api.activities.AbstractBindableActivity;
-import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.serialization.json.TypeName;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;

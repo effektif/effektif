@@ -31,11 +31,11 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.deprecated.model.CaseId;
+import com.effektif.workflow.api.deprecated.task.Case;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;

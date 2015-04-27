@@ -15,10 +15,10 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.mapper.JsonPropertyOrder;
-import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.serialization.json.JsonPropertyOrder;
 
 
 /**

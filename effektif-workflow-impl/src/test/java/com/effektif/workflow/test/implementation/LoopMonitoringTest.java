@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.mapper.JsonIgnore;
+import com.effektif.workflow.api.serialization.json.JsonIgnore;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowExecutionListener;

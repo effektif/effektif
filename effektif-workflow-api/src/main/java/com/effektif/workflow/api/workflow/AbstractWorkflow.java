@@ -15,10 +15,10 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.effektif.workflow.api.acl.AccessControlList;
-import com.effektif.workflow.api.mapper.BpmnReader;
-import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 
 
 /**

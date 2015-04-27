@@ -19,8 +19,8 @@ import java.io.StringReader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.mapper.BpmnWritable;
-import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWritable;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;

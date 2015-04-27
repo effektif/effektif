@@ -23,16 +23,16 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.EmailTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskQuery;
+import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
-import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
+import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 

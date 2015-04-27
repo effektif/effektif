@@ -18,8 +18,8 @@ package com.effektif.example.cli.command;
 import java.io.PrintWriter;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.impl.mapper.JsonMapper;
 
 /**

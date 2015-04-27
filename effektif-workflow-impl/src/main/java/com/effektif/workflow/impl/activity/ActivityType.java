@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.bpmn.DeprecatedBpmnReader;

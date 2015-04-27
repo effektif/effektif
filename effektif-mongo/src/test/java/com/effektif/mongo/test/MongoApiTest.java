@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.email.TestOutgoingEmailService;
+import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
 import com.effektif.workflow.test.WorkflowTest;
 import com.mongodb.DB;

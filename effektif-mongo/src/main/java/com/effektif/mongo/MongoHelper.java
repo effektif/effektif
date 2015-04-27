@@ -23,8 +23,8 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.mongodb.BasicDBObject;

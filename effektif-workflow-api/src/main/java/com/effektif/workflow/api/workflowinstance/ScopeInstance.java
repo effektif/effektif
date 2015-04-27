@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.workflow.Extensible;
 
 

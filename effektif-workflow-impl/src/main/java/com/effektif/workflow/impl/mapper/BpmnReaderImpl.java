@@ -32,13 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.acl.AccessIdentity;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.mapper.BpmnReader;
-import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.deprecated.acl.AccessIdentity;
+import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;

@@ -24,7 +24,7 @@ import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 
-import com.effektif.workflow.impl.script.RhinoVariableScope;
+import com.effektif.workflow.impl.deprecated.script.RhinoVariableScope;
 
 
 /**

@@ -19,18 +19,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.identity.IdentityService;
-import com.effektif.workflow.impl.identity.User;
+import com.effektif.workflow.impl.deprecated.identity.IdentityService;
+import com.effektif.workflow.impl.deprecated.identity.User;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;

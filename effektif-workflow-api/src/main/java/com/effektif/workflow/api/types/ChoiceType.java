@@ -18,16 +18,16 @@ package com.effektif.workflow.api.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.form.FormField;
-import com.effektif.workflow.api.mapper.BpmnReader;
-import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.TypeName;
-import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.deprecated.form.FormField;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
+import com.effektif.workflow.api.serialization.json.TypeName;
 import com.effektif.workflow.api.workflow.Binding;
 
 /**
  * Represents decision buttons at the end of a
- * {@link com.effektif.workflow.api.activities.UserTask} form -
+ * {@link com.effektif.workflow.api.deprecated.activities.UserTask} form -
  * a choice that completes the task.
  * 
  * @author Tom Baeyens

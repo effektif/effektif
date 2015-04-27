@@ -21,13 +21,13 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
-import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.Authentications;
-import com.effektif.workflow.api.model.FileId;
+import com.effektif.workflow.api.deprecated.acl.Authentication;
+import com.effektif.workflow.api.deprecated.acl.Authentications;
+import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.file.File;
-import com.effektif.workflow.impl.file.FileService;
+import com.effektif.workflow.impl.deprecated.file.File;
+import com.effektif.workflow.impl.deprecated.file.FileService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;

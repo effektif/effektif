@@ -22,10 +22,10 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskQuery;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.task.Task;
-import com.effektif.workflow.api.task.TaskQuery;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.util.Time;

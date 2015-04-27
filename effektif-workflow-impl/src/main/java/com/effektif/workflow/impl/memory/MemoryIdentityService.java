@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.model.GroupId;
-import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.impl.identity.Group;
-import com.effektif.workflow.impl.identity.IdentityService;
-import com.effektif.workflow.impl.identity.User;
+import com.effektif.workflow.api.deprecated.model.GroupId;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.impl.deprecated.identity.Group;
+import com.effektif.workflow.impl.deprecated.identity.IdentityService;
+import com.effektif.workflow.impl.deprecated.identity.User;
 
 
 /**

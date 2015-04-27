@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;

@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.List;
 
-import com.effektif.workflow.api.acl.AccessControlList;
+import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Trigger;

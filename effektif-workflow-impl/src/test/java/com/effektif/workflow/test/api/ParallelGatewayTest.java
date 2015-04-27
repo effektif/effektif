@@ -23,7 +23,7 @@ import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;

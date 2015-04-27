@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 
-import com.effektif.workflow.api.acl.Authentication;
-import com.effektif.workflow.api.acl.Authentications;
+import com.effektif.workflow.api.deprecated.acl.Authentication;
+import com.effektif.workflow.api.deprecated.acl.Authentications;
 import com.effektif.workflow.api.model.Id;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;

@@ -15,8 +15,8 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.effektif.workflow.api.mapper.BpmnReadable;
-import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReadable;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWritable;
 
 /**
  * @author Tom Baeyens

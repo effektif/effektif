@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.EmailTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.workflow.Workflow;
 
 public class SoftwareRelease {

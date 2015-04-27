@@ -20,14 +20,14 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.model.EmailId;
-import com.effektif.workflow.impl.email.EmailStore;
-import com.effektif.workflow.impl.email.PersistentEmail;
+import com.effektif.workflow.api.deprecated.model.EmailId;
+import com.effektif.workflow.impl.deprecated.email.EmailStore;
+import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Tests {@link com.effektif.workflow.impl.email.EmailStore} storage and retrieval.
+ * Tests {@link com.effektif.workflow.impl.deprecated.email.EmailStore} storage and retrieval.
  */
 public class EmailStoreTest extends TestCase {
 

@@ -23,11 +23,11 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;

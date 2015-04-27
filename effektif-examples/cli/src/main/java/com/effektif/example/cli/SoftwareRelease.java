@@ -15,8 +15,8 @@
  */
 package com.effektif.example.cli;
 
-import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.deprecated.activities.EmailTask;
+import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.workflow.Workflow;
 
 

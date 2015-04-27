@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.model.Attachment;
+import com.effektif.workflow.api.deprecated.model.Attachment;
 import com.effektif.workflow.impl.data.AbstractDataType;
 
 

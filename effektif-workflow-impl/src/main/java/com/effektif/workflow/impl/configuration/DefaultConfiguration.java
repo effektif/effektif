@@ -19,23 +19,23 @@ import javax.script.ScriptEngineManager;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.task.TaskService;
+import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
-import com.effektif.workflow.impl.CaseServiceImpl;
 import com.effektif.workflow.impl.ConditionServiceImpl;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
 import com.effektif.workflow.impl.SynchronousExecutorService;
-import com.effektif.workflow.impl.TaskServiceImpl;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
-import com.effektif.workflow.impl.email.OutgoingEmailServiceSupplier;
+import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
+import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
+import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceImpl;
+import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceSupplier;
+import com.effektif.workflow.impl.deprecated.script.RhinoScriptService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.mapper.Mappings;
-import com.effektif.workflow.impl.script.RhinoScriptService;
 
 
 /** Configurations to build a workflow engine. */

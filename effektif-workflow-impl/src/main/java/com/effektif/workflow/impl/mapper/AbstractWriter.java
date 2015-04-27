@@ -16,7 +16,7 @@ package com.effektif.workflow.impl.mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.serialization.json.JsonWriter;
 
 
 /**

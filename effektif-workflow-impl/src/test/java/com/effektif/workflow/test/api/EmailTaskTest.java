@@ -19,13 +19,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.EmailTask;
+import com.effektif.workflow.api.deprecated.activities.EmailTask;
+import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.email.OutgoingEmail;
-import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.deprecated.email.OutgoingEmail;
+import com.effektif.workflow.impl.deprecated.file.File;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 

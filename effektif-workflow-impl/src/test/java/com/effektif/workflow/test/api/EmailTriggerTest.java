@@ -19,14 +19,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.api.deprecated.model.EmailId;
+import com.effektif.workflow.api.deprecated.types.EmailIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.types.EmailIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.email.EmailStore;
-import com.effektif.workflow.impl.email.EmailTrigger;
-import com.effektif.workflow.impl.email.PersistentEmail;
+import com.effektif.workflow.impl.deprecated.email.EmailStore;
+import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
+import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -70,7 +70,7 @@ public class EmailTriggerTest extends WorkflowTest {
   }
 
   /**
-   * Tests specifying a custom variable ID for the {@link com.effektif.workflow.api.model.EmailId} workflow variable
+   * Tests specifying a custom variable ID for the {@link com.effektif.workflow.api.deprecated.model.EmailId} workflow variable
    * in the trigger.
    */
   @Test

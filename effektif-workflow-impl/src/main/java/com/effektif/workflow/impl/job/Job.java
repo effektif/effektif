@@ -19,10 +19,10 @@ import java.util.LinkedList;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.mapper.JsonIgnore;
-import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.serialization.json.JsonIgnore;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;

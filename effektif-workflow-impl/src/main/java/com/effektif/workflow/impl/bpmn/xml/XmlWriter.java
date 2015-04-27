@@ -23,7 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 
 
 /** serializes {@link XmlElement our own jsonnable xml dom structure} 

@@ -24,8 +24,8 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.mapper.JsonWritable;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.serialization.json.JsonWritable;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.mapper.AbstractWriter;
 import com.effektif.workflow.impl.mapper.Mappings;

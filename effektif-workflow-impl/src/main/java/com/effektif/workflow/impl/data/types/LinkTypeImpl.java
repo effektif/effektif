@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.model.Link;
+import com.effektif.workflow.api.deprecated.model.Link;
 import com.effektif.workflow.api.types.LinkType;
 
 /**

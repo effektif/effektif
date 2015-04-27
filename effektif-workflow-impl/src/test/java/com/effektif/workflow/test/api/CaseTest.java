@@ -21,8 +21,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.task.Case;
-import com.effektif.workflow.api.task.CaseQuery;
+import com.effektif.workflow.api.deprecated.task.Case;
+import com.effektif.workflow.api.deprecated.task.CaseQuery;
 import com.effektif.workflow.test.WorkflowTest;
 
 

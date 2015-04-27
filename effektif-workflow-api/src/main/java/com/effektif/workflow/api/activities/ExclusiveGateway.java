@@ -15,10 +15,10 @@
  */
 package com.effektif.workflow.api.activities;
 
-import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnReader;
-import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
+import com.effektif.workflow.api.serialization.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 
 

@@ -24,23 +24,23 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import com.effektif.workflow.api.model.EmailAddress;
-import com.effektif.workflow.api.model.FileId;
-import com.effektif.workflow.api.model.Link;
-import com.effektif.workflow.api.model.Money;
+import com.effektif.workflow.api.deprecated.model.EmailAddress;
+import com.effektif.workflow.api.deprecated.model.FileId;
+import com.effektif.workflow.api.deprecated.model.Link;
+import com.effektif.workflow.api.deprecated.model.Money;
+import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.types.FileIdType;
+import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.EmailAddressType;
-import com.effektif.workflow.api.types.FileIdType;
 import com.effektif.workflow.api.types.LinkType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.file.File;
+import com.effektif.workflow.impl.deprecated.file.File;
 import com.effektif.workflow.test.WorkflowTest;
 
 

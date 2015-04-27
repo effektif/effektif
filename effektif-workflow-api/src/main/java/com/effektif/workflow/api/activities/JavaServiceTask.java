@@ -15,9 +15,10 @@
  */
 package com.effektif.workflow.api.activities;
 
-import com.effektif.workflow.api.mapper.BpmnElement;
-import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
-import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.deprecated.activities.ServiceTask;
+import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
+import com.effektif.workflow.api.serialization.bpmn.BpmnTypeAttribute;
+import com.effektif.workflow.api.serialization.json.TypeName;
 
 
 /** 
