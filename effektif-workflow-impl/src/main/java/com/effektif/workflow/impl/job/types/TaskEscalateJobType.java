@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.job.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.task.Task;
@@ -29,13 +30,12 @@ import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("taskEscalate")
+@TypeName("taskEscalate")
 public class TaskEscalateJobType extends AbstractJobType {
 
   @Override

@@ -33,11 +33,9 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.email.OutgoingEmailServiceSupplier;
 import com.effektif.workflow.impl.job.JobServiceImpl;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
-import com.effektif.workflow.impl.mapper.deprecated.ObjectMapperSupplier;
+import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.script.RhinoScriptService;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /** Configurations to build a workflow engine. */
@@ -55,9 +53,9 @@ public abstract class DefaultConfiguration implements Configuration {
     registerDefaultEmailService();
     registerDefaultExecutorService();
     registerDefaultJobService();
-    registerDefaultJsonFactory();
     registerDefaultJsonService();
-    registerDefaultObjectMapper();
+    registerDefaultMappings();
+    registerDefaultRestJsonMapper();
     registerDefaultScriptManager();
     registerDefaultScriptService();
     registerDefaultTaskService();
@@ -99,7 +97,7 @@ public abstract class DefaultConfiguration implements Configuration {
   }
 
   protected void registerDefaultJsonService() {
-    brewery.ingredient(new JsonService());
+    brewery.ingredient(new JsonMapper());
   }
   
   protected void registerDefaultJobService() {
@@ -114,12 +112,12 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new DataTypeService());
   }
   
-  protected void registerDefaultObjectMapper() {
-    brewery.supplier(new ObjectMapperSupplier(), ObjectMapper.class);
+  protected void registerDefaultRestJsonMapper() {
+    brewery.ingredient(new JsonMapper());
   }
 
-  protected void registerDefaultJsonFactory() {
-    brewery.ingredient(new JsonFactory());
+  protected void registerDefaultMappings() {
+    brewery.ingredient(new Mappings());
   }
 
   protected void registerDefaultScriptManager() {

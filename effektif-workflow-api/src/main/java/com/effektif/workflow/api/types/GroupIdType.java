@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
  * @author Peter Hilton
  */
-@JsonTypeName("groupId")
+@TypeName("groupId")
 public class GroupIdType extends Type {
 
   public static final GroupIdType INSTANCE = new GroupIdType();

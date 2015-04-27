@@ -18,12 +18,13 @@ package com.effektif.workflow.api.workflow;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -55,24 +56,69 @@ public class Workflow extends AbstractWorkflow {
   protected LocalDateTime createTime;
   protected UserId creatorId;
 
+//  @Override
+//  public void readJson(JsonReader r) {
+//    sourceWorkflowId = r.readString("sourceWorkflowId");
+//    createTime = r.readDate("createTime");
+//    creatorId = r.readId("creatorId");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeString("sourceWorkflowId", sourceWorkflowId);
+//    w.writeDate("createTime", createTime);
+//    w.writeId("creatorId", creatorId);
+//  }
+  
   @Override
   public void readBpmn(BpmnReader r) {
+    r.startExtensionElements();
+    sourceWorkflowId = r.readStringValue("sourceWorkflowId");
+
+    for (XmlElement nestedElemenet : r.readElementsEffektif("access")) {
+      r.startElement(nestedElemenet);
+      access = new AccessControlList();
+      access.readBpmn(r);
+      r.endElement();
+    }
+    for (XmlElement nestedElement: r.readElementsEffektif("variable")) {
+      r.startElement(nestedElement);
+      Variable variable = new Variable();
+      variable.readBpmn(r);
+      variable(variable);
+      r.endElement();
+    }
+    for (XmlElement nestedElement: r.readElementsEffektif("trigger")) {
+      r.startElement(nestedElement);
+      trigger = r.readTriggerEffektif();
+      r.endElement();
+    }
+
+    r.endExtensionElements();
     super.readBpmn(r);
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-  }
+    w.startElementBpmn("extensionElements", 0);
+    w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
 
-  @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-  }
-  
-  @Override
-  public void readJson(JsonReader r) {
-    super.readJson(r);
+    if (access != null) {
+      access.writeBpmn(w);
+    }
+    if (variables != null) {
+      for (Variable variable : variables) {
+        variable.writeBpmn(w);
+      }
+    }
+    if (trigger != null) {
+      trigger.writeBpmn(w);
+    }
+
+    w.endExtensionElements();
   }
 
   /** refers to the id in the source (or authoring) form of this workflow.

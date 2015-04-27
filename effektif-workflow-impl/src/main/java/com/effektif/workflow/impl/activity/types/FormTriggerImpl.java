@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormInstance;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -24,7 +22,7 @@ import com.effektif.workflow.api.triggers.FormTrigger;
 import com.effektif.workflow.impl.FormBindings;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -35,7 +33,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
 
   public FormBindings formBindings;
-  public JsonService jsonService;
+  public JsonMapper jsonMapper;
   
   public FormTriggerImpl() {
     super(FormTrigger.class);
@@ -44,7 +42,7 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
   @Override
   public void parse(WorkflowImpl workflow, FormTrigger formTrigger, WorkflowParser parser) {
     super.parse(workflow, formTrigger, parser);
-    this.jsonService = parser.getConfiguration(JsonService.class);
+    this.jsonMapper = parser.getConfiguration(JsonMapper.class);
     Form form = formTrigger.getForm();
     if (form!=null) {
       formBindings = new FormBindings();
@@ -61,7 +59,7 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
     FormInstance formInstance = null;
     Object formInstanceObject = triggerInstance.getData(FormTrigger.FORM_INSTANCE_KEY);
     if (deserialize) {
-      formInstance = jsonService.jsonMapToObject((Map)formInstanceObject, FormInstance.class);
+      formInstance = jsonMapper.readFromJsonObject(formInstanceObject, FormInstance.class);
       triggerInstance.data(FormTrigger.FORM_INSTANCE_KEY, formInstance);
     } else {
       formInstance = (FormInstance) formInstanceObject;

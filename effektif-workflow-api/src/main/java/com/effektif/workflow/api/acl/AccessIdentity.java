@@ -15,16 +15,20 @@
  */
 package com.effektif.workflow.api.acl;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.workflow.api.mapper.JsonReader;
+import com.effektif.workflow.api.mapper.JsonWritable;
+import com.effektif.workflow.api.mapper.JsonWriter;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public class AccessIdentity {
+public class AccessIdentity implements BpmnReadable, BpmnWritable, JsonReadable, JsonWritable {
   
   protected String id;
 
@@ -37,6 +41,16 @@ public class AccessIdentity {
     } if (id!=null) {
       this.id = id.toString();
     }
+  }
+
+  @Override
+  public void readJson(JsonReader r) {
+    id = r.readString("id");
+  }
+
+  @Override
+  public void writeJson(JsonWriter w) {
+    w.writeString("id", id);
   }
 
   public String getId() {
@@ -69,5 +83,16 @@ public class AccessIdentity {
     } else if (!id.equals(other.id))
       return false;
     return true;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    id = r.readStringAttributeEffektif("id");
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeTypeAttribute(this);
+    w.writeStringAttributeEffektif("id", id);
   }
 }

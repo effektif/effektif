@@ -15,10 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnWritable;
 
 /**
  * The process engine uses a <code>Condition</code> subclass to determine which
@@ -27,9 +25,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  *
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public abstract class Condition {
-  
+public abstract class Condition implements BpmnReadable, BpmnWritable {
+
+  /***
+   * Returns true if and only if this instance defines a condition.
+   */
+  public abstract boolean isEmpty();
+
   protected String toString(Object o) {
     if (o==null) {
       return "null";

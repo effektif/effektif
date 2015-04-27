@@ -15,24 +15,16 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.EmailTask;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.Attachment;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.types.GroupIdType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.UserIdType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.bpmn.ServiceTaskType;
 import com.effektif.workflow.impl.email.OutgoingEmail;
 import com.effektif.workflow.impl.email.OutgoingEmailService;
 import com.effektif.workflow.impl.file.File;

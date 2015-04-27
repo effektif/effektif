@@ -18,6 +18,7 @@ package com.effektif.workflow.api.form;
 
 
 
+
 /**
  * @author Tom Baeyens
  */
@@ -28,6 +29,7 @@ public class AbstractForm {
 
   public AbstractForm() {
   }
+  
   /** shallow copy constructor */
   public AbstractForm(AbstractForm other) {
     this.description = other.description;

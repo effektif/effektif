@@ -13,37 +13,55 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.mapper.JsonReadable;
-import com.effektif.workflow.api.mapper.JsonWritable;
-import com.effektif.workflow.impl.mapper.RestJsonMapper;
-
+import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 
 /**
  * @author Tom Baeyens
  */
 public class RestJsonMapperTest extends AbstractMapperTest {
 
-  static RestJsonMapper restJsonMapper = new RestJsonMapper();
+  protected static final Logger log = LoggerFactory.getLogger(RestJsonMapperTest.class);
+  static JsonMapper jsonMapper = new JsonMapper();
   
   @BeforeClass
   public static void initialize() {
     initializeMappings();
-    restJsonMapper = new RestJsonMapper();
-    restJsonMapper.setMappings(mappings);
+    jsonMapper = new JsonMapper();
+    jsonMapper.setMappings(mappings);
   }
   
   @Override
-  protected <T extends JsonReadable> T serialize(T o) {
-    String jsonString = restJsonMapper
-      .createWriter()
-      .toStringPretty((JsonWritable)o);
+  protected <T> T serialize(T o) {
+    String jsonString = jsonMapper
+      .writeToStringPretty(o);
     
-    System.out.println(jsonString);
+    log.info("\n" + jsonString + "\n");
     
-    return (T) restJsonMapper
-      .createReader()
-      .toObject(jsonString, (Class<JsonReadable>) o.getClass());
+    return (T) jsonMapper
+      .readFromString(jsonString, o.getClass());
+  }
+  
+  // NOT READY TO MOVE TO ABSTRACT MAPPER TEST
+  @Test
+  public void testCall() {
+    Call activity = new Call()
+      .id("runTests")
+      .subWorkflowName("Run tests")
+      .subWorkflowId(new WorkflowId(workflowId()));
+    activity.setSubWorkflowSource("releaseTests");
+    
+    activity = serialize(activity);
+    
+    assertEquals(new WorkflowId(workflowId()), activity.getSubWorkflowId());
+    assertEquals("releaseTests", activity.getSubWorkflowSource());
   }
 }

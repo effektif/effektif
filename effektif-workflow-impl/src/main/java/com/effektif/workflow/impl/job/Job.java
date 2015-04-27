@@ -19,6 +19,7 @@ import java.util.LinkedList;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.mapper.JsonIgnore;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -34,7 +35,9 @@ public class Job {
   
   // private static final Logger log = LoggerFactory.getLogger(Job.class);
 
+  @JsonIgnore
   public JobService jobService;
+
   public JobType jobType;
   
   public String id;

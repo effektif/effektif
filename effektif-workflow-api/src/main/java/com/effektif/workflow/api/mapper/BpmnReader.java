@@ -17,9 +17,13 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.acl.AccessIdentity;
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
-
+import com.effektif.workflow.api.workflow.Trigger;
 
 /**
  * An abstraction that allows a {@link BpmnReadable} to read its internal data from any BPMN reader.
@@ -39,7 +43,7 @@ public interface BpmnReader {
    * for (XmlElement nestedElement: r.readElementsBpmn("nested")) {
    *   r.startElement(nestedElement);
    *   ... read stuff from the nested elements with the r.readXxxx methods ...
-   *   r.endElement(nestedElement);
+   *   r.endElement();
    * }
    * </pre> 
    */
@@ -48,14 +52,20 @@ public interface BpmnReader {
   /** extracts and removes elements in the Effektif namespace from the current element.
    * Typical use:
    * <pre>
-   * for (XmlElement nestedElement: r.readElementsBpmn("nested")) {
+   * for (XmlElement nestedElement: r.readElementsEffektif("nested")) {
    *   r.startElement(nestedElement);
    *   ... read stuff from the nested elements with the r.readXxxx methods ...
-   *   r.endElement(nestedElement);
+   *   r.endElement();
    * }
    * </pre> 
    */
   List<XmlElement> readElementsEffektif(String localPart);
+
+  /** extracts and removes the single element in the Effektif namespace from the current element. */
+  XmlElement readElementEffektif(String localPart);
+
+  /** Extracts and removes elements whose name corresponds to the given model class name. */
+  List<XmlElement> readElementsEffektif(Class modelClass);
 
   /** set the current element on which the other readXxxx methods apply.
    * Always ensure there is a matching endElement() called afterwards.*/
@@ -75,6 +85,12 @@ public interface BpmnReader {
    * variables and timers.*/
   void readScope();
 
+  /** Reads the access identity from a permission element’s <code>type</code> and <code>id</code> attributes. */
+  AccessIdentity readAccessIdentity();
+
+  /** Reads a binding from the element whose name corresponds to the given model class. */
+  <T> Binding<T> readBinding(Class modelClass, Class<T> type);
+
   /** Reads a binding like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> Binding<T> readBinding(String elementName, Class<T> type);
@@ -82,28 +98,49 @@ public interface BpmnReader {
   /** Returns a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> List<Binding<T>> readBindings(String elementName, Class<T> type);
-  
+
+  /** Returns a the {@link Trigger} instance specified by the Effektif <code>type</code> parameter. */
+  Trigger readTriggerEffektif();
+
+  /** Returns a the {@link Type} instance specified by the Effektif <code>type</code> parameter. */
+  Type readTypeEffektif();
+
   /** Reads the given documentation string as a BPMN <code>documentation</code> element. */
   String readDocumentation();
 
+  /** Reads a boolean string field as an attribute on the current xml element in the Effektif namespace */
+  Boolean readBooleanAttributeEffektif(String localPart);
+
   /** Reads a string field as an attribute on the current xml element in the BPMN namespace */
   String readStringAttributeBpmn(String localPart);
-  
+
   /** Reads a string field as an attribute on the current xml element in the Effektif namespace */
   String readStringAttributeEffektif(String localPart);
-  
+
   /** Reads an id as an attribute on the current xml element in the BPMN namespace */
   <T extends Id> T readIdAttributeBpmn(String localPart, Class<T> idType);
-  
+
   /** Reads an id as an attribute on the current xml element in the Effektif namespace */
   <T extends Id> T readIdAttributeEffektif(String localPart, Class<T> idType);
 
   /** Reads a date field as an attribute on the current xml element in the Effektif namespace */
   LocalDateTime readDateAttributeEffektif(String localPart);
 
+  /** Reads a {@link RelativeTime} from an element in the Effektif namespace. */
+  RelativeTime readRelativeTimeEffektif(String localPart);
+
+  /** Reads a string from the ‘value’ attribute in the current XML element in the Effektif namespace. */
+  String readStringValue(String localPart);
+
   /** Reads a string as content text in the current xml element */
   String readTextEffektif(String localPart);
-  
+
   /** TODO */
   XmlElement getUnparsedXml();
+
+  /** Reads the first condition from the available condition elements. */
+  Condition readCondition();
+
+  /** Reads a list of condition instances from their various XML elements. */
+  List<Condition> readConditions();
 }

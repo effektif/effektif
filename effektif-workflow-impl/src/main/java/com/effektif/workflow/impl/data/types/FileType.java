@@ -15,14 +15,14 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.Type;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("file")
+@TypeName("file")
 public class FileType extends Type {
 
   public static final FileType INSTANCE = new FileType();

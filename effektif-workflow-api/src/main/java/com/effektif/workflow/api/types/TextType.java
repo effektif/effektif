@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("text")
+@TypeName("text")
 public class TextType extends Type {
 
   public static final TextType INSTANCE = new TextType(); 

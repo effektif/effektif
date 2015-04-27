@@ -32,13 +32,16 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.ScopeInstance;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -64,21 +67,21 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowStore workflowStore;
   public WorkflowInstanceStore workflowInstanceStore;
   public CaseServiceImpl caseService;
-  public JsonService jsonService;
   public Brewery brewery;
   public Configuration configuration;
   public List<WorkflowExecutionListener> workflowExecutionListeners;
+  public DataTypeService dataTypeService;
   
   @Override
   public void brew(Brewery brewery) {
     this.id = brewery.get(WorkflowEngineConfiguration.class).getWorkflowEngineId();
     this.configuration = brewery.get(Configuration.class);
-    this.jsonService = brewery.get(JsonService.class);
     this.executorService = brewery.get(ExecutorService.class);
     this.workflowCache = brewery.get(WorkflowCache.class);
     this.workflowStore = brewery.get(WorkflowStore.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.caseService = brewery.get(CaseServiceImpl.class);
+    this.dataTypeService = brewery.get(DataTypeService.class);
     this.brewery = brewery;
     
     // ensuring the default activity types are registered
@@ -423,10 +426,27 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
   
-  public void deserializeVariableValues(Map<String,Object> variableValues, WorkflowImpl workflow) {
+  public void deserializeWorkflowInstance(WorkflowInstance workflowInstance) {
+    deserializeScopeInstance(workflowInstance);
   }
 
-  public void deserializeWorkflowInstance(WorkflowInstance workflowInstance) {
+  protected void deserializeScopeInstance(ScopeInstance scopeInstance) {
+    List<VariableInstance> variableInstances = scopeInstance.getVariableInstances();
+    if (variableInstances!=null) {
+      for (VariableInstance variableInstance: variableInstances) {
+        deserializeVariableInstance(variableInstance);
+      }
+    }
+  }
+
+  protected void deserializeVariableInstance(VariableInstance variableInstance) {
+    Type type = variableInstance!=null ? variableInstance.getType() : null;
+    Object serializedValue = variableInstance.getValue();
+    if (type!=null && serializedValue!=null) {
+      DataType dataType = dataTypeService.createDataType(type);
+      Object value = dataType.convertJsonToInternalValue(serializedValue);
+      variableInstance.setValue(value);
+    }
   }
 
   public void deserializeVariableValues(WorkflowInstanceId workflowInstanceId, Map<String, Object> variableValues) {

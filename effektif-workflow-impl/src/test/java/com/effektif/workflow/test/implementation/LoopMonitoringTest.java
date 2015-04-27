@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.mapper.JsonIgnore;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowExecutionListener;
@@ -40,8 +41,10 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class LoopMonitoringTest extends WorkflowTest {
   
-  private class LoopMonitor {
+  public static class LoopMonitor {
+    @JsonIgnore
     Integer treshold;
+    @JsonIgnore
     Map<ActivityImpl, Integer> counters = new HashMap<>();
     public LoopMonitor(Integer treshold) {
       this.treshold = treshold;
@@ -60,7 +63,7 @@ public class LoopMonitoringTest extends WorkflowTest {
     }
   }
 
-  private class LoopMonitoringListener implements WorkflowExecutionListener {
+  public static class LoopMonitoringListener implements WorkflowExecutionListener {
     private static final String LOOP_MONITOR_KEY = "counters";
     @Override
     public void started(ActivityInstanceImpl activityInstance) {

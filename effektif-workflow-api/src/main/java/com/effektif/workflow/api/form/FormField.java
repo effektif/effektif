@@ -15,6 +15,10 @@
  */
 package com.effektif.workflow.api.form;
 
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -29,7 +33,7 @@ import com.effektif.workflow.api.workflow.Binding;
  *
  * @author Tom Baeyens
  */
-public class FormField extends AbstractFormField {
+public class FormField extends AbstractFormField implements BpmnReadable, BpmnWritable {
 
   protected Binding<?> binding;
 
@@ -81,5 +85,40 @@ public class FormField extends AbstractFormField {
   public FormField propertyOpt(String key, Object value) {
     super.propertyOpt(key, value);
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    id = r.readStringAttributeEffektif("id");
+    name = r.readStringAttributeEffektif("name");
+    readOnly = r.readBooleanAttributeEffektif("readonly");
+    required = r.readBooleanAttributeEffektif("required");
+
+    Binding<String> fieldBinding = new Binding<>();
+    fieldBinding.setValue(r.readStringAttributeEffektif("value"));
+    fieldBinding.setExpression(r.readStringAttributeEffektif("expression"));
+    setBinding(fieldBinding);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("field");
+    w.writeStringAttributeEffektif("id", id);
+    w.writeStringAttributeEffektif("name", name);
+
+    if (readOnly != null) {
+      w.writeStringAttributeBpmn("readonly", readOnly);
+    }
+    if (required != null) {
+      w.writeStringAttributeBpmn("required", required);
+    }
+
+    if (binding != null) {
+      w.writeStringAttributeEffektif("expression", binding.getExpression());
+      if (binding.getValue() != null) {
+        w.writeStringAttributeEffektif("value", binding.getValue().toString());
+      }
+    }
+    w.endElement();
   }
 }

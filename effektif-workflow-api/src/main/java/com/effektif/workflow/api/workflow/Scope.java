@@ -20,8 +20,6 @@ import java.util.List;
 
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -35,6 +33,18 @@ public abstract class Scope extends Element {
   protected List<Variable> variables;
   protected List<Timer> timers;
 
+//  @Override
+//  public void readJson(JsonReader r) {
+//    activities =  r.readList("activities");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeList("activities", activities);
+//    super.writeJson(w);
+//  }
+  
   @Override
   public void readBpmn(BpmnReader r) {
     r.readScope();
@@ -43,20 +53,8 @@ public abstract class Scope extends Element {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.writeScope();
     super.writeBpmn(w);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeList("activities", activities);
-    super.writeJson(w);
-  }
-  
-  @Override
-  public void readJson(JsonReader r) {
-    activities =  r.readList("activities", Activity.class);
-    super.readJson(r);
+    w.writeScope();
   }
 
   public List<Activity> getActivities() {

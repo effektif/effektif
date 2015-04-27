@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("number")
+@TypeName("number")
 public class NumberType extends Type {
 
   public static final NumberType INSTANCE = new NumberType();

@@ -22,13 +22,10 @@ import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
-import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -36,7 +33,6 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -47,7 +43,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Email-Task">Email Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("email")
 @TypeName("email")
 @BpmnElement("serviceTask")
 @BpmnTypeAttribute(attribute="type", value="email")
@@ -109,49 +104,49 @@ public class EmailTask extends Activity {
     w.writeBindings("bccUserId", bccUserIds);
     w.writeBindings("bccGroupId", bccGroupIds);
     w.writeTextEffektif("subject", subject);
-    w.writeTextEffektif("bodyText", bodyText);
-    w.writeTextEffektif("bodyHtml", bodyHtml);
+    w.writeCDataTextEffektif("bodyText", bodyText);
+    w.writeCDataTextEffektif("bodyHtml", bodyHtml);
     w.writeBindings("attachmentFileId", attachmentFileIds);
     w.endExtensionElements();
   }
 
-  @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-    w.writeBinding("fromEmailAddress", fromEmailAddress);
-    w.writeBindings("toEmailAddresses", toEmailAddresses);
-    w.writeBindings("toUserIds", toUserIds);
-    w.writeBindings("toGroupIds", toGroupIds);
-    w.writeBindings("ccEmailAddresses", ccEmailAddresses);
-    w.writeBindings("ccUserIds", ccUserIds);
-    w.writeBindings("ccGroupIds", ccGroupIds);
-    w.writeBindings("bccEmailAddresses", bccEmailAddresses);
-    w.writeBindings("bccUserIds", bccUserIds);
-    w.writeBindings("bccGroupIds", bccGroupIds);
-    w.writeString("subject", subject);
-    w.writeString("bodyText", bodyText);
-    w.writeString("bodyHtml", bodyHtml);
-    w.writeBindings("attachmentFileIds", attachmentFileIds);
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
-    toEmailAddresses = r.readBindings("toEmailAddresses", String.class);
-    toUserIds = r.readBindings("toUserIds", UserId.class);
-    toGroupIds = r.readBindings("toGroupIds", GroupId.class);
-    ccEmailAddresses = r.readBindings("ccEmailAddresses", String.class);
-    ccUserIds = r.readBindings("ccUserIds", UserId.class);
-    ccGroupIds = r.readBindings("ccGroupIds", GroupId.class);
-    bccEmailAddresses = r.readBindings("bccEmailAddresses", String.class);
-    bccUserIds = r.readBindings("bccUserIds", UserId.class);
-    bccGroupIds = r.readBindings("bccGroupIds", GroupId.class);
-    subject = r.readString("subject");
-    bodyText = r.readString("bodyText");
-    bodyHtml = r.readString("bodyHtml");
-    attachmentFileIds = r.readBindings("attachmentFileIds", FileId.class);
-    super.readJson(r);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    fromEmailAddress = r.readBinding("fromEmailAddress");
+//    toEmailAddresses = r.readList("toEmailAddresses");
+//    toUserIds = r.readList("toUserIds");
+//    toGroupIds = r.readList("toGroupIds");
+//    ccEmailAddresses = r.readList("ccEmailAddresses");
+//    ccUserIds = r.readList("ccUserIds");
+//    ccGroupIds = r.readList("ccGroupIds");
+//    bccEmailAddresses = r.readList("bccEmailAddresses");
+//    bccUserIds = r.readList("bccUserIds");
+//    bccGroupIds = r.readList("bccGroupIds");
+//    subject = r.readString("subject");
+//    bodyText = r.readString("bodyText");
+//    bodyHtml = r.readString("bodyHtml");
+//    attachmentFileIds = r.readList("attachmentFileIds");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeBinding("fromEmailAddress", fromEmailAddress);
+//    w.writeList("toEmailAddresses", toEmailAddresses);
+//    w.writeList("toUserIds", toUserIds);
+//    w.writeList("toGroupIds", toGroupIds);
+//    w.writeList("ccEmailAddresses", ccEmailAddresses);
+//    w.writeList("ccUserIds", ccUserIds);
+//    w.writeList("ccGroupIds", ccGroupIds);
+//    w.writeList("bccEmailAddresses", bccEmailAddresses);
+//    w.writeList("bccUserIds", bccUserIds);
+//    w.writeList("bccGroupIds", bccGroupIds);
+//    w.writeString("subject", subject);
+//    w.writeString("bodyText", bodyText);
+//    w.writeString("bodyHtml", bodyHtml);
+//    w.writeList("attachmentFileIds", attachmentFileIds);
+//  }
 
   @Override
   public EmailTask id(String id) {

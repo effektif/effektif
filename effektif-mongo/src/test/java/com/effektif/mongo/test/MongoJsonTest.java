@@ -14,19 +14,39 @@
 package com.effektif.mongo.test;
 
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.mongo.MongoJsonMapper;
-import com.effektif.workflow.api.mapper.JsonReadable;
+import com.effektif.mongo.PrettyPrinter;
 import com.effektif.workflow.test.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
-
 
 /**
  * @author Tom Baeyens
  */
 public class MongoJsonTest extends AbstractMapperTest {
 
+  protected static final Logger log = LoggerFactory.getLogger(MongoJsonTest.class);
   static MongoJsonMapper mongoJsonMapper = new MongoJsonMapper();
+
+  protected String fileId() {
+    return "552ce4fdc2e610a6a3dedb10";
+  }
+
+  protected String groupId(int index) {
+    String[] ids = { "552ce4fdc2e610a6a3dedb20", "552ce4fdc2e610a6a3dedb21", "552ce4fdc2e610a6a3dedb22" };
+    return ids[index];
+  }
+
+  protected String userId(int index) {
+    String[] ids = { "552ce4fdc2e610a6a3dedb30", "552ce4fdc2e610a6a3dedb31", "552ce4fdc2e610a6a3dedb32" };
+    return ids[index];
+  }
+
+  protected String workflowId() {
+    return "552ce4fdc2e610a6a3dedb40";
+  }
 
   @BeforeClass
   public static void initialize() {
@@ -34,18 +54,29 @@ public class MongoJsonTest extends AbstractMapperTest {
     mongoJsonMapper = new MongoJsonMapper();
     mongoJsonMapper.setMappings(mappings);
   }
+  
+//  @Test
+//  public void testPrintObjectIds() {
+//    for (int i=0; i<20; i++) {
+//      System.out.println(ObjectId.get().toString());
+//    }
+//  }
 
   @Override
-  protected <T extends JsonReadable> T serialize(T o) {
+  protected <T> T serialize(T o) {
     BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonMapper
-      .createWriter()
-      .toDbObject(o);
+      .writeToDbObject(o);
     
-    System.out.println(dbWorkflow);
+    String json = null; 
+    if (mappings.isPretty()) {
+      json = PrettyPrinter.toJsonPrettyPrint(dbWorkflow);
+    } else {
+      json = dbWorkflow.toString();
+    }
+    log.info("\n" + json + "\n");
     
     return (T) mongoJsonMapper
-      .createReader()
-      .toObject(dbWorkflow, (Class<T>)o.getClass());
+      .readFromDbObject(dbWorkflow, (Class<T>) o.getClass());
   }
 
 }

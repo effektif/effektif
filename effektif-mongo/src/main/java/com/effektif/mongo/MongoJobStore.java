@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -32,8 +31,6 @@ import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobExecution;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
-import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.mongodb.BasicDBObject;
@@ -69,7 +66,7 @@ public class MongoJobStore implements JobStore, Brewable {
     public String jobType = "jobType";
   }
 
-  protected JsonService jsonService;
+  protected MongoJsonMapper mongoJsonMapper;
   protected String lockOwner;
   protected MongoCollection jobsCollection;
   protected MongoCollection archivedJobsCollection;
@@ -80,6 +77,7 @@ public class MongoJobStore implements JobStore, Brewable {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.jobsCollection = mongoDb.createCollection(mongoConfiguration.getJobsCollectionName());
     this.archivedJobsCollection = mongoDb.createCollection(mongoConfiguration.getJobsArchivedCollectionName());
+    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
   
   public void saveJob(Job job) {
@@ -143,25 +141,27 @@ public class MongoJobStore implements JobStore, Brewable {
   }
 
   public Job readJob(BasicDBObject dbJob) {
-    Job job = new Job();
-    job.id = readId(dbJob, JobFields._id);
-    job.key = readString(dbJob, JobFields.key);
-    job.duedate = readTime(dbJob, JobFields.duedate);
-    job.dead = readBoolean(dbJob, JobFields.dead);
-    job.done = readTime(dbJob, JobFields.done);
-    job.retries = readLong(dbJob, JobFields.retries);
-    job.retryDelay = readLong(dbJob, JobFields.retryDelay);
-    job.organizationId = readId(dbJob, JobFields.organizationId);
-    job.sourceWorkflowId = readId(dbJob, JobFields.processId);
-    job.taskId = readTaskId(dbJob, JobFields.taskId);
-    job.workflowId = readWorkflowId(dbJob, JobFields.workflowId);
-    job.workflowInstanceId = readWorkflowInstanceId(dbJob, JobFields.workflowInstanceId);
-    job.activityInstanceId = readId(dbJob, JobFields.activityInstanceId);
-    readExecutions(job, readList(dbJob, JobFields.executions));
-    readLock(job, readBasicDBObject(dbJob, JobFields.lock));
-    Map<String,Object> dbJobType = readObjectMap(dbJob, JobFields.jobType);
-    job.jobType = jsonService.jsonMapToObject(dbJobType, JobType.class);
-    return job;
+    return mongoJsonMapper.readFromDbObject(dbJob, Job.class);
+    
+//    Job job = new Job();
+//    job.id = readId(dbJob, JobFields._id);
+//    job.key = readString(dbJob, JobFields.key);
+//    job.duedate = readTime(dbJob, JobFields.duedate);
+//    job.dead = readBoolean(dbJob, JobFields.dead);
+//    job.done = readTime(dbJob, JobFields.done);
+//    job.retries = readLong(dbJob, JobFields.retries);
+//    job.retryDelay = readLong(dbJob, JobFields.retryDelay);
+//    job.organizationId = readId(dbJob, JobFields.organizationId);
+//    job.sourceWorkflowId = readId(dbJob, JobFields.processId);
+//    job.taskId = readTaskId(dbJob, JobFields.taskId);
+//    job.workflowId = readWorkflowId(dbJob, JobFields.workflowId);
+//    job.workflowInstanceId = readWorkflowInstanceId(dbJob, JobFields.workflowInstanceId);
+//    job.activityInstanceId = readId(dbJob, JobFields.activityInstanceId);
+//    readExecutions(job, readList(dbJob, JobFields.executions));
+//    readLock(job, readBasicDBObject(dbJob, JobFields.lock));
+//    Map<String,Object> dbJobType = readObjectMap(dbJob, JobFields.jobType);
+//    job.jobType = mongoJsonMapper.readFromDbObject(dbJobType, JobType.class);
+//    return job;
   }
   
   public void readExecutions(Job job, List<BasicDBObject> dbExecutions) {
@@ -187,27 +187,29 @@ public class MongoJobStore implements JobStore, Brewable {
   }
 
   public BasicDBObject writeJob(Job job) {
-    BasicDBObject dbJob = new BasicDBObject();
-    writeIdOpt(dbJob, JobFields._id, job.id);
-    writeStringOpt(dbJob, JobFields.key, job.key);
-    writeTimeOpt(dbJob, JobFields.duedate, job.duedate);
-    writeBooleanOpt(dbJob, JobFields.dead, job.dead);
-    writeTimeOpt(dbJob, JobFields.done, job.done);
-    writeLongOpt(dbJob, JobFields.retries, job.retries);
-    writeLongOpt(dbJob, JobFields.retryDelay, job.retryDelay);
-    writeIdOpt(dbJob, JobFields.organizationId, job.organizationId);
-    writeIdOpt(dbJob, JobFields.processId, job.sourceWorkflowId);
-    writeIdOpt(dbJob, JobFields.activityInstanceId, job.activityInstanceId);
-    writeIdOptNew(dbJob, JobFields.workflowInstanceId, job.workflowInstanceId);
-    writeIdOptNew(dbJob, JobFields.workflowId, job.workflowId);
-    writeIdOptNew(dbJob, JobFields.taskId, job.taskId);
-    writeExecutions(dbJob, job.executions);
-    writeLock(dbJob, job.lock);
+    return mongoJsonMapper.writeToDbObject(job.jobType);
     
-    Object dbJobType = jsonService.objectToJsonMap(job.jobType);
-    writeObjectOpt(dbJob, JobFields.jobType, dbJobType);
-    
-    return dbJob;
+//    BasicDBObject dbJob = new BasicDBObject();
+//    writeIdOpt(dbJob, JobFields._id, job.id);
+//    writeStringOpt(dbJob, JobFields.key, job.key);
+//    writeTimeOpt(dbJob, JobFields.duedate, job.duedate);
+//    writeBooleanOpt(dbJob, JobFields.dead, job.dead);
+//    writeTimeOpt(dbJob, JobFields.done, job.done);
+//    writeLongOpt(dbJob, JobFields.retries, job.retries);
+//    writeLongOpt(dbJob, JobFields.retryDelay, job.retryDelay);
+//    writeIdOpt(dbJob, JobFields.organizationId, job.organizationId);
+//    writeIdOpt(dbJob, JobFields.processId, job.sourceWorkflowId);
+//    writeIdOpt(dbJob, JobFields.activityInstanceId, job.activityInstanceId);
+//    writeIdOptNew(dbJob, JobFields.workflowInstanceId, job.workflowInstanceId);
+//    writeIdOptNew(dbJob, JobFields.workflowId, job.workflowId);
+//    writeIdOptNew(dbJob, JobFields.taskId, job.taskId);
+//    writeExecutions(dbJob, job.executions);
+//    writeLock(dbJob, job.lock);
+//    
+//    Object dbJobType = mongoJsonMapper.writeToDbObject(job.jobType);
+//    writeObjectOpt(dbJob, JobFields.jobType, dbJobType);
+//    
+//    return dbJob;
   }
 
   public void writeExecutions(BasicDBObject dbJob, LinkedList<JobExecution> jobExecutions) {

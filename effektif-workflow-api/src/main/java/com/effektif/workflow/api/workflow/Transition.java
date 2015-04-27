@@ -18,10 +18,7 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
-
-
+import com.effektif.workflow.api.mapper.XmlElement;
 
 /**
  * A sequence flow that connects two activities in a workflow.
@@ -43,36 +40,57 @@ public class Transition extends Element {
   protected Condition condition;
   protected Boolean isToNext;
 
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    from = r.readString("from");
+//    to = r.readString("to");
+//    condition = r.readObject("condition");
+//    isToNext = r.readBoolean("isToNext");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    w.writeString("from", id);
+//    w.writeString("to", id);
+//    w.writeWritable("condition", condition);
+//    w.writeBoolean("isToNext", isToNext);
+//    super.writeJson(w);
+//  }
+
   @Override
   public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
     id = r.readStringAttributeBpmn("id");
     from = r.readStringAttributeBpmn("sourceRef");
     to = r.readStringAttributeBpmn("targetRef");
-    super.readBpmn(r);
+
+    r.startExtensionElements();
+    for (XmlElement conditionElement : r.readElementsEffektif("condition")) {
+      r.startElement(conditionElement);
+      condition = r.readCondition();
+      r.endElement();
+    }
+
+    r.endExtensionElements();
   }
   
   @Override
   public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
     w.writeStringAttributeBpmn("id", id);
     w.writeStringAttributeBpmn("sourceRef", from);
     w.writeStringAttributeBpmn("targetRef", to);
-    super.writeBpmn(w);
-  }
 
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readString("id");
-    from = r.readString("from");
-    to = r.readString("to");
-    super.readJson(r);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("id", id);
-    w.writeString("from", id);
-    w.writeString("to", id);
-    super.writeJson(w);
+    if (condition != null) {
+      w.startExtensionElements();
+      w.startElementEffektif("condition");
+      condition.writeBpmn(w);
+      w.endElement();
+      w.endExtensionElements();
+    }
   }
 
   public String getId() {

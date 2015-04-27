@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.job.types;
 
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.task.Task;
 import com.effektif.workflow.api.task.TaskQuery;
@@ -25,13 +26,12 @@ import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("taskReminder")
+@TypeName("taskReminder")
 public class TaskReminderJobType extends AbstractJobType {
 
   @Override

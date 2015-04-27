@@ -16,8 +16,8 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Parallel-Gateway">Parallel Gateway</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("parallelGateway")
+@TypeName("parallelGateway")
 @BpmnElement("parallelGateway")
 public class ParallelGateway extends Activity {
 

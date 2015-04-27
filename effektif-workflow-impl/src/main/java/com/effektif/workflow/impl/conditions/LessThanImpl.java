@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.LessThan;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -22,6 +24,11 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  * @author Tom Baeyens
  */
 public class LessThanImpl extends ComparatorImpl {
+
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return LessThan.class;
+  }
 
   @Override
   public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {

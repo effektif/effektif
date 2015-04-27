@@ -18,7 +18,11 @@ package com.effektif.workflow.api.condition;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 
 
 /**
@@ -26,10 +30,16 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Tom Baeyens
  */
-@JsonTypeName("and")
+@TypeName("and")
+@BpmnElement("and")
 public class And extends Condition {
 
   protected List<Condition> conditions;
+
+  @Override
+  public boolean isEmpty() {
+    return conditions == null || conditions.isEmpty();
+  }
 
   public List<Condition> getConditions() {
     return this.conditions;
@@ -44,6 +54,24 @@ public class And extends Condition {
     }
     conditions.add(condition);
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement andElement : r.readElementsEffektif(getClass())) {
+      r.startElement(andElement);
+      conditions = r.readConditions();
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif(getClass());
+    for (Condition condition: conditions) {
+      condition.writeBpmn(w);
+    }
+    w.endElement();
   }
 
   @Override

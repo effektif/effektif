@@ -16,8 +16,10 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -26,8 +28,19 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Exclusive-Gateway">Exclusive Gateway</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("exclusiveGateway")
+@TypeName("exclusiveGateway")
 @BpmnElement("exclusiveGateway")
 public class ExclusiveGateway extends Activity {
 
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+    defaultTransitionId = r.readStringAttributeEffektif("defaultTransitionId");
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("defaultTransitionId", defaultTransitionId);
+  }
 }

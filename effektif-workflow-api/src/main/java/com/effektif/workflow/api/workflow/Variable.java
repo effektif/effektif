@@ -15,7 +15,14 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.types.Type;
 
 
@@ -27,12 +34,19 @@ public class Variable extends Element {
   protected String id;
   protected Type type;
 
-  public Variable() {
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    type = r.readObject("type");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    w.writeWritable("type", type);
+//    super.writeJson(w);
+//  }
 
   public String getId() {
     return this.id;
@@ -78,5 +92,31 @@ public class Variable extends Element {
   public Variable propertyOpt(String key, Object value) {
     super.propertyOpt(key, value);
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+    id = r.readStringAttributeEffektif("id");
+    XmlElement typeElement = r.readElementEffektif("type");
+    if (typeElement!=null) {
+      r.startElement(typeElement);
+      type = r.readTypeEffektif();
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("variable");
+    w.writeStringAttributeEffektif("id", id);
+    super.writeBpmn(w);
+    if (type!=null) {
+      w.startElementEffektif("type");
+      w.writeTypeAttribute(type);
+      type.writeBpmn(w);
+      w.endElement();
+    }
+    w.endElement();
   }
 }

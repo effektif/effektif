@@ -15,13 +15,15 @@
  */
 package com.effektif.workflow.api.condition;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("notEquals")
+@TypeName("notEquals")
+@BpmnElement("notEquals")
 public class NotEquals extends Equals {
 
   @Override

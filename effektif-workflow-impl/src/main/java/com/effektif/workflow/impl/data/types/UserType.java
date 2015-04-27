@@ -15,14 +15,14 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.Type;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("user")
+@TypeName("user")
 public class UserType extends Type {
 
   public static final UserType INSTANCE = new UserType();

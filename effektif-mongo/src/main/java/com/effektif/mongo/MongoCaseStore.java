@@ -15,11 +15,8 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoHelper.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -27,16 +24,13 @@ import org.slf4j.Logger;
 import com.effektif.workflow.api.acl.Access;
 import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.TaskId;
-import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.task.Case;
 import com.effektif.workflow.api.task.CaseQuery;
 import com.effektif.workflow.impl.CaseStore;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
 import com.effektif.workflow.impl.util.Time;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -48,7 +42,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
   
   public static final Logger log = MongoDb.log;
   
-  protected JsonService jsonService;
+  protected MongoJsonMapper mongoJsonMapper;
   protected MongoCollection casesCollection;
   
   public interface FieldsCase {
@@ -65,7 +59,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
     MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.casesCollection = mongoDb.createCollection(mongoConfiguration.getCasesCollectionName());
-    this.jsonService = brewery.get(JsonService.class);
+    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
   }
 
   @Override
@@ -121,33 +115,34 @@ public class MongoCaseStore implements CaseStore, Brewable {
   }
 
   public BasicDBObject caseToMongo(Case caze) {
-    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(caze);
-    BasicDBObject dbWorkflow = new BasicDBObject(); 
-    jsonWorkflow.remove("id");
-    jsonWorkflow.remove(FieldsCase.ORGANIZATION_ID);
-    jsonWorkflow.remove(FieldsCase.WORKFLOW_ID);
-    dbWorkflow.putAll(jsonWorkflow);
-    writeIdOptNew(dbWorkflow, FieldsCase._ID, caze.getId());
-    writeIdOpt(dbWorkflow, FieldsCase.ORGANIZATION_ID, caze.getOrganizationId());
-    writeIdOptNew(dbWorkflow, FieldsCase.WORKFLOW_ID, caze.getWorkflowId());
-    return dbWorkflow;
+    return mongoJsonMapper.writeToDbObject(caze);
+//    BasicDBObject dbWorkflow = new BasicDBObject(); 
+//    jsonWorkflow.remove("id");
+//    jsonWorkflow.remove(FieldsCase.ORGANIZATION_ID);
+//    jsonWorkflow.remove(FieldsCase.WORKFLOW_ID);
+//    dbWorkflow.putAll(jsonWorkflow);
+//    writeIdOptNew(dbWorkflow, FieldsCase._ID, caze.getId());
+//    writeIdOpt(dbWorkflow, FieldsCase.ORGANIZATION_ID, caze.getOrganizationId());
+//    writeIdOptNew(dbWorkflow, FieldsCase.WORKFLOW_ID, caze.getWorkflowId());
+//    return dbWorkflow;
   }
 
-  public Case mongoToCase(BasicDBObject dbTask) {
-    ObjectId caseId = (ObjectId) dbTask.remove(FieldsCase._ID);
-    ObjectId organizationId = (ObjectId) dbTask.remove(FieldsCase.ORGANIZATION_ID);
-    ObjectId workflowId = (ObjectId) dbTask.remove(FieldsCase.WORKFLOW_ID);
-    Case caze = jsonService.jsonMapToObject(dbTask, Case.class);
-    if (caseId!=null) {
-      caze.setId(new CaseId(caseId.toString()));
-    }
-    if (organizationId!=null) {
-      caze.setOrganizationId(organizationId.toString());
-    }
-    if (workflowId!=null) {
-      caze.setWorkflowId(new WorkflowId(workflowId.toString()));
-    }
-    return caze;
+  public Case mongoToCase(BasicDBObject dbCase) {
+    return mongoJsonMapper.readFromDbObject(dbCase, Case.class);
+//    ObjectId caseId = (ObjectId) dbCase.remove(FieldsCase._ID);
+//    ObjectId organizationId = (ObjectId) dbCase.remove(FieldsCase.ORGANIZATION_ID);
+//    ObjectId workflowId = (ObjectId) dbCase.remove(FieldsCase.WORKFLOW_ID);
+//    Case caze = mongoJsonMapper.readFromDbObject(dbCase, Case.class);
+//    if (caseId!=null) {
+//      caze.setId(new CaseId(caseId.toString()));
+//    }
+//    if (organizationId!=null) {
+//      caze.setOrganizationId(organizationId.toString());
+//    }
+//    if (workflowId!=null) {
+//      caze.setWorkflowId(new WorkflowId(workflowId.toString()));
+//    }
+//    return caze;
   }
   
   /** builds the query and ensures VIEW access */

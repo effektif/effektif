@@ -30,10 +30,7 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
-import com.effektif.workflow.impl.mapper.deprecated.SerializedMessage;
-import com.effektif.workflow.impl.mapper.deprecated.SerializedTriggerInstance;
-import com.effektif.workflow.impl.mapper.deprecated.SerializedWorkflow;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 
 
 /**
@@ -43,8 +40,8 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   
   WorkflowEngineImpl workflowEngine;
 
-  public SerializingWorkflowEngineImpl(WorkflowEngineImpl workflowEngine, JsonService jsonService) {
-    super(jsonService);
+  public SerializingWorkflowEngineImpl(WorkflowEngineImpl workflowEngine, JsonMapper jsonMapper) {
+    super(jsonMapper);
     this.workflowEngine = workflowEngine;
   }
 

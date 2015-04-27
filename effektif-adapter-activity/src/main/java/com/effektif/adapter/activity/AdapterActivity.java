@@ -16,13 +16,13 @@
 package com.effektif.adapter.activity;
 
 import com.effektif.workflow.api.activities.AbstractBindableActivity;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** 
@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeName("adapterActivity")
+@TypeName("adapterActivity")
 public class AdapterActivity extends AbstractBindableActivity {
 
   protected String adapterId;

@@ -20,11 +20,10 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.task.TaskService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
-import com.effektif.workflow.impl.mapper.deprecated.ObjectMapperSupplier;
+import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.mapper.Mappings;
 import com.effektif.workflow.impl.memory.MemoryFileService;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class DefaultAdapterConfiguration implements Configuration {
@@ -34,10 +33,10 @@ public class DefaultAdapterConfiguration implements Configuration {
   public DefaultAdapterConfiguration() {
     brewery = new Brewery();
     brewery.ingredient(this);
-    brewery.supplier(new ObjectMapperSupplier(), ObjectMapper.class);
     brewery.ingredient(new JsonFactory());
     brewery.ingredient(new DataTypeService());
-    brewery.ingredient(new JsonService());
+    brewery.ingredient(new JsonMapper());
+    brewery.ingredient(new Mappings());
     
     // The memory file service was added because it was needed in 
     // EmailTypeImpl.  This is not necessary for the adapter.

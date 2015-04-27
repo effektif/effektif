@@ -16,17 +16,14 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.FileId;
 import com.effektif.workflow.api.types.FileIdType;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.file.File;
 import com.effektif.workflow.impl.file.FileAttachment;
 import com.effektif.workflow.impl.file.FileService;
-import com.effektif.workflow.impl.util.Exceptions;
 
 
 

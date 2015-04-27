@@ -18,22 +18,22 @@ package com.effektif.workflow.api.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.UserId;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("userId")
+@TypeName("userId")
 public class UserIdType extends Type {
 
   public static final UserIdType INSTANCE = new UserIdType();
   
   protected List<UserId> candidateIds;
   protected List<GroupId> candidateGroupIds;
-
+  
   public List<UserId> getCandidateIds() {
     return this.candidateIds;
   }

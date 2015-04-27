@@ -15,8 +15,9 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Binding;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -24,7 +25,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Tom Baeyens
  */
-@JsonTypeName("isFalse")
+@TypeName("isFalse")
+@BpmnElement("isFalse")
 public class IsFalse extends SingleBindingCondition {
   
   @Override

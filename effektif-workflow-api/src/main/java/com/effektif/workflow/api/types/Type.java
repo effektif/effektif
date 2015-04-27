@@ -15,18 +15,35 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.workflow.Variable;
 
 /**
- * A type used for serialisation, for data such as process variables.
+ * Indicates the type of workflow instance variable data.
  *
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="name")
-public class Type {
+public class Type implements BpmnReadable, BpmnWritable {
 
-  
+  // protected String typeName = getClass().getAnnotation(TypeName.class).value();
+
+  /**
+   * Default implementation, which is a no-op because the <code>type</code> attribute has to be read by the
+   * {@link Variable} instance to instance this object first. This method exists so that types with additional
+   * parameters can override in order to read nested XML elements.
+   */
+  @Override
+  public void readBpmn(BpmnReader r) {
+  }
+
+  /**
+   * Default implementation, which just adds a <code>type</code> attribute.
+   * Types with additional parameters will need to override and write additional XML.
+   */
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+  }
 }

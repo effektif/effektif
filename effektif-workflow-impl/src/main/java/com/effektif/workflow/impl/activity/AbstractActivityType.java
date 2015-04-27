@@ -21,8 +21,8 @@ import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.bpmn.BpmnReader;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
+import com.effektif.workflow.impl.bpmn.DeprecatedBpmnReader;
+import com.effektif.workflow.impl.bpmn.DeprecatedBpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -46,12 +46,12 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   }
   
   @Override
-  public T readBpmn(XmlElement activityXml, BpmnReader bpmnReader) {
+  public T readBpmn(XmlElement activityXml, DeprecatedBpmnReader deprecatedBpmnReader) {
     return null;
   }
   
   @Override
-  public void writeBpmn(T activity, XmlElement activityXml, BpmnWriter bpmnWriter) {
+  public void writeBpmn(T activity, XmlElement activityXml, DeprecatedBpmnWriter deprecatedBpmnWriter) {
   }
 
   @Override

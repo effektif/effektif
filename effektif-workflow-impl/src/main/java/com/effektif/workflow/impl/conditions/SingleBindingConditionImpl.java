@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public abstract class SingleBindingConditionImpl<T extends SingleBindingCondition> extends ConditionImpl<T> {
+public abstract class SingleBindingConditionImpl<T extends SingleBindingCondition> implements ConditionImpl<T> {
   
   protected BindingImpl<?> left;
 

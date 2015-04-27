@@ -15,7 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
@@ -23,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Tom Baeyens
  */
-@JsonTypeName("lessThan")
+@TypeName("lessThan")
+@BpmnElement("lessThan")
 public class LessThan extends Comparator {
 
   @Override

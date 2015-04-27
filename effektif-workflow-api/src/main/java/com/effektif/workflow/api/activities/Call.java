@@ -18,10 +18,7 @@ package com.effektif.workflow.api.activities;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
@@ -29,7 +26,6 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /** 
  * Invokes another workflow and ends when the other workflow instance completes.
@@ -37,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Call-Activity">Call Activity</a>
  * @author Tom Baeyens
  */ 
-@JsonTypeName("call")
 @TypeName("call")
 @BpmnElement("callActivity")
 public class Call extends AbstractBindableActivity {
@@ -59,19 +54,19 @@ public class Call extends AbstractBindableActivity {
     w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
   }
 
-  @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-    w.writeId("subWorkflowId", subWorkflowId);
-    w.writeString("subWorkflowSource", subWorkflowSource);
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    subWorkflowId = r.readId("subWorkflowId", WorkflowId.class);
-    subWorkflowSource = r.readString("subWorkflowSource");
-    super.readJson(r);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    subWorkflowId = r.readId("subWorkflowId");
+//    subWorkflowSource = r.readString("subWorkflowSource");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeId("subWorkflowId", subWorkflowId);
+//    w.writeString("subWorkflowSource", subWorkflowSource);
+//  }
 
   @Override
   public Call id(String id) {

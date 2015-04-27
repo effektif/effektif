@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -26,6 +28,21 @@ import com.effektif.workflow.api.workflow.Binding;
 public abstract class SingleBindingCondition extends Condition {
   
   protected Binding<?> left;
+
+  @Override
+  public boolean isEmpty() {
+    return left == null || left.isEmpty();
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    left = r.readBinding(getClass(), Object.class);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeBinding(getClass(), getLeft());
+  }
 
   public Binding<?> getLeft() {
     return this.left;

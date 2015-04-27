@@ -23,8 +23,6 @@ import com.effektif.workflow.api.mapper.BpmnReadable;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWritable;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.XmlElement;
 
 
@@ -55,15 +53,15 @@ public abstract class Element extends Extensible implements BpmnReadable, BpmnWr
     w.writeDocumentation(description);
   }
   
-  @Override
-  public void readJson(JsonReader r) {
-    super.readJson(r);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    super.writeJson(w);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//  }
 
   /** human readable label used when visually displaying the element.
    * This corresponds to the BPMN name attribute. */

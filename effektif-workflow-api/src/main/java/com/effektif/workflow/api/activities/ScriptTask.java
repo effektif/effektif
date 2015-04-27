@@ -22,9 +22,9 @@ import java.util.Map;
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.workflow.Script;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -33,12 +33,24 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Script-Task">Script Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("scriptTask")
+@TypeName("scriptTask")
 @BpmnElement("scriptTask")
 public class ScriptTask extends NoneTask {
 
   protected Script script;
   
+//  @Override
+//  public void readJson(JsonReader r) {
+//    script = r.readObject("script");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeWritable("script", script);
+//  }
+
   @Override
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
@@ -64,10 +76,11 @@ public class ScriptTask extends NoneTask {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
     if (script!=null) {
       w.startExtensionElements();
       w.writeTextEffektif("language", script.getLanguage());
-      w.writeTextEffektif("script", script.getScript());
+      w.writeCDataTextEffektif("script", script.getScript());
       Map<String, String> mappings = script.getMappings();
       if (mappings!=null) {
         for (String scriptVariableName: mappings.keySet()) {
@@ -80,7 +93,6 @@ public class ScriptTask extends NoneTask {
       }
       w.endExtensionElements();
     }
-    super.writeBpmn(w);
   }
 
   @Override

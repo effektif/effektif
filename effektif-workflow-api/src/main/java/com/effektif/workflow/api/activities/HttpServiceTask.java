@@ -17,7 +17,7 @@ package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/HTTP-Service-Task">HTTP Service Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("httpServiceTask")
+@TypeName("httpServiceTask")
 @BpmnElement("serviceTask")
 @BpmnTypeAttribute(attribute="type", value="http")
 public class HttpServiceTask extends ServiceTask {

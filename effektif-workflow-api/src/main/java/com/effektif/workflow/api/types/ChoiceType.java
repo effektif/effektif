@@ -18,8 +18,12 @@ package com.effektif.workflow.api.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
+import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.workflow.Binding;
 
 /**
  * Represents decision buttons at the end of a
@@ -28,11 +32,40 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeName("decision")
+@TypeName("decision")
 public class ChoiceType extends TextType {
 
   protected List<ChoiceOption> options;
   
+//  @Override
+//  public void readJson(JsonReader r) {
+//    options = r.readList("options");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    super.writeJson(w);
+//    w.writeList("options", options);
+//  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement optionElement : r.readElementsEffektif("option")) {
+      r.startElement(optionElement);
+      option(r.readStringAttributeEffektif("id"));
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    for (ChoiceOption option : options) {
+      option.writeBpmn(w);
+    }
+  }
+
   public List<ChoiceOption> getOptions() {
     return options;
   }

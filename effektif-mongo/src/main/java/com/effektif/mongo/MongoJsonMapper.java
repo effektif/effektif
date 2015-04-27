@@ -13,7 +13,25 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import com.effektif.workflow.api.model.CaseId;
+import com.effektif.workflow.api.model.EmailId;
+import com.effektif.workflow.api.model.FileId;
+import com.effektif.workflow.api.model.GroupId;
+import com.effektif.workflow.api.model.TaskId;
+import com.effektif.workflow.api.model.UserId;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.task.Case;
+import com.effektif.workflow.api.task.Task;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.AbstractMapper;
+import com.mongodb.BasicDBObject;
 
 
 /**
@@ -21,11 +39,53 @@ import com.effektif.workflow.impl.mapper.AbstractMapper;
  */
 public class MongoJsonMapper extends AbstractMapper {
   
-  public MongoJsonReader createReader() {
-    return new MongoJsonReader(mappings);
+  Set<Field> documentIdFields = new HashSet<>();
+  Set<Class<?>> objectIdClasses = new HashSet<>();
+  
+  public MongoJsonMapper() {
+    documentIdFields.add(getField(AbstractWorkflow.class, "id"));
+    documentIdFields.add(getField(WorkflowInstance.class, "id"));
+    documentIdFields.add(getField(Task.class, "id"));
+    documentIdFields.add(getField(Case.class, "id"));
+    
+    objectIdClasses.add(WorkflowId.class);
+    objectIdClasses.add(WorkflowInstanceId.class);
+    objectIdClasses.add(UserId.class);
+    objectIdClasses.add(GroupId.class);
+    objectIdClasses.add(EmailId.class);
+    objectIdClasses.add(FileId.class);
+    objectIdClasses.add(TaskId.class);
+    objectIdClasses.add(CaseId.class);
+  }
+  
+  public static Field getField(Class<?> clazz, String fieldName) {
+    try {
+      return clazz.getDeclaredField(fieldName);
+    } catch (NoSuchFieldException | SecurityException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  public <T> T readFromDbObject(Map<String,Object> dbObject, Class<T> clazz) {
+    return new MongoJsonReader(mappings, this).toObject(dbObject, clazz);
+  }
+  
+  public Object writeToDbObjectAny(Object o) {
+    return new MongoJsonWriter(mappings, this).toDbObject(o, o.getClass());
   }
 
-  public MongoJsonWriter createWriter() {
-    return new MongoJsonWriter(mappings);
+  public BasicDBObject writeToDbObject(Object o) {
+    return (BasicDBObject) writeToDbObjectAny(o);
+  }
+
+  public String getFieldName(Field field) {
+    if (documentIdFields.contains(field)) {
+      return "_id";
+    }
+    return field.getName();
+  }
+
+  public boolean isObjectIdClass(Class<?> idClass) {
+    return objectIdClasses.contains(idClass);
   }
 }

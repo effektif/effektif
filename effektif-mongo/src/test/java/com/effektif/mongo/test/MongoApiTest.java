@@ -21,10 +21,26 @@ import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.email.TestOutgoingEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
+import com.effektif.workflow.test.WorkflowTest;
 import com.mongodb.DB;
 
 
 public class MongoApiTest {
+
+  public static void initializeIds() {
+    WorkflowTest.JOHN_ID = "5530a4aec2e610258e946fe0";
+    WorkflowTest.MARY_ID = "5530a4aec2e610258e946fe1";
+    WorkflowTest.JACK_ID = "5530a4aec2e610258e946fe2";
+    WorkflowTest.DEV_ID = "5530a4aec2e610258e946fe3";
+    WorkflowTest.OPS_ID = "5530a4aec2e610258e946fe4";
+  }
+  
+//  @Test
+//  public void testA() {
+//    for (int i = 0; i < 15; i++) {
+//      System.err.println(ObjectId.get().toString());
+//    }
+//  }
   
   @Test
   public void testApiWithMongoConfiguration() {
@@ -33,14 +49,15 @@ public class MongoApiTest {
     DB db = configuration.get(DB.class);
     db.dropDatabase();
 
+    initializeIds();
     // this test runs the full API test suite with a mongo test configuration.
     
     TestSuiteHelper.run(configuration
       // use the next line if you only want to run 1 test
-      // , UserTaskTest.class, "testTaskRole"
+      //      , CaseTest.class, "testCaseCrud"
       );
   }
-  
+
   public static Configuration createMongoTestConfiguration() {
     return new MongoConfiguration()
       .databaseName("effektif-test")
@@ -49,12 +66,4 @@ public class MongoApiTest {
       .synchronous();
   }
 
-  @Test
-  public void testMongoConfigurationApi() {
-    // this is used to copy and paste into the wiki docs
-    Configuration configuration = new MongoConfiguration()
-      .server("localhost") // localhost is the default
-      .databaseName("databasename")
-      .authentication("username", "password", "database");
-  }
 }

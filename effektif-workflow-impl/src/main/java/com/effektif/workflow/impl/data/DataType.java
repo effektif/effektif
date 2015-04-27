@@ -16,9 +16,7 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.activity.Plugin;
 import com.effektif.workflow.impl.template.Hints;
 
@@ -29,10 +27,13 @@ public interface DataType<T extends Type> extends Plugin {
 
   Class<?> getValueClass();
   Class<? extends Type> getApiClass();
+
+  /** Indicates that this type doesn’t have to be serialised. */
   boolean isStatic();
+
   T serialize();
 
-  TypeGenerator getTypeGenerator();
+//  TypeGenerator getTypeGenerator();
 
   /** only returns valid internal values. */
   Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;

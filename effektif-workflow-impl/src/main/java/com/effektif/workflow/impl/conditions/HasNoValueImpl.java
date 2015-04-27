@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.HasNoValue;
 
 
@@ -24,6 +25,11 @@ import com.effektif.workflow.api.condition.HasNoValue;
  */
 public class HasNoValueImpl extends SingleBindingConditionImpl<HasNoValue> {
 
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return HasNoValue.class;
+  }
+  
   @Override
   protected boolean eval(Object value) {
     return value==null || "".equals(value);

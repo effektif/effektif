@@ -21,11 +21,6 @@ import java.util.List;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /** Base class containing the configuration data for 
@@ -33,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  * 
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 public abstract class Activity extends Scope {
   
   protected String id;
@@ -41,8 +35,23 @@ public abstract class Activity extends Scope {
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
   
-  public Activity() {
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readString("id");
+//    super.readJson(r);
+//    defaultTransitionId = r.readString("defaultTransitionId");
+//    // multiInstance = r.readObject("multiInstance", MultiInstance.class);
+//    outgoingTransitions = r.readList("outgoingTransitions");
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeString("id", id);
+//    super.writeJson(w);
+//    w.writeString("defaultTransitionId", defaultTransitionId);
+//    w.writeWritable("multiInstance", multiInstance);
+//    w.writeList("outgoingTransitions", outgoingTransitions);
+//  }
   
   @Override
   public void readBpmn(BpmnReader r) {
@@ -56,24 +65,6 @@ public abstract class Activity extends Scope {
     super.writeBpmn(w);
   }
   
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("id", id);
-    super.writeJson(w);
-    w.writeString("defaultTransitionId", defaultTransitionId);
-    w.writeObject("multiInstance", multiInstance);
-    w.writeList("outgoingTransitions", outgoingTransitions);
-  }
-  
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readString("id");
-    super.readJson(r);
-    defaultTransitionId = r.readString("defaultTransitionId");
-    // multiInstance = r.readObject("multiInstance", MultiInstance.class);
-    outgoingTransitions = r.readList("outgoingTransitions", Transition.class);
-  }
-
   public String getId() {
     return this.id;
   }

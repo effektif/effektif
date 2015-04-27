@@ -18,8 +18,6 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.model.WorkflowId;
 
 
@@ -40,6 +38,20 @@ public abstract class AbstractWorkflow extends Scope {
   
   public abstract String getSourceWorkflowId();
   
+//  @Override
+//  public void readJson(JsonReader r) {
+//    id = r.readId();
+//    trigger = r.readObject("trigger");
+//    super.readJson(r);
+//  }
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeId(id);
+//    w.writeWritable("trigger", trigger);
+//    super.writeJson(w);
+//  }
+
   @Override
   public void readBpmn(BpmnReader r) {
     id = r.readIdAttributeBpmn("id", WorkflowId.class);
@@ -49,19 +61,7 @@ public abstract class AbstractWorkflow extends Scope {
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.writeIdAttributeBpmn("id", id);
-    super.writeBpmn(w);
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeId(id);
-    super.writeJson(w);
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readId(WorkflowId.class);
-    super.readJson(r);
+    w.writeStringAttributeBpmn("name", name);
   }
 
   public WorkflowId getId() {

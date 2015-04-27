@@ -16,8 +16,8 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /** 
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/Task">Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("noneTask")
+@TypeName("task")
 @BpmnElement("task")
 public class NoneTask extends Activity {
 

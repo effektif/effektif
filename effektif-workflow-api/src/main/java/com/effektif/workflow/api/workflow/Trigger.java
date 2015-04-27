@@ -15,15 +15,12 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
+import com.effektif.workflow.api.mapper.BpmnReadable;
+import com.effektif.workflow.api.mapper.BpmnWritable;
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
-public class Trigger {
+public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
 }

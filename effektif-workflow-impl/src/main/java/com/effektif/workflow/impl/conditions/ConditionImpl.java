@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.conditions;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.script.ConditionService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
@@ -23,9 +24,11 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public abstract class ConditionImpl<T> {
-  
-  public abstract boolean eval(ScopeInstanceImpl scopeInstance);
+public interface ConditionImpl<T> {
 
-  public abstract void parse(T condition, ConditionService conditionService, WorkflowParser parser);
+  Class<? extends Condition> getApiType();
+
+  boolean eval(ScopeInstanceImpl scopeInstance);
+
+  void parse(T condition, ConditionService conditionService, WorkflowParser parser);
 }

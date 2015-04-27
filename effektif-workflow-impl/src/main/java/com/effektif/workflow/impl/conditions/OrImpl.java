@@ -28,7 +28,7 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class OrImpl extends ConditionImpl<Or> {
+public class OrImpl implements ConditionImpl<Or> {
 
   protected List<ConditionImpl> conditions;
 
@@ -37,6 +37,11 @@ public class OrImpl extends ConditionImpl<Or> {
   }
   public void setConditions(List<ConditionImpl> conditions) {
     this.conditions = conditions;
+  }
+
+  @Override
+  public Class< ? extends Condition> getApiType() {
+    return Or.class;
   }
 
   @Override

@@ -42,8 +42,7 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.bpmn.BpmnWriter;
-import com.effektif.workflow.impl.mapper.deprecated.JsonService;
+import com.effektif.workflow.impl.mapper.JsonMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
@@ -198,8 +197,8 @@ public class DocumentationExamplesTest extends TestCase {
 
   private void printJson(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
-    JsonService jsonService = configuration.get(JsonService.class);
-    System.out.println(jsonService.objectToJsonStringPretty(o));
+    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
+    System.out.println(jsonMapper.writeToStringPretty(o));
   }
 
   private void print(Activity activity) {

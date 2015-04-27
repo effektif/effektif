@@ -34,7 +34,6 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
 
   protected ScriptService scriptService;
-  public Map<String, String> mappings;
   public ScriptImpl script;
   
   public ScriptTaskImpl() {

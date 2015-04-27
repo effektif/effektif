@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.identity.Group;
 
 

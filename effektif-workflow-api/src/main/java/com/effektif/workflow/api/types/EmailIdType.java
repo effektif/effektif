@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.TypeName;
 
 
 /**
  * @author Tom Baeyens
  */
-@JsonTypeName("emailId")
+@TypeName("emailId")
 public class EmailIdType extends Type {
 
   public static final EmailIdType INSTANCE = new EmailIdType();

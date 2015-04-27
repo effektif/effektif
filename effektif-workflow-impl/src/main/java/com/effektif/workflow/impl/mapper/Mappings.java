@@ -14,32 +14,138 @@
 package com.effektif.workflow.impl.mapper;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.effektif.workflow.api.acl.AccessIdentity;
+import com.effektif.workflow.api.acl.GroupIdentity;
+import com.effektif.workflow.api.acl.OrganizationIdentity;
+import com.effektif.workflow.api.acl.PublicIdentity;
+import com.effektif.workflow.api.acl.UserIdentity;
+import com.effektif.workflow.api.activities.EmbeddedSubprocess;
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.HttpServiceTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.ScriptTask;
+import com.effektif.workflow.api.activities.UserTask;
+import com.effektif.workflow.api.condition.And;
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.Contains;
+import com.effektif.workflow.api.condition.ContainsIgnoreCase;
+import com.effektif.workflow.api.condition.Equals;
+import com.effektif.workflow.api.condition.EqualsIgnoreCase;
+import com.effektif.workflow.api.condition.GreaterThan;
+import com.effektif.workflow.api.condition.GreaterThanOrEqual;
+import com.effektif.workflow.api.condition.HasNoValue;
+import com.effektif.workflow.api.condition.HasValue;
+import com.effektif.workflow.api.condition.IsFalse;
+import com.effektif.workflow.api.condition.IsTrue;
+import com.effektif.workflow.api.condition.LessThan;
+import com.effektif.workflow.api.condition.LessThanOrEqual;
+import com.effektif.workflow.api.condition.Not;
+import com.effektif.workflow.api.condition.NotContains;
+import com.effektif.workflow.api.condition.NotContainsIgnoreCase;
+import com.effektif.workflow.api.condition.NotEquals;
+import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
+import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
 import com.effektif.workflow.api.mapper.BpmnTypeAttribute;
-import com.effektif.workflow.api.mapper.JsonWritable;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.JsonIgnore;
+import com.effektif.workflow.api.mapper.JsonPropertyOrder;
 import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.triggers.FormTrigger;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.impl.bpmn.Bpmn;
-import com.effektif.workflow.impl.mapper.deprecated.SubclassMapping;
-import com.effektif.workflow.impl.mapper.deprecated.TypeField;
+import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.email.EmailTrigger;
+import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.job.types.TaskEscalateJobType;
+import com.effektif.workflow.impl.job.types.TaskReminderJobType;
 
 
 /**
  * @author Tom Baeyens
  */
 public class Mappings {
+  
+  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
 
+  Boolean isPretty;
+
+  /** Maps registered base classes (e.g. <code>Trigger</code> to their subclass mappings. */
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
+
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
+  Map<Class<?>, Map<String,java.lang.reflect.Type>> fieldTypes = new HashMap<>();
+  Map<Class<?>, List<Field>> fields = new HashMap<>();
+  
+  public Mappings() {
+    registerBaseClass(Type.class, "name");
+    registerBaseClass(Trigger.class);
+    registerSubClass(FormTrigger.class);
+    registerSubClass(EmailTrigger.class);
+
+    registerBaseClass(Activity.class);
+    registerSubClass(UserTask.class);
+    registerSubClass(EmbeddedSubprocess.class);
+    registerSubClass(EndEvent.class);
+    registerSubClass(ExclusiveGateway.class);
+    registerSubClass(HttpServiceTask.class);
+    registerSubClass(JavaServiceTask.class);
+    registerSubClass(NoneTask.class);
+    registerSubClass(ParallelGateway.class);
+    registerSubClass(ReceiveTask.class);
+    registerSubClass(ScriptTask.class);
+
+    registerBaseClass(AccessIdentity.class);
+    registerSubClass(GroupIdentity.class);
+    registerSubClass(OrganizationIdentity.class);
+    registerSubClass(PublicIdentity.class);
+    registerSubClass(UserIdentity.class);
+    
+    registerBaseClass(Condition.class);
+    registerSubClass(And.class);
+    registerSubClass(Or.class);
+    registerSubClass(Not.class);
+    registerSubClass(Contains.class);
+    registerSubClass(NotContains.class);
+    registerSubClass(ContainsIgnoreCase.class);
+    registerSubClass(NotContainsIgnoreCase.class);
+    registerSubClass(EqualsIgnoreCase.class);
+    registerSubClass(NotEqualsIgnoreCase.class);
+    registerSubClass(Equals.class);
+    registerSubClass(NotEquals.class);
+    registerSubClass(GreaterThan.class);
+    registerSubClass(GreaterThanOrEqual.class);
+    registerSubClass(LessThan.class);
+    registerSubClass(LessThanOrEqual.class);
+    registerSubClass(HasNoValue.class);
+    registerSubClass(HasValue.class);
+    registerSubClass(IsFalse.class);
+    registerSubClass(IsTrue.class);
+
+    registerBaseClass(JobType.class);
+    registerSubClass(TaskEscalateJobType.class);
+    registerSubClass(TaskReminderJobType.class);
+  }
 
   public void registerBaseClass(Class<?> baseClass) {
     registerBaseClass(baseClass, "type");
@@ -52,34 +158,39 @@ public class Mappings {
 
   public void registerSubClass(Class<?> subClass) {
     TypeName typeName = subClass.getAnnotation(TypeName.class);
-    if (typeName==null) {
-      throw new RuntimeException(subClass.getName()+" must declare "+TypeName.class.toString());
-    }
-    registerSubClass(subClass, typeName.value(), subClass);
-    if (Activity.class.isAssignableFrom(subClass)) {
-      BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
-      if (bpmnElement!=null) {
-        BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
-        String elementName = bpmnElement.value();
-        bpmnTypeMapping.setBpmnElementName(elementName);
-        bpmnTypeMapping.setType(subClass);
-        Annotation[] annotations = subClass.getAnnotations();
-        for (Annotation annotation: annotations) {
-          if (annotation instanceof BpmnTypeAttribute) {
-            BpmnTypeAttribute bpmnTypeAttribute = (BpmnTypeAttribute) annotation;
-            bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
+    if (typeName!=null) {
+      registerSubClass(subClass, typeName.value(), subClass);
+      if (Activity.class.isAssignableFrom(subClass) || Condition.class.isAssignableFrom(subClass)) {
+        BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
+        if (bpmnElement!=null) {
+          BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
+          String elementName = bpmnElement.value();
+          bpmnTypeMapping.setBpmnElementName(elementName);
+          bpmnTypeMapping.setType(subClass);
+          Annotation[] annotations = subClass.getAnnotations();
+          for (Annotation annotation: annotations) {
+            if (annotation instanceof BpmnTypeAttribute) {
+              BpmnTypeAttribute bpmnTypeAttribute = (BpmnTypeAttribute) annotation;
+              bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
+            }
           }
+          bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
+  
+          List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
+          if (typeMappings==null) {
+            typeMappings = new ArrayList<>();
+            bpmnTypeMappingsByElement.put(elementName, typeMappings);
+          }
+          typeMappings.add(bpmnTypeMapping);
+        } else {
+          // throw new RuntimeException("No bpmn element specified on "+subclass);
         }
-        bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
-
-        List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
-        if (typeMappings==null) {
-          typeMappings = new ArrayList<>();
-          bpmnTypeMappingsByElement.put(elementName, typeMappings);
+      }
+    } else {
+      for (Class<?> baseClass: subclassMappings.keySet()) {
+        if (baseClass.isAssignableFrom(subClass)) {
+          throw new RuntimeException(subClass.getName()+" does not declare "+TypeName.class.toString());
         }
-        typeMappings.add(bpmnTypeMapping);
-      } else {
-        // throw new RuntimeException("No bpmn element specified on "+subclass);
       }
     }
   }
@@ -138,14 +249,138 @@ public class Mappings {
     return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(jsonObject) : baseClass;
   }
 
+  public <T> Class<T> getConcreteClass(BpmnReader bpmnReader, Class<T> baseClass) {
+    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
+    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(bpmnReader) : baseClass;
+  }
+
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
+    if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
+      throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
+    }
     return bpmnTypeMappingsByClass.get(subClass);
   }
 
-  public void writeTypeField(JsonWriter jsonWriter, JsonWritable o) {
+  public void writeTypeField(JsonWriter jsonWriter, Object o) {
     TypeField typeField = typeFields.get(o.getClass());
     if (typeField!=null) {
       jsonWriter.writeString(typeField.getTypeField(), typeField.getTypeName());
     }
   }
+  
+  public void writeTypeAttribute(BpmnWriter bpmnWriter, Object o) {
+    TypeField typeField = typeFields.get(o.getClass());
+    if (typeField!=null) {
+      bpmnWriter.writeStringAttributeEffektif(typeField.getTypeField(), typeField.getTypeName());
+    }
+  }
+  
+  public synchronized java.lang.reflect.Type getFieldType(Class< ? > clazz, String fieldName) {
+    // could be cached in this mappings object
+    java.lang.reflect.Type fieldType = getFieldTypeFromCache(clazz, fieldName);
+    if (fieldType!=null) {
+      return fieldType;
+    }
+    Map<String,java.lang.reflect.Type> fieldTypesForClass = fieldTypes.get(clazz);
+    if (fieldTypesForClass==null) {
+      fieldTypesForClass = new HashMap<>();
+      fieldTypes.put(clazz, fieldTypesForClass);
+    }
+    fieldType = findFieldType(clazz, fieldName);
+    if (fieldType==null) {
+      throw new RuntimeException("Field "+clazz.getName()+"."+fieldName+" not found");
+    }
+    fieldTypesForClass.put(fieldName, fieldType);
+    return fieldType;
+  }
+
+  private java.lang.reflect.Type findFieldType(Class< ? > clazz, String fieldName) {
+    try {
+      for (Field field: clazz.getDeclaredFields()) {
+        if (field.getName().equals(fieldName)) {
+          return field.getGenericType();
+        }
+      }
+      if (clazz.getSuperclass()!=Object.class) {
+        return findFieldType(clazz.getSuperclass(), fieldName);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return null;
+  }
+
+  private java.lang.reflect.Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
+    Map<String,java.lang.reflect.Type> types = fieldTypes.get(type);
+    if (types==null) {
+      return null;
+    }
+    return types.get(fieldName);
+  }
+
+  public List<Field> getAllFields(Class<?> type) {
+    List<Field> allFields = fields.get(type);
+    if (allFields!=null) {
+      return allFields;
+    }
+    allFields = new ArrayList<>();
+    scanFields(allFields, type);
+    
+    JsonPropertyOrder jsonPropertyOrder = type.getAnnotation(JsonPropertyOrder.class);
+    if (jsonPropertyOrder!=null) {
+      String[] fieldNamesOrder = jsonPropertyOrder.value();
+      for (int i=fieldNamesOrder.length-1; i>=0; i--) {
+        String fieldName = fieldNamesOrder[i];
+        Field field = removeField(allFields, fieldName);
+        if (field!=null) {
+          allFields.add(0, field);
+        }
+      }
+    }
+    
+    fields.put(type, allFields);
+    return allFields;
+  }
+
+  private Field removeField(List<Field> allFields, String fieldName) {
+    Iterator<Field> iterator = allFields.iterator();
+    while (iterator.hasNext()) {
+      Field field = iterator.next();
+      if (field.getName().equals(fieldName)) {
+        iterator.remove();
+        return field;
+      }
+    }
+    return null;
+  }
+
+  public void scanFields(List<Field> allFields, Class< ? > type) {
+    Field[] declaredFields = type.getDeclaredFields();
+    if (declaredFields!=null) {
+      for (Field field: declaredFields) {
+        if (!Modifier.isStatic(field.getModifiers())
+            && field.getAnnotation(JsonIgnore.class)==null) {
+          field.setAccessible(true);
+          allFields.add(field);
+        }
+      }
+    }
+    Class< ? > superclass = type.getSuperclass();
+    if (Object.class!=superclass) {
+      scanFields(allFields, superclass);
+    }
+  }
+
+  public boolean isPretty() {
+    return Boolean.TRUE.equals(isPretty);
+  }
+
+  public void setPretty(Boolean isPretty) {
+    this.isPretty = isPretty;
+  }
+
+  public void pretty() {
+    this.isPretty = true;
+  }
+
 }

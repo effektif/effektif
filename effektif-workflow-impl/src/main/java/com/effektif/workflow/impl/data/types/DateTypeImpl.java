@@ -16,17 +16,20 @@
 package com.effektif.workflow.impl.data.types;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeDeserializer;
-import com.effektif.workflow.impl.mapper.deprecated.LocalDateTimeSerializer;
 
 /**
  * @author Tom Baeyens
  */
 public class DateTypeImpl extends AbstractDataType<DateType> {
+
+  public static DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
+  public static DateTimeFormatter printer = ISODateTimeFormat.dateTime();
 
   public DateTypeImpl() {
     super(DateType.INSTANCE, Boolean.class);
@@ -37,8 +40,12 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
     if (jsonValue==null) {
       return null;
     }
-    String timeString = (String) jsonValue;
-    return LocalDateTimeDeserializer.formatter.parseLocalDateTime(timeString);
+    try {
+      String timeString = (String) jsonValue;
+      return DateTypeImpl.formatter.parseLocalDateTime(timeString);
+    } catch (ClassCastException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -46,6 +53,6 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
     if (internalValue==null) {
       return null;
     }
-    return LocalDateTimeSerializer.formatter.print((LocalDateTime)internalValue);
+    return DateTypeImpl.printer.print((LocalDateTime)internalValue);
   }
 }

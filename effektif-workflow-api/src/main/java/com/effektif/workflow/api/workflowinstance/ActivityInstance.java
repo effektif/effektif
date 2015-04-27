@@ -15,10 +15,9 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.mapper.JsonWriter;
+import com.effektif.workflow.api.mapper.JsonPropertyOrder;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
@@ -31,10 +30,6 @@ public class ActivityInstance extends ScopeInstance {
   protected String activityId;
   protected WorkflowInstanceId calledWorkflowInstanceId;
   protected TaskId taskId;
-
-  @Override
-  public void writeJson(JsonWriter w) {
-  }
 
   public String getId() {
     return id;

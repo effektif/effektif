@@ -19,19 +19,22 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
@@ -39,7 +42,7 @@ import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.effektif.workflow.impl.mapper.Mappings;
 
 
 /**
@@ -47,12 +50,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Tom Baeyens
  */
-public class DataTypeService implements Brewable {
+public class DataTypeService implements Initializable {
   
   // private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);
   
   protected Configuration configuration;
-  protected ObjectMapper objectMapper;
+  protected Mappings mappings;
   
   protected Map<Class<? extends Type>,DataType> singletons = new ConcurrentHashMap<>();
   protected Map<Class<? extends Type>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
@@ -60,9 +63,9 @@ public class DataTypeService implements Brewable {
   protected Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
 
   @Override
-  public void brew(Brewery brewery) {
+  public void initialize(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
-    this.objectMapper = brewery.get(ObjectMapper.class);
+    this.mappings = brewery.get(Mappings.class);
     initializeDataTypes();
   }
 
@@ -91,15 +94,12 @@ public class DataTypeService implements Brewable {
 
     ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
     for (DataType dataType: dataTypeLoader) {
+      // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
       registerDataType(dataType);
     }
     for (DataType dataType: dataTypeLoader) {
       dataType.setConfiguration(configuration);
     }
-  }
-  
-  public void setObjectMapper(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
   }
   
   public void registerDataType(DataType dataType) {
@@ -111,14 +111,14 @@ public class DataTypeService implements Brewable {
         Constructor< ? > constructor = findDataTypeConstructor(dataType.getClass());
         dataTypeConstructors.put(apiClass, constructor);
       }
-      objectMapper.registerSubtypes(apiClass);
+      mappings.registerSubClass(apiClass);
     }
     Class valueClass = dataType.getValueClass();
     if (valueClass!=null) {
       if (!dataTypesByValueClass.containsKey(valueClass)) {
         dataTypesByValueClass.put(valueClass, dataType);
       }
-      objectMapper.registerSubtypes(valueClass);
+      mappings.registerSubClass(valueClass);
     }
   }
   
@@ -140,7 +140,32 @@ public class DataTypeService implements Brewable {
     javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
     registerDataType(javaBeanTypeImpl);
   }
-  
+
+//  /**
+//   * Returns the {@link Type} instance whose {@link TypeName} annotation value matches the given type name.
+//   */
+//  public Type getTypeByName(String typeName) {
+//
+//    Set<Class> typeClasses = new HashSet<>();
+//    typeClasses.addAll(singletons.keySet());
+//    typeClasses.addAll(dataTypeConstructors.keySet());
+//
+//    for (Class<? extends Type> typeClass : typeClasses) {
+//      try {
+//        // TODO call a getInstance() that returns a singleton instance.
+//        Type type = typeClass.newInstance();
+//        String name = type.getClass().getAnnotation(TypeName.class).value();
+//        if (name.equals(typeName)) {
+//          return type;
+//        }
+//      } catch (Exception e) {
+//        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
+//      }
+//    }
+//
+//    throw new IllegalArgumentException("No Type class for name: " + typeName);
+//  }
+
   public DataType getDataTypeByValue(Class<?> valueClass) {
     DataType dataType = null;
     if (valueClass!=null) {
@@ -201,7 +226,4 @@ public class DataTypeService implements Brewable {
     throw new RuntimeException("No DataType defined for "+type.getClass().getName());
   }
 
-  public ObjectMapper getObjectMapper() {
-    return objectMapper;
-  }
 }

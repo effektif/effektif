@@ -20,7 +20,11 @@ import java.util.List;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.form.Form;
+import com.effektif.workflow.api.form.FormField;
 import com.effektif.workflow.api.mapper.BpmnElement;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.UserId;
@@ -31,7 +35,6 @@ import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -41,7 +44,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @see <a href="https://github.com/effektif/effektif/wiki/User-Task">User Task</a>
  * @author Tom Baeyens
  */
-@JsonTypeName("userTask")
+@TypeName("userTask")
 @BpmnElement("userTask")
 public class UserTask extends NoneTask {
   
@@ -76,38 +79,67 @@ public class UserTask extends NoneTask {
   protected Binding<UserId> escalateToId;
 
   @Override
-  public void readBpmn(com.effektif.workflow.api.mapper.BpmnReader r) {
+  public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
+    r.startExtensionElements();
+    assigneeId = r.readBinding("assigneeId", UserId.class);
+    candidateGroupIds = r.readBindings("candidateGroupId", GroupId.class);
+    duedate = r.readRelativeTimeEffektif("dueDate");
+    reminder = r.readRelativeTimeEffektif("reminder");
+    reminderRepeat = r.readRelativeTimeEffektif("reminderRepeat");
+    escalate = r.readRelativeTimeEffektif("escalate");
+    escalateToId = r.readBinding("escalateToId", UserId.class);
+    taskName = r.readStringValue("taskName");
+
+    for (XmlElement nestedElemenet : r.readElementsEffektif("access")) {
+      r.startElement(nestedElemenet);
+      access = new AccessControlList();
+      access.readBpmn(r);
+      r.endElement();
+    }
+    for (XmlElement formElement : r.readElementsEffektif("form")) {
+      r.startElement(formElement);
+      form = new Form();
+      form.readBpmn(r);
+      r.endElement();
+    }
+
+    r.endExtensionElements();
   }
-//  @Override
-//  public UserTask readBpmn(XmlElement xml, BpmnReader reader) {
-//    if (!reader.isLocalPart(xml, BPMN_ELEMENT_NAME)) {
-//      return null;
-//    }
-//    UserTask task = new UserTask();
-//
-//    task.setTaskName(reader.readStringValue(xml, "taskName"));
-//    task.setAssigneeId(reader.readBinding(UserId.class, UserIdType.INSTANCE, xml, "assignee"));
-//    task.setCandidateIds(reader.readBindings(UserId.class, UserIdType.INSTANCE, xml, "candidate"));
-//    task.setCandidateGroupIds(reader.readBindings(GroupId.class, GroupIdType.INSTANCE, xml, "candidate"));
-//    task.setForm(reader.readForm(xml));
-//    
-//    return task;
-//  }
 
   @Override
   public void writeBpmn(com.effektif.workflow.api.mapper.BpmnWriter w) {
     super.writeBpmn(w);
+    w.startExtensionElements();
+    w.writeBinding("assigneeId", assigneeId);
+    w.writeBindings("candidateGroupId", candidateGroupIds);
+    w.writeRelativeTimeEffektif("dueDate", duedate);
+    w.writeRelativeTimeEffektif("reminder", reminder);
+    w.writeRelativeTimeEffektif("reminderRepeat", reminderRepeat);
+    w.writeRelativeTimeEffektif("escalate", escalate);
+    w.writeBinding("escalateToId", escalateToId);
+    w.writeStringValue("taskName", "value", taskName);
+
+    if (access != null) {
+      access.writeBpmn(w);
+    }
+    if (form != null) {
+      form.writeBpmn(w);
+    }
+
+    w.endExtensionElements();
   }
+
 //  @Override
-//  public void writeBpmn(UserTask task, XmlElement xml, BpmnWriter writer) {
-//    writer.setBpmnName(xml, BPMN_ELEMENT_NAME);
-//    writer.writeStringValue(xml, "taskName", task.getTaskName());
-//    writer.writeBinding(xml, "assignee", task.getAssigneeId(), UserIdType.INSTANCE);
-//    writer.writeBindings(xml, "candidate", (List) task.getCandidateIds(), UserIdType.INSTANCE);
-//    writer.writeBindings(xml, "candidate", (List) task.getCandidateGroupIds(), GroupIdType.INSTANCE);
+//  public void readJson(JsonReader r) {
+//    super.readJson(r);
 //  }
-  
+//
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeWritable("access", access);
+//    super.writeJson(w);
+//  }
 
   @Override
   public UserTask id(String id) {

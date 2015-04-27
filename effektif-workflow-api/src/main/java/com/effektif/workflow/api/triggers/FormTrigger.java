@@ -17,8 +17,12 @@ package com.effektif.workflow.api.triggers;
 
 import com.effektif.workflow.api.form.Form;
 import com.effektif.workflow.api.form.FormField;
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
+import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 /**
@@ -28,11 +32,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Tom Baeyens
  */
-@JsonTypeName("form")
+@TypeName("form")
 public class FormTrigger extends Trigger {
   
-  protected Form form;
   public static final String FORM_INSTANCE_KEY = "formInstance";
+
+  protected Form form;
 
   public Form getForm() {
     return this.form;
@@ -44,6 +49,7 @@ public class FormTrigger extends Trigger {
     this.form = form;
     return this;
   }
+
   /** adds a form field */  
   public FormTrigger field(FormField field) {
     if (form==null) {
@@ -52,9 +58,30 @@ public class FormTrigger extends Trigger {
     form.field(field);
     return this;
   }
+
   /** shortcut to add a field and set the binding expression */  
   public FormTrigger field(String bindingExpression) {
     field(new FormField().bindingExpression(bindingExpression));
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement nestedElement : r.readElementsEffektif("form")) {
+      r.startElement(nestedElement);
+      form = new Form();
+      form.readBpmn(r);
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("trigger");
+    w.writeTypeAttribute(this);
+    if (form != null) {
+      form.writeBpmn(w);
+    }
+    w.endElement();
   }
 }

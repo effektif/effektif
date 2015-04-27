@@ -58,7 +58,7 @@ public class ScriptTest extends WorkflowTest {
   @Test
   public void testScriptDereferencing() {
     User johndoe = new User()
-      .id("johndoe")
+      .id(JOHN_ID)
       .fullName("John Doe")
       .email("johndoe@localhost");
 
@@ -75,7 +75,7 @@ public class ScriptTest extends WorkflowTest {
     
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data("user", new UserId("johndoe")));
+      .data("user", new UserId(JOHN_ID)));
 
     assertEquals("John Doe", workflowInstance.getVariableValue("name"));
   }

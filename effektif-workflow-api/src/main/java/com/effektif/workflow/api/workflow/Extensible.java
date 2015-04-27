@@ -19,13 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.effektif.workflow.api.mapper.JsonReadable;
-import com.effektif.workflow.api.mapper.JsonReader;
-import com.effektif.workflow.api.mapper.JsonWritable;
-import com.effektif.workflow.api.mapper.JsonWriter;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 
 /** Base class for extensible objects that can store user-defined properties.
  * 
@@ -38,22 +31,21 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * 
  * @author Tom Baeyens
  */
-public abstract class Extensible implements JsonWritable, JsonReadable {
+public abstract class Extensible {
 
   protected Map<String,Object> properties;
   
-  @Override
-  public void readJson(JsonReader r) {
-    // properties = r.readOtherProperties();
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-    // w.writeFields(properties);
-  }
+//  @Override
+//  public void readJson(JsonReader r) {
+//    properties = r.readProperties();
+//  }
+//  
+//  @Override
+//  public void writeJson(JsonWriter w) {
+//    w.writeProperties(properties);
+//  }
 
   /** @see Extensible */
-  @JsonAnyGetter
   public Map<String,Object> getProperties() {
     return this.properties;
   }
@@ -83,7 +75,6 @@ public abstract class Extensible implements JsonWritable, JsonReadable {
     return properties!=null ? properties.get(key) : null;
   }
   /** @see Extensible */
-  @JsonAnySetter
   public void setProperty(String key,Object value) {
     checkPropertyKey(key);
     if (properties==null) {

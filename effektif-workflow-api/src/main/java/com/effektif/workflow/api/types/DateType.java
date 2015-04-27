@@ -15,12 +15,12 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.effektif.workflow.api.mapper.TypeName;
 
 /**
  * @author Peter Hilton
  */
-@JsonTypeName("date")
+@TypeName("date")
 public class DateType extends Type {
 
   public static final DateType INSTANCE = new DateType();

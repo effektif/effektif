@@ -25,7 +25,6 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.acl.AccessControlList;
 import com.effektif.workflow.api.acl.AccessControlledObject;
-import com.effektif.workflow.api.mapper.JsonWriter;
 import com.effektif.workflow.api.model.CaseId;
 import com.effektif.workflow.api.model.TaskId;
 import com.effektif.workflow.api.model.UserId;
@@ -88,10 +87,6 @@ public class Case extends Extensible implements AccessControlledObject {
     this.workflowInstanceId = other.workflowInstanceId;
     this.sourceWorkflowId = other.sourceWorkflowId;
     this.workflowId = other.workflowId;
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
   }
 
   public Case name(String name) {

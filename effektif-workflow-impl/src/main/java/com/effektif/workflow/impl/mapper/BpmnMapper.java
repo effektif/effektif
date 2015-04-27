@@ -13,8 +13,17 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-import com.effektif.workflow.api.mapper.BpmnWriter;
-import com.effektif.workflow.impl.data.DataTypeService;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.mapper.BpmnWritable;
+import com.effektif.workflow.api.mapper.XmlElement;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.bpmn.xml.XmlReader;
+import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 
 
 
@@ -22,23 +31,79 @@ import com.effektif.workflow.impl.data.DataTypeService;
 /**
  * @author Tom Baeyens
  */
-public class BpmnMapper extends AbstractMapper<BpmnReaderImpl, BpmnWriter> {
-  
-  protected DataTypeService dataTypeService;
-  
-  public DataTypeService getDataTypeService() {
-    return dataTypeService;
-  }
-  
-  public void setDataTypeService(DataTypeService dataTypeService) {
-    this.dataTypeService = dataTypeService;
+public class BpmnMapper extends AbstractMapper {
+
+  private Configuration configuration;
+
+  public BpmnMapper(Configuration configuration) {
+    this.configuration = configuration;
   }
 
-  public BpmnReaderImpl createReader() {
-    return new BpmnReaderImpl(mappings);
+//  protected DataTypeService dataTypeService;
+//  
+//  public DataTypeService getDataTypeService() {
+//    return dataTypeService;
+//  }
+//  
+//  public void setDataTypeService(DataTypeService dataTypeService) {
+//    this.dataTypeService = dataTypeService;
+//  }
+
+  public Workflow readFromString(String bpmnString) {
+    return readFromReader(new StringReader(bpmnString));
   }
 
-  public BpmnWriterImpl createWriter() {
-    return new BpmnWriterImpl(mappings);
+  public Workflow readFromReader(java.io.Reader reader) {
+    XmlElement xmlRoot = XmlReader.parseXml(reader);
+    return new BpmnReaderImpl(configuration, mappings).readDefinitions(xmlRoot);
+  }
+
+  public void writeToStream(Workflow workflow, OutputStream out) {
+    XmlElement bpmnDefinitions = new BpmnWriterImpl(mappings).writeDefinitions(workflow);
+    XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
+    xmlWriter.writeDocument(bpmnDefinitions);
+    xmlWriter.flush();
+  }
+
+  public String writeToString(Workflow workflow) {
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    writeToStream(workflow, stream);
+    return stream.toString();
+  }
+
+  /**
+   * Work in progress for testing conditions.
+   */
+  public <T extends Condition> T readCondition(String xml, Class<T> conditionClass) {
+    XmlElement xmlRoot = XmlReader.parseXml(new StringReader(xml));
+    if (xmlRoot != null && xmlRoot.elements != null) {
+      try {
+        T condition = conditionClass.newInstance();
+        BpmnReaderImpl reader = new BpmnReaderImpl(configuration, mappings);
+        reader.currentXml = xmlRoot;
+        condition.readBpmn(reader);
+        return condition;
+      } catch (Exception e) {
+        throw new RuntimeException("Could not read condition: " + e.getMessage(), e);
+      }
+    }
+    else {
+      return null;
+    }
+  }
+
+  /**
+   * Work in progress for testing conditions.
+   */
+  public String writeToString(BpmnWritable model) {
+    BpmnWriterImpl writer = new BpmnWriterImpl(mappings);
+    writer.startElementBpmn("conditionsTest");
+    model.writeBpmn(writer);
+
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    XmlWriter xmlWriter = new XmlWriter(stream, "UTF-8");
+    xmlWriter.writeDocument(writer.xml);
+    xmlWriter.flush();
+    return stream.toString();
   }
 }

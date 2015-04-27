@@ -16,11 +16,10 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.model.GroupId;
 import com.effektif.workflow.api.types.GroupIdType;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.data.AbstractDataType;
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.identity.Group;
 import com.effektif.workflow.impl.identity.IdentityService;
@@ -41,6 +40,17 @@ public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
     super.setConfiguration(configuration);
     this.groupTypeImpl = getSingletonDataType(GroupTypeImpl.class);
   }
+  
+  @Override
+  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+    return jsonValue!=null ? new GroupId((String)jsonValue) : null;
+  }
+
+  @Override
+  public Object convertInternalToJsonValue(Object internalValue) {
+    return internalValue!=null ? ((GroupId)internalValue).getInternal() : null;
+  }
+
 
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {

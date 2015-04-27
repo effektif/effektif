@@ -15,8 +15,10 @@
  */
 package com.effektif.workflow.impl.email;
 
+import com.effektif.workflow.api.mapper.BpmnReader;
+import com.effektif.workflow.api.mapper.BpmnWriter;
+import com.effektif.workflow.api.mapper.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Starts a workflow as a result of receiving an email, instead of starting a workflow directly and setting workflow
@@ -28,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Peter Hilton
  */
-@JsonTypeName("email")
+@TypeName("email")
 public class EmailTrigger extends Trigger {
 
   public static final String EMAIL_ID_KEY = "emailId";
@@ -49,5 +51,20 @@ public class EmailTrigger extends Trigger {
   public EmailTrigger emailIdVariableId(String emailIdVariableId) {
     this.emailIdVariableId = emailIdVariableId;
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    emailIdVariableId = r.readStringAttributeEffektif("emailIdVariableId");
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("trigger");
+    w.writeTypeAttribute(this);
+    if (emailIdVariableId != null) {
+      w.writeStringAttributeEffektif("emailIdVariableId", emailIdVariableId);
+    }
+    w.endElement();
   }
 }

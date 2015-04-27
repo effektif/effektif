@@ -15,13 +15,11 @@
  */
 package com.effektif.workflow.impl.data;
 
-import java.util.Map;
 import java.util.Map.Entry;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.mapper.XmlElement;
 import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.template.Hints;
 
 
@@ -85,10 +83,10 @@ public abstract class AbstractDataType<T extends Type> implements DataType<T> {
     return null;
   }
 
-  @Override
-  public TypeGenerator getTypeGenerator() {
-    return null;
-  }
+//  @Override
+//  public TypeGenerator getTypeGenerator() {
+//    return null;
+//  }
   
   @Override
   public T serialize() {
