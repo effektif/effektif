@@ -18,6 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 
 
 /**
+ * Specifies the ordering for model object properties to use for JSON serialisation, i.e. the order of fields in the
+ * generated JSON.
+ *
  * @author Tom Baeyens
  */
 @Retention(RetentionPolicy.RUNTIME)

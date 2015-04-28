@@ -39,6 +39,9 @@ import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
+ * Implements the parts of JSON deserialisation that are not specific to one of the concrete implementations in its
+ * subclasses.
+ *
  * @author Tom Baeyens
  */
 public abstract class AbstractJsonReader implements JsonReader {

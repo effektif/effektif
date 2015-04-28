@@ -19,16 +19,18 @@ import java.io.StringReader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
 import com.effektif.workflow.api.serialization.bpmn.BpmnWritable;
+import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 
-
-
-
 /**
+ * A facade for API object BPMN serialisation and deserialisation,
+ * using the {@link BpmnWriter} and {@link BpmnReader} APIs.
+ *
  * @author Tom Baeyens
  */
 public class BpmnMapper extends AbstractMapper {

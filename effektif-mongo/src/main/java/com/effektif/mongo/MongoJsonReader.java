@@ -24,6 +24,8 @@ import com.effektif.workflow.impl.mapper.Mappings;
 
 
 /**
+ * MongoDB JSON deserialisation implementation, characterised by MongoDB object IDs and dates.
+ *
  * @author Tom Baeyens
  */
 public class MongoJsonReader extends AbstractJsonReader {

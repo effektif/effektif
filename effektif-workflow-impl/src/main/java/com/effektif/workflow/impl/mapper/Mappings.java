@@ -80,6 +80,8 @@ import com.effektif.workflow.impl.job.JobType;
 
 
 /**
+ * Registry for API model classes, used to determine their serialisations.
+ *
  * @author Tom Baeyens
  */
 public class Mappings {

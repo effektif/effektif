@@ -17,7 +17,8 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 
 
-/** a mapper is an object that can read and write API objects.
+/**
+ * A facade for API object serialisation and deserialisation.
  * 
  * @author Tom Baeyens
  */

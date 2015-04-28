@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.mapper;
 
-
-
 /**
  * @author Tom Baeyens
  */

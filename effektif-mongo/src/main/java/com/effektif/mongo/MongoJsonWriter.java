@@ -34,6 +34,8 @@ import com.mongodb.BasicDBObject;
 
 
 /**
+ * MongoDB JSON serialisation implementation, characterised by MongoDB object IDs and dates.
+ *
  * @author Tom Baeyens
  */
 public class MongoJsonWriter extends AbstractWriter {

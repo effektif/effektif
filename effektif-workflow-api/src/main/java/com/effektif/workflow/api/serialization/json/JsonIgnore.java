@@ -18,6 +18,8 @@ import java.lang.annotation.RetentionPolicy;
 
 
 /**
+ * Specifies that the annotated model class field is ignored by JSON serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 @Retention(RetentionPolicy.RUNTIME)

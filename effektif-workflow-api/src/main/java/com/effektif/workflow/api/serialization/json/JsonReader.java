@@ -22,11 +22,9 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/** an abstraction that allows objects to read their internal 
- * state from a json source.
- * 
- * The goal is to support multiple 
- * json technologies like eg Jackson and MongoDB.
+/**
+ * An API for deserialising model objects from a JSON source. This API is an abstract interface so it can support
+ * multiple concrete JSON implementations: Jackson for the REST APIs, and MongoDB.
  * 
  * @author Tom Baeyens
  */

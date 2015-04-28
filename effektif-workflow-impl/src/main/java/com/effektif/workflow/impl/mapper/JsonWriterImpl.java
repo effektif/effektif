@@ -33,8 +33,11 @@ import com.effektif.workflow.api.serialization.json.JsonWritable;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.core.JsonGenerator;
 
-
 /**
+ * Standard JSON serialisation implementation.
+ *
+ * TODO Rename to StandardJsonWriter, to make the difference with MongoJsonWriter clearer.
+ *
  * @author Tom Baeyens
  */
 public class JsonWriterImpl extends AbstractWriter {

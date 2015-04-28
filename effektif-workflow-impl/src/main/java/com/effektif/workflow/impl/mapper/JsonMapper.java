@@ -20,14 +20,17 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.api.serialization.json.JsonReader;
+import com.effektif.workflow.api.serialization.json.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-
 /**
+ * A facade for API object JSON serialisation and deserialisation,
+ * using the {@link JsonWriter} and {@link JsonReader} APIs.
+ *
  * @author Tom Baeyens
  */
 public class JsonMapper extends AbstractMapper {

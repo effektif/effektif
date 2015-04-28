@@ -28,13 +28,17 @@ import com.effektif.workflow.api.deprecated.task.Case;
 import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.serialization.json.JsonReader;
+import com.effektif.workflow.api.serialization.json.JsonWriter;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.AbstractMapper;
 import com.mongodb.BasicDBObject;
 
-
 /**
+ * A facade for API object MongoDB JSON serialisation and deserialisation,
+ * using the {@link JsonWriter} and {@link JsonReader} APIs.
+ *
  * @author Tom Baeyens
  */
 public class MongoJsonMapper extends AbstractMapper {

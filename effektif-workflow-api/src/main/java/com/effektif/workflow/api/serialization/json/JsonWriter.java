@@ -22,12 +22,10 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 
 
-/** an abstraction that allows objects to write their internal 
- * state to a json source.
- * 
- * The goal is to support multiple 
- * json technologies like eg Jackson and MongoDB.
- *   
+/**
+ * An API for serialising model objects to JSON. This API is an abstract interface so it can support multiple concrete
+ * JSON implementations: Jackson for the REST APIs, and MongoDB.
+ *
  * @author Tom Baeyens
  */
 public interface JsonWriter {

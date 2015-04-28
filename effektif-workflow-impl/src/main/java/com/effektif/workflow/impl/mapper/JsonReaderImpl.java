@@ -21,6 +21,10 @@ import com.effektif.workflow.api.model.Id;
 
 
 /**
+ * Standard JSON deserialisation implementation, characterised by plain string IDs and ISO format dates.
+ *
+ * TODO Rename to StandardJsonReader, to make the difference with MongoJsonReader clearer.
+ *
  * @author Tom Baeyens
  */
 public class JsonReaderImpl extends AbstractJsonReader {
