@@ -19,6 +19,8 @@ import com.effektif.workflow.impl.configuration.Brewery;
 
 /**
  * A facade for API object serialisation and deserialisation.
+ *
+ * TODO Rename to Mapper (‘Abstract’ is redundant).
  * 
  * @author Tom Baeyens
  */
