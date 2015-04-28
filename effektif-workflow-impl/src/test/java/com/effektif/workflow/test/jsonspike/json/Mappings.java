@@ -71,7 +71,11 @@ import com.effektif.workflow.impl.mapper.TypeField;
 import com.effektif.workflow.test.jsonspike.json.typemappers.BeanTypeMapper;
 import com.effektif.workflow.test.jsonspike.json.typemappers.StringMapper;
 
-
+/**
+ * Registry for API model classes, used to determine their serialisations.
+ *
+ * @author Tom Baeyens
+ */
 public class Mappings {
   
   public String getTypeField(Class<?> clazz) {

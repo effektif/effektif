@@ -18,7 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * An API for deserialising field values from a JSON source.
+ *
+ * @author Tom Baeyens
+ */
 public abstract class JsonFieldReader {
   
   Mappings mappings;

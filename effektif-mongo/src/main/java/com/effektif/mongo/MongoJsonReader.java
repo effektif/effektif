@@ -49,6 +49,9 @@ public class MongoJsonReader extends AbstractJsonReader {
     return mongoJsonMapper.getFieldName(field);
   }
 
+  /**
+   * Returns the value of a Mongo JSON ID field, without removing it from the JSON object being parsed.
+   */
   @Override
   public <T extends Id> T readId() {
     Object id = jsonObject.get("_id");

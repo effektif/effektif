@@ -15,6 +15,11 @@ package com.effektif.workflow.test.jsonspike.json;
 
 import java.util.List;
 
+/**
+ * An API for serialising field values to JSON.
+ *
+ * @author Tom Baeyens
+ */
 public abstract class JsonFieldWriter {
   
   Mappings mappings;

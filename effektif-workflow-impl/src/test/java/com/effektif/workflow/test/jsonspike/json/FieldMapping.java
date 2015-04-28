@@ -17,7 +17,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-
+/**
+ * Uses a {@link TypeMapper} to serialise and deserialise a particular API model field.
+ *
+ * TODO Remove unused class parameter?
+ */
 public class FieldMapping<T> {
   
   Field field;

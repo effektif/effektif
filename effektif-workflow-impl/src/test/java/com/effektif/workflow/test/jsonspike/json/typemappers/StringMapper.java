@@ -14,6 +14,9 @@
 package com.effektif.workflow.test.jsonspike.json.typemappers;
 
 import java.lang.reflect.Type;
+import java.util.Date;
+
+import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.test.jsonspike.json.JsonFieldReader;
 import com.effektif.workflow.test.jsonspike.json.JsonFieldWriter;
@@ -21,6 +24,8 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
 
 /**
+ * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 public class StringMapper implements TypeMapper {
