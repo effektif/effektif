@@ -270,6 +270,12 @@ public class Mappings {
     }
   }
   
+  public <T> FieldMapping<T> findFieldMapping(Class<?> clazz, String fieldName) {
+    // TODO  
+    // use getFieldMappings(Class<?> clazz) // this will automatically scan the class if that's not yet done.
+    return null;
+  }
+
   public String getJsonFieldName(Class<?> clazz, String fieldName) {
     // TODO add member field Map<Class<?>,Map<String,String>> jsonFieldNames; 
     // TODO add method setJsonFieldName(Class<?> clazz, String fieldName, String jsonFieldName) {} 

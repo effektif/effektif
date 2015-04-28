@@ -67,4 +67,8 @@ public class FieldMapping<T> {
   public void setTypeMapper(TypeMapper typeMapper) {
     this.typeMapper = typeMapper;
   }
+
+  public void setJsonFieldName(String jsonFieldName) {
+    this.jsonFieldName = jsonFieldName;
+  }
 }

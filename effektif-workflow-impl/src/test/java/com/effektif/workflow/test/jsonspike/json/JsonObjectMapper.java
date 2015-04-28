@@ -15,6 +15,7 @@ package com.effektif.workflow.test.jsonspike.json;
 
 import java.util.Map;
 
+import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.test.jsonspike.json.typemappers.LocalDateTimeDateMapper;
 
 
@@ -29,6 +30,8 @@ public class JsonObjectMapper {
     this.mappings = new Mappings();
     
     this.mappings.registerTypeMapper(new LocalDateTimeDateMapper());
+    
+    this.mappings.findFieldMapping(Workflow.class, "id").setJsonFieldName("_id");
   }
 
   public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {
