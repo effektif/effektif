@@ -19,11 +19,11 @@ import java.lang.reflect.Type;
 /**
  * @author Tom Baeyens
  */
-public interface TypeMapper {
+public interface TypeMapper<T> {
 
-  Class< ? > getMappedClass();
+  Class<T> getMappedClass();
 
-  Object read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader);
-  void write(Object objectValue, JsonFieldWriter jsonFieldWriter);
+  T read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader);
+  void write(T objectValue, JsonFieldWriter jsonFieldWriter);
 
 }

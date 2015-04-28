@@ -27,22 +27,21 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 /**
  * @author Tom Baeyens
  */
-public class LocalDateTimeDateMapper implements TypeMapper {
+public class LocalDateTimeDateMapper implements TypeMapper<LocalDateTime> {
 
   @Override
-  public Class< ? > getMappedClass() {
+  public Class<LocalDateTime> getMappedClass() {
     return LocalDateTime.class;
   }
   
   @Override
-  public void write(Object objectValue, JsonFieldWriter jsonFieldWriter) {
-    Date date = ((LocalDateTime)objectValue).toDate();
+  public void write(LocalDateTime objectValue, JsonFieldWriter jsonFieldWriter) {
     JsonObjectFieldWriter jsonObjectFieldWriter = (JsonObjectFieldWriter) jsonFieldWriter;
-    jsonObjectFieldWriter.writeValue(date);
+    jsonObjectFieldWriter.writeValue(objectValue.toDate());
   }
 
   @Override
-  public Object read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
+  public LocalDateTime read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
     return new LocalDateTime((Date)jsonValue);
   }
 }

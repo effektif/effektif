@@ -14,8 +14,8 @@
 package com.effektif.workflow.test.jsonspike.json.typemappers;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.test.jsonspike.json.JsonFieldReader;
 import com.effektif.workflow.test.jsonspike.json.JsonFieldWriter;
 import com.effektif.workflow.test.jsonspike.json.TypeMapper;
@@ -24,23 +24,20 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 /**
  * @author Tom Baeyens
  */
-public class BeanTypeMapper implements TypeMapper<Object> {
-
-  public static final TypeMapper INSTANCE = new BeanTypeMapper();
+public class WorkflowIdStreamMapper implements TypeMapper<WorkflowId> {
 
   @Override
-  public Class<Object> getMappedClass() {
-    return null;
+  public void write(WorkflowId objectValue, JsonFieldWriter jsonFieldWriter) {
+    jsonFieldWriter.writeString(objectValue.getInternal());
   }
 
   @Override
-  public Object read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
-    return jsonFieldReader.readBean((Map<String, Object>) jsonValue, (Class<?>) type);
+  public WorkflowId read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
+    return new WorkflowId((String)jsonValue);
   }
 
   @Override
-  public void write(Object objectValue, JsonFieldWriter jsonFieldWriter) {
-    jsonFieldWriter.writeBean(objectValue);
+  public Class<WorkflowId> getMappedClass() {
+    return WorkflowId.class;
   }
-
 }
