@@ -13,35 +13,19 @@
  * limitations under the License. */
 package com.effektif.workflow.test.jsonspike;
 
-import static org.junit.Assert.*;
-
-import org.joda.time.LocalDateTime;
-import org.junit.Test;
-
-import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.test.jsonspike.json.JsonObjectMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public abstract class AbstractMapperTest {
-  
-  @Test 
-  public void testSimpleObjectBasicProperties() {
-    LocalDateTime now = new LocalDateTime();
+public class MongoObjectMapper extends JsonObjectMapper {
 
-    Workflow workflow = new Workflow();
-    workflow.id(new WorkflowId("i"));
-    workflow.name("w");
-    workflow.createTime(now);
-    
-    workflow = serialize(workflow);
-    
-    assertNotNull(workflow);
-    assertEquals("w", workflow.getName());
-    assertEquals(now, workflow.getCreateTime());
+  public MongoObjectMapper() {
+    // this.mappings.findFieldMapping(Workflow.class, "id").setJsonFieldName("_id");
+    // this.mappings.registerTypeMapper(new WorkflowIdMongoMapper());
   }
 
-  public abstract <T> T serialize(T o);
+  
 }
