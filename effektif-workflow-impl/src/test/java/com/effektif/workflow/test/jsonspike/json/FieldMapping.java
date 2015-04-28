@@ -72,7 +72,10 @@ public class FieldMapping<T> {
     this.typeMapper = typeMapper;
   }
 
-  public void setJsonFieldName(String jsonFieldName) {
-    this.jsonFieldName = jsonFieldName;
+  public void setJsonFieldName(String fieldName) {
+    if (fieldName == null || fieldName.trim().equals("")) {
+      throw new IllegalArgumentException("Provided JSON field is empty");
+    }
+    this.jsonFieldName = fieldName;
   }
 }

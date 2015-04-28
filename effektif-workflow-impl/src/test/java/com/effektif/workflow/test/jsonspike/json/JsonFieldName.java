@@ -17,7 +17,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 
-/** specifies the json field name in case it must be different from the field name;
+/**
+ * Specifies the JSON field name in case it must be different from the Java model class field name;
  * 
  * @author Tom Baeyens
  */

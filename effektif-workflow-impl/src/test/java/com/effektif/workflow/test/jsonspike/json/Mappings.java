@@ -404,6 +404,14 @@ public class Mappings {
           TypeMapper typeMapper = getTypeMapper(fieldType);
           FieldMapping fieldMapping = new FieldMapping(field, typeMapper);
 
+          // Annotation-based field name override.
+          JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
+          if (jsonFieldNameAnnotation != null) {
+            fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
+          }
+
+          // Programmatic field name override.
+          // TODO test @JsonFieldName to see if this works
           if (definesJsonFieldName(fieldType, fieldMapping.getFieldName())) {
             fieldMapping.setJsonFieldName(getJsonFieldName(fieldType, fieldMapping.getFieldName()));
           }
