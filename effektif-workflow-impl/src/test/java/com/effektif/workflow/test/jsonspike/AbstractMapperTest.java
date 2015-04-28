@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
+import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Workflow;
 
@@ -41,6 +42,17 @@ public abstract class AbstractMapperTest {
     assertNotNull(workflow);
     assertEquals("w", workflow.getName());
     assertEquals(now, workflow.getCreateTime());
+  }
+
+  @Test 
+  public void testPolymorphicTypes() {
+    Workflow workflow = new Workflow()
+      .activity(new Call()
+        .subWorkflowName("sws"));
+
+    workflow = serialize(workflow);
+    
+    assertNotNull(workflow);
   }
 
   public abstract <T> T serialize(T o);

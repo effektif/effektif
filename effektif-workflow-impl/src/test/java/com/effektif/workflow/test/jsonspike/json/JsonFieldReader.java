@@ -14,7 +14,6 @@
 package com.effektif.workflow.test.jsonspike.json;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ public abstract class JsonFieldReader {
     this.mappings = mappings;
   }
 
-  protected Object readObject(Object jsonValue, Type type) {
+  public Object readObject(Object jsonValue, Type type) {
     TypeMapper typeMapper = mappings.getTypeMapper(jsonValue, type);
     return typeMapper.read(jsonValue, type, this);
   }
@@ -59,38 +58,38 @@ public abstract class JsonFieldReader {
     return mappings.getJsonFieldName(currentBeanClass, fieldName);
   }
   
-  public String readFieldString(String fieldName) {
-    String jsonFieldName = getJsonFieldName(fieldName);
-    return (String) currentBeanJsonMap.get(jsonFieldName);
-  }
-
-  public Boolean readFieldBoolean(String fieldName) {
-    String jsonFieldName = getJsonFieldName(fieldName);
-    return (Boolean) currentBeanJsonMap.get(jsonFieldName);
-  }
-
-  public Number readFieldNumber(String fieldName) {
-    String jsonFieldName = getJsonFieldName(fieldName);
-    return (Number) currentBeanJsonMap.get(jsonFieldName);
-  }
-
-  public Object readFieldObject(String fieldName, Type type) {
-    String jsonFieldName = getJsonFieldName(fieldName);
-    Object jsonFieldValue = currentBeanJsonMap.get(jsonFieldName);
-    if (jsonFieldValue==null) {
-      return null;
-    }
-    return readObject(jsonFieldValue, type);
-  }
-
-  public List<Object> readFieldArray(String fieldName, Type elementType) {
-    String jsonFieldName = getJsonFieldName(fieldName);
-    List<Object> jsonList = (List<Object>) currentBeanJsonMap.get(jsonFieldName);
-    List<Object> objectList = new ArrayList<>();
-    for (Object jsonElement: jsonList) {
-      Object objectElement = readObject(jsonElement, elementType);
-      objectList.add(objectElement);
-    }
-    return objectList;
-  }
+//  public String readFieldString(String fieldName) {
+//    String jsonFieldName = getJsonFieldName(fieldName);
+//    return (String) currentBeanJsonMap.get(jsonFieldName);
+//  }
+//
+//  public Boolean readFieldBoolean(String fieldName) {
+//    String jsonFieldName = getJsonFieldName(fieldName);
+//    return (Boolean) currentBeanJsonMap.get(jsonFieldName);
+//  }
+//
+//  public Number readFieldNumber(String fieldName) {
+//    String jsonFieldName = getJsonFieldName(fieldName);
+//    return (Number) currentBeanJsonMap.get(jsonFieldName);
+//  }
+//
+//  public Object readFieldObject(String fieldName, Type type) {
+//    String jsonFieldName = getJsonFieldName(fieldName);
+//    Object jsonFieldValue = currentBeanJsonMap.get(jsonFieldName);
+//    if (jsonFieldValue==null) {
+//      return null;
+//    }
+//    return readObject(jsonFieldValue, type);
+//  }
+//
+//  public List<Object> readFieldArray(String fieldName, Type elementType) {
+//    String jsonFieldName = getJsonFieldName(fieldName);
+//    List<Object> jsonList = (List<Object>) currentBeanJsonMap.get(jsonFieldName);
+//    List<Object> objectList = new ArrayList<>();
+//    for (Object jsonElement: jsonList) {
+//      Object objectElement = readObject(jsonElement, elementType);
+//      objectList.add(objectElement);
+//    }
+//    return objectList;
+//  }
 }

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -58,7 +59,6 @@ import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.serialization.json.JsonIgnore;
 import com.effektif.workflow.api.serialization.json.JsonPropertyOrder;
-import com.effektif.workflow.api.serialization.json.JsonWriter;
 import com.effektif.workflow.api.serialization.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
@@ -69,6 +69,7 @@ import com.effektif.workflow.impl.mapper.BpmnTypeMapping;
 import com.effektif.workflow.impl.mapper.SubclassMapping;
 import com.effektif.workflow.impl.mapper.TypeField;
 import com.effektif.workflow.test.jsonspike.json.typemappers.BeanTypeMapper;
+import com.effektif.workflow.test.jsonspike.json.typemappers.ListTypeMapper;
 import com.effektif.workflow.test.jsonspike.json.typemappers.StringMapper;
 
 
@@ -100,11 +101,13 @@ public class Mappings {
   public Mappings() {
     
     registerTypeMapper(new StringMapper());
+    registerTypeMapper(new ListTypeMapper());
     
     registerBaseClass(Type.class, "name");
     registerBaseClass(Trigger.class);
 
     registerBaseClass(Activity.class);
+    registerSubClass(Call.class);
     registerSubClass(EmbeddedSubprocess.class);
     registerSubClass(EndEvent.class);
     registerSubClass(ExclusiveGateway.class);
@@ -256,10 +259,11 @@ public class Mappings {
     return bpmnTypeMappingsByClass.get(subClass);
   }
 
-  public void writeTypeField(JsonWriter jsonWriter, Object o) {
+  public void writeTypeField(JsonFieldWriter jsonWriter, Object o) {
     TypeField typeField = typeFields.get(o.getClass());
     if (typeField!=null) {
-      jsonWriter.writeString(typeField.getTypeField(), typeField.getTypeName());
+      jsonWriter.writeFieldName(typeField.getTypeField());
+      jsonWriter.writeString(typeField.getTypeName());
     }
   }
   
@@ -384,10 +388,19 @@ public class Mappings {
 
   public TypeMapper getTypeMapper(Class< ? > clazz) {
     TypeMapper typeMapper = typeMappers.get(clazz);
-    return typeMapper!=null ? typeMapper : BeanTypeMapper.INSTANCE;
+    if (typeMapper!=null) {
+      return typeMapper;
+    }
+    if (List.class.isAssignableFrom(clazz)) {
+      typeMapper = ListTypeMapper.INSTANCE;
+    } else {
+      typeMapper = BeanTypeMapper.INSTANCE;
+    }
+    typeMappers.put(clazz, typeMapper);
+    return typeMapper;
   }
 
   public TypeMapper getTypeMapper(Object jsonValue, Type type) {
-    return null;
+    return getTypeMapper((Class)type);
   }
 }

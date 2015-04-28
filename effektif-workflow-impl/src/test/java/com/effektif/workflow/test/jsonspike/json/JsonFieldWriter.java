@@ -27,6 +27,7 @@ public abstract class JsonFieldWriter {
     if (bean!=null) {
       objectStart();
       Class< ? extends Object> beanClass = bean.getClass();
+      mappings.writeTypeField(this, bean);
       List<FieldMapping> fieldMappings = mappings.getFieldMappings(beanClass);
       for (FieldMapping fieldMapping: fieldMappings) {
         fieldMapping.writeField(bean, this);

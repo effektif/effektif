@@ -28,7 +28,7 @@ public class FieldMapping<T> {
   public FieldMapping(Field field, TypeMapper typeMapper) {
     this.field = field;
     this.jsonFieldName = field.getName();
-    this.fieldType = field.getType(); 
+    this.fieldType = field.getGenericType(); 
     this.typeMapper = typeMapper;
   }
 
