@@ -15,8 +15,10 @@ package com.effektif.workflow.test.jsonspike.json;
 
 import java.lang.reflect.Type;
 
-
 /**
+ * Maps a Java type to an internal representation for JSON serialisation and deserialisation.
+ *
+ * @param <T> The Java type to map to JSON.
  * @author Tom Baeyens
  */
 public interface TypeMapper<T> {
@@ -25,5 +27,4 @@ public interface TypeMapper<T> {
 
   T read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader);
   void write(T objectValue, JsonFieldWriter jsonFieldWriter);
-
 }

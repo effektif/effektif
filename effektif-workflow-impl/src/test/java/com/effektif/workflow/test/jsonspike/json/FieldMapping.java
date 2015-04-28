@@ -17,7 +17,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-
+/**
+ * Uses a {@link TypeMapper} to serialise and deserialise a particular API model field.
+ *
+ * TODO Remove unused class parameter?
+ */
 public class FieldMapping<T> {
   
   Field field;
@@ -68,7 +72,10 @@ public class FieldMapping<T> {
     this.typeMapper = typeMapper;
   }
 
-  public void setJsonFieldName(String jsonFieldName) {
-    this.jsonFieldName = jsonFieldName;
+  public void setJsonFieldName(String fieldName) {
+    if (fieldName == null || fieldName.trim().equals("")) {
+      throw new IllegalArgumentException("Provided JSON field is empty");
+    }
+    this.jsonFieldName = fieldName;
   }
 }

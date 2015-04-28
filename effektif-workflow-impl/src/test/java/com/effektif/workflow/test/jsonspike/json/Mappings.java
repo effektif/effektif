@@ -72,7 +72,11 @@ import com.effektif.workflow.test.jsonspike.json.typemappers.BeanTypeMapper;
 import com.effektif.workflow.test.jsonspike.json.typemappers.ListTypeMapper;
 import com.effektif.workflow.test.jsonspike.json.typemappers.StringMapper;
 
-
+/**
+ * Registry for API model classes, used to determine their serialisations.
+ *
+ * @author Tom Baeyens
+ */
 public class Mappings {
   
   public String getTypeField(Class<?> clazz) {
@@ -97,6 +101,9 @@ public class Mappings {
 
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
+
+  /** Maps, for each registered class, the Java field name to the corresponding JSON field name. */
+  Map<Class<?>,Map<String,String>> jsonFieldNames = new HashMap<>();
 
   public Mappings() {
     
@@ -280,11 +287,35 @@ public class Mappings {
     return null;
   }
 
-  public String getJsonFieldName(Class<?> clazz, String fieldName) {
-    // TODO add member field Map<Class<?>,Map<String,String>> jsonFieldNames; 
-    // TODO add method setJsonFieldName(Class<?> clazz, String fieldName, String jsonFieldName) {} 
+  /**
+   * Returns the JSON field name for the given model class field name, used for (de)serialisation.
+   */
+  public boolean definesJsonFieldName(Class<?> modelClass, String fieldName) {
+    return jsonFieldNames.containsKey(modelClass) && jsonFieldNames.get(modelClass).containsKey(fieldName);
+  }
+
+  /**
+   * Returns the JSON field name for the given model class field name, used for (de)serialisation.
+   */
+  public String getJsonFieldName(Class<?> modelClass, String fieldName) {
+    if (!jsonFieldNames.containsKey(modelClass)) {
+      throw new IllegalArgumentException("No field mappings registered for class " + modelClass.getName());
+    }
+    if (!jsonFieldNames.get(modelClass).containsKey(fieldName)) {
+      throw new IllegalArgumentException(String.format("No mapping for field %s in class %s", fieldName, modelClass.getName()));
+    }
     // TODO update scanFields below, add annotation support @JsonFieldName("_id") (annotation already created in this package)
-    return fieldName;
+    return jsonFieldNames.get(modelClass).get(fieldName);
+  }
+
+  /**
+   * Sets the mapping from the given model class field name to a JSON field name, used for (de)serialisation.
+   */
+  public void setJsonFieldName(Class<?> modelClass, String fieldName, String jsonFieldName) {
+    if (!jsonFieldNames.containsKey(modelClass)) {
+      jsonFieldNames.put(modelClass, new HashMap<String, String>());
+    }
+    jsonFieldNames.get(modelClass).put(fieldName, jsonFieldName);
   }
 
   public synchronized java.lang.reflect.Type getFieldType(Class< ? > clazz, String fieldName) {
@@ -370,17 +401,30 @@ public class Mappings {
     Field[] declaredFields = clazz.getDeclaredFields();
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
-        if (!Modifier.isStatic(field.getModifiers())
-            && field.getAnnotation(JsonIgnore.class)==null) {
+        boolean includeInJsonSerialisation = field.getAnnotation(JsonIgnore.class) == null;
+        if (!Modifier.isStatic(field.getModifiers()) && includeInJsonSerialisation) {
           field.setAccessible(true);
           Class< ? > fieldType = field.getType();
           TypeMapper typeMapper = getTypeMapper(fieldType);
           FieldMapping fieldMapping = new FieldMapping(field, typeMapper);
+
+          // Annotation-based field name override.
+          JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
+          if (jsonFieldNameAnnotation != null) {
+            fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
+          }
+
+          // Programmatic field name override.
+          // TODO test @JsonFieldName to see if this works
+          if (definesJsonFieldName(fieldType, fieldMapping.getFieldName())) {
+            fieldMapping.setJsonFieldName(getJsonFieldName(fieldType, fieldMapping.getFieldName()));
+          }
+
           fieldMappings.add(fieldMapping);
         }
       }
     }
-    Class< ? > superclass = clazz.getSuperclass();
+    Class<? > superclass = clazz.getSuperclass();
     if (Object.class!=superclass) {
       scanFields(fieldMappings, superclass);
     }

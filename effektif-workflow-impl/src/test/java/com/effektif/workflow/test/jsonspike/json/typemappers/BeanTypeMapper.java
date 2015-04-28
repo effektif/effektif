@@ -22,6 +22,8 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
 
 /**
+ * Maps a JavaBean to a {@link Map} field for JSON serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 public class BeanTypeMapper implements TypeMapper<Object> {

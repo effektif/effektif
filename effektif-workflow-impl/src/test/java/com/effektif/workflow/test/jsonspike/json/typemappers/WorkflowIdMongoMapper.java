@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+package com.effektif.workflow.test.jsonspike.json.typemappers;/* Copyright (c) 2015, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,38 +11,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.jsonspike.json.typemappers;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
-import org.joda.time.LocalDateTime;
-
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.test.jsonspike.json.JsonFieldReader;
 import com.effektif.workflow.test.jsonspike.json.JsonFieldWriter;
 import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
-
 /**
- * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
+ * Maps a {@link WorkflowId} to a MongoDB JSON ID field for serialisation and deserialisation.
  *
- * @author Tom Baeyens
+ * TODO Can this subclass WorkflowIdStreamMapper?
+ * @author Peter Hilton
  */
-public class StringMapper implements TypeMapper {
+public class WorkflowIdMongoMapper implements TypeMapper<WorkflowId> {
 
   @Override
-  public Class< ? > getMappedClass() {
-    return String.class;
+  public Class<WorkflowId> getMappedClass() {
+    return WorkflowId.class;
+  }
+
+  // TODO
+  @Override
+  public WorkflowId read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
+    return null;
   }
 
   @Override
-  public void write(Object objectValue, JsonFieldWriter jsonFieldWriter) {
-    String jsonValue = (String) objectValue;
-    jsonFieldWriter.writeString(jsonValue);
-  }
-
-  @Override
-  public Object read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
-    return (String) jsonValue;
+  public void write(WorkflowId objectValue, JsonFieldWriter jsonFieldWriter) {
+    jsonFieldWriter.objectStart();
+    jsonFieldWriter.writeFieldName("$oid");
+    jsonFieldWriter.writeString(objectValue.getInternal());
+    jsonFieldWriter.objectEnd();
   }
 }

@@ -22,6 +22,8 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
 
 /**
+ * Maps a {@link WorkflowId} to a JSON string field for serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 public class WorkflowIdStreamMapper implements TypeMapper<WorkflowId> {

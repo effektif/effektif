@@ -25,6 +25,8 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
 
 /**
+ * Maps a {@link LocalDateTime} to a {@link Date} field for JSON serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 public class LocalDateTimeDateMapper implements TypeMapper<LocalDateTime> {

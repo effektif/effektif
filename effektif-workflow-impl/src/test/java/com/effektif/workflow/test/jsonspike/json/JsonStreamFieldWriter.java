@@ -19,7 +19,9 @@ import java.math.BigInteger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-
+/**
+ * Serialises to JSON using a stream-based JSON representation.
+ */
 public class JsonStreamFieldWriter extends JsonFieldWriter {
 
   JsonGenerator jgen;

@@ -13,6 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.test.jsonspike.json;
 
+import java.util.Map;
+
+/**
+ * Deserialises from JSON using a {@link Map}-based JSON representation.
+ */
 public class JsonObjectFieldReader extends JsonFieldReader {
 
   public JsonObjectFieldReader(Mappings mappings) {

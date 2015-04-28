@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.test.jsonspike.json;
 
-
+/**
+ * Deserialises from JSON using a stream-based JSON representation.
+ */
 public class JsonStreamFieldReader extends JsonFieldReader {
 
   public JsonStreamFieldReader(Mappings mappings) {

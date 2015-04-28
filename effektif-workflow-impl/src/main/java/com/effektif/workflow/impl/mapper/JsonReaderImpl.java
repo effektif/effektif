@@ -29,7 +29,7 @@ import com.effektif.workflow.api.model.Id;
  */
 public class JsonReaderImpl extends AbstractJsonReader {
   
-  public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTimeParser();
+  public static final DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTimeParser();
 
   public JsonReaderImpl() {
     this(new Mappings());
@@ -39,6 +39,9 @@ public class JsonReaderImpl extends AbstractJsonReader {
     this.mappings = mappings;
   }
 
+  /**
+   * Returns the value of a JSON string field as an ID instance, and removes it from the JSON object being parsed.
+   */
   @Override
   public <T extends Id> T readId() {
     return readId("id");

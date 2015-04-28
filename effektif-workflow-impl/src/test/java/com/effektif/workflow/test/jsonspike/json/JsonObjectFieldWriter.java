@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-
+/**
+ * Serialises to JSON using a {@link Map}-based JSON representation.
+ */
 public class JsonObjectFieldWriter extends JsonFieldWriter {
   
   public static class ObjectContext {
