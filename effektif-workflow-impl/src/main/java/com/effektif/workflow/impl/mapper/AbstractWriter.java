@@ -20,6 +20,11 @@ import com.effektif.workflow.api.serialization.json.JsonWriter;
 
 
 /**
+ * Implements the parts of JSON serialisation that are not specific to one of the concrete implementations in its
+ * subclasses.
+ *
+ * TODO Rename to AbstractJsonWriter
+ *
  * @author Tom Baeyens
  */
 public abstract class AbstractWriter implements JsonWriter {

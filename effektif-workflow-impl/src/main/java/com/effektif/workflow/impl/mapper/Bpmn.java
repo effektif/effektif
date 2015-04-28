@@ -15,7 +15,9 @@
  */
 package com.effektif.workflow.impl.mapper;
 
-/** constants used in both the BpmnReader and BpmnWriter */
+/**
+ * Constants for fixed string values used by both the {@link BpmnReaderImpl} and {@link BpmnWriterImpl}.
+ */
 public class Bpmn {
 
   public static final String BPMN_URI = "http://www.omg.org/spec/BPMN/20100524/MODEL";
@@ -25,5 +27,4 @@ public class Bpmn {
 
   public static final String KEY_BPMN = "bpmn";
   public static final String KEY_DEFINITIONS = "bpmnDefinitions";
-
 }

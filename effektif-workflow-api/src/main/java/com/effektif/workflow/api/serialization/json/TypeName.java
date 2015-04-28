@@ -18,6 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 
 
 /**
+ * Specifies the type name used for model object serialisation, such as the value of JSON serialisation
+ * <code>type</code> fields.
+ *
  * @author Tom Baeyens
  */
 @Retention(RetentionPolicy.RUNTIME)

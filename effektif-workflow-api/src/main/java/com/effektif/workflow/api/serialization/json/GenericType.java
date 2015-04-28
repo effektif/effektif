@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
 
 
 /**
+ * A container for type information that is used by JSON deserialisation.
+ *
  * @author Tom Baeyens
  */
 public class GenericType implements Type {

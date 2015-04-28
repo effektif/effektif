@@ -39,13 +39,19 @@ import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
+ * Implements the parts of JSON deserialisation that are not specific to one of the concrete implementations in its
+ * subclasses. A reader instance contains an internal representation of the JSON being parsed. The various read methods
+ * parse this object, and remove the parsed data.
+ *
  * @author Tom Baeyens
  */
 public abstract class AbstractJsonReader implements JsonReader {
   
   public static final Logger log = LoggerFactory.getLogger(AbstractJsonReader.class);
-  
+
+  /** A Java representation of the JSON object being parsed. */
   protected Map<String,Object> jsonObject;
+
   protected Class<?> readableClass;
   protected Mappings mappings; 
 
@@ -58,6 +64,10 @@ public abstract class AbstractJsonReader implements JsonReader {
   }
 
   private static final Class< ? >[] ID_CONSTRUCTOR_PARAMETERS = new Class< ? >[] { String.class };
+
+  /**
+   * Returns the value of a JSON string field as an ID instance, and removes it from the JSON object being parsed.
+   */
   @Override
   public <T extends Id> T readId(String fieldName) {
     Object id = jsonObject.remove(fieldName);
@@ -65,34 +75,52 @@ public abstract class AbstractJsonReader implements JsonReader {
     return toId(id, idType);
   }
 
+  /**
+   * Returns the value of a JSON string field, and removes it from the JSON object being parsed.
+   */
   public String readString(String fieldName) {
     return (String) jsonObject.remove(fieldName);
   }
-  
 
+  /**
+   * Returns the value of a JSON Boolean field, and removes it from the JSON object being parsed.
+   */
   @Override
   public Boolean readBoolean(String fieldName) {
     return (Boolean) jsonObject.remove(fieldName);
   }
 
+  /**
+   * Returns the value of a JSON number field, and removes it from the JSON object being parsed.
+   */
   @Override
   public Long readLong(String fieldName) {
     Number number = (Number) jsonObject.remove(fieldName);
     return number instanceof Long ? (Long) number : number.longValue();
   }
 
+  /**
+   * Returns the value of a JSON number field, and removes it from the JSON object being parsed.
+   */
   @Override
   public Double readDouble(String fieldName) {
     Number number = (Number) jsonObject.remove(fieldName);
     return number instanceof Double ? (Double) number : number.doubleValue();
   }
 
+  /**
+   * Returns the value of a JSON string field, parsed as a date, and removes it from the JSON object being parsed.
+   */
   @Override
   public LocalDateTime readDate(String fieldName) {
     Object dateValue = jsonObject.remove(fieldName);
     return readDateValue(dateValue);
   }
 
+  /**
+   * Returns the value of a JSON string field as a fully-qualified Java class name, and removes it from the JSON data
+   * being parsed.
+   */
   @Override
   public Class< ? > readClass(String fieldName) {
     String className = (String) jsonObject.remove(fieldName);
@@ -106,6 +134,9 @@ public abstract class AbstractJsonReader implements JsonReader {
     return toObject(json, readableType);
   }
 
+  /**
+   * Returns the value of a JSON object field as a {@link Map}, and removes it from the JSON object being parsed.
+   */
   @Override
   public <T> Map<String, T> readMap(String fieldName) {
     Map<String,Object> jsonMap = (Map<String,Object>) jsonObject.remove(fieldName);
@@ -115,7 +146,10 @@ public abstract class AbstractJsonReader implements JsonReader {
     ParameterizedType mapType = (ParameterizedType) mappings.getFieldType(readableClass, fieldName);
     return toMap(jsonMap, mapType.getActualTypeArguments()[1]);
   }
-  
+
+  /**
+   * Returns the value of a JSON array field as a {@link List}, and removes it from the JSON object being parsed.
+   */
   @Override
   public <T> List<T> readList(String fieldName) {
     List<Object> jsons = (List<Object>) jsonObject.remove(fieldName);
@@ -126,6 +160,9 @@ public abstract class AbstractJsonReader implements JsonReader {
     return toList(jsons, listType.getActualTypeArguments()[0]);
   }
 
+  /**
+   * Returns the value of a JSON object field as a {@link Binding}, and removes it from the JSON object being parsed.
+   */
   @Override
   public <T> Binding<T> readBinding(String fieldName) {
     Map<String,Object> jsonBinding = (Map<String, Object>) jsonObject.remove(fieldName);
@@ -136,11 +173,22 @@ public abstract class AbstractJsonReader implements JsonReader {
     return toBinding(jsonBinding, bindingType.getActualTypeArguments()[0]);
   }
   
+  /**
+   * Returns the underlying Java representation of the JSON object being parsed. 
+   */
   @Override
   public Map<String, Object> readProperties() {
     return jsonObject;
   }
 
+  /**
+   * Returns the result of deserialising the given JSON representation as an instance of the given type -
+   * this class’ main interface.
+   *
+   * @param json A Java representation of JSON, using (wrapped) primitive types to represent basic JSON types, and
+   * {@link Map} structures to represent JSON objects.
+   * @param type The required return type.
+   */
   public Object toObject(Object json, Type type) {
     if (json==null) {
       return null;
@@ -242,6 +290,11 @@ public abstract class AbstractJsonReader implements JsonReader {
     throw new RuntimeException("Couldn't parse "+json+" ("+json.getClass().getName()+")");
   }
 
+  /**
+   * Returns the result of deserialising the given JSON representation as an instance of the given {@link Number} type.
+   *
+   * TODO Change return type to Number.
+   */
   protected Object toNumber(Object json, Type type) {
     if (json==null) {
       return null;
@@ -267,8 +320,14 @@ public abstract class AbstractJsonReader implements JsonReader {
     throw new RuntimeException("The model should not contain fields with other number types than Long, Integer or Double: "+type);
   }
 
+  /**
+   * Returns the date that results from reading an implementation-specific JSON date value.
+   */
   public abstract LocalDateTime readDateValue(Object jsonDate);
-  
+
+  /**
+   * Returns an ID type instance, constructed from the given JSON string ID.
+   */
   public static <T extends Id> T toId(Object jsonId, Class<T> idType) {
     if (jsonId==null) {
       return null;
@@ -349,6 +408,10 @@ public abstract class AbstractJsonReader implements JsonReader {
     return field.getName();
   }
 
+  /**
+   * Returns the result of deserialising the given JSON object representation by recursively deserialising its field
+   * values.
+   */
   public <T> Map<String, T> toMap(Map<String, Object> jsonMap, Type valueType) {
     if (jsonMap==null) {
       return null;
@@ -362,6 +425,9 @@ public abstract class AbstractJsonReader implements JsonReader {
     return map;
   }
 
+  /**
+   * Returns the result of deserialising the given JSON array representation by recursively deserialising its entries.
+   */
   public <T> List<T> toList(List<Object> jsonList, Type elementType) {
     if (jsonList==null) {
       return null;
@@ -374,6 +440,9 @@ public abstract class AbstractJsonReader implements JsonReader {
     return objects;
   }
 
+  /**
+   * Returns the result of deserialising the given JSON object representation as a {@link Binding}.
+   */
   public <T> Binding<T> toBinding(Map<String, Object> jsonBinding, Type valueType) {
     if (jsonBinding==null) {
       return null;

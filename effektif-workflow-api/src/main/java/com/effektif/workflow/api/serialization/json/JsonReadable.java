@@ -14,10 +14,10 @@
 package com.effektif.workflow.api.serialization.json;
 
 
-/** indicates a class can be deserialized from json.
- * 
- * This abstraction allows to map api objects to different 
- * json technologies like eg Jackson and MongoDB's json model.  
+/**
+ * Indicates that a model class can be deserialised from JSON, using one of the {@link JsonReader} implementations
+ * (the Jackson or MongoDB JSON model). Using this abstract API makes this model deserialisation independent of the
+ * concrete {@link JsonReader} deserialisation.
  * 
  * @author Tom Baeyens
  */
