@@ -26,6 +26,8 @@ import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
+ * Maps a {@link List} to a JSON array for serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 public class ListMapper implements JsonTypeMapper<List>{

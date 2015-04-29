@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
- * Maps a {@link LocalDateTime} to a {@link Date} field for JSON serialisation and deserialisation.
+ * Maps a {@link LocalDateTime} to a {@link Date} internal representation for JSON serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
