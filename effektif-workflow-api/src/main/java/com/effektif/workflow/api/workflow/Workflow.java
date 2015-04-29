@@ -75,6 +75,7 @@ public class Workflow extends AbstractWorkflow {
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
     sourceWorkflowId = r.readStringValue("sourceWorkflowId");
+    createTime = r.readDateValue("createTime");
 
     for (XmlElement nestedElemenet : r.readElementsEffektif("access")) {
       r.startElement(nestedElemenet);
@@ -104,6 +105,10 @@ public class Workflow extends AbstractWorkflow {
     super.writeBpmn(w);
     w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
+
+    w.startElementEffektif("createTime");
+    w.writeDateAttributeEffektif("value", createTime);
+    w.endElement();
 
     if (access != null) {
       access.writeBpmn(w);
