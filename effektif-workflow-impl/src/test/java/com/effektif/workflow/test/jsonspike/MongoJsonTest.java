@@ -21,7 +21,7 @@ import org.junit.BeforeClass;
 /**
  * @author Tom Baeyens
  */
-public class MongoJsonTest extends AbstractMapperTest {
+public class MongoJsonTest extends WorkflowSerializationTest {
 
   static MongoObjectMapper mongoObjectMapper = null;
   

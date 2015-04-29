@@ -13,7 +13,12 @@
  * limitations under the License. */
 package com.effektif.workflow.test.jsonspike.json;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An API for serialising field values to JSON.
@@ -22,7 +27,10 @@ import java.util.List;
  */
 public abstract class JsonFieldWriter {
   
+  private static final Logger log = LoggerFactory.getLogger(JsonFieldWriter.class);
+  
   Mappings mappings;
+  List<Object> loopCheckBeans = new ArrayList<>();
   
   public JsonFieldWriter(Mappings mappings) {
     this.mappings = mappings;
@@ -30,6 +38,7 @@ public abstract class JsonFieldWriter {
 
   public void writeBean(Object bean) {
     if (bean!=null) {
+      loopCheckBeanStart(bean);
       objectStart();
       Class< ? extends Object> beanClass = bean.getClass();
       mappings.writeTypeField(this, bean);
@@ -38,15 +47,48 @@ public abstract class JsonFieldWriter {
         fieldMapping.writeField(bean, this);
       }
       objectEnd();
+      loopCheckBeanEnd();
     } else {
       writeNull();
     }
+  }
+
+  public void writeMap(Map map) {
+    if (map!=null) {
+      objectStart();
+      for (Object key: map.keySet()) {
+        if (key!=null) {
+          if (!(key instanceof String)) {
+            throw new RuntimeException("Only String keys allowed: "+key+" ("+key.getClass().getName()+"): Occurred when writing map "+map);
+          }
+          writeFieldName((String)key);
+          writeObject(map.get(key));
+        }
+      }
+      objectEnd();
+    } else {
+      writeNull();
+    }
+  }
+
+  private void loopCheckBeanStart(Object bean) {
+    for (int i=0; i<loopCheckBeans.size(); i++) {
+      if (loopCheckBeans.get(i)==bean) {
+        throw new RuntimeException("Loop detected in object graph: "+bean+" ("+bean.getClass().getName()+")");
+      }
+    }
+    loopCheckBeans.add(bean);
+  }
+
+  private void loopCheckBeanEnd() {
+    loopCheckBeans.remove(loopCheckBeans.size()-1);
   }
 
   public void writeObject(Object o) {
     if (o!=null) {
       Class<?> clazz = o.getClass();
       TypeMapper typeMapper = mappings.getTypeMapper(clazz);
+      log.debug("using type mapper "+typeMapper.getClass().getSimpleName()+" to write object "+o+" ("+o.getClass().getSimpleName()+")");
       typeMapper.write(o, this);
     } else {
       writeNull();

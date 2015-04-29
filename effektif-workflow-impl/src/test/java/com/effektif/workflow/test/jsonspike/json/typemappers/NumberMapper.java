@@ -21,26 +21,26 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
 
 /**
- * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
+ * Maps a {@link Number} to a JSON number value for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
-public class StringMapper implements TypeMapper<String> {
+public class NumberMapper implements TypeMapper<Number> {
 
-  public static final StringMapper INSTANCE = new StringMapper();
+  public static final TypeMapper INSTANCE = new NumberMapper();
 
   @Override
-  public Class<String> getMappedClass() {
-    return String.class;
+  public Class<Number> getMappedClass() {
+    return Number.class;
   }
 
   @Override
-  public void write(String objectValue, JsonFieldWriter jsonFieldWriter) {
-    jsonFieldWriter.writeString(objectValue);
+  public void write(Number objectValue, JsonFieldWriter jsonFieldWriter) {
+    jsonFieldWriter.writeNumber(objectValue);
   }
 
   @Override
-  public String read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
-    return (String) jsonValue;
+  public Number read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
+    return (Number) jsonValue;
   }
 }

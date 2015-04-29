@@ -19,9 +19,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
@@ -32,6 +34,7 @@ import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.condition.And;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Contains;
@@ -68,8 +71,12 @@ import com.effektif.workflow.impl.mapper.BpmnReaderImpl;
 import com.effektif.workflow.impl.mapper.BpmnTypeMapping;
 import com.effektif.workflow.impl.mapper.SubclassMapping;
 import com.effektif.workflow.impl.mapper.TypeField;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.jsonspike.json.typemappers.BeanTypeMapper;
+import com.effektif.workflow.test.jsonspike.json.typemappers.BooleanMapper;
 import com.effektif.workflow.test.jsonspike.json.typemappers.ListTypeMapper;
+import com.effektif.workflow.test.jsonspike.json.typemappers.MapMapper;
+import com.effektif.workflow.test.jsonspike.json.typemappers.NumberMapper;
 import com.effektif.workflow.test.jsonspike.json.typemappers.StringMapper;
 
 /**
@@ -123,6 +130,7 @@ public class Mappings {
     registerSubClass(NoneTask.class);
     registerSubClass(ParallelGateway.class);
     registerSubClass(ReceiveTask.class);
+    registerSubClass(StartEvent.class);
 
     registerBaseClass(Condition.class);
     registerSubClass(And.class);
@@ -430,13 +438,25 @@ public class Mappings {
     }
   }
 
+  private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
+          Lists.of("short", "int", "long", "float", "double"));
   public TypeMapper getTypeMapper(Class< ? > clazz) {
     TypeMapper typeMapper = typeMappers.get(clazz);
     if (typeMapper!=null) {
       return typeMapper;
     }
-    if (List.class.isAssignableFrom(clazz)) {
+    if (String.class==clazz) {
+      typeMapper = StringMapper.INSTANCE;
+    } else if (List.class.isAssignableFrom(clazz)) {
       typeMapper = ListTypeMapper.INSTANCE;
+    } else if (Map.class.isAssignableFrom(clazz)) {
+      typeMapper = MapMapper.INSTANCE;
+    } else if (Number.class.isAssignableFrom(clazz)
+               || NUMBERTYPENAMES.contains(clazz.getName())) {
+      typeMapper = NumberMapper.INSTANCE;
+    } else if ( Boolean.class==clazz
+                || boolean.class==clazz ) {
+      typeMapper = BooleanMapper.INSTANCE;
     } else {
       typeMapper = BeanTypeMapper.INSTANCE;
     }

@@ -33,6 +33,7 @@ import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.condition.And;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Contains;
@@ -115,6 +116,7 @@ public class Mappings {
     registerSubClass(NoneTask.class);
     registerSubClass(ParallelGateway.class);
     registerSubClass(ReceiveTask.class);
+    registerSubClass(StartEvent.class);
     registerSubClass(ScriptTask.class);
 
     registerBaseClass(AccessIdentity.class);

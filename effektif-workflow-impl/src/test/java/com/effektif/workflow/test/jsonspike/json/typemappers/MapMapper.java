@@ -14,6 +14,7 @@
 package com.effektif.workflow.test.jsonspike.json.typemappers;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import com.effektif.workflow.test.jsonspike.json.JsonFieldReader;
 import com.effektif.workflow.test.jsonspike.json.JsonFieldWriter;
@@ -21,26 +22,26 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
 
 
 /**
- * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
+ * Maps a {@link Map} to a JSON object for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
-public class StringMapper implements TypeMapper<String> {
+public class MapMapper implements TypeMapper<Map> {
 
-  public static final StringMapper INSTANCE = new StringMapper();
-
+  public static final MapMapper INSTANCE = new MapMapper();
+  
   @Override
-  public Class<String> getMappedClass() {
-    return String.class;
+  public Class<Map> getMappedClass() {
+    return Map.class;
   }
 
   @Override
-  public void write(String objectValue, JsonFieldWriter jsonFieldWriter) {
-    jsonFieldWriter.writeString(objectValue);
+  public void write(Map objectValue, JsonFieldWriter jsonFieldWriter) {
+    jsonFieldWriter.writeMap(objectValue);
   }
 
   @Override
-  public String read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
-    return (String) jsonValue;
+  public Map read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
+    return (Map) jsonValue;
   }
 }

@@ -23,7 +23,7 @@ import com.effektif.workflow.test.jsonspike.json.JsonObjectMapper;
 /**
  * @author Tom Baeyens
  */
-public class ObjectJsonTest extends AbstractMapperTest {
+public class ObjectJsonTest extends WorkflowSerializationTest {
 
   static JsonObjectMapper jsonObjectMapper = null;
   

@@ -25,22 +25,22 @@ import com.effektif.workflow.test.jsonspike.json.TypeMapper;
  *
  * @author Tom Baeyens
  */
-public class StringMapper implements TypeMapper<String> {
+public class BooleanMapper implements TypeMapper<Boolean> {
 
-  public static final StringMapper INSTANCE = new StringMapper();
+  public static final BooleanMapper INSTANCE = new BooleanMapper();
 
   @Override
-  public Class<String> getMappedClass() {
-    return String.class;
+  public Class<Boolean> getMappedClass() {
+    return Boolean.class;
   }
 
   @Override
-  public void write(String objectValue, JsonFieldWriter jsonFieldWriter) {
-    jsonFieldWriter.writeString(objectValue);
+  public void write(Boolean objectValue, JsonFieldWriter jsonFieldWriter) {
+    jsonFieldWriter.writeBoolean(objectValue);
   }
 
   @Override
-  public String read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
-    return (String) jsonValue;
+  public Boolean read(Object jsonValue, Type type, JsonFieldReader jsonFieldReader) {
+    return (Boolean) jsonValue;
   }
 }

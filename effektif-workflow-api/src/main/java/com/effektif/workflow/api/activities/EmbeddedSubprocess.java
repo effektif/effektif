@@ -15,19 +15,128 @@
  */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
 import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
-
+import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
 
 /**
  * Invokes a workflow that is embedded in another workflow.
  *
- * @see <a href="https://github.com/effektif/effektif/wiki/Embedded-Subprocess">Embedded Subprocess</a>
+ * @see <a
+ *      href="https://github.com/effektif/effektif/wiki/Embedded-Subprocess">Embedded
+ *      Subprocess</a>
  * @author Tom Baeyens
  */
 @TypeName("subProcess")
 @BpmnElement("subProcess")
 public class EmbeddedSubprocess extends Activity {
+
+  @Override
+  public EmbeddedSubprocess id(String id) {
+    super.id(id);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess multiInstance(MultiInstance multiInstance) {
+    super.multiInstance(multiInstance);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess transitionTo(String toActivityId) {
+    super.transitionTo(toActivityId);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess transitionWithConditionTo(Condition condition, String toActivityId) {
+    super.transitionWithConditionTo(condition, toActivityId);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess transitionToNext() {
+    super.transitionToNext();
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess transitionTo(Transition transition) {
+    super.transitionTo(transition);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess activity(Activity activity) {
+    super.activity(activity);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess activity(String id, Activity activity) {
+    super.activity(id, activity);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess transition(Transition transition) {
+    super.transition(transition);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess variable(Variable variable) {
+    super.variable(variable);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess timer(Timer timer) {
+    super.timer(timer);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess variable(String id, Type type) {
+    super.variable(id, type);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess name(String name) {
+    super.name(name);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess description(String description) {
+    super.description(description);
+    return this;
+  }
+
+  @Override
+  public EmbeddedSubprocess propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
 
 }
