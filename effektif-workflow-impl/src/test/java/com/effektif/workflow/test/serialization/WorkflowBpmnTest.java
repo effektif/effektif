@@ -16,7 +16,6 @@ package com.effektif.workflow.test.serialization;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -35,8 +34,7 @@ import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
-import com.effektif.workflow.impl.json.JsonObjectMapper;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
