@@ -27,7 +27,7 @@ import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
+import com.effektif.workflow.api.bpmn.XmlElement;
 
 
 /** Uses a SAX streaming parser to parse XML and

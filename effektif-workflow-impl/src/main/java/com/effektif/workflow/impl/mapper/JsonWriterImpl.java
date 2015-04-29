@@ -28,8 +28,8 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.effektif.workflow.api.deprecated.json.JsonWritable;
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.api.serialization.json.JsonWritable;
 import com.effektif.workflow.api.workflow.Binding;
 import com.fasterxml.jackson.core.JsonGenerator;
 

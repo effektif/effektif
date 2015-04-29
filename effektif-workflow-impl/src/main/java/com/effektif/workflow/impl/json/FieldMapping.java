@@ -1,0 +1,79 @@
+/* Copyright (c) 2014, Effektif GmbH.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. */
+package com.effektif.workflow.impl.json;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.Map;
+
+/**
+ * Uses a {@link JsonTypeMapper} to serialise and deserialise a particular API model field.
+ */
+public class FieldMapping {
+  
+  Field field;
+  String jsonFieldName;
+  Type fieldType;
+  JsonTypeMapper jsonTypeMapper;
+  
+  public FieldMapping(Field field, JsonTypeMapper jsonTypeMapper) {
+    this.field = field;
+    this.jsonFieldName = field.getName();
+    this.fieldType = field.getGenericType(); 
+    this.jsonTypeMapper = jsonTypeMapper;
+  }
+
+  public void writeField(Object bean, JsonWriter jsonWriter) {
+    try {
+      Object fieldValue = field.get(bean);
+      if (fieldValue!=null) {
+        jsonWriter.writeFieldName(jsonFieldName);
+        jsonTypeMapper.write(fieldValue, jsonWriter);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  public void readField(Map<String,Object> beanJson, Object bean, JsonReader jsonReader) {
+    try {
+      Object jsonFieldValue = beanJson.get(jsonFieldName);
+      if (jsonFieldValue!=null) {
+        Object fieldValue = jsonTypeMapper.read(jsonFieldValue, fieldType, jsonReader);
+        field.set(bean, fieldValue);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String getFieldName() {
+    return field.getName();
+  }
+
+  public JsonTypeMapper getTypeMapper() {
+    return jsonTypeMapper;
+  }
+  
+  public void setTypeMapper(JsonTypeMapper jsonTypeMapper) {
+    this.jsonTypeMapper = jsonTypeMapper;
+  }
+
+  public void setJsonFieldName(String fieldName) {
+    if (fieldName == null || fieldName.trim().equals("")) {
+      throw new IllegalArgumentException("Provided JSON field is empty");
+    }
+    this.jsonFieldName = fieldName;
+  }
+}

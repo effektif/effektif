@@ -15,11 +15,11 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.bpmn.DeprecatedBpmnReader;
-import com.effektif.workflow.impl.bpmn.DeprecatedBpmnWriter;
+import com.effektif.workflow.impl.deprecated.bpmn.DeprecatedBpmnReader;
+import com.effektif.workflow.impl.deprecated.bpmn.DeprecatedBpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;

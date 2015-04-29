@@ -17,10 +17,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,11 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.And;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.Contains;
@@ -61,19 +69,17 @@ import com.effektif.workflow.api.deprecated.acl.PublicIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
 import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.deprecated.json.JsonWriter;
 import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
-import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnTypeAttribute;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
-import com.effektif.workflow.api.serialization.json.JsonIgnore;
-import com.effektif.workflow.api.serialization.json.JsonPropertyOrder;
-import com.effektif.workflow.api.serialization.json.JsonWriter;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.json.JsonIgnore;
+import com.effektif.workflow.api.json.JsonPropertyOrder;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.bpmn.Bpmn;
+import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
+import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
 import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.job.TaskEscalateJobType;
 import com.effektif.workflow.impl.deprecated.job.TaskReminderJobType;
@@ -387,4 +393,14 @@ public class Mappings {
     this.isPretty = true;
   }
 
+  public SortedSet<Class< ? >> getBpmnClasses() {
+    // TODO only add condition classes
+    SortedSet<Class< ? >> bpmnClasses = new TreeSet(new Comparator<Class>() {
+      public int compare(Class c1, Class c2) {
+      return c1.getName().compareTo(c2.getName());
+      }
+    });
+    bpmnClasses.addAll(bpmnTypeMappingsByClass.keySet());
+    return bpmnClasses;
+  }
 }

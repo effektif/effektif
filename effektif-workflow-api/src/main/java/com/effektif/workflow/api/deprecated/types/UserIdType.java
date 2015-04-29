@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.Type;
 
 

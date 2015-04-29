@@ -18,10 +18,10 @@ package com.effektif.workflow.api.workflow;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.serialization.json.JsonReadable;
-import com.effektif.workflow.api.serialization.json.JsonReader;
-import com.effektif.workflow.api.serialization.json.JsonWritable;
-import com.effektif.workflow.api.serialization.json.JsonWriter;
+import com.effektif.workflow.api.deprecated.json.JsonReadable;
+import com.effektif.workflow.api.deprecated.json.JsonReader;
+import com.effektif.workflow.api.deprecated.json.JsonWritable;
+import com.effektif.workflow.api.deprecated.json.JsonWriter;
 
 
 /**

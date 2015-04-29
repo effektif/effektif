@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.effektif.workflow.api.deprecated.json.JsonReader;
+import com.effektif.workflow.api.deprecated.json.JsonWriter;
 import com.effektif.workflow.api.deprecated.model.CaseId;
 import com.effektif.workflow.api.deprecated.model.EmailId;
 import com.effektif.workflow.api.deprecated.model.FileId;
@@ -28,8 +30,6 @@ import com.effektif.workflow.api.deprecated.task.Case;
 import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.effektif.workflow.api.serialization.json.JsonReader;
-import com.effektif.workflow.api.serialization.json.JsonWriter;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.mapper.AbstractMapper;

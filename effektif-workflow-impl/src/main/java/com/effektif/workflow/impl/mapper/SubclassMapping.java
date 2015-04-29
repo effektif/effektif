@@ -16,8 +16,8 @@ package com.effektif.workflow.impl.mapper;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
 import com.effektif.workflow.api.workflow.Trigger;
 
 /**

@@ -17,9 +17,9 @@ package com.effektif.workflow.api.deprecated.acl;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.json.TypeName;
 
 /** TODO check if this can be removed
  * 

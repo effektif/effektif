@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.slack;
 
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Element;

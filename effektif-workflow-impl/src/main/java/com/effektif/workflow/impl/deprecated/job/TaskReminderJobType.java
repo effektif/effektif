@@ -21,7 +21,7 @@ import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.task.TaskQuery;
 import com.effektif.workflow.api.deprecated.task.TaskService;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;

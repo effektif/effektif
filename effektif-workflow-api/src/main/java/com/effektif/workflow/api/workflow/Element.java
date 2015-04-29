@@ -19,11 +19,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.effektif.workflow.api.serialization.bpmn.BpmnReadable;
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWritable;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
+import com.effektif.workflow.api.bpmn.BpmnReadable;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWritable;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 
 
 /** 

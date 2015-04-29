@@ -15,10 +15,10 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 
 /**
  * A sequence flow that connects two activities in a workflow.

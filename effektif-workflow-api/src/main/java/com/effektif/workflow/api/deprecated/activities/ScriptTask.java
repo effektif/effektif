@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Script;
 
 

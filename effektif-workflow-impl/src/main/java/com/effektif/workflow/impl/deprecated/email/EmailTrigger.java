@@ -15,9 +15,9 @@
  */
 package com.effektif.workflow.impl.deprecated.email;
 
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Trigger;
 
 /**

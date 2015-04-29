@@ -1,0 +1,47 @@
+/* Copyright (c) 2014, Effektif GmbH.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. */
+package com.effektif.workflow.impl.json;
+
+import java.util.Map;
+
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
+
+
+/**
+ * A facade for API object serialisation and deserialisation to and from JSON.
+ *
+ * @author Tom Baeyens
+ */
+public class JsonObjectMapper {
+
+  protected Mappings mappings;
+  
+  public JsonObjectMapper() {
+    this.mappings = new Mappings();
+    
+    this.mappings.registerTypeMapper(new LocalDateTimeDateMapper());
+  }
+
+  public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {
+    JsonObjectReader jsonObjectReader = new JsonObjectReader(mappings);
+    return (T) jsonObjectReader.readBean(beanJsonMap, clazz);
+  }
+  
+  public <T> Map<String,Object> write(T bean) {
+    JsonObjectWriter jsonObjectWriter = new JsonObjectWriter(mappings);
+    jsonObjectWriter.writeObject(bean);
+    return (Map<String, Object>) jsonObjectWriter.result;
+  }
+}

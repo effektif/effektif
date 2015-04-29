@@ -30,10 +30,10 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.deprecated.json.GenericType;
+import com.effektif.workflow.api.deprecated.json.JsonReadable;
+import com.effektif.workflow.api.deprecated.json.JsonReader;
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.api.serialization.json.GenericType;
-import com.effektif.workflow.api.serialization.json.JsonReadable;
-import com.effektif.workflow.api.serialization.json.JsonReader;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.util.Reflection;
 

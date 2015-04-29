@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.job;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.serialization.json.JsonIgnore;
+import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 

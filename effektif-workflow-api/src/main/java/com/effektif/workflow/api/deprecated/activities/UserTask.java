@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.activities.NoneTask;
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.XmlElement;
-import com.effektif.workflow.api.serialization.json.TypeName;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -108,7 +108,7 @@ public class UserTask extends NoneTask {
   }
 
   @Override
-  public void writeBpmn(com.effektif.workflow.api.serialization.bpmn.BpmnWriter w) {
+  public void writeBpmn(com.effektif.workflow.api.bpmn.BpmnWriter w) {
     super.writeBpmn(w);
     w.startExtensionElements();
     w.writeBinding("assigneeId", assigneeId);

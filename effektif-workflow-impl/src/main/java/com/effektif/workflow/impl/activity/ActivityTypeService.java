@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.configuration.Brewery;

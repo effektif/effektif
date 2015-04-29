@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.Type;
 
 

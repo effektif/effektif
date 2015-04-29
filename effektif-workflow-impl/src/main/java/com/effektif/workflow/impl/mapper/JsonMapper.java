@@ -20,8 +20,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
 
-import com.effektif.workflow.api.serialization.json.JsonReader;
-import com.effektif.workflow.api.serialization.json.JsonWriter;
+import com.effektif.workflow.api.deprecated.json.JsonReader;
+import com.effektif.workflow.api.deprecated.json.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;

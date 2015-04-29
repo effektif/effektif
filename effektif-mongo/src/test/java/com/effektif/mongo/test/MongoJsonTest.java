@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.mongo.MongoJsonMapper;
 import com.effektif.mongo.PrettyPrinter;
-import com.effektif.workflow.test.serialization.AbstractMapperTest;
+import com.effektif.workflow.test.deprecated.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
 
 /**

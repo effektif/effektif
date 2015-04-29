@@ -15,8 +15,8 @@
  */
 package com.effektif.workflow.api.condition;
 
-import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
-import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Binding;
 
 /**
