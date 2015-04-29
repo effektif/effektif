@@ -28,6 +28,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
+import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.api.deprecated.acl.Access;
 import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.deprecated.model.UserId;

@@ -11,26 +11,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.mapper;
+package com.effektif.workflow.impl.deprecated.json;
+
+import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
 
 
 /**
+ * A facade for API object serialisation and deserialisation.
+ *
+ * TODO Rename to Mapper (‘Abstract’ is redundant).
+ * 
  * @author Tom Baeyens
  */
-public class TypeField {
-
-  protected String typeField;
-  protected String typeName;
+public abstract class AbstractMapper implements Brewable {
   
-  public TypeField(String typeField, String typeName) {
-    this.typeField = typeField;
-    this.typeName = typeName;
+  protected Mappings mappings;
+
+  @Override
+  public void brew(Brewery brewery) {
+    this.mappings = brewery.get(Mappings.class);
   }
 
-  public String getTypeName() {
-    return this.typeName;
+  public Mappings getMappings() {
+    return mappings;
   }
-  public String getTypeField() {
-    return this.typeField;
+
+  public void setMappings(Mappings mappings) {
+    this.mappings = mappings;
   }
 }

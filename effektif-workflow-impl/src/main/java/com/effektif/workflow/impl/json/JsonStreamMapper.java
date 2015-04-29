@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
+import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -34,16 +35,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JsonStreamMapper {
 
+  ObjectMapper objectMapper;
   Mappings mappings;
   boolean pretty;
-  ObjectMapper objectMapper;
   
   public JsonStreamMapper() {
-    this.mappings = new Mappings();
     this.objectMapper = new ObjectMapper();
-    
+    this.mappings = new Mappings();
     this.mappings.registerTypeMapper(new LocalDateTimeStreamMapper());
     this.mappings.registerTypeMapper(new WorkflowIdStreamMapper());
+    this.mappings.registerTypeMapper(new WorkflowInstanceIdStreamMapper());
   }
   
   public JsonStreamMapper pretty() {

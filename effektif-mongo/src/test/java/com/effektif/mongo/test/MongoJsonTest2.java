@@ -15,6 +15,7 @@ package com.effektif.mongo.test;
 
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
 
 import com.effektif.mongo.MongoObjectMapper;
@@ -38,5 +39,9 @@ public class MongoJsonTest2 extends WorkflowStreamTest {
     Map<String,Object> jsonMap = mongoObjectMapper.write(o);
     System.out.println(jsonMap.toString());
     return mongoObjectMapper.read(jsonMap, o.getClass());
+  }
+
+  protected String getWorkflowIdInternal() {
+    return ObjectId.get().toString();
   }
 }

@@ -13,6 +13,6 @@
  * limitations under the License. */
 
 /**
- * Implements API model classes’ bi-directional mappings (serialisation and deserialisation) to JSON and BPMN.
+ * Implements API model classes’ bi-directional mappings (serialisation and deserialisation) to JSON.
  */
-package com.effektif.workflow.impl.mapper;
+package com.effektif.workflow.impl.json;

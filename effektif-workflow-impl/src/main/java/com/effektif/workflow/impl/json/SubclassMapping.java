@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.mapper;
+package com.effektif.workflow.impl.json;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,14 +27,12 @@ import com.effektif.workflow.api.workflow.Trigger;
  */
 public class SubclassMapping {
 
+  Class<?> baseClass;
   String typeField;
   Map<String,Class<?>> subclasses = new HashMap<>();
   
-  public SubclassMapping() {
-    this.typeField = "type";
-  }
-
-  public SubclassMapping(String typeField) {
+  public SubclassMapping(Class<?> baseClass, String typeField) {
+    this.baseClass = baseClass;
     this.typeField = typeField;
   }
   
@@ -44,7 +42,11 @@ public class SubclassMapping {
   
   public Class<?> getSubclass(Map<String,Object> jsonObject) {
     String typeName = (String) jsonObject.get(typeField);
-    return subclasses.get(typeName);
+    Class< ? > subclass = subclasses.get(typeName);
+    if (subclass==null) {
+      throw new RuntimeException("Unknown subclass "+typeField+":"+typeName+" of "+baseClass.getName()+": object is "+jsonObject);
+    }
+    return subclass;
   }
 
   public Class<?> getSubclass(BpmnReader r) {

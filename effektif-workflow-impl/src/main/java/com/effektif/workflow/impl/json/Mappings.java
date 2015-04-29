@@ -23,52 +23,27 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
-import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.activities.EmbeddedSubprocess;
-import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.HttpServiceTask;
-import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
-import com.effektif.workflow.api.condition.And;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.condition.Contains;
-import com.effektif.workflow.api.condition.ContainsIgnoreCase;
-import com.effektif.workflow.api.condition.Equals;
-import com.effektif.workflow.api.condition.EqualsIgnoreCase;
-import com.effektif.workflow.api.condition.GreaterThan;
-import com.effektif.workflow.api.condition.GreaterThanOrEqual;
-import com.effektif.workflow.api.condition.HasNoValue;
-import com.effektif.workflow.api.condition.HasValue;
-import com.effektif.workflow.api.condition.IsFalse;
-import com.effektif.workflow.api.condition.IsTrue;
-import com.effektif.workflow.api.condition.LessThan;
-import com.effektif.workflow.api.condition.LessThanOrEqual;
-import com.effektif.workflow.api.condition.Not;
-import com.effektif.workflow.api.condition.NotContains;
-import com.effektif.workflow.api.condition.NotContainsIgnoreCase;
-import com.effektif.workflow.api.condition.NotEquals;
-import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
-import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
+import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.types.BeanMapper;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
@@ -76,8 +51,6 @@ import com.effektif.workflow.impl.json.types.ListMapper;
 import com.effektif.workflow.impl.json.types.MapMapper;
 import com.effektif.workflow.impl.json.types.NumberMapper;
 import com.effektif.workflow.impl.json.types.StringMapper;
-import com.effektif.workflow.impl.mapper.SubclassMapping;
-import com.effektif.workflow.impl.mapper.TypeField;
 import com.effektif.workflow.impl.util.Lists;
 
 /**
@@ -87,17 +60,6 @@ import com.effektif.workflow.impl.util.Lists;
  */
 public class Mappings {
   
-  public String getTypeField(Class<?> clazz) {
-    SubclassMapping subclassMapping = null;
-    while (subclassMapping==null && clazz!=null) {
-      subclassMapping = subclassMappings.get(clazz);
-      if (subclassMapping==null) {
-        clazz = clazz.getSuperclass();
-      }
-    }
-    return subclassMapping.getTypeField();
-  }
-
   Map<Class<?>, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
 
   /** Maps registered base classes (e.g. <code>Trigger</code> to their subclass mappings. */
@@ -114,46 +76,25 @@ public class Mappings {
   Map<Class<?>,Map<String,String>> jsonFieldNames = new HashMap<>();
 
   public Mappings() {
-    
-    registerTypeMapper(new StringMapper());
-    registerTypeMapper(new ListMapper());
-    
-    registerBaseClass(Type.class, "name");
-    registerBaseClass(Trigger.class);
-
     registerBaseClass(Activity.class);
-    registerSubClass(Call.class);
-    registerSubClass(EmbeddedSubprocess.class);
-    registerSubClass(EndEvent.class);
-    registerSubClass(ExclusiveGateway.class);
-    registerSubClass(HttpServiceTask.class);
-    registerSubClass(JavaServiceTask.class);
-    registerSubClass(NoneTask.class);
-    registerSubClass(ParallelGateway.class);
-    registerSubClass(ReceiveTask.class);
-    registerSubClass(StartEvent.class);
+    ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
+    for (ActivityType activityType: activityTypeLoader) {
+      registerSubClass(activityType.getActivityApiClass());
+    }
+
+    registerBaseClass(Type.class, "name");
+    ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
+    for (DataType dataType: dataTypeLoader) {
+      registerSubClass(dataType.getApiClass());
+    }
 
     registerBaseClass(Condition.class);
-    registerSubClass(And.class);
-    registerSubClass(Or.class);
-    registerSubClass(Not.class);
-    registerSubClass(Contains.class);
-    registerSubClass(NotContains.class);
-    registerSubClass(ContainsIgnoreCase.class);
-    registerSubClass(NotContainsIgnoreCase.class);
-    registerSubClass(EqualsIgnoreCase.class);
-    registerSubClass(NotEqualsIgnoreCase.class);
-    registerSubClass(Equals.class);
-    registerSubClass(NotEquals.class);
-    registerSubClass(GreaterThan.class);
-    registerSubClass(GreaterThanOrEqual.class);
-    registerSubClass(LessThan.class);
-    registerSubClass(LessThanOrEqual.class);
-    registerSubClass(HasNoValue.class);
-    registerSubClass(HasValue.class);
-    registerSubClass(IsFalse.class);
-    registerSubClass(IsTrue.class);
+    ServiceLoader<ConditionImpl> conditionLoader = ServiceLoader.load(ConditionImpl.class);
+    for (ConditionImpl condition: conditionLoader) {
+      registerSubClass(condition.getApiType());
+    }
 
+    registerBaseClass(Trigger.class);
     registerBaseClass(JobType.class);
   }
 
@@ -166,11 +107,14 @@ public class Mappings {
   }
 
   public void registerBaseClass(Class<?> baseClass, String typeField) {
-    SubclassMapping subclassMapping = new SubclassMapping(typeField);
+    SubclassMapping subclassMapping = new SubclassMapping(baseClass, typeField);
     subclassMappings.put(baseClass, subclassMapping);
   }
 
   public void registerSubClass(Class<?> subClass) {
+    if (subClass==null) {
+      return;
+    }
     TypeName typeName = subClass.getAnnotation(TypeName.class);
     if (typeName!=null) {
       registerSubClass(subClass, typeName.value(), subClass);

@@ -48,9 +48,9 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.mapper.AbstractJsonReader;
-import com.effektif.workflow.impl.mapper.JsonReaderImpl;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
+import com.effektif.workflow.impl.deprecated.json.JsonReaderImpl;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 /**
  * @author Tom Baeyens

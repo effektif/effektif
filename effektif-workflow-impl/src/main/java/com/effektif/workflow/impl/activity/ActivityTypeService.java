@@ -30,7 +30,7 @@ import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.deprecated.activity.types.EmailTriggerImpl;
 import com.effektif.workflow.impl.deprecated.activity.types.FormTriggerImpl;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.util.Exceptions;
 
 

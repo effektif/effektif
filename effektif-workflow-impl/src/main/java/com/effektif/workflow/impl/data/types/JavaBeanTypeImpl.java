@@ -24,7 +24,7 @@ import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.impl.data.DataType;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 
 
 /**

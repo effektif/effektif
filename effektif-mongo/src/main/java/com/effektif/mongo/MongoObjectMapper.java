@@ -13,10 +13,9 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonObjectMapper;
-import com.effektif.workflow.impl.json.types.WorkflowIdMongoMapper;
 
 /**
  * A facade for API object serialisation and deserialisation to and from the MongoDB JSON variant.
@@ -26,7 +25,9 @@ import com.effektif.workflow.impl.json.types.WorkflowIdMongoMapper;
 public class MongoObjectMapper extends JsonObjectMapper {
 
   public MongoObjectMapper() {
-    this.mappings.setJsonFieldName(WorkflowId.class, "id", "_id");
+    this.mappings.setJsonFieldName(Workflow.class, "id", "_id");
+    this.mappings.setJsonFieldName(WorkflowInstance.class, "id", "_id");
     this.mappings.registerTypeMapper(new WorkflowIdMongoMapper());
+    this.mappings.registerTypeMapper(new WorkflowInstanceIdMongoMapper());
   }
 }

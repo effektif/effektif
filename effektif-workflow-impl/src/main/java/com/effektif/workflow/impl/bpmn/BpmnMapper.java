@@ -26,7 +26,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
-import com.effektif.workflow.impl.mapper.AbstractMapper;
+import com.effektif.workflow.impl.deprecated.json.AbstractMapper;
 
 /**
  * A facade for API object BPMN serialisation and deserialisation,

@@ -74,6 +74,10 @@ public class WorkflowStreamTest {
     return jsonStreamMapper.readString(jsonString, o.getClass());
   }
   
+  protected String getWorkflowIdInternal() {
+    return "wid";
+  }
+  
   @Test 
   public void testWorkflow() {
     LocalDateTime now = new LocalDateTime();
@@ -85,17 +89,29 @@ public class WorkflowStreamTest {
     p.put("dou", Double.MAX_VALUE);
     p.put("boo", true);
     
+    String workflowIdInternal = getWorkflowIdInternal();
+    
     Workflow workflow = new Workflow()
-      .id(new WorkflowId("i"))
+      .id(new WorkflowId(workflowIdInternal))
       .createTime(now)
       .description("d")
       .name("w")
-      .property("p", p);
+      .property("str", "s")
+      .property("lis", Lists.of("a", 1, true))
+      .property("num", Long.MAX_VALUE)
+      .property("dou", Double.MAX_VALUE)
+      .property("boo", true);
     
     workflow = serialize(workflow);
     
     assertNotNull(workflow);
+    assertEquals(workflowIdInternal, workflow.getId().getInternal());
     assertEquals("w", workflow.getName());
+    assertEquals(p.get("str"), workflow.getProperty("str"));
+    assertEquals(p.get("lis"), workflow.getProperty("lis"));
+    assertEquals(p.get("num"), workflow.getProperty("num"));
+    assertEquals(p.get("dou"), workflow.getProperty("dou"));
+    assertEquals(p.get("boo"), workflow.getProperty("boo"));
     assertEquals(now, workflow.getCreateTime());
   }
 

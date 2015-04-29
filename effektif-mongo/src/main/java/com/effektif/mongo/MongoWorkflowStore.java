@@ -21,6 +21,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
+import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;

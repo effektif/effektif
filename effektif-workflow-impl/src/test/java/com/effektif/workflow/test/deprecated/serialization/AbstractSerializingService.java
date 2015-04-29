@@ -18,7 +18,8 @@ package com.effektif.workflow.test.deprecated.serialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.test.serialization2.SerializationTest;
 
 
 /**

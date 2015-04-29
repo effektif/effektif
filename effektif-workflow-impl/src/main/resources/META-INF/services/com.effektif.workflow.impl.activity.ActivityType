@@ -1,13 +1,13 @@
-com.effektif.workflow.impl.deprecated.activity.types.UserTaskImpl
 com.effektif.workflow.impl.activity.types.ParallelGatewayImpl
 com.effektif.workflow.impl.activity.types.ExclusiveGatewayImpl
 com.effektif.workflow.impl.activity.types.StartEventImpl
 com.effektif.workflow.impl.activity.types.EndEventImpl
-com.effektif.workflow.impl.deprecated.activity.types.EmailTaskImpl
-com.effektif.workflow.impl.deprecated.activity.types.ScriptTaskImpl
 com.effektif.workflow.impl.activity.types.CallImpl
 com.effektif.workflow.impl.activity.types.EmbeddedSubprocessImpl
 com.effektif.workflow.impl.activity.types.JavaServiceTaskImpl
 com.effektif.workflow.impl.activity.types.HttpServiceTaskImpl
 com.effektif.workflow.impl.activity.types.NoneTaskImpl
 com.effektif.workflow.impl.activity.types.ReceiveTaskImpl
+com.effektif.workflow.impl.deprecated.activity.types.UserTaskImpl
+com.effektif.workflow.impl.deprecated.activity.types.EmailTaskImpl
+com.effektif.workflow.impl.deprecated.activity.types.ScriptTaskImpl

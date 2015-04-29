@@ -33,7 +33,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceImpl;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 

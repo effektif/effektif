@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.mapper;
+package com.effektif.workflow.impl.deprecated.json;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -84,6 +84,8 @@ import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.job.TaskEscalateJobType;
 import com.effektif.workflow.impl.deprecated.job.TaskReminderJobType;
 import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.json.SubclassMapping;
+import com.effektif.workflow.impl.json.TypeField;
 
 
 /**
@@ -162,7 +164,7 @@ public class Mappings {
   }
 
   public void registerBaseClass(Class<?> baseClass, String typeField) {
-    SubclassMapping subclassMapping = new SubclassMapping(typeField);
+    SubclassMapping subclassMapping = new SubclassMapping(baseClass, typeField);
     subclassMappings.put(baseClass, subclassMapping);
   }
 

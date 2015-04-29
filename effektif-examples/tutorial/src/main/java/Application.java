@@ -27,7 +27,7 @@ import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 /**

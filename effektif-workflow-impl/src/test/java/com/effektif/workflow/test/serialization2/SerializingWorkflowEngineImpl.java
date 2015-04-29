@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.test.deprecated.serialization;
+package com.effektif.workflow.test.serialization2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,8 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.test.deprecated.serialization.AbstractSerializingService;
 
 
 /**

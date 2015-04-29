@@ -14,8 +14,11 @@
 package com.effektif.workflow.impl.json;
 
 import java.util.Map;
+import java.util.ServiceLoader;
 
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.impl.activity.ActivityType;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
 
 
@@ -27,10 +30,9 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
 public class JsonObjectMapper {
 
   protected Mappings mappings;
-  
+
   public JsonObjectMapper() {
     this.mappings = new Mappings();
-    
     this.mappings.registerTypeMapper(new LocalDateTimeDateMapper());
   }
 

@@ -42,7 +42,7 @@ import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 
 /**

@@ -36,7 +36,7 @@ import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 
 
 public abstract class AbstractAdapterService implements AdapterService, Brewable {

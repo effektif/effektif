@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 
 
 /**

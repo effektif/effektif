@@ -33,7 +33,7 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 
 /**

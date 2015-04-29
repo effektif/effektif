@@ -62,7 +62,7 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.sun.corba.se.spi.ior.ObjectId;
 

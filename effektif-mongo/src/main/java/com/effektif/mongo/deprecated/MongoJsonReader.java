@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.mongo;
+package com.effektif.mongo.deprecated;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -19,8 +19,8 @@ import java.util.Date;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.impl.mapper.AbstractJsonReader;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 
 /**

@@ -44,5 +44,4 @@ public class BeanMapper implements JsonTypeMapper<Object> {
   public void write(Object objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeBean(objectValue);
   }
-
 }

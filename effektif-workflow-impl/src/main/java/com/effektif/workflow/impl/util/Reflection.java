@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.impl.mapper.AbstractJsonReader;
+import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
 
 
 /**

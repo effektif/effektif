@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.mongo;
+package com.effektif.mongo.deprecated;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -27,8 +27,8 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.api.deprecated.json.JsonWritable;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.impl.mapper.AbstractWriter;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.AbstractWriter;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 

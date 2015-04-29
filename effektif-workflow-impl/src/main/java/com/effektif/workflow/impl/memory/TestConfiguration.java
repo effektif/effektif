@@ -24,14 +24,9 @@ import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
  * @author Tom Baeyens
  */
 public class TestConfiguration extends MemoryConfiguration {
-
-  @Override
-  protected void registerDefaultExecutorService() {
+  
+  public TestConfiguration() {
     synchronous();
-  }
-
-  @Override
-  protected void registerDefaultEmailService() {
     brewery.ingredient(new TestOutgoingEmailService());
   }
   

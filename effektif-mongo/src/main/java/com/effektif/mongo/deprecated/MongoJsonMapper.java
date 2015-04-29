@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.mongo;
+package com.effektif.mongo.deprecated;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -32,7 +32,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.mapper.AbstractMapper;
+import com.effektif.workflow.impl.deprecated.json.AbstractMapper;
 import com.mongodb.BasicDBObject;
 
 /**

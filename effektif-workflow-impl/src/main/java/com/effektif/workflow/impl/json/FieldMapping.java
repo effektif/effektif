@@ -17,10 +17,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Uses a {@link JsonTypeMapper} to serialise and deserialise a particular API model field.
  */
 public class FieldMapping {
+  
+  private static final Logger log = LoggerFactory.getLogger(FieldMapping.class);
   
   Field field;
   String jsonFieldName;
@@ -39,6 +44,7 @@ public class FieldMapping {
       Object fieldValue = field.get(bean);
       if (fieldValue!=null) {
         jsonWriter.writeFieldName(jsonFieldName);
+        log.debug("writing "+field+" : "+fieldValue);
         jsonTypeMapper.write(fieldValue, jsonWriter);
       }
     } catch (Exception e) {

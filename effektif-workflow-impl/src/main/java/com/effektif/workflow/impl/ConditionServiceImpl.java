@@ -22,7 +22,7 @@ import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 
 /**

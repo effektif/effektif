@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.test.deprecated.serialization;
+package com.effektif.workflow.test.serialization2;
 
 import org.junit.Test;
 import org.junit.runners.model.InitializationError;

@@ -1,4 +1,4 @@
-package com.effektif.workflow.impl.json.types;/* Copyright (c) 2015, Effektif GmbH.
+/* Copyright (c) 2014, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,38 +11,36 @@ package com.effektif.workflow.impl.json.types;/* Copyright (c) 2015, Effektif Gm
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
+package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
 
+
 /**
- * Maps a {@link WorkflowId} to a MongoDB JSON ID field for serialisation and deserialisation.
+ * Maps a {@link WorkflowId} to a JSON string field for serialisation and deserialisation.
  *
- * TODO Can this subclass WorkflowIdStreamMapper?
- * @author Peter Hilton
+ * @author Tom Baeyens
  */
-public class WorkflowIdMongoMapper implements JsonTypeMapper<WorkflowId> {
+public class WorkflowInstanceIdStreamMapper implements JsonTypeMapper<WorkflowInstanceId> {
 
   @Override
-  public Class<WorkflowId> getMappedClass() {
-    return WorkflowId.class;
-  }
-
-  // TODO
-  @Override
-  public WorkflowId read(Object jsonValue, Type type, JsonReader jsonReader) {
-    return null;
-  }
-
-  @Override
-  public void write(WorkflowId objectValue, JsonWriter jsonWriter) {
-    jsonWriter.objectStart();
-    jsonWriter.writeFieldName("$oid");
+  public void write(WorkflowInstanceId objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeString(objectValue.getInternal());
-    jsonWriter.objectEnd();
+  }
+
+  @Override
+  public WorkflowInstanceId read(Object jsonValue, Type type, JsonReader jsonReader) {
+    return new WorkflowInstanceId((String)jsonValue);
+  }
+
+  @Override
+  public Class<WorkflowInstanceId> getMappedClass() {
+    return WorkflowInstanceId.class;
   }
 }

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 
 /**
  * @author Tom Baeyens

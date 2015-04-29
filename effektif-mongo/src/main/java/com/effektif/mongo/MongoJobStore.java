@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;

@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.mongo;
+package com.effektif.mongo.deprecated;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,7 +22,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.mongodb.BasicDBObject;
 
 

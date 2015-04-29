@@ -17,8 +17,8 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.mongo.MongoJsonMapper;
 import com.effektif.mongo.PrettyPrinter;
+import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.test.deprecated.serialization.AbstractMapperTest;
 import com.mongodb.BasicDBObject;
 

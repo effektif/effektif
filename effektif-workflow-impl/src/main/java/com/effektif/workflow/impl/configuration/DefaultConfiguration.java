@@ -32,10 +32,11 @@ import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
 import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
 import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceSupplier;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.deprecated.script.RhinoScriptService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
-import com.effektif.workflow.impl.mapper.JsonMapper;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 /** Configurations to build a workflow engine. */
@@ -46,25 +47,25 @@ public abstract class DefaultConfiguration implements Configuration {
   public DefaultConfiguration() {
     brewery = new Brewery();
     brewery.ingredient(this);
-    registerDefaultActivityTypeService();
-    registerDefaultCaseService();
-    registerDefaultConditionService();
-    registerDefaultDataTypeService();
-    registerDefaultEmailService();
-    registerDefaultExecutorService();
-    registerDefaultJobService();
-    registerDefaultJsonService();
-    registerDefaultMappings();
-    registerDefaultRestJsonMapper();
-    registerDefaultScriptManager();
-    registerDefaultScriptService();
-    registerDefaultTaskService();
-    registerDefaultWorkflowCache();
-    registerDefaultWorkflowEngine();
-  }
-  
-  public void registerDefaultCaseService() {
+
+    brewery.ingredient(new WorkflowEngineConfiguration());
+    brewery.ingredient(new WorkflowEngineImpl());
+    brewery.ingredient(new SimpleWorkflowCache());
+    brewery.ingredient(new AsynchronousExecutorService());
+    brewery.ingredient(new ConditionServiceImpl());
+    brewery.ingredient(new JobServiceImpl());
+    brewery.ingredient(new ActivityTypeService());
+    brewery.ingredient(new DataTypeService());
+    brewery.ingredient(new JsonStreamMapper());
+
+    // deprecated
     brewery.ingredient(new CaseServiceImpl());
+    brewery.ingredient(new RhinoScriptService());
+    brewery.ingredient(new JsonMapper());
+    brewery.ingredient(new Mappings());
+    brewery.ingredient(new ScriptEngineManager());
+    brewery.ingredient(new TaskServiceImpl());
+    brewery.supplier(new OutgoingEmailServiceSupplier(), OutgoingEmailServiceImpl.class);
   }
 
   public WorkflowEngine getWorkflowEngine() {
@@ -75,62 +76,6 @@ public abstract class DefaultConfiguration implements Configuration {
     return brewery.get(TaskService.class);
   }
 
-  protected void registerDefaultWorkflowEngine() {
-    brewery.ingredient(new WorkflowEngineConfiguration());
-    brewery.ingredient(new WorkflowEngineImpl());
-  }
-  
-  protected void registerDefaultWorkflowCache() {
-    brewery.ingredient(new SimpleWorkflowCache());
-  }
-
-  protected void registerDefaultExecutorService() {
-    brewery.ingredient(new AsynchronousExecutorService());
-  }
-
-  protected void registerDefaultScriptService() {
-    brewery.ingredient(new RhinoScriptService());
-  }
-
-  protected void registerDefaultConditionService() {
-    brewery.ingredient(new ConditionServiceImpl());
-  }
-
-  protected void registerDefaultJsonService() {
-    brewery.ingredient(new JsonMapper());
-  }
-  
-  protected void registerDefaultJobService() {
-    brewery.ingredient(new JobServiceImpl());
-  }
-
-  protected void registerDefaultActivityTypeService() {
-    brewery.ingredient(new ActivityTypeService());
-  }
-  
-  protected void registerDefaultDataTypeService() {
-    brewery.ingredient(new DataTypeService());
-  }
-  
-  protected void registerDefaultRestJsonMapper() {
-    brewery.ingredient(new JsonMapper());
-  }
-
-  protected void registerDefaultMappings() {
-    brewery.ingredient(new Mappings());
-  }
-
-  protected void registerDefaultScriptManager() {
-    brewery.ingredient(new ScriptEngineManager());
-  }
-
-  protected void registerDefaultTaskService() {
-    brewery.ingredient(new TaskServiceImpl());
-  }
-
-  protected void registerDefaultEmailService() {
-    brewery.supplier(new OutgoingEmailServiceSupplier(), OutgoingEmailServiceImpl.class);
-  }
   
   public DefaultConfiguration ingredient(Object ingredient) {
     brewery.ingredient(ingredient);

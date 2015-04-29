@@ -20,8 +20,8 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.mapper.JsonMapper;
-import com.effektif.workflow.impl.mapper.Mappings;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.MemoryFileService;
 import com.fasterxml.jackson.core.JsonFactory;
 

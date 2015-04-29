@@ -22,7 +22,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.deprecated.FormBindings;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 

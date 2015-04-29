@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.deprecated.task.Task;
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 
 /**
  * Outputs details of the task with the given ID, in JSON format.

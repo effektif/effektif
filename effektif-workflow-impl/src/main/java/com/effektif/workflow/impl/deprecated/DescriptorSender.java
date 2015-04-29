@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.activity;
+package com.effektif.workflow.impl.deprecated;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.mapper.JsonMapper;
+import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
