@@ -132,19 +132,6 @@ public class BpmnReaderImpl implements BpmnReader {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
 
-//        if (scopeElement.is(BPMN_URI, "subProcess")) {
-//          EmbeddedSubprocess subprocess = new EmbeddedSubprocess();
-//          subprocess.readBpmn(this);
-//          scope.activity(subprocess);
-//
-//          // Read the subprocess activities.
-//          currentXml = scopeElement;
-//          scope = subprocess;
-//          readScope();
-//
-//          iterator.remove();
-//        }
-//        else
         if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
