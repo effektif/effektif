@@ -23,6 +23,7 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Trigger;
 
 /**
@@ -123,13 +124,13 @@ public interface BpmnReader {
   /** Reads an id as an attribute on the current xml element in the Effektif namespace */
   <T extends Id> T readIdAttributeEffektif(String localPart, Class<T> idType);
 
-  /** Reads a date field as an attribute on the current xml element in the Effektif namespace */
-  LocalDateTime readDateAttributeEffektif(String localPart);
-
   /** Reads a {@link RelativeTime} from an element in the Effektif namespace. */
   RelativeTime readRelativeTimeEffektif(String localPart);
 
-  /** Reads a string from the ‘value’ attribute in the current XML element in the Effektif namespace. */
+  /** Reads a date from the ‘value’ attribute in the named element in the Effektif namespace. */
+  LocalDateTime readDateValue(String localPart);
+
+  /** Reads a string from the ‘value’ attribute in the named element in the Effektif namespace. */
   String readStringValue(String localPart);
 
   /** Reads a string as content text in the current xml element */
@@ -143,4 +144,10 @@ public interface BpmnReader {
 
   /** Reads a list of condition instances from their various XML elements. */
   List<Condition> readConditions();
+
+  /** Starts a nested scope for reading from within the given scope. */
+  void startScope(Scope scope);
+
+  /** Ends a nested scope. */
+  void endScope();
 }

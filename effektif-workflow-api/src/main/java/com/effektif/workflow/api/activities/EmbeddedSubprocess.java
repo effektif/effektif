@@ -16,6 +16,7 @@
 package com.effektif.workflow.api.activities;
 
 import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.Type;
@@ -139,4 +140,10 @@ public class EmbeddedSubprocess extends Activity {
     return this;
   }
 
+  @Override
+  public void readBpmn(BpmnReader r) {
+    r.startScope(this);
+    super.readBpmn(r);
+    r.endScope();
+  }
 }

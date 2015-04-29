@@ -17,14 +17,12 @@ import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -36,10 +34,8 @@ import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.deprecated.acl.AccessIdentity;
-import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.Type;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -135,15 +131,28 @@ public class BpmnReaderImpl implements BpmnReader {
       while (iterator.hasNext()) {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
-        // Check if the XML element can be parsed as a sequenceFlow.
+
+//        if (scopeElement.is(BPMN_URI, "subProcess")) {
+//          EmbeddedSubprocess subprocess = new EmbeddedSubprocess();
+//          subprocess.readBpmn(this);
+//          scope.activity(subprocess);
+//
+//          // Read the subprocess activities.
+//          currentXml = scopeElement;
+//          scope = subprocess;
+//          readScope();
+//
+//          iterator.remove();
+//        }
+//        else
         if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
           scope.transition(transition);
           // Remove the sequenceFlow as it has been parsed in the model.
           iterator.remove();
-
-        } else {
+        }
+        else {
           // Check if the XML element can be parsed as one of the activity types.
           BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(currentXml, this);
           if (bpmnTypeMapping != null) {
@@ -220,7 +229,7 @@ public class BpmnReaderImpl implements BpmnReader {
     this.scope = scope;
   }
   
-  public void endScpope() {
+  public void endScope() {
     this.scope = scopeStack.pop();
   }
   
@@ -405,20 +414,24 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   @Override
-  public LocalDateTime readDateAttributeEffektif(String localPart) {
-    return readDate(readStringAttributeEffektif(localPart));
-  }
-  private LocalDateTime readDate(String readStringAttributeEffektif) {
-    throw new RuntimeException("TODO");
-  }
-
-  @Override
   public RelativeTime readRelativeTimeEffektif(String localPart) {
     XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
     if (element != null) {
       String value = element.getAttribute(EFFEKTIF_URI, "after");
       if (value != null) {
         return RelativeTime.parse(value);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public LocalDateTime readDateValue(String localPart) {
+    XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
+    if (element != null) {
+      String value = element.getAttribute(EFFEKTIF_URI, "value");
+      if (value != null) {
+        return DATE_FORMAT.parseLocalDateTime(value);
       }
     }
     return null;

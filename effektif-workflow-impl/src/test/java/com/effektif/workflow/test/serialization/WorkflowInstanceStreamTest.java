@@ -19,6 +19,8 @@ import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 /**
+ * Tests workflow instance serialisation to JSON, by serialising and deserialising workflow instance objects.
+ *
  * @author Tom Baeyens
  */
 public class WorkflowInstanceStreamTest {

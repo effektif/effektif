@@ -56,6 +56,8 @@ import com.effektif.workflow.impl.util.Lists;
 
 
 /**
+ * Tests workflow serialisation to JSON, by serialising and deserialising workflow objects.
+ *
  * @author Tom Baeyens
  */
 public class WorkflowStreamTest {

@@ -21,7 +21,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
- * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
+ * Maps a {@link Boolean} to a JSON Boolean field for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
