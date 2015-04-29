@@ -14,7 +14,6 @@
 package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,7 +31,11 @@ import com.effektif.workflow.impl.json.JsonWriter;
  */
 public class ListMapper implements JsonTypeMapper<List>{
 
-  public static final JsonTypeMapper INSTANCE = new ListMapper();
+  JsonTypeMapper elementMapper;
+  
+  public ListMapper(JsonTypeMapper elementMapper) {
+    this.elementMapper = elementMapper;
+  }
 
   @Override
   public Class<List> getMappedClass() {
@@ -40,21 +43,15 @@ public class ListMapper implements JsonTypeMapper<List>{
   }
 
   @Override
-  public List read(Object jsonValue, Type type, JsonReader jsonReader) {
-    Type elementType = null;
-    if (type instanceof ParameterizedType) {
-      elementType = ((ParameterizedType)type).getActualTypeArguments()[0];
-    }
-    
+  public List read(Object jsonValue, JsonReader jsonReader) {
     List list = new ArrayList();
     Collection jsonCollection = (Collection) jsonValue;
     Iterator jsonIterator = jsonCollection.iterator();
     while (jsonIterator.hasNext()) {
       Object jsonElement = jsonIterator.next();
-      Object objectElementValue = jsonReader.readObject(jsonElement, elementType);
+      Object objectElementValue = elementMapper.read(jsonElement, jsonReader);
       list.add(objectElementValue);
     }
-    
     return list;
   }
 
@@ -62,8 +59,15 @@ public class ListMapper implements JsonTypeMapper<List>{
   public void write(List objectValue, JsonWriter jsonWriter) {
     jsonWriter.arrayStart();
     for (Object objectElement: objectValue) {
-      jsonWriter.writeObject(objectElement);
+      elementMapper.write(objectElement, jsonWriter);
     }
     jsonWriter.arrayEnd();
   }
+
+  @Override
+  public String toString() {
+    return "ListMapper<"+elementMapper+">";
+  }
+  
+  
 }

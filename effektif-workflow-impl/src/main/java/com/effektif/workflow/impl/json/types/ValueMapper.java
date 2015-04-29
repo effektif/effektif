@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonReader;
@@ -26,22 +25,22 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class ObjectMapper<T extends Object> implements JsonTypeMapper<T> {
+public class ValueMapper implements JsonTypeMapper<Object> {
 
-  public static final ObjectMapper INSTANCE = new ObjectMapper();
-
+  public static final ValueMapper INSTANCE = new ValueMapper();
+  
   @Override
-  public Class<T> getMappedClass() {
-    return (Class<T>) Object.class;
+  public Class<Object> getMappedClass() {
+    return Object.class;
   }
 
   @Override
-  public T read(Object jsonValue, Type type, JsonReader jsonReader) {
-    return (T) jsonReader.readObject(jsonValue, type);
+  public Object read(Object jsonValue, JsonReader jsonReader) {
+    return jsonValue;
   }
 
   @Override
-  public void write(T objectValue, JsonWriter jsonWriter) {
+  public void write(Object objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeObject(objectValue);
   }
 }

@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.lang.reflect.Type;
 
 /**
  * Maps a Java type to an internal representation for JSON serialisation and deserialisation.
@@ -25,6 +24,6 @@ public interface JsonTypeMapper<T> {
 
   Class<T> getMappedClass();
 
-  T read(Object jsonValue, Type type, JsonReader jsonReader);
+  T read(Object jsonValue, JsonReader jsonReader);
   void write(T objectValue, JsonWriter jsonWriter);
 }

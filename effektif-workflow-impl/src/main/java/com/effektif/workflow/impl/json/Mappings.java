@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
@@ -52,8 +55,8 @@ import com.effektif.workflow.impl.json.types.BooleanMapper;
 import com.effektif.workflow.impl.json.types.ListMapper;
 import com.effektif.workflow.impl.json.types.MapMapper;
 import com.effektif.workflow.impl.json.types.NumberMapper;
-import com.effektif.workflow.impl.json.types.ObjectMapper;
 import com.effektif.workflow.impl.json.types.StringMapper;
+import com.effektif.workflow.impl.json.types.ValueMapper;
 import com.effektif.workflow.impl.util.Lists;
 
 /**
@@ -62,6 +65,8 @@ import com.effektif.workflow.impl.util.Lists;
  * @author Tom Baeyens
  */
 public class Mappings {
+  
+  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
   
   Map<Class<?>, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
 
@@ -74,9 +79,6 @@ public class Mappings {
 
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
-
-  /** Maps, for each registered class, the Java field name to the corresponding JSON field name. */
-  Map<Class<?>,Map<String,String>> jsonFieldNames = new HashMap<>();
 
   public Mappings() {
     registerBaseClass(Activity.class);
@@ -236,36 +238,27 @@ public class Mappings {
       bpmnWriter.writeStringAttributeEffektif(typeField.getTypeField(), typeField.getTypeName());
     }
   }
-  
-  /**
-   * Returns the JSON field name for the given model class field name, used for (de)serialisation.
-   */
-  public boolean definesJsonFieldName(Class<?> modelClass, String fieldName) {
-    return jsonFieldNames.containsKey(modelClass) && jsonFieldNames.get(modelClass).containsKey(fieldName);
-  }
-
-  /**
-   * Returns the JSON field name for the given model class field name, used for (de)serialisation.
-   */
-  public String getJsonFieldName(Class<?> modelClass, String fieldName) {
-    if (!jsonFieldNames.containsKey(modelClass)) {
-      throw new IllegalArgumentException("No field mappings registered for class " + modelClass.getName());
-    }
-    if (!jsonFieldNames.get(modelClass).containsKey(fieldName)) {
-      throw new IllegalArgumentException(String.format("No mapping for field %s in class %s", fieldName, modelClass.getName()));
-    }
-    // TODO update scanFields below, add annotation support @JsonFieldName("_id") (annotation already created in this package)
-    return jsonFieldNames.get(modelClass).get(fieldName);
-  }
 
   /**
    * Sets the mapping from the given model class field name to a JSON field name, used for (de)serialisation.
    */
   public void setJsonFieldName(Class<?> modelClass, String fieldName, String jsonFieldName) {
-    if (!jsonFieldNames.containsKey(modelClass)) {
-      jsonFieldNames.put(modelClass, new HashMap<String, String>());
+    FieldMapping fieldMapping = findFieldMapping(modelClass, fieldName);
+    if (fieldMapping!=null) {
+      fieldMapping.jsonFieldName = jsonFieldName;
     }
-    jsonFieldNames.get(modelClass).put(fieldName, jsonFieldName);
+  }
+
+  private FieldMapping findFieldMapping(Class< ? > modelClass, String fieldName) {
+    List<FieldMapping> fieldMappings = getFieldMappings(modelClass);
+    if (fieldMappings!=null) {
+      for (FieldMapping fieldMapping: fieldMappings) {
+        if (fieldMapping.field.getName().equals(fieldName)) {
+          return fieldMapping;
+        }
+      }
+    }
+    return null;
   }
 
   public synchronized java.lang.reflect.Type getFieldType(Class< ? > clazz, String fieldName) {
@@ -354,20 +347,18 @@ public class Mappings {
         boolean includeInJsonSerialisation = field.getAnnotation(JsonIgnore.class) == null;
         if (!Modifier.isStatic(field.getModifiers()) && includeInJsonSerialisation) {
           field.setAccessible(true);
-          Class< ? > fieldType = field.getType();
+          Type fieldType = field.getGenericType();
           JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
+          
+          log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
+
+          
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
 
           // Annotation-based field name override.
           JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
           if (jsonFieldNameAnnotation != null) {
             fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
-          }
-
-          // Programmatic field name override.
-          // TODO test @JsonFieldName to see if this works
-          if (definesJsonFieldName(fieldType, fieldMapping.getFieldName())) {
-            fieldMapping.setJsonFieldName(getJsonFieldName(fieldType, fieldMapping.getFieldName()));
           }
 
           fieldMappings.add(fieldMapping);
@@ -379,10 +370,14 @@ public class Mappings {
       scanFields(fieldMappings, superclass);
     }
   }
+  
+  public JsonTypeMapper getTypeMapper(Object jsonValue, Type type) {
+    return getTypeMapper((Class)type);
+  }
 
   public JsonTypeMapper getTypeMapper(Type type) {
-    if (type==null) {
-      return ObjectMapper.INSTANCE;
+    if (type==null || type==Object.class) {
+      return ValueMapper.INSTANCE;
     }
 
     JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
@@ -394,49 +389,53 @@ public class Mappings {
 
     if (String.class==type) {
       jsonTypeMapper = StringMapper.INSTANCE;
+    
     } else if ( Boolean.class==type
                 || boolean.class==type ) {
       jsonTypeMapper = BooleanMapper.INSTANCE;
-    } else if ( Object.class==type ) {
-      jsonTypeMapper = ObjectMapper.INSTANCE;
+    
     } else if (isNumberClass(clazz)) {
       jsonTypeMapper = NumberMapper.INSTANCE;
-    }
 
-    if (type instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType)type;
-      clazz = (Class< ? >) parameterizedType.getRawType();
-    } else if (type instanceof WildcardType) {
-      WildcardType wildcardType = (WildcardType)type;
-      clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
-    }
-
-    if (isList(clazz)) {
-      Type elementType = getTypeArg(type, 0);
-      JsonTypeMapper elementMapper = getTypeMapper(elementType);
-      jsonTypeMapper = new ListMapper(elementMapper); 
+    } else {
       
-    } else if (isMap(clazz)) {
-      Type valuesType = getTypeArg(type, 1);
-      JsonTypeMapper valuesMapper = getTypeMapper(valuesType);
-      jsonTypeMapper = new MapMapper(valuesMapper); 
+      if (clazz==null) {
+        if (type instanceof ParameterizedType) {
+          ParameterizedType parameterizedType = (ParameterizedType) type;
+          clazz = (Class< ? >) parameterizedType.getRawType();
+        } else if (type instanceof WildcardType) {
+          WildcardType wildcardType = (WildcardType) type;
+          clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
+        }
+      }
+      
+      if (List.class.isAssignableFrom(clazz)) {
+        Type elementType = getTypeArg(type, 0);
+        JsonTypeMapper elementMapper = getTypeMapper(elementType);
+        jsonTypeMapper = new ListMapper(elementMapper); 
+        
+      } else if (Map.class.isAssignableFrom(clazz)) {
+        Type valuesType = getTypeArg(type, 1);
+        JsonTypeMapper valuesMapper = getTypeMapper(valuesType);
+        jsonTypeMapper = new MapMapper(valuesMapper);
+        
+      } else {
+        jsonTypeMapper = new BeanMapper(type);
+      }
     }
 
-    jsonTypeMappers.put(type, jsonTypeMapper);
+    jsonTypeMappers.put(clazz, jsonTypeMapper);
     return jsonTypeMapper;
   }
 
   private Type getTypeArg(Type type, int i) {
-    
+    if (type instanceof ParameterizedType) {
+      Type[] typeArgs = ((ParameterizedType) type).getActualTypeArguments();
+      if (typeArgs!=null && i<typeArgs.length) {
+        return typeArgs[i];
+      }
+    }
     return null;
-  }
-
-  private boolean isMap(Class< ? > clazz) {
-    return false;
-  }
-
-  private boolean isList(Class< ? > clazz) {
-    return false;
   }
 
   private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
@@ -448,8 +447,5 @@ public class Mappings {
     return Number.class.isAssignableFrom(clazz)
       || NUMBERTYPENAMES.contains(clazz.getName());
   }
-  
-  public JsonTypeMapper getTypeMapper(Object jsonValue, Type type) {
-    return getTypeMapper((Class)type);
-  }
+
 }

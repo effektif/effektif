@@ -50,24 +50,6 @@ public abstract class JsonWriter {
     }
   }
 
-  public void writeMap(Map map) {
-    if (map!=null) {
-      objectStart();
-      for (Object key: map.keySet()) {
-        if (key!=null) {
-          if (!(key instanceof String)) {
-            throw new RuntimeException("Only String keys allowed: "+key+" ("+key.getClass().getName()+"): Occurred when writing map "+map);
-          }
-          writeFieldName((String)key);
-          writeObject(map.get(key));
-        }
-      }
-      objectEnd();
-    } else {
-      writeNull();
-    }
-  }
-
   private void loopCheckBeanStart(Object bean) {
     for (int i=0; i<loopCheckBeans.size(); i++) {
       if (loopCheckBeans.get(i)==bean) {

@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -40,7 +38,7 @@ public class BooleanMapper implements JsonTypeMapper<Boolean> {
   }
 
   @Override
-  public Boolean read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public Boolean read(Object jsonValue, JsonReader jsonReader) {
     return (Boolean) jsonValue;
   }
 }

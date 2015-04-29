@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.json.JsonReader;
@@ -35,7 +33,7 @@ public class WorkflowInstanceIdStreamMapper implements JsonTypeMapper<WorkflowIn
   }
 
   @Override
-  public WorkflowInstanceId read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public WorkflowInstanceId read(Object jsonValue, JsonReader jsonReader) {
     return new WorkflowInstanceId((String)jsonValue);
   }
 

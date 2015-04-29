@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonReader;
@@ -28,7 +27,11 @@ import com.effektif.workflow.impl.json.JsonWriter;
  */
 public class MapMapper implements JsonTypeMapper<Map> {
 
-  public static final MapMapper INSTANCE = new MapMapper();
+  JsonTypeMapper valueMapper;
+  
+  public MapMapper(JsonTypeMapper valueMapper) {
+    this.valueMapper = valueMapper;
+  }
   
   @Override
   public Class<Map> getMappedClass() {
@@ -36,12 +39,27 @@ public class MapMapper implements JsonTypeMapper<Map> {
   }
 
   @Override
-  public void write(Map objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeMap(objectValue);
+  public void write(Map map, JsonWriter jsonWriter) {
+    if (map!=null) {
+      jsonWriter.objectStart();
+      for (Object key: map.keySet()) {
+        if (key!=null) {
+          if (!(key instanceof String)) {
+            throw new RuntimeException("Only String keys allowed: "+key+" ("+key.getClass().getName()+"): Occurred when writing map "+map);
+          }
+          jsonWriter.writeFieldName((String)key);
+          Object value = map.get(key);
+          valueMapper.write(value, jsonWriter);
+        }
+      }
+      jsonWriter.objectEnd();
+    } else {
+      jsonWriter.writeNull();
+    }
   }
 
   @Override
-  public Map read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public Map read(Object jsonValue, JsonReader jsonReader) {
     return (Map) jsonValue;
   }
 }

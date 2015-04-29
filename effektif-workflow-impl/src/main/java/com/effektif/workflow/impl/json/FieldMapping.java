@@ -44,7 +44,7 @@ public class FieldMapping {
       Object fieldValue = field.get(bean);
       if (fieldValue!=null) {
         jsonWriter.writeFieldName(jsonFieldName);
-        log.debug("writing "+field+" : "+fieldValue);
+        log.debug("writing "+field+" with "+jsonTypeMapper.getClass().getSimpleName()+" : "+fieldValue);
         jsonTypeMapper.write(fieldValue, jsonWriter);
       }
     } catch (Exception e) {
@@ -56,7 +56,7 @@ public class FieldMapping {
     try {
       Object jsonFieldValue = beanJson.get(jsonFieldName);
       if (jsonFieldValue!=null) {
-        Object fieldValue = jsonTypeMapper.read(jsonFieldValue, fieldType, jsonReader);
+        Object fieldValue = jsonTypeMapper.read(jsonFieldValue, jsonReader);
         field.set(bean, fieldValue);
       }
     } catch (Exception e) {

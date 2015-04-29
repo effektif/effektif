@@ -14,7 +14,6 @@
 package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.json.JsonReader;
@@ -30,6 +29,10 @@ import com.effektif.workflow.impl.json.JsonWriter;
 public class VariableInstanceMapper extends BeanMapper<VariableInstance> implements JsonTypeMapper<VariableInstance> {
 
   public static final VariableInstanceMapper INSTANCE = new VariableInstanceMapper();
+
+  public VariableInstanceMapper() {
+    super(VariableInstance.class);
+  }
 
   @Override
   public Class<VariableInstance> getMappedClass() {
@@ -47,7 +50,7 @@ public class VariableInstanceMapper extends BeanMapper<VariableInstance> impleme
   }
 
   @Override
-  public VariableInstance read(Object jsonValue, Type type, JsonReader jsonReader) {
-    return (VariableInstance) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>)type);
+  public VariableInstance read(Object jsonValue, JsonReader jsonReader) {
+    return null;
   }
 }

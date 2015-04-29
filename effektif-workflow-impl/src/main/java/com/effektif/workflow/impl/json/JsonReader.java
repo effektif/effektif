@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +29,6 @@ public abstract class JsonReader {
   
   public JsonReader(Mappings mappings) {
     this.mappings = mappings;
-  }
-
-  public Object readObject(Object jsonValue, Type type) {
-    JsonTypeMapper jsonTypeMapper = mappings.getTypeMapper(jsonValue, type);
-    return jsonTypeMapper.read(jsonValue, type, this);
   }
 
   public Object readBean(Map<String,Object> beanJsonMap, Class<?> clazz) {
@@ -57,9 +51,4 @@ public abstract class JsonReader {
       throw new RuntimeException(e);
     }
   }
-
-  protected String getJsonFieldName(String fieldName) {
-    return mappings.getJsonFieldName(currentBeanClass, fieldName);
-  }
-
 }

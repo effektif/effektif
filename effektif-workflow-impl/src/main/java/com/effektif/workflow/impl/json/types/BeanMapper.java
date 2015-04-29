@@ -28,7 +28,11 @@ import com.effektif.workflow.impl.json.JsonWriter;
  */
 public class BeanMapper<T extends Object> implements JsonTypeMapper<T> {
 
-  public static final JsonTypeMapper INSTANCE = new BeanMapper();
+  Type type;
+  
+  public BeanMapper(Type type) {
+    this.type = type;
+  }
 
   @Override
   public Class<T> getMappedClass() {
@@ -36,7 +40,7 @@ public class BeanMapper<T extends Object> implements JsonTypeMapper<T> {
   }
 
   @Override
-  public T read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public T read(Object jsonValue, JsonReader jsonReader) {
     return (T) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>) type);
   }
 

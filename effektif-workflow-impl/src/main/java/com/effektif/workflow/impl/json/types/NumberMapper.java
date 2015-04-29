@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -40,7 +38,7 @@ public class NumberMapper implements JsonTypeMapper<Number> {
   }
 
   @Override
-  public Number read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public Number read(Object jsonValue, JsonReader jsonReader) {
     return (Number) jsonValue;
   }
 }

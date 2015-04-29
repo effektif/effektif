@@ -12,8 +12,6 @@ package com.effektif.mongo;/* Copyright (c) 2015, Effektif GmbH.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 
-import java.lang.reflect.Type;
-
 import org.bson.types.ObjectId;
 
 import com.effektif.workflow.api.model.WorkflowId;
@@ -42,7 +40,7 @@ public class WorkflowIdMongoMapper implements JsonTypeMapper<WorkflowId> {
   }
 
   @Override
-  public WorkflowId read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public WorkflowId read(Object jsonValue, JsonReader jsonReader) {
     return new WorkflowId(jsonValue.toString());
   }
 }

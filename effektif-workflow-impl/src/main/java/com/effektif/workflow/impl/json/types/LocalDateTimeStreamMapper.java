@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -40,7 +38,7 @@ public class LocalDateTimeStreamMapper implements JsonTypeMapper {
   }
 
   @Override
-  public Object read(Object jsonValue, Type type, JsonReader jsonReader) {
+  public Object read(Object jsonValue, JsonReader jsonReader) {
     return PARSER.parseLocalDateTime((String)jsonValue);
   }
 
