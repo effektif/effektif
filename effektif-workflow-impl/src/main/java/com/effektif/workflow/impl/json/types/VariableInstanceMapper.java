@@ -16,32 +16,38 @@ package com.effektif.workflow.impl.json.types;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
- * Maps a JavaBean to a {@link Map} field for JSON serialisation and deserialisation.
+ * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
-public class BeanMapper<T extends Object> implements JsonTypeMapper<T> {
+public class VariableInstanceMapper extends BeanMapper<VariableInstance> implements JsonTypeMapper<VariableInstance> {
 
-  public static final JsonTypeMapper INSTANCE = new BeanMapper();
+  public static final VariableInstanceMapper INSTANCE = new VariableInstanceMapper();
 
   @Override
-  public Class<T> getMappedClass() {
-    return null;
+  public Class<VariableInstance> getMappedClass() {
+    return VariableInstance.class;
   }
 
   @Override
-  public T read(Object jsonValue, Type type, JsonReader jsonReader) {
-    return (T) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>) type);
+  public void write(VariableInstance variableInstance, JsonWriter jsonWriter) {
+    com.effektif.workflow.api.types.Type type = variableInstance.getType();
+    Object value = variableInstance.getValue();
+    if (type==null && value!=null) {
+      // TODO
+    }
+    jsonWriter.writeBean(variableInstance);
   }
 
   @Override
-  public void write(T objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeBean(objectValue);
+  public VariableInstance read(Object jsonValue, Type type, JsonReader jsonReader) {
+    return (VariableInstance) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>)type);
   }
 }

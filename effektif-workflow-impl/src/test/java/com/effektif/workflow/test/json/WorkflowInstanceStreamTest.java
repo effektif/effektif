@@ -13,9 +13,24 @@
  * limitations under the License. */
 package com.effektif.workflow.test.json;
 
-import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.joda.time.LocalDateTime;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflowinstance.VariableInstance;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
+import com.effektif.workflow.impl.util.Lists;
 
 
 /**
@@ -37,6 +52,37 @@ public class WorkflowInstanceStreamTest {
     String jsonString = jsonStreamMapper.write(o);
     System.out.println(jsonString);
     return jsonStreamMapper.readString(jsonString, o.getClass());
+  }
+  
+  protected String getWorkflowInstanceIdInternal() {
+    return "wiid";
+  }
+
+
+  @Test 
+  public void testWorkflow() {
+    LocalDateTime now = new LocalDateTime();
+
+    String workflowInstanceIdInternal = getWorkflowInstanceIdInternal();
+    
+    VariableInstance variableInstance = new VariableInstance();
+    variableInstance.setId("v");
+    variableInstance.setType(TextType.INSTANCE);
+    variableInstance.setVariableId("vid");
+    variableInstance.setValue("hello");
+
+    List<VariableInstance> variableInstances = new ArrayList<>();
+    variableInstances.add(variableInstance);
+    
+    WorkflowInstance workflowInstance = new WorkflowInstance();
+    workflowInstance.setId(new WorkflowInstanceId(workflowInstanceIdInternal));
+    workflowInstance.setVariableInstances(variableInstances );
+    workflowInstance.setStart(now);
+    workflowInstance.setEnd(now);
+    
+    workflowInstance = serialize(workflowInstance);
+    
+    assertNotNull(workflowInstance);
   }
 
 }

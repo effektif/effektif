@@ -16,7 +16,9 @@ package com.effektif.workflow.impl.json;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +52,7 @@ import com.effektif.workflow.impl.json.types.BooleanMapper;
 import com.effektif.workflow.impl.json.types.ListMapper;
 import com.effektif.workflow.impl.json.types.MapMapper;
 import com.effektif.workflow.impl.json.types.NumberMapper;
+import com.effektif.workflow.impl.json.types.ObjectMapper;
 import com.effektif.workflow.impl.json.types.StringMapper;
 import com.effektif.workflow.impl.util.Lists;
 
@@ -377,32 +380,75 @@ public class Mappings {
     }
   }
 
-  private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
-          Lists.of("short", "int", "long", "float", "double"));
-  public JsonTypeMapper getTypeMapper(Class< ? > clazz) {
-    JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(clazz);
+  public JsonTypeMapper getTypeMapper(Type type) {
+    if (type==null) {
+      return ObjectMapper.INSTANCE;
+    }
+
+    JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
     if (jsonTypeMapper!=null) {
       return jsonTypeMapper;
     }
-    if (String.class==clazz) {
+    
+    Class<?> clazz = type instanceof Class ? (Class<?>) type : null;
+
+    if (String.class==type) {
       jsonTypeMapper = StringMapper.INSTANCE;
-    } else if (List.class.isAssignableFrom(clazz)) {
-      jsonTypeMapper = ListMapper.INSTANCE;
-    } else if (Map.class.isAssignableFrom(clazz)) {
-      jsonTypeMapper = MapMapper.INSTANCE;
-    } else if (Number.class.isAssignableFrom(clazz)
-               || NUMBERTYPENAMES.contains(clazz.getName())) {
-      jsonTypeMapper = NumberMapper.INSTANCE;
-    } else if ( Boolean.class==clazz
-                || boolean.class==clazz ) {
+    } else if ( Boolean.class==type
+                || boolean.class==type ) {
       jsonTypeMapper = BooleanMapper.INSTANCE;
-    } else {
-      jsonTypeMapper = BeanMapper.INSTANCE;
+    } else if ( Object.class==type ) {
+      jsonTypeMapper = ObjectMapper.INSTANCE;
+    } else if (isNumberClass(clazz)) {
+      jsonTypeMapper = NumberMapper.INSTANCE;
     }
-    jsonTypeMappers.put(clazz, jsonTypeMapper);
+
+    if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType)type;
+      clazz = (Class< ? >) parameterizedType.getRawType();
+    } else if (type instanceof WildcardType) {
+      WildcardType wildcardType = (WildcardType)type;
+      clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
+    }
+
+    if (isList(clazz)) {
+      Type elementType = getTypeArg(type, 0);
+      JsonTypeMapper elementMapper = getTypeMapper(elementType);
+      jsonTypeMapper = new ListMapper(elementMapper); 
+      
+    } else if (isMap(clazz)) {
+      Type valuesType = getTypeArg(type, 1);
+      JsonTypeMapper valuesMapper = getTypeMapper(valuesType);
+      jsonTypeMapper = new MapMapper(valuesMapper); 
+    }
+
+    jsonTypeMappers.put(type, jsonTypeMapper);
     return jsonTypeMapper;
   }
 
+  private Type getTypeArg(Type type, int i) {
+    
+    return null;
+  }
+
+  private boolean isMap(Class< ? > clazz) {
+    return false;
+  }
+
+  private boolean isList(Class< ? > clazz) {
+    return false;
+  }
+
+  private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
+          Lists.of("byte", "short", "int", "long", "float", "double"));
+  private boolean isNumberClass(Class< ? > clazz) {
+    if (clazz==null) {
+      return false;
+    }
+    return Number.class.isAssignableFrom(clazz)
+      || NUMBERTYPENAMES.contains(clazz.getName());
+  }
+  
   public JsonTypeMapper getTypeMapper(Object jsonValue, Type type) {
     return getTypeMapper((Class)type);
   }

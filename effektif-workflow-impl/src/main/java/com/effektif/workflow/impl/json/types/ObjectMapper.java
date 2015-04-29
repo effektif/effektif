@@ -26,22 +26,22 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class BeanMapper<T extends Object> implements JsonTypeMapper<T> {
+public class ObjectMapper<T extends Object> implements JsonTypeMapper<T> {
 
-  public static final JsonTypeMapper INSTANCE = new BeanMapper();
+  public static final ObjectMapper INSTANCE = new ObjectMapper();
 
   @Override
   public Class<T> getMappedClass() {
-    return null;
+    return (Class<T>) Object.class;
   }
 
   @Override
   public T read(Object jsonValue, Type type, JsonReader jsonReader) {
-    return (T) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>) type);
+    return (T) jsonReader.readObject(jsonValue, type);
   }
 
   @Override
   public void write(T objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeBean(objectValue);
+    jsonWriter.writeObject(objectValue);
   }
 }
