@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
@@ -66,7 +63,7 @@ import com.effektif.workflow.impl.util.Lists;
  */
 public class Mappings {
   
-  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
+  // private static final Logger log = LoggerFactory.getLogger(Mappings.class);
   
   Map<Class<?>, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
 
@@ -349,10 +346,7 @@ public class Mappings {
           field.setAccessible(true);
           Type fieldType = field.getGenericType();
           JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
-          
-          log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
-
-          
+          // log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
 
           // Annotation-based field name override.

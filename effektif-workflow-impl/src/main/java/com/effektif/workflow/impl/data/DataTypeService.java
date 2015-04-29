@@ -19,15 +19,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;

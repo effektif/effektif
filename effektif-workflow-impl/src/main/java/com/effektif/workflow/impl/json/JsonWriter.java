@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.json;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An API for serialising values to JSON.

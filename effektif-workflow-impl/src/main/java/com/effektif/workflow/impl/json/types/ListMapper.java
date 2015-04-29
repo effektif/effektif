@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

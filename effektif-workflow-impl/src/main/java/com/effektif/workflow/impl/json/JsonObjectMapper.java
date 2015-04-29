@@ -14,11 +14,7 @@
 package com.effektif.workflow.impl.json;
 
 import java.util.Map;
-import java.util.ServiceLoader;
 
-import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
 
 

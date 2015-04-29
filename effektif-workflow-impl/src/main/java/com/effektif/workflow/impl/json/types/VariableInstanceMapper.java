@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
