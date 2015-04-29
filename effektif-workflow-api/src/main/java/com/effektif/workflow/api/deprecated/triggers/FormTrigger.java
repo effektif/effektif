@@ -21,7 +21,6 @@ import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
 import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.bpmn.XmlElement;
 import com.effektif.workflow.api.serialization.json.TypeName;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Trigger;
 
 

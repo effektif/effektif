@@ -23,7 +23,6 @@ import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
 import com.effektif.workflow.api.serialization.bpmn.BpmnWritable;
 import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.bpmn.XmlElement;
-import com.effektif.workflow.api.workflow.Binding;
 
 /**
  * A form definition (aka ‘declaration’) that specifies the fields to display for a

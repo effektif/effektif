@@ -15,11 +15,11 @@
  */
 package com.effektif.workflow.api.deprecated.acl;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
 import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.json.TypeName;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /** TODO check if this can be removed
  * 

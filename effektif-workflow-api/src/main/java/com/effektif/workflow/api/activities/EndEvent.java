@@ -30,4 +30,33 @@ import com.effektif.workflow.api.workflow.Activity;
 @BpmnElement("endEvent")
 public class EndEvent extends Activity {
 
+  @Override
+  public EndEvent id(String id) {
+    super.id(id);
+    return this;
+  }
+
+  @Override
+  public EndEvent property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public EndEvent name(String name) {
+    super.name(name);
+    return this;
+  }
+
+  @Override
+  public EndEvent description(String description) {
+    super.description(description);
+    return this;
+  }
+
+  @Override
+  public EndEvent propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
 }

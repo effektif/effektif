@@ -15,10 +15,12 @@
  */
 package com.effektif.workflow.api.activities;
 
+import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.deprecated.activities.ServiceTask;
 import com.effektif.workflow.api.serialization.bpmn.BpmnElement;
 import com.effektif.workflow.api.serialization.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.serialization.json.TypeName;
+import com.effektif.workflow.api.workflow.Transition;
 
 
 /**
@@ -31,5 +33,71 @@ import com.effektif.workflow.api.serialization.json.TypeName;
 @BpmnElement("serviceTask")
 @BpmnTypeAttribute(attribute="type", value="http")
 public class HttpServiceTask extends ServiceTask {
+
+  @Override
+  public HttpServiceTask id(String id) {
+    super.id(id);
+    return this;
+  }
+  
+  @Override
+  public HttpServiceTask name(String name) {
+    super.name(name);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask description(String description) {
+    super.description(description);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask transitionTo(String toActivityId) {
+    super.transitionTo(toActivityId);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask transitionWithConditionTo(Condition condition, String toActivityId) {
+    super.transitionWithConditionTo(condition, toActivityId);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask transitionToNext() {
+    super.transitionToNext();
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask transitionTo(Transition transition) {
+    super.transitionTo(transition);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask transition(Transition transition) {
+    super.transition(transition);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask transition(String id, Transition transition) {
+    super.transition(id, transition);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public HttpServiceTask propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
 
 }

@@ -25,6 +25,7 @@ import org.junit.Test;
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Transition;
@@ -86,6 +87,31 @@ public class WorkflowSerializationTest {
     workflow = serialize(workflow);
     
     assertNotNull(workflow);
+  }
+
+  @Test
+  public void testEndEvent() {
+    EndEvent activity = new EndEvent();
+    activity.setId("releaseComplete");
+    activity.setName("software released");
+    activity.setDescription("Ends the process when the release is complete.");
+    activity = serialize(activity);
+    assertEquals(EndEvent.class, activity.getClass());
+    assertEquals("releaseComplete", activity.getId());
+    assertEquals("software released", activity.getName());
+    assertEquals("Ends the process when the release is complete.", activity.getDescription());
+    assertNull(activity.getOutgoingTransitions());
+  }
+
+  @Test
+  public void testExclusiveGateway() {
+    ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway()
+      .id("test-ok")
+      .defaultTransitionId("proceed");
+    activity = serialize(activity);
+    assertEquals(ExclusiveGateway.class, activity.getClass());
+    assertEquals("test-ok", activity.getId());
+    assertEquals("proceed", activity.getDefaultTransitionId());
   }
 
   @Test

@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.api.types;
 
-import java.util.List;
-
 import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
 import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.bpmn.XmlElement;

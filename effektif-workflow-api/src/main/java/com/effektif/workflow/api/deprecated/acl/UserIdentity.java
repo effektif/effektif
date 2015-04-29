@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.api.deprecated.acl;
 
-import com.effektif.workflow.api.serialization.bpmn.BpmnReader;
-import com.effektif.workflow.api.serialization.bpmn.BpmnWriter;
 import com.effektif.workflow.api.serialization.json.TypeName;
 
 

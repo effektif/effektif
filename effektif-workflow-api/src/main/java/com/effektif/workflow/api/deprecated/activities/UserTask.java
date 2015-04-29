@@ -21,7 +21,6 @@ import java.util.List;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.form.Form;
-import com.effektif.workflow.api.deprecated.form.FormField;
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.model.RelativeTime;

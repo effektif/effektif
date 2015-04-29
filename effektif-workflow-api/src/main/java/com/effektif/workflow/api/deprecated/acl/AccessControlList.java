@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.deprecated.acl;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
