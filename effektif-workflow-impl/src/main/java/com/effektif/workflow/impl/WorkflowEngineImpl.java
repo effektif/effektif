@@ -32,7 +32,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
@@ -40,7 +40,7 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
 import com.effektif.workflow.impl.util.Exceptions;
@@ -441,10 +441,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   protected void deserializeVariableInstance(VariableInstance variableInstance) {
-    Type type = variableInstance!=null ? variableInstance.getType() : null;
+    DataType type = variableInstance!=null ? variableInstance.getType() : null;
     Object serializedValue = variableInstance.getValue();
     if (type!=null && serializedValue!=null) {
-      DataType dataType = dataTypeService.createDataType(type);
+      DataTypeImpl dataType = dataTypeService.createDataType(type);
       Object value = dataType.convertJsonToInternalValue(serializedValue);
       variableInstance.setValue(value);
     }

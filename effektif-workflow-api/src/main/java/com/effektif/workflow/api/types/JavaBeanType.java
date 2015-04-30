@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -24,7 +26,7 @@ import com.effektif.workflow.api.json.TypeName;
  * @author Tom Baeyens
  */
 @TypeName("javaBean")
-public class JavaBeanType extends Type {
+public class JavaBeanType extends DataType {
 
   protected Class<?> javaClass;
   
@@ -56,6 +58,11 @@ public class JavaBeanType extends Type {
   public JavaBeanType javaClass(Class<?> javaClass) {
     this.javaClass = javaClass;
     return this;
+  }
+
+  @Override
+  public Type getValueType() {
+    return javaClass;
   }
 
 }

@@ -19,7 +19,7 @@ import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
@@ -117,7 +117,7 @@ public class EmbeddedSubprocess extends Activity {
   }
 
   @Override
-  public EmbeddedSubprocess variable(String id, Type type) {
+  public EmbeddedSubprocess variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }

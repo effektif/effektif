@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -39,7 +39,7 @@ public class ActivityDescriptor {
     return this;
   }
 
-  public ActivityDescriptor inputParameter(String inputParameterKey, String inputParameterLabel, Type type) {
+  public ActivityDescriptor inputParameter(String inputParameterKey, String inputParameterLabel, DataType type) {
     inputParameter(new InputParameter()
       .key(inputParameterKey)
       .label(inputParameterLabel)
@@ -61,7 +61,7 @@ public class ActivityDescriptor {
     return this;
   }
 
-  public ActivityDescriptor outputParameter(String outputParameterKey, String outputParameterLabel, Type type) {
+  public ActivityDescriptor outputParameter(String outputParameterKey, String outputParameterLabel, DataType type) {
     outputParameter(new OutputParameter()
       .key(outputParameterKey)
       .label(outputParameterLabel)

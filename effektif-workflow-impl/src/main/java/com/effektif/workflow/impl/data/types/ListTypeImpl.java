@@ -20,9 +20,9 @@ import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -33,7 +33,7 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
  */
 public class ListTypeImpl extends AbstractDataType<ListType> {
   
-  public DataType elementType;
+  public DataTypeImpl elementType;
   
   public ListTypeImpl() {
     this(new ListType());
@@ -46,7 +46,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   @Override
   public void setConfiguration(Configuration configuration) {
     super.setConfiguration(configuration);
-    Type elementType = type.getElementType();
+    DataType elementType = type.getElementType();
     if (elementType!=null) {
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);
       this.elementType = dataTypeService.createDataType(elementType);

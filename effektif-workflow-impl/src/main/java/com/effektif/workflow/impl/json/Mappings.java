@@ -19,6 +19,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +40,10 @@ import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.types.BooleanType;
+import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.NumberType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.activity.ActivityType;
@@ -45,7 +51,7 @@ import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.types.BeanMapper;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
@@ -66,28 +72,26 @@ public class Mappings {
   // private static final Logger log = LoggerFactory.getLogger(Mappings.class);
   
   Map<Class<?>, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
+  Map<Type,DataType> dataTypesByClass = new HashMap<>();
 
-  /** Maps registered base classes (e.g. <code>Trigger</code> to their subclass mappings. */
+  /** Maps registered base classes (e.g. <code>Activity</code> to all their subclass mappings. */
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
   Map<Class<?>, List<FieldMapping>> fieldMappings = new HashMap<>();
 
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
-  Map<Class<?>, Map<String,java.lang.reflect.Type>> fieldTypes = new HashMap<>();
+  Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
 
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
 
   public Mappings() {
+    registerBaseClass(Trigger.class);
+    registerBaseClass(JobType.class);
+    
     registerBaseClass(Activity.class);
     ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
     for (ActivityType activityType: activityTypeLoader) {
       registerSubClass(activityType.getActivityApiClass());
-    }
-
-    registerBaseClass(Type.class, "name");
-    ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
-    for (DataType dataType: dataTypeLoader) {
-      registerSubClass(dataType.getApiClass());
     }
 
     registerBaseClass(Condition.class);
@@ -96,12 +100,35 @@ public class Mappings {
       registerSubClass(condition.getApiType());
     }
 
-    registerBaseClass(Trigger.class);
-    registerBaseClass(JobType.class);
+    registerBaseClass(DataType.class, "name");
+    ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
+    for (DataTypeImpl dataTypeImpl: dataTypeLoader) {
+      try {
+        Class<? extends DataType> apiClass = dataTypeImpl.getApiClass();
+        if (apiClass!=null) {
+          registerSubClass(apiClass);
+          DataType dataType = apiClass.newInstance();
+          dataTypesByClass.put(dataType.getValueType(), dataType);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    dataTypesByClass.put(String.class, TextType.INSTANCE);
+    dataTypesByClass.put(Boolean.class, BooleanType.INSTANCE);
+    dataTypesByClass.put(Byte.class, NumberType.INSTANCE);
+    dataTypesByClass.put(Short.class, NumberType.INSTANCE);
+    dataTypesByClass.put(Integer.class, NumberType.INSTANCE);
+    dataTypesByClass.put(Long.class, NumberType.INSTANCE);
+    dataTypesByClass.put(Float.class, NumberType.INSTANCE);
+    dataTypesByClass.put(Double.class, NumberType.INSTANCE);
+    dataTypesByClass.put(BigInteger.class, NumberType.INSTANCE);
+    dataTypesByClass.put(BigDecimal.class, NumberType.INSTANCE);
   }
 
   public void registerTypeMapper(JsonTypeMapper jsonTypeMapper) {
     jsonTypeMappers.put(jsonTypeMapper.getMappedClass(), jsonTypeMapper);
+    jsonTypeMapper.setMappings(this);
   }
 
   public void registerBaseClass(Class<?> baseClass) {
@@ -258,13 +285,13 @@ public class Mappings {
     return null;
   }
 
-  public synchronized java.lang.reflect.Type getFieldType(Class< ? > clazz, String fieldName) {
+  public synchronized Type getFieldType(Class< ? > clazz, String fieldName) {
     // could be cached in this mappings object
-    java.lang.reflect.Type fieldType = getFieldTypeFromCache(clazz, fieldName);
+    Type fieldType = getFieldTypeFromCache(clazz, fieldName);
     if (fieldType!=null) {
       return fieldType;
     }
-    Map<String,java.lang.reflect.Type> fieldTypesForClass = fieldTypes.get(clazz);
+    Map<String,Type> fieldTypesForClass = fieldTypes.get(clazz);
     if (fieldTypesForClass==null) {
       fieldTypesForClass = new HashMap<>();
       fieldTypes.put(clazz, fieldTypesForClass);
@@ -277,7 +304,7 @@ public class Mappings {
     return fieldType;
   }
 
-  private java.lang.reflect.Type findFieldType(Class< ? > clazz, String fieldName) {
+  private Type findFieldType(Class< ? > clazz, String fieldName) {
     try {
       for (Field field: clazz.getDeclaredFields()) {
         if (field.getName().equals(fieldName)) {
@@ -293,8 +320,8 @@ public class Mappings {
     return null;
   }
 
-  private java.lang.reflect.Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
-    Map<String,java.lang.reflect.Type> types = fieldTypes.get(type);
+  private Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
+    Map<String,Type> types = fieldTypes.get(type);
     if (types==null) {
       return null;
     }
@@ -442,4 +469,7 @@ public class Mappings {
       || NUMBERTYPENAMES.contains(clazz.getName());
   }
 
+  public DataType getTypeByValue(Object value) {
+    return dataTypesByClass.get(value.getClass());
+  }
 }

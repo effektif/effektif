@@ -26,7 +26,7 @@ import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -508,7 +508,7 @@ public class EmailTask extends Activity {
     return this;
   }
   @Override
-  public EmailTask variable(String id, Type type) {
+  public EmailTask variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }

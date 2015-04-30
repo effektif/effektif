@@ -20,8 +20,8 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
@@ -30,7 +30,7 @@ import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 /**
  * @author Tom Baeyens
  */
-public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
+public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   
   public JsonMapper jsonMapper;
   
@@ -68,7 +68,7 @@ public class JavaBeanTypeImpl<T extends Type> extends ObjectTypeImpl<T> {
 
   protected void addField(Field field) {
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataType dataType = dataTypeService.getDataTypeByValue(field.getType());
+    DataTypeImpl dataType = dataTypeService.getDataTypeByValue(field.getType());
     JavaBeanFieldImpl javaBeanField = new JavaBeanFieldImpl(field, dataType);
     addField(javaBeanField);
   }

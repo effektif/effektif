@@ -18,7 +18,7 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -27,7 +27,7 @@ import com.effektif.workflow.api.types.Type;
 public class Variable extends Element {
   
   protected String id;
-  protected Type type;
+  protected DataType type;
 
 //  @Override
 //  public void readJson(JsonReader r) {
@@ -54,13 +54,13 @@ public class Variable extends Element {
     return this;
   }
 
-  public Type getType() {
+  public DataType getType() {
     return this.type;
   }
-  public void setType(Type type) {
+  public void setType(DataType type) {
     this.type = type;
   }
-  public Variable type(Type type) {
+  public Variable type(DataType type) {
     this.type = type;
     return this;
   }

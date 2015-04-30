@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -22,7 +24,12 @@ import com.effektif.workflow.api.json.TypeName;
  * @author Tom Baeyens
  */
 @TypeName("boolean")
-public class BooleanType extends Type {
+public class BooleanType extends DataType {
 
-  public static final BooleanType INSTANCE = new BooleanType(); 
+  public static final BooleanType INSTANCE = new BooleanType();
+
+  @Override
+  public Type getValueType() {
+    return Boolean.class;
+  }
 }

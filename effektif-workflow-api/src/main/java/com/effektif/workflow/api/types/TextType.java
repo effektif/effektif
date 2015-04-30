@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -22,8 +24,13 @@ import com.effektif.workflow.api.json.TypeName;
  * @author Tom Baeyens
  */
 @TypeName("text")
-public class TextType extends Type {
+public class TextType extends DataType {
 
   public static final TextType INSTANCE = new TextType(); 
+
+  @Override
+  public Type getValueType() {
+    return String.class;
+  }
 
 }

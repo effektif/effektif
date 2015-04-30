@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.deprecated.json;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -74,7 +75,7 @@ import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.bpmn.Bpmn;
@@ -105,11 +106,11 @@ public class Mappings {
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
-  Map<Class<?>, Map<String,java.lang.reflect.Type>> fieldTypes = new HashMap<>();
+  Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
   Map<Class<?>, List<Field>> fields = new HashMap<>();
   
   public Mappings() {
-    registerBaseClass(Type.class, "name");
+    registerBaseClass(DataType.class, "name");
     registerBaseClass(Trigger.class);
     registerSubClass(FormTrigger.class);
     registerSubClass(EmailTrigger.class);
@@ -287,13 +288,13 @@ public class Mappings {
     }
   }
   
-  public synchronized java.lang.reflect.Type getFieldType(Class< ? > clazz, String fieldName) {
+  public synchronized Type getFieldType(Class< ? > clazz, String fieldName) {
     // could be cached in this mappings object
-    java.lang.reflect.Type fieldType = getFieldTypeFromCache(clazz, fieldName);
+    Type fieldType = getFieldTypeFromCache(clazz, fieldName);
     if (fieldType!=null) {
       return fieldType;
     }
-    Map<String,java.lang.reflect.Type> fieldTypesForClass = fieldTypes.get(clazz);
+    Map<String,Type> fieldTypesForClass = fieldTypes.get(clazz);
     if (fieldTypesForClass==null) {
       fieldTypesForClass = new HashMap<>();
       fieldTypes.put(clazz, fieldTypesForClass);
@@ -306,7 +307,7 @@ public class Mappings {
     return fieldType;
   }
 
-  private java.lang.reflect.Type findFieldType(Class< ? > clazz, String fieldName) {
+  private Type findFieldType(Class< ? > clazz, String fieldName) {
     try {
       for (Field field: clazz.getDeclaredFields()) {
         if (field.getName().equals(fieldName)) {
@@ -322,8 +323,8 @@ public class Mappings {
     return null;
   }
 
-  private java.lang.reflect.Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
-    Map<String,java.lang.reflect.Type> types = fieldTypes.get(type);
+  private Type getFieldTypeFromCache(Class< ? > type, String fieldName) {
+    Map<String,Type> types = fieldTypes.get(type);
     if (types==null) {
       return null;
     }

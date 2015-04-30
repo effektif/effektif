@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class MapMapper implements JsonTypeMapper<Map> {
+public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper<Map> {
 
   JsonTypeMapper valueMapper;
   

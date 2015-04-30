@@ -26,7 +26,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class BeanMapper<T extends Object> implements JsonTypeMapper<T> {
+public class BeanMapper<T extends Object> extends AbstractTypeMapper<T> implements JsonTypeMapper<T> {
 
   Type type;
   

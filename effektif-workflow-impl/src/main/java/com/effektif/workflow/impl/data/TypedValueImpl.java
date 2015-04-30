@@ -22,19 +22,19 @@ package com.effektif.workflow.impl.data;
  */
 public class TypedValueImpl {
 
-  public DataType type;
+  public DataTypeImpl type;
   public Object value;
 
-  public TypedValueImpl(DataType type, Object value) {
+  public TypedValueImpl(DataTypeImpl type, Object value) {
     this.type = type;
     this.value = value;
   }
 
-  public DataType getType() {
+  public DataTypeImpl getType() {
     return type;
   }
   
-  public void setType(DataType type) {
+  public void setType(DataTypeImpl type) {
     this.type = type;
   }
   

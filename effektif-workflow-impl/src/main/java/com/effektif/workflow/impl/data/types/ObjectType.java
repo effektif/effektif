@@ -15,8 +15,15 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import java.lang.reflect.Type;
+import java.util.Map;
+
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
+import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /** an object type without any declared fields.
@@ -30,7 +37,53 @@ import com.effektif.workflow.api.types.Type;
  * @author Tom Baeyens
  */
 @TypeName("object")
-public class ObjectType extends Type {
+public class ObjectType extends DataType {
 
   public static final ObjectType INSTANCE = new ObjectType();
+
+  protected DataType elementType;
+
+  public ObjectType() {
+  }
+  public ObjectType(DataType elementType) {
+    this.elementType = elementType;
+  }
+
+  public DataType getElementType() {
+    return this.elementType;
+  }
+  public void setElementType(DataType elementType) {
+    this.elementType = elementType;
+  }
+  public ObjectType elementType(DataType elementType) {
+    this.elementType = elementType;
+    return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    XmlElement element = r.readElementEffektif("object");
+    if (element!=null) {
+      r.startElement(element);
+      elementType = r.readTypeEffektif();
+      r.endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    if (elementType!=null) {
+      w.startElementEffektif("object");
+      w.writeTypeAttribute(elementType);
+      elementType.writeBpmn(w);
+      w.endElement();
+    }
+  }
+
+  @Override
+  public Type getValueType() {
+    Type t = elementType!=null ? elementType.getValueType() : null;
+    return new GenericType(Map.class, t);
+  }
 }

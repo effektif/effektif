@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.deprecated.script;
 
 import java.util.Map;
 
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -30,7 +30,7 @@ public class ScriptImpl {
   public Object compiledScript;
   /** maps script variable names to workflow variable ids */ 
   public Map<String, String> mappings;
-  public DataType expectedResultType;
+  public DataTypeImpl expectedResultType;
   public boolean readOnly;
   
   public boolean evaluate(ScopeInstanceImpl scopeInstance) {

@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.activity;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -58,7 +58,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
   public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance, boolean deserialize) {
   }
 
-  public DataType<?> getDataTypeForTriggerKey(String triggerKey) {
+  public DataTypeImpl<?> getDataTypeForTriggerKey(String triggerKey) {
     return null;
   }
 }

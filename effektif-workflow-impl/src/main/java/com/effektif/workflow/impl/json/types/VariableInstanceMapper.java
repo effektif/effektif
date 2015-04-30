@@ -13,7 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -27,6 +29,8 @@ import com.effektif.workflow.impl.json.JsonWriter;
 public class VariableInstanceMapper extends BeanMapper<VariableInstance> implements JsonTypeMapper<VariableInstance> {
 
   public static final VariableInstanceMapper INSTANCE = new VariableInstanceMapper();
+  
+  DataTypeService dataTypeService;
 
   public VariableInstanceMapper() {
     super(VariableInstance.class);
@@ -39,16 +43,24 @@ public class VariableInstanceMapper extends BeanMapper<VariableInstance> impleme
 
   @Override
   public void write(VariableInstance variableInstance, JsonWriter jsonWriter) {
-    com.effektif.workflow.api.types.Type type = variableInstance.getType();
+    DataType type = variableInstance.getType();
     Object value = variableInstance.getValue();
     if (type==null && value!=null) {
-      // TODO
+      type = mappings.getTypeByValue(value);
+      variableInstance.setType(type);
     }
-    jsonWriter.writeBean(variableInstance);
+    super.write(variableInstance, jsonWriter);
   }
 
   @Override
   public VariableInstance read(Object jsonValue, JsonReader jsonReader) {
-    return null;
+    VariableInstance variableInstance = super.read(jsonValue, jsonReader);
+    DataType type = variableInstance.getType();
+    Object jsonVariableValue = variableInstance.getValue();
+    if (jsonVariableValue!=null && type!=null) {
+      Object objectVariableValue = jsonReader.readObject(jsonVariableValue, type.getValueType());
+      variableInstance.setValue(objectVariableValue);
+    }
+    return variableInstance;
   }
 }

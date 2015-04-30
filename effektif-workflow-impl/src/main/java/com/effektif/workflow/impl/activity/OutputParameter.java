@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -30,7 +30,7 @@ public class OutputParameter extends Parameter {
   }
 
   @Override
-  public OutputParameter type(Type type) {
+  public OutputParameter type(DataType type) {
     super.type(type);
     return this;
   }

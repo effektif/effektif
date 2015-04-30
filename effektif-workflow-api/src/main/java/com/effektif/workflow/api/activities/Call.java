@@ -20,7 +20,7 @@ import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
@@ -185,7 +185,7 @@ public class Call extends AbstractBindableActivity {
     return this;
   }
   @Override
-  public Call variable(String id, Type type) {
+  public Call variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }

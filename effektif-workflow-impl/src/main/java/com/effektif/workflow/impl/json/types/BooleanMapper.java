@@ -23,7 +23,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class BooleanMapper implements JsonTypeMapper<Boolean> {
+public class BooleanMapper extends AbstractTypeMapper<Boolean> implements JsonTypeMapper<Boolean> {
 
   public static final BooleanMapper INSTANCE = new BooleanMapper();
 

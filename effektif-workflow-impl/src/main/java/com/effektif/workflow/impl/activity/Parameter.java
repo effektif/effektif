@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -24,7 +24,7 @@ import com.effektif.workflow.api.types.Type;
 public class Parameter {
 
   protected String key;
-  protected Type type;
+  protected DataType type;
   protected String label;
   protected String description;
 
@@ -50,13 +50,13 @@ public class Parameter {
     return this;
   }
 
-  public Type getType() {
+  public DataType getType() {
     return this.type;
   }
-  public void setType(Type type) {
+  public void setType(DataType type) {
     this.type = type;
   }
-  public Parameter type(Type type) {
+  public Parameter type(DataType type) {
     this.type = type;
     return this;
   }

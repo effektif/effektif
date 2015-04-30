@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -50,5 +51,10 @@ public abstract class JsonReader {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public Object readObject(Object jsonValue, Type type) {
+    JsonTypeMapper typeMapper = mappings.getTypeMapper(jsonValue, type);
+    return typeMapper.read(jsonValue, this);
   }
 }

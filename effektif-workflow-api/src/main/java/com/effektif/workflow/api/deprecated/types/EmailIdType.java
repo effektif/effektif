@@ -15,18 +15,25 @@
  */
 package com.effektif.workflow.api.deprecated.types;
 
+import java.lang.reflect.Type;
+
+import com.effektif.workflow.api.deprecated.model.EmailId;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
  * @author Tom Baeyens
  */
 @TypeName("emailId")
-public class EmailIdType extends Type {
+public class EmailIdType extends DataType {
 
   public static final EmailIdType INSTANCE = new EmailIdType();
 
+  @Override
+  public Type getValueType() {
+    return EmailId.class;
+  }
 }
 
 

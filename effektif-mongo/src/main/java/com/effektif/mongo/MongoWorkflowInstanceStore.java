@@ -35,7 +35,7 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -520,7 +520,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
           variableInstanceImpl.type = variableInstanceImpl.variable.type;
         } else {
           variableInstanceImpl.variable = new VariableImpl();
-          Type type = variableInstance.getType();
+          DataType type = variableInstance.getType();
           if (type!=null) {
             variableInstanceImpl.type = dataTypeService.createDataType(type);
           }

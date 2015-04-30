@@ -27,23 +27,23 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class LocalDateTimeStreamMapper implements JsonTypeMapper {
+public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapper<LocalDateTime> {
 
   public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
   public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
 
   @Override
-  public void write(Object objectValue, JsonWriter jsonWriter) {
+  public void write(LocalDateTime objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeString(PRINTER.print((LocalDateTime)objectValue));
   }
 
   @Override
-  public Object read(Object jsonValue, JsonReader jsonReader) {
+  public LocalDateTime read(Object jsonValue, JsonReader jsonReader) {
     return PARSER.parseLocalDateTime((String)jsonValue);
   }
 
   @Override
-  public Class< ? > getMappedClass() {
+  public Class<LocalDateTime> getMappedClass() {
     return LocalDateTime.class;
   }
 }

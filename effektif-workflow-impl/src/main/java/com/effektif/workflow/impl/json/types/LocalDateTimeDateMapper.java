@@ -28,7 +28,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class LocalDateTimeDateMapper implements JsonTypeMapper<LocalDateTime> {
+public class LocalDateTimeDateMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapper<LocalDateTime> {
 
   @Override
   public Class<LocalDateTime> getMappedClass() {

@@ -36,7 +36,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.deprecated.acl.AccessIdentity;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
@@ -389,10 +389,10 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   @Override
-  public Type readTypeEffektif() {
+  public DataType readTypeEffektif() {
     try {
-      Class<?> typeClass = mappings.getConcreteClass(this, Type.class);
-      Type type = (Type) typeClass.newInstance();
+      Class<?> typeClass = mappings.getConcreteClass(this, DataType.class);
+      DataType type = (DataType) typeClass.newInstance();
       type.readBpmn(this);
       return type;
     } catch (Exception e) {

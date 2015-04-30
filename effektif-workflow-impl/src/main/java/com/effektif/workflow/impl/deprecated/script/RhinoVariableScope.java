@@ -34,7 +34,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
@@ -164,7 +164,7 @@ public class RhinoVariableScope implements Scriptable {
       }
       VariableInstanceImpl variableInstance = scopeInstance.findVariableInstance(variableId);
       if (variableInstance!=null) {
-        DataType type = variableInstance.type;
+        DataTypeImpl type = variableInstance.type;
         // NativeObject implements Map
         // NativeArray implements List
         // So the data type conversion from javascript to internal should work
@@ -198,7 +198,7 @@ public class RhinoVariableScope implements Scriptable {
     return convertInternalToNative(typedValue.type,  typedValue.value, name);
   }
 
-  protected Object convertInternalToNative(DataType type, Object value, String name) {
+  protected Object convertInternalToNative(DataTypeImpl type, Object value, String name) {
     if (value==null) {
       return null;
     }
@@ -218,9 +218,9 @@ public class RhinoVariableScope implements Scriptable {
   public class DirtyCheckingNativeArray extends NativeArray {
     private static final long serialVersionUID = 1L;
     String name;
-    DataType elementType;
+    DataTypeImpl elementType;
     List<Object> values;
-    public DirtyCheckingNativeArray(DataType elementType, List<Object> values, String name) {
+    public DirtyCheckingNativeArray(DataTypeImpl elementType, List<Object> values, String name) {
       super(values.size());
       this.name = name;
       this.values = values;
@@ -323,9 +323,9 @@ public class RhinoVariableScope implements Scriptable {
   public class DirtyCheckingNativeObject extends NativeObject {
     private static final long serialVersionUID = 1L;
     String name;
-    DataType type;
+    DataTypeImpl type;
     Object value;
-    public DirtyCheckingNativeObject(DataType type, Object value, String name) {
+    public DirtyCheckingNativeObject(DataTypeImpl type, Object value, String name) {
       this.name = name;
       this.type = type;
       this.value = value;

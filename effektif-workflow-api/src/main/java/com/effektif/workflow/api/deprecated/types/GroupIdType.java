@@ -15,16 +15,23 @@
  */
 package com.effektif.workflow.api.deprecated.types;
 
+import java.lang.reflect.Type;
+
+import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
  * @author Peter Hilton
  */
 @TypeName("groupId")
-public class GroupIdType extends Type {
+public class GroupIdType extends DataType {
 
   public static final GroupIdType INSTANCE = new GroupIdType();
 
+  @Override
+  public Type getValueType() {
+    return GroupId.class;
+  }
 }

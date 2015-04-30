@@ -15,44 +15,36 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
+import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.json.TypeName;
 
 /**
  * @author Tom Baeyens
  */
 @TypeName("list")
-public class ListType extends Type {
+public class ListType extends DataType {
 
-  protected Type elementType;
+  protected DataType elementType;
 
   public ListType() {
   }
-  public ListType(Type elementType) {
+  public ListType(DataType elementType) {
     this.elementType = elementType;
   }
 
-//  @Override
-//  public void readJson(JsonReader r) {
-//    elementType = r.readObject("elementType");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeWritable("elementType", elementType);
-//  }
-
-  public Type getElementType() {
+  public DataType getElementType() {
     return this.elementType;
   }
-  public void setElementType(Type elementType) {
+  public void setElementType(DataType elementType) {
     this.elementType = elementType;
   }
-  public ListType elementType(Type elementType) {
+  public ListType elementType(DataType elementType) {
     this.elementType = elementType;
     return this;
   }
@@ -78,4 +70,9 @@ public class ListType extends Type {
     }
   }
 
+  @Override
+  public Type getValueType() {
+    Type elementValueType = elementType!=null ? elementType.getValueType() : null;
+    return new GenericType(List.class, elementValueType);
+  }
 }

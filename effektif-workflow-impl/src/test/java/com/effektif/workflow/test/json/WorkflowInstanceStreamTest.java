@@ -58,7 +58,6 @@ public class WorkflowInstanceStreamTest {
     return "wiid";
   }
 
-
   @Test 
   public void testWorkflow() {
     LocalDateTime now = new LocalDateTime();
@@ -67,9 +66,7 @@ public class WorkflowInstanceStreamTest {
     
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setId("v");
-    variableInstance.setType(TextType.INSTANCE);
     variableInstance.setVariableId("vid");
-    variableInstance.setValue("hello");
 
     List<VariableInstance> variableInstances = new ArrayList<>();
     variableInstances.add(variableInstance);
@@ -83,6 +80,39 @@ public class WorkflowInstanceStreamTest {
     workflowInstance = serialize(workflowInstance);
     
     assertNotNull(workflowInstance);
+    assertEquals(now, workflowInstance.getStart());
+    assertEquals(now, workflowInstance.getEnd());
+    variableInstance = workflowInstance.getVariableInstances().get(0);
+    assertEquals("v", variableInstance.getId());
+    assertEquals("vid", variableInstance.getVariableId());
   }
 
+  @Test 
+  public void testVariableInstanceString() {
+    VariableInstance v = serializeVariableInstance("hello");
+    assertEquals("hello", v.getValue());
+  }
+
+  @Test 
+  public void testVariableInstanceDate() {
+    LocalDateTime now = new LocalDateTime();
+
+    VariableInstance v = serializeVariableInstance(now);
+    assertEquals(now, v.getValue());
+  }
+
+  protected VariableInstance serializeVariableInstance(Object value) {
+    VariableInstance variableInstance = new VariableInstance();
+    variableInstance.setValue(value);
+    
+    List<VariableInstance> variableInstances = new ArrayList<>();
+    variableInstances.add(variableInstance);
+    
+    WorkflowInstance workflowInstance = new WorkflowInstance();
+    workflowInstance.setVariableInstances(variableInstances );
+    
+    workflowInstance = serialize(workflowInstance);
+    
+    return workflowInstance.getVariableInstances().get(0);
+  }
 }

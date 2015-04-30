@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -22,8 +24,13 @@ import com.effektif.workflow.api.json.TypeName;
  * @author Tom Baeyens
  */
 @TypeName("number")
-public class NumberType extends Type {
+public class NumberType extends DataType {
 
   public static final NumberType INSTANCE = new NumberType();
+
+  @Override
+  public Type getValueType() {
+    return Number.class;
+  }
 
 }

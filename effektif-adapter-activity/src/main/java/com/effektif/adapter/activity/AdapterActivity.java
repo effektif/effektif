@@ -17,7 +17,7 @@ package com.effektif.adapter.activity;
 
 import com.effektif.workflow.api.activities.AbstractBindableActivity;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
@@ -147,7 +147,7 @@ public class AdapterActivity extends AbstractBindableActivity {
     return this;
   }
   @Override
-  public AdapterActivity variable(String id, Type type) {
+  public AdapterActivity variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }

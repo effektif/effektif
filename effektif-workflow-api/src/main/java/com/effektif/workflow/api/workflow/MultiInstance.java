@@ -18,7 +18,7 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -52,7 +52,7 @@ public class MultiInstance {
     this.variable = variable;
     return this;
   }
-  public MultiInstance variable(String id, Type type) {
+  public MultiInstance variable(String id, DataType type) {
     this.variable = new Variable()
       .id(id)
       .type(type);

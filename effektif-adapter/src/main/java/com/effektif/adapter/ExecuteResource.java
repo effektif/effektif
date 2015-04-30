@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 import com.effektif.adapter.service.ExecuteRequest;
 import com.effektif.adapter.service.ExecuteResponse;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.activity.InputParameter;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
 
@@ -48,7 +48,7 @@ public class ExecuteResource {
   protected Map<String, ActivityAdapter> activityAdapters = new HashMap<>();
   /** cache that maps activityKeys to a map of input parameter data types
    * The keys of the nested maps are inputParameterKeys */
-  protected Map<String, Map<String,DataType>> inputParameterDataTypes = new ConcurrentHashMap<>();
+  protected Map<String, Map<String,DataTypeImpl>> inputParameterDataTypes = new ConcurrentHashMap<>();
   
   public ExecuteResource(Configuration configuration) {
     this.configuration = configuration;
@@ -75,7 +75,7 @@ public class ExecuteResource {
     if (inputParameters==null) {
       return;
     }
-    Map<String,DataType> dataTypes = inputParameterDataTypes.get(activityKey);
+    Map<String,DataTypeImpl> dataTypes = inputParameterDataTypes.get(activityKey);
     if (dataTypes==null) {
       dataTypes = createInputParameterDataTypes(activityAdapter.getDescriptor());
       inputParameterDataTypes.put(activityKey, dataTypes);
@@ -83,22 +83,22 @@ public class ExecuteResource {
     for (String inputParameterKey: inputParameters.keySet()) {
       Object inputParameterValue = inputParameters.get(inputParameterKey);
       if (inputParameterValue!=null) {
-        DataType parameterDataType = dataTypes.get(inputParameterKey);
+        DataTypeImpl parameterDataType = dataTypes.get(inputParameterKey);
         Object deserializedParameterValue = parameterDataType.convertJsonToInternalValue(inputParameterValue);
         inputParameters.put(inputParameterKey, deserializedParameterValue);
       }
     }
   }
 
-  private Map<String, DataType> createInputParameterDataTypes(ActivityDescriptor descriptor) {
-    Map<String, DataType> dataTypes = new HashMap<>();
+  private Map<String, DataTypeImpl> createInputParameterDataTypes(ActivityDescriptor descriptor) {
+    Map<String, DataTypeImpl> dataTypes = new HashMap<>();
     Map<String, InputParameter> inputParameters = descriptor!=null ? descriptor.getInputParameters() : null;
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
     if (inputParameters!=null) {
       for (String parameterKey: inputParameters.keySet()) {
         InputParameter inputParameter = inputParameters.get(parameterKey);
-        Type type = inputParameter.getType();
-        DataType dataType = dataTypeService.createDataType(type);
+        DataType type = inputParameter.getType();
+        DataTypeImpl dataType = dataTypeService.createDataType(type);
         dataTypes.put(parameterKey, dataType);
       }
     }

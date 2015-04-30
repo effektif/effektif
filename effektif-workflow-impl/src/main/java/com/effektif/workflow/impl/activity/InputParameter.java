@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -93,7 +93,7 @@ public class InputParameter<T> extends Parameter {
     return this;
   }
   @Override
-  public InputParameter type(Type type) {
+  public InputParameter type(DataType type) {
     super.type(type);
     return this;
   }

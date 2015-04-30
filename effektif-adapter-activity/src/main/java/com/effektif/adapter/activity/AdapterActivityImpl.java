@@ -23,14 +23,14 @@ import com.effektif.adapter.service.Adapter;
 import com.effektif.adapter.service.AdapterService;
 import com.effektif.adapter.service.ExecuteRequest;
 import com.effektif.adapter.service.ExecuteResponse;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.activity.InputParameter;
 import com.effektif.workflow.impl.activity.OutputParameter;
 import com.effektif.workflow.impl.activity.types.AbstractBindableActivityImpl;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -47,7 +47,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   protected DataTypeService dataTypeService;
   protected AdapterService adapterService;
   protected ActivityDescriptor descriptor;
-  protected Map<String,DataType> outputParameterDataTypes;
+  protected Map<String,DataTypeImpl> outputParameterDataTypes;
   protected Map<String, InputParameter> inputParameters;
   
   public AdapterActivityImpl() {
@@ -73,8 +73,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
           //      configured variable type (@see this.outputBindings),
           //      then we could coerse (=apply a conversion) 
           OutputParameter outputParameter = outputParameters.get(outputParameterKey);
-          Type type = outputParameter.getType();
-          DataType dataType = dataTypeService.createDataType(type);
+          DataType type = outputParameter.getType();
+          DataTypeImpl dataType = dataTypeService.createDataType(type);
           outputParameterDataTypes.put(outputParameterKey, dataType);
         }
       }
@@ -91,7 +91,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         if (inputParameter==null) {
           parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activity.getId());
         }
-        Type type = inputParameter.getType();
+        DataType type = inputParameter.getType();
         String bindingName = inputParameter.getKey();
         boolean required = inputParameter.isRequired();
         BindingImpl<?> bindingImpl = parser.parseBinding(inputBinding, bindingName, required, type);
@@ -144,7 +144,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
       for (String outputParameterKey: outputBindings.keySet()) {
         String variableId = outputBindings.get(outputParameterKey);
         Object value = outputParameterValues.get(outputParameterKey);
-        DataType dataType = outputParameterDataTypes.get(outputParameterKey);
+        DataTypeImpl dataType = outputParameterDataTypes.get(outputParameterKey);
         activityInstance.setVariableValue(variableId, value, true);
       }
     }

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -42,7 +42,7 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.script.ScriptImpl;
 import com.effektif.workflow.impl.deprecated.script.ScriptService;
@@ -209,7 +209,7 @@ public class WorkflowParser {
   /** @param type is only provided if the binding is untyped.  in that case the jackson deserialization didn't
    * instantiate the correct type and the deserialization needs to completed here based on the type.
    * only provide the type if the binding is untyped, otherwise use null or {@link #parseBinding(Binding, String, boolean)}. */
-  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName, boolean isRequired, Type type) {
+  public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName, boolean isRequired, DataType type) {
     pushContext(bindingName, binding, null, null);
     BindingImpl<T> bindingImpl = parseBinding(binding, type);
     int values = 0;
@@ -226,7 +226,7 @@ public class WorkflowParser {
     return bindingImpl;
   }
 
-  protected <T> BindingImpl<T> parseBinding(Binding<T> binding, Type type) {
+  protected <T> BindingImpl<T> parseBinding(Binding<T> binding, DataType type) {
     if (binding==null) {
       return null;
     }
@@ -235,7 +235,7 @@ public class WorkflowParser {
       bindingImpl.value = binding.getValue();
       if (type!=null && deserialize) {
         DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-        DataType dataType = dataTypeService.createDataType(type);
+        DataTypeImpl dataType = dataTypeService.createDataType(type);
         bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
       }
     }

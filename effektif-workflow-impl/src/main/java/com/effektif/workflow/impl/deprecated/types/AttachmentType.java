@@ -15,23 +15,16 @@
  */
 package com.effektif.workflow.impl.deprecated.types;
 
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.impl.deprecated.identity.User;
 
 
 /**
  * @author Tom Baeyens
  */
-@TypeName("user")
-public class UserType extends DataType {
+@TypeName("attachment")
+public class AttachmentType extends DataType {
 
-  public static final UserType INSTANCE = new UserType();
-  
-  @Override
-  public Type getValueType() {
-    return User.class;
-  }
+  public static final AttachmentType INSTANCE = new AttachmentType();
+
 }

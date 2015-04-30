@@ -23,7 +23,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class NumberMapper implements JsonTypeMapper<Number> {
+public class NumberMapper extends AbstractTypeMapper<Number> implements JsonTypeMapper<Number> {
 
   public static final JsonTypeMapper INSTANCE = new NumberMapper();
 

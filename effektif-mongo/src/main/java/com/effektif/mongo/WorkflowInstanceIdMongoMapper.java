@@ -20,14 +20,14 @@ import com.effektif.workflow.impl.json.JsonObjectWriter;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.types.AbstractTypeMapper;
 
 /**
  * Maps a {@link WorkflowId} to a MongoDB JSON ID field for serialisation and deserialisation.
  *
- * TODO Can this subclass WorkflowIdStreamMapper?
  * @author Peter Hilton
  */
-public class WorkflowInstanceIdMongoMapper implements JsonTypeMapper<WorkflowInstanceId> {
+public class WorkflowInstanceIdMongoMapper extends AbstractTypeMapper<WorkflowInstanceId> implements JsonTypeMapper<WorkflowInstanceId> {
 
   @Override
   public Class<WorkflowInstanceId> getMappedClass() {

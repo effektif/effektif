@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
@@ -29,7 +29,7 @@ import com.effektif.workflow.impl.data.TypedValueImpl;
  */
 public class ExpressionImpl {
 
-  public DataType type;
+  public DataTypeImpl type;
   public String variableId;
   public List<String> fields;
 

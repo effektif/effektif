@@ -18,8 +18,8 @@ package com.effektif.workflow.impl.data.types;
 import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.Type;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 
@@ -30,20 +30,20 @@ import com.effektif.workflow.impl.data.DataTypeService;
 public class ObjectFieldImpl {
 
   protected String name;
-  protected DataType type;
+  protected DataTypeImpl type;
   
   public ObjectFieldImpl(String name) {
     this.name = name;
   }
 
-  public ObjectFieldImpl(String name, DataType type) {
+  public ObjectFieldImpl(String name, DataTypeImpl type) {
     this.name = name;
     this.type = type;
   }
 
   public ObjectFieldImpl(Class< ? > objectClass, ObjectField field, Configuration configuration) {
     this.name = field.getName();
-    Type fieldType = field.getType();
+    DataType fieldType = field.getType();
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
     this.type = dataTypeService.createDataType(fieldType);
   }
@@ -67,13 +67,13 @@ public class ObjectFieldImpl {
     return this;
   }
   
-  public DataType getDataType() {
+  public DataTypeImpl getDataType() {
     return this.type;
   }
-  public void setDataType(DataType type) {
+  public void setDataType(DataTypeImpl type) {
     this.type = type;
   }
-  public ObjectFieldImpl type(DataType type) {
+  public ObjectFieldImpl type(DataTypeImpl type) {
     this.type = type;
     return this;
   }

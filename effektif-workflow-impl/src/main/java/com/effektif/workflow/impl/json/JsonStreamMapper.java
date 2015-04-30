@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
+import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
 import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -41,8 +42,10 @@ public class JsonStreamMapper {
   
   public JsonStreamMapper() {
     this.objectMapper = new ObjectMapper();
+    
     this.mappings = new Mappings();
     this.mappings.registerTypeMapper(new LocalDateTimeStreamMapper());
+    this.mappings.registerTypeMapper(new VariableInstanceMapper());
     this.mappings.registerTypeMapper(new WorkflowIdStreamMapper());
     this.mappings.registerTypeMapper(new WorkflowInstanceIdStreamMapper());
   }

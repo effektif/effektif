@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /** this is just an idea for now. moves to api when mature.
@@ -27,7 +27,7 @@ public class ObjectField {
   protected String label;
   protected String name;
   protected String description;
-  protected Type type;
+  protected DataType type;
 
   public ObjectField() {
   }
@@ -69,13 +69,13 @@ public class ObjectField {
     return this;
   }
   
-  public Type getType() {
+  public DataType getType() {
     return this.type;
   }
-  public void setType(Type type) {
+  public void setType(DataType type) {
     this.type = type;
   }
-  public ObjectField type(Type type) {
+  public ObjectField type(DataType type) {
     this.type = type;
     return this;
   }

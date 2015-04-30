@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.bpmn.BpmnReadable;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
@@ -26,7 +28,7 @@ import com.effektif.workflow.api.workflow.Variable;
  *
  * @author Tom Baeyens
  */
-public class Type implements BpmnReadable, BpmnWritable {
+public class DataType implements BpmnReadable, BpmnWritable {
 
   // protected String typeName = getClass().getAnnotation(TypeName.class).value();
 
@@ -45,5 +47,9 @@ public class Type implements BpmnReadable, BpmnWritable {
    */
   @Override
   public void writeBpmn(BpmnWriter w) {
+  }
+  
+  public Type getValueType() {
+    return Object.class;
   }
 }

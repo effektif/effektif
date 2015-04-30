@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class WorkflowInstanceIdStreamMapper implements JsonTypeMapper<WorkflowInstanceId> {
+public class WorkflowInstanceIdStreamMapper extends AbstractTypeMapper<WorkflowInstanceId> implements JsonTypeMapper<WorkflowInstanceId> {
 
   @Override
   public void write(WorkflowInstanceId objectValue, JsonWriter jsonWriter) {

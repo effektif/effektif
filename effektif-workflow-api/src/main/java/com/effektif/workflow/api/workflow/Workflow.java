@@ -24,7 +24,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -202,7 +202,7 @@ public class Workflow extends AbstractWorkflow {
   }
   /** add a variable to this workflow and set the given id. */
   @Override
-  public Workflow variable(String id, Type type) {
+  public Workflow variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }

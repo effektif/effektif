@@ -15,13 +15,23 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.json.TypeName;
 
 /**
  * @author Peter Hilton
  */
 @TypeName("date")
-public class DateType extends Type {
+public class DateType extends DataType {
 
   public static final DateType INSTANCE = new DateType();
+  
+  @Override
+  public Type getValueType() {
+    return LocalDateTime.class;
+  }
+
 }

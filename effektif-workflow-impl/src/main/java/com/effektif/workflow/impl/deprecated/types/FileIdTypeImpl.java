@@ -21,7 +21,6 @@ import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypedValueImpl;
-import com.effektif.workflow.impl.data.types.AttachmentTypeImpl;
 import com.effektif.workflow.impl.deprecated.file.File;
 import com.effektif.workflow.impl.deprecated.file.FileAttachment;
 import com.effektif.workflow.impl.deprecated.file.FileService;

@@ -29,7 +29,7 @@ import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
@@ -54,10 +54,10 @@ public class DataTypeService implements Initializable {
   protected Configuration configuration;
   protected Mappings mappings;
   
-  protected Map<Class<? extends Type>,DataType> singletons = new ConcurrentHashMap<>();
-  protected Map<Class<? extends Type>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
+  protected Map<Class<? extends DataType>,DataTypeImpl> singletons = new ConcurrentHashMap<>();
+  protected Map<Class<? extends DataType>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
-  protected Map<Class<?>, DataType> dataTypesByValueClass = new HashMap<>();
+  protected Map<Class<?>, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
 
   @Override
   public void initialize(Brewery brewery) {
@@ -89,17 +89,17 @@ public class DataTypeService implements Initializable {
     objectTypeImpl.setConfiguration(configuration);
     registerDataType(objectTypeImpl);
 
-    ServiceLoader<DataType> dataTypeLoader = ServiceLoader.load(DataType.class);
-    for (DataType dataType: dataTypeLoader) {
+    ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
+    for (DataTypeImpl dataType: dataTypeLoader) {
       // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
       registerDataType(dataType);
     }
-    for (DataType dataType: dataTypeLoader) {
+    for (DataTypeImpl dataType: dataTypeLoader) {
       dataType.setConfiguration(configuration);
     }
   }
   
-  public void registerDataType(DataType dataType) {
+  public void registerDataType(DataTypeImpl dataType) {
     Class apiClass = dataType.getApiClass();
     if (apiClass!=null) {
       if (dataType.isStatic()) {
@@ -119,15 +119,15 @@ public class DataTypeService implements Initializable {
     }
   }
   
-  protected Constructor< ? > findDataTypeConstructor(Class< ? extends DataType> dataTypeClass) {
+  protected Constructor< ? > findDataTypeConstructor(Class< ? extends DataTypeImpl> dataTypeClass) {
     for (Constructor<?> constructor: dataTypeClass.getDeclaredConstructors()) {
       Class< ? >[] parameterTypes = constructor.getParameterTypes();
       if (parameterTypes.length==1
-          && Type.class.isAssignableFrom(parameterTypes[0])) {
+          && DataType.class.isAssignableFrom(parameterTypes[0])) {
         return constructor;
       }
     }
-    throw new RuntimeException("Constructor not found "+dataTypeClass.getName()+"("+Type.class.getName()+","+Configuration.class.getName()+")");
+    throw new RuntimeException("Constructor not found "+dataTypeClass.getName()+"("+DataType.class.getName()+","+Configuration.class.getName()+")");
   }
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {
@@ -138,33 +138,8 @@ public class DataTypeService implements Initializable {
     registerDataType(javaBeanTypeImpl);
   }
 
-//  /**
-//   * Returns the {@link Type} instance whose {@link TypeName} annotation value matches the given type name.
-//   */
-//  public Type getTypeByName(String typeName) {
-//
-//    Set<Class> typeClasses = new HashSet<>();
-//    typeClasses.addAll(singletons.keySet());
-//    typeClasses.addAll(dataTypeConstructors.keySet());
-//
-//    for (Class<? extends Type> typeClass : typeClasses) {
-//      try {
-//        // TODO call a getInstance() that returns a singleton instance.
-//        Type type = typeClass.newInstance();
-//        String name = type.getClass().getAnnotation(TypeName.class).value();
-//        if (name.equals(typeName)) {
-//          return type;
-//        }
-//      } catch (Exception e) {
-//        throw new RuntimeException("Cannot read @TypeName annotation for class " + typeClass.getName());
-//      }
-//    }
-//
-//    throw new IllegalArgumentException("No Type class for name: " + typeName);
-//  }
-
-  public DataType getDataTypeByValue(Class<?> valueClass) {
-    DataType dataType = null;
+  public DataTypeImpl getDataTypeByValue(Class<?> valueClass) {
+    DataTypeImpl dataType = null;
     if (valueClass!=null) {
       dataType = dataTypesByValueClass.get(valueClass);
     }
@@ -175,7 +150,7 @@ public class DataTypeService implements Initializable {
     return dataType;
   }
 
-  public Type getTypeByValue(Object value) {
+  public DataType getTypeByValue(Object value) {
     if (value==null) {
       return null;
     }
@@ -191,7 +166,7 @@ public class DataTypeService implements Initializable {
       Iterator iterator = ((Collection)value).iterator();
       if (iterator.hasNext()) {
         Object elementValue = iterator.next();
-        Type elementType = getTypeByValue(elementValue);
+        DataType elementType = getTypeByValue(elementValue);
         listType.elementType(elementType);
       }
       return listType;
@@ -202,18 +177,18 @@ public class DataTypeService implements Initializable {
     throw new RuntimeException("No data type found for value "+value+" ("+valueClass.getName()+")");
   }
 
-  public DataType createDataType(Type type) {
+  public DataTypeImpl createDataType(DataType type) {
     if (type==null) {
       return null;
     }
-    DataType singleton = singletons.get(type.getClass());
+    DataTypeImpl singleton = singletons.get(type.getClass());
     if (singleton!=null) {
       return singleton;
     }
     Constructor<?> constructor = dataTypeConstructors.get(type.getClass());
     if (constructor!=null) {
       try {
-        DataType dataType = (DataType) constructor.newInstance(new Object[]{type});
+        DataTypeImpl dataType = (DataTypeImpl) constructor.newInstance(new Object[]{type});
         dataType.setConfiguration(configuration);
         return dataType;
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

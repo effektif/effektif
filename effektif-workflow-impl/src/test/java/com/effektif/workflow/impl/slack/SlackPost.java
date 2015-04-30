@@ -16,7 +16,7 @@
 package com.effektif.workflow.impl.slack;
 
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
@@ -123,7 +123,7 @@ public class SlackPost extends Activity {
     return super.property(key, value);
   }
   @Override
-  public Scope variable(String id, Type type) {
+  public Scope variable(String id, DataType type) {
     return super.variable(id, type);
   }
   @Override

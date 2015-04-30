@@ -16,17 +16,17 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.activity.Plugin;
 import com.effektif.workflow.impl.template.Hints;
 
 
-public interface DataType<T extends Type> extends Plugin {
+public interface DataTypeImpl<T extends DataType> extends Plugin {
   
   void setConfiguration(Configuration configuration);
 
   Class<?> getValueClass();
-  Class<? extends Type> getApiClass();
+  Class<? extends DataType> getApiClass();
 
   /** Indicates that this type doesn’t have to be serialised. */
   boolean isStatic();

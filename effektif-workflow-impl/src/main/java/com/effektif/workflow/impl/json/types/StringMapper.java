@@ -23,7 +23,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class StringMapper implements JsonTypeMapper<String> {
+public class StringMapper extends AbstractTypeMapper<String> implements JsonTypeMapper<String> {
 
   public static final StringMapper INSTANCE = new StringMapper();
 

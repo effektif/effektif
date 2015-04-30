@@ -18,16 +18,16 @@ package com.effektif.workflow.impl.data.types;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
+public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
   
   public Map<String,ObjectFieldImpl> fields;
 
@@ -45,7 +45,7 @@ public class ObjectTypeImpl<T extends Type> extends AbstractDataType<T> {
     if (field==null) {
       throw new RuntimeException("Field '"+fieldName+"' doesn't exist in type "+getClass().getSimpleName());
     }
-    DataType fieldType = field.type;
+    DataTypeImpl fieldType = field.type;
     Object fieldValue = field.getFieldValue(value);
     return new TypedValueImpl(fieldType, fieldValue);
   }

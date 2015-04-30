@@ -25,7 +25,7 @@ import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -110,7 +110,7 @@ public class ExpressionTest extends WorkflowTest {
     assertEquals(Lists.of(new UserId("johndoe"), new UserId("joesmoe"), new UserId("jackblack")), task.getCandidateIds());
   }
   
-  public Object evaluate(Type type, String variableId, Object value, String expression) {
+  public Object evaluate(DataType type, String variableId, Object value, String expression) {
     Workflow workflow = new Workflow()
       .variable(variableId, type);
     

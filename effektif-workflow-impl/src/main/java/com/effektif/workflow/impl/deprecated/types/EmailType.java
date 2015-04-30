@@ -15,16 +15,23 @@
  */
 package com.effektif.workflow.impl.deprecated.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
 
 
 /**
  * @author Tom Baeyens
  */
 @TypeName("email")
-public class EmailType extends Type {
+public class EmailType extends DataType {
 
   public static final EmailType INSTANCE = new EmailType();
   
+  @Override
+  public Type getValueType() {
+    return PersistentEmail.class;
+  }
 }

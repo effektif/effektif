@@ -15,20 +15,21 @@
  */
 package com.effektif.workflow.api.deprecated.types;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
  * @author Tom Baeyens
  */
 @TypeName("userId")
-public class UserIdType extends Type {
+public class UserIdType extends DataType {
 
   public static final UserIdType INSTANCE = new UserIdType();
   
@@ -70,5 +71,10 @@ public class UserIdType extends Type {
     }
     candidateGroupIds.add(candidateGroupId);
     return this;
+  }
+  
+  @Override
+  public Type getValueType() {
+    return UserId.class;
   }
 }

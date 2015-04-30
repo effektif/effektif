@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -37,7 +37,7 @@ public class AbstractFormField extends Extensible {
   protected String name;
   // TODO Map<String,String> nameI18n;
   
-  protected Type type;
+  protected DataType type;
   protected Boolean readOnly;
   protected Boolean required;
 
@@ -128,13 +128,13 @@ public class AbstractFormField extends Extensible {
   /** The type is retrieved from the variable or expression 
    * and is passed here for form rendering.  Types don't have 
    * to be specified when creating workflows. */
-  public Type getType() {
+  public DataType getType() {
     return this.type;
   }
   /** The type is retrieved from the variable or expression 
    * and is passed here for form rendering.  Types don't have 
    * to be specified when creating workflows. */
-  public void setType(Type type) {
+  public void setType(DataType type) {
     this.type = type;
   }
 

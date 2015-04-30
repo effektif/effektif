@@ -15,16 +15,23 @@
  */
 package com.effektif.workflow.impl.deprecated.types;
 
+import java.lang.reflect.Type;
+
+import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
  * @author Tom Baeyens
  */
 @TypeName("file")
-public class FileType extends Type {
+public class FileType extends DataType {
 
   public static final FileType INSTANCE = new FileType();
   
+  @Override
+  public Type getValueType() {
+    return FileId.class;
+  }
 }

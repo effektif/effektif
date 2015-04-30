@@ -61,6 +61,7 @@ import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
@@ -217,6 +218,7 @@ public class WorkflowTest {
     try {
       log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name+" ending ######################################################## \n");
       
+      JsonStreamMapper jsonStreamMapper = configuration.get(JsonStreamMapper.class);
       JsonMapper jsonMapper = configuration.get(JsonMapper.class);
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
@@ -226,21 +228,6 @@ public class WorkflowTest {
       StringBuilder cleanLog = new StringBuilder();
       cleanLog.append("Workflow engine contents\n");
       
-//    List<Job> jobs = jobService.newJobQuery().asList();
-//    if (jobs != null && !jobs.isEmpty()) {
-//      int i = 0;
-//      cleanLog.append("\n=== jobs ======================================================== \n");
-//      for (Job job : jobs) {
-//        jobService.deleteJob(job.getId());
-//        cleanLog.append("--- Deleted job ");
-//        cleanLog.append(i);
-//        cleanLog.append(" ---\n");
-//        cleanLog.append(jsonService.objectToJsonStringPretty(job));
-//        cleanLog.append("\n");
-//        i++;
-//      }
-//    }
-
       List<Job> jobs = jobStore.findJobs(new JobQuery());
       if (jobs != null && !jobs.isEmpty()) {
         int i = 0;
@@ -277,7 +264,7 @@ public class WorkflowTest {
           cleanLog.append("--- Workflow instance ");
           cleanLog.append(i);
           cleanLog.append(" ---\n");
-          cleanLog.append(jsonMapper.writeToStringPretty(workflowInstance.toWorkflowInstance()));
+          cleanLog.append(jsonStreamMapper.write(workflowInstance.toWorkflowInstance()));
           cleanLog.append("\n");
           i++;
         }

@@ -26,7 +26,7 @@ import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -92,7 +92,7 @@ public class ConditionsTest extends WorkflowTest {
       .rightValue("johndoe")));
   }
 
-  public boolean evaluate(Type type, String variableId, Object value, Condition condition) {
+  public boolean evaluate(DataType type, String variableId, Object value, Condition condition) {
     Workflow workflow = new Workflow()
       .variable(variableId, type);
     

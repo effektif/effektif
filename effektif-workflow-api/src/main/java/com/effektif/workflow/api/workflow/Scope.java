@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -101,7 +101,7 @@ public abstract class Scope extends Element {
   public void setVariables(List<Variable> variables) {
     this.variables = variables;
   }
-  public Scope variable(String id, Type type) {
+  public Scope variable(String id, DataType type) {
     Variable variable = new Variable();
     variable.setId(id);
     variable.setType(type);

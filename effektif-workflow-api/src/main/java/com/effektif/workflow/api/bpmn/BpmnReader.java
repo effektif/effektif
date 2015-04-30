@@ -21,7 +21,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.deprecated.acl.AccessIdentity;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Trigger;
@@ -103,8 +103,8 @@ public interface BpmnReader {
   /** Returns a the {@link Trigger} instance specified by the Effektif <code>type</code> parameter. */
   Trigger readTriggerEffektif();
 
-  /** Returns a the {@link Type} instance specified by the Effektif <code>type</code> parameter. */
-  Type readTypeEffektif();
+  /** Returns a the {@link DataType} instance specified by the Effektif <code>type</code> parameter. */
+  DataType readTypeEffektif();
 
   /** Reads the given documentation string as a BPMN <code>documentation</code> element. */
   String readDocumentation();

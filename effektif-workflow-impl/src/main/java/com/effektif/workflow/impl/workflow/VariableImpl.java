@@ -15,10 +15,10 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 
@@ -33,7 +33,7 @@ public class VariableImpl {
 
   public Variable variable;
   public String id;
-  public DataType type;
+  public DataTypeImpl type;
   public Object initialValue;
 
   public void parse(Variable variable, ScopeImpl parentImpl, WorkflowParser parser) {
@@ -50,7 +50,7 @@ public class VariableImpl {
     }
     this.parent = parentImpl;
     DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
-    Type typeApi = variable.getType();
+    DataType typeApi = variable.getType();
     if (typeApi!=null) {
       this.type = dataTypeService.createDataType(typeApi);
     } else {

@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -26,7 +26,7 @@ public class VariableInstance {
   protected String id;
   protected String variableId;
   protected Object value;
-  protected Type type;
+  protected DataType type;
 
   public String getId() {
     return this.id;
@@ -49,10 +49,10 @@ public class VariableInstance {
     this.value = value;
   }
   
-  public Type getType() {
+  public DataType getType() {
     return this.type;
   }
-  public void setType(Type type) {
+  public void setType(DataType type) {
     this.type = type;
   }
 }

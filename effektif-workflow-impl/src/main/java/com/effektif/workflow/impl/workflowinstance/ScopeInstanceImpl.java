@@ -36,7 +36,7 @@ import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.data.DataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
@@ -174,7 +174,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return variableInstance;
   }
   
-  public VariableInstanceImpl createVariableInstanceLocal(String variableId, DataType dataType) {
+  public VariableInstanceImpl createVariableInstanceLocal(String variableId, DataTypeImpl dataType) {
     VariableImpl variable = new VariableImpl();
     variable.id = variableId;
     variable.type = dataType;
@@ -258,7 +258,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         String field = fields.get(i);
         Object value = typedValue.value;
         if (value!=null) {
-          DataType type = typedValue.type;
+          DataTypeImpl type = typedValue.type;
           if ( (value instanceof Collection)
                && ! (type instanceof ListTypeImpl) ){
             type = new ListTypeImpl((ListType)type);
@@ -334,7 +334,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
     Class<?> valueClass = value!=null ? value.getClass() : null;
-    DataType dataType = dataTypeService.getDataTypeByValue(valueClass);
+    DataTypeImpl dataType = dataTypeService.getDataTypeByValue(valueClass);
     if (dataType==null) {
       throw new RuntimeException("Couldn't determine data type dynamically for value "+value);
     }

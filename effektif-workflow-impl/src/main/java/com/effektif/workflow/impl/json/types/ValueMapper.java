@@ -13,19 +13,18 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.util.Map;
-
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
- * Maps a JavaBean to a {@link Map} field for JSON serialisation and deserialisation.
+ * Maps an object to the json object representation for JSON serialisation and 
+ * just returns the json object for deserialisation.
  *
  * @author Tom Baeyens
  */
-public class ValueMapper implements JsonTypeMapper<Object> {
+public class ValueMapper extends AbstractTypeMapper<Object> implements JsonTypeMapper<Object> {
 
   public static final ValueMapper INSTANCE = new ValueMapper();
   

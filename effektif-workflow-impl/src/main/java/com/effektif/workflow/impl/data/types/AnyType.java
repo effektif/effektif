@@ -16,13 +16,13 @@
 package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.Type;
+import com.effektif.workflow.api.types.DataType;
 
 
 // kept this type in the impl as i don't know yet if it is a good idea 
 // to expose it
 @TypeName("any")
-public class AnyType extends Type {
+public class AnyType extends DataType {
   
   public static final AnyType INSTANCE = new AnyType();
 }
