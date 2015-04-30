@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonReader;
@@ -60,6 +61,23 @@ public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper
 
   @Override
   public Map read(Object jsonValue, JsonReader jsonReader) {
-    return (Map) jsonValue;
+    if (jsonValue==null) {
+      return null;
+    }
+    Map<String,Object> objectMap = new LinkedHashMap<>();
+    Map<String,Object> jsonMap = (Map<String, Object>) jsonValue;
+    for (String key: jsonMap.keySet()) {
+      Object jsonElementValue = jsonMap.get(key);
+      Object objectElementValue = valueMapper.read(jsonElementValue, jsonReader);
+      objectMap.put(key, objectElementValue);
+    }
+    return objectMap;
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()+"<"+valueMapper+">";
+  }
+  
+  
 }

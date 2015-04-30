@@ -33,6 +33,7 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.model.DataContainer;
 import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
@@ -283,7 +284,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     throw new RuntimeException("Variable "+variableId+" is not defined in "+getClass().getSimpleName()+" "+toString());
   }
   
-  public void collectVariableValues(Map<String, Object> variableValues) {
+  public void collectVariableValues(VariableValues variableValues) {
     // parent is added before the local variables to comply with scoping rules.
     if (parent!=null) {
       parent.collectVariableValues(variableValues);
@@ -291,7 +292,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     if (variableInstancesMap!=null) {
       for (String variableId: variableInstancesMap.keySet()) {
         VariableInstanceImpl variableInstance = variableInstancesMap.get(variableId);
-        variableValues.put(variableId, variableInstance.value);
+        variableValues.value(variableId, variableInstance.value, variableInstance.type.getDataType());
       }
     }
   }

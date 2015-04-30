@@ -17,54 +17,67 @@ package com.effektif.workflow.test.serialization;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
-import com.effektif.workflow.test.deprecated.serialization.AbstractSerializingService;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public class SerializingWorkflowEngineImpl extends AbstractSerializingService implements WorkflowEngine {
-  
+public class SerializingWorkflowEngineImpl implements WorkflowEngine {
+
+  protected static final Logger log = LoggerFactory.getLogger(SerializingWorkflowEngineImpl.class+".JSON");
+
   WorkflowEngineImpl workflowEngine;
 
-  public SerializingWorkflowEngineImpl(WorkflowEngineImpl workflowEngine, JsonMapper jsonMapper) {
-    super(jsonMapper);
+  protected JsonStreamMapper jsonMapper;
+  
+  protected <T> T wireize(String name, T o) {
+    if (o==null) return null;
+    Class<T> clazz = (Class<T>) o.getClass();
+    String jsonString = jsonMapper.write(o);
+    log.debug(name+jsonString);
+    return jsonMapper.readString(jsonString, clazz);
+  }
+
+  public SerializingWorkflowEngineImpl(WorkflowEngineImpl workflowEngine, JsonStreamMapper jsonStreamMapper) {
     this.workflowEngine = workflowEngine;
+    this.jsonMapper = jsonStreamMapper;
   }
 
   @Override
   public Deployment deployWorkflow(Workflow workflow) {
     log.debug("deployWorkflow");
-    workflow = wireize(" >>workflow>> ", workflow, Workflow.class);
-    ParseIssues parseIssues = workflowEngine.deployWorkflow(workflow, true);
-    return wireize("  <<deployment<< ", parseIssues, Deployment.class);
+    workflow = wireize(" >>workflow>> ", workflow);
+    Deployment deployment = workflowEngine.deployWorkflow(workflow);
+    return wireize("  <<deployment<< ", deployment);
   }
 
   @Override
   public List<Workflow> findWorkflows(WorkflowQuery query) {
     log.debug("findWorkflow");
-    query = wireize(" >>query>> ", query, WorkflowQuery.class);
+    query = wireize(" >>query>> ", query);
     List<Workflow> workflows = workflowEngine.findWorkflows(query);
     if (workflows==null) {
       return null;
     }
     List<Workflow> wirizedWorkflows = new ArrayList<>(workflows.size());
     for (Workflow workflow: workflows) {
-      wirizedWorkflows.add(wireize("  <<workflow<< ", workflow, Workflow.class));
+      wirizedWorkflows.add(wireize("  <<workflow<< ", workflow));
     }
     return wirizedWorkflows;
   }
@@ -72,74 +85,69 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
     log.debug("deleteWorkflow");
-    query = wireize(" >>query>> ", query, WorkflowQuery.class);
+    query = wireize(" >>query>> ", query);
     workflowEngine.deleteWorkflows(query);
   }
 
   @Override
   public WorkflowInstance start(TriggerInstance triggerInstance) {
     log.debug("startWorkflow");
-    triggerInstance = wireize(" >>start>> ", triggerInstance, TriggerInstance.class);
-    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance, true);
-    workflowInstance = wireize("  <<workflowInstance<< ", workflowInstance, WorkflowInstance.class);
-    workflowEngine.deserializeWorkflowInstance(workflowInstance);
+    triggerInstance = wireize(" >>start>> ", triggerInstance);
+    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance);
+    workflowInstance = wireize("  <<workflowInstance<< ", workflowInstance);
     return workflowInstance;
   }
 
   @Override
   public WorkflowInstance send(Message message) {
     log.debug("sendMessage");
-    message = wireize(" >>message>> ", message, Message.class);
-    WorkflowInstance workflowInstance = workflowEngine.send(message, true);
-    workflowInstance = wireize("  <<workflowInstance<< ", workflowInstance, WorkflowInstance.class);
-    workflowEngine.deserializeWorkflowInstance(workflowInstance);
+    message = wireize(" >>message>> ", message);
+    WorkflowInstance workflowInstance = workflowEngine.send(message);
+    workflowInstance = wireize("  <<workflowInstance<< ", workflowInstance);
     return workflowInstance;
   }
   
   @Override
-  public Map<String, Object> getVariableValues(WorkflowInstanceId workflowInstanceId) {
+  public VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId) {
     log.debug("getVariableValues");
-    Map<String, Object> variableValues = workflowEngine.getVariableValues(workflowInstanceId);
-    variableValues = wireize("  <<variableValues<< ", variableValues, Map.class);
-    workflowEngine.deserializeVariableValues(workflowInstanceId, variableValues);
+    VariableValues variableValues = workflowEngine.getVariableValues(workflowInstanceId);
+    variableValues = wireize("  <<variableValues<< ", variableValues);
     return variableValues;
   }
 
   @Override
-  public Map<String, Object> getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
+  public VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
     log.debug("getVariableValues");
-    Map<String, Object> variableValues = workflowEngine.getVariableValues(workflowInstanceId, activityInstanceId);
-    variableValues = wireize("  <<variableValues<< ", variableValues, Map.class);
-    workflowEngine.deserializeVariableValues(workflowInstanceId, variableValues);
+    VariableValues variableValues = workflowEngine.getVariableValues(workflowInstanceId, activityInstanceId);
+    variableValues = wireize("  <<variableValues<< ", variableValues);
     return variableValues;
   }
 
   @Override
-  public void setVariableValues(WorkflowInstanceId workflowInstanceId, Map<String, Object> variableValues) {
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, VariableValues variableValues) {
     log.debug("setVariableValues");
-    variableValues = wireize(" >>variableValues>> ", variableValues, Map.class);
-    workflowEngine.setVariableValues(workflowInstanceId, null, variableValues, true);
+    variableValues = wireize(" >>variableValues>> ", variableValues);
+    workflowEngine.setVariableValues(workflowInstanceId, null, variableValues);
   }
 
   @Override
-  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, Map<String, Object> variableValues) {
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, VariableValues variableValues) {
     log.debug("setVariableValues");
-    variableValues = wireize(" >>variableValues>> ", variableValues, Map.class);
-    workflowEngine.setVariableValues(workflowInstanceId, activityInstanceId, variableValues, true);
+    variableValues = wireize(" >>variableValues>> ", variableValues);
+    workflowEngine.setVariableValues(workflowInstanceId, activityInstanceId, variableValues);
   }
 
   @Override
   public List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query) {
     log.debug("findWorkflowInstances");
-    query = wireize(" >>query>>", query, WorkflowInstanceQuery.class);
+    query = wireize(" >>query>>", query);
     List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(query);
     if (workflowInstances==null) {
       return null;
     }
     List<WorkflowInstance> wirizedWorkflowInstances = new ArrayList<>(workflowInstances.size());
     for (WorkflowInstance workflowInstance: workflowInstances) {
-      workflowInstance = wireize("  <-workflowInstance-", workflowInstance, WorkflowInstance.class);
-      workflowEngine.deserializeWorkflowInstance(workflowInstance);
+      workflowInstance = wireize("  <-workflowInstance-", workflowInstance);
       wirizedWorkflowInstances.add(workflowInstance);
     }
     return wirizedWorkflowInstances;
@@ -148,7 +156,7 @@ public class SerializingWorkflowEngineImpl extends AbstractSerializingService im
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query) {
     log.debug("deleteWorkflowInstances");
-    query = wireize(" >>query>>", query, WorkflowInstanceQuery.class);
+    query = wireize(" >>query>>", query);
     workflowEngine.deleteWorkflowInstances(query);
   }
 }

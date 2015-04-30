@@ -15,14 +15,14 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.model.ValueConverter;
 import com.effektif.workflow.api.workflow.Extensible;
 
 
@@ -30,10 +30,6 @@ import com.effektif.workflow.api.workflow.Extensible;
  * @author Tom Baeyens
  */
 public abstract class ScopeInstance extends Extensible {
-
-  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "start", "end", "duration", "activityInstances", "variableInstances", 
-          "timerInstances", "taskId"));
 
   protected LocalDateTime start;
   protected LocalDateTime end;
@@ -54,15 +50,30 @@ public abstract class ScopeInstance extends Extensible {
     }
     return null;
   }
+
+  public <T> T getVariableValue(String variableId, Class rawClass, Type... typeArgs) {
+    return getVariableValue(variableId, new GenericType(rawClass, typeArgs));
+  }
+
+  public <T> T getVariableValue(String variableId, Type type) {
+    Object value = getVariableValue(variableId);
+    if (value==null) {
+      return (T) value;
+    }
+    if (type instanceof Class && ((Class)type).isAssignableFrom(value.getClass())) {
+      return (T) value;
+    }
+    return ValueConverter.shoehorn(value, type);
+  }
   
-  public Object getVariableValue(String variableId) {
+  public <T> T getVariableValue(String variableId) {
     if (variableId==null) {
       return null;
     }
     if (variableInstances!=null) {
       for (VariableInstance variableInstance: variableInstances) {
         if (variableId.equals(variableInstance.getVariableId())) {
-          return variableInstance.getValue();
+          return (T) variableInstance.getValue();
         }
       }
     }
@@ -157,10 +168,5 @@ public abstract class ScopeInstance extends Extensible {
   }
   public void setTaskId(TaskId taskId) {
     this.taskId = taskId;
-  }
-
-  @Override
-  protected void checkPropertyKey(String key) {
-    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 }

@@ -60,7 +60,7 @@ public class JsonStreamMapper {
     try {
       JsonStreamReader jsonStreamReader = new JsonStreamReader(mappings);
       Map<String,Object> beanJsonObject = objectMapper.readValue(new StringReader(jsonString), Map.class);
-      return (T) jsonStreamReader.readBean(beanJsonObject, clazz);
+      return (T) jsonStreamReader.readObject(beanJsonObject, clazz);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -79,7 +79,7 @@ public class JsonStreamMapper {
         jgen.setPrettyPrinter(new DefaultPrettyPrinter());
       }
       JsonStreamWriter jsonStreamWriter = new JsonStreamWriter(mappings,jgen);
-      jsonStreamWriter.writeBean(bean);
+      jsonStreamWriter.writeObject(bean);
       jgen.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);

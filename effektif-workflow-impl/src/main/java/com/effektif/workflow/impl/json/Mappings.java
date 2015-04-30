@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
@@ -53,9 +56,12 @@ import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.json.types.ArrayMapper;
 import com.effektif.workflow.impl.json.types.BeanMapper;
 import com.effektif.workflow.impl.json.types.BindingMapper;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
+import com.effektif.workflow.impl.json.types.ClassMapper;
+import com.effektif.workflow.impl.json.types.EnumMapper;
 import com.effektif.workflow.impl.json.types.ListMapper;
 import com.effektif.workflow.impl.json.types.MapMapper;
 import com.effektif.workflow.impl.json.types.NumberMapper;
@@ -72,7 +78,7 @@ import com.effektif.workflow.impl.util.Lists;
  */
 public class Mappings {
   
-  // private static final Logger log = LoggerFactory.getLogger(Mappings.class);
+  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
   
   Map<Class<?>, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
   Map<Type,DataType> dataTypesByClass = new HashMap<>();
@@ -88,6 +94,11 @@ public class Mappings {
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
 
   public Mappings() {
+    registerTypeMapper(new VariableInstanceMapper());
+    registerTypeMapper(new TypedValueMapper());
+    registerTypeMapper(new BindingMapper());
+    registerTypeMapper(new ClassMapper());
+    
     registerBaseClass(Trigger.class);
     registerBaseClass(JobType.class);
     
@@ -127,10 +138,6 @@ public class Mappings {
     dataTypesByClass.put(Double.class, NumberType.INSTANCE);
     dataTypesByClass.put(BigInteger.class, NumberType.INSTANCE);
     dataTypesByClass.put(BigDecimal.class, NumberType.INSTANCE);
-    
-    registerTypeMapper(new VariableInstanceMapper());
-    registerTypeMapper(new TypedValueMapper());
-    registerTypeMapper(new BindingMapper());
   }
 
   public void registerTypeMapper(JsonTypeMapper jsonTypeMapper) {
@@ -380,7 +387,7 @@ public class Mappings {
           field.setAccessible(true);
           Type fieldType = field.getGenericType();
           JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
-          // log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
+          log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
 
           // Annotation-based field name override.
@@ -392,6 +399,9 @@ public class Mappings {
           fieldMappings.add(fieldMapping);
         }
       }
+    }
+    if (clazz.isEnum()) {
+      return;
     }
     Class<? > superclass = clazz.getSuperclass();
     if (Object.class!=superclass) {
@@ -413,7 +423,16 @@ public class Mappings {
       return jsonTypeMapper;
     }
     
-    Class<?> clazz = type instanceof Class ? (Class<?>) type : null;
+    Class<?> clazz = null;
+    if (type instanceof Class) {
+      clazz = (Class<?>) type;
+    } else if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      clazz = (Class< ? >) parameterizedType.getRawType();
+    } else if (type instanceof WildcardType) {
+      WildcardType wildcardType = (WildcardType) type;
+      clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
+    }
 
     if (String.class==type) {
       jsonTypeMapper = StringMapper.INSTANCE;
@@ -423,33 +442,31 @@ public class Mappings {
       jsonTypeMapper = BooleanMapper.INSTANCE;
     
     } else if (isNumberClass(clazz)) {
-      jsonTypeMapper = NumberMapper.INSTANCE;
+      jsonTypeMapper = new NumberMapper(type);
+
+    } else if (clazz!=null && clazz.isEnum()) {
+      jsonTypeMapper = new EnumMapper(type);
+
+    } else if (clazz!=null && clazz.isArray()) {
+      Class<?> elementClass = clazz.getComponentType(); 
+      JsonTypeMapper elementMapper = getTypeMapper(elementClass);
+      jsonTypeMapper = new ArrayMapper(elementMapper, clazz);
+
+    } else if (clazz!=null && List.class.isAssignableFrom(clazz)) {
+      Type elementType = getTypeArg(type, 0);
+      JsonTypeMapper elementMapper = getTypeMapper(elementType);
+      jsonTypeMapper = new ListMapper(elementMapper); 
+        
+    } else if (clazz!=null && Map.class.isAssignableFrom(clazz)) {
+      Type valuesType = getTypeArg(type, 1);
+      JsonTypeMapper valuesMapper = getTypeMapper(valuesType);
+      jsonTypeMapper = new MapMapper(valuesMapper);
+
+    } else if (clazz==Class.class) {
+      jsonTypeMapper = new ClassMapper();
 
     } else {
-      
-      if (clazz==null) {
-        if (type instanceof ParameterizedType) {
-          ParameterizedType parameterizedType = (ParameterizedType) type;
-          clazz = (Class< ? >) parameterizedType.getRawType();
-        } else if (type instanceof WildcardType) {
-          WildcardType wildcardType = (WildcardType) type;
-          clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
-        }
-      }
-      
-      if (List.class.isAssignableFrom(clazz)) {
-        Type elementType = getTypeArg(type, 0);
-        JsonTypeMapper elementMapper = getTypeMapper(elementType);
-        jsonTypeMapper = new ListMapper(elementMapper); 
-        
-      } else if (Map.class.isAssignableFrom(clazz)) {
-        Type valuesType = getTypeArg(type, 1);
-        JsonTypeMapper valuesMapper = getTypeMapper(valuesType);
-        jsonTypeMapper = new MapMapper(valuesMapper);
-        
-      } else {
-        jsonTypeMapper = new BeanMapper(type);
-      }
+      jsonTypeMapper = new BeanMapper(type);
     }
 
     jsonTypeMappers.put(clazz, jsonTypeMapper);
@@ -465,7 +482,7 @@ public class Mappings {
     }
     return null;
   }
-
+  
   private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
           Lists.of("byte", "short", "int", "long", "float", "double"));
   private boolean isNumberClass(Class< ? > clazz) {

@@ -15,9 +15,13 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /** Base class for extensible objects that can store user-defined properties.
@@ -33,18 +37,11 @@ import java.util.Set;
  */
 public abstract class Extensible {
 
+  private static Map<Class,Set<String>> invalidPropertyKeysByClass = new ConcurrentHashMap<>();
+
+
   protected Map<String,Object> properties;
   
-//  @Override
-//  public void readJson(JsonReader r) {
-//    properties = r.readProperties();
-//  }
-//  
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    w.writeProperties(properties);
-//  }
-
   /** @see Extensible */
   public Map<String,Object> getProperties() {
     return this.properties;
@@ -53,7 +50,7 @@ public abstract class Extensible {
   public void setProperties(Map<String,Object> properties) {
     if (properties!=null) {
       for (String key: properties.keySet()) {
-        checkPropertyKey(key);
+        setProperty(key, properties.get(key));
       }
     }
     this.properties = properties;
@@ -76,7 +73,7 @@ public abstract class Extensible {
   }
   /** @see Extensible */
   public void setProperty(String key,Object value) {
-    checkPropertyKey(key);
+    checkProperty(key, value);
     if (properties==null) {
       properties = new HashMap<>();
     }
@@ -97,13 +94,73 @@ public abstract class Extensible {
   /** throws RuntimeException if a property is set with an invalid key.
    * All the known fieldnames are invalid values because the properties are 
    * serialized inside the containing object json. 
+   * @param value 
    * @see Extensible */
-  protected abstract void checkPropertyKey(String key);
-  
-  /** convenience method to be use din checkPropertyKey implementations */
-  protected void checkPropertyKey(String key, Set<String> invalidPropertyKeys) {
+  private void checkProperty(String key, Object value) {
+    Set<String> invalidPropertyKeys = getInvalidPropertyKeys(getClass());
     if (key==null || invalidPropertyKeys.contains(key)) {
       throw new RuntimeException("Invalid property '"+key+"'");
+    }
+    // TODO checkValue(key, value);
+    // checkValue still fails on the bpmn tests
+  }
+
+  private void checkValue(String key, Object value) {
+    if ( value==null
+         || (value instanceof String)
+         || (value instanceof Number)
+         || (value instanceof Boolean) ) {
+      return;
+    }
+    if (value instanceof Map) {
+      checkValueMap(key, (Map)value);
+      return;
+    }
+    if (value instanceof Collection) {
+      checkValueCollection(key, (Collection)value);
+      return;
+    }
+    throw new RuntimeException("Invalid value in property '"+key+"': "+value+" ("+value.getClass()+") Allowed types: String,Number,Boolean,Collection,Map");
+  }
+  
+  private void checkValueCollection(String key, Collection value) {
+    for (Object element: (Collection)value) {
+      checkValue(key, element);
+    }
+  }
+  
+  private void checkValueMap(String key, Map value) {
+    for (Object mapKey: ((Map)value).keySet()) {
+      if (!(mapKey instanceof String)) {
+        throw new RuntimeException("Invalid key in map in '"+key+"': "+mapKey+" ("+mapKey.getClass()+") Only String's are allowed as map key types: String");
+      }
+    }
+    for (Object element: ((Map)value).values()) {
+      checkValue(key, element);
+    }
+  }
+  
+  private static Set<String> getInvalidPropertyKeys(Class<?> clazz) {
+    Set<String> invalidPropertyKeys = invalidPropertyKeysByClass.get(clazz);
+    if (invalidPropertyKeys!=null) {
+      return invalidPropertyKeys;
+    }
+    invalidPropertyKeys = new HashSet<>();
+    collectInvalidPropertyKeys(clazz, invalidPropertyKeys);
+    invalidPropertyKeysByClass.put(clazz, invalidPropertyKeys);
+    return invalidPropertyKeys;
+  }
+
+  private static void collectInvalidPropertyKeys(Class<?> clazz, Set<String> invalidPropertyKeys) {
+    Field[] fields = clazz.getDeclaredFields();
+    if (fields!=null) {
+      for (Field field: fields) {
+        invalidPropertyKeys.add(field.getName());
+      }
+    }
+    Class<?> superclass = clazz.getSuperclass();
+    if (superclass!=Object.class) {
+      collectInvalidPropertyKeys(superclass, invalidPropertyKeys);
     }
   }
 }

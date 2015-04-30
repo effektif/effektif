@@ -46,13 +46,6 @@ import com.effektif.workflow.api.workflow.Extensible;
  */
 public class Task extends Extensible implements AccessControlledObject {
   
-  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "id", "organizationId", "name", "description", "access", "createdBy",
-          "participants", "assignee", "candidates", "candidateGroups", "caseId",
-          "parentId", "subtaskIds", "duedate", "lastUpdated", "canceled", "completed",
-          "activityId", "activityInstanceId", "activityNotify", "hasWorkflowForm", 
-          "workflowInstanceId", "sourceWorkflowId", "workflowId", "properties"));
-  
   protected TaskId id;
   protected String organizationId;
   protected String name;
@@ -378,11 +371,6 @@ public class Task extends Extensible implements AccessControlledObject {
   public Task propertyOpt(String key, Object value) {
     super.propertyOpt(key, value);
     return this;
-  }
-
-  @Override
-  protected void checkPropertyKey(String key) {
-    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 
   public AccessControlList getAccess() {

@@ -108,7 +108,7 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     return xml.attributes.get(attributeName);
   }
   
-  public T getType() {
+  public T getDataType() {
     return type;
   }
 }

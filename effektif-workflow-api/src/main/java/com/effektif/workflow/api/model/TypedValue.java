@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.api.model;
 
+import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.types.DataType;
 
 
@@ -22,6 +23,7 @@ import com.effektif.workflow.api.types.DataType;
 public class TypedValue {
 
   protected Object value;
+  @JsonFieldName("type")
   protected DataType dataType;
 
   public TypedValue() {

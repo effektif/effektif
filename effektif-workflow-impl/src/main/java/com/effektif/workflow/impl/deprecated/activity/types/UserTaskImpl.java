@@ -108,7 +108,7 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
 
     if (roleVariable!=null) {
       UserIdTypeImpl roleTypeImpl = (UserIdTypeImpl) roleVariable.type;
-      UserIdType roleType = roleTypeImpl!=null ? roleTypeImpl.getType() : null;
+      UserIdType roleType = roleTypeImpl!=null ? roleTypeImpl.getDataType() : null;
       candidateIds = roleType.getCandidateIds();
       candidateGroupIds = roleType.getCandidateGroupIds();
       UserId roleValue = (UserId) activityInstance.getValue(roleVariable.id);

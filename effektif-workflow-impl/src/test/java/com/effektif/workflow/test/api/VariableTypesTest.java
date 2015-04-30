@@ -18,13 +18,12 @@ package com.effektif.workflow.test.api;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import com.effektif.workflow.api.deprecated.model.EmailAddress;
+import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.deprecated.model.Link;
 import com.effektif.workflow.api.deprecated.model.Money;
@@ -32,15 +31,18 @@ import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.api.types.LinkType;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.deprecated.file.File;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -56,20 +58,55 @@ public class VariableTypesTest extends WorkflowTest {
     
     deploy(workflow);
 
-    long time = new Date().getTime();
+    LocalDateTime value = new LocalDateTime();
+    
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", value));
+
+    assertEquals(value, workflowInstance.getVariableValue("v"));
+  }
+
+  @Test
+  public void testDateTypeSetVariables() {
+    Workflow workflow = new Workflow()
+      .variable("v", new DateType());
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId()));
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
+
+    LocalDateTime value = new LocalDateTime();
+
+    VariableValues variableValues = new VariableValues();
+    variableValues.value("v", value);
+
+    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
+
+    VariableValues retrieved = workflowEngine.getVariableValues(workflowInstanceId);
+    
+    assertEqualsVariableValue("v", variableValues, retrieved);
+  }
+
+  @Test
+  public void testListOfDatesType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new DateType()));
+    
+    deploy(workflow);
+
+    long time1 = new Date().getTime();
+    long time2 = time1+1;
 
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data("v", new LocalDateTime(time)));
+      .data("v", Lists.of(new LocalDateTime(time1), new LocalDateTime(time2))));
 
-    assertEquals(new LocalDateTime(time), workflowInstance.getVariableValueDate("v"));
-
-    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
-    
-    Map<String, Object> variableValues = new HashMap<>();
-    variableValues.put("v", new LocalDateTime(time));
-    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
-    assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
+    List<LocalDateTime> variableValue = (List<LocalDateTime>) workflowInstance.getVariableValue("v");
+    assertEquals(new LocalDateTime(time1), variableValue.get(0));
+    assertEquals(new LocalDateTime(time2), variableValue.get(1));
   }
 
   @Test
@@ -87,6 +124,25 @@ public class VariableTypesTest extends WorkflowTest {
   }
 
   @Test
+  public void testListOfEmailAddressesType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new EmailAddressType()));
+
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance().workflowId(workflow.getId())
+      .data("v", Lists.of("info@effektif.com", "sales@effektif.com")));
+
+    List<String> value = (List<String>) workflowInstance.getVariableValue("v");
+    assertEquals("info@effektif.com", value.get(0));
+    assertEquals("sales@effektif.com", value.get(1));
+
+    value = (List<String>)workflowInstance.getVariableValue("v");
+    assertEquals("info@effektif.com", value.get(0));
+    assertEquals("sales@effektif.com", value.get(1));
+  }
+
+  @Test
   public void testNumberType() {
     Workflow workflow = new Workflow()
       .variable("v", new NumberType());
@@ -97,14 +153,24 @@ public class VariableTypesTest extends WorkflowTest {
       .workflowId(workflow.getId())
       .data("v", 5));
 
-    assertEquals(new Long(5), workflowInstance.getVariableValueLong("v"));
+    assertEquals(new Long(5), workflowInstance.getVariableValue("v", Long.class));
+  }
 
-    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
+  @Test
+  public void testListOfNumbersType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new NumberType()));
 
-    Map<String, Object> variableValues = new HashMap<>();
-    variableValues.put("v", 6l);
-    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
-    assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", Lists.of(5, 6)));
+
+    GenericType genericType = new GenericType(List.class, Long.class);
+    List<Long> listOfNumbers = workflowInstance.getVariableValue("v", genericType);
+    assertEquals(new Long(5), listOfNumbers.get(0));
+    assertEquals(new Long(6), listOfNumbers.get(1));
   }
 
   @Test
@@ -117,15 +183,25 @@ public class VariableTypesTest extends WorkflowTest {
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
       .data("v", new UserId(JOHN_ID)));
+
+    UserId userId = workflowInstance.getVariableValue("v");
+    assertEquals(UserId.class, userId.getClass());
+  }
+
+  @Test
+  public void testListOfUserIdType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new UserIdType()));
     
-    assertEquals(UserId.class, workflowInstance.getVariableValue("v").getClass());
+    deploy(workflow);
 
-    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
-
-    Map<String, Object> variableValues = new HashMap<>();
-    variableValues.put("v", new UserId(MARY_ID));
-    workflowEngine.setVariableValues(workflowInstanceId, variableValues);
-    assertEquals(variableValues, new HashMap<String,Object>(workflowEngine.getVariableValues(workflowInstanceId)));
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", Lists.of(new UserId(JOHN_ID), new UserId(MARY_ID))));
+    
+    List<UserId> userIds = workflowInstance.getVariableValue("v");
+    assertEquals(JOHN_ID, userIds.get(0).getInternal());
+    assertEquals(MARY_ID, userIds.get(1).getInternal());
   }
 
   @Test
@@ -139,11 +215,31 @@ public class VariableTypesTest extends WorkflowTest {
       new TriggerInstance().workflowId(workflow.getId())
         .data("v", new Link().name("Effektif").url("http://www.effektif.com/")));
     
-    Object value = workflowInstance.getVariableValue("v");
+    Object value = workflowInstance.getVariableValue("v", Link.class);
     assertEquals(Link.class, value.getClass());
     Link link = (Link) value;
     assertEquals("Effektif", link.getName());
     assertEquals("http://www.effektif.com/", link.getUrl());
+  }
+
+  @Test
+  public void testListOfLinkType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new LinkType()));
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId())
+        .data("v", Lists.of(
+                new Link().name("Effektif").url("http://effektif.com/"),
+                new Link().name("Signavio").url("http://signavio.com/"))));
+    
+    List<Link> links = (List<Link>) workflowInstance.getVariableValue("v");
+    assertEquals("Effektif", links.get(0).getName());
+    assertEquals("http://effektif.com/", links.get(0).getUrl());
+    assertEquals("Signavio", links.get(1).getName());
+    assertEquals("http://signavio.com/", links.get(1).getUrl());
   }
 
   @Test
@@ -157,11 +253,29 @@ public class VariableTypesTest extends WorkflowTest {
       .workflowId(workflow.getId())
       .data("v", new Money().amount(5d).currency("USD")));
     
-    Object value = workflowInstance.getVariableValue("v");
-    assertEquals(Money.class, value.getClass());
-    Money money = (Money) value;
+    Money money = workflowInstance.getVariableValue("v", Money.class);
     assertEquals(new Double(5d), money.getAmount());
     assertEquals("USD", money.getCurrency());
+  }
+
+  @Test
+  public void testListOfMoneyType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new MoneyType()));
+    
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", Lists.of(
+              new Money().amount(5d).currency("USD"),
+              new Money().amount(6d).currency("EUR"))));
+    
+    List<Money> moneys = workflowInstance.getVariableValue("v");
+    assertEquals(new Double(5d), moneys.get(0).getAmount());
+    assertEquals("USD", moneys.get(0).getCurrency());
+    assertEquals(new Double(6d), moneys.get(1).getAmount());
+    assertEquals("EUR", moneys.get(1).getCurrency());
   }
 
   @Test
@@ -177,8 +291,30 @@ public class VariableTypesTest extends WorkflowTest {
       .workflowId(workflow.getId())
       .data("v", file.getId()));
     
-    Object value = workflowInstance.getVariableValue("v");
-    assertEquals(FileId.class, value.getClass());
-    assertEquals(file.getId().getInternal(), ((FileId)value).getInternal());
+    FileId fileId = workflowInstance.getVariableValue("v", FileId.class);
+    assertEquals(file.getId().getInternal(), fileId.getInternal());
+  }
+
+  @Test
+  public void testListOfFileIdType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new ListType(new FileIdType()));
+    
+    deploy(workflow);
+    
+    File file1 = createTestFile("blabla", "joke.txt", "text/plain");
+    File file2 = createTestFile("oblabl", "hehe.txt", "text/plain");
+
+    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("v", Lists.of(file1.getId(), file2.getId())));
+    
+    List<FileId> fileIds = workflowInstance.getVariableValue("v");
+    assertEquals(file1.getId().getInternal(), fileIds.get(0).getInternal());
+    assertEquals(file2.getId().getInternal(), fileIds.get(1).getInternal());
+  }
+  
+  protected void assertEqualsVariableValue(String variableId, VariableValues expected, VariableValues actual) {
+    assertEquals(expected.getValue(variableId), actual.getValue(variableId));
   }
 }

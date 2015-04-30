@@ -14,7 +14,6 @@
 package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
@@ -22,37 +21,34 @@ import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
- * Maps a JavaBean to a {@link Map} field for JSON serialisation and deserialisation.
+ * Maps a {@link Number} to a JSON number value for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
-public class BeanMapper<T extends Object> extends AbstractTypeMapper<T> implements JsonTypeMapper<T> {
+public class EnumMapper extends AbstractTypeMapper<Enum> implements JsonTypeMapper<Enum> {
 
-  Type type;
+  Class<Enum> enumClass;
   
-  public BeanMapper(Type type) {
-    this.type = type;
+  public EnumMapper(Type type) {
+    if (! (type instanceof Class)
+        || !((Enum.class.isAssignableFrom((Class)type)))) {
+      throw new RuntimeException("Expected number class, but was "+type);
+    }
+    enumClass = (Class<Enum>) type;
   }
 
   @Override
-  public Class<T> getMappedClass() {
-    return null;
+  public Class<Enum> getMappedClass() {
+    return enumClass;
   }
 
   @Override
-  public T read(Object jsonValue, JsonReader jsonReader) {
-    return (T) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>) type);
+  public void write(Enum objectValue, JsonWriter jsonWriter) {
+    jsonWriter.writeString(objectValue.toString());
   }
 
   @Override
-  public void write(T objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeBean(objectValue);
+  public Enum read(Object jsonValue, JsonReader jsonReader) {
+    return Enum.valueOf(enumClass, (String) jsonValue);
   }
-
-  @Override
-  public String toString() {
-    return "BeanMapper<" + type + ">";
-  }
-  
-  
 }

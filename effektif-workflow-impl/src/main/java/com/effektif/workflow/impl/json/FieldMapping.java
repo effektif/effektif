@@ -17,12 +17,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Uses a {@link JsonTypeMapper} to serialise and deserialise a particular API model field.
  */
 public class FieldMapping {
   
-  // private static final Logger log = LoggerFactory.getLogger(FieldMapping.class);
+  private static final Logger log = LoggerFactory.getLogger(FieldMapping.class);
   
   Field field;
   String jsonFieldName;
@@ -41,11 +44,11 @@ public class FieldMapping {
       Object fieldValue = field.get(bean);
       if (fieldValue!=null) {
         jsonWriter.writeFieldName(jsonFieldName);
-        // log.debug("writing "+field+" with "+jsonTypeMapper.getClass().getSimpleName()+" : "+fieldValue);
+        log.debug("writing "+field+" with "+jsonTypeMapper+" : "+fieldValue);
         jsonTypeMapper.write(fieldValue, jsonWriter);
       }
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Error writing field "+field+": "+e.getMessage(), e);
     }
   }
   
@@ -53,11 +56,12 @@ public class FieldMapping {
     try {
       Object jsonFieldValue = beanJson.get(jsonFieldName);
       if (jsonFieldValue!=null) {
+        log.debug("reading "+field+" with "+jsonTypeMapper+" : "+jsonFieldValue);
         Object fieldValue = jsonTypeMapper.read(jsonFieldValue, jsonReader);
         field.set(bean, fieldValue);
       }
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Error reading "+field+": "+e.getMessage(), e);
     }
   }
 

@@ -26,14 +26,13 @@ public interface DataTypeImpl<T extends DataType> extends Plugin {
   void setConfiguration(Configuration configuration);
 
   Class<?> getValueClass();
+  T getDataType();
   Class<? extends DataType> getApiClass();
 
   /** Indicates that this type doesn’t have to be serialised. */
   boolean isStatic();
 
   T serialize();
-
-//  TypeGenerator getTypeGenerator();
 
   /** only returns valid internal values. */
   Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
@@ -42,12 +41,7 @@ public interface DataTypeImpl<T extends DataType> extends Plugin {
 
   String convertInternalToText(Object value, Hints hints);
 
-//  /** Read the a binding value from the given XML element. */
-//  Binding readValue(XmlElement value);
-//
-//  /** Write the given value as an attribute on the given XML element. */
-//  void writeValue(XmlElement xml, Object value);
-  
   /** The returned value is never null. */
   TypedValueImpl dereference(Object value, String field);
+
 }

@@ -57,11 +57,12 @@ public class DataContainer {
   }
 
   public DataContainer typedValue(String key, TypedValue value) {
-    setData(key, value);
+    setTypedValue(key, value);
     return this;
   }
 
   public Map<String, TypedValue> getData() {
     return data;
   }
+  
 }

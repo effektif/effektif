@@ -28,6 +28,8 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.TypedValue;
+import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
@@ -359,35 +361,35 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
 
-  public Map<String,Object> getVariableValues(WorkflowInstanceId workflowInstanceId) {
+  public VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId) {
     return getVariableValues(workflowInstanceId, null);
   }
 
-  public Map<String,Object> getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
+  public VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
     WorkflowInstanceImpl workflowInstance = workflowInstanceStore.getWorkflowInstanceImplById(workflowInstanceId);
     ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
-    Map<String,Object> variableValues = new HashMap<>();
+    VariableValues variableValues = new VariableValues();
     scopeInstance.collectVariableValues(variableValues);
     return variableValues;
   }
 
-  public void setVariableValues(WorkflowInstanceId workflowInstanceId, Map<String,Object> variableValues) {
-    setVariableValues(workflowInstanceId, null, variableValues, false);
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, VariableValues variableValues) {
+    setVariableValues(workflowInstanceId, null, variableValues);
   }
 
-  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, Map<String,Object> variableValues) {
-    setVariableValues(workflowInstanceId, activityInstanceId, variableValues, false);
-  }
-  
-  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, Map<String,Object> variableValues, boolean deserialize) {
+  public void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, VariableValues variableValues) {
     if (workflowInstanceId==null || variableValues==null) {
       return;
     }
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
     ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
-    for (String variableId: variableValues.keySet()) {
-      Object value = variableValues.get(variableId);
-      scopeInstance.setVariableValue(variableId, value, deserialize);
+    Map<String, TypedValue> values = variableValues!=null ? variableValues.getValues() : null;
+    if (values!=null) {
+      for (String variableId : values.keySet()) {
+        TypedValue typedValue = values.get(variableId);
+        Object value = typedValue.getValue();
+        scopeInstance.setVariableValue(variableId, value);
+      }
     }
     workflowInstanceStore.flushAndUnlock(workflowInstance);
   }
@@ -412,6 +414,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
    * Default deserialization of trigger instance data.
    * This is called if there is no trigger defined and it will 
    * assume the trigger instance data maps variable ids to values. */
+  @Deprecated
   public void deserializeTriggerInstanceData(TriggerInstance triggerInstance, WorkflowImpl workflow) {
     if (triggerInstance!=null && triggerInstance.getData()!=null) {
       for (String variableId: triggerInstance.getData().keySet()) {
@@ -427,10 +430,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
   
+  @Deprecated
   public void deserializeWorkflowInstance(WorkflowInstance workflowInstance) {
     deserializeScopeInstance(workflowInstance);
   }
 
+  @Deprecated
   protected void deserializeScopeInstance(ScopeInstance scopeInstance) {
     List<VariableInstance> variableInstances = scopeInstance.getVariableInstances();
     if (variableInstances!=null) {
@@ -440,6 +445,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
 
+  @Deprecated
   protected void deserializeVariableInstance(VariableInstance variableInstance) {
     DataType type = variableInstance!=null ? variableInstance.getType() : null;
     Object serializedValue = variableInstance.getValue();
@@ -450,6 +456,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
   }
 
+  @Deprecated
   public void deserializeVariableValues(WorkflowInstanceId workflowInstanceId, Map<String, Object> variableValues) {
     if (variableValues!=null) {
       WorkflowInstanceImpl workflowInstance = workflowInstanceStore.getWorkflowInstanceImplById(workflowInstanceId);

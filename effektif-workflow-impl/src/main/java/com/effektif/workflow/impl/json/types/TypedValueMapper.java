@@ -15,8 +15,6 @@ package com.effektif.workflow.impl.json.types;
 
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -31,10 +29,8 @@ public class TypedValueMapper extends BeanMapper<TypedValue> implements JsonType
 
   public static final TypedValueMapper INSTANCE = new TypedValueMapper();
   
-  DataTypeService dataTypeService;
-
   public TypedValueMapper() {
-    super(VariableInstance.class);
+    super(TypedValue.class);
   }
 
   @Override

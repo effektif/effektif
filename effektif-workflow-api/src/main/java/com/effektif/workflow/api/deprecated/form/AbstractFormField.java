@@ -15,10 +15,6 @@
  */
 package com.effektif.workflow.api.deprecated.form;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Extensible;
 
@@ -28,10 +24,6 @@ import com.effektif.workflow.api.workflow.Extensible;
  */
 public class AbstractFormField extends Extensible {
   
-  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "id", "name", "readOnly", "required", "properties"));
-
-
   protected String id;
   
   protected String name;
@@ -136,10 +128,5 @@ public class AbstractFormField extends Extensible {
    * to be specified when creating workflows. */
   public void setType(DataType type) {
     this.type = type;
-  }
-
-  @Override
-  protected void checkPropertyKey(String key) {
-    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 }

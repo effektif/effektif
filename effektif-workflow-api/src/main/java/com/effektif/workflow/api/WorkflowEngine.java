@@ -16,11 +16,11 @@
 package com.effektif.workflow.api;
 
 import java.util.List;
-import java.util.Map;
 
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -52,13 +52,13 @@ public interface WorkflowEngine {
    * to end the specified activity instance and move workflow execution forward from there. */
   WorkflowInstance send(Message message);
   
-  Map<String,Object> getVariableValues(WorkflowInstanceId workflowInstanceId);
+  VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId);
 
-  Map<String,Object> getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId);
+  VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId);
 
-  void setVariableValues(WorkflowInstanceId workflowInstanceId, Map<String,Object> variableValues);
+  void setVariableValues(WorkflowInstanceId workflowInstanceId, VariableValues variableValues);
 
-  void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, Map<String,Object> variableValues);
+  void setVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId, VariableValues variableValues);
 
   List<WorkflowInstance> findWorkflowInstances(WorkflowInstanceQuery query);
   

@@ -13,46 +13,35 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-
 import com.effektif.workflow.impl.json.JsonReader;
-import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
 
 
 /**
- * Maps a JavaBean to a {@link Map} field for JSON serialisation and deserialisation.
+ * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
-public class BeanMapper<T extends Object> extends AbstractTypeMapper<T> implements JsonTypeMapper<T> {
+public class ClassMapper extends AbstractTypeMapper<Class> {
 
-  Type type;
-  
-  public BeanMapper(Type type) {
-    this.type = type;
+  public static final ClassMapper INSTANCE = new ClassMapper();
+
+  @Override
+  public Class<Class> getMappedClass() {
+    return Class.class;
   }
 
   @Override
-  public Class<T> getMappedClass() {
-    return null;
+  public void write(Class objectValue, JsonWriter jsonWriter) {
+    jsonWriter.writeString(objectValue.getName());
   }
 
   @Override
-  public T read(Object jsonValue, JsonReader jsonReader) {
-    return (T) jsonReader.readBean((Map<String, Object>) jsonValue, (Class<?>) type);
+  public Class read(Object jsonValue, JsonReader jsonReader) {
+    try {
+      return Class.forName((String) jsonValue);
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
-
-  @Override
-  public void write(T objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeBean(objectValue);
-  }
-
-  @Override
-  public String toString() {
-    return "BeanMapper<" + type + ">";
-  }
-  
-  
 }

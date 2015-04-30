@@ -33,9 +33,6 @@ import com.effektif.workflow.api.bpmn.XmlElement;
  */
 public abstract class Element extends Extensible implements BpmnReadable, BpmnWritable {
   
-  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "name", "description", "bpmn"));
-
   protected String name;
   protected String description;
   protected XmlElement bpmn;
@@ -100,10 +97,5 @@ public abstract class Element extends Extensible implements BpmnReadable, BpmnWr
   /** @see #getBpmn() */
   public void setBpmn(XmlElement bpmn) {
     this.bpmn = bpmn;
-  }
-  
-  @Override
-  protected void checkPropertyKey(String key) {
-    checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 }
