@@ -16,7 +16,6 @@ package com.effektif.workflow.impl.json;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
-import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
 
 
 /**
@@ -31,7 +30,6 @@ public class JsonObjectMapper {
   public JsonObjectMapper() {
     this.mappings = new Mappings();
     this.mappings.registerTypeMapper(new LocalDateTimeDateMapper());
-    this.mappings.registerTypeMapper(new VariableInstanceMapper());
   }
 
   public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {

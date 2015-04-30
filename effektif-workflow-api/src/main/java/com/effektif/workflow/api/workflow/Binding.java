@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import com.effektif.workflow.api.types.DataType;
+
 
 
 /**
@@ -34,7 +36,7 @@ package com.effektif.workflow.api.workflow;
 public class Binding<T> {
 
   protected T value;
-  
+  protected DataType dataType;
   protected String expression;
 
   /**
@@ -82,5 +84,13 @@ public class Binding<T> {
 
   public boolean isEmpty() {
     return value == null && expression == null;
+  }
+  
+  public DataType getDataType() {
+    return dataType;
+  }
+  
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 }

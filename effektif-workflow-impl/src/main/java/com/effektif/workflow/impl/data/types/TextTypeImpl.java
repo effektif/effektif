@@ -38,6 +38,6 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
     if (valueApi==null || (valueApi instanceof String)) {
       return valueApi;
     }
-    throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getSimpleName());
+    throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getName());
   }
 }

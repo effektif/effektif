@@ -80,12 +80,10 @@ public class VariableTypesTest extends WorkflowTest {
     deploy(workflow);
 
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance().workflowId(workflow.getId())
-      .data("v", new EmailAddress("info@effektif.com")));
+      .data("v", "info@effektif.com"));
 
     Object value = workflowInstance.getVariableValue("v");
-    assertEquals(EmailAddress.class, value.getClass());
-    EmailAddress address = (EmailAddress) value;
-    assertEquals("info@effektif.com", address.getValue());
+    assertEquals("info@effektif.com", value);
   }
 
   @Test

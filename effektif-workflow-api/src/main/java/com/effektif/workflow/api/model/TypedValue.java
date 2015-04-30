@@ -19,10 +19,22 @@ import com.effektif.workflow.api.types.DataType;
 /**
  * @author Tom Baeyens
  */
-public class Value {
+public class TypedValue {
 
   protected Object value;
-  protected DataType type;
+  protected DataType dataType;
+
+  public TypedValue() {
+  }
+  
+  public TypedValue(Object value) {
+    this.value = value;
+  }
+  
+  public TypedValue(Object value, DataType dataType) {
+    this.value = value;
+    this.dataType = dataType;
+  }
 
   public Object getValue() {
     return this.value;
@@ -31,11 +43,11 @@ public class Value {
     this.value = value;
   }
 
-  public DataType getType() {
-    return this.type;
+  public DataType getDataType() {
+    return this.dataType;
   }
-  public void setType(DataType type) {
-    this.type = type;
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 
 }

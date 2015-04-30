@@ -15,9 +15,7 @@
  */
 package com.effektif.workflow.api.model;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -27,13 +25,12 @@ import com.effektif.workflow.api.workflow.Workflow;
  *
  * @author Tom Baeyens
  */
-public class TriggerInstance {
+public class TriggerInstance extends DataContainer {
   
   protected WorkflowInstanceId workflowInstanceId;
   protected WorkflowId workflowId;
   protected String sourceWorkflowId;
   protected String businessKey;
-  protected Map<String,Object> data;
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
 
@@ -65,31 +62,6 @@ public class TriggerInstance {
     return this;
   }
 
-  public Map<String,Object> getData() {
-    return this.data;
-  }
-
-  /** @see #data(String, Object) */
-  public void setData(Map<String,Object> data) {
-    this.data = data;
-  }
-
-  /** this data is passed to the trigger or is set as variable values.
-   * In case there is no trigger specified, the data keys have to 
-   * represent the variable ids. */
-  public TriggerInstance data(String key, Object value) {
-    if (data==null) {
-      data = new LinkedHashMap<>();
-    }
-    data.put(key, value);
-    return this;
-  }
-  /** retrieves a data item from the map */
-  public Object getData(String key) {
-    return data!=null ? data.get(key) : null;
-  }
-
-  
   public String getBusinessKey() {
     return this.businessKey;
   }
@@ -144,5 +116,23 @@ public class TriggerInstance {
    * and the called workflow instance */
   public void setCallerActivityInstanceId(String callerActivityInstanceId) {
     this.callerActivityInstanceId = callerActivityInstanceId;
+  }
+  
+  @Override
+  public TriggerInstance data(String key, Object value) {
+    super.data(key, value);
+    return this;
+  }
+  
+  @Override
+  public TriggerInstance data(String key, Object value, DataType dataType) {
+    super.data(key, value, dataType);
+    return this;
+  }
+  
+  @Override
+  public TriggerInstance typedValue(String key, TypedValue value) {
+    super.typedValue(key, value);
+    return this;
   }
 }

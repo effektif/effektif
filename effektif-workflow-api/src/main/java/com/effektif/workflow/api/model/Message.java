@@ -15,20 +15,19 @@
  */
 package com.effektif.workflow.api.model;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.effektif.workflow.api.types.DataType;
+
 
 
 /**
  * @author Tom Baeyens
  */
-public class Message {
+public class Message extends DataContainer {
 
   protected WorkflowInstanceId workflowInstanceId;
   protected String sourceWorkflowId;
   protected String businessKey;
   protected String activityInstanceId;
-  protected Map<String,Object> data;
 
   public WorkflowInstanceId getWorkflowInstanceId() {
     return this.workflowInstanceId;
@@ -49,25 +48,6 @@ public class Message {
   }
   public Message activityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
-    return this;
-  }
-
-  public Map<String,Object> getData() {
-    return this.data;
-  }
-
-  public void setData(Map<String,Object> data) {
-    this.data = data;
-  }
-
-  /** this data is passed to the activity, usually 
-   * this activities apply the data as variable values, 
-   * but you have to check the activity documentation. */
-  public Message data(String key, Object value) {
-    if (data==null) {
-      data = new LinkedHashMap<>();
-    }
-    data.put(key, value);
     return this;
   }
 
@@ -96,6 +76,24 @@ public class Message {
    * as opposed to using {@link #workflowInstanceId(String) } */
   public Message businessKey(String businessKey) {
     this.businessKey = businessKey;
+    return this;
+  }
+  
+  @Override
+  public Message data(String key, Object value) {
+    super.data(key, value);
+    return this;
+  }
+  
+  @Override
+  public Message data(String key, Object value, DataType dataType) {
+    super.data(key, value, dataType);
+    return this;
+  }
+  
+  @Override
+  public Message typedValue(String key, TypedValue value) {
+    super.typedValue(key, value);
     return this;
   }
 }

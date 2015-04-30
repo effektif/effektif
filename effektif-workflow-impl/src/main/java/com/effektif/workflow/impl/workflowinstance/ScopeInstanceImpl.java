@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.model.DataContainer;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
@@ -303,15 +305,16 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   /** sets all entries individually, variableValues maps variable ids to values */
-  public void setVariableValues(Map<String,Object> variableValues) {
+  public void setVariableValues(DataContainer variableValues) {
     setVariableValues(variableValues, false);
   }
 
-  public void setVariableValues(Map<String,Object> variableValues, boolean deserialize) {
-    if (variableValues!=null) {
-      for (String variableId: variableValues.keySet()) {
-        Object value = variableValues.get(variableId);
-        setVariableValue(variableId, value, deserialize);
+  public void setVariableValues(DataContainer variableValues, boolean deserialize) {
+    Map<String, TypedValue> data = variableValues!=null ? variableValues.getData() : null;
+    if (data!=null) {
+      for (String variableId: data.keySet()) {
+        TypedValue value = data.get(variableId);
+        setVariableValue(variableId, value.getValue(), deserialize);
       }
     }
   }

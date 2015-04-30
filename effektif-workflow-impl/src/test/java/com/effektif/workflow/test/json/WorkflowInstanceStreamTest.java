@@ -16,21 +16,18 @@ package com.effektif.workflow.test.json;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
-import com.effektif.workflow.impl.util.Lists;
 
 
 /**
@@ -59,7 +56,7 @@ public class WorkflowInstanceStreamTest {
   }
 
   @Test 
-  public void testWorkflow() {
+  public void testWorkflowInstance() {
     LocalDateTime now = new LocalDateTime();
 
     String workflowInstanceIdInternal = getWorkflowInstanceIdInternal();
@@ -96,14 +93,25 @@ public class WorkflowInstanceStreamTest {
   @Test 
   public void testVariableInstanceDate() {
     LocalDateTime now = new LocalDateTime();
-
     VariableInstance v = serializeVariableInstance(now);
     assertEquals(now, v.getValue());
   }
 
+  @Test 
+  public void testVariableInstanceEmailAddress() {
+    VariableInstance v = serializeVariableInstance("a@b.c", EmailAddressType.INSTANCE);
+    assertEquals("a@b.c", v.getValue());
+    assertEquals(EmailAddressType.class, v.getType().getClass());
+  }
+
   protected VariableInstance serializeVariableInstance(Object value) {
+    return serializeVariableInstance(value, null);
+  }
+
+  protected VariableInstance serializeVariableInstance(Object value, DataType dataType) {
     VariableInstance variableInstance = new VariableInstance();
     variableInstance.setValue(value);
+    variableInstance.setType(dataType);
     
     List<VariableInstance> variableInstances = new ArrayList<>();
     variableInstances.add(variableInstance);

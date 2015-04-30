@@ -182,7 +182,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     if (workflow.trigger!=null) {
       workflow.trigger.applyTriggerData(workflowInstance, triggerInstance, deserialize);
     } else {
-      workflowInstance.setVariableValues(triggerInstance.getData(), deserialize);
+      workflowInstance.setVariableValues(triggerInstance, deserialize);
     }
     
     return workflowInstance;
@@ -227,7 +227,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   public WorkflowInstance send(Message message, boolean deserialize) {
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
-    workflowInstance.setVariableValues(message.getData(), deserialize);
+    workflowInstance.setVariableValues(message, deserialize);
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(message.getActivityInstanceId());
     if (activityInstance.isEnded()) {
       throw new RuntimeException("Activity instance "+activityInstance+" is already ended");

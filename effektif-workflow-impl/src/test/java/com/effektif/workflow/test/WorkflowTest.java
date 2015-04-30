@@ -218,8 +218,7 @@ public class WorkflowTest {
     try {
       log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name+" ending ######################################################## \n");
       
-      JsonStreamMapper jsonStreamMapper = configuration.get(JsonStreamMapper.class);
-      JsonMapper jsonMapper = configuration.get(JsonMapper.class);
+      JsonStreamMapper jsonMapper = configuration.get(JsonStreamMapper.class);
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       JobStore jobStore = configuration.get(JobStore.class);
@@ -236,7 +235,7 @@ public class WorkflowTest {
           cleanLog.append("--- Job ");
           cleanLog.append(i);
           cleanLog.append(" ---\n");
-          cleanLog.append(jsonMapper.writeToStringPretty(job));
+          cleanLog.append(jsonMapper.write(job));
           cleanLog.append("\n");
           i++;
         }
@@ -250,7 +249,7 @@ public class WorkflowTest {
           cleanLog.append("--- Task ");
           cleanLog.append(i);
           cleanLog.append(" ---\n");
-          cleanLog.append(jsonMapper.writeToStringPretty(task));
+          cleanLog.append(jsonMapper.write(task));
           cleanLog.append("\n");
           i++;
         }
@@ -264,7 +263,7 @@ public class WorkflowTest {
           cleanLog.append("--- Workflow instance ");
           cleanLog.append(i);
           cleanLog.append(" ---\n");
-          cleanLog.append(jsonStreamMapper.write(workflowInstance.toWorkflowInstance()));
+          cleanLog.append(jsonMapper.write(workflowInstance.toWorkflowInstance()));
           cleanLog.append("\n");
           i++;
         }
@@ -278,7 +277,7 @@ public class WorkflowTest {
           cleanLog.append("--- Deleted workflow ");
           cleanLog.append(i);
           cleanLog.append(" ---\n");
-          cleanLog.append(jsonMapper.writeToStringPretty(workflow));
+          cleanLog.append(jsonMapper.write(workflow));
           cleanLog.append("\n");
           i++;
         }

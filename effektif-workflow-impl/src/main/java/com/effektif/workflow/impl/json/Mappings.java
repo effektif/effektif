@@ -54,12 +54,15 @@ import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.types.BeanMapper;
+import com.effektif.workflow.impl.json.types.BindingMapper;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
 import com.effektif.workflow.impl.json.types.ListMapper;
 import com.effektif.workflow.impl.json.types.MapMapper;
 import com.effektif.workflow.impl.json.types.NumberMapper;
 import com.effektif.workflow.impl.json.types.StringMapper;
+import com.effektif.workflow.impl.json.types.TypedValueMapper;
 import com.effektif.workflow.impl.json.types.ValueMapper;
+import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
 import com.effektif.workflow.impl.util.Lists;
 
 /**
@@ -124,6 +127,10 @@ public class Mappings {
     dataTypesByClass.put(Double.class, NumberType.INSTANCE);
     dataTypesByClass.put(BigInteger.class, NumberType.INSTANCE);
     dataTypesByClass.put(BigDecimal.class, NumberType.INSTANCE);
+    
+    registerTypeMapper(new VariableInstanceMapper());
+    registerTypeMapper(new TypedValueMapper());
+    registerTypeMapper(new BindingMapper());
   }
 
   public void registerTypeMapper(JsonTypeMapper jsonTypeMapper) {
