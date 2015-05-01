@@ -21,7 +21,7 @@ import java.util.List;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
-import com.effektif.workflow.api.deprecated.json.GenericType;
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.json.TypeName;
 
 /**

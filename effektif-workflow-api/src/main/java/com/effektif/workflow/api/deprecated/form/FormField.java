@@ -35,15 +35,15 @@ import com.effektif.workflow.api.workflow.Binding;
  */
 public class FormField extends AbstractFormField implements BpmnReadable, BpmnWritable {
 
-  protected Binding<?> binding;
+  protected Binding binding;
 
-  public Binding<?> getBinding() {
+  public Binding getBinding() {
     return this.binding;
   }
-  public void setBinding(Binding<?> binding) {
+  public void setBinding(Binding binding) {
     this.binding = binding;
   }
-  public FormField binding(Binding<?> binding) {
+  public FormField binding(Binding binding) {
     this.binding = binding;
     return this;
   }

@@ -11,31 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.api.deprecated.json;
+package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
+import com.effektif.workflow.impl.json.Mappings;
+
 
 /**
- * A container for type information that is used by JSON deserialisation.
- *
  * @author Tom Baeyens
  */
-public class GenericType implements Type {
-  
-  protected Class<?> baseType;
-  protected Type[] typeArgs;
-  
-  public GenericType(Class< ? > baseType, Type... typeArgs) {
-    this.baseType = baseType;
-    this.typeArgs = typeArgs;
-  }
+public class ArrayMapperFactory implements JsonTypeMapperFactory {
 
-  public Class<?> getBaseType() {
-    return this.baseType;
-  }
-  
-  public Type[] getTypeArgs() {
-    return this.typeArgs;
+  @Override
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if (clazz!=null && clazz.isArray()) {
+      Class<?> elementClass = clazz.getComponentType(); 
+      JsonTypeMapper elementMapper = mappings.getTypeMapper(elementClass);
+      return new ArrayMapper(elementMapper, clazz);
+    }
+    return null;
   }
 }

@@ -13,11 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.Mappings;
 
 
 /**
@@ -25,8 +29,16 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class WorkflowInstanceIdStreamMapper extends AbstractTypeMapper<WorkflowInstanceId> implements JsonTypeMapper<WorkflowInstanceId> {
+public class WorkflowInstanceIdStreamMapper extends AbstractTypeMapper<WorkflowInstanceId> implements JsonTypeMapperFactory {
 
+  @Override
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if (clazz==WorkflowInstanceId.class) {
+      return this;
+    }
+    return null;
+  }
+  
   @Override
   public void write(WorkflowInstanceId objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeString(objectValue.getInternal());
@@ -35,10 +47,5 @@ public class WorkflowInstanceIdStreamMapper extends AbstractTypeMapper<WorkflowI
   @Override
   public WorkflowInstanceId read(Object jsonValue, JsonReader jsonReader) {
     return new WorkflowInstanceId((String)jsonValue);
-  }
-
-  @Override
-  public Class<WorkflowInstanceId> getMappedClass() {
-    return WorkflowInstanceId.class;
   }
 }

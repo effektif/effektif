@@ -13,12 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.Mappings;
 
 
 /**
@@ -26,19 +29,18 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class VariableInstanceMapper extends BeanMapper<VariableInstance> implements JsonTypeMapper<VariableInstance> {
-
-  public static final VariableInstanceMapper INSTANCE = new VariableInstanceMapper();
-  
-  DataTypeService dataTypeService;
-
-  public VariableInstanceMapper() {
-    super(VariableInstance.class);
-  }
+public class VariableInstanceMapper extends BeanMapper<VariableInstance> implements JsonTypeMapperFactory {
 
   @Override
-  public Class<VariableInstance> getMappedClass() {
-    return VariableInstance.class;
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if (clazz==VariableInstance.class) {
+      return this;
+    }
+    return null;
+  }
+
+  public VariableInstanceMapper() {
+    super(VariableInstance.class, null);
   }
 
   @Override

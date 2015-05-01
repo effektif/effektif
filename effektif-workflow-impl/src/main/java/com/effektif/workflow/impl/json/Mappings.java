@@ -16,19 +16,17 @@ package com.effektif.workflow.impl.json;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,20 +54,20 @@ import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.json.types.ArrayMapper;
+import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
 import com.effektif.workflow.impl.json.types.BeanMapper;
-import com.effektif.workflow.impl.json.types.BindingMapper;
+import com.effektif.workflow.impl.json.types.BindingMapperFactory;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
 import com.effektif.workflow.impl.json.types.ClassMapper;
-import com.effektif.workflow.impl.json.types.EnumMapper;
-import com.effektif.workflow.impl.json.types.ListMapper;
-import com.effektif.workflow.impl.json.types.MapMapper;
-import com.effektif.workflow.impl.json.types.NumberMapper;
+import com.effektif.workflow.impl.json.types.EnumMapperFactory;
+import com.effektif.workflow.impl.json.types.ListMapperFactory;
+import com.effektif.workflow.impl.json.types.MapMapperFactory;
+import com.effektif.workflow.impl.json.types.NumberMapperFactory;
 import com.effektif.workflow.impl.json.types.StringMapper;
 import com.effektif.workflow.impl.json.types.TypedValueMapper;
 import com.effektif.workflow.impl.json.types.ValueMapper;
 import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
-import com.effektif.workflow.impl.util.Lists;
+import com.effektif.workflow.impl.util.Reflection;
 
 /**
  * Registry for API model classes, used to determine their serialisations.
@@ -80,12 +78,13 @@ public class Mappings {
   
   private static final Logger log = LoggerFactory.getLogger(Mappings.class);
   
-  Map<Class<?>, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
+  List<JsonTypeMapperFactory> jsonTypeMapperFactories = new ArrayList<>();
+  Map<Type, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
   Map<Type,DataType> dataTypesByClass = new HashMap<>();
 
   /** Maps registered base classes (e.g. <code>Activity</code> to all their subclass mappings. */
   Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
-  Map<Class<?>, List<FieldMapping>> fieldMappings = new HashMap<>();
+  Map<Type, List<FieldMapping>> fieldMappings = new HashMap<>();
 
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
@@ -94,10 +93,18 @@ public class Mappings {
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
 
   public Mappings() {
-    registerTypeMapper(new VariableInstanceMapper());
-    registerTypeMapper(new TypedValueMapper());
-    registerTypeMapper(new BindingMapper());
-    registerTypeMapper(new ClassMapper());
+    registerTypeMapperFactory(new ValueMapper());
+    registerTypeMapperFactory(new StringMapper());
+    registerTypeMapperFactory(new NumberMapperFactory());
+    registerTypeMapperFactory(new BooleanMapper());
+    registerTypeMapperFactory(new ClassMapper());
+    registerTypeMapperFactory(new VariableInstanceMapper());
+    registerTypeMapperFactory(new TypedValueMapper());
+    registerTypeMapperFactory(new EnumMapperFactory());
+    registerTypeMapperFactory(new ArrayMapperFactory());
+    registerTypeMapperFactory(new ListMapperFactory());
+    registerTypeMapperFactory(new MapMapperFactory());
+    registerTypeMapperFactory(new BindingMapperFactory());
     
     registerBaseClass(Trigger.class);
     registerBaseClass(JobType.class);
@@ -128,6 +135,9 @@ public class Mappings {
         throw new RuntimeException(e);
       }
     }
+    // potentially multiple datatypes may map to eg String. 
+    // by re-putting these datatypes, we ensure that these basic
+    // data types are used when looking up a datatype by value
     dataTypesByClass.put(String.class, TextType.INSTANCE);
     dataTypesByClass.put(Boolean.class, BooleanType.INSTANCE);
     dataTypesByClass.put(Byte.class, NumberType.INSTANCE);
@@ -140,9 +150,8 @@ public class Mappings {
     dataTypesByClass.put(BigDecimal.class, NumberType.INSTANCE);
   }
 
-  public void registerTypeMapper(JsonTypeMapper jsonTypeMapper) {
-    jsonTypeMappers.put(jsonTypeMapper.getMappedClass(), jsonTypeMapper);
-    jsonTypeMapper.setMappings(this);
+  public void registerTypeMapperFactory(JsonTypeMapperFactory jsonTypeMapperFactory) {
+    jsonTypeMapperFactories.add(jsonTypeMapperFactory);
   }
 
   public void registerBaseClass(Class<?> baseClass) {
@@ -288,7 +297,7 @@ public class Mappings {
   }
 
   private FieldMapping findFieldMapping(Class< ? > modelClass, String fieldName) {
-    List<FieldMapping> fieldMappings = getFieldMappings(modelClass);
+    List<FieldMapping> fieldMappings = getFieldMappings(modelClass, null);
     if (fieldMappings!=null) {
       for (FieldMapping fieldMapping: fieldMappings) {
         if (fieldMapping.field.getName().equals(fieldName)) {
@@ -342,13 +351,14 @@ public class Mappings {
     return types.get(fieldName);
   }
 
-  public List<FieldMapping> getFieldMappings(Class<?> clazz) {
+  public List<FieldMapping> getFieldMappings(Class<?> clazz, Type type) {
     List<FieldMapping> classFieldMappings = fieldMappings.get(clazz);
     if (classFieldMappings!=null) {
       return classFieldMappings;
     }
     classFieldMappings = new ArrayList<>();
-    scanFields(classFieldMappings, clazz);
+    
+    scanFields(classFieldMappings, clazz, type);
     
     JsonPropertyOrder jsonPropertyOrder = clazz.getAnnotation(JsonPropertyOrder.class);
     if (jsonPropertyOrder!=null) {
@@ -377,15 +387,18 @@ public class Mappings {
     }
     return null;
   }
-
-  public void scanFields(List<FieldMapping> fieldMappings, Class< ? > clazz) {
+  
+  public void scanFields(List<FieldMapping> fieldMappings, Class<?> clazz, Type type) {
     Field[] declaredFields = clazz.getDeclaredFields();
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
-        boolean includeInJsonSerialisation = field.getAnnotation(JsonIgnore.class) == null;
-        if (!Modifier.isStatic(field.getModifiers()) && includeInJsonSerialisation) {
+        if (!Modifier.isStatic(field.getModifiers()) 
+            && field.getAnnotation(JsonIgnore.class)==null) {
           field.setAccessible(true);
           Type fieldType = field.getGenericType();
+          if (fieldType instanceof TypeVariable) {
+            fieldType = Reflection.resolveFieldType((TypeVariable)fieldType, clazz, type);
+          }
           JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
           log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
@@ -405,92 +418,32 @@ public class Mappings {
     }
     Class<? > superclass = clazz.getSuperclass();
     if (Object.class!=superclass) {
-      scanFields(fieldMappings, superclass);
+      scanFields(fieldMappings, superclass, superclass.getGenericSuperclass());
     }
   }
   
-  public JsonTypeMapper getTypeMapper(Object jsonValue, Type type) {
-    return getTypeMapper((Class)type);
-  }
-
   public JsonTypeMapper getTypeMapper(Type type) {
-    if (type==null || type==Object.class) {
-      return ValueMapper.INSTANCE;
-    }
-
     JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
     if (jsonTypeMapper!=null) {
       return jsonTypeMapper;
     }
     
-    Class<?> clazz = null;
-    if (type instanceof Class) {
-      clazz = (Class<?>) type;
-    } else if (type instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) type;
-      clazz = (Class< ? >) parameterizedType.getRawType();
-    } else if (type instanceof WildcardType) {
-      WildcardType wildcardType = (WildcardType) type;
-      clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
-    }
-
-    if (String.class==type) {
-      jsonTypeMapper = StringMapper.INSTANCE;
+    Class< ? > clazz = Reflection.getClass(type);
     
-    } else if ( Boolean.class==type
-                || boolean.class==type ) {
-      jsonTypeMapper = BooleanMapper.INSTANCE;
-    
-    } else if (isNumberClass(clazz)) {
-      jsonTypeMapper = new NumberMapper(type);
-
-    } else if (clazz!=null && clazz.isEnum()) {
-      jsonTypeMapper = new EnumMapper(type);
-
-    } else if (clazz!=null && clazz.isArray()) {
-      Class<?> elementClass = clazz.getComponentType(); 
-      JsonTypeMapper elementMapper = getTypeMapper(elementClass);
-      jsonTypeMapper = new ArrayMapper(elementMapper, clazz);
-
-    } else if (clazz!=null && List.class.isAssignableFrom(clazz)) {
-      Type elementType = getTypeArg(type, 0);
-      JsonTypeMapper elementMapper = getTypeMapper(elementType);
-      jsonTypeMapper = new ListMapper(elementMapper); 
-        
-    } else if (clazz!=null && Map.class.isAssignableFrom(clazz)) {
-      Type valuesType = getTypeArg(type, 1);
-      JsonTypeMapper valuesMapper = getTypeMapper(valuesType);
-      jsonTypeMapper = new MapMapper(valuesMapper);
-
-    } else if (clazz==Class.class) {
-      jsonTypeMapper = new ClassMapper();
-
-    } else {
-      jsonTypeMapper = new BeanMapper(type);
-    }
-
-    jsonTypeMappers.put(clazz, jsonTypeMapper);
-    return jsonTypeMapper;
-  }
-
-  private Type getTypeArg(Type type, int i) {
-    if (type instanceof ParameterizedType) {
-      Type[] typeArgs = ((ParameterizedType) type).getActualTypeArguments();
-      if (typeArgs!=null && i<typeArgs.length) {
-        return typeArgs[i];
+    for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {
+      jsonTypeMapper = factory.createTypeMapper(clazz, type, this);
+      if (jsonTypeMapper!=null) {
+        break;
       }
     }
-    return null;
-  }
-  
-  private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
-          Lists.of("byte", "short", "int", "long", "float", "double"));
-  private boolean isNumberClass(Class< ? > clazz) {
-    if (clazz==null) {
-      return false;
+
+    if (jsonTypeMapper==null) {
+      jsonTypeMapper = new BeanMapper(clazz, type);
     }
-    return Number.class.isAssignableFrom(clazz)
-      || NUMBERTYPENAMES.contains(clazz.getName());
+
+    jsonTypeMapper.setMappings(this);
+    jsonTypeMappers.put(type, jsonTypeMapper);
+    return jsonTypeMapper;
   }
 
   public DataType getTypeByValue(Object value) {

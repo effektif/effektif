@@ -23,13 +23,13 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.deprecated.model.Link;
 import com.effektif.workflow.api.deprecated.model.Money;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;

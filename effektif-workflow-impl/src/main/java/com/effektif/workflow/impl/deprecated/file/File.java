@@ -33,10 +33,6 @@ import com.effektif.workflow.api.workflow.Extensible;
  */
 public class File extends Extensible {
   
-  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "id", "organizationId", "creatorId", "createTime", "fileName", "contentType",
-          "sizeInBytes"));
-
   protected FileId id;
   protected String organizationId;
   protected UserId creatorId;
@@ -165,10 +161,5 @@ public class File extends Extensible {
     };
     headers.put(headerName, headerValue);
     return this;
-  }
-
-  @Override
-  protected void checkPropertyKey(String key) {
-    super.checkPropertyKey(key, INVALID_PROPERTY_KEYS);
   }
 }

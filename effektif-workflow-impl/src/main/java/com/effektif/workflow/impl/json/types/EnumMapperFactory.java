@@ -11,25 +11,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
+import com.effektif.workflow.impl.json.Mappings;
+
+
 /**
- * An API for deserialising field values from a JSON source.
- *
  * @author Tom Baeyens
  */
-public abstract class JsonReader {
-  
-  Mappings mappings;
-  
-  public JsonReader(Mappings mappings) {
-    this.mappings = mappings;
-  }
+public class EnumMapperFactory implements JsonTypeMapperFactory {
 
-  public Object readObject(Object jsonValue, Type type) {
-    JsonTypeMapper typeMapper = mappings.getTypeMapper(type);
-    return typeMapper.read(jsonValue, this);
+  @Override
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if (clazz!=null && clazz.isEnum()) {
+      return new EnumMapper(type);
+    }
+    return null;
   }
 }

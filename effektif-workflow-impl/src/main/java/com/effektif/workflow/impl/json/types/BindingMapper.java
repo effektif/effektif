@@ -13,13 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflowinstance.VariableInstance;
-import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.json.JsonReader;
-import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -27,19 +28,10 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class BindingMapper extends BeanMapper<Binding> implements JsonTypeMapper<Binding> {
-
-  public static final BindingMapper INSTANCE = new BindingMapper();
+public class BindingMapper extends BeanMapper<Binding> {
   
-  DataTypeService dataTypeService;
-
-  public BindingMapper() {
-    super(VariableInstance.class);
-  }
-
-  @Override
-  public Class<Binding> getMappedClass() {
-    return Binding.class;
+  public BindingMapper(Class clazz, Type type) {
+    super(clazz, (type instanceof ParameterizedType ? type : null));
   }
 
   @Override
@@ -56,12 +48,22 @@ public class BindingMapper extends BeanMapper<Binding> implements JsonTypeMapper
   @Override
   public Binding read(Object jsonValue, JsonReader jsonReader) {
     Binding binding = super.read(jsonValue, jsonReader);
-    DataType dataType = binding.getDataType();
-    Object jsonVariableValue = binding.getValue();
-    if (jsonVariableValue!=null && dataType!=null) {
-      Object objectVariableValue = jsonReader.readObject(jsonVariableValue, dataType.getValueType());
-      binding.setValue(objectVariableValue);
+    if (! (type instanceof ParameterizedType)) {
+      DataType dataType = binding.getDataType();
+      Object jsonVariableValue = binding.getValue();
+      if (jsonVariableValue!=null && dataType!=null) {
+        Object objectVariableValue = jsonReader.readObject(jsonVariableValue, dataType.getValueType());
+        binding.setValue(objectVariableValue);
+      }
     }
     return binding;
+  }
+
+  @Override
+  public String toString() {
+    if (type!=null) {
+      return "BindingMapper<"+Reflection.getTypeArg(type, 0)+">";
+    }
+    return "BindingMapper";
   }
 }

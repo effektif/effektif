@@ -32,24 +32,7 @@ public abstract class JsonWriter {
     this.mappings = mappings;
   }
 
-  public void writeBean(Object bean) {
-    if (bean!=null) {
-      loopCheckBeanStart(bean);
-      objectStart();
-      Class< ? extends Object> beanClass = bean.getClass();
-      mappings.writeTypeField(this, bean);
-      List<FieldMapping> fieldMappings = mappings.getFieldMappings(beanClass);
-      for (FieldMapping fieldMapping: fieldMappings) {
-        fieldMapping.writeField(bean, this);
-      }
-      objectEnd();
-      loopCheckBeanEnd();
-    } else {
-      writeNull();
-    }
-  }
-
-  private void loopCheckBeanStart(Object bean) {
+  public void loopCheckBeanStart(Object bean) {
     for (int i=0; i<loopCheckBeans.size(); i++) {
       if (loopCheckBeans.get(i)==bean) {
         throw new RuntimeException("Loop detected in object graph: "+bean+" ("+bean.getClass().getName()+")");
@@ -58,7 +41,7 @@ public abstract class JsonWriter {
     loopCheckBeans.add(bean);
   }
 
-  private void loopCheckBeanEnd() {
+  public void loopCheckBeanEnd() {
     loopCheckBeans.remove(loopCheckBeans.size()-1);
   }
 
@@ -79,6 +62,10 @@ public abstract class JsonWriter {
       writeObject(element);
     }
     arrayEnd();
+  }
+  
+  public void writeTypeField(Object bean) {
+    mappings.writeTypeField(this, bean);
   }
   
   public abstract void objectStart();

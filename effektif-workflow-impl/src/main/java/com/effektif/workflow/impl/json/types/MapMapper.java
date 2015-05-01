@@ -35,11 +35,6 @@ public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper
   }
   
   @Override
-  public Class<Map> getMappedClass() {
-    return Map.class;
-  }
-
-  @Override
   public void write(Map map, JsonWriter jsonWriter) {
     if (map!=null) {
       jsonWriter.objectStart();
@@ -78,6 +73,4 @@ public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper
   public String toString() {
     return getClass().getSimpleName()+"<"+valueMapper+">";
   }
-  
-  
 }

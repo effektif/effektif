@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 
 import org.joda.time.LocalDateTime;
@@ -20,7 +21,9 @@ import org.joda.time.LocalDateTime;
 import com.effektif.workflow.impl.json.JsonObjectWriter;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.Mappings;
 
 
 /**
@@ -28,11 +31,14 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class LocalDateTimeDateMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapper<LocalDateTime> {
+public class LocalDateTimeDateMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapperFactory {
 
   @Override
-  public Class<LocalDateTime> getMappedClass() {
-    return LocalDateTime.class;
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if (clazz==LocalDateTime.class) {
+      return this;
+    }
+    return null;
   }
   
   @Override

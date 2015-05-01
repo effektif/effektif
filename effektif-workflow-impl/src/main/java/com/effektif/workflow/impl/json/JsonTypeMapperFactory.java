@@ -15,21 +15,13 @@ package com.effektif.workflow.impl.json;
 
 import java.lang.reflect.Type;
 
+
 /**
- * An API for deserialising field values from a JSON source.
- *
  * @author Tom Baeyens
  */
-public abstract class JsonReader {
-  
-  Mappings mappings;
-  
-  public JsonReader(Mappings mappings) {
-    this.mappings = mappings;
-  }
+public interface JsonTypeMapperFactory {
 
-  public Object readObject(Object jsonValue, Type type) {
-    JsonTypeMapper typeMapper = mappings.getTypeMapper(type);
-    return typeMapper.read(jsonValue, this);
-  }
+  /** returns a json type mapper only if this factory is applicable for the given clazz/type. 
+   * @param mappings TODO*/
+  JsonTypeMapper createTypeMapper(Class<?> clazz, Type type, Mappings mappings);
 }

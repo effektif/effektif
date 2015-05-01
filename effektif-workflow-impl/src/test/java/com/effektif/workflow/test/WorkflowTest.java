@@ -93,7 +93,7 @@ public class WorkflowTest {
 
   @Before
   public void initializeWorkflowEngine() {
-    log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name+" starting ######################################################## \n");
+    log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name.getMethodName()+" starting ######################################################## \n");
 
     if (workflowEngine==null || taskService==null) {
       if (cachedConfiguration==null) {

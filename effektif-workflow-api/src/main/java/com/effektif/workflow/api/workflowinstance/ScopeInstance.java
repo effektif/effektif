@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
-import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.deprecated.model.TaskId;
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.model.ValueConverter;
 import com.effektif.workflow.api.workflow.Extensible;
 

@@ -13,9 +13,13 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.Mappings;
 
 
 /**
@@ -23,13 +27,15 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class BooleanMapper extends AbstractTypeMapper<Boolean> implements JsonTypeMapper<Boolean> {
-
-  public static final BooleanMapper INSTANCE = new BooleanMapper();
+public class BooleanMapper extends AbstractTypeMapper<Boolean> implements JsonTypeMapperFactory {
 
   @Override
-  public Class<Boolean> getMappedClass() {
-    return Boolean.class;
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if ( Boolean.class==type
+            || boolean.class==type ) {
+      return this;
+    }
+    return null;
   }
 
   @Override

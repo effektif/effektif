@@ -38,11 +38,6 @@ public class EnumMapper extends AbstractTypeMapper<Enum> implements JsonTypeMapp
   }
 
   @Override
-  public Class<Enum> getMappedClass() {
-    return enumClass;
-  }
-
-  @Override
   public void write(Enum objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeString(objectValue.toString());
   }

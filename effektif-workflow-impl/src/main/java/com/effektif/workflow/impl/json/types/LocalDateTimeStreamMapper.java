@@ -13,13 +13,17 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
+
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.Mappings;
 
 
 /**
@@ -27,8 +31,16 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapper<LocalDateTime> {
+public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapperFactory {
 
+  @Override
+  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+    if (clazz==LocalDateTime.class) {
+      return this;
+    }
+    return null;
+  }
+  
   public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
   public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
 
@@ -40,10 +52,5 @@ public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime>
   @Override
   public LocalDateTime read(Object jsonValue, JsonReader jsonReader) {
     return PARSER.parseLocalDateTime((String)jsonValue);
-  }
-
-  @Override
-  public Class<LocalDateTime> getMappedClass() {
-    return LocalDateTime.class;
   }
 }

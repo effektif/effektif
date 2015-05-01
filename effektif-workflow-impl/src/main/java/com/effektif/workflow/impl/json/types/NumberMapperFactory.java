@@ -14,37 +14,36 @@
 package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
-import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.util.Lists;
 
 
 /**
- * Maps a {@link WorkflowId} to a JSON string field for serialisation and deserialisation.
- *
  * @author Tom Baeyens
  */
-public class WorkflowIdStreamMapper extends AbstractTypeMapper<WorkflowId> implements JsonTypeMapperFactory {
+public class NumberMapperFactory implements JsonTypeMapperFactory {
 
   @Override
   public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
-    if (clazz==WorkflowId.class) {
-      return this;
+    if (isNumberClass(clazz)) {
+      return new NumberMapper(type);
     }
     return null;
   }
-  
-  @Override
-  public void write(WorkflowId objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeString(objectValue.getInternal());
-  }
 
-  @Override
-  public WorkflowId read(Object jsonValue, JsonReader jsonReader) {
-    return new WorkflowId((String)jsonValue);
+  private static final Set<String> NUMBERTYPENAMES = new HashSet<>(
+          Lists.of("byte", "short", "int", "long", "float", "double"));
+
+  private boolean isNumberClass(Class< ? > clazz) {
+    if (clazz==null) {
+      return false;
+    }
+    return Number.class.isAssignableFrom(clazz)
+      || NUMBERTYPENAMES.contains(clazz.getName());
   }
 }

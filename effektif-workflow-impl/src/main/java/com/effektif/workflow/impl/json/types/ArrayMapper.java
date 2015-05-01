@@ -41,11 +41,6 @@ public class ArrayMapper extends AbstractTypeMapper<Object[]> implements JsonTyp
   }
 
   @Override
-  public Class<Object[]> getMappedClass() {
-    return arrayClass;
-  }
-
-  @Override
   public Object[] read(Object jsonValue, JsonReader jsonReader) {
     Collection jsonCollection = (Collection) jsonValue;
     Object[] array = (Object[]) Array.newInstance(componentType, jsonCollection.size());

@@ -23,7 +23,6 @@ package com.effektif.workflow.impl.json;
 public interface JsonTypeMapper<T> {
 
   void setMappings(Mappings mappings);
-  Class<T> getMappedClass();
 
   T read(Object jsonValue, JsonReader jsonReader);
   void write(T objectValue, JsonWriter jsonWriter);

@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.deprecated.json.GenericType;
+import com.effektif.workflow.api.json.GenericType;
 
 
 /**
@@ -96,7 +96,7 @@ public class ValueConverter {
     }
     if (shoe instanceof GenericType) {
       GenericType genericType = (GenericType) shoe;
-      if (genericType.getBaseType().isAssignableFrom(ArrayList.class)
+      if (genericType.getRawClass().isAssignableFrom(ArrayList.class)
           && foot instanceof Collection) {
         return (T) shoehorn((Collection)foot, (Class)genericType.getTypeArgs()[0]);
       }

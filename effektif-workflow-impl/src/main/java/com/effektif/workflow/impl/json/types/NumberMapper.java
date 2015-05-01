@@ -18,7 +18,6 @@ import java.lang.reflect.Type;
 import com.effektif.workflow.api.model.ValueConverter;
 import com.effektif.workflow.api.model.ValueConverter.Converter;
 import com.effektif.workflow.impl.json.JsonReader;
-import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
 
 
@@ -27,7 +26,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class NumberMapper extends AbstractTypeMapper<Number> implements JsonTypeMapper<Number> {
+public class NumberMapper extends AbstractTypeMapper<Number> {
 
   Class<? extends Number> numberClass;
   Converter<Number, ? extends Number> converter;
@@ -35,11 +34,6 @@ public class NumberMapper extends AbstractTypeMapper<Number> implements JsonType
   public NumberMapper(Type type) {
     numberClass = (Class< ? extends Number>) type;
     converter = ValueConverter.findConverter(Number.class, numberClass);
-  }
-
-  @Override
-  public Class<Number> getMappedClass() {
-    return Number.class;
   }
 
   @Override
@@ -53,9 +47,10 @@ public class NumberMapper extends AbstractTypeMapper<Number> implements JsonType
       return null;
     }
     Number number = (Number) jsonValue;
-    if (number.getClass()==numberClass) {
-      return number;
+    if (number.getClass()!=numberClass
+        && converter!=null) {
+      return converter.convert(number);
     }
-    return converter.convert(number);
+    return number;
   }
 }

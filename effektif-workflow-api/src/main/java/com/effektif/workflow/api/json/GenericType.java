@@ -11,25 +11,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.api.json;
 
 import java.lang.reflect.Type;
 
+
 /**
- * An API for deserialising field values from a JSON source.
+ * A container for type information that is used by JSON deserialisation.
  *
  * @author Tom Baeyens
  */
-public abstract class JsonReader {
+public class GenericType implements Type {
   
-  Mappings mappings;
+  protected Class<?> rawClass;
+  protected Type[] typeArgs;
   
-  public JsonReader(Mappings mappings) {
-    this.mappings = mappings;
+  public GenericType(Class< ? > rawClass, Type... typeArgs) {
+    this.rawClass = rawClass;
+    this.typeArgs = typeArgs;
   }
 
-  public Object readObject(Object jsonValue, Type type) {
-    JsonTypeMapper typeMapper = mappings.getTypeMapper(type);
-    return typeMapper.read(jsonValue, this);
+  public Class<?> getRawClass() {
+    return this.rawClass;
+  }
+  
+  public Type[] getTypeArgs() {
+    return this.typeArgs;
   }
 }

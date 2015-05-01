@@ -17,9 +17,16 @@ package com.effektif.workflow.impl.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
 
 
@@ -75,5 +82,56 @@ public class Reflection {
       }
     }
     return clazz;
+  }
+
+  public static Class< ? > getClass(Type type) {
+    Class<?> clazz = null;
+    if (type instanceof Class) {
+      clazz = (Class<?>) type;
+    } else if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      clazz = (Class< ? >) parameterizedType.getRawType();
+    } else if (type instanceof WildcardType) {
+      WildcardType wildcardType = (WildcardType) type;
+      clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
+    } else if (type instanceof GenericType) {
+      clazz = ((GenericType)type).getRawClass();
+    }
+    return clazz;
+  }
+
+  public static Type getTypeArg(Type type, int i) {
+    if (type instanceof ParameterizedType) {
+      Type[] typeArgs = ((ParameterizedType) type).getActualTypeArguments();
+      if (typeArgs!=null && i<typeArgs.length) {
+        return typeArgs[i];
+      }
+    } else if (type instanceof GenericType) {
+      Type[] typeArgs = ((GenericType) type).getTypeArgs();
+      if (typeArgs!=null && i<typeArgs.length) {
+        return typeArgs[i];
+      }
+    }
+    return null;
+  }
+
+  public static Type resolveFieldType(TypeVariable fieldType, Class<?> clazz, Type type) {
+    Map<String,Type> typeArgs = new HashMap<>();
+    TypeVariable< ? >[] typeParameters = clazz.getTypeParameters();
+    Type[] actualTypeArguments = null;
+    if (type instanceof ParameterizedType) {
+      actualTypeArguments = ((ParameterizedType)type).getActualTypeArguments(); 
+    } else if (type instanceof GenericType) {
+      actualTypeArguments = ((GenericType)type).getTypeArgs(); 
+    } else {
+      return null;
+    }
+    for (int i=0; i<typeParameters.length; i++) {
+      String name = typeParameters[i].getName();
+      Type typeArg = actualTypeArguments[i];
+      typeArgs.put(name, typeArg);
+    }
+    String typeArgName = fieldType.toString();
+    return typeArgs.get(typeArgName);
   }
 }

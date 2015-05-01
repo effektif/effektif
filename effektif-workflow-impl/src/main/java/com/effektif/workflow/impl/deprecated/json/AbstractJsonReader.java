@@ -30,9 +30,9 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.deprecated.json.GenericType;
 import com.effektif.workflow.api.deprecated.json.JsonReadable;
 import com.effektif.workflow.api.deprecated.json.JsonReader;
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.util.Reflection;
@@ -228,7 +228,7 @@ public abstract class AbstractJsonReader implements JsonReader {
       clazz = (Class< ? >) wildcardType.getUpperBounds()[0];
     } else if (type instanceof GenericType) {
       GenericType genericType = (GenericType) type;
-      clazz = (Class) genericType.getBaseType();
+      clazz = (Class) genericType.getRawClass();
       typeArgs = genericType.getTypeArgs();
     }
 

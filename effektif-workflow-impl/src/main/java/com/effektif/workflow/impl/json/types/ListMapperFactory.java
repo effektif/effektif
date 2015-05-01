@@ -14,37 +14,26 @@
 package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
-import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
- * Maps a {@link WorkflowId} to a JSON string field for serialisation and deserialisation.
- *
  * @author Tom Baeyens
  */
-public class WorkflowIdStreamMapper extends AbstractTypeMapper<WorkflowId> implements JsonTypeMapperFactory {
+public class ListMapperFactory implements JsonTypeMapperFactory {
 
   @Override
   public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
-    if (clazz==WorkflowId.class) {
-      return this;
+    if (clazz!=null && List.class.isAssignableFrom(clazz)) {
+      Type elementType = Reflection.getTypeArg(type, 0);
+      JsonTypeMapper elementMapper = mappings.getTypeMapper(elementType);
+      return new ListMapper(elementMapper); 
     }
     return null;
-  }
-  
-  @Override
-  public void write(WorkflowId objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeString(objectValue.getInternal());
-  }
-
-  @Override
-  public WorkflowId read(Object jsonValue, JsonReader jsonReader) {
-    return new WorkflowId((String)jsonValue);
   }
 }

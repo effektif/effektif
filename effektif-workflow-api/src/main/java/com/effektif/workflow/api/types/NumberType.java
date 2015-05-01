@@ -32,5 +32,4 @@ public class NumberType extends DataType {
   public Type getValueType() {
     return Number.class;
   }
-
 }

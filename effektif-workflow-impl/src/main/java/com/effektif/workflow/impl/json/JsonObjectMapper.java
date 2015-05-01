@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
@@ -29,14 +30,18 @@ public class JsonObjectMapper {
 
   public JsonObjectMapper() {
     this.mappings = new Mappings();
-    this.mappings.registerTypeMapper(new LocalDateTimeDateMapper());
+    this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
   }
 
   public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {
-    JsonObjectReader jsonObjectReader = new JsonObjectReader(mappings);
-    return (T) jsonObjectReader.readBean(beanJsonMap, clazz);
+    return read(beanJsonMap, (Type)clazz);
   }
-  
+
+  public <T> T read(Object jsonObject, Type type) {
+    JsonObjectReader jsonObjectReader = new JsonObjectReader(mappings);
+    return (T) jsonObjectReader.readObject(jsonObject, type);
+  }
+
   public <T> Map<String,Object> write(T bean) {
     JsonObjectWriter jsonObjectWriter = new JsonObjectWriter(mappings);
     jsonObjectWriter.writeObject(bean);

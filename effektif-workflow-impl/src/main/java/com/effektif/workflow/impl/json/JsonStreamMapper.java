@@ -46,9 +46,9 @@ public class JsonStreamMapper {
     this.objectMapper = new ObjectMapper();
     
     this.mappings = new Mappings();
-    this.mappings.registerTypeMapper(new LocalDateTimeStreamMapper());
-    this.mappings.registerTypeMapper(new WorkflowIdStreamMapper());
-    this.mappings.registerTypeMapper(new WorkflowInstanceIdStreamMapper());
+    this.mappings.registerTypeMapperFactory(new LocalDateTimeStreamMapper());
+    this.mappings.registerTypeMapperFactory(new WorkflowIdStreamMapper());
+    this.mappings.registerTypeMapperFactory(new WorkflowInstanceIdStreamMapper());
   }
   
   public JsonStreamMapper pretty() {

@@ -31,4 +31,11 @@ public abstract class AbstractTypeMapper<T> implements JsonTypeMapper<T> {
   public void setMappings(Mappings mappings) {
     this.mappings = mappings;
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName();
+  }
+  
+  
 }
