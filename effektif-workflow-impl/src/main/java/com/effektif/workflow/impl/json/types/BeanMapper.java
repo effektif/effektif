@@ -13,16 +13,15 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.impl.json.FieldMapping;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.SubclassMapping;
 
 
 /**
@@ -31,26 +30,33 @@ import com.effektif.workflow.impl.json.JsonWriter;
  * @author Tom Baeyens
  */
 public class BeanMapper<T extends Object> extends AbstractTypeMapper<T> {
-
-  Class<?> clazz;
+  
+  // TODO flesh out these member fields
+  boolean isPolymorphic;
+  SubclassMapping subclassMapping;
+  Class< ? > rawClass;
   Type type;
   
-  public BeanMapper(Class<?> clazz, Type type) {
-    this.clazz = clazz;
+  public BeanMapper(Type type) {
     this.type = type;
+    this.rawClass = GenericType.getRawClass(type);
   }
 
   @Override
   public T read(Object jsonValue, JsonReader jsonReader) {
     Map<String,Object> jsonMap = (Map<String, Object>) jsonValue;
-    Class<?> concreteClazz = mappings.getConcreteClass(jsonMap, clazz);
+    Class<?> concreteClazz = mappings.getConcreteClass(jsonMap, GenericType.getRawClass(type));
     Object bean = null;
     try {
       bean = concreteClazz.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
       throw new RuntimeException(e);
     }
-    List<FieldMapping> fieldMappings = mappings.getFieldMappings(concreteClazz, type);
+    Type fieldMappingType = concreteClazz; 
+    if (concreteClazz==rawClass) {
+      fieldMappingType = type;
+    }
+    List<FieldMapping> fieldMappings = mappings.getFieldMappings(fieldMappingType);
     for (FieldMapping fieldMapping: fieldMappings) {
       fieldMapping.readField(jsonMap, bean, jsonReader);
     }
@@ -61,9 +67,13 @@ public class BeanMapper<T extends Object> extends AbstractTypeMapper<T> {
   public void write(T bean, JsonWriter jsonWriter) {
     jsonWriter.loopCheckBeanStart(bean);
     jsonWriter.objectStart();
-    Class< ? extends Object> beanClass = bean.getClass();
+    Class<?> beanClass = bean.getClass();
     jsonWriter.writeTypeField(bean);
-    List<FieldMapping> fieldMappings = mappings.getFieldMappings(beanClass, type);
+    Type fieldMappingType = beanClass; 
+    if (beanClass==rawClass) {
+      fieldMappingType = type;
+    }
+    List<FieldMapping> fieldMappings = mappings.getFieldMappings(fieldMappingType);
     for (FieldMapping fieldMapping: fieldMappings) {
       fieldMapping.writeField(bean, jsonWriter);
     }
@@ -73,6 +83,6 @@ public class BeanMapper<T extends Object> extends AbstractTypeMapper<T> {
 
   @Override
   public String toString() {
-    return "BeanMapper<" + clazz.getSimpleName() + ">";
+    return "BeanMapper<" + GenericType.getSimpleName(type) + ">";
   }
 }

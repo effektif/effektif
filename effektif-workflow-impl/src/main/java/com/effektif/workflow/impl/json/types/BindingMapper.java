@@ -48,13 +48,11 @@ public class BindingMapper extends BeanMapper<Binding> {
   @Override
   public Binding read(Object jsonValue, JsonReader jsonReader) {
     Binding binding = super.read(jsonValue, jsonReader);
-    if (! (type instanceof ParameterizedType)) {
-      DataType dataType = binding.getDataType();
-      Object jsonVariableValue = binding.getValue();
-      if (jsonVariableValue!=null && dataType!=null) {
-        Object objectVariableValue = jsonReader.readObject(jsonVariableValue, dataType.getValueType());
-        binding.setValue(objectVariableValue);
-      }
+    DataType dataType = binding.getDataType();
+    Object jsonVariableValue = binding.getValue();
+    if (jsonVariableValue!=null && dataType!=null) {
+      Object objectVariableValue = jsonReader.readObject(jsonVariableValue, dataType.getValueType());
+      binding.setValue(objectVariableValue);
     }
     return binding;
   }
@@ -62,7 +60,9 @@ public class BindingMapper extends BeanMapper<Binding> {
   @Override
   public String toString() {
     if (type!=null) {
-      return "BindingMapper<"+Reflection.getTypeArg(type, 0)+">";
+      Type typeArg = Reflection.getTypeArg(type, 0);
+      String typeArgText = typeArg instanceof Class ? ((Class)typeArg).getSimpleName() : typeArg.toString();
+      return "BindingMapper<"+typeArgText+">";
     }
     return "BindingMapper";
   }

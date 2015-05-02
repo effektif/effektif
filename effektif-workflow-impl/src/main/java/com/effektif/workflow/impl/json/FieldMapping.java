@@ -56,7 +56,7 @@ public class FieldMapping {
     try {
       Object jsonFieldValue = beanJson.get(jsonFieldName);
       if (jsonFieldValue!=null) {
-        log.debug("reading "+field+" with "+jsonTypeMapper+" : "+jsonFieldValue);
+        log.debug("read "+field.getDeclaringClass().getSimpleName()+"."+field.getName()+" with "+jsonTypeMapper+System.identityHashCode(jsonTypeMapper)+" : "+jsonFieldValue);
         Object fieldValue = jsonTypeMapper.read(jsonFieldValue, jsonReader);
         field.set(bean, fieldValue);
       }
@@ -82,5 +82,9 @@ public class FieldMapping {
       throw new IllegalArgumentException("Provided JSON field is empty");
     }
     this.jsonFieldName = fieldName;
+  }
+  
+  public String toString() {
+    return field.getDeclaringClass().getSimpleName()+"."+field.getName()+"-->"+jsonTypeMapper+System.identityHashCode(jsonTypeMapper);
   }
 }

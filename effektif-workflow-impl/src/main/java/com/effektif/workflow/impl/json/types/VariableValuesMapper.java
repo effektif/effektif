@@ -35,7 +35,7 @@ public class VariableValuesMapper extends AbstractTypeMapper<VariableValues> imp
   static final MapMapper valuesMapper = new MapMapper(new TypedValueMapper());
 
   @Override
-  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
     if (clazz==VariableValues.class) {
       return this;
     }

@@ -18,10 +18,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,12 +37,15 @@ import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
@@ -53,6 +56,7 @@ import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.data.types.ObjectType;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
 import com.effektif.workflow.impl.json.types.BeanMapper;
@@ -297,7 +301,7 @@ public class Mappings {
   }
 
   private FieldMapping findFieldMapping(Class< ? > modelClass, String fieldName) {
-    List<FieldMapping> fieldMappings = getFieldMappings(modelClass, null);
+    List<FieldMapping> fieldMappings = getFieldMappings(modelClass);
     if (fieldMappings!=null) {
       for (FieldMapping fieldMapping: fieldMappings) {
         if (fieldMapping.field.getName().equals(fieldName)) {
@@ -351,15 +355,18 @@ public class Mappings {
     return types.get(fieldName);
   }
 
-  public List<FieldMapping> getFieldMappings(Class<?> clazz, Type type) {
-    List<FieldMapping> classFieldMappings = fieldMappings.get(clazz);
+  public List<FieldMapping> getFieldMappings(Type type) {
+    type = GenericType.unify(type);
+    
+    List<FieldMapping> classFieldMappings = fieldMappings.get(type);
     if (classFieldMappings!=null) {
       return classFieldMappings;
     }
     classFieldMappings = new ArrayList<>();
     
-    scanFields(classFieldMappings, clazz, type);
+    scanFields(classFieldMappings, type);
     
+    Class<?> clazz = GenericType.getRawClass(type);
     JsonPropertyOrder jsonPropertyOrder = clazz.getAnnotation(JsonPropertyOrder.class);
     if (jsonPropertyOrder!=null) {
       String[] fieldNamesOrder = jsonPropertyOrder.value();
@@ -388,7 +395,8 @@ public class Mappings {
     return null;
   }
   
-  public void scanFields(List<FieldMapping> fieldMappings, Class<?> clazz, Type type) {
+  public void scanFields(List<FieldMapping> fieldMappings, Type type) {
+    Class<?> clazz = GenericType.getRawClass(type);
     Field[] declaredFields = clazz.getDeclaredFields();
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
@@ -397,10 +405,10 @@ public class Mappings {
           field.setAccessible(true);
           Type fieldType = field.getGenericType();
           if (fieldType instanceof TypeVariable) {
-            fieldType = Reflection.resolveFieldType((TypeVariable)fieldType, clazz, type);
+            fieldType = null;
+            // fieldType = Reflection.resolveFieldType((TypeVariable)fieldType, clazz, type);
           }
           JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
-          log.debug(clazz.getSimpleName()+"."+field.getName()+" --> "+jsonTypeMapper);
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
 
           // Annotation-based field name override.
@@ -418,35 +426,80 @@ public class Mappings {
     }
     Class<? > superclass = clazz.getSuperclass();
     if (Object.class!=superclass) {
-      scanFields(fieldMappings, superclass, superclass.getGenericSuperclass());
+      Type supertype = GenericType.getSuperclass(type);
+      scanFields(fieldMappings, supertype);
     }
   }
   
   public JsonTypeMapper getTypeMapper(Type type) {
+    type = GenericType.unify(type);
+    
     JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
     if (jsonTypeMapper!=null) {
       return jsonTypeMapper;
     }
     
-    Class< ? > clazz = Reflection.getClass(type);
-    
     for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {
-      jsonTypeMapper = factory.createTypeMapper(clazz, type, this);
+      jsonTypeMapper = factory.createTypeMapper(type, this);
       if (jsonTypeMapper!=null) {
         break;
       }
     }
 
     if (jsonTypeMapper==null) {
-      jsonTypeMapper = new BeanMapper(clazz, type);
+      
+      jsonTypeMapper = new BeanMapper(type);
     }
-
+    
     jsonTypeMapper.setMappings(this);
     jsonTypeMappers.put(type, jsonTypeMapper);
     return jsonTypeMapper;
   }
 
   public DataType getTypeByValue(Object value) {
-    return dataTypesByClass.get(value.getClass());
+    if (value==null) {
+      return null;
+    }
+    if (value instanceof Collection) {
+      return getTypeByCollection((Collection) value);
+    }
+    if (value instanceof Map) {
+      return getTypeByMap((Map) value);
+    }
+    Class<?> clazz = value.getClass();
+    DataType dataType = dataTypesByClass.get(clazz);
+    if (dataType!=null) {
+      return dataType;
+    }
+    return new JavaBeanType(clazz);
+  }
+
+  private DataType getTypeByMap(Map map) {
+    if (map==null || map.isEmpty()) {
+      return null;
+    }
+    DataType valueType = getTypeByCollection(map.values());
+    return new ObjectType(valueType);
+  }
+
+  private DataType getTypeByCollection(Collection collection) {
+    if (collection==null || collection.isEmpty()) {
+      return null;
+    }
+    Iterator iterator = collection.iterator();
+    DataType commonDataType = getTypeByValue(iterator.next());
+    if (commonDataType instanceof JavaBeanType) {
+      JavaBeanType javaBeanType = (JavaBeanType) commonDataType; 
+      while (iterator.hasNext()) {
+        Object elementValue = iterator.next();
+        Class elementValueClass = elementValue.getClass();
+        Class javaBeanClass = javaBeanType.getJavaClass();
+        while (!javaBeanClass.isAssignableFrom(elementValueClass)
+               && javaBeanClass!=Object.class) {
+          javaBeanType.setJavaClass(javaBeanClass.getSuperclass());
+        }
+      }
+    }
+    return new ListType(commonDataType);
   }
 }

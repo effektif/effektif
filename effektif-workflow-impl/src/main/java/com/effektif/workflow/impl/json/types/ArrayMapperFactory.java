@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.Mappings;
@@ -26,7 +27,7 @@ import com.effektif.workflow.impl.json.Mappings;
 public class ArrayMapperFactory implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
     if (clazz!=null && clazz.isArray()) {
       Class<?> elementClass = clazz.getComponentType(); 
       JsonTypeMapper elementMapper = mappings.getTypeMapper(elementClass);

@@ -23,5 +23,5 @@ public interface JsonTypeMapperFactory {
 
   /** returns a json type mapper only if this factory is applicable for the given clazz/type. 
    * @param mappings TODO*/
-  JsonTypeMapper createTypeMapper(Class<?> clazz, Type type, Mappings mappings);
+  JsonTypeMapper createTypeMapper(Type type, Mappings mappings);
 }

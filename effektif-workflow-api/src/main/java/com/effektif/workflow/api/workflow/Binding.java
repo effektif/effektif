@@ -93,4 +93,10 @@ public class Binding<T> {
   public void setDataType(DataType dataType) {
     this.dataType = dataType;
   }
+  @Override
+  public String toString() {
+    return "Binding[value=" + value + ",dataType=" + dataType + ",expression=" + expression + "]";
+  }
+  
+  
 }

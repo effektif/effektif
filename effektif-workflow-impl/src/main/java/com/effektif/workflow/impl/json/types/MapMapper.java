@@ -16,6 +16,9 @@ package com.effektif.workflow.impl.json.types;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -36,29 +39,22 @@ public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper
   
   @Override
   public void write(Map map, JsonWriter jsonWriter) {
-    if (map!=null) {
-      jsonWriter.objectStart();
-      for (Object key: map.keySet()) {
-        if (key!=null) {
-          if (!(key instanceof String)) {
-            throw new RuntimeException("Only String keys allowed: "+key+" ("+key.getClass().getName()+"): Occurred when writing map "+map);
-          }
-          jsonWriter.writeFieldName((String)key);
-          Object value = map.get(key);
-          valueMapper.write(value, jsonWriter);
+    jsonWriter.objectStart();
+    for (Object key: map.keySet()) {
+      if (key!=null) {
+        if (!(key instanceof String)) {
+          throw new RuntimeException("Only String keys allowed: "+key+" ("+key.getClass().getName()+"): Occurred when writing map "+map);
         }
+        jsonWriter.writeFieldName((String)key);
+        Object value = map.get(key);
+        valueMapper.write(value, jsonWriter);
       }
-      jsonWriter.objectEnd();
-    } else {
-      jsonWriter.writeNull();
     }
+    jsonWriter.objectEnd();
   }
 
   @Override
   public Map read(Object jsonValue, JsonReader jsonReader) {
-    if (jsonValue==null) {
-      return null;
-    }
     Map<String,Object> objectMap = new LinkedHashMap<>();
     Map<String,Object> jsonMap = (Map<String, Object>) jsonValue;
     for (String key: jsonMap.keySet()) {

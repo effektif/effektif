@@ -31,7 +31,7 @@ import com.effektif.workflow.impl.json.Mappings;
 public class ValueMapper extends AbstractTypeMapper<Object> implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Class< ? > clazz, Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
     if (clazz==null || clazz==Object.class) {
       return this;
     }
