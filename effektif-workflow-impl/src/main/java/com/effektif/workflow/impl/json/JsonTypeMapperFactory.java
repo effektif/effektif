@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 public interface JsonTypeMapperFactory {
 
   /** returns a json type mapper only if this factory is applicable for the given clazz/type. 
+   * @param clazz TODO
    * @param mappings TODO*/
-  JsonTypeMapper createTypeMapper(Type type, Mappings mappings);
+  JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings);
 }

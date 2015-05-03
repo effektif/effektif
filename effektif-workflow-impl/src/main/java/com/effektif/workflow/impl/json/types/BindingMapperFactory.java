@@ -13,13 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.TypeMapping;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -28,13 +29,10 @@ import com.effektif.workflow.impl.json.Mappings;
 public class BindingMapperFactory implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz==Binding.class) {
-      if (type instanceof ParameterizedType) {
-        Type[] typeArgs = ((ParameterizedType)type).getActualTypeArguments();
-      }
-      
-      return new BindingMapper(clazz,type);
+      TypeMapping typeMapping = mappings.getTypeMapping(type);
+      return new BindingMapper(typeMapping);
     }
     return null;
   }

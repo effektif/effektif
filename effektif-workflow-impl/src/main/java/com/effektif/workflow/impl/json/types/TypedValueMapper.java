@@ -13,34 +13,20 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.json.JsonReader;
-import com.effektif.workflow.impl.json.JsonTypeMapper;
-import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
-import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.TypeMapping;
 
 
 /**
- * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
- *
  * @author Tom Baeyens
  */
-public class TypedValueMapper extends BeanMapper<TypedValue> implements JsonTypeMapperFactory {
+public class TypedValueMapper extends BeanMapper<TypedValue> {
 
-  @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
-    if (clazz==TypedValue.class) {
-      return this;
-    }
-    return null;
-  }
-
-  public TypedValueMapper() {
-    super(TypedValue.class, null);
+  public TypedValueMapper(TypeMapping typeMapping) {
+    super(typeMapping);
   }
 
   @Override
@@ -65,4 +51,5 @@ public class TypedValueMapper extends BeanMapper<TypedValue> implements JsonType
     }
     return typedValue;
   }
+
 }

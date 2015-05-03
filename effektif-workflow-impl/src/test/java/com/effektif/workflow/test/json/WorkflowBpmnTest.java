@@ -34,7 +34,6 @@ import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
-import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
@@ -45,15 +44,12 @@ import com.effektif.workflow.impl.memory.TestConfiguration;
 public class WorkflowBpmnTest extends WorkflowStreamTest {
 
   private static final Logger log = LoggerFactory.getLogger(WorkflowBpmnTest.class);
-  private static Mappings mappings;
   private static BpmnMapper bpmnMapper;
   
   @BeforeClass
   public static void initialize() {
-    mappings = new TestConfiguration().get(Mappings.class);
-    mappings.pretty();
     bpmnMapper = new BpmnMapper(new TestConfiguration());
-    bpmnMapper.setMappings(mappings);
+    bpmnMapper.setMappings(WorkflowStreamTest.getJsonStreamMapper().getMappings());
   }
 
   @Override

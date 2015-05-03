@@ -22,7 +22,6 @@ import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
-import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 
 /**
@@ -34,12 +33,9 @@ public class ConditionServiceImpl implements ConditionService, Initializable {
 
   @Override
   public void initialize(Brewery brewery) {
-    Mappings mappings = brewery.get(Mappings.class);
-    mappings.registerBaseClass(Condition.class);
     ServiceLoader<ConditionImpl> activityTypeLoader = ServiceLoader.load(ConditionImpl.class);
     for (ConditionImpl condition: activityTypeLoader) {
       Class apiType = condition.getApiType();
-      mappings.registerSubClass(apiType);
       impls.put(apiType, condition.getClass());
     }
   }

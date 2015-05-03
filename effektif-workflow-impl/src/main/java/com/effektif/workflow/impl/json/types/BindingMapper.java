@@ -13,14 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonWriter;
-import com.effektif.workflow.impl.util.Reflection;
+import com.effektif.workflow.impl.json.TypeMapping;
 
 
 /**
@@ -30,10 +27,10 @@ import com.effektif.workflow.impl.util.Reflection;
  */
 public class BindingMapper extends BeanMapper<Binding> {
   
-  public BindingMapper(Class clazz, Type type) {
-    super(clazz, (type instanceof ParameterizedType ? type : null));
+  public BindingMapper(TypeMapping typeMapping) {
+    super(typeMapping);
   }
-
+  
   @Override
   public void write(Binding typeValue, JsonWriter jsonWriter) {
     DataType dataType = typeValue.getDataType();
@@ -55,15 +52,5 @@ public class BindingMapper extends BeanMapper<Binding> {
       binding.setValue(objectVariableValue);
     }
     return binding;
-  }
-
-  @Override
-  public String toString() {
-    if (type!=null) {
-      Type typeArg = Reflection.getTypeArg(type, 0);
-      String typeArgText = typeArg instanceof Class ? ((Class)typeArg).getSimpleName() : typeArg.toString();
-      return "BindingMapper<"+typeArgText+">";
-    }
-    return "BindingMapper";
   }
 }

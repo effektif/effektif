@@ -34,7 +34,7 @@ import com.effektif.workflow.impl.json.Mappings;
 public class LocalDateTimeDateMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz==LocalDateTime.class) {
       return this;
     }

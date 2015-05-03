@@ -28,7 +28,7 @@ import com.effektif.workflow.impl.util.Reflection;
 public class ListMapperFactory implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz!=null && List.class.isAssignableFrom(clazz)) {
       Type elementType = Reflection.getTypeArg(type, 0);
       JsonTypeMapper elementMapper = mappings.getTypeMapper(elementType);

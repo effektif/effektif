@@ -43,8 +43,6 @@ import com.effektif.workflow.api.condition.Or;
 import com.effektif.workflow.api.condition.SingleBindingCondition;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
-import com.effektif.workflow.impl.deprecated.json.Mappings;
-import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
  * Tests BPMN serialisation for conditions.
@@ -58,9 +56,7 @@ public class ConditionMapperTest {
 
   @BeforeClass
   public static void initialize() {
-    Mappings mappings = new Mappings();
-    bpmnMapper = new BpmnMapper(new TestConfiguration());
-    bpmnMapper.setMappings(mappings);
+    bpmnMapper = BpmnMapperTest.getBpmnMapper();
   }
 
   @Test

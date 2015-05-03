@@ -106,7 +106,9 @@ public class ConditionsTest extends WorkflowTest {
     WorkflowInstanceImpl workflowInstance = workflowEngineImpl.startInitialize(triggerInstance);
   
     ConditionService conditionService = configuration.get(ConditionService.class);
-    ConditionImpl conditionImpl = conditionService.compile(condition, new WorkflowParser(configuration));
+    WorkflowParser workflowParser = new WorkflowParser(configuration);
+    workflowParser.pushContext("condition", null, null, null);
+    ConditionImpl conditionImpl = conditionService.compile(condition, workflowParser);
     return conditionImpl.eval(workflowInstance);
   }
 }

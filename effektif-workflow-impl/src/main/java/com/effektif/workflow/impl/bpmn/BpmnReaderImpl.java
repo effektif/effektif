@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.Stack;
 
 import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +44,10 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
-import com.effektif.workflow.impl.deprecated.json.JsonReaderImpl;
-import com.effektif.workflow.impl.deprecated.json.Mappings;
+import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.PolymorphicMapping;
+import com.effektif.workflow.impl.json.TypeMapping;
+import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
 
 /**
  * @author Tom Baeyens
@@ -54,8 +55,7 @@ import com.effektif.workflow.impl.deprecated.json.Mappings;
 public class BpmnReaderImpl implements BpmnReader {
 
   private static final Logger log = LoggerFactory.getLogger(BpmnReaderImpl.class);
-  public static DateTimeFormatter DATE_FORMAT = JsonReaderImpl.DATE_FORMAT;
-
+  
   /** global mappings */
   protected Mappings mappings;
 
@@ -344,23 +344,23 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) AbstractJsonReader.toId(value, (Class<Id>) type);
     }
     if (type==LocalDateTime.class) {
-      return (T) DATE_FORMAT.parseLocalDateTime(value);
+      return (T) LocalDateTimeStreamMapper.PARSER.parseLocalDateTime(value);
     }
     throw new RuntimeException("Couldn't parse "+value+" ("+value.getClass().getName()+") as a "+type.getName());
   }
 
 
-  @Override
-  public AccessIdentity readAccessIdentity() {
-    try {
-      Class<AccessIdentity> identityClass = mappings.getConcreteClass(this, AccessIdentity.class);
-      AccessIdentity identity = identityClass.newInstance();
-      identity.readBpmn(this);
-      return identity;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+//  @Override
+//  public AccessIdentity readAccessIdentity() {
+//    try {
+//      Class<AccessIdentity> identityClass = mappings.getConcreteClass(this, AccessIdentity.class);
+//      AccessIdentity identity = identityClass.newInstance();
+//      identity.readBpmn(this);
+//      return identity;
+//    } catch (Exception e) {
+//      throw new RuntimeException(e);
+//    }
+//  }
 
 
   /** Returns the contents of the BPMN <code>documentation</code> element. */
@@ -379,8 +379,9 @@ public class BpmnReaderImpl implements BpmnReader {
   @Override
   public Trigger readTriggerEffektif() {
     try {
-      Class<Trigger> triggerClass = mappings.getConcreteClass(this, Trigger.class);
-      Trigger type = triggerClass.newInstance();
+      PolymorphicMapping triggerMapping = mappings.getPolymorphicMapping(Trigger.class);
+      TypeMapping triggerSubclassMapping = triggerMapping.getTypeMapping(this);
+      Trigger type = (Trigger) triggerSubclassMapping.instantiate();
       type.readBpmn(this);
       return type;
     } catch (Exception e) {
@@ -391,8 +392,9 @@ public class BpmnReaderImpl implements BpmnReader {
   @Override
   public DataType readTypeEffektif() {
     try {
-      Class<?> typeClass = mappings.getConcreteClass(this, DataType.class);
-      DataType type = (DataType) typeClass.newInstance();
+      PolymorphicMapping triggerMapping = mappings.getPolymorphicMapping(DataType.class);
+      TypeMapping typeSubclassMapping = triggerMapping.getTypeMapping(this);
+      DataType type = (DataType) typeSubclassMapping.instantiate();
       type.readBpmn(this);
       return type;
     } catch (Exception e) {
@@ -418,7 +420,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (element != null) {
       String value = element.getAttribute(EFFEKTIF_URI, "value");
       if (value != null) {
-        return DATE_FORMAT.parseLocalDateTime(value);
+        return LocalDateTimeStreamMapper.PARSER.parseLocalDateTime(value);
       }
     }
     return null;
@@ -479,6 +481,11 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return conditions;
   }
+
+//  @Override
+//  public AccessIdentity readAccessIdentity() {
+//    return null;
+//  }
 
   //  @Override
 //  public <T extends Id> T readId(Class<T> idType) {

@@ -87,7 +87,7 @@ public interface BpmnReader {
   void readScope();
 
   /** Reads the access identity from a permission element’s <code>type</code> and <code>id</code> attributes. */
-  AccessIdentity readAccessIdentity();
+  // AccessIdentity readAccessIdentity();
 
   /** Reads a binding from the element whose name corresponds to the given model class. */
   <T> Binding<T> readBinding(Class modelClass, Class<T> type);

@@ -20,6 +20,7 @@ import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -30,7 +31,7 @@ import com.effektif.workflow.impl.json.Mappings;
 public class ClassMapper extends AbstractTypeMapper<Class> implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz!=null && Class.class==clazz) {
       return this;
     }

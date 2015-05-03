@@ -31,7 +31,7 @@ import com.effektif.workflow.impl.json.Mappings;
 public class WorkflowIdStreamMapper extends AbstractTypeMapper<WorkflowId> implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz==WorkflowId.class) {
       return this;
     }

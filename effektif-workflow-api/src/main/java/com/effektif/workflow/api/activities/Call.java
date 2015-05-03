@@ -79,7 +79,7 @@ public class Call extends AbstractBindableActivity {
     return this;
   }
 
-  public Call subWorkflowName(String subWorkflowSource) {
+  public Call subWorkflowSource(String subWorkflowSource) {
     this.subWorkflowSource = subWorkflowSource;
     return this;
   }

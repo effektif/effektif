@@ -33,17 +33,17 @@ import com.effektif.workflow.impl.json.Mappings;
  */
 public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapperFactory {
 
+  public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
+  public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
+
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz==LocalDateTime.class) {
       return this;
     }
     return null;
   }
   
-  public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
-  public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
-
   @Override
   public void write(LocalDateTime objectValue, JsonWriter jsonWriter) {
     jsonWriter.writeString(PRINTER.print((LocalDateTime)objectValue));

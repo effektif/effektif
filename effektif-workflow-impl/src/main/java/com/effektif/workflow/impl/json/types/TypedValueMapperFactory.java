@@ -15,36 +15,26 @@ package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
-import com.effektif.workflow.impl.json.JsonReader;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
-import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.TypeMapping;
 
 
 /**
- * Maps an object to the json object representation for JSON serialisation and 
- * just returns the json object for deserialisation.
+ * Maps a {@link String} to a JSON string field for serialisation and deserialisation.
  *
  * @author Tom Baeyens
  */
-public class ValueMapper extends AbstractTypeMapper<Object> implements JsonTypeMapperFactory {
+public class TypedValueMapperFactory implements JsonTypeMapperFactory {
 
   @Override
   public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
-    if (clazz==null || clazz==Object.class) {
-      return this;
+    if (clazz==TypedValue.class) {
+      TypeMapping typedMapping = mappings.getTypeMapping(type);
+      return new TypedValueMapper(typedMapping);
     }
     return null;
-  }
-
-  @Override
-  public Object read(Object jsonValue, JsonReader jsonReader) {
-    return jsonValue;
-  }
-
-  @Override
-  public void write(Object objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeObject(objectValue);
   }
 }

@@ -41,7 +41,6 @@ public class ActivityTypeService implements Initializable {
   
   // private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
   
-  protected Mappings mappings;
   protected Configuration configuration;
 
   // maps json type names to activity descriptors
@@ -58,7 +57,6 @@ public class ActivityTypeService implements Initializable {
 
   @Override
   public void initialize(Brewery brewery) {
-    this.mappings = brewery.get(Mappings.class);
     this.configuration = brewery.get(Configuration.class);
     initializeActivityTypes();
     initializeTriggerTypes();
@@ -87,9 +85,6 @@ public class ActivityTypeService implements Initializable {
       throw new RuntimeException("Please add @JsonTypeName annotation to "+activityTypeApiClass);
     }
     activityTypeDescriptors.put(jsonTypeName.value(), descriptor);
-    
-    // log.debug("Registering "+activityTypeApiClass);
-    mappings.registerSubClass(activityTypeApiClass);
   }
   
   public ActivityDescriptor getActivityDescriptor(String jsonTypeName) {
@@ -99,7 +94,6 @@ public class ActivityTypeService implements Initializable {
   public void registerTriggerType(AbstractTriggerImpl trigger) {
     Class triggerApiClass = trigger.getTriggerApiClass();
     triggerClasses.put(triggerApiClass, trigger.getClass());
-    mappings.registerSubClass(triggerApiClass);
   }
 
   public ActivityType instantiateActivityType(Activity activityApi) {

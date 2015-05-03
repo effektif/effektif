@@ -26,7 +26,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
-import com.effektif.workflow.impl.deprecated.json.AbstractMapper;
+import com.effektif.workflow.impl.json.Mappings;
 
 /**
  * A facade for API object BPMN serialisation and deserialisation,
@@ -34,9 +34,10 @@ import com.effektif.workflow.impl.deprecated.json.AbstractMapper;
  *
  * @author Tom Baeyens
  */
-public class BpmnMapper extends AbstractMapper {
+public class BpmnMapper {
 
   private Configuration configuration;
+  private Mappings mappings;
 
   public BpmnMapper(Configuration configuration) {
     this.configuration = configuration;
@@ -108,5 +109,15 @@ public class BpmnMapper extends AbstractMapper {
     xmlWriter.writeDocument(writer.xml);
     xmlWriter.flush();
     return stream.toString();
+  }
+
+  
+  public Mappings getMappings() {
+    return mappings;
+  }
+
+  
+  public void setMappings(Mappings mappings) {
+    this.mappings = mappings;
   }
 }

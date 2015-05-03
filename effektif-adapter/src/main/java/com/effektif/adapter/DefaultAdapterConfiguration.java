@@ -36,7 +36,6 @@ public class DefaultAdapterConfiguration implements Configuration {
     brewery.ingredient(new JsonFactory());
     brewery.ingredient(new DataTypeService());
     brewery.ingredient(new JsonMapper());
-    brewery.ingredient(new Mappings());
     
     // The memory file service was added because it was needed in 
     // EmailTypeImpl.  This is not necessary for the adapter.

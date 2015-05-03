@@ -16,23 +16,26 @@ package com.effektif.workflow.impl.json;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.bpmn.BpmnElement;
-import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
@@ -67,10 +70,11 @@ import com.effektif.workflow.impl.json.types.EnumMapperFactory;
 import com.effektif.workflow.impl.json.types.ListMapperFactory;
 import com.effektif.workflow.impl.json.types.MapMapperFactory;
 import com.effektif.workflow.impl.json.types.NumberMapperFactory;
+import com.effektif.workflow.impl.json.types.PolymorphicBeanMapper;
 import com.effektif.workflow.impl.json.types.StringMapper;
-import com.effektif.workflow.impl.json.types.TypedValueMapper;
+import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
 import com.effektif.workflow.impl.json.types.ValueMapper;
-import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
+import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
 import com.effektif.workflow.impl.util.Reflection;
 
 /**
@@ -83,12 +87,15 @@ public class Mappings {
   private static final Logger log = LoggerFactory.getLogger(Mappings.class);
   
   List<JsonTypeMapperFactory> jsonTypeMapperFactories = new ArrayList<>();
+  /** Json type mappers are the SPI to plug in support for particular types */ 
   Map<Type, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
   Map<Type,DataType> dataTypesByClass = new HashMap<>();
 
-  /** Maps registered base classes (e.g. <code>Activity</code> to all their subclass mappings. */
-  Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
-  Map<Type, List<FieldMapping>> fieldMappings = new HashMap<>();
+  /** Maps registered base classes (like e.g. <code>Activity</code>) to *unparameterized* polymorphic mappings.
+   * Polymorphic parameterized types are not yet supported */
+  Map<Class<?>, PolymorphicMapping> polymorphicMappings = new HashMap<>();
+  /** Type mappings contain the field mappings for each type.  Types can be parameterized. */ 
+  Map<Type, TypeMapping> typeMappings = new HashMap<>();
 
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
@@ -97,35 +104,35 @@ public class Mappings {
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
 
   public Mappings() {
+    registerBaseClass(Trigger.class);
+    registerBaseClass(JobType.class);
+    registerBaseClass(Activity.class);
+    registerBaseClass(Condition.class);
+    registerBaseClass(DataType.class, "name");
+    
     registerTypeMapperFactory(new ValueMapper());
     registerTypeMapperFactory(new StringMapper());
-    registerTypeMapperFactory(new NumberMapperFactory());
     registerTypeMapperFactory(new BooleanMapper());
     registerTypeMapperFactory(new ClassMapper());
-    registerTypeMapperFactory(new VariableInstanceMapper());
-    registerTypeMapperFactory(new TypedValueMapper());
+    registerTypeMapperFactory(new NumberMapperFactory());
+    registerTypeMapperFactory(new VariableInstanceMapperFactory());
+    registerTypeMapperFactory(new TypedValueMapperFactory());
     registerTypeMapperFactory(new EnumMapperFactory());
     registerTypeMapperFactory(new ArrayMapperFactory());
     registerTypeMapperFactory(new ListMapperFactory());
     registerTypeMapperFactory(new MapMapperFactory());
     registerTypeMapperFactory(new BindingMapperFactory());
     
-    registerBaseClass(Trigger.class);
-    registerBaseClass(JobType.class);
-    
-    registerBaseClass(Activity.class);
     ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
     for (ActivityType activityType: activityTypeLoader) {
       registerSubClass(activityType.getActivityApiClass());
     }
 
-    registerBaseClass(Condition.class);
     ServiceLoader<ConditionImpl> conditionLoader = ServiceLoader.load(ConditionImpl.class);
     for (ConditionImpl condition: conditionLoader) {
       registerSubClass(condition.getApiType());
     }
 
-    registerBaseClass(DataType.class, "name");
     ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
     for (DataTypeImpl dataTypeImpl: dataTypeLoader) {
       try {
@@ -163,8 +170,8 @@ public class Mappings {
   }
 
   public void registerBaseClass(Class<?> baseClass, String typeField) {
-    SubclassMapping subclassMapping = new SubclassMapping(baseClass, typeField);
-    subclassMappings.put(baseClass, subclassMapping);
+    PolymorphicMapping subclassMapping = new PolymorphicMapping(baseClass, typeField);
+    polymorphicMappings.put(baseClass, subclassMapping);
   }
 
   public void registerSubClass(Class<?> subClass) {
@@ -201,7 +208,7 @@ public class Mappings {
         }
       }
     } else {
-      for (Class<?> baseClass: subclassMappings.keySet()) {
+      for (Class<?> baseClass: polymorphicMappings.keySet()) {
         if (baseClass.isAssignableFrom(subClass)) {
           throw new RuntimeException(subClass.getName()+" does not declare "+TypeName.class.toString());
         }
@@ -244,10 +251,11 @@ public class Mappings {
   }
 
   public void registerSubClass(Class<?> baseClass, String typeName, Class<?> subClass) {
-    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
-    if (subclassMapping!=null) {
-      subclassMapping.registerSubclass(typeName, subClass);
-      typeFields.put(subClass, new TypeField(subclassMapping.getTypeField(), typeName));
+    PolymorphicMapping polymorphicMapping = polymorphicMappings.get(baseClass);
+    if (polymorphicMapping!=null) {
+      TypeMapping typeMapping = getTypeMapping(subClass);
+      polymorphicMapping.registerSubtypeMapping(typeName, subClass, typeMapping);
+      typeFields.put(subClass, new TypeField(polymorphicMapping.getTypeField(), typeName));
     }
     Class< ? > superClass = baseClass.getSuperclass();
     if (superClass!=null) {
@@ -256,23 +264,6 @@ public class Mappings {
     for (Class<?> i: baseClass.getInterfaces()) {
       registerSubClass(i, typeName, subClass);
     }
-  }
-
-  public <T> Class<T> getConcreteClass(Map<String,Object> jsonObject, Class<T> baseClass) {
-    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
-    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(jsonObject) : baseClass;
-  }
-
-  public <T> Class<T> getConcreteClass(BpmnReader bpmnReader, Class<T> baseClass) {
-    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
-    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(bpmnReader) : baseClass;
-  }
-
-  public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
-    if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
-      throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
-    }
-    return bpmnTypeMappingsByClass.get(subClass);
   }
 
   public void writeTypeField(JsonWriter jsonWriter, Object o) {
@@ -301,9 +292,9 @@ public class Mappings {
   }
 
   private FieldMapping findFieldMapping(Class< ? > modelClass, String fieldName) {
-    List<FieldMapping> fieldMappings = getFieldMappings(modelClass);
-    if (fieldMappings!=null) {
-      for (FieldMapping fieldMapping: fieldMappings) {
+    TypeMapping typeMapping = getTypeMapping(modelClass);
+    if (typeMapping!=null && typeMapping.fieldMappings!=null) {
+      for (FieldMapping fieldMapping: typeMapping.fieldMappings) {
         if (fieldMapping.field.getName().equals(fieldName)) {
           return fieldMapping;
         }
@@ -354,108 +345,7 @@ public class Mappings {
     }
     return types.get(fieldName);
   }
-
-  public List<FieldMapping> getFieldMappings(Type type) {
-    type = GenericType.unify(type);
-    
-    List<FieldMapping> classFieldMappings = fieldMappings.get(type);
-    if (classFieldMappings!=null) {
-      return classFieldMappings;
-    }
-    classFieldMappings = new ArrayList<>();
-    
-    scanFields(classFieldMappings, type);
-    
-    Class<?> clazz = GenericType.getRawClass(type);
-    JsonPropertyOrder jsonPropertyOrder = clazz.getAnnotation(JsonPropertyOrder.class);
-    if (jsonPropertyOrder!=null) {
-      String[] fieldNamesOrder = jsonPropertyOrder.value();
-      for (int i=fieldNamesOrder.length-1; i>=0; i--) {
-        String fieldName = fieldNamesOrder[i];
-        FieldMapping fieldMapping = removeField(classFieldMappings, fieldName);
-        if (fieldMapping!=null) {
-          classFieldMappings.add(0, fieldMapping);
-        }
-      }
-    }
-    
-    fieldMappings.put(clazz, classFieldMappings);
-    return classFieldMappings;
-  }
-
-  private FieldMapping removeField(List<FieldMapping> fieldMappings, String fieldName) {
-    Iterator<FieldMapping> iterator = fieldMappings.iterator();
-    while (iterator.hasNext()) {
-      FieldMapping fieldMapping = iterator.next();
-      if (fieldMapping.getFieldName().equals(fieldName)) {
-        iterator.remove();
-        return fieldMapping;
-      }
-    }
-    return null;
-  }
   
-  public void scanFields(List<FieldMapping> fieldMappings, Type type) {
-    Class<?> clazz = GenericType.getRawClass(type);
-    Field[] declaredFields = clazz.getDeclaredFields();
-    if (declaredFields!=null) {
-      for (Field field: declaredFields) {
-        if (!Modifier.isStatic(field.getModifiers()) 
-            && field.getAnnotation(JsonIgnore.class)==null) {
-          field.setAccessible(true);
-          Type fieldType = field.getGenericType();
-          if (fieldType instanceof TypeVariable) {
-            fieldType = null;
-            // fieldType = Reflection.resolveFieldType((TypeVariable)fieldType, clazz, type);
-          }
-          JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
-          FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
-
-          // Annotation-based field name override.
-          JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
-          if (jsonFieldNameAnnotation != null) {
-            fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
-          }
-
-          fieldMappings.add(fieldMapping);
-        }
-      }
-    }
-    if (clazz.isEnum()) {
-      return;
-    }
-    Class<? > superclass = clazz.getSuperclass();
-    if (Object.class!=superclass) {
-      Type supertype = GenericType.getSuperclass(type);
-      scanFields(fieldMappings, supertype);
-    }
-  }
-  
-  public JsonTypeMapper getTypeMapper(Type type) {
-    type = GenericType.unify(type);
-    
-    JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
-    if (jsonTypeMapper!=null) {
-      return jsonTypeMapper;
-    }
-    
-    for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {
-      jsonTypeMapper = factory.createTypeMapper(type, this);
-      if (jsonTypeMapper!=null) {
-        break;
-      }
-    }
-
-    if (jsonTypeMapper==null) {
-      
-      jsonTypeMapper = new BeanMapper(type);
-    }
-    
-    jsonTypeMapper.setMappings(this);
-    jsonTypeMappers.put(type, jsonTypeMapper);
-    return jsonTypeMapper;
-  }
-
   public DataType getTypeByValue(Object value) {
     if (value==null) {
       return null;
@@ -501,5 +391,182 @@ public class Mappings {
       }
     }
     return new ListType(commonDataType);
+  }
+
+  public JsonTypeMapper getTypeMapper(Type type) {
+    JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
+    if (jsonTypeMapper!=null) {
+      log.debug("Found type mapper "+jsonTypeMapper+" in cache for type "+Reflection.getSimpleName(type));
+      return jsonTypeMapper;
+    }
+
+    log.debug("Creating type mapper for type "+Reflection.getSimpleName(type));
+
+    Class clazz = Reflection.getRawClass(type);
+    for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {
+      jsonTypeMapper = factory.createTypeMapper(type, clazz, this);
+      if (jsonTypeMapper!=null) {
+        break;
+      }
+    }
+
+    if (jsonTypeMapper==null) {
+      PolymorphicMapping polymorphicMapping = getPolymorphicMapping(type);
+      if (polymorphicMapping!=null) {
+        polymorphicMapping = getParameterizedPolymorphicMapping(type, polymorphicMapping);
+        jsonTypeMapper = new PolymorphicBeanMapper(polymorphicMapping);
+      } else {
+        TypeMapping typeMapping = getTypeMapping(type);
+        jsonTypeMapper = new BeanMapper(typeMapping);
+      }
+    }
+
+    log.debug("Created type mapper "+jsonTypeMapper+" for type "+Reflection.getSimpleName(type));
+
+    jsonTypeMapper.setMappings(this);
+    jsonTypeMappers.put(type, jsonTypeMapper);
+    return jsonTypeMapper;
+  }
+
+  /** finds the most concrete polymorphic mapping that matches the given type. */
+  public PolymorphicMapping getPolymorphicMapping(Type type) {
+    Class<?> clazz = Reflection.getRawClass(type);
+    PolymorphicMapping polymorphicMapping = polymorphicMappings.get(clazz);
+    while (polymorphicMapping==null && clazz!=Object.class) {
+      clazz = clazz.getSuperclass();
+      polymorphicMapping = polymorphicMappings.get(clazz);
+    }
+    return polymorphicMapping;
+  }
+
+
+  private PolymorphicMapping getParameterizedPolymorphicMapping(Type type, PolymorphicMapping untypedPolymorphicMapping) {
+    if (!Reflection.isParameterized(type)) {
+      return untypedPolymorphicMapping;
+    }
+    throw new RuntimeException("TODO polymorphic, parameterized types are not yet supported");
+  }
+
+  public TypeMapping getTypeMapping(Type type) {
+    TypeMapping typeMapping = typeMappings.get(type);
+    if (typeMapping!=null) {
+      log.debug("Found type mapping "+typeMapping+" in cache for type "+Reflection.getSimpleName(type));
+      return typeMapping;
+    }
+    log.debug("Creating type mapping for "+Reflection.getSimpleName(type));
+    Class<?> clazz = Reflection.getRawClass(type);
+    typeMapping = new TypeMapping(clazz);
+    typeMappings.put(type, typeMapping);
+    scanFieldMappings(type, typeMapping);
+    log.debug("Creating type mapping "+typeMapping);
+    return typeMapping;
+  }
+
+  public void scanFieldMappings(Type type, TypeMapping typeMapping) {
+    List<FieldMapping> fieldMappings = new ArrayList<>();
+    scanFields(fieldMappings, type);
+    Class<?> clazz = Reflection.getRawClass(type);
+    JsonPropertyOrder jsonPropertyOrder = clazz.getAnnotation(JsonPropertyOrder.class);
+    if (jsonPropertyOrder!=null) {
+      String[] fieldNamesOrder = jsonPropertyOrder.value();
+      for (int i=fieldNamesOrder.length-1; i>=0; i--) {
+        String fieldName = fieldNamesOrder[i];
+        FieldMapping fieldMapping = removeField(fieldMappings, fieldName);
+        if (fieldMapping!=null) {
+          fieldMappings.add(0, fieldMapping);
+        }
+      }
+    }
+    typeMapping.setFieldMappings(fieldMappings);
+  }
+
+  private FieldMapping removeField(List<FieldMapping> fieldMappings, String fieldName) {
+    Iterator<FieldMapping> iterator = fieldMappings.iterator();
+    while (iterator.hasNext()) {
+      FieldMapping fieldMapping = iterator.next();
+      if (fieldMapping.getFieldName().equals(fieldName)) {
+        iterator.remove();
+        return fieldMapping;
+      }
+    }
+    return null;
+  }
+  
+  public static Type resolveFieldType(TypeVariable fieldType, Class<?> clazz, Type type) {
+    Map<String,Type> typeArgs = new HashMap<>();
+    TypeVariable< ? >[] typeParameters = clazz.getTypeParameters();
+    Type[] actualTypeArguments = null;
+    if (type instanceof ParameterizedType) {
+      actualTypeArguments = ((ParameterizedType)type).getActualTypeArguments(); 
+    } else if (type instanceof GenericType) {
+      actualTypeArguments = ((GenericType)type).getTypeArgs(); 
+    } else {
+      return null;
+    }
+    for (int i=0; i<typeParameters.length; i++) {
+      String name = typeParameters[i].getName();
+      Type typeArg = actualTypeArguments[i];
+      typeArgs.put(name, typeArg);
+    }
+    String typeArgName = fieldType.toString();
+    return typeArgs.get(typeArgName);
+  }
+
+
+  public void scanFields(List<FieldMapping> fieldMappings, Type type) {
+    Class<?> clazz = Reflection.getRawClass(type);
+    Map<TypeVariable,Type> typeArgs = Reflection.getTypeArgsMap(type);
+    
+    Field[] declaredFields = clazz.getDeclaredFields();
+    if (declaredFields!=null) {
+      for (Field field: declaredFields) {
+        if (!Modifier.isStatic(field.getModifiers()) 
+            && field.getAnnotation(JsonIgnore.class)==null) {
+          field.setAccessible(true);
+          log.debug("  Scanning "+Reflection.getSimpleName(field));
+          Type fieldType = field.getGenericType();
+          if (fieldType instanceof TypeVariable) {
+            fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : null;
+          }
+          JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
+          FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
+
+          // Annotation-based field name override.
+          JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
+          if (jsonFieldNameAnnotation != null) {
+            fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
+          }
+
+          fieldMappings.add(fieldMapping);
+        }
+      }
+    }
+    if (clazz.isEnum()) {
+      return;
+    }
+    Class<? > superclass = clazz.getSuperclass();
+    if (Object.class!=superclass) {
+      Type supertype = Reflection.getSuperclass(type);
+      scanFields(fieldMappings, supertype);
+    }
+  }
+
+  
+  public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
+    if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
+      throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
+    }
+    return bpmnTypeMappingsByClass.get(subClass);
+  }
+
+  public SortedSet<Class< ? >> getBpmnClasses() {
+    // TODO only add condition classes
+    SortedSet<Class< ? >> bpmnClasses = new TreeSet(new Comparator<Class<?>>() {
+      public int compare(Class c1, Class c2) {
+      return c1.getName().compareTo(c2.getName());
+      }
+    });
+    bpmnClasses.addAll(bpmnTypeMappingsByClass.keySet());
+    return bpmnClasses;
   }
 }

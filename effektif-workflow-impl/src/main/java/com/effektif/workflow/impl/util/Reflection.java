@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,23 +116,131 @@ public class Reflection {
     return null;
   }
 
-  public static Type resolveFieldType(TypeVariable fieldType, Class<?> clazz, Type type) {
-    Map<String,Type> typeArgs = new HashMap<>();
-    TypeVariable< ? >[] typeParameters = clazz.getTypeParameters();
-    Type[] actualTypeArguments = null;
-    if (type instanceof ParameterizedType) {
-      actualTypeArguments = ((ParameterizedType)type).getActualTypeArguments(); 
-    } else if (type instanceof GenericType) {
-      actualTypeArguments = ((GenericType)type).getTypeArgs(); 
-    } else {
+//  /** converts ParameterizedType into GenericType */
+//  public static Type unify(Type type) {
+//    if (type==null
+//        || type instanceof Class
+//        || type instanceof GenericType) {
+//      return type;
+//    }
+//    if (type instanceof ParameterizedType) {
+//      ParameterizedType parameterizedType = (ParameterizedType) type;
+//      Type rawType = parameterizedType.getRawType();
+//      if (! (rawType instanceof Class)) {
+//        throw new RuntimeException("Type "+type+" has non-class raw type "+rawType);
+//      }
+//      Type[] typeArgs = null; 
+//      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+//      if (actualTypeArguments!=null) {
+//        typeArgs = new Type[actualTypeArguments.length];
+//        for (int i=0; i<actualTypeArguments.length; i++) {
+//          typeArgs[i] = unify(actualTypeArguments[i]);
+//        }
+//      }
+//      return new GenericType((Class) rawType, typeArgs);
+//    }
+//    if (type instanceof WildcardType) {
+//      WildcardType wildcardType = (WildcardType) type;
+//      Type[] upperBounds = wildcardType.getUpperBounds();
+//      if (upperBounds==null || upperBounds.length!=1) {
+//        throw new RuntimeException("Type"+type+" doesn't have single upperbound "+(upperBounds!=null ? Arrays.asList(upperBounds) : null));
+//      }
+//      return unify(upperBounds[0]);
+//    }
+//    throw new RuntimeException("Unknown type: "+type+" ("+type.getClass().getName()+")");
+//  }
+  
+  public static Class<?> getRawClass(Type type) {
+    if (type==null) {
       return null;
     }
-    for (int i=0; i<typeParameters.length; i++) {
-      String name = typeParameters[i].getName();
-      Type typeArg = actualTypeArguments[i];
-      typeArgs.put(name, typeArg);
+    if (type instanceof Class) {
+      return (Class<?>)type;
     }
-    String typeArgName = fieldType.toString();
-    return typeArgs.get(typeArgName);
+    if (type instanceof ParameterizedType) {
+      return (Class<?>) ((ParameterizedType)type).getRawType();
+    }
+    if (type instanceof GenericType) {
+      return ((GenericType)type).getRawClass();
+    }
+    if (type instanceof WildcardType) {
+      return (Class) ((WildcardType)type).getUpperBounds()[0];
+    }
+    throw new RuntimeException("Unexpected type: "+type+" ("+type.getClass().getName()+"). Please perform GenericType.unify on the type first");
+  }
+
+  public static Type getSuperclass(Type type) {
+    return getRawClass(type).getGenericSuperclass();
+  }
+
+  public static String getSimpleName(Type type) {
+    if (type==null) {
+      return "null";
+    }
+    if (type instanceof Class) {
+      return ((Class)type).getSimpleName();
+    }
+    if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      StringBuilder name = new StringBuilder();
+      String rawname = getRawClass(parameterizedType.getRawType()).getSimpleName();
+      name.append(rawname);
+      Type[] typeArgs = parameterizedType.getActualTypeArguments();
+      if (typeArgs!=null) {
+        name.append("<");
+        for (int i = 0; i < typeArgs.length; i++) {
+          if (i!=0) {
+            name.append(",");
+          }
+          name.append(getSimpleName(typeArgs[i]));
+        }
+        name.append(">");
+      }
+      return name.toString();
+    }
+    return type.toString();
+  }
+
+  public static Object instantiate(Class< ? > clazz) {
+    try {
+      return clazz.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static boolean isParameterized(Type type) {
+    return type instanceof ParameterizedType
+           || type instanceof GenericType;
+  }
+
+  public static Type[] getTypeArgs(Type type) {
+    if (type instanceof ParameterizedType) {
+      return ((ParameterizedType)type).getActualTypeArguments();
+    }
+    if (type instanceof GenericType) {
+      return ((GenericType)type).getTypeArgs();
+    }
+    return null;
+  }
+
+  public static Map<TypeVariable, Type> getTypeArgsMap(Type type) {
+    Type[] typeArgs = getTypeArgs(type);
+    if (typeArgs==null) {
+      return null;
+    }
+    Class<?> rawClass = getRawClass(type);
+    Map<TypeVariable,Type> typeVariables = new HashMap<>();
+    // Map<String,Type> typeArgsMap = new HashMap<>();
+    TypeVariable<?>[] typeParameters = rawClass.getTypeParameters();
+    for (int i=0; i<typeArgs.length; i++) {
+      typeVariables.put(typeParameters[i], typeArgs[i]);
+      // typeArgsMap.put(typeParameters[i].toString(), typeArgs[i]);
+    }
+    return typeVariables;
+  }
+
+  public static String getSimpleName(Field field) {
+    return field.getDeclaringClass().getSimpleName()+"."+field.getName();
   }
 }

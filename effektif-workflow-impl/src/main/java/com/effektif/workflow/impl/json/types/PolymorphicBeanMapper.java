@@ -15,29 +15,29 @@ package com.effektif.workflow.impl.json.types;
 
 import java.util.Map;
 
+import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeMapping;
-import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
  * @author Tom Baeyens
  */
-public class BeanMapper<T> extends AbstractBeanMapper<T> {
+public class PolymorphicBeanMapper extends AbstractBeanMapper {
   
-  TypeMapping typeMapping;
+  PolymorphicMapping polymorphicMapping;
   
-  public BeanMapper(TypeMapping typeMapping) {
-    super(Reflection.getSimpleName(typeMapping.getType()));
-    this.typeMapping = typeMapping;
+  public PolymorphicBeanMapper(PolymorphicMapping polymorphicMapping) {
+    super(polymorphicMapping.getBaseClass().getSimpleName());
+    this.polymorphicMapping = polymorphicMapping;
   }
 
   @Override
   protected TypeMapping getTypeMapping(Map jsonObject) {
-    return typeMapping;
+    return polymorphicMapping.getTypeMapping(jsonObject);
   }
 
   @Override
   protected TypeMapping getTypeMapping(Class beanClass) {
-    return typeMapping;
+    return polymorphicMapping.getTypeMapping(beanClass);
   }
 }

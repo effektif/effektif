@@ -22,6 +22,7 @@ import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.TypeMapping;
 
 
 /**
@@ -29,18 +30,10 @@ import com.effektif.workflow.impl.json.Mappings;
  *
  * @author Tom Baeyens
  */
-public class VariableInstanceMapper extends BeanMapper<VariableInstance> implements JsonTypeMapperFactory {
+public class VariableInstanceMapper extends BeanMapper<VariableInstance> {
 
-  @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
-    if (clazz==VariableInstance.class) {
-      return this;
-    }
-    return null;
-  }
-
-  public VariableInstanceMapper() {
-    super(VariableInstance.class, null);
+  public VariableInstanceMapper(TypeMapping typeMapping) {
+    super(typeMapping);
   }
 
   @Override

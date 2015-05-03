@@ -138,8 +138,9 @@ public class AccessControlList implements BpmnReadable, BpmnWritable, JsonWritab
     for (XmlElement nestedElement: r.readElementsEffektif("permission")) {
       r.startElement(nestedElement);
       String action = r.readStringAttributeEffektif("action");
-      AccessIdentity identity = r.readAccessIdentity();
-      permission(identity, action);
+// TODO
+//      AccessIdentity identity = r.readAccessIdentity();
+//      permission(identity, action);
       r.endElement();
     }
   }

@@ -11,33 +11,34 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json.types;
+package com.effektif.workflow.impl.json;
 
 import java.util.Map;
 
-import com.effektif.workflow.impl.json.TypeMapping;
-import com.effektif.workflow.impl.util.Reflection;
-
+import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
+import com.effektif.workflow.api.workflow.Trigger;
 
 /**
+ * A mapping from a ‘base class’, e.g. {@link Trigger}, to its subclasses (e.g. {@link FormTrigger}).
+ *
  * @author Tom Baeyens
  */
-public class BeanMapper<T> extends AbstractBeanMapper<T> {
-  
+public class BeanMapping {
+
   TypeMapping typeMapping;
   
-  public BeanMapper(TypeMapping typeMapping) {
-    super(Reflection.getSimpleName(typeMapping.getType()));
+  protected BeanMapping() {
+  }
+  
+  public BeanMapping(TypeMapping typeMapping) {
     this.typeMapping = typeMapping;
   }
-
-  @Override
-  protected TypeMapping getTypeMapping(Map jsonObject) {
+  
+  public TypeMapping getTypeMapping(Map<String, Object> jsonObject) {
     return typeMapping;
   }
 
-  @Override
-  protected TypeMapping getTypeMapping(Class beanClass) {
+  public TypeMapping getTypeMapping(Class<?> beanClass) {
     return typeMapping;
   }
 }

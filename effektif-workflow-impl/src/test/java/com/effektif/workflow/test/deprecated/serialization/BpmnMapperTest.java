@@ -35,24 +35,31 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
+import com.effektif.workflow.test.json.WorkflowStreamTest;
 
 /**
  * @author Tom Baeyens
  */
-public class BpmnMapperTest extends AbstractMapperTest {
+public class BpmnMapperTest extends WorkflowStreamTest {
 
   protected static final Logger log = LoggerFactory.getLogger(BpmnMapperTest.class);
   static BpmnMapper bpmnMapper;
   
   @BeforeClass
   public static void initialize() {
-    initializeMappings();
-    bpmnMapper = new BpmnMapper(new TestConfiguration());
-    bpmnMapper.setMappings(mappings);
+    if (bpmnMapper==null) {
+      bpmnMapper = new BpmnMapper(new TestConfiguration());
+      bpmnMapper.setMappings(WorkflowStreamTest.getJsonStreamMapper().getMappings());
+    }
+  }
+  
+  public static BpmnMapper getBpmnMapper() {
+    initialize();
+    return bpmnMapper;
   }
   
   @Override
-  protected <T> T serialize(T o) {
+  public <T> T serialize(T o) {
     Workflow w = null;
     if (o instanceof Activity) {
       w = new Workflow()

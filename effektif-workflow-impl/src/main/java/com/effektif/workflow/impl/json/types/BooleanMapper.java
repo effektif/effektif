@@ -30,7 +30,7 @@ import com.effektif.workflow.impl.json.Mappings;
 public class BooleanMapper extends AbstractTypeMapper<Boolean> implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if ( Boolean.class==type
             || boolean.class==type ) {
       return this;

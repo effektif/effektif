@@ -29,7 +29,7 @@ import com.effektif.workflow.impl.util.Lists;
 public class NumberMapperFactory implements JsonTypeMapperFactory {
 
   @Override
-  public JsonTypeMapper createTypeMapper(Type type, Mappings mappings) {
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (isNumberClass(clazz)) {
       return new NumberMapper(type);
     }

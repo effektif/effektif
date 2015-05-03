@@ -32,24 +32,8 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.condition.IsTrue;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
-import com.effektif.workflow.api.deprecated.types.EmailIdType;
-import com.effektif.workflow.api.deprecated.types.FileIdType;
-import com.effektif.workflow.api.deprecated.types.GroupIdType;
-import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.ChoiceType;
-import com.effektif.workflow.api.types.EmailAddressType;
-import com.effektif.workflow.api.types.LinkType;
-import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.MoneyType;
-import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
@@ -62,12 +46,19 @@ import com.effektif.workflow.impl.util.Lists;
  */
 public class WorkflowStreamTest {
   
-  static JsonStreamMapper jsonStreamMapper = null;
+  protected static JsonStreamMapper jsonStreamMapper = null;
   
   @BeforeClass
   public static void initialize() {
-    jsonStreamMapper = new JsonStreamMapper();
-    jsonStreamMapper.pretty();
+    if (jsonStreamMapper==null) {
+      jsonStreamMapper = new JsonStreamMapper();
+      jsonStreamMapper.pretty();
+    }
+  }
+
+  public static JsonStreamMapper getJsonStreamMapper() {
+    initialize();
+    return jsonStreamMapper; 
   }
 
   public <T> T serialize(T o) {
@@ -145,13 +136,18 @@ public class WorkflowStreamTest {
   public void testCall() {
     Workflow workflow = new Workflow()
       .activity(new Call()
-        .subWorkflowName("sws"));
+      .id("runTests")
+      .subWorkflowSource("Run tests")
+      .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
     workflow = serialize(workflow);
     
     assertNotNull(workflow);
+    Call call = (Call) workflow.getActivities().get(0);
+    assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
+    assertEquals("Run tests", call.getSubWorkflowSource());
   }
-
+  
   @Test
   public void testEndEvent() {
     EndEvent activity = new EndEvent();

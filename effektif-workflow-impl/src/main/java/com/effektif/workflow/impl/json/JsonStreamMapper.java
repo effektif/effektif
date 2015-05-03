@@ -21,7 +21,7 @@ import java.util.Map;
 
 import com.effektif.workflow.impl.json.types.BindingMapper;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
-import com.effektif.workflow.impl.json.types.TypedValueMapper;
+import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
 import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
 import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
@@ -84,5 +84,9 @@ public class JsonStreamMapper {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public Mappings getMappings() {
+    return mappings;
   }
 }

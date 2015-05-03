@@ -85,7 +85,7 @@ import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.job.TaskEscalateJobType;
 import com.effektif.workflow.impl.deprecated.job.TaskReminderJobType;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.json.SubclassMapping;
+import com.effektif.workflow.impl.json.BeanMapping;
 import com.effektif.workflow.impl.json.TypeField;
 
 
@@ -101,7 +101,7 @@ public class Mappings {
   Boolean isPretty;
 
   /** Maps registered base classes (e.g. <code>Trigger</code> to their subclass mappings. */
-  Map<Class<?>, SubclassMapping> subclassMappings = new HashMap<>();
+  Map<Class<?>, BeanMapping> subclassMappings = new HashMap<>();
 
   Map<Class<?>, TypeField> typeFields = new HashMap<>();
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
@@ -165,8 +165,8 @@ public class Mappings {
   }
 
   public void registerBaseClass(Class<?> baseClass, String typeField) {
-    SubclassMapping subclassMapping = new SubclassMapping(baseClass, typeField);
-    subclassMappings.put(baseClass, subclassMapping);
+//    BeanMapping subclassMapping = new BeanMapping(baseClass, typeField);
+//    subclassMappings.put(baseClass, subclassMapping);
   }
 
   public void registerSubClass(Class<?> subClass) {
@@ -243,28 +243,30 @@ public class Mappings {
   }
 
   public void registerSubClass(Class<?> baseClass, String typeName, Class<?> subClass) {
-    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
-    if (subclassMapping!=null) {
-      subclassMapping.registerSubclass(typeName, subClass);
-      typeFields.put(subClass, new TypeField(subclassMapping.getTypeField(), typeName));
-    }
-    Class< ? > superClass = baseClass.getSuperclass();
-    if (superClass!=null) {
-      registerSubClass(superClass, typeName, subClass);
-    }
-    for (Class<?> i: baseClass.getInterfaces()) {
-      registerSubClass(i, typeName, subClass);
-    }
+//    BeanMapping subclassMapping = subclassMappings.get(baseClass);
+//    if (subclassMapping!=null) {
+//      subclassMapping.registerSubclass(typeName, subClass);
+//      typeFields.put(subClass, new TypeField(subclassMapping.getTypeField(), typeName));
+//    }
+//    Class< ? > superClass = baseClass.getSuperclass();
+//    if (superClass!=null) {
+//      registerSubClass(superClass, typeName, subClass);
+//    }
+//    for (Class<?> i: baseClass.getInterfaces()) {
+//      registerSubClass(i, typeName, subClass);
+//    }
   }
 
   public <T> Class<T> getConcreteClass(Map<String,Object> jsonObject, Class<T> baseClass) {
-    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
-    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(jsonObject) : baseClass;
+//    BeanMapping subclassMapping = subclassMappings.get(baseClass);
+//    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(jsonObject) : baseClass;
+    return null;
   }
 
   public <T> Class<T> getConcreteClass(BpmnReader bpmnReader, Class<T> baseClass) {
-    SubclassMapping subclassMapping = subclassMappings.get(baseClass);
-    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(bpmnReader) : baseClass;
+//    BeanMapping subclassMapping = subclassMappings.get(baseClass);
+//    return subclassMapping!=null ? (Class<T>) subclassMapping.getSubclass(bpmnReader) : baseClass;
+    return null;
   }
 
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
