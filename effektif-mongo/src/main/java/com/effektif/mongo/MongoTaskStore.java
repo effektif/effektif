@@ -28,7 +28,6 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
 import com.effektif.mongo.MongoWorkflowStore.FieldsWorkflow;
-import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.api.deprecated.acl.Access;
 import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.deprecated.model.UserId;
@@ -51,7 +50,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
   
   public static final Logger log = MongoDb.log;
   
-  protected MongoJsonMapper mongoJsonMapper;
+  protected MongoObjectMapper mongoMapper;
   protected MongoCollection tasksCollection;
   
   public interface FieldsTask {
@@ -77,7 +76,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.tasksCollection = mongoDb.createCollection(mongoConfiguration.getTasksCollectionName());
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
 
   @Override
@@ -165,7 +164,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
 
   public BasicDBObject taskToMongo(Task task) {
-    Map<String,Object> jsonTask = mongoJsonMapper.writeToDbObject(task);
+    Map<String,Object> jsonTask = mongoMapper.write(task);
     BasicDBObject dbTask = new BasicDBObject(); 
     jsonTask.remove("id");
     jsonTask.remove(FieldsTask.ORGANIZATION_ID);
@@ -196,7 +195,7 @@ public class MongoTaskStore implements TaskStore, Brewable {
     ObjectId workflowId = (ObjectId) dbTask.remove(FieldsTask.WORKFLOW_ID);
     ObjectId workflowInstanceId = (ObjectId) dbTask.remove(FieldsTask.WORKFLOW_INSTANCE_ID);
     Date lastUpdated = (Date) dbTask.remove(FieldsTask.LAST_UPDATED);
-    Task task = mongoJsonMapper.readFromDbObject(dbTask, Task.class);
+    Task task = mongoMapper.read(dbTask, Task.class);
     if (taskId!=null) {
       task.setId(new TaskId(taskId.toString()));
     }

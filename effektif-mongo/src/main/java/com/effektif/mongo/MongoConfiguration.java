@@ -19,7 +19,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
@@ -66,7 +65,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoJobStore());
     brewery.ingredient(new MongoFileService());
     brewery.ingredient(new MongoEmailStore());
-    brewery.ingredient(new MongoJsonMapper());
+    brewery.ingredient(new MongoObjectMapper());
     
     // TODO replace this with a default mongo identity service
     brewery.ingredient(new MemoryIdentityService());

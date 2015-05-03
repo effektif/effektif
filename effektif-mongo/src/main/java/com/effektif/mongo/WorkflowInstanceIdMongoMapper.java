@@ -12,6 +12,8 @@ package com.effektif.mongo;/* Copyright (c) 2015, Effektif GmbH.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 
+import java.lang.reflect.Type;
+
 import org.bson.types.ObjectId;
 
 import com.effektif.workflow.api.model.WorkflowId;
@@ -19,7 +21,9 @@ import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.json.JsonObjectWriter;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
+import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.json.types.AbstractTypeMapper;
 
 /**
@@ -27,11 +31,14 @@ import com.effektif.workflow.impl.json.types.AbstractTypeMapper;
  *
  * @author Peter Hilton
  */
-public class WorkflowInstanceIdMongoMapper extends AbstractTypeMapper<WorkflowInstanceId> implements JsonTypeMapper<WorkflowInstanceId> {
+public class WorkflowInstanceIdMongoMapper extends AbstractTypeMapper<WorkflowInstanceId> implements JsonTypeMapperFactory {
 
   @Override
-  public Class<WorkflowInstanceId> getMappedClass() {
-    return WorkflowInstanceId.class;
+  public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
+    if (clazz==WorkflowInstanceId.class) {
+      return this;
+    }
+    return null;
   }
 
   @Override

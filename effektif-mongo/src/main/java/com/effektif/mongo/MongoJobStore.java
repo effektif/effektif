@@ -67,7 +67,7 @@ public class MongoJobStore implements JobStore, Brewable {
     public String jobType = "jobType";
   }
 
-  protected MongoJsonMapper mongoJsonMapper;
+  protected MongoObjectMapper mongoMapper;
   protected String lockOwner;
   protected MongoCollection jobsCollection;
   protected MongoCollection archivedJobsCollection;
@@ -78,7 +78,7 @@ public class MongoJobStore implements JobStore, Brewable {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.jobsCollection = mongoDb.createCollection(mongoConfiguration.getJobsCollectionName());
     this.archivedJobsCollection = mongoDb.createCollection(mongoConfiguration.getJobsArchivedCollectionName());
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
   
   public void saveJob(Job job) {
@@ -142,7 +142,7 @@ public class MongoJobStore implements JobStore, Brewable {
   }
 
   public Job readJob(BasicDBObject dbJob) {
-    return mongoJsonMapper.readFromDbObject(dbJob, Job.class);
+    return mongoMapper.read(dbJob, Job.class);
     
 //    Job job = new Job();
 //    job.id = readId(dbJob, JobFields._id);
@@ -188,7 +188,7 @@ public class MongoJobStore implements JobStore, Brewable {
   }
 
   public BasicDBObject writeJob(Job job) {
-    return mongoJsonMapper.writeToDbObject(job.jobType);
+    return mongoMapper.write(job.jobType);
     
 //    BasicDBObject dbJob = new BasicDBObject();
 //    writeIdOpt(dbJob, JobFields._id, job.id);

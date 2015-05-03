@@ -19,10 +19,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
-import com.effektif.workflow.impl.json.types.BindingMapper;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
-import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
-import com.effektif.workflow.impl.json.types.VariableInstanceMapper;
 import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
 import com.fasterxml.jackson.core.JsonFactory;

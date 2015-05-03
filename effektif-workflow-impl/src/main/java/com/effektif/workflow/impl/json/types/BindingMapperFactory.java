@@ -20,7 +20,6 @@ import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.json.TypeMapping;
-import com.effektif.workflow.impl.util.Reflection;
 
 
 /**

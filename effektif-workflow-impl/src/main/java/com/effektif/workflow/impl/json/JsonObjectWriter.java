@@ -38,17 +38,19 @@ public class JsonObjectWriter extends JsonWriter {
     }
   }
   
+  JsonObjectMapper jsonObjectMapper;
   Stack<ObjectContext> objectContextStack = new Stack<>();
   Object result = null;
   
-  public JsonObjectWriter(Mappings mappings) {
+  public JsonObjectWriter(Mappings mappings, JsonObjectMapper jsonObjectMapper) {
     super(mappings);
+    this.jsonObjectMapper = jsonObjectMapper;
   }
 
   @Override
   public void objectStart() {
     ObjectContext objectContext = new ObjectContext();
-    objectContext.jsonMap = new LinkedHashMap<>();
+    objectContext.jsonMap = jsonObjectMapper.newObjectMap();
     objectContextStack.push(objectContext);
   }
 
@@ -72,7 +74,7 @@ public class JsonObjectWriter extends JsonWriter {
   @Override
   public void arrayStart() {
     ObjectContext objectContext = new ObjectContext();
-    objectContext.jsonList = new ArrayList<>();
+    objectContext.jsonList = jsonObjectMapper.newArray();
     objectContextStack.push(objectContext);
   }
 

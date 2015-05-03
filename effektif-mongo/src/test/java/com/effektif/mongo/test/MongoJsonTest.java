@@ -13,70 +13,35 @@
  * limitations under the License. */
 package com.effektif.mongo.test;
 
-import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
-import com.effektif.mongo.PrettyPrinter;
-import com.effektif.mongo.deprecated.MongoJsonMapper;
-import com.effektif.workflow.test.deprecated.serialization.AbstractMapperTest;
-import com.mongodb.BasicDBObject;
+import org.bson.types.ObjectId;
+import org.junit.BeforeClass;
+
+import com.effektif.mongo.MongoObjectMapper;
+import com.effektif.workflow.test.json.WorkflowStreamTest;
+
 
 /**
  * @author Tom Baeyens
  */
-public class MongoJsonTest extends AbstractMapperTest {
+public class MongoJsonTest extends WorkflowStreamTest {
 
-  protected static final Logger log = LoggerFactory.getLogger(MongoJsonTest.class);
-  static MongoJsonMapper mongoJsonMapper = new MongoJsonMapper();
-
-  protected String fileId() {
-    return "552ce4fdc2e610a6a3dedb10";
-  }
-
-  protected String groupId(int index) {
-    String[] ids = { "552ce4fdc2e610a6a3dedb20", "552ce4fdc2e610a6a3dedb21", "552ce4fdc2e610a6a3dedb22" };
-    return ids[index];
-  }
-
-  protected String userId(int index) {
-    String[] ids = { "552ce4fdc2e610a6a3dedb30", "552ce4fdc2e610a6a3dedb31", "552ce4fdc2e610a6a3dedb32" };
-    return ids[index];
-  }
-
-  protected String workflowId() {
-    return "552ce4fdc2e610a6a3dedb40";
-  }
-
+  static MongoObjectMapper mongoObjectMapper = null;
+  
   @BeforeClass
   public static void initialize() {
-    initializeMappings();
-    mongoJsonMapper = new MongoJsonMapper();
-    mongoJsonMapper.setMappings(mappings);
+    mongoObjectMapper = new MongoObjectMapper();
   }
-  
-//  @Test
-//  public void testPrintObjectIds() {
-//    for (int i=0; i<20; i++) {
-//      System.out.println(ObjectId.get().toString());
-//    }
-//  }
 
   @Override
-  protected <T> T serialize(T o) {
-    BasicDBObject dbWorkflow = (BasicDBObject) mongoJsonMapper
-      .writeToDbObject(o);
-    
-    String json = null; 
-    if (mappings.isPretty()) {
-      json = PrettyPrinter.toJsonPrettyPrint(dbWorkflow);
-    } else {
-      json = dbWorkflow.toString();
-    }
-    log.info("\n" + json + "\n");
-    
-    return (T) mongoJsonMapper
-      .readFromDbObject(dbWorkflow, (Class<T>) o.getClass());
+  public <T> T serialize(T o) {
+    Map<String,Object> jsonMap = mongoObjectMapper.write(o);
+    System.out.println(jsonMap.toString());
+    return mongoObjectMapper.read(jsonMap, o.getClass());
   }
 
+  protected String getWorkflowIdInternal() {
+    return "55461f4003649edf48457c70";
+  }
 }

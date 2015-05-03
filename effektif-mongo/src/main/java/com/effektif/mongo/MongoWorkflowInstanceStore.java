@@ -18,7 +18,6 @@ package com.effektif.mongo;
 import static com.effektif.mongo.MongoHelper.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -27,10 +26,8 @@ import java.util.Map;
 import java.util.Queue;
 
 import org.bson.types.ObjectId;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
-import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -72,7 +69,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   protected MongoJobStore mongoJobsStore;
   protected boolean storeWorkflowIdsAsStrings;
   protected DataTypeService dataTypeService;
-  protected MongoJsonMapper mongoJsonMapper;
+  protected MongoObjectMapper mongoMapper;
   
   interface ScopeInstanceFields {
     String _ID = "id";
@@ -131,7 +128,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     this.storeWorkflowIdsAsStrings = mongoConfiguration.getStoreWorkflowIdsAsString();
     this.mongoJobsStore = brewery.get(MongoJobStore.class);
     this.dataTypeService = brewery.get(DataTypeService.class);
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
   
   @Override
@@ -510,7 +507,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     List<BasicDBObject> dbVariableInstances = readList(dbWorkflowInstance, WorkflowInstanceFields.VARIABLE_INSTANCES);
     if (dbVariableInstances!=null && !dbVariableInstances.isEmpty()) {
       for (BasicDBObject dbVariableInstance: dbVariableInstances) {
-        VariableInstance variableInstance = mongoJsonMapper.readFromDbObject(dbVariableInstance, VariableInstance.class);
+        VariableInstance variableInstance = mongoMapper.read(dbVariableInstance, VariableInstance.class);
         
         VariableInstanceImpl variableInstanceImpl = new VariableInstanceImpl();
         variableInstanceImpl.id = variableInstance.getId();
@@ -525,17 +522,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
             variableInstanceImpl.type = dataTypeService.createDataType(type);
           }
         }
-        Object jsonValue = dbVariableInstance.get(VariableInstanceFields.VALUE);
-        if (jsonValue!=null) {
-          if (jsonValue instanceof Date) {
-            variableInstanceImpl.value = new LocalDateTime(jsonValue);
-          } else {
-            if (jsonValue instanceof ObjectId) {
-              jsonValue = jsonValue.toString();
-            }
-            variableInstanceImpl.value = variableInstanceImpl.type.convertJsonToInternalValue(jsonValue);
-          }
-        }
+        variableInstanceImpl.value = dbVariableInstance.get(VariableInstanceFields.VALUE);
 
         variableInstanceImpl.configuration = configuration;
         variableInstanceImpl.workflowInstance = parent.workflowInstance;
@@ -596,7 +583,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   protected BasicDBObject writeActivityInstance(ActivityInstanceImpl activityInstance) {
-    BasicDBObject dbActivity = mongoJsonMapper.writeToDbObject(activityInstance.toActivityInstance());
+    BasicDBObject dbActivity = mongoMapper.write(activityInstance.toActivityInstance());
     String parentId = (activityInstance.parent.isWorkflowInstance() ? null : ((ActivityInstanceImpl)activityInstance.parent).id);
     writeString(dbActivity, ActivityInstanceFields.PARENT, parentId);
     writeString(dbActivity, ActivityInstanceFields.WORK_STATE, activityInstance.workState);
@@ -604,7 +591,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
   
   protected ActivityInstanceImpl readActivityInstance(WorkflowInstanceImpl workflowInstance, BasicDBObject dbActivityInstance) {
-    ActivityInstance activityInstance = mongoJsonMapper.readFromDbObject(dbActivityInstance, ActivityInstance.class);
+    ActivityInstance activityInstance = mongoMapper.read(dbActivityInstance, ActivityInstance.class);
     ActivityInstanceImpl activityInstanceImpl = new ActivityInstanceImpl();
     activityInstanceImpl.id = activityInstance.getId();
     activityInstanceImpl.start = activityInstance.getStart();
@@ -627,7 +614,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     if (scope.variableInstances!=null) {
       for (VariableInstanceImpl variableInstanceImpl: scope.variableInstances) {
         VariableInstance variableInstance = variableInstanceImpl.toVariableInstance();
-        BasicDBObject dbVariable = mongoJsonMapper.writeToDbObject(variableInstance);
+        BasicDBObject dbVariable = mongoMapper.write(variableInstance);
         writeListElementOpt(dbScope, WorkflowInstanceFields.VARIABLE_INSTANCES, dbVariable);
       }
     }

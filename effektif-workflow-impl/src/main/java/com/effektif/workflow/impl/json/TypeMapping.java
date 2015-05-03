@@ -14,7 +14,6 @@
 package com.effektif.workflow.impl.json;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.impl.util.Reflection;
@@ -32,6 +31,10 @@ public class TypeMapping {
   public TypeMapping(Type type) {
     this.type = type;
     this.rawClass = Reflection.getRawClass(type);
+  }
+  
+  public boolean isParameterized() {
+    return type!=rawClass;
   }
   
   public Object instantiate() {

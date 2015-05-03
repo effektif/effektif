@@ -396,11 +396,11 @@ public class Mappings {
   public JsonTypeMapper getTypeMapper(Type type) {
     JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
     if (jsonTypeMapper!=null) {
-      log.debug("Found type mapper "+jsonTypeMapper+" in cache for type "+Reflection.getSimpleName(type));
+      // log.debug("Found type mapper "+jsonTypeMapper+" in cache for type "+Reflection.getSimpleName(type));
       return jsonTypeMapper;
     }
 
-    log.debug("Creating type mapper for type "+Reflection.getSimpleName(type));
+    // log.debug("Creating type mapper for type "+Reflection.getSimpleName(type));
 
     Class clazz = Reflection.getRawClass(type);
     for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {
@@ -421,7 +421,7 @@ public class Mappings {
       }
     }
 
-    log.debug("Created type mapper "+jsonTypeMapper+" for type "+Reflection.getSimpleName(type));
+    // log.debug("Created type mapper "+jsonTypeMapper+" for type "+Reflection.getSimpleName(type));
 
     jsonTypeMapper.setMappings(this);
     jsonTypeMappers.put(type, jsonTypeMapper);
@@ -450,15 +450,15 @@ public class Mappings {
   public TypeMapping getTypeMapping(Type type) {
     TypeMapping typeMapping = typeMappings.get(type);
     if (typeMapping!=null) {
-      log.debug("Found type mapping "+typeMapping+" in cache for type "+Reflection.getSimpleName(type));
+      // log.debug("Found type mapping "+typeMapping+" in cache for type "+Reflection.getSimpleName(type));
       return typeMapping;
     }
-    log.debug("Creating type mapping for "+Reflection.getSimpleName(type));
+    // log.debug("Creating type mapping for "+Reflection.getSimpleName(type));
     Class<?> clazz = Reflection.getRawClass(type);
     typeMapping = new TypeMapping(clazz);
     typeMappings.put(type, typeMapping);
     scanFieldMappings(type, typeMapping);
-    log.debug("Creating type mapping "+typeMapping);
+    // log.debug("Creating type mapping "+typeMapping);
     return typeMapping;
   }
 
@@ -523,7 +523,7 @@ public class Mappings {
         if (!Modifier.isStatic(field.getModifiers()) 
             && field.getAnnotation(JsonIgnore.class)==null) {
           field.setAccessible(true);
-          log.debug("  Scanning "+Reflection.getSimpleName(field));
+          // log.debug("  Scanning "+Reflection.getSimpleName(field));
           Type fieldType = field.getGenericType();
           if (fieldType instanceof TypeVariable) {
             fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : null;

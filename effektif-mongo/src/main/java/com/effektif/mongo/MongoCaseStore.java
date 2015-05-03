@@ -43,7 +43,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
   
   public static final Logger log = MongoDb.log;
   
-  protected MongoJsonMapper mongoJsonMapper;
+  protected MongoObjectMapper mongoMapper;
   protected MongoCollection casesCollection;
   
   public interface FieldsCase {
@@ -60,7 +60,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
     MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.casesCollection = mongoDb.createCollection(mongoConfiguration.getCasesCollectionName());
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
 
   @Override
@@ -116,7 +116,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
   }
 
   public BasicDBObject caseToMongo(Case caze) {
-    return mongoJsonMapper.writeToDbObject(caze);
+    return mongoMapper.write(caze);
 //    BasicDBObject dbWorkflow = new BasicDBObject(); 
 //    jsonWorkflow.remove("id");
 //    jsonWorkflow.remove(FieldsCase.ORGANIZATION_ID);
@@ -129,7 +129,7 @@ public class MongoCaseStore implements CaseStore, Brewable {
   }
 
   public Case mongoToCase(BasicDBObject dbCase) {
-    return mongoJsonMapper.readFromDbObject(dbCase, Case.class);
+    return mongoMapper.read(dbCase, Case.class);
 //    ObjectId caseId = (ObjectId) dbCase.remove(FieldsCase._ID);
 //    ObjectId organizationId = (ObjectId) dbCase.remove(FieldsCase.ORGANIZATION_ID);
 //    ObjectId workflowId = (ObjectId) dbCase.remove(FieldsCase.WORKFLOW_ID);

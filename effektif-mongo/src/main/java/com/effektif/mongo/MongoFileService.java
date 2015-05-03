@@ -46,7 +46,7 @@ public class MongoFileService implements FileService, Brewable {
   
   public MongoCollection filesCollection;
   public GridFS gridFs;
-  public MongoJsonMapper mongoJsonMapper;
+  public MongoObjectMapper mongoMapper;
   
   public interface FieldsFile {
     String _ID = "_id";
@@ -61,7 +61,7 @@ public class MongoFileService implements FileService, Brewable {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.filesCollection = mongoDb.createCollection(mongoConfiguration.getFilesCollectionName());
     this.gridFs = brewery.get(GridFS.class);
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
   
   @Override
@@ -90,7 +90,7 @@ public class MongoFileService implements FileService, Brewable {
   }
 
   protected void insertFile(File file) {
-    BasicDBObject dbFile = mongoJsonMapper.writeToDbObject(file);
+    BasicDBObject dbFile = mongoMapper.write(file);
     filesCollection.insert("insert-file", dbFile);
     ObjectId id = (ObjectId) dbFile.get("_id");
     file.setId(new FileId(id.toString()));
@@ -115,7 +115,7 @@ public class MongoFileService implements FileService, Brewable {
 
     BasicDBObject dbFile = filesCollection.findOne("get-file", query);
 
-    return mongoJsonMapper.readFromDbObject(dbFile, File.class);
+    return mongoMapper.read(dbFile, File.class);
   }
   
   @Override
@@ -136,7 +136,7 @@ public class MongoFileService implements FileService, Brewable {
       DBCursor dbFiles = filesCollection.find("get-files", query);
       while (dbFiles.hasNext()) {
         BasicDBObject dbFile = (BasicDBObject) dbFiles.next();
-        File file = mongoJsonMapper.readFromDbObject(dbFile, File.class);
+        File file = mongoMapper.read(dbFile, File.class);
         files.add(file);
       }
     }

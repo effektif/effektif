@@ -41,7 +41,7 @@ import com.mongodb.BasicDBObject;
  *
  * @author Tom Baeyens
  */
-public class MongoJsonMapper extends AbstractMapper {
+public class MongoJsonMapper {
   
   Set<Field> documentIdFields = new HashSet<>();
   Set<Class<?>> objectIdClasses = new HashSet<>();
@@ -71,11 +71,11 @@ public class MongoJsonMapper extends AbstractMapper {
   }
   
   public <T> T readFromDbObject(Map<String,Object> dbObject, Class<T> clazz) {
-    return new MongoJsonReader(mappings, this).toObject(dbObject, clazz);
+    return null; // new MongoJsonReader(mappings, this).toObject(dbObject, clazz);
   }
   
   public Object writeToDbObjectAny(Object o) {
-    return new MongoJsonWriter(mappings, this).toDbObject(o, o.getClass());
+    return null; // new MongoJsonWriter(mappings, this).toDbObject(o, o.getClass());
   }
 
   public BasicDBObject writeToDbObject(Object o) {

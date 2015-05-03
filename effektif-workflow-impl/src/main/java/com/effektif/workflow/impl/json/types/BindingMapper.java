@@ -47,7 +47,9 @@ public class BindingMapper extends BeanMapper<Binding> {
     Binding binding = super.read(jsonValue, jsonReader);
     DataType dataType = binding.getDataType();
     Object jsonVariableValue = binding.getValue();
-    if (jsonVariableValue!=null && dataType!=null) {
+    if (!typeMapping.isParameterized() // if it's parameterized, then the this.typeMapping already performed the deserialization of the value 
+        && jsonVariableValue!=null 
+        && dataType!=null) {
       Object objectVariableValue = jsonReader.readObject(jsonVariableValue, dataType.getValueType());
       binding.setValue(objectVariableValue);
     }

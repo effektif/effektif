@@ -42,21 +42,20 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
 
   protected static final Logger log = LoggerFactory.getLogger(SerializingWorkflowEngineImpl.class+".JSON");
 
-  WorkflowEngineImpl workflowEngine;
-
+  protected WorkflowEngineImpl workflowEngine;
   protected JsonStreamMapper jsonMapper;
   
+  public SerializingWorkflowEngineImpl(WorkflowEngineImpl workflowEngine, JsonStreamMapper jsonStreamMapper) {
+    this.workflowEngine = workflowEngine;
+    this.jsonMapper = jsonStreamMapper;
+  }
+
   protected <T> T wireize(String name, T o) {
     if (o==null) return null;
     Class<T> clazz = (Class<T>) o.getClass();
     String jsonString = jsonMapper.write(o);
     log.debug(name+jsonString);
     return jsonMapper.readString(jsonString, clazz);
-  }
-
-  public SerializingWorkflowEngineImpl(WorkflowEngineImpl workflowEngine, JsonStreamMapper jsonStreamMapper) {
-    this.workflowEngine = workflowEngine;
-    this.jsonMapper = jsonStreamMapper;
   }
 
   @Override

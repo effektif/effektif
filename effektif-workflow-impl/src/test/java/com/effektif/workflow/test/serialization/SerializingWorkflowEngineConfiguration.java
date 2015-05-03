@@ -40,11 +40,7 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
     JsonStreamMapper jsonStreamMapper = configuration.get(JsonStreamMapper.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonStreamMapper);
-
-    // deprecated section
-    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
-    jsonMapper.getMappings().pretty();
-    this.taskService = new SerializingTaskServiceImpl(taskService, jsonMapper);
+    this.taskService = new SerializingTaskServiceImpl(taskService, jsonStreamMapper);
     
     this.configuration = configuration;
   }

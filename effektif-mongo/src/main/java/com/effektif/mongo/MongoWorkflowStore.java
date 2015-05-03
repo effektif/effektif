@@ -21,7 +21,6 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
-import com.effektif.mongo.deprecated.MongoJsonMapper;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.OrderBy;
@@ -52,7 +51,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   protected ActivityTypeService activityTypeService;
   protected Configuration configuration;
   protected ScriptService scriptService;
-  protected MongoJsonMapper mongoJsonMapper;
+  protected MongoObjectMapper mongoMapper;
   
   public interface FieldsWorkflow {
     String _ID = "_id";
@@ -82,14 +81,13 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     this.workflowsCollection = mongoDb.createCollection(mongoConfiguration.getWorkflowsCollectionName());
     this.configuration = brewery.get(Configuration.class);
     this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
     this.scriptService = brewery.get(ScriptService.class);
     this.activityTypeService = brewery.get(ActivityTypeService.class);
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
 
   public BasicDBObject workflowApiToMongo(AbstractWorkflow workflow) {
-    return (BasicDBObject) mongoJsonMapper.writeToDbObject(workflow);
+    return (BasicDBObject) mongoMapper.write(workflow);
   }
 
 //  public BasicDBObject workflowApiToMongoAbstract(AbstractWorkflow workflow) {
@@ -115,7 +113,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //  }
 
   public <T extends AbstractWorkflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
-    return mongoJsonMapper.readFromDbObject(dbWorkflow, workflowClass);
+    return mongoMapper.read(dbWorkflow, workflowClass);
   }
 
 //  public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {

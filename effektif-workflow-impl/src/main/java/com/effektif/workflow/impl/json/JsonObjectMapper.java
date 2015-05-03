@@ -14,6 +14,9 @@
 package com.effektif.workflow.impl.json;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
@@ -43,8 +46,16 @@ public class JsonObjectMapper {
   }
 
   public <T> Map<String,Object> write(T bean) {
-    JsonObjectWriter jsonObjectWriter = new JsonObjectWriter(mappings);
+    JsonObjectWriter jsonObjectWriter = new JsonObjectWriter(mappings, this);
     jsonObjectWriter.writeObject(bean);
     return (Map<String, Object>) jsonObjectWriter.result;
+  }
+  
+  protected Map<String, Object> newObjectMap() {
+    return new LinkedHashMap<>();
+  }
+
+  public List<Object> newArray() {
+    return new ArrayList<>();
   }
 }

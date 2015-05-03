@@ -36,7 +36,7 @@ public class MongoEmailStore implements EmailStore, Brewable {
   public static final Logger log = MongoDb.log;
   
   public MongoCollection emailsCollection;
-  public MongoJsonMapper mongoJsonMapper;
+  public MongoObjectMapper mongoMapper;
   
   public interface FieldsEmail {
     String _ID = "_id";
@@ -48,13 +48,13 @@ public class MongoEmailStore implements EmailStore, Brewable {
     MongoDb mongoDb = brewery.get(MongoDb.class);
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     this.emailsCollection = mongoDb.createCollection(mongoConfiguration.getFilesCollectionName());
-    this.mongoJsonMapper = brewery.get(MongoJsonMapper.class);
+    this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
   
   @Override
   public void insertEmail(PersistentEmail email) {
     if (email!=null) {
-      BasicDBObject dbEmail = mongoJsonMapper.writeToDbObject(email);
+      BasicDBObject dbEmail = mongoMapper.write(email);
       emailsCollection.insert("insert-email", dbEmail);
       ObjectId id = (ObjectId) dbEmail.get("_id");
       email.setId(new EmailId(id.toString()));
@@ -73,6 +73,6 @@ public class MongoEmailStore implements EmailStore, Brewable {
   
     BasicDBObject dbEmail = emailsCollection.findOne("get-email", query);
   
-    return mongoJsonMapper.readFromDbObject(dbEmail, PersistentEmail.class);
+    return mongoMapper.read(dbEmail, PersistentEmail.class);
   }
 }

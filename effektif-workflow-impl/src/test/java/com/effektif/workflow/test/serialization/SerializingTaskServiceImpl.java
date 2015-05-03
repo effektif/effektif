@@ -18,6 +18,9 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.deprecated.form.FormInstance;
 import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.deprecated.model.UserId;
@@ -25,28 +28,38 @@ import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.task.TaskQuery;
 import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
-import com.effektif.workflow.test.deprecated.serialization.AbstractSerializingService;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public class SerializingTaskServiceImpl extends AbstractSerializingService implements TaskService {
+public class SerializingTaskServiceImpl implements TaskService {
+  
+  private static final Logger log = LoggerFactory.getLogger(SerializingTaskServiceImpl.class+".JSON");
   
   protected TaskServiceImpl taskService;
+  protected JsonStreamMapper jsonMapper;
 
-  public SerializingTaskServiceImpl(TaskServiceImpl taskService, JsonMapper jsonMapper) {
-    super(jsonMapper);
+  public SerializingTaskServiceImpl(TaskServiceImpl taskService, JsonStreamMapper jsonMapper) {
     this.taskService = taskService;
+    this.jsonMapper = jsonMapper;
+  }
+  
+  protected <T> T wireize(String name, T o) {
+    if (o==null) return null;
+    Class<T> clazz = (Class<T>) o.getClass();
+    String jsonString = jsonMapper.write(o);
+    log.debug(name+jsonString);
+    return jsonMapper.readString(jsonString, clazz);
   }
 
   @Override
   public Task createTask(Task task) {
     log.debug("saveTask");
-    task = wireize("  >>task>>", task, Task.class);
+    task = wireize("  >>task>>", task);
     task = taskService.createTask(task);
-    task = wireize("  <<task<<", task, Task.class);
+    task = wireize("  <<task<<", task);
     return task;
   }
 
@@ -54,21 +67,21 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   public Task findTaskById(TaskId taskId) {
     log.debug("  >>taskId>> "+taskId);
     Task task = taskService.findTaskById(taskId);
-    task = wireize("  <<task<<", task, Task.class);
+    task = wireize("  <<task<<", task);
     return task;
   }
 
   @Override
   public List<Task> findTasks(TaskQuery query) {
     log.debug("findTasks");
-    query = wireize("  >>query>>", query, TaskQuery.class);
+    query = wireize("  >>query>>", query);
     List<Task> tasks = taskService.findTasks(query);
     if (tasks==null) {
       return null;
     }
     List<Task> wireizedTasks = new ArrayList<>(tasks.size());
     for (Task task: tasks) {
-      wireizedTasks.add(wireize("  <<task<<", task, Task.class));
+      wireizedTasks.add(wireize("  <<task<<", task));
     }
     return tasks;
   }
@@ -76,29 +89,29 @@ public class SerializingTaskServiceImpl extends AbstractSerializingService imple
   @Override
   public Task assignTask(TaskId taskId, UserId assignee) {
     log.debug("assignTask");
-    assignee = wireize("  >>assignee>>", assignee, UserId.class);
+    assignee = wireize("  >>assignee>>", assignee);
     Task task = taskService.assignTask(taskId, assignee);
-    task = wireize("  <<task<<", task, Task.class);
+    task = wireize("  <<task<<", task);
     return task;
   }
 
   @Override
   public void deleteTasks(TaskQuery query) {
     log.debug("deleteTasks");
-    query = wireize("  >>query>>", query, TaskQuery.class);
+    query = wireize("  >>query>>", query);
     taskService.deleteTasks(query);
   }
 
   @Override
   public Task completeTask(TaskId taskId) {
     Task task = taskService.completeTask(taskId);
-    task = wireize("  <<task<<", task, Task.class);
+    task = wireize("  <<task<<", task);
     return task;
   }
 
   @Override
   public void saveFormInstance(TaskId taskId, FormInstance formInstance) {
-    formInstance = wireize("  >>formInstance>>", formInstance, FormInstance.class);
+    formInstance = wireize("  >>formInstance>>", formInstance);
     taskService.saveFormInstance(taskId, formInstance, true); 
   }
 }
