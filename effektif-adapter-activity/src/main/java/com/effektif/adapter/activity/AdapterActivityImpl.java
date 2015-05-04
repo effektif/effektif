@@ -145,7 +145,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         String variableId = outputBindings.get(outputParameterKey);
         Object value = outputParameterValues.get(outputParameterKey);
         DataTypeImpl dataType = outputParameterDataTypes.get(outputParameterKey);
-        activityInstance.setVariableValue(variableId, value, true);
+        activityInstance.setVariableValue(variableId, value);
       }
     }
     

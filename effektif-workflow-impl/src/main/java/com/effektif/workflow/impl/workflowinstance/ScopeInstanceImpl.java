@@ -307,33 +307,25 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   /** sets all entries individually, variableValues maps variable ids to values */
   public void setVariableValues(DataContainer variableValues) {
-    setVariableValues(variableValues, false);
-  }
-
-  public void setVariableValues(DataContainer variableValues, boolean deserialize) {
     Map<String, TypedValue> data = variableValues!=null ? variableValues.getData() : null;
     if (data!=null) {
       for (String variableId: data.keySet()) {
         TypedValue value = data.get(variableId);
-        setVariableValue(variableId, value.getValue(), deserialize);
+        setVariableValue(variableId, value.getValue());
       }
     }
   }
 
   public void setVariableValue(String variableId, Object value) {
-    setVariableValue(variableId, value, false);
-  }
-
-  public void setVariableValue(String variableId, Object value, boolean deserialize) {
     if (variableInstances!=null) {
       VariableInstanceImpl variableInstance = getVariableInstanceLocal(variableId);
       if (variableInstance!=null) {
-        setVariableValue(variableInstance, value, deserialize);
+        setVariableValue(variableInstance, value);
         return;
       }
     }
     if (parent!=null) {
-      parent.setVariableValue(variableId, value, deserialize);
+      parent.setVariableValue(variableId, value);
       return;
     }
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
@@ -343,13 +335,10 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       throw new RuntimeException("Couldn't determine data type dynamically for value "+value);
     }
     VariableInstanceImpl variableInstance = createVariableInstanceLocal(variableId, dataType);
-    setVariableValue(variableInstance, value, deserialize);
+    setVariableValue(variableInstance, value);
   }
 
-  public void setVariableValue(VariableInstanceImpl variableInstance, Object value, boolean deserialize) {
-    if (deserialize) {
-      value = variableInstance.type.convertJsonToInternalValue(value);
-    }
+  public void setVariableValue(VariableInstanceImpl variableInstance, Object value) {
     variableInstance.setValue(value);
     if (updates!=null) {
       updates.isVariableInstancesChanged = true;
@@ -519,6 +508,4 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public TaskId findTaskIdRecursive() {
     return null;
   }
-  
-  
 }

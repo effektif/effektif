@@ -45,6 +45,6 @@ public class DeployResource {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Deployment deploy(Workflow workflow) {
-    return workflowEngine.deployWorkflow(workflow, true);
+    return workflowEngine.deployWorkflow(workflow);
   }
 }

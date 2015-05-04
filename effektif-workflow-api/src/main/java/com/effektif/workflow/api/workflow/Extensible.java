@@ -70,7 +70,7 @@ public abstract class Extensible {
   /** @see Extensible */
   public Object getProperty(String key) {
     return properties!=null ? properties.get(key) : null;
-  }
+  } 
   /** @see Extensible */
   public void setProperty(String key,Object value) {
     checkProperty(key, value);

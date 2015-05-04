@@ -73,7 +73,6 @@ public class WorkflowParser {
   public Set<String> activityIds = new HashSet<>();
   public Set<String> variableIds = new HashSet<>();
   public Set<String> transitionIds = new HashSet<>();
-  public boolean deserialize;
   
   private class ParseContext {
     ParseContext(String property, Object element, Object elementImpl, Integer index) {
@@ -134,12 +133,11 @@ public class WorkflowParser {
    * adds any parse issues to <code>workflowApi</code>.
    * Use one parser for each parse.
    */
-  public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi, boolean deserialize) {
+  public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi) {
     WorkflowParser parser = new WorkflowParser(configuration);
     parser.workflow = new WorkflowImpl();
     parser.workflow.id = workflowApi.getId();
     parser.pushContext("workflow", workflowApi, parser.workflow, null);
-    parser.deserialize = deserialize;
     parser.workflow.parse(workflowApi, parser);
     parser.popContext();
     return parser;
@@ -233,11 +231,6 @@ public class WorkflowParser {
     BindingImpl<T> bindingImpl = new BindingImpl<>();
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
-      if (type!=null && deserialize) {
-        DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-        DataTypeImpl dataType = dataTypeService.createDataType(type);
-        bindingImpl.value = (T) dataType.convertJsonToInternalValue(bindingImpl.value);
-      }
     }
     String expression = binding.getExpression();
     if (expression!=null) {

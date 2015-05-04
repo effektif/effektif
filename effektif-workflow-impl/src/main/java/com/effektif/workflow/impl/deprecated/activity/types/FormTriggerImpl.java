@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.deprecated.activity.types;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.form.FormInstance;
 import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
@@ -23,6 +25,7 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.deprecated.FormBindings;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -33,7 +36,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
 
   public FormBindings formBindings;
-  public JsonMapper jsonMapper;
+  public JavaBeanValueMapper javaBeanValueMapper;
   
   public FormTriggerImpl() {
     super(FormTrigger.class);
@@ -42,7 +45,7 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
   @Override
   public void parse(WorkflowImpl workflow, FormTrigger formTrigger, WorkflowParser parser) {
     super.parse(workflow, formTrigger, parser);
-    this.jsonMapper = parser.getConfiguration(JsonMapper.class);
+    this.javaBeanValueMapper = parser.getConfiguration(JavaBeanValueMapper.class);
     Form form = formTrigger.getForm();
     if (form!=null) {
       formBindings = new FormBindings();
@@ -55,17 +58,17 @@ public class FormTriggerImpl extends AbstractTriggerImpl<FormTrigger> {
   }
 
   @Override
-  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance, boolean deserialize) {
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
     FormInstance formInstance = null;
     Object formInstanceObject = triggerInstance.getData(FormTrigger.FORM_INSTANCE_KEY);
-    if (deserialize) {
-      formInstance = jsonMapper.readFromJsonObject(formInstanceObject, FormInstance.class);
+    if (formInstanceObject instanceof Map) {
+      formInstance = javaBeanValueMapper.read(formInstanceObject, FormInstance.class);
       triggerInstance.data(FormTrigger.FORM_INSTANCE_KEY, formInstance);
     } else {
       formInstance = (FormInstance) formInstanceObject;
     }
     if (formBindings!=null) {
-      formBindings.applyFormInstanceData(formInstance, workflowInstance, deserialize);
+      formBindings.applyFormInstanceData(formInstance, workflowInstance);
     }
   }
 }
