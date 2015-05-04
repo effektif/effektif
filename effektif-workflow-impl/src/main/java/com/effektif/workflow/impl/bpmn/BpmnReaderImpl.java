@@ -332,8 +332,10 @@ public class BpmnReaderImpl implements BpmnReader {
       if (key != null) {
         Binding binding = new Binding();
         String value = element.getAttribute(EFFEKTIF_URI, "value");
-        DataType type = readTypeAttributeEffektif();
-        binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
+        if (value != null) {
+          DataType type = readTypeAttributeEffektif();
+          binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
+        }
         binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
         bindings.put(key, binding);
       }

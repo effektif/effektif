@@ -132,7 +132,7 @@ public class WorkflowStreamTest {
       .id("runTests")
       .inputValue("d", now)
       .inputValue("s", "string")
-//        .inputExpression()
+      .inputExpression("v", "version")
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
@@ -144,6 +144,7 @@ public class WorkflowStreamTest {
     assertEquals("Run tests", call.getSubWorkflowSource());
     assertEquals(now, call.getInputBindings().get("d").getValue());
     assertEquals("string", call.getInputBindings().get("s").getValue());
+    assertEquals("version", call.getInputBindings().get("v").getExpression());
   }
   
   @Test
