@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 /**
@@ -46,9 +47,9 @@ public class EffektifJsonProvider implements MessageBodyReader<Object>, MessageB
   
   private static final Logger log = LoggerFactory.getLogger(EffektifJsonProvider.class);
 
-  JsonMapper jsonMapper;
+  JsonStreamMapper jsonMapper;
   
-  public EffektifJsonProvider(JsonMapper jsonMapper) {
+  public EffektifJsonProvider(JsonStreamMapper jsonMapper) {
     this.jsonMapper = jsonMapper;
   }
 
@@ -62,7 +63,7 @@ public class EffektifJsonProvider implements MessageBodyReader<Object>, MessageB
   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
           InputStream entityStream) throws IOException, WebApplicationException {
     log.info("readFrom("+type.getName()+", "+genericType.toString()+", "+mediaType);
-    return jsonMapper.readFromReader(new InputStreamReader(entityStream), type);
+    return jsonMapper.read(new InputStreamReader(entityStream), type);
   }
 
   @Override
@@ -80,6 +81,6 @@ public class EffektifJsonProvider implements MessageBodyReader<Object>, MessageB
   public void writeTo(Object t, Class< ? > type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
           OutputStream entityStream) throws IOException, WebApplicationException {
     log.info("writeTo("+t+", "+genericType.toString()+", "+mediaType);
-    jsonMapper.writeToStreamPretty(t, new OutputStreamWriter(entityStream));
+    jsonMapper.write(t, new OutputStreamWriter(entityStream));
   }
 }

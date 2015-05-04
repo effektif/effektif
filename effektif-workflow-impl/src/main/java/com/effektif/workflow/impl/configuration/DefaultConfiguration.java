@@ -36,6 +36,7 @@ import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.deprecated.script.RhinoScriptService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
+import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
@@ -57,6 +58,7 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new ActivityTypeService());
     brewery.ingredient(new DataTypeService());
     brewery.ingredient(new JsonStreamMapper());
+    brewery.ingredient(new JavaBeanValueMapper());
 
     // deprecated
     brewery.ingredient(new CaseServiceImpl());

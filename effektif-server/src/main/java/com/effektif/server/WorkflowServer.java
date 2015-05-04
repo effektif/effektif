@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 /**
@@ -82,7 +82,8 @@ public class WorkflowServer {
             new MessageResource(workflowEngine),
             new PingResource() );
 
-    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
+    JsonStreamMapper jsonMapper = configuration.get(JsonStreamMapper.class);
+    jsonMapper.pretty();
 
     config.registerInstances(
             new EffektifJsonProvider(jsonMapper),

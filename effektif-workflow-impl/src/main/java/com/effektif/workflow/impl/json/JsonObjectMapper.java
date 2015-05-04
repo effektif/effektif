@@ -29,13 +29,12 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
  *
  * @author Tom Baeyens
  */
-public class JsonObjectMapper implements Initializable {
+public abstract class JsonObjectMapper implements Initializable {
 
   protected Mappings mappings;
 
   public JsonObjectMapper() {
     this.mappings = new Mappings();
-    this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
   }
 
   @Override

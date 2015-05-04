@@ -37,6 +37,7 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 public abstract class AbstractAdapterService implements AdapterService, Brewable {
@@ -44,12 +45,12 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
   private static final Logger log = LoggerFactory.getLogger(AbstractAdapterService.class);
   
   protected DataTypeService dataTypeService;
-  protected JsonMapper jsonMapper;
+  protected JsonStreamMapper jsonMapper;
   
   @Override
   public void brew(Brewery brewery) {
     dataTypeService = brewery.get(DataTypeService.class);
-    jsonMapper = brewery.get(JsonMapper.class);
+    jsonMapper = brewery.get(JsonStreamMapper.class);
   }
 
   public Adapter refreshAdapter(String adapterId) {
@@ -69,7 +70,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         if (httpEntity != null) {
           InputStream inputStream = httpEntity.getContent();
           InputStreamReader reader = new InputStreamReader(inputStream);
-          AdapterDescriptors adapterDescriptors = jsonMapper.readFromReader(reader, AdapterDescriptors.class);
+          AdapterDescriptors adapterDescriptors = jsonMapper.read(reader, AdapterDescriptors.class);
           adapter.setActivityDescriptors(adapterDescriptors);
           saveAdapter(adapter);
         }
@@ -89,7 +90,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         CloseableHttpClient httpClient = HttpClients.createDefault();
         
         HttpPost request = new HttpPost(adapter.url+"/execute");
-        String requestEntityJsonString = jsonMapper.writeToStringPretty(executeRequest);
+        String requestEntityJsonString = jsonMapper.write(executeRequest);
         request.setEntity(new StringEntity(requestEntityJsonString, ContentType.APPLICATION_JSON));
         CloseableHttpResponse response = httpClient.execute(request);
 
@@ -105,7 +106,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
           try {
             InputStream inputStream = httpEntity.getContent();
             InputStreamReader reader = new InputStreamReader(inputStream);
-            executeResponse = jsonMapper.readFromReader(reader, ExecuteResponse.class);
+            executeResponse = jsonMapper.read(reader, ExecuteResponse.class);
             log.debug("Parsed adapter activity execute response");
           } catch (Exception e) {
             log.error("Problem while parsing the adapter activity execute response: "+e.getMessage(), e);
@@ -131,7 +132,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
         CloseableHttpClient httpClient = HttpClients.createDefault();
         
         HttpPost request = new HttpPost(adapter.url+"/items");
-        String requestEntityJsonString = jsonMapper.writeToStringPretty(findItemsRequest);
+        String requestEntityJsonString = jsonMapper.write(findItemsRequest);
         request.setEntity(new StringEntity(requestEntityJsonString, ContentType.APPLICATION_JSON));
         CloseableHttpResponse response = httpClient.execute(request);
 
@@ -147,7 +148,7 @@ public abstract class AbstractAdapterService implements AdapterService, Brewable
           try {
             InputStream inputStream = httpEntity.getContent();
             InputStreamReader reader = new InputStreamReader(inputStream);
-            items = jsonMapper.readFromReader(reader, new GenericType(List.class, ItemReference.class));
+            items = jsonMapper.read(reader, new GenericType(List.class, ItemReference.class));
             log.debug("Parsed adapter data source find items");
           } catch (Exception e) {
             log.error("Problem while parsing the adapter activity execute response: "+e.getMessage(), e);

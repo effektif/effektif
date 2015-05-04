@@ -11,32 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.json;
+package com.effektif.workflow.impl.json;
 
-import java.util.Map;
-
-import org.junit.BeforeClass;
-
-import com.effektif.workflow.impl.json.JavaBeanValueMapper;
+import com.effektif.workflow.impl.json.types.LocalDateTimeValueMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public class WorkflowObjectTest extends WorkflowStreamTest {
+public class JavaBeanValueMapper extends JsonObjectMapper {
 
-  static JavaBeanValueMapper jsonObjectMapper = null;
-  
-  @BeforeClass
-  public static void initialize() {
-    jsonObjectMapper = new JavaBeanValueMapper();
-    jsonObjectMapper.initialize();
-  }
-
-  @Override
-  public <T> T serialize(T o) {
-    Map<String,Object> jsonMap = jsonObjectMapper.write(o);
-    System.out.println(jsonMap.toString());
-    return jsonObjectMapper.read(jsonMap, o.getClass());
+  public JavaBeanValueMapper() {
+    super();
+    this.mappings.registerTypeMapperFactory(new LocalDateTimeValueMapper());
   }
 }

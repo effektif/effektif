@@ -49,7 +49,7 @@ public class WorkflowInstanceStreamTest {
   public <T> T serialize(T o) {
     String jsonString = jsonStreamMapper.write(o);
     System.out.println(jsonString);
-    return jsonStreamMapper.readString(jsonString, o.getClass());
+    return (T) jsonStreamMapper.readString(jsonString, o.getClass());
   }
   
   protected String getWorkflowInstanceIdInternal() {

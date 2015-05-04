@@ -31,9 +31,9 @@ import com.mongodb.BasicDBObject;
 public class MongoObjectMapper extends JsonObjectMapper {
 
   public MongoObjectMapper() {
+    this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
     this.mappings.registerTypeMapperFactory(new WorkflowIdMongoMapper());
     this.mappings.registerTypeMapperFactory(new WorkflowInstanceIdMongoMapper());
-    this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
   }
   
   @Override

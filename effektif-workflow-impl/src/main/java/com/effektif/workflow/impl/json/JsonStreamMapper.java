@@ -14,9 +14,11 @@
 package com.effektif.workflow.impl.json;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.effektif.workflow.impl.configuration.Brewery;
@@ -64,11 +66,20 @@ public class JsonStreamMapper implements Initializable {
     return this;
   }
 
-  public <T> T readString(String jsonString, Class<?> clazz) {
+  public <T> T readString(String jsonString, Class<T> clazz) {
+    Reader reader = new StringReader(jsonString);
+    return read(reader, clazz);
+  }
+
+  public <T> T read(Reader reader, Class<T> clazz) {
+    return read(reader, (Type)clazz);
+  }
+
+  public <T> T read(Reader reader, Type type) {
     try {
+      Object beanJsonObject = objectMapper.readValue(reader, Object.class);
       JsonStreamReader jsonStreamReader = new JsonStreamReader(mappings);
-      Map<String,Object> beanJsonObject = objectMapper.readValue(new StringReader(jsonString), Map.class);
-      return (T) jsonStreamReader.readObject(beanJsonObject, clazz);
+      return (T) jsonStreamReader.readObject(beanJsonObject, type);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -97,4 +108,5 @@ public class JsonStreamMapper implements Initializable {
   public Mappings getMappings() {
     return mappings;
   }
+
 }

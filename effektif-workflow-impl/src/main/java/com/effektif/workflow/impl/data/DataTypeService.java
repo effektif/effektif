@@ -25,11 +25,11 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
@@ -39,7 +39,6 @@ import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.effektif.workflow.impl.deprecated.json.Mappings;
 
 
 /**
@@ -52,7 +51,6 @@ public class DataTypeService implements Initializable {
   // private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);
   
   protected Configuration configuration;
-  protected Mappings mappings;
   
   protected Map<Class<? extends DataType>,DataTypeImpl> singletons = new ConcurrentHashMap<>();
   protected Map<Class<? extends DataType>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
@@ -62,7 +60,6 @@ public class DataTypeService implements Initializable {
   @Override
   public void initialize(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
-    this.mappings = brewery.get(Mappings.class);
     initializeDataTypes();
   }
 
@@ -108,14 +105,12 @@ public class DataTypeService implements Initializable {
         Constructor< ? > constructor = findDataTypeConstructor(dataType.getClass());
         dataTypeConstructors.put(apiClass, constructor);
       }
-      mappings.registerSubClass(apiClass);
     }
     Class valueClass = dataType.getValueClass();
     if (valueClass!=null) {
       if (!dataTypesByValueClass.containsKey(valueClass)) {
         dataTypesByValueClass.put(valueClass, dataType);
       }
-      mappings.registerSubClass(valueClass);
     }
   }
   

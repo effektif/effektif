@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 
+import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 import com.effektif.workflow.impl.json.JsonObjectMapper;
 
 
@@ -25,11 +26,11 @@ import com.effektif.workflow.impl.json.JsonObjectMapper;
  */
 public class WorkflowInstanceObjectTest extends WorkflowInstanceStreamTest {
 
-  static JsonObjectMapper jsonObjectMapper = null;
+  static JavaBeanValueMapper jsonObjectMapper = null;
   
   @BeforeClass
   public static void initialize() {
-    jsonObjectMapper = new JsonObjectMapper();
+    jsonObjectMapper = new JavaBeanValueMapper();
     jsonObjectMapper.initialize();
   }
 

@@ -24,7 +24,7 @@ import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 
 
 /**
@@ -32,7 +32,7 @@ import com.effektif.workflow.impl.deprecated.json.JsonMapper;
  */
 public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   
-  public JsonMapper jsonMapper;
+  public JavaBeanValueMapper valueMapper;
   
   public JavaBeanTypeImpl() {
     super(null, null);
@@ -44,7 +44,7 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
 
   public void setConfiguration(Configuration configuration) {
     super.setConfiguration(configuration);
-    this.jsonMapper = configuration.get(JsonMapper.class);
+    this.valueMapper = configuration.get(JavaBeanValueMapper.class);
     initializeFields();
   }
   
@@ -78,20 +78,6 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
     return false;
   }
 
-//  @Override
-//  public TypeGenerator getTypeGenerator() {
-//    return new TypeGenerator<JavaBeanType>() {
-//      @Override
-//      public JavaType createJavaType(JavaBeanType javaBeanType, TypeFactory typeFactory, DataTypeService dataTypeService) {
-//        Class< ? > javaClass = javaBeanType.getJavaClass();
-//        if (javaClass==null) {
-//          return null;
-//        }
-//        return typeFactory.constructType(javaClass);
-//      }
-//    };
-//  }
-
   @Override
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
     if (internalValue==null) {
@@ -107,15 +93,13 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     if (jsonValue==null) return null;
     if (Map.class.isAssignableFrom(jsonValue.getClass())) {
-      return jsonMapper.readFromJsonObject(jsonValue, valueClass);
+      return valueMapper.read(jsonValue, valueClass);
     }
     throw new InvalidValueException("Couldn't convert json: "+jsonValue+" ("+jsonValue.getClass().getName()+")");
   }
   
   @Override
   public Object convertInternalToJsonValue(Object internalValue) {
-//    if (internalValue==null) return null;
-//    return jsonMapper.readFromJsonObject(internalValue);
     return internalValue;
   }
   
@@ -124,7 +108,7 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
     return valueClass;
   }
   
-  public void setJsonService(JsonMapper jsonMapper) {
-    this.jsonMapper = jsonMapper;
+  public void setJsonService(JavaBeanValueMapper jsonMapper) {
+    this.valueMapper = jsonMapper;
   }
 }

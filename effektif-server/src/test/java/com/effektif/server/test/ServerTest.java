@@ -42,7 +42,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 /**
  * @author Tom Baeyens
@@ -78,7 +78,7 @@ public class ServerTest extends JerseyTest {
   
   @Override
   protected void configureClient(ClientConfig clientConfig) {
-    JsonMapper jsonMapper = getConfiguration().get(JsonMapper.class);
+    JsonStreamMapper jsonMapper = getConfiguration().get(JsonStreamMapper.class);
     clientConfig.register(new EffektifJsonProvider(jsonMapper));
   }
 

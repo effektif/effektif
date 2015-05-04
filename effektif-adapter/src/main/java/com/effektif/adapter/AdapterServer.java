@@ -28,6 +28,7 @@ import com.effektif.adapter.helpers.RequestLogger;
 import com.effektif.server.EffektifJsonProvider;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
 public class AdapterServer {
@@ -37,14 +38,15 @@ public class AdapterServer {
   protected Integer port;
   protected ResourceConfig config;
   protected Server server;
-  protected JsonMapper jsonMapper;
+  protected JsonStreamMapper jsonMapper;
   protected DescriptorsResource descriptorsResource;
   protected ExecuteResource executeResource;
   protected FindItemsResource findItemsResource;
   
   public AdapterServer() {
     Configuration configuration = new DefaultAdapterConfiguration();
-    jsonMapper = configuration.get(JsonMapper.class);
+    jsonMapper = configuration.get(JsonStreamMapper.class);
+    jsonMapper.pretty();
     
     descriptorsResource = new DescriptorsResource();
     executeResource = new ExecuteResource(configuration);
