@@ -522,7 +522,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
             variableInstanceImpl.type = dataTypeService.createDataType(type);
           }
         }
-        variableInstanceImpl.value = dbVariableInstance.get(VariableInstanceFields.VALUE);
+        variableInstanceImpl.value = variableInstance.getValue();
 
         variableInstanceImpl.configuration = configuration;
         variableInstanceImpl.workflowInstance = parent.workflowInstance;

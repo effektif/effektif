@@ -40,6 +40,11 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     this.id = id;
     this.variable = variable;
   }
+  
+  @Override
+  public String toString() {
+    return "["+variable.id+"="+value+"]";
+  }
 
   /**
    * TODO Decide whether variable instance IDs are needed, and copy the id if so.

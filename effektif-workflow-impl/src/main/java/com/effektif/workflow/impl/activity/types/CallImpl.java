@@ -93,6 +93,9 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
       
       // IDEA improve error message by validating the keys to be proper subworkflow variable ids
       this.outputBindings = activity.getOutputBindings();
+    } else if ( (inputBindings!=null && !inputBindings.isEmpty())
+                || (inputBindings!=null && !inputBindings.isEmpty()) ) {
+      parser.addWarning("input and output bindings could not be parsed because sub workflow was not found");
     }
   }
 

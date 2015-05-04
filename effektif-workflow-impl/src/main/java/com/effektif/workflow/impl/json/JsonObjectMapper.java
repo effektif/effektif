@@ -19,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
 
 
@@ -27,13 +29,22 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
  *
  * @author Tom Baeyens
  */
-public class JsonObjectMapper {
+public class JsonObjectMapper implements Initializable {
 
   protected Mappings mappings;
 
   public JsonObjectMapper() {
     this.mappings = new Mappings();
     this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
+  }
+
+  @Override
+  public void initialize(Brewery brewery) {
+    initialize();
+  }
+
+  public void initialize() {
+    this.mappings.initialize();
   }
 
   public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {

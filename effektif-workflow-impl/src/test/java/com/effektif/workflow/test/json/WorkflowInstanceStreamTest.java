@@ -42,6 +42,7 @@ public class WorkflowInstanceStreamTest {
   @BeforeClass
   public static void initialize() {
     jsonStreamMapper = new JsonStreamMapper();
+    jsonStreamMapper.initialize();
     jsonStreamMapper.pretty();
   }
 

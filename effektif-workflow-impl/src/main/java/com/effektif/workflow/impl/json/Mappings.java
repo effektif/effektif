@@ -122,7 +122,9 @@ public class Mappings {
     registerTypeMapperFactory(new ListMapperFactory());
     registerTypeMapperFactory(new MapMapperFactory());
     registerTypeMapperFactory(new BindingMapperFactory());
-    
+  }
+
+  public void initialize() {
     ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
     for (ActivityType activityType: activityTypeLoader) {
       registerSubClass(activityType.getActivityApiClass());
@@ -452,7 +454,7 @@ public class Mappings {
   public PolymorphicMapping getPolymorphicMapping(Type type) {
     Class<?> clazz = Reflection.getRawClass(type);
     PolymorphicMapping polymorphicMapping = polymorphicMappings.get(clazz);
-    while (polymorphicMapping==null && clazz!=Object.class) {
+    while (polymorphicMapping==null && clazz!=null && clazz!=Object.class) {
       clazz = clazz.getSuperclass();
       polymorphicMapping = polymorphicMappings.get(clazz);
     }

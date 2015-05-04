@@ -35,7 +35,9 @@ public class BindingMapper extends BeanMapper<Binding> {
   public void write(Binding typeValue, JsonWriter jsonWriter) {
     DataType dataType = typeValue.getDataType();
     Object value = typeValue.getValue();
-    if (dataType==null && value!=null) {
+    if (!typeMapping.isParameterized() // if it's parameterized, then the this.typeMapping already performed the deserialization of the value
+        && dataType==null 
+        && value!=null) {
       dataType = mappings.getTypeByValue(value);
       typeValue.setDataType(dataType);
     }
