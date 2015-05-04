@@ -32,7 +32,6 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.deprecated.json.AbstractMapper;
 import com.mongodb.BasicDBObject;
 
 /**

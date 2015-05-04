@@ -22,8 +22,6 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
 import com.effektif.workflow.test.WorkflowTest;
-import com.effektif.workflow.test.api.CallTest;
-import com.effektif.workflow.test.api.VariableTypesTest;
 import com.mongodb.DB;
 
 

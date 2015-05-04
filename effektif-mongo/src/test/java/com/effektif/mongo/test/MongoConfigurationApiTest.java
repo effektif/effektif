@@ -24,6 +24,7 @@ import com.effektif.workflow.api.Configuration;
  */
 public class MongoConfigurationApiTest {
 
+  @SuppressWarnings("unused")
   @Test
   public void testMongoConfigurationApi() {
     // this is used to copy and paste into the wiki docs

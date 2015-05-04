@@ -15,7 +15,6 @@ package com.effektif.mongo.test;
 
 import java.util.Map;
 
-import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
 
 import com.effektif.mongo.MongoObjectMapper;

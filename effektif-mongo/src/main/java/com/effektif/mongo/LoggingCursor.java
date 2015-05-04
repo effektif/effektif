@@ -151,6 +151,7 @@ public class LoggingCursor extends DBCursor {
     cursor.close();
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public DBCursor slaveOk() {
     return cursor.slaveOk();

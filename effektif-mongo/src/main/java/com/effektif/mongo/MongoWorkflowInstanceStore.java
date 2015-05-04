@@ -72,13 +72,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   protected MongoObjectMapper mongoMapper;
   
   interface ScopeInstanceFields {
-    String _ID = "id";
     String START = "start";
     String END = "end";
     String DURATION = "duration";
   }
   
   interface WorkflowInstanceFields extends ScopeInstanceFields {
+    String _ID = "_id";
     String ORGANIZATION_ID = "organizationId";
     String WORKFLOW_ID = "workflowId";
     String ACTIVITY_INSTANCES = "activities";
@@ -99,6 +99,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
   
   interface ActivityInstanceFields extends ScopeInstanceFields {
+    String ID = "id";
     String PARENT = "parent";
     String CALLED_WORKFLOW_INSTANCE_ID = "calledWorkflowInstanceId";
     String ACTIVITY_ID = "activityId";
@@ -297,7 +298,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       dbQuery.append(WorkflowInstanceFields._ID, new ObjectId(query.getWorkflowInstanceId().getInternal()));
     }
     if (query.getActivityInstanceId()!=null) {
-      dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, query.getActivityInstanceId());
+      dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+ActivityInstanceFields.ID, query.getActivityInstanceId());
     }
     return dbQuery;
   }
@@ -327,7 +328,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     DBObject query = createLockQuery();
     query.put(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId.getInternal()));
     if (activityInstanceId!=null) {
-      query.put(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+WorkflowInstanceFields._ID, activityInstanceId);
+      query.put(WorkflowInstanceFields.ACTIVITY_INSTANCES+"."+ActivityInstanceFields.ID, activityInstanceId);
     }
     
     DBObject update = createLockUpdate();
