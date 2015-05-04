@@ -45,7 +45,7 @@ public class StartResource {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public WorkflowInstance startProcessInstance(TriggerInstance triggerInstance) {
-    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance, true);
+    WorkflowInstance workflowInstance = workflowEngine.start(triggerInstance);
     log.info("Started "+workflowInstance.getId());
     return workflowInstance;
   }

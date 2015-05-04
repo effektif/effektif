@@ -132,7 +132,7 @@ public class FormBindings {
     return fieldIds;
   }
 
-  public void applyFormInstanceData(FormInstance formInstance, ScopeInstanceImpl scopeInstance, boolean deserialize) {
+  public void applyFormInstanceData(FormInstance formInstance, ScopeInstanceImpl scopeInstance) {
     if (formInstance!=null && formInstance.getFields()!=null) {
       List<FormInstanceField> renderedFields = new ArrayList<>();
       for (FormInstanceField field: formInstance.getFields()) {
@@ -140,7 +140,7 @@ public class FormBindings {
         FormFieldBinding formFieldBinding = formFieldBindings.get(field.getId());
         if (isWritable(formFieldBinding)) {
           String variableId = formFieldBinding.binding.expression.variableId;
-          scopeInstance.setVariableValue(variableId, value, deserialize);
+          scopeInstance.setVariableValue(variableId, value);
           FormField formField = formFieldBinding.formField;
           // The name and type are copied from the form to the form instance
           // This is for the start form rendering
@@ -172,22 +172,5 @@ public class FormBindings {
            && formFieldBinding.binding.expression!=null
            && formFieldBinding.binding.expression.variableId!=null
            && formFieldBinding.binding.expression.fields==null;
-  }
-
-  public void deserializeFormInstance(FormInstance formInstance) {
-    if (formInstance==null) {
-      return;
-    }
-    if (formInstance.getFields()!=null) {
-      for (FormInstanceField field: formInstance.getFields()) {
-        String fieldId = field.getId();
-        FormFieldBinding formFieldBinding = formFieldBindings.get(fieldId);
-        if (formFieldBinding!=null) {
-          formFieldBinding.deserializeFormField(field);
-        } else {
-          log.debug("Ignoring undefined form field '"+fieldId+"'");
-        }
-      }
-    }
   }
 }

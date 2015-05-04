@@ -46,6 +46,6 @@ public class MessageResource {
   @Produces(MediaType.APPLICATION_JSON)
   public WorkflowInstance send(Message message) {
     log.info("Message "+message.getWorkflowInstanceId()+" / "+message.getActivityInstanceId());
-    return workflowEngine.send(message, true);
+    return workflowEngine.send(message);
   }
 }

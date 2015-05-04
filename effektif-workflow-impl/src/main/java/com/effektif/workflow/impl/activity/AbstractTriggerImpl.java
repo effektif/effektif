@@ -55,7 +55,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
    * Copies the trigger data from the given {@link com.effektif.workflow.api.model.TriggerInstance} to the given
    * {@link com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl} when starting a workflow.
    */
-  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance, boolean deserialize) {
+  public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
   }
 
   public DataTypeImpl<?> getDataTypeForTriggerKey(String triggerKey) {

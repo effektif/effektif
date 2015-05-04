@@ -112,6 +112,6 @@ public class SerializingTaskServiceImpl implements TaskService {
   @Override
   public void saveFormInstance(TaskId taskId, FormInstance formInstance) {
     formInstance = wireize("  >>formInstance>>", formInstance);
-    taskService.saveFormInstance(taskId, formInstance, true); 
+    taskService.saveFormInstance(taskId, formInstance); 
   }
 }

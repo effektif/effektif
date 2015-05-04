@@ -32,15 +32,4 @@ public class FormFieldBinding {
     this.formField = formField;
     this.binding = binding;
   }
-
-  public void deserializeFormField(FormInstanceField field) {
-    Object value = field!=null ? field.getValue() : null;
-    if (value!=null 
-        && binding!=null 
-        && binding.expression!=null 
-        && binding.expression.type!=null) {
-      Object deserializedValue = binding.expression.type.convertJsonToInternalValue(value);
-      field.setValue(deserializedValue);
-    }
-  }
 }
