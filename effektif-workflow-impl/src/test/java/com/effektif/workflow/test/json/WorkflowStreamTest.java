@@ -33,6 +33,7 @@ import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -86,9 +87,14 @@ public class WorkflowStreamTest {
     
     Workflow workflow = new Workflow()
       .id(new WorkflowId(workflowIdInternal))
+      .name("Software release")
+      .description("Regular software production release process.")
       .createTime(now)
-      .description("d")
-      .name("w")
+      .sourceWorkflowId("source")
+      .variable("v", TextType.INSTANCE)
+      .activity("start", new StartEvent())
+      .activity("end", new EndEvent())
+      .transition(new Transition().from("start").to("end"))
       .property("str", "s")
       .property("lis", Lists.of("a", 1, true))
       .property("num", Long.MAX_VALUE)
@@ -99,7 +105,14 @@ public class WorkflowStreamTest {
     
     assertNotNull(workflow);
     assertEquals(workflowIdInternal, workflow.getId().getInternal());
-    assertEquals("w", workflow.getName());
+    assertEquals("Software release", workflow.getName());
+    assertEquals("Regular software production release process.", workflow.getDescription());
+    assertEquals("source", workflow.getSourceWorkflowId());
+    assertEquals("start", ((StartEvent)workflow.getActivities().get(0)).getId());
+    assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
+    assertEquals("start", workflow.getTransitions().get(0).getFrom());
+    assertEquals("end", workflow.getTransitions().get(0).getTo());
+// TODO in BPMN
 //    assertEquals(p.get("str"), workflow.getProperty("str"));
 //    assertEquals(p.get("lis"), workflow.getProperty("lis"));
 //    assertEquals(p.get("num"), workflow.getProperty("num"));
@@ -108,35 +121,15 @@ public class WorkflowStreamTest {
     assertEquals(now, workflow.getCreateTime());
   }
 
-// TODO merge with the above test
-//  @Test
-//  public void testWorkflow() {
-//    Workflow workflow = new Workflow()
-//      .id(new WorkflowId(workflowId()))
-//      .name("Software release")
-//      .description("Regular software production release process.")
-//      .sourceWorkflowId(workflowId())
-//      .variable("v", TextType.INSTANCE)
-//      .activity("s", new StartEvent())
-//      .activity("task", new UserTask())
-//      .transition(new Transition().from("s").to("task"));
-//
-//    workflow = serialize(workflow);
-//
-//    assertEquals(workflowId(), workflow.getId().getInternal());
-//    assertEquals("Software release", workflow.getName());
-//    assertEquals("Regular software production release process.", workflow.getDescription());
-//    assertEquals(workflowId(), workflow.getSourceWorkflowId());
-//    assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
-//    assertEquals("s", workflow.getActivities().get(0).getId());
-//  }
-
-
   @Test 
   public void testCall() {
+    LocalDateTime now = new LocalDateTime();
     Workflow workflow = new Workflow()
       .activity(new Call()
       .id("runTests")
+// TODO in BPMN
+//      .inputValue("d", now)
+//      .inputValue("s", "string")
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
@@ -146,6 +139,9 @@ public class WorkflowStreamTest {
     Call call = (Call) workflow.getActivities().get(0);
     assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
     assertEquals("Run tests", call.getSubWorkflowSource());
+// TODO in BPMN
+//    assertEquals(now, call.getInputBindings().get("d").getValue());
+//    assertEquals("string", call.getInputBindings().get("s").getValue());
   }
   
   @Test
@@ -255,81 +251,4 @@ public class WorkflowStreamTest {
     assertEquals("code complete", activity.getName());
     assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
   }
- 
-//  @Test
-//  public void testTransition() {
-//    Condition condition = new IsTrue().left(new Binding().expression("testsPassed"));
-//
-//    Workflow workflow = new Workflow()
-//      .activity("start", new StartEvent())
-//      .activity("smokeTest", new UserTask())
-//      .activity("checkTestResult", new ExclusiveGateway().defaultTransitionId("to-failed"))
-//      .activity("passed", new EndEvent())
-//      .activity("failed", new EndEvent())
-//      .transition("to-smokeTest", new Transition().from("start").to("smokeTest").description("Starting the process"))
-//      .transition("to-checkTestResult", new Transition().from("smokeTest").to("checkTestResult"))
-//      .transition("to-passed", new Transition().from("checkTestResult").to("passed").condition(condition))
-//      .transition("to-failed", new Transition().from("checkTestResult").to("failed"));
-//
-//    workflow = serialize(workflow);
-//
-//    assertEquals(4, workflow.getTransitions().size());
-//    assertEquals("to-smokeTest", workflow.getTransitions().get(0).getId());
-//    assertEquals("Starting the process", workflow.getTransitions().get(0).getDescription());
-//    assertEquals("start", workflow.getTransitions().get(0).getFrom());
-//    assertEquals("smokeTest", workflow.getTransitions().get(0).getTo());
-//
-//    assertEquals("to-passed", workflow.getTransitions().get(2).getId());
-//    IsTrue deserialisedCondition = (IsTrue) workflow.getTransitions().get(2).getCondition();
-//    assertEquals("testsPassed", deserialisedCondition.getLeft().getExpression());
-//  }
-
-//  @Test
-//  public void testVariables() {
-//    Workflow workflow = new Workflow()
-//      .variable(new Variable().type(TextType.INSTANCE).id("v").name("version").description("Release version"))
-//      .variable("mailing-list", EmailAddressType.INSTANCE)
-//      .variable("announcement", EmailIdType.INSTANCE)
-//      .variable("source-bundle", FileIdType.INSTANCE)
-//      .variable("release-notes", LinkType.INSTANCE)
-//      .variable("team-bonus", MoneyType.INSTANCE)
-//      .variable("bugs-fixed", NumberType.INSTANCE)
-//      .variable("dev-team", GroupIdType.INSTANCE)
-//      .variable("product-owner", UserIdType.INSTANCE)
-//      .variable("distribution", new ChoiceType().option("Internal").option("External"))
-//      .variable("stakeholders", new ListType().elementType(UserIdType.INSTANCE));
-//
-//    workflow = serialize(workflow);
-//
-//    assertNotNull(workflow.getVariables());
-//    assertEquals(11, workflow.getVariables().size());
-//
-//    // Basic properties
-//    assertEquals("v", workflow.getVariables().get(0).getId());
-//    assertEquals("version", workflow.getVariables().get(0).getName());
-//    assertEquals("Release version", workflow.getVariables().get(0).getDescription());
-//    assertEquals(TextType.class, workflow.getVariables().get(0).getType().getClass());
-//
-//    // Other static types
-//    assertEquals(EmailAddressType.class, workflow.getVariables().get(1).getType().getClass());
-//    assertEquals(EmailIdType.class, workflow.getVariables().get(2).getType().getClass());
-//    assertEquals(FileIdType.class, workflow.getVariables().get(3).getType().getClass());
-//    assertEquals(LinkType.class, workflow.getVariables().get(4).getType().getClass());
-//    assertEquals(MoneyType.class, workflow.getVariables().get(5).getType().getClass());
-//    assertEquals(NumberType.class, workflow.getVariables().get(6).getType().getClass());
-//    assertEquals(GroupIdType.class, workflow.getVariables().get(7).getType().getClass());
-//    assertEquals(UserIdType.class, workflow.getVariables().get(8).getType().getClass());
-//
-//    // Complex types
-//    assertEquals(ChoiceType.class, workflow.getVariables().get(9).getType().getClass());
-//    ChoiceType choiceType = (ChoiceType) workflow.getVariables().get(9).getType();
-//    assertEquals(2, choiceType.getOptions().size());
-//    assertEquals("Internal", choiceType.getOptions().get(0).getId());
-//    assertEquals("External", choiceType.getOptions().get(1).getId());
-//
-//    assertEquals(ListType.class, workflow.getVariables().get(10).getType().getClass());
-//    ListType listType = (ListType) workflow.getVariables().get(10).getType();
-//    assertEquals(UserIdType.class, listType.getElementType().getClass());
-//  }
-
 }

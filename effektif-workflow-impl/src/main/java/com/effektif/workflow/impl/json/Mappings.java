@@ -88,7 +88,7 @@ public class Mappings {
   
   List<JsonTypeMapperFactory> jsonTypeMapperFactories = new ArrayList<>();
   /** Json type mappers are the SPI to plug in support for particular types */ 
-  Map<Type, JsonTypeMapper> jsonTypeMappers = new HashMap<>();
+  Map<Type, JsonTypeMapper> typeMappers = new HashMap<>();
   Map<Type,DataType> dataTypesByClass = new HashMap<>();
 
   /** Maps registered base classes (like e.g. <code>Activity</code>) to *unparameterized* polymorphic mappings.
@@ -394,11 +394,30 @@ public class Mappings {
   }
 
   public JsonTypeMapper getTypeMapper(Type type) {
-    JsonTypeMapper jsonTypeMapper = jsonTypeMappers.get(type);
-    if (jsonTypeMapper!=null) {
-      // log.debug("Found type mapper "+jsonTypeMapper+" in cache for type "+Reflection.getSimpleName(type));
-      return jsonTypeMapper;
-    }
+//    Type typeKey = Reflection.unify(type);
+//    
+//    String typeName = Reflection.getSimpleName(type);
+//    if (typeName.contains("Binding")) {
+//      log.debug("Searching cached mapper for type "+typeName);
+//      for (Type key: typeMappers.keySet()) {
+//        JsonTypeMapper typeMapper = typeMappers.get(key);
+//        String keyName = key.toString();
+//        if (keyName.contains("Binding")) {
+//          log.debug("  "+key+" --> "+typeMapper);
+//        }
+//      }
+//    }
+    
+    JsonTypeMapper jsonTypeMapper = typeMappers.get(type);
+//    if (jsonTypeMapper!=null) {
+//      if (typeName.contains("Binding")) {
+//        log.debug("Found type mapper "+jsonTypeMapper+" in cache for type "+typeName);
+//      }
+//      return jsonTypeMapper;
+//    }
+//    if (typeName.contains("Binding")) {
+//      log.debug(typeName+" not in cache.  Creating type mapper...");
+//    }
 
     // log.debug("Creating type mapper for type "+Reflection.getSimpleName(type));
 
@@ -421,10 +440,11 @@ public class Mappings {
       }
     }
 
-    // log.debug("Created type mapper "+jsonTypeMapper+" for type "+Reflection.getSimpleName(type));
-
     jsonTypeMapper.setMappings(this);
-    jsonTypeMappers.put(type, jsonTypeMapper);
+//    if (typeName.contains("Binding")) {
+//      log.debug("Adding type mapper "+jsonTypeMapper+" in cache for type "+typeName);
+//    }
+    typeMappers.put(type, jsonTypeMapper);
     return jsonTypeMapper;
   }
 
@@ -454,8 +474,7 @@ public class Mappings {
       return typeMapping;
     }
     // log.debug("Creating type mapping for "+Reflection.getSimpleName(type));
-    Class<?> clazz = Reflection.getRawClass(type);
-    typeMapping = new TypeMapping(clazz);
+    typeMapping = new TypeMapping(type);
     typeMappings.put(type, typeMapping);
     scanFieldMappings(type, typeMapping);
     // log.debug("Creating type mapping "+typeMapping);
@@ -516,7 +535,6 @@ public class Mappings {
   public void scanFields(List<FieldMapping> fieldMappings, Type type) {
     Class<?> clazz = Reflection.getRawClass(type);
     Map<TypeVariable,Type> typeArgs = Reflection.getTypeArgsMap(type);
-    
     Field[] declaredFields = clazz.getDeclaredFields();
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
@@ -526,7 +544,7 @@ public class Mappings {
           // log.debug("  Scanning "+Reflection.getSimpleName(field));
           Type fieldType = field.getGenericType();
           if (fieldType instanceof TypeVariable) {
-            fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : null;
+            fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : Object.class;
           }
           JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);

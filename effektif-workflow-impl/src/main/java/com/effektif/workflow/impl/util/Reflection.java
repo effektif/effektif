@@ -116,39 +116,39 @@ public class Reflection {
     return null;
   }
 
-//  /** converts ParameterizedType into GenericType */
-//  public static Type unify(Type type) {
-//    if (type==null
-//        || type instanceof Class
-//        || type instanceof GenericType) {
-//      return type;
-//    }
-//    if (type instanceof ParameterizedType) {
-//      ParameterizedType parameterizedType = (ParameterizedType) type;
-//      Type rawType = parameterizedType.getRawType();
-//      if (! (rawType instanceof Class)) {
-//        throw new RuntimeException("Type "+type+" has non-class raw type "+rawType);
-//      }
-//      Type[] typeArgs = null; 
-//      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-//      if (actualTypeArguments!=null) {
-//        typeArgs = new Type[actualTypeArguments.length];
-//        for (int i=0; i<actualTypeArguments.length; i++) {
-//          typeArgs[i] = unify(actualTypeArguments[i]);
-//        }
-//      }
-//      return new GenericType((Class) rawType, typeArgs);
-//    }
-//    if (type instanceof WildcardType) {
-//      WildcardType wildcardType = (WildcardType) type;
-//      Type[] upperBounds = wildcardType.getUpperBounds();
-//      if (upperBounds==null || upperBounds.length!=1) {
-//        throw new RuntimeException("Type"+type+" doesn't have single upperbound "+(upperBounds!=null ? Arrays.asList(upperBounds) : null));
-//      }
-//      return unify(upperBounds[0]);
-//    }
-//    throw new RuntimeException("Unknown type: "+type+" ("+type.getClass().getName()+")");
-//  }
+  /** converts ParameterizedType into GenericType */
+  public static Type unify(Type type) {
+    if (type==null
+        || type instanceof Class
+        || type instanceof GenericType) {
+      return type;
+    }
+    if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      Type rawType = parameterizedType.getRawType();
+      if (! (rawType instanceof Class)) {
+        throw new RuntimeException("Type "+type+" has non-class raw type "+rawType);
+      }
+      Type[] typeArgs = null; 
+      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+      if (actualTypeArguments!=null) {
+        typeArgs = new Type[actualTypeArguments.length];
+        for (int i=0; i<actualTypeArguments.length; i++) {
+          typeArgs[i] = unify(actualTypeArguments[i]);
+        }
+      }
+      return new GenericType((Class) rawType, typeArgs);
+    }
+    if (type instanceof WildcardType) {
+      WildcardType wildcardType = (WildcardType) type;
+      Type[] upperBounds = wildcardType.getUpperBounds();
+      if (upperBounds==null || upperBounds.length!=1) {
+        throw new RuntimeException("Type"+type+" doesn't have single upperbound "+(upperBounds!=null ? Arrays.asList(upperBounds) : null));
+      }
+      return unify(upperBounds[0]);
+    }
+    throw new RuntimeException("Unknown type: "+type+" ("+type.getClass().getName()+")");
+  }
   
   public static Class<?> getRawClass(Type type) {
     if (type==null) {

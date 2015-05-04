@@ -13,10 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.api.json;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 
 
@@ -75,10 +72,22 @@ public class GenericType implements Type {
 
   @Override
   public String toString() {
-    if (typeArgs==null) {
-      return rawClass.getSimpleName();
-    } else {
-      return rawClass.getSimpleName()+Arrays.asList(typeArgs);
+    StringBuilder name = new StringBuilder();
+    name.append(rawClass.getSimpleName());
+    if (typeArgs!=null) {
+      name.append("<");
+      for (int i = 0; i < typeArgs.length; i++) {
+        if (i!=0) {
+          name.append(",");
+        }
+        if (typeArgs[i] instanceof Class) {
+          name.append(((Class)typeArgs[i]).getSimpleName());
+        } else {
+          name.append(typeArgs[i].toString());
+        }
+      }
+      name.append(">");
     }
+    return name.toString();
   }
 }

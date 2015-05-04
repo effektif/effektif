@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.json;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.impl.util.Reflection;
 
 
