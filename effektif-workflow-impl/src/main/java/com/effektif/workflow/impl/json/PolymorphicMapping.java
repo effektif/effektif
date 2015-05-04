@@ -17,10 +17,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
+import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 
 
 /**
+ * A mapping from a ‘base class’, e.g. {@link Trigger}, to its subclasses (e.g. {@link FormTrigger}).
+ *
  * @author Tom Baeyens
  */
 public class PolymorphicMapping extends BeanMapping {
@@ -33,8 +37,8 @@ public class PolymorphicMapping extends BeanMapping {
   public PolymorphicMapping(Class<?> baseClass, String typeField) {
     this.baseClass = baseClass;
     this.typeField = typeField;
-    this.typeMappingsByName = new HashMap<String,TypeMapping>();
-    this.typeMappingsByClass = new HashMap<Class,TypeMapping>();
+    this.typeMappingsByName = new HashMap<>();
+    this.typeMappingsByClass = new HashMap<>();
   }
 
   public void registerSubtypeMapping(String typeName, Class<?> subClass, TypeMapping typeMapping) {
@@ -49,18 +53,18 @@ public class PolymorphicMapping extends BeanMapping {
   @Override
   public TypeMapping getTypeMapping(Map<String, Object> jsonObject) {
     String typeName = (String) jsonObject.get(typeField);
-    TypeMapping typeMapping = typeMappingsByName.get(typeName);
-    if (typeMapping==null) {
-      throw new RuntimeException("Unknown subclass "+typeField+":"+typeName+" of "+baseClass+": object is "+jsonObject);
-    }
-    return typeMapping;
+    return getTypeMapping(typeName);
   }
 
   public TypeMapping getTypeMapping(BpmnReaderImpl bpmnReader) {
     String typeName = bpmnReader.readStringAttributeEffektif(typeField);
+    return getTypeMapping(typeName);
+  }
+
+  public TypeMapping getTypeMapping(String typeName) {
     TypeMapping typeMapping = typeMappingsByName.get(typeName);
     if (typeMapping==null) {
-      throw new RuntimeException("Unknown subclass "+typeField+":"+typeName+" of "+baseClass);
+      throw new RuntimeException("Unknown subclass " + typeField + " ‘" + typeName + "’ of " + baseClass);
     }
     return typeMapping;
   }

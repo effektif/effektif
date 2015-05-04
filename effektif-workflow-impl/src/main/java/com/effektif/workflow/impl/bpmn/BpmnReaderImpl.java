@@ -32,7 +32,6 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.deprecated.acl.AccessIdentity;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
@@ -323,7 +322,28 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return bindings;
   }
-  
+
+  @Override
+  public Map<String, Binding> readInputBindings() {
+    Map<String, Binding> bindings = new HashMap<>();
+    for (XmlElement element: currentXml.removeElements(EFFEKTIF_URI, "input")) {
+      startElement(element);
+      String key = element.getAttribute(EFFEKTIF_URI, "key");
+      if (key != null) {
+        Binding binding = new Binding();
+        String value = element.getAttribute(EFFEKTIF_URI, "value");
+        if (value != null) {
+          DataType type = readTypeAttributeEffektif();
+          binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
+        }
+        binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
+        bindings.put(key, binding);
+      }
+      endElement();
+    }
+    return bindings;
+  }
+
   protected <T> T parseText(String value, Class<T> type) {
     if (value==null) {
       return null;
@@ -390,16 +410,32 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   @Override
-  public DataType readTypeEffektif() {
+  public DataType readTypeAttributeEffektif() {
+    return readTypeAttributeEffektif("type");
+  }
+
+  private DataType readTypeAttributeEffektif(String attributeName) {
     try {
-      PolymorphicMapping triggerMapping = mappings.getPolymorphicMapping(DataType.class);
-      TypeMapping typeSubclassMapping = triggerMapping.getTypeMapping(this);
-      DataType type = (DataType) typeSubclassMapping.instantiate();
+      String typeName = readStringAttributeEffektif(attributeName);
+      PolymorphicMapping dataTypeMapping = mappings.getPolymorphicMapping(DataType.class);
+      DataType type = (DataType) dataTypeMapping.getTypeMapping(typeName).instantiate();
       type.readBpmn(this);
       return type;
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public DataType readTypeElementEffektif() {
+    XmlElement typeElement = readElementEffektif("type");
+    DataType type = null;
+    if (typeElement!=null) {
+      startElement(typeElement);
+      type = readTypeAttributeEffektif("name");
+      endElement();
+    }
+    return type;
   }
 
   @Override

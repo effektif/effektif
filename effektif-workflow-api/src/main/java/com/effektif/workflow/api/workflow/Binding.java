@@ -18,7 +18,6 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.types.DataType;
 
 
-
 /**
  * A binding stores a value for an activity input parameter, such as a process
  * variable.
@@ -40,25 +39,27 @@ public class Binding<T> {
   protected String expression;
 
   /**
-   * the fixed value. When serializing and deserializing, the type for this
+   * Returns the fixed value. When serializing and deserializing, the type for this
    * value will be automatically initialized. This value is mutually exclusive
-   * with variableId and expression
+   * with expression.
    */
   public T getValue() {
     return this.value;
   }
+
   /**
-   * the fixed value. When serializing and deserializing, the type for this
+   * Sets the fixed value. When serializing and deserializing, the type for this
    * value will be automatically initialized. This value is mutually exclusive
-   * with expression
+   * with expression.
    */
   public void setValue(T value) {
     this.value = value;
   }
+
   /**
-   * the fixed value. When serializing and deserializing, the type for this
+   * Sets the fixed value. When serializing and deserializing, the type for this
    * value will be automatically initialized. This value is mutually exclusive
-   * with variableId and expression
+   * with and expression
    */
   public Binding<T> value(T value) {
     this.value = value;
@@ -70,12 +71,14 @@ public class Binding<T> {
   public String getExpression() {
     return this.expression;
   }
+
   /** specifies how a dynamic value is to be fetched from the variables. 
    * @see https://github.com/effektif/effektif/wiki/Expressions */
   public void setExpression(String expression) {
     this.expression = expression;
   }
-  /** specifies how a dynamic value is to be fetched from the variables. 
+
+  /** specifies how a dynamic value is to be fetched from the variables.
    * @see https://github.com/effektif/effektif/wiki/Expressions */
   public Binding expression(String expression) {
     this.expression = expression;
@@ -97,6 +100,4 @@ public class Binding<T> {
   public String toString() {
     return "Binding[value=" + value + ",dataType=" + dataType + ",expression=" + expression + "]";
   }
-  
-  
 }

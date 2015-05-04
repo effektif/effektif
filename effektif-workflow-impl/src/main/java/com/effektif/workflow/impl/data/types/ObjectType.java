@@ -65,7 +65,7 @@ public class ObjectType extends DataType {
     XmlElement element = r.readElementEffektif("object");
     if (element!=null) {
       r.startElement(element);
-      elementType = r.readTypeEffektif();
+      elementType = r.readTypeAttributeEffektif();
       r.endElement();
     }
   }

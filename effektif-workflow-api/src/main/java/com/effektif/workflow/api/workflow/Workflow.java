@@ -106,9 +106,11 @@ public class Workflow extends AbstractWorkflow {
     w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
 
-    w.startElementEffektif("createTime");
-    w.writeDateAttributeEffektif("value", createTime);
-    w.endElement();
+    if (createTime != null) {
+      w.startElementEffektif("createTime");
+      w.writeDateAttributeEffektif("value", createTime);
+      w.endElement();
+    }
 
     if (access != null) {
       access.writeBpmn(w);

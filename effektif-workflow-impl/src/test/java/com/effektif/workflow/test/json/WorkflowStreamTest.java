@@ -113,12 +113,14 @@ public class WorkflowStreamTest {
     assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
     assertEquals("start", workflow.getTransitions().get(0).getFrom());
     assertEquals("end", workflow.getTransitions().get(0).getTo());
-// TODO in BPMN
-//    assertEquals(p.get("str"), workflow.getProperty("str"));
-//    assertEquals(p.get("lis"), workflow.getProperty("lis"));
-//    assertEquals(p.get("num"), workflow.getProperty("num"));
-//    assertEquals(p.get("dou"), workflow.getProperty("dou"));
-//    assertEquals(p.get("boo"), workflow.getProperty("boo"));
+
+    // Not tested, pending implementation.
+    //assertEquals(p.get("str"), workflow.getProperty("str"));
+    //assertEquals(p.get("lis"), workflow.getProperty("lis"));
+    //assertEquals(p.get("num"), workflow.getProperty("num"));
+    //assertEquals(p.get("dou"), workflow.getProperty("dou"));
+    //assertEquals(p.get("boo"), workflow.getProperty("boo"));
+
     assertEquals(now, workflow.getCreateTime());
   }
 
@@ -128,9 +130,9 @@ public class WorkflowStreamTest {
     Workflow workflow = new Workflow()
       .activity(new Call()
       .id("runTests")
-// TODO in BPMN
-//      .inputValue("d", now)
-//      .inputValue("s", "string")
+      .inputValue("d", now)
+      .inputValue("s", "string")
+      .inputExpression("v", "version")
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
@@ -140,9 +142,9 @@ public class WorkflowStreamTest {
     Call call = (Call) workflow.getActivities().get(0);
     assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
     assertEquals("Run tests", call.getSubWorkflowSource());
-// TODO in BPMN
-//    assertEquals(now, call.getInputBindings().get("d").getValue());
-//    assertEquals("string", call.getInputBindings().get("s").getValue());
+    assertEquals(now, call.getInputBindings().get("d").getValue());
+    assertEquals("string", call.getInputBindings().get("s").getValue());
+    assertEquals("version", call.getInputBindings().get("v").getExpression());
   }
   
   @Test

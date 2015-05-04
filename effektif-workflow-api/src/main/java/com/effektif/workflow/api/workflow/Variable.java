@@ -93,12 +93,7 @@ public class Variable extends Element {
   public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
     id = r.readStringAttributeEffektif("id");
-    XmlElement typeElement = r.readElementEffektif("type");
-    if (typeElement!=null) {
-      r.startElement(typeElement);
-      type = r.readTypeEffektif();
-      r.endElement();
-    }
+    type = r.readTypeElementEffektif();
   }
 
   @Override
@@ -106,12 +101,7 @@ public class Variable extends Element {
     w.startElementEffektif("variable");
     w.writeStringAttributeEffektif("id", id);
     super.writeBpmn(w);
-    if (type!=null) {
-      w.startElementEffektif("type");
-      w.writeTypeAttribute(type);
-      type.writeBpmn(w);
-      w.endElement();
-    }
+    w.writeTypeElement(type);
     w.endElement();
   }
 }
