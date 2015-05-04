@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.adapter.service.ExecuteRequest;
 import com.effektif.adapter.service.ExecuteResponse;
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.impl.data.DataTypeService;
 
 
@@ -43,17 +44,17 @@ public class ActivityContext {
   }
 
   public Object getValue(String parameterKey) {
-    Map<String, Object> inputParameters = executeRequest.getInputParameters();
+    Map<String, TypedValue> inputParameters = executeRequest.getInputParameters();
     if (!inputParameters.containsKey(parameterKey)) {
       log.debug("Parameter '"+parameterKey+"' not available");
       return null;
     }
-    Object value = inputParameters.get(parameterKey);
-    if (value==null) {
+    TypedValue typedValue = inputParameters.get(parameterKey);
+    if (typedValue==null) {
       log.debug("Parameter '"+parameterKey+"' has value null");
       return null;
     }
-    return value;
+    return typedValue.getValue();
   }
 
   public ExecuteResponse getExecuteResponse() {

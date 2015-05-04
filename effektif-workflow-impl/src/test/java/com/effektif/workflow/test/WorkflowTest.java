@@ -57,7 +57,6 @@ import com.effektif.workflow.impl.deprecated.email.OutgoingEmail;
 import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
 import com.effektif.workflow.impl.deprecated.file.File;
 import com.effektif.workflow.impl.deprecated.file.FileService;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;

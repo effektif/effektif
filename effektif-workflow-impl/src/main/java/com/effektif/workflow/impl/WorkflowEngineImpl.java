@@ -16,7 +16,6 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,27 +33,21 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.api.workflowinstance.ScopeInstance;
-import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 /**

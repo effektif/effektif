@@ -18,8 +18,8 @@ package com.effektif.workflow.impl.activity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.TextType;
 
 
 /**

@@ -42,8 +42,6 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
-import com.effektif.workflow.impl.data.DataTypeImpl;
-import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.script.ScriptImpl;
 import com.effektif.workflow.impl.deprecated.script.ScriptService;
 import com.effektif.workflow.impl.template.Hint;

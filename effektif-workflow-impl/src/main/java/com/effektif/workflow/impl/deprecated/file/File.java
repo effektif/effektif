@@ -15,11 +15,8 @@
  */
 package com.effektif.workflow.impl.deprecated.file;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 

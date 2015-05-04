@@ -27,7 +27,6 @@ import com.effektif.adapter.helpers.DefaultExceptionMapper;
 import com.effektif.adapter.helpers.RequestLogger;
 import com.effektif.server.EffektifJsonProvider;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 

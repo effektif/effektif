@@ -17,7 +17,6 @@ package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.types.DataType;
 
 

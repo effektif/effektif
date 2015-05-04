@@ -16,7 +16,6 @@
 package com.effektif.workflow.impl.deprecated;
 
 import com.effektif.workflow.api.deprecated.form.FormField;
-import com.effektif.workflow.api.deprecated.form.FormInstanceField;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 
 

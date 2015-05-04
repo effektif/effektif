@@ -15,10 +15,6 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.effektif.workflow.api.bpmn.BpmnReadable;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;

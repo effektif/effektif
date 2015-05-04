@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;

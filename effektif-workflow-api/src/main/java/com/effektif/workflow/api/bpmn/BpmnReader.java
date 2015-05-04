@@ -19,7 +19,6 @@ import java.util.Map;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.deprecated.acl.AccessIdentity;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;

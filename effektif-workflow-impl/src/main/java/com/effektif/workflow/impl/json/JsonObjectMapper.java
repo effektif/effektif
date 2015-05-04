@@ -21,7 +21,6 @@ import java.util.Map;
 
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
-import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
 
 
 /**

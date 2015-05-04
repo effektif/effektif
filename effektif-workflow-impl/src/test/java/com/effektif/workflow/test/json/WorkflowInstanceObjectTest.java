@@ -18,7 +18,6 @@ import java.util.Map;
 import org.junit.BeforeClass;
 
 import com.effektif.workflow.impl.json.JavaBeanValueMapper;
-import com.effektif.workflow.impl.json.JsonObjectMapper;
 
 
 /**

@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.test.deprecated.serialization;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -29,10 +31,8 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.IsTrue;
 import com.effektif.workflow.api.deprecated.acl.Access;
 import com.effektif.workflow.api.deprecated.acl.AccessControlList;
-import com.effektif.workflow.api.deprecated.acl.Authentication;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
-import com.effektif.workflow.api.deprecated.acl.PublicIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
 import com.effektif.workflow.api.deprecated.activities.EmailTask;
 import com.effektif.workflow.api.deprecated.activities.ScriptTask;
@@ -64,12 +64,6 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.sun.corba.se.spi.ior.ObjectId;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 
 /**

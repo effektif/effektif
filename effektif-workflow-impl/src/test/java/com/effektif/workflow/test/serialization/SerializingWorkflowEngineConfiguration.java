@@ -20,7 +20,6 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 

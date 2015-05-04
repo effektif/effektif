@@ -18,6 +18,7 @@ package com.effektif.adapter.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 
 
@@ -31,7 +32,7 @@ public class ExecuteRequest {
   protected String activityKey;
   protected WorkflowInstanceId workflowInstanceId;
   protected String activityInstanceId;
-  protected Map<String,Object> inputParameters;
+  protected Map<String,TypedValue> inputParameters;
   
   public String getActivityKey() {
     return this.activityKey;
@@ -66,21 +67,22 @@ public class ExecuteRequest {
     return this;
   }
 
-  public Map<String, Object> getInputParameters() {
+  public Map<String, TypedValue> getInputParameters() {
     return inputParameters;
   }
   
-  public void setInputParameters(Map<String, Object> inputParameters) {
+  public void setInputParameters(Map<String, TypedValue> inputParameters) {
     this.inputParameters = inputParameters;
   }
   public void inputParameter(String parameterKey, Object value) {
     if (inputParameters==null) {
       inputParameters = new HashMap<>();
     }
-    inputParameters.put(parameterKey, value);
+    inputParameters.put(parameterKey, new TypedValue(value));
   }
 
   public Object getInputParameterValue(String inputParameterKey) {
-    return inputParameters!=null ? inputParameters.get(inputParameterKey) : null;
+    TypedValue typedValue = inputParameters!=null ? inputParameters.get(inputParameterKey) : null;
+    return typedValue!=null ? typedValue.getValue() : null;
   }
 }

@@ -23,6 +23,7 @@ import com.effektif.adapter.service.Adapter;
 import com.effektif.adapter.service.AdapterService;
 import com.effektif.adapter.service.ExecuteRequest;
 import com.effektif.adapter.service.ExecuteResponse;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -47,7 +48,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   protected DataTypeService dataTypeService;
   protected AdapterService adapterService;
   protected ActivityDescriptor descriptor;
-  protected Map<String,DataTypeImpl> outputParameterDataTypes;
+//  protected Map<String,DataTypeImpl> outputParameterDataTypes;
   protected Map<String, InputParameter> inputParameters;
   
   public AdapterActivityImpl() {
@@ -64,20 +65,20 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     Adapter adapter = adapterService.findAdapterById(adapterId);
     this.descriptor = adapter!=null ? adapter.getActivityDescriptor(activityKey) : null;
     if (descriptor!=null) {
-      Map<String, OutputParameter> outputParameters = descriptor.getOutputParameters();
-      if (outputParameters!=null) {
-        this.outputParameterDataTypes = new HashMap<>();
-        DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
-        for (String outputParameterKey: outputParameters.keySet()) {
-          // IDEA if there there is a difference between the parameter type and the 
-          //      configured variable type (@see this.outputBindings),
-          //      then we could coerse (=apply a conversion) 
-          OutputParameter outputParameter = outputParameters.get(outputParameterKey);
-          DataType type = outputParameter.getType();
-          DataTypeImpl dataType = dataTypeService.createDataType(type);
-          outputParameterDataTypes.put(outputParameterKey, dataType);
-        }
-      }
+//      Map<String, OutputParameter> outputParameters = descriptor.getOutputParameters();
+//      if (outputParameters!=null) {
+//        this.outputParameterDataTypes = new HashMap<>();
+//        DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
+//        for (String outputParameterKey: outputParameters.keySet()) {
+//          // IDEA if there there is a difference between the parameter type and the 
+//          //      configured variable type (@see this.outputBindings),
+//          //      then we could coerse (=apply a conversion) 
+//          OutputParameter outputParameter = outputParameters.get(outputParameterKey);
+//          DataType type = outputParameter.getType();
+//          DataTypeImpl dataType = dataTypeService.createDataType(type);
+//          outputParameterDataTypes.put(outputParameterKey, dataType);
+//        }
+//      }
       inputParameters = descriptor.getInputParameters();
     }
     
@@ -140,12 +141,12 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     ExecuteResponse executeResponse = adapterService.executeAdapterActivity(adapterId, executeRequest);
     
     if (outputBindings!=null) {
-      Map<String, Object> outputParameterValues = executeResponse.getOutputParameterValues();
+      Map<String, TypedValue> outputParameterValues = executeResponse.getOutputParameterValues();
       for (String outputParameterKey: outputBindings.keySet()) {
         String variableId = outputBindings.get(outputParameterKey);
-        Object value = outputParameterValues.get(outputParameterKey);
-        DataTypeImpl dataType = outputParameterDataTypes.get(outputParameterKey);
-        activityInstance.setVariableValue(variableId, value);
+        TypedValue typedValue = outputParameterValues.get(outputParameterKey);
+//        DataTypeImpl dataType = outputParameterDataTypes.get(outputParameterKey);
+        activityInstance.setVariableValue(variableId, typedValue.getValue());
       }
     }
     
