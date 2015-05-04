@@ -19,6 +19,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -50,6 +51,9 @@ public interface BpmnWriter {
   /** Writes a binding like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> void writeBinding(String localPart, Binding<T> binding);
+
+  /** Writes a binding with a key, e.g. <e:input key="a" value="42"/>. */
+  <T> void writeBinding(String localPart, Binding<T> binding, String key);
 
   /** Writes a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
@@ -91,6 +95,10 @@ public interface BpmnWriter {
 
   /** write an element in the Effektif namespace with the value as content text. */
   void writeTextEffektif(String localPart, Object value);
-  
+
+  /** Writes a <code>type</code> attribute whose value is a data type name. */
   void writeTypeAttribute(Object o);
+
+  /** Writes a element in the Effektif namespace with the given data type as an attribute. */
+  void writeTypeElement(DataType type);
 }

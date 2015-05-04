@@ -14,6 +14,7 @@
 package com.effektif.workflow.api.bpmn;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
@@ -100,11 +101,17 @@ public interface BpmnReader {
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> List<Binding<T>> readBindings(String elementName, Class<T> type);
 
+  /** Returns a map of string input bindings with string keys, e.g. <e:input key="a" value="42"/>. */
+  Map<String,Binding> readInputBindings();
+
   /** Returns a the {@link Trigger} instance specified by the Effektif <code>type</code> parameter. */
   Trigger readTriggerEffektif();
 
-  /** Returns a the {@link DataType} instance specified by the Effektif <code>type</code> parameter. */
-  DataType readTypeEffektif();
+  /** Returns a the {@link DataType} instance specified by the Effektif <code>type</code> attribute. */
+  DataType readTypeAttributeEffektif();
+
+  /** Returns a the {@link DataType} instance specified by the Effektif <code>type</code> element. */
+  DataType readTypeElementEffektif();
 
   /** Reads the given documentation string as a BPMN <code>documentation</code> element. */
   String readDocumentation();

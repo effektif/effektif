@@ -28,6 +28,7 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
@@ -270,11 +271,22 @@ public class BpmnWriterImpl implements BpmnWriter {
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   @Override
   public <T> void writeBinding(String localPart, Binding<T> binding) {
+    writeBinding(localPart, binding, null);
+  }
+
+  /** Writes binding values as extension elements with the given local name and attribute name,
+   * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
+  @Override
+  public <T> void writeBinding(String localPart, Binding<T> binding, String key) {
     if (binding!=null) {
       startElementEffektif(localPart);
+      if (key != null) {
+        writeStringAttributeEffektif("key", key);
+      }
       T value = binding.getValue();
       if (value!=null) {
         writeStringAttributeEffektif("value", value);
+        writeTypeAttribute(mappings.getTypeByValue(value));
       }
       if (binding.getExpression()!=null) {
         writeStringAttributeEffektif("expression", binding.getExpression());
@@ -381,10 +393,20 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   @Override
   public void writeTypeAttribute(Object o) {
-    mappings.writeTypeAttribute(this, o);
+    mappings.writeTypeAttribute(this, o, "type");
   }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+  @Override
+  public void writeTypeElement(DataType type) {
+    if (type!=null) {
+      startElementEffektif("type");
+      mappings.writeTypeAttribute(this, type, "name");
+      type.writeBpmn(this);
+      endElement();
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////

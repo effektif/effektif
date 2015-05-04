@@ -54,7 +54,7 @@ public class ListType extends DataType {
     XmlElement element = r.readElementEffektif("element");
     if (element!=null) {
       r.startElement(element);
-      elementType = r.readTypeEffektif();
+      elementType = r.readTypeAttributeEffektif();
       r.endElement();
     }
   }

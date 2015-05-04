@@ -276,10 +276,10 @@ public class Mappings {
     }
   }
   
-  public void writeTypeAttribute(BpmnWriter bpmnWriter, Object o) {
+  public void writeTypeAttribute(BpmnWriter bpmnWriter, Object o, String attributeName) {
     TypeField typeField = typeFields.get(o.getClass());
     if (typeField!=null) {
-      bpmnWriter.writeStringAttributeEffektif(typeField.getTypeField(), typeField.getTypeName());
+      bpmnWriter.writeStringAttributeEffektif(attributeName, typeField.getTypeName());
     }
   }
 
