@@ -1,1 +1,2 @@
 com.effektif.workflow.impl.deprecated.activity.types.EmailTriggerImpl
+com.effektif.workflow.impl.deprecated.activity.types.FormTriggerImpl
