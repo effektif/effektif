@@ -21,6 +21,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
@@ -62,15 +65,17 @@ public class ActivityTypeService implements Initializable {
   }
 
   protected void initializeActivityTypes() {
-    ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
-    for (ActivityType activityType: activityTypeLoader) {
-      registerActivityType(activityType);
+    ServiceLoader<ActivityType> loader = ServiceLoader.load(ActivityType.class);
+    for (ActivityType type: loader) {
+      registerActivityType(type);
     }
   }
 
   protected void initializeTriggerTypes() {
-    registerTriggerType(new FormTriggerImpl());
-    registerTriggerType(new EmailTriggerImpl());
+    ServiceLoader<AbstractTriggerImpl> loader = ServiceLoader.load(AbstractTriggerImpl.class);
+    for (AbstractTriggerImpl type: loader) {
+      registerTriggerType(type);
+    }
   }
 
   public void registerActivityType(ActivityType activityType) {
