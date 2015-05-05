@@ -53,6 +53,7 @@ import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
@@ -78,7 +79,8 @@ import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
 import com.effektif.workflow.impl.util.Reflection;
 
 /**
- * Registry for API model classes, used to determine their serialisations.
+ * Registry for static information used to map API model classes to and from JSON. The purpose of this class is to
+ * provide a static cache of class information that is programmatically registered or discovered by reflection.
  *
  * @author Tom Baeyens
  */
@@ -128,6 +130,11 @@ public class Mappings {
     ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
     for (ActivityType activityType: activityTypeLoader) {
       registerSubClass(activityType.getActivityApiClass());
+    }
+
+    ServiceLoader<AbstractTriggerImpl> triggerTypeLoader = ServiceLoader.load(AbstractTriggerImpl.class);
+    for (AbstractTriggerImpl type: triggerTypeLoader) {
+      registerSubClass(type.getTriggerApiClass());
     }
 
     ServiceLoader<ConditionImpl> conditionLoader = ServiceLoader.load(ConditionImpl.class);
