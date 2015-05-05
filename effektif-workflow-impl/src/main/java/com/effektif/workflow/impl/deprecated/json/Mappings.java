@@ -80,7 +80,6 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
-import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.job.TaskEscalateJobType;
 import com.effektif.workflow.impl.deprecated.job.TaskReminderJobType;
 import com.effektif.workflow.impl.job.JobType;
@@ -111,7 +110,6 @@ public class Mappings {
   public Mappings() {
     registerBaseClass(DataType.class, "name");
     registerBaseClass(Trigger.class);
-    registerSubClass(EmailTrigger.class);
 
     registerBaseClass(Activity.class);
     registerSubClass(UserTask.class);

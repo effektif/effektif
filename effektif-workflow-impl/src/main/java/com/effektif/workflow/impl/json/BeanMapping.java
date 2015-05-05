@@ -16,10 +16,9 @@ package com.effektif.workflow.impl.json;
 import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 
 /**
- * A mapping from a ‘base class’, e.g. {@link Trigger}, to its subclasses (e.g. {@link EmailTrigger}).
+ * A mapping from a ‘base class’, e.g. {@link Trigger}, to its subclasses - actual trigger implementations.
  *
  * @author Tom Baeyens
  */

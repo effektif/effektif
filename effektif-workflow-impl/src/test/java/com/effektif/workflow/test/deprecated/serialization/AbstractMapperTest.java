@@ -58,7 +58,6 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
@@ -166,19 +165,6 @@ public abstract class AbstractMapperTest {
     assertEquals("<b>A new version has been deployed on production.</b>", activity.getBodyHtml());
 
     assertEquals(new FileId(fileId()), activity.getAttachmentFileIds().get(0).getValue());
-  }
-
-  @Test
-  public void testEmailTrigger() {
-    Workflow workflow = new Workflow()
-      .trigger(new EmailTrigger().emailIdVariableId("triggerEmailVariableId"));
-
-    workflow = serialize(workflow);
-
-    assertNotNull(workflow.getTrigger());
-    assertEquals(EmailTrigger.class, workflow.getTrigger().getClass());
-    EmailTrigger trigger = (EmailTrigger) workflow.getTrigger();
-    assertEquals("triggerEmailVariableId", trigger.getEmailIdVariableId());
   }
 
   @Test
