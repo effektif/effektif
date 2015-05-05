@@ -126,14 +126,18 @@ public class Mappings {
     registerTypeMapperFactory(new BindingMapperFactory());
   }
 
+  /**
+   * Initialises mappings by using the {@link ServiceLoader} mechanism to load implementation classes for
+   * activity types, triggers, conditions and data types.
+   */
   public void initialize() {
     ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
     for (ActivityType activityType: activityTypeLoader) {
       registerSubClass(activityType.getActivityApiClass());
     }
 
-    ServiceLoader<AbstractTriggerImpl> triggerTypeLoader = ServiceLoader.load(AbstractTriggerImpl.class);
-    for (AbstractTriggerImpl type: triggerTypeLoader) {
+    ServiceLoader<AbstractTriggerImpl> triggerLoader = ServiceLoader.load(AbstractTriggerImpl.class);
+    for (AbstractTriggerImpl type: triggerLoader) {
       registerSubClass(type.getTriggerApiClass());
     }
 
