@@ -28,7 +28,6 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.form.FormField;
@@ -37,7 +36,6 @@ import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
@@ -124,17 +122,6 @@ public class DocumentationExamplesTest extends TestCase {
   public void testReceiveTask() {
     ReceiveTask activity = new ReceiveTask();
     activity.setId("buildComplete");
-    print(activity);
-  }
-
-  @Test
-  public void testScriptTask() {
-    ScriptTask activity = new ScriptTask()
-      .id("postToTeamChat")
-      .script(new Script()
-        .language("javascript")
-        .script("console.log('TODO');")
-        .mapping("Version", "version"));
     print(activity);
   }
 

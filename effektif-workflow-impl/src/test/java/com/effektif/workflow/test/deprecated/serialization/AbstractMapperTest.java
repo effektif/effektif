@@ -32,7 +32,6 @@ import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.form.FormField;
@@ -51,7 +50,6 @@ import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -191,29 +189,6 @@ public abstract class AbstractMapperTest {
     activity = serialize(activity);
     assertEquals(ReceiveTask.class, activity.getClass());
     assertEquals("buildComplete", activity.getId());
-  }
-
-  @Test
-  public void testScriptTask() {
-    ScriptTask activity = new ScriptTask()
-      .id("postToTeamChat")
-      .script(new Script().language("javascript")
-      .script("console.log('TODO');")
-      .mapping("Version", "version"));
-    activity.name("Announce release in chat room")
-      .description("Announce the release in the developer chat room.");
-
-    activity = serialize(activity);
-
-    assertEquals(ScriptTask.class, activity.getClass());
-    assertEquals("postToTeamChat", activity.getId());
-    assertEquals("Announce release in chat room", activity.getName());
-    assertEquals("Announce the release in the developer chat room.", activity.getDescription());
-    assertNotNull(activity.getScript());
-    assertEquals("javascript", activity.getScript().getLanguage());
-    assertEquals("console.log('TODO');", activity.getScript().getScript());
-    assertEquals(1, activity.getScript().getMappings().size());
-    assertEquals("version", activity.getScript().getMappings().get("Version"));
   }
 
   @Test

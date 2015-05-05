@@ -68,7 +68,6 @@ import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.PublicIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.json.JsonWriter;
 import com.effektif.workflow.api.json.JsonIgnore;
@@ -122,7 +121,6 @@ public class Mappings {
     registerSubClass(ParallelGateway.class);
     registerSubClass(ReceiveTask.class);
     registerSubClass(StartEvent.class);
-    registerSubClass(ScriptTask.class);
 
     registerBaseClass(AccessIdentity.class);
     registerSubClass(GroupIdentity.class);

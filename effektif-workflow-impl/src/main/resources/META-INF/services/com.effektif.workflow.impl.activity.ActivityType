@@ -9,4 +9,3 @@ com.effektif.workflow.impl.activity.types.HttpServiceTaskImpl
 com.effektif.workflow.impl.activity.types.NoneTaskImpl
 com.effektif.workflow.impl.activity.types.ReceiveTaskImpl
 com.effektif.workflow.impl.deprecated.activity.types.UserTaskImpl
-com.effektif.workflow.impl.deprecated.activity.types.ScriptTaskImpl
