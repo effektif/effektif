@@ -32,15 +32,12 @@ import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.form.FormField;
-import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.deprecated.types.EmailIdType;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.deprecated.types.GroupIdType;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
-import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.EmailAddressType;
@@ -227,7 +224,7 @@ public abstract class AbstractMapperTest {
 
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent())
-      .activity("smokeTest", new UserTask())
+      .activity("smokeTest", new NoneTask())
       .activity("checkTestResult", new ExclusiveGateway().defaultTransitionId("to-failed"))
       .activity("passed", new EndEvent())
       .activity("failed", new EndEvent())
@@ -250,55 +247,6 @@ public abstract class AbstractMapperTest {
   }
 
   @Test
-  public void testUserTask() {
-    Form form = new Form()
-      .description("Test results & comments")
-      .field(new FormField().id("f1").name("Test summary").bindingExpression("v1"));
-    UserTask activity = new UserTask()
-      .id("smokeTest")
-      .name("Smoke test")
-      .description("Quick check to make sure it isn’t obviously broken.")
-      .taskName("Release version {{version}}")
-      .assigneeId(userId())
-      .candidateGroupId(groupId())
-      .form(form)
-      .duedate(RelativeTime.hours(1))
-      .reminder(RelativeTime.hours(2))
-      .reminderRepeat(RelativeTime.minutes(30))
-      .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId(userId())));
-
-    GroupIdentity permissionGroup = new GroupIdentity("dev");
-    activity.setAccess(new AccessControlList()
-      .permission(permissionGroup, Access.START));
-
-    activity = serialize(activity);
-
-    assertEquals(UserTask.class, activity.getClass());
-    assertEquals("smokeTest", activity.getId());
-    assertEquals("Smoke test", activity.getName());
-    assertEquals("Quick check to make sure it isn’t obviously broken.", activity.getDescription());
-    assertEquals("Release version {{version}}", activity.getTaskName());
-    assertEquals(userId(), activity.getAssigneeId().getValue().getInternal());
-    assertEquals(groupId(), activity.getCandidateGroupIds().get(0).getValue().getInternal());
-    assertEquals(RelativeTime.hours(1), activity.getDuedate());
-    assertEquals(RelativeTime.hours(2), activity.getReminder());
-    assertEquals(RelativeTime.minutes(30), activity.getReminderRepeat());
-    assertEquals(RelativeTime.hours(4), activity.getEscalate());
-    assertEquals(new UserId(userId()), activity.getEscalateToId().getValue());
-
-    assertEquals(Form.class, activity.getForm().getClass());
-    assertEquals("Test results & comments", activity.getForm().getDescription());
-
-    assertEquals(1, activity.getForm().getFields().size());
-    assertEquals("f1", activity.getForm().getFields().get(0).getId());
-    assertEquals("Test summary", activity.getForm().getFields().get(0).getName());
-    assertEquals("v1", activity.getForm().getFields().get(0).getBinding().getExpression());
-
-    assertTrue(activity.getAccess().getPermissions().get(Access.START).contains(permissionGroup));
-  }
-
-  @Test
   public void testWorkflow() {
     Workflow workflow = new Workflow()
       .id(new WorkflowId(workflowId()))
@@ -307,7 +255,7 @@ public abstract class AbstractMapperTest {
       .sourceWorkflowId(workflowId())
       .variable("v", TextType.INSTANCE)
       .activity("s", new StartEvent())
-      .activity("task", new UserTask())
+      .activity("task", new NoneTask())
       .transition(new Transition().from("s").to("task"));
 
     workflow = serialize(workflow);

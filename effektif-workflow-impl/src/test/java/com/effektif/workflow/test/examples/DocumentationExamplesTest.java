@@ -28,14 +28,8 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
-import com.effektif.workflow.api.deprecated.form.Form;
-import com.effektif.workflow.api.deprecated.form.FormField;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
@@ -132,40 +126,6 @@ public class DocumentationExamplesTest extends TestCase {
     print(activity);
   }
 
-  /** this shows what properties to set when setting or updating a form in a workflow */
-  @Test
-  public void testFormInput() {
-    Form form = new Form()
-      .description("Form description")
-      .field("v1")
-      .field(new FormField()
-        .bindingExpression("v2")
-        .readOnly()
-        .required());
-    print(form);
-  }
-
-  @Test
-  public void testUserTask() {
-    Form form = new Form()
-      .description("Form description")
-      .field(new FormField()
-        .id("f1")
-        .name("The first field in the form")
-        .bindingExpression("v1"));
-    UserTask activity = new UserTask()
-      .id("smokeTest")
-      .name("Smoke test")
-      .candidateGroupId("dev")
-      .form(form)
-      .duedate(RelativeTime.hours(1))
-      .reminder(RelativeTime.hours(2))
-      .reminderRepeat(RelativeTime.minutes(30))
-      .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId("bofh")));
-    print(activity);
-  }
-
   private void printJson(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
     JsonMapper jsonMapper = configuration.get(JsonMapper.class);
@@ -177,10 +137,5 @@ public class DocumentationExamplesTest extends TestCase {
 
     Workflow workflow = new Workflow().activity(activity);
     // System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
-  }
-
-  private void print(Form form) {
-    UserTask activity = new UserTask().form(form);
-    print(activity);
   }
 }

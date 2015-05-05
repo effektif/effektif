@@ -21,9 +21,9 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -36,19 +36,20 @@ import com.effektif.workflow.test.WorkflowTest;
  * @author Tom Baeyens
  */
 public class ParallelGatewayTest extends WorkflowTest {
-  
+
+  /*
+                    +-->[t1]------+
+                    |             |
+               +-->[f2]           |
+               |    |             |
+   [start]-->[f1]   +-->[t2]-+   [j1]-->[end]
+               |             |    |
+               |            [j2]--+
+               |             |
+               +-->[t3]------+
+  */
   @Test
   public void testParallelGateway() {
-    /*                +-->[t1]------+
-                      |             |
-                 +-->[f2]           |
-                 |    |             | 
-     [start]-->[f1]   +-->[t2]-+   [j1]-->[end]
-                 |             |    |
-                 |            [j2]--+
-                 |             |
-                 +-->[t3]------+ 
-    */
 
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent()
@@ -59,11 +60,11 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("f2", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo("t2"))
-      .activity("t1", new UserTask()
+      .activity("t1", new JavaServiceTask()
         .transitionTo("j1"))
-      .activity("t2", new UserTask()
+      .activity("t2", new JavaServiceTask()
         .transitionTo("j2"))
-      .activity("t3", new UserTask()
+      .activity("t3", new JavaServiceTask()
         .transitionTo("j2"))
       .activity("j1", new ParallelGateway()
         .transitionTo("end"))
@@ -110,9 +111,9 @@ public class ParallelGatewayTest extends WorkflowTest {
     */
 
     Workflow workflow = new Workflow()
-      .activity("t1", new UserTask()
+      .activity("t1", new JavaServiceTask()
         .transitionTo("+"))
-      .activity("t2", new UserTask()
+      .activity("t2", new JavaServiceTask()
         .transitionTo("x"))
       .activity("x", new ExclusiveGateway()
         .defaultTransitionId("default") // let's set the transition to 'o' as the default one
@@ -122,7 +123,7 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("o", new EndEvent())
       .activity("+", new ParallelGateway()
         .transitionTo("t3"))
-      .activity("t3", new UserTask());
+      .activity("t3", new JavaServiceTask());
         
     deploy(workflow);
     

@@ -24,9 +24,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 
 /**
- * Represents decision buttons at the end of a
- * {@link com.effektif.workflow.api.deprecated.activities.UserTask} form -
- * a choice that completes the task.
+ * Represents decision buttons at the end of a user task form - a choice that completes the task.
  * 
  * @author Tom Baeyens
  */

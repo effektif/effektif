@@ -15,13 +15,12 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.model.UserId;
@@ -36,6 +35,10 @@ import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * @author Tom Baeyens
@@ -45,7 +48,7 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testCallActivity() {
     Workflow subWorkflow = new Workflow()
-      .activity("subtask", new UserTask());
+      .activity("subtask", new JavaServiceTask());
     
     deploy(subWorkflow);
     

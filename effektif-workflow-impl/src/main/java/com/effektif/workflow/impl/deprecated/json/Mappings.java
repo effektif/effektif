@@ -68,7 +68,6 @@ import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.PublicIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.json.JsonWriter;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
@@ -111,7 +110,6 @@ public class Mappings {
     registerBaseClass(Trigger.class);
 
     registerBaseClass(Activity.class);
-    registerSubClass(UserTask.class);
     registerSubClass(EmbeddedSubprocess.class);
     registerSubClass(EndEvent.class);
     registerSubClass(ExclusiveGateway.class);

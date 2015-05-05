@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 /**
- * Java beans to declare forms for form trigger and
- * {@link com.effektif.workflow.api.deprecated.activities.UserTask} definitions,
+ * Java beans to declare forms for form trigger and user task definitions,
  * as well as the beans to represent form instances.
  */
 package com.effektif.workflow.api.deprecated.form;
