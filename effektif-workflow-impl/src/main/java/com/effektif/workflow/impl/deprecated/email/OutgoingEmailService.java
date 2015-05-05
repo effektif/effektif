@@ -18,7 +18,7 @@ package com.effektif.workflow.impl.deprecated.email;
 
 
 /**
- * API for sending emails, used for notifications and the {@link com.effektif.workflow.api.deprecated.activities.EmailTask}.
+ * API for sending emails, used for notifications and the email task.
  * 
  * @author Tom Baeyens
  */

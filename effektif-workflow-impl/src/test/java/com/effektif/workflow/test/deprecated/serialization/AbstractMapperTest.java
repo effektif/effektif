@@ -32,13 +32,10 @@ import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.EmailTask;
 import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.form.FormField;
-import com.effektif.workflow.api.deprecated.model.FileId;
-import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.deprecated.types.EmailIdType;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
@@ -116,56 +113,6 @@ public abstract class AbstractMapperTest {
   }
 
   protected abstract <T> T serialize(T o);
-
-  @Test
-  public void testEmailTask() {
-    EmailTask activity = new EmailTask()
-      .id("sendEmail")
-      .name("Announce release")
-      .description("Announce the new software release.")
-      .from("effektif@example.org")
-      .to("releases@example.org")
-      .toExpression("v1.email")
-      .toUserId(userId(0))
-      .toGroupId(groupId(0))
-      .cc("Developers <dev@example.org>")
-      .ccUserId(userId(1))
-      .ccGroupId(groupId(1))
-      .bcc("archive@example.org")
-      .bccUserId(userId(2))
-      .bccGroupId(groupId(2))
-      .subject("New release")
-      .bodyText("A new version has been deployed on production.")
-      .bodyHtml("<b>A new version has been deployed on production.</b>")
-      .attachment(new FileId(fileId()));
-
-    activity = serialize(activity);
-
-    assertEquals(EmailTask.class, activity.getClass());
-
-    assertEquals("sendEmail", activity.getId());
-    assertEquals("Announce release", activity.getName());
-    assertEquals("Announce the new software release.", activity.getDescription());
-    assertEquals("effektif@example.org", activity.getFromEmailAddress().getValue());
-    assertEquals("releases@example.org", activity.getToEmailAddresses().get(0).getValue());
-    assertEquals("v1.email", activity.getToEmailAddresses().get(1).getExpression());
-    assertEquals(new UserId(userId(0)), activity.getToUserIds().get(0).getValue());
-    assertEquals(new GroupId(groupId(0)), activity.getToGroupIds().get(0).getValue());
-
-    assertEquals("Developers <dev@example.org>", activity.getCcEmailAddresses().get(0).getValue());
-    assertEquals(new UserId(userId(1)), activity.getCcUserIds().get(0).getValue());
-    assertEquals(new GroupId(groupId(1)), activity.getCcGroupIds().get(0).getValue());
-
-    assertEquals("archive@example.org", activity.getBccEmailAddresses().get(0).getValue());
-    assertEquals(new UserId(userId(2)), activity.getBccUserIds().get(0).getValue());
-    assertEquals(new GroupId(groupId(2)), activity.getBccGroupIds().get(0).getValue());
-
-    assertEquals("New release", activity.getSubject());
-    assertEquals("A new version has been deployed on production.", activity.getBodyText());
-    assertEquals("<b>A new version has been deployed on production.</b>", activity.getBodyHtml());
-
-    assertEquals(new FileId(fileId()), activity.getAttachmentFileIds().get(0).getValue());
-  }
 
   @Test
   public void testEmbeddedSubprocess() {

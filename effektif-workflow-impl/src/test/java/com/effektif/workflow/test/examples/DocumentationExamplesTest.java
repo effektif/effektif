@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.test.examples;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
@@ -30,7 +28,6 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.deprecated.activities.EmailTask;
 import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.form.Form;
@@ -44,6 +41,7 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
+import junit.framework.TestCase;
 
 /**
  * Stub for a test of JSON and BPMN output, used to generate samples for documentation.
@@ -69,20 +67,6 @@ public class DocumentationExamplesTest extends TestCase {
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId("releaseTests1"));
     activity.setSubWorkflowSource("releaseTests");
-    print(activity);
-  }
-
-  @Test
-  public void testEmailTask() {
-    EmailTask activity = new EmailTask()
-      .id("sendEmail")
-      // .attachmentId(new FileId("releaseNotes"))
-      .bcc("archive@example.org")
-      .bodyText("A new version has been deployed on production.")
-      .cc("dev@example.org")
-      .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
-      .subject("New release")
-      .to("releases@example.org").toGroupId("releases");
     print(activity);
   }
 
