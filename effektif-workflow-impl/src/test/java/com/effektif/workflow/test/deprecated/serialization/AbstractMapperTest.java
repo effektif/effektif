@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.test.deprecated.serialization;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -42,7 +40,6 @@ import com.effektif.workflow.api.deprecated.form.FormField;
 import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.deprecated.types.EmailIdType;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.deprecated.types.GroupIdType;
@@ -64,6 +61,11 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -211,23 +213,6 @@ public abstract class AbstractMapperTest {
     assertEquals(ExclusiveGateway.class, activity.getClass());
     assertEquals("test-ok", activity.getId());
     assertEquals("proceed", activity.getDefaultTransitionId());
-  }
-
-  @Test
-  public void testFormTrigger() {
-    Workflow workflow = new Workflow()
-      .variable(new Variable().id("version").name("Version number").type(new TextType()))
-      .trigger(new FormTrigger().field("version"));
-
-    workflow = serialize(workflow);
-
-    assertNotNull(workflow.getTrigger());
-    assertEquals(FormTrigger.class, workflow.getTrigger().getClass());
-    FormTrigger trigger = (FormTrigger) workflow.getTrigger();
-    assertNotNull(trigger.getForm());
-    assertNotNull(trigger.getForm().getFields());
-    assertEquals(1, trigger.getForm().getFields().size());
-    assertEquals("version", trigger.getForm().getFields().get(0).getBinding().getExpression());
   }
 
   @Test

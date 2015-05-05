@@ -71,7 +71,6 @@ import com.effektif.workflow.api.deprecated.acl.UserIdentity;
 import com.effektif.workflow.api.deprecated.activities.ScriptTask;
 import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.json.JsonWriter;
-import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
@@ -112,7 +111,6 @@ public class Mappings {
   public Mappings() {
     registerBaseClass(DataType.class, "name");
     registerBaseClass(Trigger.class);
-    registerSubClass(FormTrigger.class);
     registerSubClass(EmailTrigger.class);
 
     registerBaseClass(Activity.class);

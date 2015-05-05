@@ -21,9 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
@@ -31,8 +28,6 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
-import com.effektif.workflow.impl.deprecated.activity.types.EmailTriggerImpl;
-import com.effektif.workflow.impl.deprecated.activity.types.FormTriggerImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 
 

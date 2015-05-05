@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.test.json;
 
-import static org.junit.Assert.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +37,10 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 
 /**
  * Tests workflow serialisation to JSON, by serialising and deserialising workflow objects.
@@ -46,9 +48,9 @@ import com.effektif.workflow.impl.util.Lists;
  * @author Tom Baeyens
  */
 public class WorkflowStreamTest {
-  
+
   protected static JsonStreamMapper jsonStreamMapper = null;
-  
+
   @BeforeClass
   public static void initialize() {
     if (jsonStreamMapper==null) {
@@ -175,11 +177,9 @@ public class WorkflowStreamTest {
   @Test
   public void testEmbeddedSubprocess() {
     Workflow workflow = new Workflow()
-      .activity("phase1", new EmbeddedSubprocess()
-        .name("phase one")
-        .activity("start", new StartEvent())
-        .activity("end", new EndEvent())
-        .transition(new Transition().from("start").to("end")));
+      .activity("phase1",
+        new EmbeddedSubprocess().name("phase one").activity("start", new StartEvent()).activity("end", new EndEvent())
+          .transition(new Transition().from("start").to("end")));
     
     workflow = serialize(workflow);
     
@@ -196,7 +196,6 @@ public class WorkflowStreamTest {
     assertEquals("end", transition.getTo());
   }
 
-  
   @Test
   public void testHttpServiceTask() {
     HttpServiceTask activity = new HttpServiceTask();

@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
- * A facade for API object serialisation and deserialisation to and from JSON.
+ * An API that implements logic for mapping model classes to and from JSON.
  *
  * @author Tom Baeyens
  */
