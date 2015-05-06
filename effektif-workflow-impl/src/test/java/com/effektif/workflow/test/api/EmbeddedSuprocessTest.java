@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
@@ -24,8 +26,6 @@ import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
-
-import static org.junit.Assert.assertTrue;
 
 
 /**

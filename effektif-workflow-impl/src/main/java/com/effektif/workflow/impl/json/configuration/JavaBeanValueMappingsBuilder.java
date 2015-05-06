@@ -11,21 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json;
+package com.effektif.workflow.impl.json.configuration;
 
-import com.effektif.workflow.impl.json.configuration.JavaBeanValueMappingsBuilder;
+import com.effektif.workflow.impl.json.MappingsBuilder;
+import com.effektif.workflow.impl.json.types.LocalDateTimeValueMapper;
 
 
 /**
  * @author Tom Baeyens
  */
-public class JavaBeanValueMapper extends JsonObjectMapper {
+public class JavaBeanValueMappingsBuilder extends MappingsBuilder {
 
-  public JavaBeanValueMapper() {
-    super(new JavaBeanValueMappingsBuilder().getMappings());
-  }
-
-  public JavaBeanValueMapper(Mappings mappings) {
-    super(mappings);
+  public JavaBeanValueMappingsBuilder() {
+    configureDefaults();
+    typeMapperFactory(new LocalDateTimeValueMapper());
   }
 }

@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.test.deprecated.serialization;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -52,11 +54,6 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 
 /**

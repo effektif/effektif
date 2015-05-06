@@ -38,6 +38,10 @@ import com.effektif.workflow.impl.deprecated.script.RhinoScriptService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
+import com.effektif.workflow.impl.json.configuration.JavaBeanValueMapperSupplier;
+import com.effektif.workflow.impl.json.configuration.JavaBeanValueMappingsBuilder;
+import com.effektif.workflow.impl.json.configuration.JsonStreamMapperSupplier;
+import com.effektif.workflow.impl.json.configuration.JsonStreamMappingsBuilder;
 
 
 /** Configurations to build a workflow engine. */
@@ -48,7 +52,6 @@ public abstract class DefaultConfiguration implements Configuration {
   public DefaultConfiguration() {
     brewery = new Brewery();
     brewery.ingredient(this);
-
     brewery.ingredient(new WorkflowEngineConfiguration());
     brewery.ingredient(new WorkflowEngineImpl());
     brewery.ingredient(new SimpleWorkflowCache());
@@ -57,8 +60,11 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new JobServiceImpl());
     brewery.ingredient(new ActivityTypeService());
     brewery.ingredient(new DataTypeService());
-    brewery.ingredient(new JsonStreamMapper());
-    brewery.ingredient(new JavaBeanValueMapper());
+    brewery.ingredient(new JsonStreamMappingsBuilder());
+    brewery.ingredient(new JavaBeanValueMappingsBuilder());
+
+    brewery.supplier(new JsonStreamMapperSupplier(), JsonStreamMapper.class);
+    brewery.supplier(new JavaBeanValueMapperSupplier(), JavaBeanValueMapper.class);
 
     // deprecated
     brewery.ingredient(new CaseServiceImpl());

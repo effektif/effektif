@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.test;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,10 +63,6 @@ import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */

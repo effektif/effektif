@@ -13,20 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.bpmn;
 
-import com.effektif.workflow.impl.json.Mappings;
-import com.effektif.workflow.impl.json.MappingsBuilder;
+import com.effektif.workflow.impl.json.configuration.JsonStreamMappingsBuilder;
 
 
 /**
  * @author Tom Baeyens
  */
-public class BpmnMappingsBuilder extends MappingsBuilder {
-
+public class BpmnMappingsBuilder extends JsonStreamMappingsBuilder {
 
   @Override
   public BpmnMappings getMappings() {
     return new BpmnMappings(this);
   }
-
-  
 }

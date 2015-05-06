@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.test.examples;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
@@ -33,7 +35,6 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import junit.framework.TestCase;
 
 /**
  * Stub for a test of JSON and BPMN output, used to generate samples for documentation.

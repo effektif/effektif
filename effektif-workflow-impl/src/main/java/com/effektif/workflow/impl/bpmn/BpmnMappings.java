@@ -27,10 +27,8 @@ import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.json.Mappings;
-import com.effektif.workflow.impl.json.MappingsBuilder;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeField;
 

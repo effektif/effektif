@@ -33,6 +33,7 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Extensible;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
@@ -123,6 +124,10 @@ public class MappingsBuilder {
     ServiceLoader<ConditionImpl> conditionLoader = ServiceLoader.load(ConditionImpl.class);
     for (ConditionImpl condition: conditionLoader) {
       subClass(condition.getApiType());
+    }
+    ServiceLoader<AbstractTriggerImpl> triggerLoader = ServiceLoader.load(AbstractTriggerImpl.class);
+    for (AbstractTriggerImpl trigger: triggerLoader) {
+        subClass(trigger.getTriggerApiClass());
     }
     ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
     for (DataTypeImpl dataTypeImpl: dataTypeLoader) {

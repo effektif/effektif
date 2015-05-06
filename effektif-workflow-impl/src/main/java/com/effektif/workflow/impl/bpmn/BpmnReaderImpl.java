@@ -28,7 +28,6 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
@@ -41,9 +40,7 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
-import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeMapping;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;

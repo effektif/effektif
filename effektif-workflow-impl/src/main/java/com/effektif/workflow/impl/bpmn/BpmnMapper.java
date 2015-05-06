@@ -25,7 +25,6 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 /**
  * A facade for API object BPMN serialisation and deserialisation,
@@ -38,10 +37,7 @@ public class BpmnMapper {
   private BpmnMappings bpmnMappings;
 
   public BpmnMapper() {
-    BpmnMappingsBuilder bpmnMappingsBuilder = new BpmnMappingsBuilder();
-    bpmnMappingsBuilder.configureDefaults();
-    JsonStreamMapper.configureForStream(bpmnMappingsBuilder);
-    this.bpmnMappings = bpmnMappingsBuilder.getMappings();
+    this.bpmnMappings = new BpmnMappingsBuilder().getMappings();
   }
 
   public Workflow readFromString(String bpmnString) {

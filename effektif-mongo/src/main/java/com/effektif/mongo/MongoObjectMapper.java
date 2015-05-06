@@ -39,7 +39,8 @@ public class MongoObjectMapper extends JsonObjectMapper {
       .typeMapperFactory(new WorkflowIdMongoMapper())
       .typeMapperFactory(new WorkflowInstanceIdMongoMapper())
       .jsonFieldName(AbstractWorkflow.class, "id", "_id")
-      .jsonFieldName(WorkflowInstance.class, "id", "_id"));
+      .jsonFieldName(WorkflowInstance.class, "id", "_id")
+      .getMappings());
   }
   
   public <T> BasicDBObject write(T bean) {

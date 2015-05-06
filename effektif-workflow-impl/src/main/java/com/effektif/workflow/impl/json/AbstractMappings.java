@@ -13,24 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import com.effektif.workflow.api.json.JsonFieldName;
-import com.effektif.workflow.api.json.JsonIgnore;
-import com.effektif.workflow.api.json.JsonPropertyOrder;
-import com.effektif.workflow.impl.json.types.BeanMapper;
-import com.effektif.workflow.impl.json.types.PolymorphicBeanMapper;
-import com.effektif.workflow.impl.util.Reflection;
 
 
 /**

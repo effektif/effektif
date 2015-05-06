@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.test.deprecated;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EndEvent;

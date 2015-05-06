@@ -20,9 +20,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
 
-import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
-import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
-import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
+import com.effektif.workflow.impl.json.configuration.JsonStreamMappingsBuilder;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -41,22 +39,14 @@ public class JsonStreamMapper {
   boolean pretty;
   
   public JsonStreamMapper() {
-    this(new MappingsBuilder().configureDefaults());
+    this(null);
   }
   
-  public JsonStreamMapper(MappingsBuilder mappingsBuilder) {
+  public JsonStreamMapper(Mappings mappings) {
     this.objectMapper = new ObjectMapper();
-    configureForStream(mappingsBuilder);
-    this.mappings = mappingsBuilder.getMappings();
+    this.mappings = mappings!=null ? mappings : new JsonStreamMappingsBuilder().getMappings();
   }
 
-  public static void configureForStream(MappingsBuilder mappingsBuilder) {
-    mappingsBuilder
-      .typeMapperFactory(new LocalDateTimeStreamMapper())
-      .typeMapperFactory(new WorkflowIdStreamMapper())
-      .typeMapperFactory(new WorkflowInstanceIdStreamMapper());
-  }
-  
   public JsonStreamMapper pretty() {
     this.pretty = true;
     return this;

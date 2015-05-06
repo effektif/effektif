@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
-import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
  * Tests workflow serialisation to BPMN, by running {@link WorkflowStreamTest} with a different serialisation.
