@@ -30,8 +30,12 @@ public class MongoGridFSSupplier implements Supplier {
     MongoClient mongoClient = brewery.get(MongoClient.class);
     String filedatabaseName = mongoConfiguration.getFileDatabaseName();
     DB db = mongoClient.getDB(filedatabaseName);
-    GridFS gridFs = new GridFS(db);
-    brewery.brew(gridFs);
-    return gridFs;
+    return new GridFS(db);
   }
+  
+  @Override
+  public boolean isSingleton() {
+    return true;
+  }
+
 }

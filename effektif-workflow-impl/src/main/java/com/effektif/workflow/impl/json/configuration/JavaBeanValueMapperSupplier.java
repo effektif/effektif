@@ -30,4 +30,9 @@ public class JavaBeanValueMapperSupplier implements Supplier {
     Mappings mappings = javaBeanValueMappingsBuilder.getMappings();
     return new JavaBeanValueMapper(mappings);
   }
+
+  @Override
+  public boolean isSingleton() {
+    return true;
+  }
 }

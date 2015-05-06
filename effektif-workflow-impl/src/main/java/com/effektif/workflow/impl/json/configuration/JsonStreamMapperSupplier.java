@@ -31,4 +31,8 @@ public class JsonStreamMapperSupplier implements Supplier {
     return new JsonStreamMapper(mappings);
   }
 
+  @Override
+  public boolean isSingleton() {
+    return true;
+  }
 }

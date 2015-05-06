@@ -29,7 +29,6 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceImpl;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
@@ -72,17 +71,5 @@ public class ApiExamplesTest {
 //    taskService.completeTask(task.getId());
     
     System.err.println(configuration.get(JsonMapper.class).writeToStringPretty(workflow));
-  }
-  
-  @Test
-  public void testEmailServerConfiguration() {
-    Configuration configuration = new MemoryConfiguration();
-    configuration.get(OutgoingEmailServiceImpl.class)
-      // by default, localhost and port 25 are configured
-      .host("smtp.gmail.com") // overwrite the default server
-      .ssl() // also sets the port to the default ssl port 465 
-      .tls() // also sets the port to the default tls port 587
-      .connectionTimeoutSeconds(34523523l)
-      .authenticate("youraccount@gmail.com", "***");
   }
 }

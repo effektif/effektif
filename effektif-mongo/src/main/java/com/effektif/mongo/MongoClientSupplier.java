@@ -25,11 +25,14 @@ public class MongoClientSupplier implements Supplier {
   @Override
   public Object supply(Brewery brewery) {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
-    MongoClient mongoClient = new MongoClient(
+    return new MongoClient(
             mongoConfiguration.getServerAddresses(), 
             mongoConfiguration.getCredentials(), 
             mongoConfiguration.getOptionBuilder().build());
-    brewery.brew(mongoClient);
-    return mongoClient;
+  }
+
+  @Override
+  public boolean isSingleton() {
+    return true;
   }
 }

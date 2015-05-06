@@ -117,6 +117,9 @@ public class Brewery {
     if (supplier!=null) {
       // log.debug("supplying("+name+")");
       o = supplier.supply(this);
+      if (supplier.isSingleton()) {
+        brew(o);
+      }
       // log.debug("returning supplied("+name+") "+System.identityHashCode(o));
       return o;
     }

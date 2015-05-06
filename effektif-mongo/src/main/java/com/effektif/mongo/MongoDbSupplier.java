@@ -17,7 +17,6 @@ package com.effektif.mongo;
 
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
-import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
 
@@ -28,8 +27,12 @@ public class MongoDbSupplier implements Supplier {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
     MongoClient mongoClient = brewery.get(MongoClient.class);
     String databaseName = mongoConfiguration.getDatabaseName();
-    DB db = mongoClient.getDB(databaseName);
-    brewery.brew(db);
-    return db;
+    return mongoClient.getDB(databaseName);
   }
+  
+  @Override
+  public boolean isSingleton() {
+    return true;
+  }
+
 }

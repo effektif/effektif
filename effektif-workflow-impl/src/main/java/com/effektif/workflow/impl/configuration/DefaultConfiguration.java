@@ -30,8 +30,6 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
 import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
-import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceImpl;
-import com.effektif.workflow.impl.deprecated.email.OutgoingEmailServiceSupplier;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.deprecated.script.RhinoScriptService;
@@ -73,7 +71,6 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new Mappings());
     brewery.ingredient(new ScriptEngineManager());
     brewery.ingredient(new TaskServiceImpl());
-    brewery.supplier(new OutgoingEmailServiceSupplier(), OutgoingEmailServiceImpl.class);
   }
 
   public WorkflowEngine getWorkflowEngine() {

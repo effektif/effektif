@@ -19,4 +19,6 @@ package com.effektif.workflow.impl.configuration;
 public interface Supplier {
   
   Object supply(Brewery brewery);
+  
+  boolean isSingleton();
 }
