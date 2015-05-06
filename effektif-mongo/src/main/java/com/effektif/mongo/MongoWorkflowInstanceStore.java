@@ -373,7 +373,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbWorkflowInstance = new BasicDBObject();
     writeIdOptNew(dbWorkflowInstance, WorkflowInstanceFields._ID, workflowInstance.id);
-    writeIdOpt(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID, workflowInstance.organizationId);
     if (storeWorkflowIdsAsStrings) {
       writeString(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id.getInternal());
     } else {
@@ -418,7 +417,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   public WorkflowInstanceImpl readWorkflowInstance(BasicDBObject dbWorkflowInstance) {
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
     workflowInstance.id = readWorkflowInstanceId(dbWorkflowInstance, WorkflowInstanceFields._ID);
-    workflowInstance.organizationId = readId(dbWorkflowInstance, WorkflowInstanceFields.ORGANIZATION_ID);
     workflowInstance.businessKey = readString(dbWorkflowInstance, WorkflowInstanceFields.BUSINESS_KEY);
     
     Object workflowIdObject = readObject(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID);

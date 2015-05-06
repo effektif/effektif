@@ -59,7 +59,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   public WorkflowInstanceId id;
   public String businessKey;
-  public String organizationId;
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
@@ -89,7 +88,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
           TriggerInstance triggerInstance,
           LockImpl lock) {
     this.id = workflowInstanceId;
-    this.organizationId = workflow.organizationId;
     this.configuration = configuration;
     this.workflow = workflow;
     this.scope = workflow;
@@ -108,7 +106,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     WorkflowInstance workflowInstance = new WorkflowInstance();
     workflowInstance.setId(id);
     workflowInstance.setBusinessKey(businessKey);
-    workflowInstance.setOrganizationId(organizationId);
     workflowInstance.setWorkflowId(workflow.id);
     workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
     workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);

@@ -31,7 +31,6 @@ public abstract class AbstractWorkflow extends Scope {
   protected Trigger trigger;
   
   protected AccessControlList access;
-  protected String organizationId;
   
   protected Boolean enableCases;
   protected String caseNameTemplate;
@@ -95,20 +94,6 @@ public abstract class AbstractWorkflow extends Scope {
    * If not specified, all is allowed. */
   public void setAccess(AccessControlList access) {
     this.access = access;
-  }
-
-  /** optional organization (aka tenant or workspace) identification */
-  public String getOrganizationId() {
-    return this.organizationId;
-  }
-  /** optional organization (aka tenant or workspace) identification */
-  public void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
-  }
-  /** optional organization (aka tenant or workspace) identification */
-  public AbstractWorkflow organizationId(String organizationId) {
-    this.organizationId = organizationId;
-    return this;
   }
 
   /** optional template to initialize the name of cases */

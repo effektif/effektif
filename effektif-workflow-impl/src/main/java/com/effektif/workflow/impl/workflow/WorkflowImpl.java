@@ -38,7 +38,6 @@ public class WorkflowImpl extends ScopeImpl {
   public String name;
   public WorkflowEngineImpl workflowEngine;
   public String sourceWorkflowId;
-  public String organizationId;
   public List<ActivityImpl> startActivities;
   public AbstractTriggerImpl trigger;
   public AccessControlList access;
@@ -51,7 +50,6 @@ public class WorkflowImpl extends ScopeImpl {
   public void parse(AbstractWorkflow workflow, WorkflowParser parser) {
     this.workflow = this;
     this.name = workflow.getName();
-    this.organizationId = workflow.getOrganizationId();
     super.parse(workflow, null, parser);
     this.startActivities = parser.getStartActivities(this);
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
@@ -86,12 +84,6 @@ public class WorkflowImpl extends ScopeImpl {
     return sourceWorkflowId;
   }
 
-  
-  public String getOrganizationId() {
-    return organizationId;
-  }
-
-  
   public List<ActivityImpl> getStartActivities() {
     return startActivities;
   }
