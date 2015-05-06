@@ -33,9 +33,7 @@ import com.effektif.workflow.impl.NotificationService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.deprecated.activity.types.UserTaskImpl;
 import com.effektif.workflow.impl.exceptions.BadRequestException;
-import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
@@ -154,10 +152,11 @@ public class TaskServiceImpl implements TaskService, Brewable {
     String activityInstanceId = task.getActivityInstanceId();
     WorkflowInstanceImpl workflowInstance = workflowEngine.workflowInstanceStore
             .lockWorkflowInstance(task.getWorkflowInstanceId(), activityInstanceId);
-    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
-    UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
-    FormBindings formBindings = userTask.formBindings;
-    formBindings.applyFormInstanceData(formInstance, activityInstance);
+      // Commented out when removing user task; TODO resolve dependency.
+//    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
+//    UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
+//    FormBindings formBindings = userTask.formBindings;
+//    formBindings.applyFormInstanceData(formInstance, activityInstance);
     workflowEngine.workflowInstanceStore.flushAndUnlock(workflowInstance);
   }
   
@@ -190,10 +189,11 @@ public class TaskServiceImpl implements TaskService, Brewable {
       WorkflowInstanceImpl workflowInstance = workflowEngine.workflowInstanceStore
               .getWorkflowInstanceImplById(task.getWorkflowInstanceId());
       String activityInstanceId = task.getActivityInstanceId();
-      ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
-      UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
-      FormInstance formInstance = userTask.formBindings.createFormInstance(activityInstance);
-      task.setFormInstance(formInstance);
+        // Commented out when removing user task; TODO resolve dependency.
+//      ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
+//      UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;
+//      FormInstance formInstance = userTask.formBindings.createFormInstance(activityInstance);
+//      task.setFormInstance(formInstance);
     }
     return task;
   }

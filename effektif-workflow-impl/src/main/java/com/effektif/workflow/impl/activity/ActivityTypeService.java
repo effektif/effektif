@@ -28,8 +28,6 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
-import com.effektif.workflow.impl.deprecated.activity.types.EmailTriggerImpl;
-import com.effektif.workflow.impl.deprecated.activity.types.FormTriggerImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
@@ -62,15 +60,17 @@ public class ActivityTypeService implements Initializable {
   }
 
   protected void initializeActivityTypes() {
-    ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
-    for (ActivityType activityType: activityTypeLoader) {
-      registerActivityType(activityType);
+    ServiceLoader<ActivityType> loader = ServiceLoader.load(ActivityType.class);
+    for (ActivityType type: loader) {
+      registerActivityType(type);
     }
   }
 
   protected void initializeTriggerTypes() {
-    registerTriggerType(new FormTriggerImpl());
-    registerTriggerType(new EmailTriggerImpl());
+    ServiceLoader<AbstractTriggerImpl> loader = ServiceLoader.load(AbstractTriggerImpl.class);
+    for (AbstractTriggerImpl type: loader) {
+      registerTriggerType(type);
+    }
   }
 
   public void registerActivityType(ActivityType activityType) {

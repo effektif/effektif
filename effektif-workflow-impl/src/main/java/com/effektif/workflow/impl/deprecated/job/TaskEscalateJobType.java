@@ -18,16 +18,13 @@ package com.effektif.workflow.impl.deprecated.job;
 import java.util.List;
 
 import com.effektif.workflow.api.deprecated.model.TaskId;
-import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.task.TaskQuery;
 import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.impl.deprecated.activity.types.UserTaskImpl;
 import com.effektif.workflow.impl.job.AbstractJobType;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
-import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -50,13 +47,14 @@ public class TaskEscalateJobType extends AbstractJobType {
     if (task!=null && !task.isCompleted()) {
       String activityInstanceId = job.getActivityInstanceId();
       ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
-      UserTaskImpl userTaskImpl = (UserTaskImpl) activityInstance.getActivity().getActivityType();
-      BindingImpl<UserId> escalateTo = userTaskImpl.getEscalateTo();
-      UserId escalateToReference = activityInstance.getValue(escalateTo);
-      task.assigneeId(escalateToReference);
+      // Commented out when removing user task; TODO resolve dependency.
+//      UserTaskImpl userTaskImpl = (UserTaskImpl) activityInstance.getActivity().getActivityType();
+//      BindingImpl<UserId> escalateTo = userTaskImpl.getEscalateTo();
+//      UserId escalateToReference = activityInstance.getValue(escalateTo);
+//      task.assigneeId(escalateToReference);
       // The next method requires that authentication is NOT set (AuthenticationThreadLocal) 
       // The TaskStore will apply authentication to the query if it is specified.
-      taskService.assignTask(taskId, escalateToReference);
+//      taskService.assignTask(taskId, escalateToReference);
     }
   }
 

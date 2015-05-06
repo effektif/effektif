@@ -15,14 +15,14 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
-import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
+
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -33,10 +33,10 @@ public class MultipleStartActivitiesTest extends WorkflowTest {
   @Test
   public void testDefaultStartActivitiesParallelExecution() {
     Workflow workflow = new Workflow() 
-      .activity("one", new UserTask())
-      .activity("two", new UserTask()
+      .activity("one", new JavaServiceTask())
+      .activity("two", new JavaServiceTask()
         .transitionTo("three"))
-      .activity("three", new UserTask());
+      .activity("three", new JavaServiceTask());
     
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);

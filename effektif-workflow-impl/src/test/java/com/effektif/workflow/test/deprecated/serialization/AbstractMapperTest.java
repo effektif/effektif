@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.test.deprecated.serialization;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.Call;
@@ -34,20 +32,12 @@ import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.EmailTask;
-import com.effektif.workflow.api.deprecated.activities.ScriptTask;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.deprecated.form.FormField;
-import com.effektif.workflow.api.deprecated.model.FileId;
-import com.effektif.workflow.api.deprecated.model.GroupId;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.deprecated.types.EmailIdType;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.deprecated.types.GroupIdType;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
-import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.EmailAddressType;
@@ -57,13 +47,16 @@ import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -117,69 +110,6 @@ public abstract class AbstractMapperTest {
   protected abstract <T> T serialize(T o);
 
   @Test
-  public void testEmailTask() {
-    EmailTask activity = new EmailTask()
-      .id("sendEmail")
-      .name("Announce release")
-      .description("Announce the new software release.")
-      .from("effektif@example.org")
-      .to("releases@example.org")
-      .toExpression("v1.email")
-      .toUserId(userId(0))
-      .toGroupId(groupId(0))
-      .cc("Developers <dev@example.org>")
-      .ccUserId(userId(1))
-      .ccGroupId(groupId(1))
-      .bcc("archive@example.org")
-      .bccUserId(userId(2))
-      .bccGroupId(groupId(2))
-      .subject("New release")
-      .bodyText("A new version has been deployed on production.")
-      .bodyHtml("<b>A new version has been deployed on production.</b>")
-      .attachment(new FileId(fileId()));
-
-    activity = serialize(activity);
-
-    assertEquals(EmailTask.class, activity.getClass());
-
-    assertEquals("sendEmail", activity.getId());
-    assertEquals("Announce release", activity.getName());
-    assertEquals("Announce the new software release.", activity.getDescription());
-    assertEquals("effektif@example.org", activity.getFromEmailAddress().getValue());
-    assertEquals("releases@example.org", activity.getToEmailAddresses().get(0).getValue());
-    assertEquals("v1.email", activity.getToEmailAddresses().get(1).getExpression());
-    assertEquals(new UserId(userId(0)), activity.getToUserIds().get(0).getValue());
-    assertEquals(new GroupId(groupId(0)), activity.getToGroupIds().get(0).getValue());
-
-    assertEquals("Developers <dev@example.org>", activity.getCcEmailAddresses().get(0).getValue());
-    assertEquals(new UserId(userId(1)), activity.getCcUserIds().get(0).getValue());
-    assertEquals(new GroupId(groupId(1)), activity.getCcGroupIds().get(0).getValue());
-
-    assertEquals("archive@example.org", activity.getBccEmailAddresses().get(0).getValue());
-    assertEquals(new UserId(userId(2)), activity.getBccUserIds().get(0).getValue());
-    assertEquals(new GroupId(groupId(2)), activity.getBccGroupIds().get(0).getValue());
-
-    assertEquals("New release", activity.getSubject());
-    assertEquals("A new version has been deployed on production.", activity.getBodyText());
-    assertEquals("<b>A new version has been deployed on production.</b>", activity.getBodyHtml());
-
-    assertEquals(new FileId(fileId()), activity.getAttachmentFileIds().get(0).getValue());
-  }
-
-  @Test
-  public void testEmailTrigger() {
-    Workflow workflow = new Workflow()
-      .trigger(new EmailTrigger().emailIdVariableId("triggerEmailVariableId"));
-
-    workflow = serialize(workflow);
-
-    assertNotNull(workflow.getTrigger());
-    assertEquals(EmailTrigger.class, workflow.getTrigger().getClass());
-    EmailTrigger trigger = (EmailTrigger) workflow.getTrigger();
-    assertEquals("triggerEmailVariableId", trigger.getEmailIdVariableId());
-  }
-
-  @Test
   public void testEmbeddedSubprocess() {
     EmbeddedSubprocess activity = new EmbeddedSubprocess();
     activity.setId("phase1");
@@ -211,23 +141,6 @@ public abstract class AbstractMapperTest {
     assertEquals(ExclusiveGateway.class, activity.getClass());
     assertEquals("test-ok", activity.getId());
     assertEquals("proceed", activity.getDefaultTransitionId());
-  }
-
-  @Test
-  public void testFormTrigger() {
-    Workflow workflow = new Workflow()
-      .variable(new Variable().id("version").name("Version number").type(new TextType()))
-      .trigger(new FormTrigger().field("version"));
-
-    workflow = serialize(workflow);
-
-    assertNotNull(workflow.getTrigger());
-    assertEquals(FormTrigger.class, workflow.getTrigger().getClass());
-    FormTrigger trigger = (FormTrigger) workflow.getTrigger();
-    assertNotNull(trigger.getForm());
-    assertNotNull(trigger.getForm().getFields());
-    assertEquals(1, trigger.getForm().getFields().size());
-    assertEquals("version", trigger.getForm().getFields().get(0).getBinding().getExpression());
   }
 
   @Test
@@ -276,29 +189,6 @@ public abstract class AbstractMapperTest {
   }
 
   @Test
-  public void testScriptTask() {
-    ScriptTask activity = new ScriptTask()
-      .id("postToTeamChat")
-      .script(new Script().language("javascript")
-      .script("console.log('TODO');")
-      .mapping("Version", "version"));
-    activity.name("Announce release in chat room")
-      .description("Announce the release in the developer chat room.");
-
-    activity = serialize(activity);
-
-    assertEquals(ScriptTask.class, activity.getClass());
-    assertEquals("postToTeamChat", activity.getId());
-    assertEquals("Announce release in chat room", activity.getName());
-    assertEquals("Announce the release in the developer chat room.", activity.getDescription());
-    assertNotNull(activity.getScript());
-    assertEquals("javascript", activity.getScript().getLanguage());
-    assertEquals("console.log('TODO');", activity.getScript().getScript());
-    assertEquals(1, activity.getScript().getMappings().size());
-    assertEquals("version", activity.getScript().getMappings().get("Version"));
-  }
-
-  @Test
   public void testStartEvent() {
     StartEvent activity = new StartEvent();
     activity.setId("codeComplete");
@@ -334,7 +224,7 @@ public abstract class AbstractMapperTest {
 
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent())
-      .activity("smokeTest", new UserTask())
+      .activity("smokeTest", new NoneTask())
       .activity("checkTestResult", new ExclusiveGateway().defaultTransitionId("to-failed"))
       .activity("passed", new EndEvent())
       .activity("failed", new EndEvent())
@@ -357,55 +247,6 @@ public abstract class AbstractMapperTest {
   }
 
   @Test
-  public void testUserTask() {
-    Form form = new Form()
-      .description("Test results & comments")
-      .field(new FormField().id("f1").name("Test summary").bindingExpression("v1"));
-    UserTask activity = new UserTask()
-      .id("smokeTest")
-      .name("Smoke test")
-      .description("Quick check to make sure it isn’t obviously broken.")
-      .taskName("Release version {{version}}")
-      .assigneeId(userId())
-      .candidateGroupId(groupId())
-      .form(form)
-      .duedate(RelativeTime.hours(1))
-      .reminder(RelativeTime.hours(2))
-      .reminderRepeat(RelativeTime.minutes(30))
-      .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId(userId())));
-
-    GroupIdentity permissionGroup = new GroupIdentity("dev");
-    activity.setAccess(new AccessControlList()
-      .permission(permissionGroup, Access.START));
-
-    activity = serialize(activity);
-
-    assertEquals(UserTask.class, activity.getClass());
-    assertEquals("smokeTest", activity.getId());
-    assertEquals("Smoke test", activity.getName());
-    assertEquals("Quick check to make sure it isn’t obviously broken.", activity.getDescription());
-    assertEquals("Release version {{version}}", activity.getTaskName());
-    assertEquals(userId(), activity.getAssigneeId().getValue().getInternal());
-    assertEquals(groupId(), activity.getCandidateGroupIds().get(0).getValue().getInternal());
-    assertEquals(RelativeTime.hours(1), activity.getDuedate());
-    assertEquals(RelativeTime.hours(2), activity.getReminder());
-    assertEquals(RelativeTime.minutes(30), activity.getReminderRepeat());
-    assertEquals(RelativeTime.hours(4), activity.getEscalate());
-    assertEquals(new UserId(userId()), activity.getEscalateToId().getValue());
-
-    assertEquals(Form.class, activity.getForm().getClass());
-    assertEquals("Test results & comments", activity.getForm().getDescription());
-
-    assertEquals(1, activity.getForm().getFields().size());
-    assertEquals("f1", activity.getForm().getFields().get(0).getId());
-    assertEquals("Test summary", activity.getForm().getFields().get(0).getName());
-    assertEquals("v1", activity.getForm().getFields().get(0).getBinding().getExpression());
-
-    assertTrue(activity.getAccess().getPermissions().get(Access.START).contains(permissionGroup));
-  }
-
-  @Test
   public void testWorkflow() {
     Workflow workflow = new Workflow()
       .id(new WorkflowId(workflowId()))
@@ -414,7 +255,7 @@ public abstract class AbstractMapperTest {
       .sourceWorkflowId(workflowId())
       .variable("v", TextType.INSTANCE)
       .activity("s", new StartEvent())
-      .activity("task", new UserTask())
+      .activity("task", new NoneTask())
       .transition(new Transition().from("s").to("task"));
 
     workflow = serialize(workflow);

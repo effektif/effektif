@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.test.examples;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
@@ -30,20 +28,12 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.deprecated.activities.EmailTask;
-import com.effektif.workflow.api.deprecated.activities.ScriptTask;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
-import com.effektif.workflow.api.deprecated.form.Form;
-import com.effektif.workflow.api.deprecated.form.FormField;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
+import junit.framework.TestCase;
 
 /**
  * Stub for a test of JSON and BPMN output, used to generate samples for documentation.
@@ -69,20 +59,6 @@ public class DocumentationExamplesTest extends TestCase {
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId("releaseTests1"));
     activity.setSubWorkflowSource("releaseTests");
-    print(activity);
-  }
-
-  @Test
-  public void testEmailTask() {
-    EmailTask activity = new EmailTask()
-      .id("sendEmail")
-      // .attachmentId(new FileId("releaseNotes"))
-      .bcc("archive@example.org")
-      .bodyText("A new version has been deployed on production.")
-      .cc("dev@example.org")
-      .fromEmailAddress(new Binding<String>().value("effektif@example.org"))
-      .subject("New release")
-      .to("releases@example.org").toGroupId("releases");
     print(activity);
   }
 
@@ -144,54 +120,9 @@ public class DocumentationExamplesTest extends TestCase {
   }
 
   @Test
-  public void testScriptTask() {
-    ScriptTask activity = new ScriptTask()
-      .id("postToTeamChat")
-      .script(new Script()
-        .language("javascript")
-        .script("console.log('TODO');")
-        .mapping("Version", "version"));
-    print(activity);
-  }
-
-  @Test
   public void testStartEvent() {
     StartEvent activity = new StartEvent();
     activity.setId("codeComplete");
-    print(activity);
-  }
-
-  /** this shows what properties to set when setting or updating a form in a workflow */
-  @Test
-  public void testFormInput() {
-    Form form = new Form()
-      .description("Form description")
-      .field("v1")
-      .field(new FormField()
-        .bindingExpression("v2")
-        .readOnly()
-        .required());
-    print(form);
-  }
-
-  @Test
-  public void testUserTask() {
-    Form form = new Form()
-      .description("Form description")
-      .field(new FormField()
-        .id("f1")
-        .name("The first field in the form")
-        .bindingExpression("v1"));
-    UserTask activity = new UserTask()
-      .id("smokeTest")
-      .name("Smoke test")
-      .candidateGroupId("dev")
-      .form(form)
-      .duedate(RelativeTime.hours(1))
-      .reminder(RelativeTime.hours(2))
-      .reminderRepeat(RelativeTime.minutes(30))
-      .escalate(RelativeTime.hours(4))
-      .escalateTo(new Binding().value(new UserId("bofh")));
     print(activity);
   }
 
@@ -206,10 +137,5 @@ public class DocumentationExamplesTest extends TestCase {
 
     Workflow workflow = new Workflow().activity(activity);
     // System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
-  }
-
-  private void print(Form form) {
-    UserTask activity = new UserTask().form(form);
-    print(activity);
   }
 }

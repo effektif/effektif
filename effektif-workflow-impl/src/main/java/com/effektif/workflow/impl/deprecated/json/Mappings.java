@@ -68,10 +68,7 @@ import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.PublicIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.activities.ScriptTask;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.json.JsonWriter;
-import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
@@ -81,7 +78,6 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
-import com.effektif.workflow.impl.deprecated.email.EmailTrigger;
 import com.effektif.workflow.impl.deprecated.job.TaskEscalateJobType;
 import com.effektif.workflow.impl.deprecated.job.TaskReminderJobType;
 import com.effektif.workflow.impl.job.JobType;
@@ -112,11 +108,8 @@ public class Mappings {
   public Mappings() {
     registerBaseClass(DataType.class, "name");
     registerBaseClass(Trigger.class);
-    registerSubClass(FormTrigger.class);
-    registerSubClass(EmailTrigger.class);
 
     registerBaseClass(Activity.class);
-    registerSubClass(UserTask.class);
     registerSubClass(EmbeddedSubprocess.class);
     registerSubClass(EndEvent.class);
     registerSubClass(ExclusiveGateway.class);
@@ -126,7 +119,6 @@ public class Mappings {
     registerSubClass(ParallelGateway.class);
     registerSubClass(ReceiveTask.class);
     registerSubClass(StartEvent.class);
-    registerSubClass(ScriptTask.class);
 
     registerBaseClass(AccessIdentity.class);
     registerSubClass(GroupIdentity.class);

@@ -25,9 +25,7 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 
 /**
- * A form definition (aka ‘declaration’) that specifies the fields to display for a
- * {@link com.effektif.workflow.api.deprecated.activities.UserTask} or
- * {@link com.effektif.workflow.api.deprecated.triggers.FormTrigger}.
+ * A form definition (aka ‘declaration’) that specifies the fields to display for a user task or form trigger.
  *
  * @see <a href="https://github.com/effektif/effektif/wiki/Forms">Forms</a>
  *

@@ -15,17 +15,17 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
+
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -46,8 +46,8 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
       .activity("start", new StartEvent()
         .transitionTo("sub"))
       .activity("sub", new EmbeddedSubprocess()
-        .activity("w1", new UserTask())
-        .activity("w2", new UserTask())
+        .activity("w1", new JavaServiceTask())
+        .activity("w2", new JavaServiceTask())
         .transitionTo("end"))
       .activity("end", new EndEvent());
   

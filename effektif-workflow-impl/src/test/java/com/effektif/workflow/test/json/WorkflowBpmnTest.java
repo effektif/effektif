@@ -29,8 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.effektif.workflow.api.deprecated.activities.UserTask;
-import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
@@ -55,10 +53,7 @@ public class WorkflowBpmnTest extends WorkflowStreamTest {
   public <T> T serialize(T o) {
     Workflow w = null;
     if (o instanceof Activity) {
-      w = new Workflow()
-        .activity((Activity)o);
-    } else if (o instanceof Form) {
-      w = new Workflow().activity(new UserTask().form((Form) o));
+      w = new Workflow().activity((Activity) o);
     } else {
       w = (Workflow) o;
     }
@@ -73,8 +68,6 @@ public class WorkflowBpmnTest extends WorkflowStreamTest {
 
     if (o instanceof Activity) {
       return (T) w.getActivities().get(0);
-    } else if (o instanceof Form) {
-      return (T) ((UserTask) w.getActivities().get(0)).getForm();
     } else {
       return (T) w;
     }

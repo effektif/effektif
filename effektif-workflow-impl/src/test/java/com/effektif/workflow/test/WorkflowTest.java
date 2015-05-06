@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.test;
 
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +37,6 @@ import com.effektif.workflow.api.deprecated.task.CaseService;
 import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.task.TaskQuery;
 import com.effektif.workflow.api.deprecated.task.TaskService;
-import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -65,10 +62,16 @@ import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 
 /** Base class that allows to reuse tests and run them on different process engines. */
 public class WorkflowTest {
-  
+
+  public static final String FORM_INSTANCE_KEY = "formInstance";
+
   public static String JOHN_ID = "john";
   public static String MARY_ID = "mary";
   public static String JACK_ID = "jack";
@@ -130,7 +133,7 @@ public class WorkflowTest {
   public WorkflowInstance start(Workflow workflow, FormInstance formInstance) {
     return workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data(FormTrigger.FORM_INSTANCE_KEY, formInstance));
+      .data(FORM_INSTANCE_KEY, formInstance));
   }
   
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {

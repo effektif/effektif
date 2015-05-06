@@ -18,7 +18,6 @@ package com.effektif.workflow.api.activities;
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.deprecated.activities.ServiceTask;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Transition;
 
