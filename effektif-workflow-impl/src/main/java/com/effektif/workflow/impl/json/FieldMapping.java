@@ -15,6 +15,8 @@ package com.effektif.workflow.impl.json;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -34,6 +36,9 @@ public class FieldMapping {
   Type fieldType;
   JsonTypeMapper jsonTypeMapper;
   
+  /** the list of parent fieldNames. not null means inline is activated for this field. */
+  Collection<String> inline;
+  
   public FieldMapping(Field field, JsonTypeMapper jsonTypeMapper) {
     this.field = field;
     this.jsonFieldName = field.getName();
@@ -45,8 +50,12 @@ public class FieldMapping {
     try {
       Object fieldValue = field.get(bean);
       if (fieldValue!=null) {
-        jsonWriter.writeFieldName(jsonFieldName);
         // log.debug("writing "+Reflection.getSimpleName(field)+" with "+jsonTypeMapper+" : "+fieldValue);
+        if (inline!=null) {
+          jsonWriter.setInline();
+        } else {
+          jsonWriter.writeFieldName(jsonFieldName);
+        }
         jsonTypeMapper.write(fieldValue, jsonWriter);
       }
     } catch (Exception e) {
@@ -56,7 +65,18 @@ public class FieldMapping {
   
   public void readField(Map<String,Object> beanJson, Object bean, JsonReader jsonReader) {
     try {
-      Object jsonFieldValue = beanJson.get(jsonFieldName);
+      Object jsonFieldValue = null;
+      if (inline!=null) {
+        Map<String,Object> fieldJson = new HashMap<>(beanJson);
+        for (String parentFieldName: inline) {
+          fieldJson.remove(parentFieldName);
+        }
+        if (!fieldJson.isEmpty()) {
+          jsonFieldValue = fieldJson;
+        }
+      } else {
+        jsonFieldValue = beanJson.get(jsonFieldName);
+      }
       if (jsonFieldValue!=null) {
         // log.debug("read "+Reflection.getSimpleName(field)+" with "+jsonTypeMapper+" : "+jsonFieldValue);
         Object fieldValue = jsonTypeMapper.read(jsonFieldValue, jsonReader);
@@ -84,6 +104,10 @@ public class FieldMapping {
       throw new IllegalArgumentException("Provided JSON field is empty");
     }
     this.jsonFieldName = fieldName;
+  }
+  
+  public void setInline(Collection<String> inline) {
+    this.inline = inline;
   }
   
   public String toString() {

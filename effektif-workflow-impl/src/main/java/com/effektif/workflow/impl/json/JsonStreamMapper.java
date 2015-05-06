@@ -70,6 +70,11 @@ public class JsonStreamMapper implements Initializable {
     return read(reader, clazz);
   }
 
+  public <T> T readString(String jsonString, Type type) {
+    Reader reader = new StringReader(jsonString);
+    return read(reader, type);
+  }
+
   public <T> T read(Reader reader, Class<T> clazz) {
     return read(reader, (Type)clazz);
   }

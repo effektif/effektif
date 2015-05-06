@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Effektif GmbH.
+package com.effektif.mongo;/* Copyright (c) 2015, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,49 +11,42 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import org.bson.types.ObjectId;
 
+import com.effektif.workflow.impl.json.JsonObjectWriter;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.Mappings;
-
+import com.effektif.workflow.impl.json.types.AbstractTypeMapper;
 
 /**
- * Maps a {@link LocalDateTime} to a JSON string field for serialisation and deserialisation.
+ * Maps a {@link ObjectId} to a MongoDB ObjectId.
  *
  * @author Tom Baeyens
  */
-public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapperFactory {
-
-  public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
-  public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
+public class ObjectIdMapper extends AbstractTypeMapper<ObjectId> implements JsonTypeMapperFactory {
 
   @Override
   public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
-    if (clazz==LocalDateTime.class) {
+    if (clazz==ObjectId.class) {
       return this;
     }
     return null;
   }
-  
+
   @Override
-  public void write(LocalDateTime objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeString(PRINTER.print(objectValue));
+  public void write(ObjectId objectValue, JsonWriter jsonWriter) {
+    JsonObjectWriter jsonObjectWriter = (JsonObjectWriter) jsonWriter;
+    jsonObjectWriter.writeValue(objectValue);
   }
 
   @Override
-  public LocalDateTime read(Object jsonValue, JsonReader jsonReader) {
-    if (!(jsonValue instanceof String)) {
-      throw new RuntimeException("Expected date in iso string format, but was "+jsonValue+" ("+jsonValue.getClass().getName()+")");
-    }
-    return PARSER.parseLocalDateTime((String)jsonValue);
+  public ObjectId read(Object jsonValue, JsonReader jsonReader) {
+    return (ObjectId) jsonValue;
   }
 }

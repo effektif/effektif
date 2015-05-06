@@ -36,7 +36,10 @@ public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper
   
   @Override
   public void write(Map map, JsonWriter jsonWriter) {
-    jsonWriter.objectStart();
+    boolean inline = jsonWriter.getInline();
+    if (!inline) {
+      jsonWriter.objectStart();
+    }
     for (Object key: map.keySet()) {
       if (key!=null) {
         if (!(key instanceof String)) {
@@ -47,7 +50,9 @@ public class MapMapper extends AbstractTypeMapper<Map> implements JsonTypeMapper
         valueMapper.write(value, jsonWriter);
       }
     }
-    jsonWriter.objectEnd();
+    if (!inline) {
+      jsonWriter.objectEnd();
+    }
   }
 
   @Override

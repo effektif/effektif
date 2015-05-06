@@ -80,6 +80,11 @@ public class MongoQuery {
     return this;
   }
 
+  public MongoQuery lt(String fieldName, Object dbValue) {
+    query.put(fieldName, new BasicDBObject("$lt", dbValue));
+    return this;
+  }
+
   public MongoQuery access(String... actions) {
     Authentication authentication = Authentications.current();
     if (authentication!=null) {

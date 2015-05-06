@@ -25,10 +25,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -52,6 +54,7 @@ import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Extensible;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.bpmn.Bpmn;
@@ -102,8 +105,13 @@ public class Mappings {
 
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
+  
+  Map<Field,String> jsonFieldNames = new HashMap<>();
+  Set<Field> inlineFields = new HashSet<>();
 
   public Mappings() {
+    setInline(Extensible.class, "properties");
+
     registerBaseClass(Trigger.class);
     registerBaseClass(JobType.class);
     registerBaseClass(Activity.class);
@@ -125,6 +133,7 @@ public class Mappings {
   }
 
   public void initialize() {
+    
     ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
     for (ActivityType activityType: activityTypeLoader) {
       registerSubClass(activityType.getActivityApiClass());
@@ -287,23 +296,63 @@ public class Mappings {
    * Sets the mapping from the given model class field name to a JSON field name, used for (de)serialisation.
    */
   public void setJsonFieldName(Class<?> modelClass, String fieldName, String jsonFieldName) {
-    FieldMapping fieldMapping = findFieldMapping(modelClass, fieldName);
-    if (fieldMapping!=null) {
-      fieldMapping.jsonFieldName = jsonFieldName;
+    try {
+      jsonFieldNames.put(modelClass.getDeclaredField(fieldName),jsonFieldName);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+//    getTypeMapping(modelClass);
+//    List<TypeMapping> typeMappings = getTypeMappings(modelClass);
+//    if (typeMappings!=null) {
+//      for (TypeMapping typeMapping: typeMappings) {
+//        if (typeMapping.fieldMappings!=null) {
+//          for (FieldMapping fieldMapping: typeMapping.fieldMappings) {
+//            if (fieldMapping.field.getName().equals(fieldName)) {
+//              fieldMapping.jsonFieldName = jsonFieldName;
+//            }
+//          }
+//        }
+//      }
+//    }
   }
 
-  private FieldMapping findFieldMapping(Class< ? > modelClass, String fieldName) {
-    TypeMapping typeMapping = getTypeMapping(modelClass);
-    if (typeMapping!=null && typeMapping.fieldMappings!=null) {
-      for (FieldMapping fieldMapping: typeMapping.fieldMappings) {
-        if (fieldMapping.field.getName().equals(fieldName)) {
-          return fieldMapping;
-        }
-      }
+  public void setInline(Class<?> modelClass, String fieldName) {
+    try {
+      inlineFields.add(modelClass.getDeclaredField(fieldName));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-    return null;
+//    getTypeMapping(modelClass);
+//    List<TypeMapping> typeMappings = getTypeMappings(modelClass);
+//    if (typeMappings!=null) {
+//      for (TypeMapping typeMapping: typeMappings) {
+//        if (typeMapping.fieldMappings!=null) {
+//          List<String> fieldNames = null;
+//          for (FieldMapping fieldMapping: typeMapping.fieldMappings) {
+//            if (fieldMapping.field.getName().equals(fieldName)) {
+//              if (fieldNames==null) {
+//                fieldNames = new ArrayList<>();
+//                for (FieldMapping parentFieldMapping: typeMapping.fieldMappings) {
+//                  fieldNames.add(parentFieldMapping.jsonFieldName);
+//                }
+//              }
+//              fieldMapping.inline = fieldNames;
+//            }
+//          }
+//        }
+//      }
+//    }
   }
+
+//  private List<TypeMapping> getTypeMappings(Class< ? > modelClass) {
+//    List<TypeMapping> result = new ArrayList<>();
+//    for (TypeMapping typeMapping: this.typeMappings.values()) {
+//      if (modelClass.isAssignableFrom(typeMapping.rawClass)) {
+//        result.add(typeMapping);
+//      }
+//    }
+//    return result;
+//  }
 
   public synchronized Type getFieldType(Class< ? > clazz, String fieldName) {
     // could be cached in this mappings object
@@ -487,6 +536,25 @@ public class Mappings {
     List<FieldMapping> fieldMappings = new ArrayList<>();
     scanFields(fieldMappings, type);
     Class<?> clazz = Reflection.getRawClass(type);
+    Set<FieldMapping> inlineFieldMappings = new HashSet<>();
+    for (FieldMapping fieldMapping: fieldMappings) {
+      String jsonFieldName = jsonFieldNames.get(fieldMapping.field);
+      if (jsonFieldName!=null) {
+        fieldMapping.jsonFieldName = jsonFieldName;
+      }
+      if (inlineFields.contains(fieldMapping.field)) {
+        inlineFieldMappings.add(fieldMapping);
+      }
+    }
+    if (!inlineFieldMappings.isEmpty()) {
+      List<String> fieldNames = new ArrayList<>();
+      for (FieldMapping fieldMapping: fieldMappings) {
+        fieldNames.add(fieldMapping.jsonFieldName);
+      }
+      for (FieldMapping inlineFieldMapping: inlineFieldMappings) {
+        inlineFieldMapping.inline = fieldNames;
+      }
+    }
     JsonPropertyOrder jsonPropertyOrder = clazz.getAnnotation(JsonPropertyOrder.class);
     if (jsonPropertyOrder!=null) {
       String[] fieldNamesOrder = jsonPropertyOrder.value();

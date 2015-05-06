@@ -27,6 +27,7 @@ public abstract class JsonWriter {
   
   Mappings mappings;
   List<Object> loopCheckBeans = new ArrayList<>();
+  boolean inline;
   
   public JsonWriter(Mappings mappings) {
     this.mappings = mappings;
@@ -67,6 +68,16 @@ public abstract class JsonWriter {
   public void writeTypeField(Object bean) {
     mappings.writeTypeField(this, bean);
   }
+
+  public void setInline() {
+    inline = true;
+  }
+  
+  public boolean getInline() {
+    boolean inline = this.inline;
+    this.inline = false;
+    return inline;
+  }
   
   public abstract void objectStart();
   public abstract void writeFieldName(String fieldName);
@@ -79,4 +90,5 @@ public abstract class JsonWriter {
   public abstract void writeString(String s);
   public abstract void writeBoolean(Boolean b);
   public abstract void writeNumber(Number n);
+
 }

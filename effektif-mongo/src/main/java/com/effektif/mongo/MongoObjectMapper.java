@@ -16,7 +16,7 @@ package com.effektif.mongo;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonObjectMapper;
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
@@ -31,15 +31,17 @@ import com.mongodb.BasicDBObject;
 public class MongoObjectMapper extends JsonObjectMapper {
 
   public MongoObjectMapper() {
+    this.mappings.registerTypeMapperFactory(new ObjectIdMapper());
     this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
     this.mappings.registerTypeMapperFactory(new WorkflowIdMongoMapper());
     this.mappings.registerTypeMapperFactory(new WorkflowInstanceIdMongoMapper());
+
+    this.mappings.setJsonFieldName(AbstractWorkflow.class, "id", "_id");
+    this.mappings.setJsonFieldName(WorkflowInstance.class, "id", "_id");
   }
   
   @Override
   public void initialize() {
-    this.mappings.setJsonFieldName(Workflow.class, "id", "_id");
-    this.mappings.setJsonFieldName(WorkflowInstance.class, "id", "_id");
     super.initialize();
   }
 
