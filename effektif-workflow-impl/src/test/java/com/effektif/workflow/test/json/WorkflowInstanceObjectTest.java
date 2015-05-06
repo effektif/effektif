@@ -30,7 +30,6 @@ public class WorkflowInstanceObjectTest extends WorkflowInstanceStreamTest {
   @BeforeClass
   public static void initialize() {
     jsonObjectMapper = new JavaBeanValueMapper();
-    jsonObjectMapper.initialize();
   }
 
   @Override

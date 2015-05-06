@@ -56,7 +56,7 @@ public class BpmnReaderImpl implements BpmnReader {
   private static final Logger log = LoggerFactory.getLogger(BpmnReaderImpl.class);
   
   /** global mappings */
-  protected Mappings mappings;
+  protected BpmnMappings bpmnMappings;
 
   /** stack of scopes */ 
   protected Stack<Scope> scopeStack = new Stack<Scope>();
@@ -69,17 +69,14 @@ public class BpmnReaderImpl implements BpmnReader {
   protected XmlElement currentXml; 
   protected Class<?> currentClass; 
   
-  protected DataTypeService dataTypeService;
-
   /** maps uri's to prefixes.
    * Ideally this should be done in a stack so that each element can add new namespaces.
    * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
    * The current implementation assumes that all namespaces are defined in the root element */
   protected Map<String,String> prefixes = new HashMap<>();
 
-  public BpmnReaderImpl(Configuration configuration, Mappings mappings) {
-    this.mappings = mappings;
-    dataTypeService = configuration.get(DataTypeService.class);
+  public BpmnReaderImpl(BpmnMappings bpmnMappings) {
+    this.bpmnMappings = bpmnMappings;
   }
   
   protected Workflow readDefinitions(XmlElement definitionsXml) {
@@ -140,7 +137,7 @@ public class BpmnReaderImpl implements BpmnReader {
         }
         else {
           // Check if the XML element can be parsed as one of the activity types.
-          BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(currentXml, this);
+          BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(currentXml, this);
           if (bpmnTypeMapping != null) {
             Activity activity = (Activity) bpmnTypeMapping.instantiate();
             // read the fields
@@ -172,7 +169,7 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public List<XmlElement> readElementsEffektif(Class modelClass) {
-    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
     String localPart = bpmnTypeMapping.getBpmnElementName();
     return readElementsEffektif(localPart);
   }
@@ -287,7 +284,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public <T> Binding<T> readBinding(Class modelClass, Class<T> type) {
-    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
     String localPart = bpmnTypeMapping.getBpmnElementName();
     return readBinding(localPart, type);
   }
@@ -399,7 +396,7 @@ public class BpmnReaderImpl implements BpmnReader {
   @Override
   public Trigger readTriggerEffektif() {
     try {
-      PolymorphicMapping triggerMapping = mappings.getPolymorphicMapping(Trigger.class);
+      PolymorphicMapping triggerMapping = bpmnMappings.getPolymorphicMapping(Trigger.class);
       TypeMapping triggerSubclassMapping = triggerMapping.getTypeMapping(this);
       Trigger type = (Trigger) triggerSubclassMapping.instantiate();
       type.readBpmn(this);
@@ -417,7 +414,7 @@ public class BpmnReaderImpl implements BpmnReader {
   private DataType readTypeAttributeEffektif(String attributeName) {
     try {
       String typeName = readStringAttributeEffektif(attributeName);
-      PolymorphicMapping dataTypeMapping = mappings.getPolymorphicMapping(DataType.class);
+      PolymorphicMapping dataTypeMapping = bpmnMappings.getPolymorphicMapping(DataType.class);
       DataType type = (DataType) dataTypeMapping.getTypeMapping(typeName).instantiate();
       type.readBpmn(this);
       return type;
@@ -500,7 +497,7 @@ public class BpmnReaderImpl implements BpmnReader {
   public List<Condition> readConditions() {
     List<Condition> conditions = new ArrayList<>();
 
-    SortedSet<Class<?>> bpmnClasses = mappings.getBpmnClasses(); 
+    SortedSet<Class<?>> bpmnClasses = bpmnMappings.getBpmnClasses(); 
 
     for (Class bpmnClass : bpmnClasses) {
       if (Condition.class.isAssignableFrom(bpmnClass)) {

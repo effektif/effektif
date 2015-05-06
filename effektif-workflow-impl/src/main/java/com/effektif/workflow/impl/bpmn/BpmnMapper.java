@@ -17,7 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 
-import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
@@ -26,7 +25,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
-import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 /**
  * A facade for API object BPMN serialisation and deserialisation,
@@ -36,22 +35,14 @@ import com.effektif.workflow.impl.json.Mappings;
  */
 public class BpmnMapper {
 
-  private Configuration configuration;
-  private Mappings mappings;
+  private BpmnMappings bpmnMappings;
 
-  public BpmnMapper(Configuration configuration) {
-    this.configuration = configuration;
+  public BpmnMapper() {
+    BpmnMappingsBuilder bpmnMappingsBuilder = new BpmnMappingsBuilder();
+    bpmnMappingsBuilder.configureDefaults();
+    JsonStreamMapper.configureForStream(bpmnMappingsBuilder);
+    this.bpmnMappings = bpmnMappingsBuilder.getMappings();
   }
-
-//  protected DataTypeService dataTypeService;
-//  
-//  public DataTypeService getDataTypeService() {
-//    return dataTypeService;
-//  }
-//  
-//  public void setDataTypeService(DataTypeService dataTypeService) {
-//    this.dataTypeService = dataTypeService;
-//  }
 
   public Workflow readFromString(String bpmnString) {
     return readFromReader(new StringReader(bpmnString));
@@ -59,11 +50,11 @@ public class BpmnMapper {
 
   public Workflow readFromReader(java.io.Reader reader) {
     XmlElement xmlRoot = XmlReader.parseXml(reader);
-    return new BpmnReaderImpl(configuration, mappings).readDefinitions(xmlRoot);
+    return new BpmnReaderImpl(bpmnMappings).readDefinitions(xmlRoot);
   }
 
   public void writeToStream(Workflow workflow, OutputStream out) {
-    XmlElement bpmnDefinitions = new BpmnWriterImpl(mappings).writeDefinitions(workflow);
+    XmlElement bpmnDefinitions = new BpmnWriterImpl(bpmnMappings).writeDefinitions(workflow);
     XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
     xmlWriter.writeDocument(bpmnDefinitions);
     xmlWriter.flush();
@@ -83,7 +74,7 @@ public class BpmnMapper {
     if (xmlRoot != null && xmlRoot.elements != null) {
       try {
         T condition = conditionClass.newInstance();
-        BpmnReaderImpl reader = new BpmnReaderImpl(configuration, mappings);
+        BpmnReaderImpl reader = new BpmnReaderImpl(bpmnMappings);
         reader.currentXml = xmlRoot;
         condition.readBpmn(reader);
         return condition;
@@ -100,7 +91,7 @@ public class BpmnMapper {
    * Work in progress for testing conditions.
    */
   public String writeToString(BpmnWritable model) {
-    BpmnWriterImpl writer = new BpmnWriterImpl(mappings);
+    BpmnWriterImpl writer = new BpmnWriterImpl(bpmnMappings);
     writer.startElementBpmn("conditionsTest");
     model.writeBpmn(writer);
 
@@ -109,15 +100,5 @@ public class BpmnMapper {
     xmlWriter.writeDocument(writer.xml);
     xmlWriter.flush();
     return stream.toString();
-  }
-
-  
-  public Mappings getMappings() {
-    return mappings;
-  }
-
-  
-  public void setMappings(Mappings mappings) {
-    this.mappings = mappings;
   }
 }

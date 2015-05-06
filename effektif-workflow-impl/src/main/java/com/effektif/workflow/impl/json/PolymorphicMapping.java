@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.json;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.deprecated.triggers.FormTrigger;
@@ -67,6 +68,10 @@ public class PolymorphicMapping extends BeanMapping {
       throw new RuntimeException("Unknown subclass " + typeField + " ‘" + typeName + "’ of " + baseClass);
     }
     return typeMapping;
+  }
+  
+  public Set<Class> getSubClasses() {
+    return typeMappingsByClass.keySet();
   }
 
   @Override

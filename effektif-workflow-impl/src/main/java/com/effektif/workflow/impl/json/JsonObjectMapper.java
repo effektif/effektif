@@ -19,30 +19,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
-
 
 /**
  * A facade for API object serialisation and deserialisation to and from JSON.
  *
  * @author Tom Baeyens
  */
-public abstract class JsonObjectMapper implements Initializable {
+public abstract class JsonObjectMapper {
 
   protected Mappings mappings;
 
   public JsonObjectMapper() {
-    this.mappings = new Mappings();
+    this(new MappingsBuilder().configureDefaults());
   }
 
-  @Override
-  public void initialize(Brewery brewery) {
-    initialize();
-  }
-
-  public void initialize() {
-    this.mappings.initialize();
+  public JsonObjectMapper(MappingsBuilder mappingsBuilder) {
+    this.mappings = mappingsBuilder.getMappings();
   }
 
   public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {

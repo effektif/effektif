@@ -19,6 +19,7 @@ import java.util.Map;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonObjectMapper;
+import com.effektif.workflow.impl.json.MappingsBuilder;
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -31,20 +32,16 @@ import com.mongodb.BasicDBObject;
 public class MongoObjectMapper extends JsonObjectMapper {
 
   public MongoObjectMapper() {
-    this.mappings.registerTypeMapperFactory(new ObjectIdMapper());
-    this.mappings.registerTypeMapperFactory(new LocalDateTimeDateMapper());
-    this.mappings.registerTypeMapperFactory(new WorkflowIdMongoMapper());
-    this.mappings.registerTypeMapperFactory(new WorkflowInstanceIdMongoMapper());
-
-    this.mappings.setJsonFieldName(AbstractWorkflow.class, "id", "_id");
-    this.mappings.setJsonFieldName(WorkflowInstance.class, "id", "_id");
+    super(new MappingsBuilder()
+      .configureDefaults()
+      .typeMapperFactory(new ObjectIdMapper())
+      .typeMapperFactory(new LocalDateTimeDateMapper())
+      .typeMapperFactory(new WorkflowIdMongoMapper())
+      .typeMapperFactory(new WorkflowInstanceIdMongoMapper())
+      .jsonFieldName(AbstractWorkflow.class, "id", "_id")
+      .jsonFieldName(WorkflowInstance.class, "id", "_id"));
   }
   
-  @Override
-  public void initialize() {
-    super.initialize();
-  }
-
   public <T> BasicDBObject write(T bean) {
     return (BasicDBObject) super.write(bean);
   }

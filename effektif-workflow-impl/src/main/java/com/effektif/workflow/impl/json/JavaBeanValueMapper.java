@@ -22,7 +22,8 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeValueMapper;
 public class JavaBeanValueMapper extends JsonObjectMapper {
 
   public JavaBeanValueMapper() {
-    super();
-    this.mappings.registerTypeMapperFactory(new LocalDateTimeValueMapper());
+    super(new MappingsBuilder()
+      .configureDefaults()
+      .typeMapperFactory(new LocalDateTimeValueMapper()));
   }
 }

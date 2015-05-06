@@ -20,8 +20,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
 
-import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
@@ -36,28 +34,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Tom Baeyens
  */
-public class JsonStreamMapper implements Initializable {
+public class JsonStreamMapper {
 
   ObjectMapper objectMapper;
   Mappings mappings;
   boolean pretty;
   
   public JsonStreamMapper() {
-    this.objectMapper = new ObjectMapper();
-    
-    this.mappings = new Mappings();
-    this.mappings.registerTypeMapperFactory(new LocalDateTimeStreamMapper());
-    this.mappings.registerTypeMapperFactory(new WorkflowIdStreamMapper());
-    this.mappings.registerTypeMapperFactory(new WorkflowInstanceIdStreamMapper());
+    this(new MappingsBuilder().configureDefaults());
   }
   
-  @Override
-  public void initialize(Brewery brewery) {
-    initialize();
+  public JsonStreamMapper(MappingsBuilder mappingsBuilder) {
+    this.objectMapper = new ObjectMapper();
+    configureForStream(mappingsBuilder);
+    this.mappings = mappingsBuilder.getMappings();
   }
 
-  public void initialize() {
-    this.mappings.initialize();
+  public static void configureForStream(MappingsBuilder mappingsBuilder) {
+    mappingsBuilder
+      .typeMapperFactory(new LocalDateTimeStreamMapper())
+      .typeMapperFactory(new WorkflowIdStreamMapper())
+      .typeMapperFactory(new WorkflowInstanceIdStreamMapper());
   }
   
   public JsonStreamMapper pretty() {

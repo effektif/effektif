@@ -13,71 +13,34 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.bpmn.BpmnElement;
-import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
-import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.bpmn.XmlElement;
-import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Extensible;
-import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.bpmn.Bpmn;
-import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
-import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
-import com.effektif.workflow.impl.conditions.ConditionImpl;
-import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectType;
-import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
 import com.effektif.workflow.impl.json.types.BeanMapper;
-import com.effektif.workflow.impl.json.types.BindingMapperFactory;
-import com.effektif.workflow.impl.json.types.BooleanMapper;
-import com.effektif.workflow.impl.json.types.ClassMapper;
-import com.effektif.workflow.impl.json.types.EnumMapperFactory;
-import com.effektif.workflow.impl.json.types.ListMapperFactory;
-import com.effektif.workflow.impl.json.types.MapMapperFactory;
-import com.effektif.workflow.impl.json.types.NumberMapperFactory;
 import com.effektif.workflow.impl.json.types.PolymorphicBeanMapper;
-import com.effektif.workflow.impl.json.types.StringMapper;
-import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
-import com.effektif.workflow.impl.json.types.ValueMapper;
-import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
 import com.effektif.workflow.impl.util.Reflection;
 
 /**
@@ -88,136 +51,71 @@ import com.effektif.workflow.impl.util.Reflection;
 public class Mappings {
   
   private static final Logger log = LoggerFactory.getLogger(Mappings.class);
+
+  /** Initialized from the mapping builder information */
+  protected Map<Field,String> jsonFieldNames = new HashMap<>();
+
+  /** Initialized from the mapping builder information */
+  protected Set<Field> inlineFields = new HashSet<>();
   
-  List<JsonTypeMapperFactory> jsonTypeMapperFactories = new ArrayList<>();
-  /** Json type mappers are the SPI to plug in support for particular types */ 
-  Map<Type, JsonTypeMapper> typeMappers = new HashMap<>();
-  Map<Type,DataType> dataTypesByClass = new HashMap<>();
+  /** Initialized from the mapping builder information */
+  protected List<JsonTypeMapperFactory> jsonTypeMapperFactories = new ArrayList<>();
+  
+  /** Initialized from the mapping builder information */
+  protected Map<Type,DataType> dataTypesByValueClass = new HashMap<>();
 
   /** Maps registered base classes (like e.g. <code>Activity</code>) to *unparameterized* polymorphic mappings.
-   * Polymorphic parameterized types are not yet supported */
-  Map<Class<?>, PolymorphicMapping> polymorphicMappings = new HashMap<>();
-  /** Type mappings contain the field mappings for each type.  Types can be parameterized. */ 
-  Map<Type, TypeMapping> typeMappings = new HashMap<>();
+   * Polymorphic parameterized types are not yet supported.
+   * Initialized from the mapping builder information */
+  protected Map<Class<?>, PolymorphicMapping> polymorphicMappings = new HashMap<>();
 
-  Map<Class<?>, TypeField> typeFields = new HashMap<>();
-  Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
-
-  Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
-  Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
+  /** Initialized from the mapping builder information in registerSubClass */
+  protected Map<Class<?>, TypeField> typeFields = new HashMap<>();
   
-  Map<Field,String> jsonFieldNames = new HashMap<>();
-  Set<Field> inlineFields = new HashSet<>();
+  /** Type mappings contain the field mappings for each type.  
+   * Types can be parameterized.
+   * Dynamically initialized */ 
+  protected Map<Type, TypeMapping> typeMappings = new HashMap<>();
 
-  public Mappings() {
-    setInline(Extensible.class, "properties");
+  /** Json type mappers are the SPI to plug in support for particular types,
+   * Dynamically initialized. */ 
+  protected Map<Type, JsonTypeMapper> typeMappers = new HashMap<>();
+  
+  /** dynamically initialized */
+  protected Map<Class<?>, Map<String,Type>> fieldTypes = new HashMap<>();
 
-    registerBaseClass(Trigger.class);
-    registerBaseClass(JobType.class);
-    registerBaseClass(Activity.class);
-    registerBaseClass(Condition.class);
-    registerBaseClass(DataType.class, "name");
+  public Mappings(MappingsBuilder mappingsBuilder) {
+    this.inlineFields = mappingsBuilder.inlineFields;
+    this.jsonFieldNames = mappingsBuilder.jsonFieldNames;
+    this.jsonTypeMapperFactories = mappingsBuilder.typeMapperFactories;
+    this.dataTypesByValueClass = mappingsBuilder.dataTypesByValueClass;
     
-    registerTypeMapperFactory(new ValueMapper());
-    registerTypeMapperFactory(new StringMapper());
-    registerTypeMapperFactory(new BooleanMapper());
-    registerTypeMapperFactory(new ClassMapper());
-    registerTypeMapperFactory(new NumberMapperFactory());
-    registerTypeMapperFactory(new VariableInstanceMapperFactory());
-    registerTypeMapperFactory(new TypedValueMapperFactory());
-    registerTypeMapperFactory(new EnumMapperFactory());
-    registerTypeMapperFactory(new ArrayMapperFactory());
-    registerTypeMapperFactory(new ListMapperFactory());
-    registerTypeMapperFactory(new MapMapperFactory());
-    registerTypeMapperFactory(new BindingMapperFactory());
-  }
-
-  public void initialize() {
-    
-    ServiceLoader<ActivityType> activityTypeLoader = ServiceLoader.load(ActivityType.class);
-    for (ActivityType activityType: activityTypeLoader) {
-      registerSubClass(activityType.getActivityApiClass());
+    for (Class baseClass: mappingsBuilder.baseClasses.keySet()) {
+      String typeField = mappingsBuilder.baseClasses.get(baseClass);
+      PolymorphicMapping subclassMapping = new PolymorphicMapping(baseClass, typeField);
+      polymorphicMappings.put(baseClass, subclassMapping);
     }
-
-    ServiceLoader<ConditionImpl> conditionLoader = ServiceLoader.load(ConditionImpl.class);
-    for (ConditionImpl condition: conditionLoader) {
-      registerSubClass(condition.getApiType());
+    for (Class<?> subClass: mappingsBuilder.subClasses) {
+      registerSubClass(subClass);
     }
-
-    ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
-    for (DataTypeImpl dataTypeImpl: dataTypeLoader) {
-      try {
-        Class<? extends DataType> apiClass = dataTypeImpl.getApiClass();
-        if (apiClass!=null) {
-          registerSubClass(apiClass);
-          DataType dataType = apiClass.newInstance();
-          dataTypesByClass.put(dataType.getValueType(), dataType);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-    // potentially multiple datatypes may map to eg String. 
-    // by re-putting these datatypes, we ensure that these basic
-    // data types are used when looking up a datatype by value
-    dataTypesByClass.put(String.class, TextType.INSTANCE);
-    dataTypesByClass.put(Boolean.class, BooleanType.INSTANCE);
-    dataTypesByClass.put(Byte.class, NumberType.INSTANCE);
-    dataTypesByClass.put(Short.class, NumberType.INSTANCE);
-    dataTypesByClass.put(Integer.class, NumberType.INSTANCE);
-    dataTypesByClass.put(Long.class, NumberType.INSTANCE);
-    dataTypesByClass.put(Float.class, NumberType.INSTANCE);
-    dataTypesByClass.put(Double.class, NumberType.INSTANCE);
-    dataTypesByClass.put(BigInteger.class, NumberType.INSTANCE);
-    dataTypesByClass.put(BigDecimal.class, NumberType.INSTANCE);
   }
 
-  public void registerTypeMapperFactory(JsonTypeMapperFactory jsonTypeMapperFactory) {
-    jsonTypeMapperFactories.add(jsonTypeMapperFactory);
+  public Mappings(Mappings other) {
+    this.jsonFieldNames = other.jsonFieldNames;
+    this.inlineFields = other.inlineFields;
+    this.jsonTypeMapperFactories = other.jsonTypeMapperFactories;
+    this.dataTypesByValueClass = other.dataTypesByValueClass;
+    this.polymorphicMappings = other.polymorphicMappings;
+    this.typeFields = other.typeFields;
+    this.typeMappings = other.typeMappings;
+    this.typeMappers = other.typeMappers;
+    this.fieldTypes = other.fieldTypes;
   }
 
-  public void registerBaseClass(Class<?> baseClass) {
-    registerBaseClass(baseClass, "type");
-  }
-
-  public void registerBaseClass(Class<?> baseClass, String typeField) {
-    PolymorphicMapping subclassMapping = new PolymorphicMapping(baseClass, typeField);
-    polymorphicMappings.put(baseClass, subclassMapping);
-  }
-
-  public void registerSubClass(Class<?> subClass) {
-    if (subClass==null) {
-      return;
-    }
+  protected void registerSubClass(Class< ? > subClass) {
     TypeName typeName = subClass.getAnnotation(TypeName.class);
     if (typeName!=null) {
       registerSubClass(subClass, typeName.value(), subClass);
-      if (Activity.class.isAssignableFrom(subClass) || Condition.class.isAssignableFrom(subClass)) {
-        BpmnElement bpmnElement = subClass.getAnnotation(BpmnElement.class);
-        if (bpmnElement!=null) {
-          BpmnTypeMapping bpmnTypeMapping = new BpmnTypeMapping();
-          String elementName = bpmnElement.value();
-          bpmnTypeMapping.setBpmnElementName(elementName);
-          bpmnTypeMapping.setType(subClass);
-          Annotation[] annotations = subClass.getAnnotations();
-          for (Annotation annotation: annotations) {
-            if (annotation instanceof BpmnTypeAttribute) {
-              BpmnTypeAttribute bpmnTypeAttribute = (BpmnTypeAttribute) annotation;
-              bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
-            }
-          }
-          bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
-  
-          List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
-          if (typeMappings==null) {
-            typeMappings = new ArrayList<>();
-            bpmnTypeMappingsByElement.put(elementName, typeMappings);
-          }
-          typeMappings.add(bpmnTypeMapping);
-        } else {
-          // throw new RuntimeException("No bpmn element specified on "+subclass);
-        }
-      }
     } else {
       for (Class<?> baseClass: polymorphicMappings.keySet()) {
         if (baseClass.isAssignableFrom(subClass)) {
@@ -226,42 +124,8 @@ public class Mappings {
       }
     }
   }
-
-  public BpmnTypeMapping getBpmnTypeMapping(XmlElement activityXml, BpmnReaderImpl bpmnReaderImpl) {
-    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(activityXml.getName());
-    if (typeMappings!=null) {
-      if (typeMappings.size()==1) {
-        return typeMappings.get(0);
-      } else if (!typeMappings.isEmpty()) {
-        for (BpmnTypeMapping typeMapping: typeMappings) {
-          if (isBpmnTypeAttributeMatch(activityXml, typeMapping, bpmnReaderImpl)) {
-            return typeMapping;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  private boolean isBpmnTypeAttributeMatch(XmlElement xmlElement, BpmnTypeMapping typeMapping, BpmnReaderImpl bpmnReaderImpl) {
-    Map<String, String> bpmnTypeAttributes = typeMapping.getBpmnTypeAttributes();
-    if (bpmnTypeAttributes==null) {
-      return true;
-    }
-    for (String localPart: bpmnTypeAttributes.keySet()) {
-      String typeValue = bpmnTypeAttributes.get(localPart);
-      // get the attribute value in the xml element
-      String xmlValue = xmlElement.getAttribute(Bpmn.EFFEKTIF_URI, localPart);
-      if (typeValue.equals(xmlValue)) {
-        // only if there is a match we read (==remove) the the attribute from the xml element
-        xmlElement.removeAttribute(Bpmn.EFFEKTIF_URI, localPart);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public void registerSubClass(Class<?> baseClass, String typeName, Class<?> subClass) {
+  
+  protected void registerSubClass(Class<?> baseClass, String typeName, Class<?> subClass) {
     PolymorphicMapping polymorphicMapping = polymorphicMappings.get(baseClass);
     if (polymorphicMapping!=null) {
       TypeMapping typeMapping = getTypeMapping(subClass);
@@ -277,6 +141,7 @@ public class Mappings {
     }
   }
 
+
   public void writeTypeField(JsonWriter jsonWriter, Object o) {
     TypeField typeField = typeFields.get(o.getClass());
     if (typeField!=null) {
@@ -285,75 +150,6 @@ public class Mappings {
     }
   }
   
-  public void writeTypeAttribute(BpmnWriter bpmnWriter, Object o, String attributeName) {
-    TypeField typeField = typeFields.get(o.getClass());
-    if (typeField!=null) {
-      bpmnWriter.writeStringAttributeEffektif(attributeName, typeField.getTypeName());
-    }
-  }
-
-  /**
-   * Sets the mapping from the given model class field name to a JSON field name, used for (de)serialisation.
-   */
-  public void setJsonFieldName(Class<?> modelClass, String fieldName, String jsonFieldName) {
-    try {
-      jsonFieldNames.put(modelClass.getDeclaredField(fieldName),jsonFieldName);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-//    getTypeMapping(modelClass);
-//    List<TypeMapping> typeMappings = getTypeMappings(modelClass);
-//    if (typeMappings!=null) {
-//      for (TypeMapping typeMapping: typeMappings) {
-//        if (typeMapping.fieldMappings!=null) {
-//          for (FieldMapping fieldMapping: typeMapping.fieldMappings) {
-//            if (fieldMapping.field.getName().equals(fieldName)) {
-//              fieldMapping.jsonFieldName = jsonFieldName;
-//            }
-//          }
-//        }
-//      }
-//    }
-  }
-
-  public void setInline(Class<?> modelClass, String fieldName) {
-    try {
-      inlineFields.add(modelClass.getDeclaredField(fieldName));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-//    getTypeMapping(modelClass);
-//    List<TypeMapping> typeMappings = getTypeMappings(modelClass);
-//    if (typeMappings!=null) {
-//      for (TypeMapping typeMapping: typeMappings) {
-//        if (typeMapping.fieldMappings!=null) {
-//          List<String> fieldNames = null;
-//          for (FieldMapping fieldMapping: typeMapping.fieldMappings) {
-//            if (fieldMapping.field.getName().equals(fieldName)) {
-//              if (fieldNames==null) {
-//                fieldNames = new ArrayList<>();
-//                for (FieldMapping parentFieldMapping: typeMapping.fieldMappings) {
-//                  fieldNames.add(parentFieldMapping.jsonFieldName);
-//                }
-//              }
-//              fieldMapping.inline = fieldNames;
-//            }
-//          }
-//        }
-//      }
-//    }
-  }
-
-//  private List<TypeMapping> getTypeMappings(Class< ? > modelClass) {
-//    List<TypeMapping> result = new ArrayList<>();
-//    for (TypeMapping typeMapping: this.typeMappings.values()) {
-//      if (modelClass.isAssignableFrom(typeMapping.rawClass)) {
-//        result.add(typeMapping);
-//      }
-//    }
-//    return result;
-//  }
-
   public synchronized Type getFieldType(Class< ? > clazz, String fieldName) {
     // could be cached in this mappings object
     Type fieldType = getFieldTypeFromCache(clazz, fieldName);
@@ -408,7 +204,7 @@ public class Mappings {
       return getTypeByMap((Map) value);
     }
     Class<?> clazz = value.getClass();
-    DataType dataType = dataTypesByClass.get(clazz);
+    DataType dataType = dataTypesByValueClass.get(clazz);
     if (dataType!=null) {
       return dataType;
     }
@@ -445,32 +241,7 @@ public class Mappings {
   }
 
   public JsonTypeMapper getTypeMapper(Type type) {
-//    Type typeKey = Reflection.unify(type);
-//    
-//    String typeName = Reflection.getSimpleName(type);
-//    if (typeName.contains("Binding")) {
-//      log.debug("Searching cached mapper for type "+typeName);
-//      for (Type key: typeMappers.keySet()) {
-//        JsonTypeMapper typeMapper = typeMappers.get(key);
-//        String keyName = key.toString();
-//        if (keyName.contains("Binding")) {
-//          log.debug("  "+key+" --> "+typeMapper);
-//        }
-//      }
-//    }
-    
     JsonTypeMapper jsonTypeMapper = typeMappers.get(type);
-//    if (jsonTypeMapper!=null) {
-//      if (typeName.contains("Binding")) {
-//        log.debug("Found type mapper "+jsonTypeMapper+" in cache for type "+typeName);
-//      }
-//      return jsonTypeMapper;
-//    }
-//    if (typeName.contains("Binding")) {
-//      log.debug(typeName+" not in cache.  Creating type mapper...");
-//    }
-
-    // log.debug("Creating type mapper for type "+Reflection.getSimpleName(type));
 
     Class clazz = Reflection.getRawClass(type);
     for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {
@@ -492,9 +263,6 @@ public class Mappings {
     }
 
     jsonTypeMapper.setMappings(this);
-//    if (typeName.contains("Binding")) {
-//      log.debug("Adding type mapper "+jsonTypeMapper+" in cache for type "+typeName);
-//    }
     typeMappers.put(type, jsonTypeMapper);
     return jsonTypeMapper;
   }
@@ -637,24 +405,5 @@ public class Mappings {
       Type supertype = Reflection.getSuperclass(type);
       scanFields(fieldMappings, supertype);
     }
-  }
-
-  
-  public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
-    if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
-      throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
-    }
-    return bpmnTypeMappingsByClass.get(subClass);
-  }
-
-  public SortedSet<Class< ? >> getBpmnClasses() {
-    // TODO only add condition classes
-    SortedSet<Class< ? >> bpmnClasses = new TreeSet(new Comparator<Class<?>>() {
-      public int compare(Class c1, Class c2) {
-      return c1.getName().compareTo(c2.getName());
-      }
-    });
-    bpmnClasses.addAll(bpmnTypeMappingsByClass.keySet());
-    return bpmnClasses;
   }
 }

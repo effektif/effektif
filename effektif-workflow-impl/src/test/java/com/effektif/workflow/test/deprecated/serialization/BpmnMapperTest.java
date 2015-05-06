@@ -34,7 +34,6 @@ import com.effektif.workflow.api.deprecated.form.Form;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
-import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.test.json.WorkflowStreamTest;
 
 /**
@@ -48,8 +47,7 @@ public class BpmnMapperTest extends WorkflowStreamTest {
   @BeforeClass
   public static void initialize() {
     if (bpmnMapper==null) {
-      bpmnMapper = new BpmnMapper(new TestConfiguration());
-      bpmnMapper.setMappings(WorkflowStreamTest.getJsonStreamMapper().getMappings());
+      bpmnMapper = new BpmnMapper();
     }
   }
   

@@ -31,7 +31,6 @@ public class MongoJsonTest extends WorkflowStreamTest {
   @BeforeClass
   public static void initialize() {
     mongoObjectMapper = new MongoObjectMapper();
-    mongoObjectMapper.initialize();
   }
 
   @Override

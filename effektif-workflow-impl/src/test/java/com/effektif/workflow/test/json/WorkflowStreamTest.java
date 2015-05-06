@@ -53,7 +53,6 @@ public class WorkflowStreamTest {
   public static void initialize() {
     if (jsonStreamMapper==null) {
       jsonStreamMapper = new JsonStreamMapper();
-      jsonStreamMapper.initialize();
       jsonStreamMapper.pretty();
     }
   }

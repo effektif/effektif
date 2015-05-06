@@ -11,31 +11,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.json;
+package com.effektif.workflow.impl.bpmn;
 
-import java.util.Map;
-
-import org.junit.BeforeClass;
-
-import com.effektif.workflow.impl.json.JavaBeanValueMapper;
+import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.MappingsBuilder;
 
 
 /**
  * @author Tom Baeyens
  */
-public class WorkflowObjectTest extends WorkflowStreamTest {
+public class BpmnMappingsBuilder extends MappingsBuilder {
 
-  static JavaBeanValueMapper jsonObjectMapper = null;
-  
-  @BeforeClass
-  public static void initialize() {
-    jsonObjectMapper = new JavaBeanValueMapper();
-  }
 
   @Override
-  public <T> T serialize(T o) {
-    Map<String,Object> jsonMap = jsonObjectMapper.write(o);
-    System.out.println(jsonMap.toString());
-    return jsonObjectMapper.read(jsonMap, o.getClass());
+  public BpmnMappings getMappings() {
+    return new BpmnMappings(this);
   }
+
+  
 }

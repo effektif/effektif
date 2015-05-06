@@ -48,8 +48,7 @@ public class WorkflowBpmnTest extends WorkflowStreamTest {
   
   @BeforeClass
   public static void initialize() {
-    bpmnMapper = new BpmnMapper(new TestConfiguration());
-    bpmnMapper.setMappings(WorkflowStreamTest.getJsonStreamMapper().getMappings());
+    bpmnMapper = new BpmnMapper();
   }
 
   @Override

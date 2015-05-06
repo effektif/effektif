@@ -44,11 +44,9 @@ public class BpmnWriterImpl implements BpmnWriter {
   
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTime();
 
-  protected Mappings mappings;
+  protected BpmnMappings bpmnMappings;
   protected String bpmnPrefix;
   protected String effektifPrefix;
-//  protected DataTypeService dataTypeService;
-//  protected ActivityTypeService activityTypeService;
 
   /** stack of the current scopes */
   protected Stack<Scope> scopeStack = new Stack();
@@ -60,8 +58,8 @@ public class BpmnWriterImpl implements BpmnWriter {
   /** current xml element */
   protected XmlElement xml;
   
-  public BpmnWriterImpl(Mappings mappings) {
-    this.mappings = mappings;
+  public BpmnWriterImpl(BpmnMappings bpmnMappings) {
+    this.bpmnMappings = bpmnMappings;
   }
 
   protected void startElementBpmn(String localpart, Object source) {
@@ -106,7 +104,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   
   @Override
   public void startElementEffektif(Class modelClass) {
-    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
     String localPart = bpmnTypeMapping.getBpmnElementName();
     startElementEffektif(localPart, null);
   }
@@ -235,7 +233,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   private BpmnTypeMapping getBpmnTypeMapping(Class<? extends Activity> activityClass) {
-    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(activityClass);
+    BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(activityClass);
     if (bpmnTypeMapping == null) {
       throw new RuntimeException("Register " + activityClass + " in class " + Mappings.class.getName() +
         " with method registerSubClass and ensure annotation " + BpmnElement.class + " is set");
@@ -262,7 +260,7 @@ public class BpmnWriterImpl implements BpmnWriter {
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   @Override
   public <T> void writeBinding(Class modelClass, Binding<T> binding) {
-    BpmnTypeMapping bpmnTypeMapping = mappings.getBpmnTypeMapping(modelClass);
+    BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
     String localPart = bpmnTypeMapping.getBpmnElementName();
     writeBinding(localPart, binding);
   }
@@ -286,7 +284,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       T value = binding.getValue();
       if (value!=null) {
         writeStringAttributeEffektif("value", value);
-        writeTypeAttribute(mappings.getTypeByValue(value));
+        writeTypeAttribute(bpmnMappings.getTypeByValue(value));
       }
       if (binding.getExpression()!=null) {
         writeStringAttributeEffektif("expression", binding.getExpression());
@@ -393,14 +391,14 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   @Override
   public void writeTypeAttribute(Object o) {
-    mappings.writeTypeAttribute(this, o, "type");
+    bpmnMappings.writeTypeAttribute(this, o, "type");
   }
 
   @Override
   public void writeTypeElement(DataType type) {
     if (type!=null) {
       startElementEffektif("type");
-      mappings.writeTypeAttribute(this, type, "name");
+      bpmnMappings.writeTypeAttribute(this, type, "name");
       type.writeBpmn(this);
       endElement();
     }
