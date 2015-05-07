@@ -36,4 +36,7 @@ public interface Configuration {
   TaskService getTaskService();
   
   <T> T get(Class<T> type);
+  Object get(String name);
+  void set(Object bean, String name);
+  void set(Object bean);
 }

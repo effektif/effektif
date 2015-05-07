@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -242,5 +243,40 @@ public class Reflection {
 
   public static String getSimpleName(Field field) {
     return field.getDeclaringClass().getSimpleName()+"."+field.getName();
+  }
+
+  public static Method findMethod(Class<?> clazz, String methodName) {
+    return findMethod(clazz, methodName, null);
+  }
+  
+  /** @Param args null means don't match args */
+  public static Method findMethod(Class<?> clazz, String methodName, Object[] args) {
+    if (clazz==null || methodName==null) {
+      return null;
+    }
+    for (Method method: clazz.getDeclaredMethods()) {
+      if (method.getName().equals(methodName)) {
+        if (argsMatch(method, args)) {
+          return method;
+        }
+      }
+    }
+    return null;
+  }
+
+  static boolean argsMatch(Method method, Object[] args) {
+    if (args==null) {
+      return true;
+    }
+    Class< ? >[] parameterTypes = method.getParameterTypes();
+    if (parameterTypes==null || parameterTypes.length!=args.length) {
+      return false;
+    }
+    for (int i=0; i<args.length; i++) {
+      if (args[i]!=null && !parameterTypes[i].isAssignableFrom(args[i].getClass())) {
+        return false;
+      }
+    }
+    return true;
   }
 }

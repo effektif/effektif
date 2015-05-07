@@ -66,4 +66,18 @@ public class DefaultAdapterConfiguration implements Configuration {
   public TaskService getTaskService() {
     return brewery.get(TaskService.class);
   }
+  
+  @Override
+  public Object get(String name) {
+    return brewery.get(name);
+  }
+  @Override
+  public void set(Object bean, String name) {
+    brewery.ingredient(bean, name);
+  }
+
+  @Override
+  public void set(Object bean) {
+    brewery.ingredient(bean);
+  }
 }

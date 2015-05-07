@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -23,6 +22,9 @@ import java.util.List;
 import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.util.Reflection;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -68,25 +70,31 @@ public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
-    Object[] args = null;
-    Object bean = null;
-    Method method = null;
-    
-    if (argBindings!=null) {
-      args = new Object[argBindings.length];
-      for (int i=0; i<argBindings.length; i++) {
-        args[i] = activityInstance.getValue(argBindings[i]);
-      }
-    }
-    
-    if (staticMethod!=null) {
-      method = staticMethod;
-    } else if (bean!=null) {
-      // method = Reflection.findMethod(bean.getClass(), activity.getMethodName(), args);
-    }
-    
     try {
+      Object[] args = null;
+      Object bean = null;
+      Method method = null;
+      
+      if (argBindings!=null) {
+        args = new Object[argBindings.length];
+        for (int i=0; i<argBindings.length; i++) {
+          args[i] = activityInstance.getValue(argBindings[i]);
+        }
+      }
+      
+      if (staticMethod!=null) {
+        method = staticMethod;
+      } else {
+        String beanName = activity.getBeanName();
+        if (beanName!=null) {
+          bean = activityInstance.getConfiguration().get(beanName);
+          method = Reflection.findMethod(bean.getClass(), activity.getMethodName(), args);
+        }
+      }
+      
       method.invoke(bean, args);
+      
+      activityInstance.onwards();
     } catch (Exception e) {
       // TODO handle the exception
     }

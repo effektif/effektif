@@ -123,9 +123,17 @@ public class WorkflowTest {
     return deployment;
   }
 
+  public TriggerInstance createTriggerInstance(Workflow workflow) {
+    return new TriggerInstance().workflowId(workflow.getId());
+  }
+
   public WorkflowInstance start(Workflow workflow) {
     return workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId()));
+  }
+  
+  public WorkflowInstance start(TriggerInstance triggerInstance) {
+    return workflowEngine.start(triggerInstance);
   }
   
   public WorkflowInstance start(Workflow workflow, FormInstance formInstance) {

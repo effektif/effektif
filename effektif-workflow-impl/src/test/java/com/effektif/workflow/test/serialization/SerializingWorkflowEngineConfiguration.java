@@ -61,4 +61,19 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     }
     return configuration.get(type);
   }
+
+  @Override
+  public Object get(String name) {
+    return configuration.get(name);
+  }
+
+  @Override
+  public void set(Object bean, String name) {
+    configuration.set(bean, name);
+  }
+
+  @Override
+  public void set(Object bean) {
+    configuration.set(bean);
+  }
 }
