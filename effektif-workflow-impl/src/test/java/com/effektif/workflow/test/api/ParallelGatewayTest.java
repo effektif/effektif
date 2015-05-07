@@ -173,7 +173,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   }
 
   /**
-   * Tests that a workflow can have both explicit and implicit parallel forking.
+   * TODO Work out what this is supposed to be testing and finish the test
    * <pre>
    *
    *  [one]──→<+>──→[a]
@@ -344,8 +344,7 @@ public class ParallelGatewayTest extends WorkflowTest {
         .transitionTo("join1"))
       .activity("t2", new JavaServiceTask()
         .transitionTo("join1"))
-      .activity("t3", new JavaServiceTask()
-        .transitionTo("join2"))
+      .activity("t3", new JavaServiceTask().transitionTo("join2"))
       .activity("end", new EndEvent());
 
     deploy(workflow);
@@ -410,6 +409,54 @@ public class ParallelGatewayTest extends WorkflowTest {
     assertFalse(workflowInstance.isEnded());
 
     workflowInstance = endTask(workflowInstance, "t3");
+    assertTrue(workflowInstance.isEnded());
+  }
+
+  /**
+   * Tests that an AND join is only finished if all incoming flows are satisfied.
+   * <pre>
+   *
+   *               +---->[t1]-->[t2]---+
+   *               |                   v
+   *  [start]-->[fork]-->[t3]------->[join]-->[t4]-->[end]
+   *
+   * </pre>
+   */
+  @Test
+  public void testMultipleStepsBeforeJoin() {
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("fork"))
+      .activity("fork", new ParallelGateway()
+        .transitionTo("t1")
+        .transitionTo("t3"))
+      .activity("t1", new JavaServiceTask()
+        .transitionTo("t2"))
+      .activity("t2", new JavaServiceTask()
+        .transitionTo("join"))
+      .activity("t3", new JavaServiceTask()
+        .transitionTo("join"))
+      .activity("join", new ParallelGateway()
+        .transitionTo("t4"))
+      .activity("t4", new JavaServiceTask()
+        .transitionTo("end"))
+      .activity("end", new StartEvent());
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+
+    assertOpen(workflowInstance, "t1", "t3");
+
+    workflowInstance = endTask(workflowInstance, "t3");
+    assertOpen(workflowInstance, "t1");
+
+    workflowInstance = endTask(workflowInstance, "t1");
+    assertOpen(workflowInstance, "t2");
+
+    workflowInstance = endTask(workflowInstance, "t2");
+    assertOpen(workflowInstance, "t4");
+
+    workflowInstance = endTask(workflowInstance, "t4");
     assertTrue(workflowInstance.isEnded());
   }
 }
