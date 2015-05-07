@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -46,8 +46,8 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
       .activity("start", new StartEvent()
         .transitionTo("sub"))
       .activity("sub", new EmbeddedSubprocess()
-        .activity("w1", new JavaServiceTask())
-        .activity("w2", new JavaServiceTask())
+        .activity("w1", new ReceiveTask())
+        .activity("w2", new ReceiveTask())
         .transitionTo("end"))
       .activity("end", new EndEvent());
   

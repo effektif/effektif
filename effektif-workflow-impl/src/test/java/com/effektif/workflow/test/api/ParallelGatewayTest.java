@@ -17,7 +17,7 @@ package com.effektif.workflow.test.api;
 
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.condition.LessThan;
@@ -57,13 +57,13 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo("t2"))
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("join"))
-      .activity("t2", new JavaServiceTask()
+      .activity("t2", new ReceiveTask()
         .transitionTo("join"))
       .activity("join", new ParallelGateway()
         .transitionTo("afterJoinTask"))
-      .activity("afterJoinTask", new JavaServiceTask()
+      .activity("afterJoinTask", new ReceiveTask()
         .transitionTo("end"))
       .activity("end", new StartEvent());
 
@@ -100,11 +100,11 @@ public class ParallelGatewayTest extends WorkflowTest {
         .transitionTo("f2")
         .transitionTo("t3"))
       .activity("f2", new ParallelGateway().transitionTo("t1").transitionTo("t2"))
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("j1"))
-      .activity("t2", new JavaServiceTask()
+      .activity("t2", new ReceiveTask()
         .transitionTo("j2"))
-      .activity("t3", new JavaServiceTask()
+      .activity("t3", new ReceiveTask()
         .transitionTo("j2"))
       .activity("j1", new ParallelGateway()
         .transitionTo("end"))
@@ -146,9 +146,9 @@ public class ParallelGatewayTest extends WorkflowTest {
     */
 
     Workflow workflow = new Workflow()
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("+"))
-      .activity("t2", new JavaServiceTask()
+      .activity("t2", new ReceiveTask()
         .transitionTo("x"))
       .activity("x", new ExclusiveGateway()
         .defaultTransitionId("default") // let's set the transition to 'o' as the default one
@@ -158,7 +158,7 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("o", new EndEvent())
       .activity("+", new ParallelGateway()
         .transitionTo("t3"))
-      .activity("t3", new JavaServiceTask());
+      .activity("t3", new ReceiveTask());
         
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
@@ -186,15 +186,15 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testCombineDefaultOutgoingParallelWithGatewayParallel() {
     Workflow workflow = new Workflow()
-      .activity("one", new JavaServiceTask()
+      .activity("one", new ReceiveTask()
         .transitionTo("two")
         .transitionTo("fork"))
-      .activity("two", new JavaServiceTask())
+      .activity("two", new ReceiveTask())
       .activity("fork", new ParallelGateway()
         .transitionTo("a")
         .transitionTo("b"))
-      .activity("a", new JavaServiceTask())
-      .activity("b", new JavaServiceTask());
+      .activity("a", new ReceiveTask())
+      .activity("b", new ReceiveTask());
 
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
@@ -223,9 +223,9 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo("t2"))
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("join"))
-      .activity("t2", new JavaServiceTask()
+      .activity("t2", new ReceiveTask()
         .transitionTo("join"))
       .activity("join", new ParallelGateway()
         .transitionTo("fork"));
@@ -269,7 +269,7 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo((String) null))
-      .activity("t1", new JavaServiceTask().transitionTo("end"))
+      .activity("t1", new ReceiveTask().transitionTo("end"))
       .activity("end", new StartEvent());
 
     deploy(workflow);
@@ -340,11 +340,11 @@ public class ParallelGatewayTest extends WorkflowTest {
         .transitionTo("join2"))
       .activity("join2", new ParallelGateway()
         .transitionTo("end"))
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("join1"))
-      .activity("t2", new JavaServiceTask()
+      .activity("t2", new ReceiveTask()
         .transitionTo("join1"))
-      .activity("t3", new JavaServiceTask().transitionTo("join2"))
+      .activity("t3", new ReceiveTask().transitionTo("join2"))
       .activity("end", new EndEvent());
 
     deploy(workflow);
@@ -395,9 +395,9 @@ public class ParallelGatewayTest extends WorkflowTest {
         .transitionTo("join2"))
       .activity("join2", new ParallelGateway()
         .transitionTo("end"))
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("join1"))
-      .activity("t3", new JavaServiceTask()
+      .activity("t3", new ReceiveTask()
         .transitionTo("join2"))
       .activity("end", new EndEvent());
 
@@ -430,15 +430,15 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo("t3"))
-      .activity("t1", new JavaServiceTask()
+      .activity("t1", new ReceiveTask()
         .transitionTo("t2"))
-      .activity("t2", new JavaServiceTask()
+      .activity("t2", new ReceiveTask()
         .transitionTo("join"))
-      .activity("t3", new JavaServiceTask()
+      .activity("t3", new ReceiveTask()
         .transitionTo("join"))
       .activity("join", new ParallelGateway()
         .transitionTo("t4"))
-      .activity("t4", new JavaServiceTask()
+      .activity("t4", new ReceiveTask()
         .transitionTo("end"))
       .activity("end", new StartEvent());
 

@@ -18,7 +18,7 @@ package com.effektif.workflow.test.api;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.condition.LessThan;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -55,9 +55,9 @@ public class ExclusiveGatewayTest extends WorkflowTest {
       .transition(new Transition()
         .id("default")
         .from("?").to("t3"))
-      .activity("t1", new JavaServiceTask())
-      .activity("t2", new JavaServiceTask())
-      .activity("t3", new JavaServiceTask());
+      .activity("t1", new ReceiveTask())
+      .activity("t2", new ReceiveTask())
+      .activity("t3", new ReceiveTask());
     
     deploy(workflow);
 

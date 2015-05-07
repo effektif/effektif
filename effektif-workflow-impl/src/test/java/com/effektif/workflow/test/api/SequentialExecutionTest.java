@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.JavaServiceTask;
+import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
@@ -33,11 +33,11 @@ public class SequentialExecutionTest extends WorkflowTest {
   @Test
   public void testOne() {
     Workflow workflow = new Workflow()
-      .activity("one", new JavaServiceTask()
+      .activity("one", new ReceiveTask()
         .transitionTo("two"))
-      .activity("two", new JavaServiceTask()
+      .activity("two", new ReceiveTask()
         .transitionTo("three"))
-      .activity("three", new JavaServiceTask());
+      .activity("three", new ReceiveTask());
     
     deploy(workflow);
     
