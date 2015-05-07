@@ -42,7 +42,7 @@ public class JavaServiceTaskTest extends WorkflowTest {
   public void testJavaServiceTask() {
     Workflow workflow = new Workflow()
       .activity("invoke hello", new JavaServiceTask()
-        .javaClazz(JavaServiceTaskTest.class)
+        .javaClass(JavaServiceTaskTest.class)
         .methodName("hello")
         .argValue("world"));
     
