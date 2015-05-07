@@ -78,7 +78,7 @@ public class JavaServiceTask extends ServiceTask {
   }
   /** The class on which the static method will be invoked.
    * This is mutually exclusive with the beanName property. */
-  public JavaServiceTask javaClazz(Class javaClass) {
+  public JavaServiceTask javaClass(Class javaClass) {
     this.javaClass = javaClass;
     return this;
   }

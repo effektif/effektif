@@ -40,13 +40,13 @@ public class JavaServiceTaskTest extends WorkflowTest {
   }
   protected JavaServiceTask msgValue(String message) {
     return new JavaServiceTask()
-      .javaClazz(JavaServiceTaskTest.class)
+      .javaClass(JavaServiceTaskTest.class)
       .methodName("hello")
       .argValue(message);
   }
   protected JavaServiceTask msgExpression(String messageExpression) {
     return new JavaServiceTask()
-      .javaClazz(JavaServiceTaskTest.class)
+      .javaClass(JavaServiceTaskTest.class)
       .methodName("hello")
       .argExpression(messageExpression);
   }
