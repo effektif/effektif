@@ -16,26 +16,21 @@
 package com.effektif.workflow.test.api;
 
 import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.condition.Equals;
-import com.effektif.workflow.api.condition.IsFalse;
-import com.effektif.workflow.api.condition.IsTrue;
-import com.effektif.workflow.api.types.BooleanType;
-import com.effektif.workflow.api.workflow.Binding;
-import org.junit.Test;
-
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.condition.IsFalse;
+import com.effektif.workflow.api.condition.IsTrue;
 import com.effektif.workflow.api.condition.LessThan;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -54,8 +49,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
   @Test
   public void testSingleOutgoingFlow() {
     Workflow workflow = new Workflow()
-      .activity("start", new StartEvent()
-        .transitionTo("gateway"))
+      .activity("start", new StartEvent().transitionTo("gateway"))
       .activity("gateway", new ExclusiveGateway()
         .transitionTo("end"))
       .activity("end", new EndEvent());
@@ -104,42 +98,6 @@ public class ExclusiveGatewayTest extends WorkflowTest {
    */
   @Test
   public void testSimpleCondition() {
-    // @formatter:off
-    Workflow workflow = new Workflow()
-      .variable("waitingRequired", new NumberType())
-      .activity("start", new StartEvent()
-        .transitionTo("gateway"))
-      .activity("gateway", new ExclusiveGateway()
-        .transitionTo(new Transition().id("continue").to("end")
-          .condition(new Equals().leftExpression("waitingRequired").rightValue(0)))
-        .transitionTo(new Transition().id("wait").to("receive")
-          .condition(new Equals().leftExpression("waitingRequired").rightValue(1))))
-      .activity("receive", new ReceiveTask())
-      .activity("end", new EndEvent());
-    // @formatter:on
-
-    deploy(workflow);
-
-    WorkflowInstance endingWorkflow = workflowEngine.start(
-      new TriggerInstance().workflowId(workflow.getId()).data("waitingRequired", 0));
-    assertTrue(endingWorkflow.isEnded());
-
-    WorkflowInstance waitingWorkflow = workflowEngine.start(
-      new TriggerInstance().workflowId(workflow.getId()).data("waitingRequired", 1));
-    assertOpen(waitingWorkflow, "receive");
-  }
-
-  /**
-   * Tests an exclusive gateway with a numeric condition.
-   * <pre>
-   *
-   *  ◯─→<X>──→◯
-   *      │
-   *      └→[wait]
-   * </pre>
-   */
-  @Test
-  public void testSimpleBooleanCondition() {
     // @formatter:off
     Workflow workflow = new Workflow()
       .variable("waitingRequired", new BooleanType())

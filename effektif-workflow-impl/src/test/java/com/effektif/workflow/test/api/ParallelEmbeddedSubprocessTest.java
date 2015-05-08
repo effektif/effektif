@@ -74,7 +74,7 @@ public class ParallelEmbeddedSubprocessTest extends WorkflowTest {
    *          ┌────────────┐
    *          │ subprocess │
    *  ◯─→<+>─→┤            ├─→<+>─→◯
-   *      │   │ [s1]  [s2] │   ↑
+   *      │   │ [s1]─→[s2] │   ↑
    *      │   └────────────┘   │
    *      │                    │
    *      └───────→[t1]────────┘
@@ -91,7 +91,8 @@ public class ParallelEmbeddedSubprocessTest extends WorkflowTest {
         .transitionTo("subprocess")
         .transitionTo("t1"))
       .activity("subprocess", new EmbeddedSubprocess()
-        .activity("s1", new ReceiveTask())
+        .activity("s1", new ReceiveTask()
+          .transitionTo("s2"))
         .activity("s2", new ReceiveTask())
         .transitionTo("join"))
       .activity("t1", new ReceiveTask()
@@ -104,7 +105,7 @@ public class ParallelEmbeddedSubprocessTest extends WorkflowTest {
     deploy(workflow);
 
     WorkflowInstance workflowInstance = start(workflow);
-    assertOpen(workflowInstance, "subprocess", "s1", "s2", "t1");
+    assertOpen(workflowInstance, "subprocess", "s1", "t1");
 
     workflowInstance = endTask(workflowInstance, "s1");
     workflowInstance = endTask(workflowInstance, "s2");

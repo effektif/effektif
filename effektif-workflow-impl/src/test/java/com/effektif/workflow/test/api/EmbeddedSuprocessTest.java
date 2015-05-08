@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -61,5 +62,52 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
 
     workflowInstance = endTask(workflowInstance, "w2");
     assertTrue(workflowInstance.isEnded());
+  }
+
+  /**
+   * Tests a nested subprocess.
+   * <pre>
+   *
+   *     ┌───────────────────────┐
+   *     │ subprocess1           │
+   *     │                       │
+   *     │       ┌─────────────┐ │
+   *  ◯──┤       │ subprocess2 │ ├─→[t3]─→◯
+   *     │ [s1]─→┤             │ │
+   *     │       │    [s2]     │ │
+   *     │       └─────────────┘ │
+   *     └───────────────────────┘
+   *
+   * </pre>
+   * TODO Work out why execution doesn't stop at t3, and make the test pass.
+   */
+//  @Test
+  public void testNestedSubprocess() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("subprocess1"))
+      .activity("subprocess1", new EmbeddedSubprocess()
+        .activity("s1", new ReceiveTask()
+          .transitionTo("subprocess2"))
+        .activity("subprocess2", new EmbeddedSubprocess()
+          .activity("s2", new ReceiveTask()))
+        .transitionTo("t3"))
+      .activity("t3", new ReceiveTask()
+        .transitionTo("end"))
+      .activity("end", new EndEvent());
+    // @formatter:on
+
+    deploy(workflow);
+
+    WorkflowInstance workflowInstance = start(workflow);
+    assertOpen(workflowInstance, "subprocess1", "s1");
+
+    workflowInstance = endTask(workflowInstance, "s1");
+    assertOpen(workflowInstance, "subprocess1", "subprocess2", "s2");
+
+    workflowInstance = endTask(workflowInstance, "s2");
+    assertOpen(workflowInstance, "t3");
+    assertFalse(workflowInstance.isEnded());
   }
 }

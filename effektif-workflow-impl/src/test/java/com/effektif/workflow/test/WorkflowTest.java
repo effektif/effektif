@@ -119,7 +119,7 @@ public class WorkflowTest {
 
   public Deployment deploy(Workflow workflow) {
     Deployment deployment = workflowEngine.deployWorkflow(workflow);
-    deployment.checkNoErrorsAndNoWarnings();
+    deployment.checkNoErrors();
     workflow.setId(deployment.getWorkflowId());
     return deployment;
   }
