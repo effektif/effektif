@@ -15,6 +15,13 @@
  */
 package com.effektif.workflow.test.api;
 
+import com.effektif.workflow.api.activities.EndEvent;
+import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.condition.Equals;
+import com.effektif.workflow.api.condition.IsFalse;
+import com.effektif.workflow.api.condition.IsTrue;
+import com.effektif.workflow.api.types.BooleanType;
+import com.effektif.workflow.api.workflow.Binding;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -28,12 +35,136 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Tom Baeyens
  */
 public class ExclusiveGatewayTest extends WorkflowTest {
-  
+
+  /**
+   * Tests that the process continues from an exclusive gateway that only has one outgoing flow.
+   * <pre>
+   *
+   *  ◯─→<X>─→◯
+   *
+   * </pre>
+   */
+  @Test
+  public void testSingleOutgoingFlow() {
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("gateway"))
+      .activity("gateway", new ExclusiveGateway()
+        .transitionTo("end"))
+      .activity("end", new EndEvent());
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+    assertTrue(workflowInstance.isEnded());
+  }
+
+  /**
+   * Tests that the process continues from an exclusive gateway with a default transition.
+   * <pre>
+   *
+   *  ◯─→<X>──→◯
+   *      │
+   *      └→[wait]
+   * </pre>
+   */
+  @Test
+  public void testDefaultTransition() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("gateway"))
+      .activity("gateway", new ExclusiveGateway()
+        .defaultTransitionId("wait")
+        .transitionTo(new Transition().id("continue").to("end"))
+        .transitionTo(new Transition().id("wait").to("receive")))
+      .activity("receive", new ReceiveTask())
+      .activity("end", new EndEvent());
+    // @formatter:on
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+    assertOpen(workflowInstance, "receive");
+  }
+
+  /**
+   * Tests an exclusive gateway with a numeric condition.
+   * <pre>
+   *
+   *  ◯─→<X>──→◯
+   *      │
+   *      └→[wait]
+   * </pre>
+   */
+  @Test
+  public void testSimpleCondition() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .variable("waitingRequired", new NumberType())
+      .activity("start", new StartEvent()
+        .transitionTo("gateway"))
+      .activity("gateway", new ExclusiveGateway()
+        .transitionTo(new Transition().id("continue").to("end")
+          .condition(new Equals().leftExpression("waitingRequired").rightValue(0)))
+        .transitionTo(new Transition().id("wait").to("receive")
+          .condition(new Equals().leftExpression("waitingRequired").rightValue(1))))
+      .activity("receive", new ReceiveTask())
+      .activity("end", new EndEvent());
+    // @formatter:on
+
+    deploy(workflow);
+
+    WorkflowInstance endingWorkflow = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data("waitingRequired", 0));
+    assertTrue(endingWorkflow.isEnded());
+
+    WorkflowInstance waitingWorkflow = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data("waitingRequired", 1));
+    assertOpen(waitingWorkflow, "receive");
+  }
+
+  /**
+   * Tests an exclusive gateway with a numeric condition.
+   * <pre>
+   *
+   *  ◯─→<X>──→◯
+   *      │
+   *      └→[wait]
+   * </pre>
+   */
+  @Test
+  public void testSimpleBooleanCondition() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .variable("waitingRequired", new BooleanType())
+      .activity("start", new StartEvent()
+        .transitionTo("gateway"))
+      .activity("gateway", new ExclusiveGateway()
+        .transitionTo(new Transition().id("continue").to("end")
+          .condition(new IsFalse().leftExpression("waitingRequired")))
+        .transitionTo(new Transition().id("wait").to("receive")
+          .condition(new IsTrue().leftExpression("waitingRequired"))))
+      .activity("receive", new ReceiveTask())
+      .activity("end", new EndEvent());
+    // @formatter:on
+
+    deploy(workflow);
+
+    WorkflowInstance endingWorkflow = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data("waitingRequired", Boolean.FALSE));
+    assertTrue(endingWorkflow.isEnded());
+
+    WorkflowInstance waitingWorkflow = workflowEngine.start(
+      new TriggerInstance().workflowId(workflow.getId()).data("waitingRequired", Boolean.TRUE));
+    assertOpen(waitingWorkflow, "receive");
+  }
+
   @Test
   public void testExclusiveGateway() {
     Workflow workflow = new Workflow()

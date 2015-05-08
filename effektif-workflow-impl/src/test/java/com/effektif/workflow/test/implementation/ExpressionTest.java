@@ -42,6 +42,9 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class ExpressionTest extends WorkflowTest {
 
+  /**
+   * TODO Replace UserId with Link or Money
+   */
   @Test
   public void testExpressionUserDereferencing() {
     User johndoe = new User()
@@ -70,6 +73,9 @@ public class ExpressionTest extends WorkflowTest {
     assertEquals("johndoe@localhost",user.getEmail());
   }
 
+  /**
+   * TODO Replace the UserTask with a bean that has a list of values.
+   */
   @Test
   public void testBindingExpressionListFlattening() {
     User johndoe = new User()

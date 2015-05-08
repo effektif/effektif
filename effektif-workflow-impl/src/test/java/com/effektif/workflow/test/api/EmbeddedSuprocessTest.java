@@ -41,7 +41,7 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
    *           +-------------+
    */ 
   @Test 
-  public void testOne() {
+  public void testSubprocess() {
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent()
         .transitionTo("sub"))
@@ -52,17 +52,14 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
       .activity("end", new EndEvent());
   
     deploy(workflow);
-    
-    WorkflowInstance workflowInstance = start(workflow);
 
+    WorkflowInstance workflowInstance = start(workflow);
     assertOpen(workflowInstance, "sub", "w1", "w2");
     
     workflowInstance = endTask(workflowInstance, "w1");
-
     assertOpen(workflowInstance, "sub", "w2");
 
     workflowInstance = endTask(workflowInstance, "w2");
-    
     assertTrue(workflowInstance.isEnded());
   }
 }

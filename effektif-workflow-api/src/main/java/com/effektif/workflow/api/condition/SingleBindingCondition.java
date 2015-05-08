@@ -54,5 +54,9 @@ public abstract class SingleBindingCondition extends Condition {
     this.left = left;
     return this;
   }
-  
+
+  public SingleBindingCondition leftExpression(String leftExpression) {
+    this.left = new Binding().expression(leftExpression);
+    return this;
+  }
 }

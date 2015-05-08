@@ -17,12 +17,19 @@ package com.effektif.workflow.test.api;
 
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
+import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.condition.Equals;
+import com.effektif.workflow.api.condition.IsFalse;
+import com.effektif.workflow.api.condition.IsTrue;
 import com.effektif.workflow.api.condition.LessThan;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.VariableValues;
+import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.NumberType;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -33,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests BPMN execution semantics for parallel executions using parallel gateways, including some edge cases.
+ * Tests BPMN execution semantics for parallel executions using parallel gateways.
  *
  * @author Tom Baeyens
  */
@@ -43,7 +50,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    * Tests that two parallel tasks must complete before the first task after a parallel join is open.
    * <pre>
    *
-   *  ◯─→<+>─→[t1]─→<+>─→[after]─→◯
+   *  ◯─→<+>─→[t1]─→<+>─→[after]
    *      │          ↑
    *      └──→[t2]───┘
    *
@@ -54,18 +61,14 @@ public class ParallelGatewayTest extends WorkflowTest {
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
-      .activity("fork", new ParallelGateway()
-        .transitionTo("t1")
-        .transitionTo("t2"))
+      .activity("fork", new ParallelGateway().transitionTo("t1").transitionTo("t2"))
       .activity("t1", new ReceiveTask()
         .transitionTo("join"))
       .activity("t2", new ReceiveTask()
         .transitionTo("join"))
       .activity("join", new ParallelGateway()
         .transitionTo("afterJoinTask"))
-      .activity("afterJoinTask", new ReceiveTask()
-        .transitionTo("end"))
-      .activity("end", new StartEvent());
+      .activity("afterJoinTask", new ReceiveTask());
 
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
@@ -77,6 +80,36 @@ public class ParallelGatewayTest extends WorkflowTest {
 
     workflowInstance = endTask(workflowInstance, "t2");
     assertOpen(workflowInstance, "afterJoinTask");
+  }
+
+  /**
+   * Tests that the process ends after two parallel automatic tasks.
+   * <pre>
+   *
+   *  ◯─→<+>─→[t1]─→<+>─→◯
+   *      │          ↑
+   *      └──→[t2]───┘
+   *
+   * </pre>
+   */
+  @Test
+  public void testSimpleParallelGatewayAutomaticTasks() {
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent().transitionTo("fork"))
+      .activity("fork", new ParallelGateway()
+        .transitionTo("t1")
+        .transitionTo("t2"))
+      .activity("t1", new NoneTask()
+        .transitionTo("join"))
+      .activity("t2", new NoneTask()
+        .transitionTo("join"))
+      .activity("join", new ParallelGateway()
+        .transitionTo("end"))
+      .activity("end", new EndEvent());
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+    assertTrue(workflowInstance.isEnded());
   }
 
   /*
@@ -99,9 +132,10 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("f1", new ParallelGateway()
         .transitionTo("f2")
         .transitionTo("t3"))
-      .activity("f2", new ParallelGateway().transitionTo("t1").transitionTo("t2"))
-      .activity("t1", new ReceiveTask()
-        .transitionTo("j1"))
+      .activity("f2", new ParallelGateway()
+        .transitionTo("t1")
+        .transitionTo("t2"))
+      .activity("t1", new ReceiveTask().transitionTo("j1"))
       .activity("t2", new ReceiveTask()
         .transitionTo("j2"))
       .activity("t3", new ReceiveTask()
@@ -128,13 +162,53 @@ public class ParallelGatewayTest extends WorkflowTest {
     assertTrue(workflowInstance.isEnded());
   }
 
+  /*
+                    +-->[t1]------+
+                    |             |
+               +-->[f2]           |
+               |    |             |
+   [start]-->[f1]   +-->[t2]-+   [j1]-->[end]
+               |             |    |
+               |            [j2]--+
+               |             |
+               +-->[t3]------+
+  */
+  @Test
+  public void testComplexParallelGatewayAutomaticTasks() {
+
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("f1"))
+      .activity("f1", new ParallelGateway()
+        .transitionTo("f2")
+        .transitionTo("t3"))
+      .activity("f2", new ParallelGateway()
+        .transitionTo("t1")
+        .transitionTo("t2"))
+      .activity("t1", new NoneTask()
+        .transitionTo("j1"))
+      .activity("t2", new NoneTask()
+        .transitionTo("j2"))
+      .activity("t3", new NoneTask()
+        .transitionTo("j2"))
+      .activity("j1", new ParallelGateway()
+        .transitionTo("end"))
+      .activity("j2", new ParallelGateway()
+        .transitionTo("j1"))
+      .activity("end", new EndEvent());
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+    assertTrue(workflowInstance.isEnded());
+  }
+
   @Test
   public void testParallelGatewayOnwardsOnOtherPathEnd() {
     /* [t1]-------+
                   |
-                 [+]-->[t3]
+                 <+>-->[t3]
                   |
-       [t2]--[x]--+
+       [t2]--<x>--+
               |
               o   
        
@@ -142,7 +216,7 @@ public class ParallelGatewayTest extends WorkflowTest {
        We complete t1 which puts 1 joining token in the + parallel gateway.
        We then complete t2 and make sure that the exclusive gateway 
        takes the transition to the end event.
-       The fact that there is nothing more to do should fire the + parallel gateway. 
+       The fact that there is nothing more to do should fire the + parallel gateway.
     */
 
     Workflow workflow = new Workflow()
@@ -202,13 +276,13 @@ public class ParallelGatewayTest extends WorkflowTest {
   }
 
   /**
-   * Tests that a workflow can have both explicit and implicit parallel forking.
+   * Tests that parallel forks and joins work with a loop.
    * <pre>
    *
    *              +-->[t1]---+
    *              |          |
    *  [start]-+->[f]        [j]--+
-   *          |   |          |   |
+   *          ^   |          |   |
    *          |   +-->[t2]---+   |
    *          +------------------+
    *
@@ -416,25 +490,26 @@ public class ParallelGatewayTest extends WorkflowTest {
    * Tests that an AND join is only finished if all incoming flows are satisfied.
    * <pre>
    *
-   *               +---->[t1]-->[t2]---+
-   *               |                   v
-   *  [start]-->[fork]-->[t3]------->[join]-->[t4]-->[end]
+   *               +-->[t1]-->[t2]--+
+   *               |                v
+   *  [start]-->[fork]--->[t3]--->[join]-->[t4]-->[end]
+   *               |                ^
+   *               +----->[t5]------+
    *
    * </pre>
    */
   @Test
   public void testMultipleStepsBeforeJoin() {
     Workflow workflow = new Workflow()
-      .activity("start", new StartEvent()
-        .transitionTo("fork"))
-      .activity("fork", new ParallelGateway()
-        .transitionTo("t1")
-        .transitionTo("t3"))
+      .activity("start", new StartEvent().transitionTo("fork"))
+      .activity("fork", new ParallelGateway().transitionTo("t1").transitionTo("t3").transitionTo("t5"))
       .activity("t1", new ReceiveTask()
         .transitionTo("t2"))
       .activity("t2", new ReceiveTask()
         .transitionTo("join"))
       .activity("t3", new ReceiveTask()
+        .transitionTo("join"))
+      .activity("t5", new NoneTask()
         .transitionTo("join"))
       .activity("join", new ParallelGateway()
         .transitionTo("t4"))
@@ -457,6 +532,63 @@ public class ParallelGatewayTest extends WorkflowTest {
     assertOpen(workflowInstance, "t4");
 
     workflowInstance = endTask(workflowInstance, "t4");
+    assertTrue(workflowInstance.isEnded());
+  }
+
+  /**
+   * Tests that a parallel gateway inside a loop works.
+   * The loop condition checks a variable that is changed the second time, so the loop only repeats once.
+   * {@code
+   *
+   *      ┌──→[t1]───┐
+   *      │          │
+   *  ◯─→<+>─→[t2]──<+>─→[t3]─→<egw>─→◯
+   *      ↑                      │
+   *      └──────────────────────┘
+   * }
+   * TODO Resolve the exclusive gateway issue and make the test pass; see ExclusiveGatewayTest.testSimpleCondition
+   */
+  @Test
+  public void testParallelGatewayInsideLoop() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .variable("repeatRequired", new NumberType())
+      .activity("start", new StartEvent()
+        .transitionTo("fork"))
+      .activity("fork", new ParallelGateway()
+        .transitionTo("t1")
+        .transitionTo("t2"))
+      .activity("t1", new NoneTask()
+        .transitionTo("join"))
+      .activity("t2", new NoneTask()
+        .transitionTo("join"))
+      .activity("join", new ParallelGateway()
+        .transitionTo("t3"))
+      .activity("t3", new ReceiveTask()
+        .transitionTo("egw"))
+      .activity("egw", new ExclusiveGateway()
+        .transitionTo(new Transition().to("end")
+          .condition(new Equals().leftExpression("repeatRequired").rightValue(0)))
+        .transitionTo(new Transition().to("fork")
+          .condition(new Equals().leftExpression("repeatRequired").rightValue(1))))
+      .activity("end", new StartEvent());
+    // @formatter:on
+
+    deploy(workflow);
+    TriggerInstance trigger = new TriggerInstance().workflowId(workflow.getId()).data("repeatRequired", 1);
+    WorkflowInstance workflowInstance = workflowEngine.start(trigger);
+
+    // TODO assertion fails because workflow has ended with ended activity instances start and eg1 only
+    // TODO … so figure out why it doesn't wait at the receive task.
+    assertOpen(workflowInstance, "t3");
+    workflowInstance = endTask(workflowInstance, "t3");
+
+    assertOpen(workflowInstance, "t3");
+
+    VariableValues variableValues = new VariableValues();
+    variableValues.setValue("repeatRequired", 0);
+    workflowEngine.setVariableValues(workflowInstance.getId(), variableValues);
+    workflowInstance = endTask(workflowInstance, "t3");
     assertTrue(workflowInstance.isEnded());
   }
 }

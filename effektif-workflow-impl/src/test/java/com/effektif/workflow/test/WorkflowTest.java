@@ -119,6 +119,7 @@ public class WorkflowTest {
 
   public Deployment deploy(Workflow workflow) {
     Deployment deployment = workflowEngine.deployWorkflow(workflow);
+    deployment.checkNoErrorsAndNoWarnings();
     workflow.setId(deployment.getWorkflowId());
     return deployment;
   }
@@ -158,7 +159,7 @@ public class WorkflowTest {
     }
     Map<String,Integer> activityCounts = new HashMap<String, Integer>();
     scanActivityCounts(workflowInstance, activityCounts);
-    assertEquals(expectedActivityCounts, activityCounts);
+    assertEquals("activity counts", expectedActivityCounts, activityCounts);
   }
   
   static void scanActivityCounts(ScopeInstance scopeInstance, Map<String, Integer> activityCounts) {

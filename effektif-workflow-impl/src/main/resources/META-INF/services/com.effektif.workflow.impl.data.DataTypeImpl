@@ -1,4 +1,5 @@
 com.effektif.workflow.impl.data.types.AnyTypeImpl
+com.effektif.workflow.impl.data.types.BooleanTypeImpl
 com.effektif.workflow.impl.data.types.ChoiceTypeImpl
 com.effektif.workflow.impl.data.types.CustomTypeImpl
 com.effektif.workflow.impl.data.types.DateTypeImpl
