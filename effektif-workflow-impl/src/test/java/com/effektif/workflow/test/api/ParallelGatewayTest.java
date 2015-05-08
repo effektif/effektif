@@ -219,9 +219,7 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("f1", new ParallelGateway()
         .transitionTo("f2")
         .transitionTo("t3"))
-      .activity("f2", new ParallelGateway()
-        .transitionTo("t1")
-        .transitionTo("t2"))
+      .activity("f2", new ParallelGateway().transitionTo("t1").transitionTo("t2"))
       .activity("t1", new ReceiveTask().transitionTo("j1"))
       .activity("t2", new ReceiveTask()
         .transitionTo("j2"))
@@ -420,7 +418,6 @@ public class ParallelGatewayTest extends WorkflowTest {
    *      └──→
    *
    * </pre>
-   * TODO Add call to checkNoErrorsAndNoWarnings() in deploy() and remove this test because there are warnings?
    */
   @Test
   public void testLooseEnd() {
@@ -673,4 +670,46 @@ public class ParallelGatewayTest extends WorkflowTest {
     assertTrue(workflowInstance.isEnded());
   }
 
+  /**
+   * Tests that the process ends after one parallel flow results in an end event (after t2),
+   * which means that only one flow arrives at the join (after t1), but the engine should continue because
+   * there are no remaining executions.
+   * <pre>
+   *
+   *  ◯─→<+>─→[t1]─→<+>─→◯
+   *      │          ↑
+   *      └─→<X>─────┘
+   *          │
+   *          └─→[t2]─→◯
+   *
+   * </pre>
+   * TODO Instead of ending, the process gets into an infinite loop, repeating the flow from 'join' to 'end'.
+   */
+//  @Test
+  public void testParallelFlowEndEvent() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("fork"))
+      .activity("fork", new ParallelGateway()
+        .transitionTo("t1")
+        .transitionTo("condition"))
+      .activity("t1", new NoneTask()
+        .transitionTo("join"))
+      .activity("condition", new ExclusiveGateway()
+        .transitionTo("join")
+        .transitionTo(new Transition().id("default").to("t2"))
+        .defaultTransitionId("default"))
+      .activity("t2", new NoneTask()
+        .transitionTo("parallelEnd"))
+      .activity("parallelEnd", new EndEvent())
+      .activity("join", new ParallelGateway()
+        .transitionTo("end"))
+      .activity("end", new EndEvent());
+    // @formatter:on
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+    assertTrue(workflowInstance.isEnded());
+  }
 }

@@ -76,7 +76,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
         .transitionTo("gateway"))
       .activity("gateway", new ExclusiveGateway()
         .defaultTransitionId("wait")
-        .transitionTo(new Transition().id("continue").to("end"))
+        .transitionTo("end")
         .transitionTo(new Transition().id("wait").to("receive")))
       .activity("receive", new ReceiveTask())
       .activity("end", new EndEvent());
