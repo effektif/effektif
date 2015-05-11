@@ -374,7 +374,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    * </pre>
    * TODO Fix test, which fails since migration from the product.
    */
-//  @Test
+  @Test
   public void testJoinInLoop() {
     Workflow workflow = new Workflow()
       .activity("start", new StartEvent()

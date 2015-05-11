@@ -54,7 +54,9 @@ public class ActivityInstance extends ScopeInstance {
   }
 
   public ActivityInstance findOpenActivityInstance(String activityId) {
-    if (activityId!=null && activityId.equals(this.activityId)) {
+    if ( activityId!=null 
+         && activityId.equals(this.activityId)
+         && !isEnded()) {
       return this;
     }
     return super.findOpenActivityInstance(activityId);
