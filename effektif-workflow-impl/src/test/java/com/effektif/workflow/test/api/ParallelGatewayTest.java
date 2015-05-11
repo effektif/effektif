@@ -358,6 +358,19 @@ public class ParallelGatewayTest extends WorkflowTest {
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
     assertOpen(workflowInstance, "one");
+
+    workflowInstance = endTask(workflowInstance, "one");
+    assertOpen(workflowInstance, "two", "a", "b");
+
+    workflowInstance = endTask(workflowInstance, "a");
+    assertOpen(workflowInstance, "two", "b");
+
+    workflowInstance = endTask(workflowInstance, "two");
+    assertOpen(workflowInstance, "b");
+    assertFalse(workflowInstance.isEnded());
+
+    workflowInstance = endTask(workflowInstance, "b");
+    assertTrue(workflowInstance.isEnded());
   }
 
   /**
