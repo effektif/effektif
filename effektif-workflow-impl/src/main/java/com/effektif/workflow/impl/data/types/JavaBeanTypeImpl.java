@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.InvalidValueException;
@@ -35,11 +36,11 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   public JavaBeanValueMapper valueMapper;
   
   public JavaBeanTypeImpl() {
-    super(null, null);
+    super((T) new JavaBeanType(), null);
   }
   
-  public JavaBeanTypeImpl(T typeApi, Class< ? > valueClass) {
-    super(typeApi, valueClass);
+  public JavaBeanTypeImpl(DataType typeApi, Class< ? > valueClass) {
+    super((T) typeApi, valueClass);
   }
 
   public void setConfiguration(Configuration configuration) {
@@ -111,4 +112,6 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   public void setJsonService(JavaBeanValueMapper jsonMapper) {
     this.valueMapper = jsonMapper;
   }
+  
+  
 }

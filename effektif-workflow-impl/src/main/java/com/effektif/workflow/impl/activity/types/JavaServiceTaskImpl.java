@@ -92,7 +92,7 @@ public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
         }
       }
       
-      method.invoke(bean, args);
+      Object result = method.invoke(bean, args);
       
       activityInstance.onwards();
     } catch (Exception e) {

@@ -48,7 +48,7 @@ public class JavaServiceTask extends ServiceTask {
   protected String methodName;
   
   protected List<Binding> argBindings;
-
+  
   /** the name of the bean in the brewery (engine configuration) to invoke the method on.
    * This is mutually exclusive with clazz. */
   public String getBeanName() {
@@ -116,8 +116,6 @@ public class JavaServiceTask extends ServiceTask {
     return this;
   }
 
-
-  @Override
   public JavaServiceTask id(String id) {
     super.id(id);
     return this;
@@ -182,5 +180,4 @@ public class JavaServiceTask extends ServiceTask {
     super.propertyOpt(key, value);
     return this;
   }
-
 }
