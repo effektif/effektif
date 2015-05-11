@@ -624,7 +624,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    * }
    * TODO Resolve the exclusive gateway issue and make the test pass; see ExclusiveGatewayTest.testSimpleCondition
    */
-//  @Test
+  @Test
   public void testParallelGatewayInsideExclusiveGateway() {
     // @formatter:off
     Workflow workflow = new Workflow()
@@ -632,7 +632,8 @@ public class ParallelGatewayTest extends WorkflowTest {
       .activity("start", new StartEvent()
         .transitionTo("eg1"))
       .activity("eg1", new ExclusiveGateway()
-        .transitionTo(new Transition().to("fork")))
+        .transitionTo(new Transition().id("default").to("fork"))
+        .defaultTransitionId("default"))
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
         .transitionTo("t2"))

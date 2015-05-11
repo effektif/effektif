@@ -31,6 +31,7 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -39,24 +40,57 @@ import static org.junit.Assert.assertTrue;
 public class ExclusiveGatewayTest extends WorkflowTest {
 
   /**
-   * Tests that the process continues from an exclusive gateway that only has one outgoing flow.
+   * Tests that the process fails on an exclusive gateway that only has one outgoing flow.
    * <pre>
    *
-   *  ◯─→<X>─→◯
+   *  ◯─→<X>─→[t1]─→◯
    *
    * </pre>
    */
   @Test
   public void testSingleOutgoingFlow() {
+    // @formatter:off
     Workflow workflow = new Workflow()
-      .activity("start", new StartEvent().transitionTo("gateway"))
+      .activity("start", new StartEvent()
+        .transitionTo("gateway"))
       .activity("gateway", new ExclusiveGateway()
+        .transitionTo("wait"))
+      .activity("wait", new ReceiveTask()
         .transitionTo("end"))
       .activity("end", new EndEvent());
+    // @formatter:on
 
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
     assertTrue(workflowInstance.isEnded());
+  }
+
+  /**
+   * Tests that the process continues on an exclusive gateway that only has a default flow.
+   * <pre>
+   *
+   *  ◯─→<X>-/─→[t1]─→◯
+   *
+   * </pre>
+   */
+  @Test
+  public void testSingleOutgoingFlowDefault() {
+    // @formatter:off
+    Workflow workflow = new Workflow()
+      .activity("start", new StartEvent()
+        .transitionTo("gateway"))
+      .activity("gateway", new ExclusiveGateway()
+        .transitionTo(new Transition().id("default").to("wait"))
+        .defaultTransitionId("default"))
+      .activity("wait", new ReceiveTask()
+        .transitionTo("end"))
+      .activity("end", new EndEvent());
+    // @formatter:on
+
+    deploy(workflow);
+    WorkflowInstance workflowInstance = start(workflow);
+    assertOpen(workflowInstance, "wait");
+    assertFalse(workflowInstance.isEnded());
   }
 
   /**

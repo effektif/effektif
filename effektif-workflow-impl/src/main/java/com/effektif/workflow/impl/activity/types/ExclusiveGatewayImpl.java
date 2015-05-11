@@ -55,7 +55,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
     List<TransitionImpl> outgoingTransitions = activity.outgoingTransitions;
     TransitionImpl defaultTransition = activity.defaultTransition;
     // if there are less than two edges, ignore the conditions
-    if (outgoingTransitions != null && outgoingTransitions.size() > 1) {  
+    if (outgoingTransitions != null && outgoingTransitions.size() > 0) {
       TransitionImpl transition = findFirstTransitionThatMeetsCondition(activityInstance, outgoingTransitions);
       if (transition != null) {
         activityInstance.takeTransition(transition);
