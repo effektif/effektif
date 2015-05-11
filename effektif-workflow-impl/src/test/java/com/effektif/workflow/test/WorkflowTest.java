@@ -98,6 +98,7 @@ public class WorkflowTest {
     if (workflowEngine==null || taskService==null) {
       if (cachedConfiguration==null) {
         cachedConfiguration = new TestConfiguration();
+        cachedConfiguration.get(JsonStreamMapper.class).pretty();
       }
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();

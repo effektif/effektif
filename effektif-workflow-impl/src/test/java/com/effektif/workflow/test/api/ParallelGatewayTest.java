@@ -654,8 +654,9 @@ public class ParallelGatewayTest extends WorkflowTest {
     // @formatter:on
 
     deploy(workflow);
-    TriggerInstance trigger = new TriggerInstance().workflowId(workflow.getId()).data("repeatRequired", Boolean.TRUE);
-    WorkflowInstance workflowInstance = workflowEngine.start(trigger);
+
+    WorkflowInstance workflowInstance = start(createTriggerInstance(workflow)
+            .data("repeatRequired", Boolean.TRUE));
 
     // TODO assertion fails because workflow has ended with ended activity instances start and eg1 only
     // TODO … so figure out why it doesn't wait at the receive task.

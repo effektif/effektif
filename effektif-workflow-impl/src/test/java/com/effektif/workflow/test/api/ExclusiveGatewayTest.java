@@ -40,7 +40,12 @@ import static org.junit.Assert.assertTrue;
 public class ExclusiveGatewayTest extends WorkflowTest {
 
   /**
-   * Tests that the process fails on an exclusive gateway that only has one outgoing flow.
+   * Tests that the process takes the single outgoing flow 
+   * leaving an exclusive gateway if it has no condition specified.
+   * 
+   * The specification says to throw an exception.  Effektif 
+   * interprets this by taking the single, non-condition transition 
+   * if there is one.  
    * <pre>
    *
    *  ◯─→<X>─→[t1]─→◯
@@ -62,7 +67,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
 
     deploy(workflow);
     WorkflowInstance workflowInstance = start(workflow);
-    assertTrue(workflowInstance.isEnded());
+    assertOpen(workflowInstance, "wait");
   }
 
   /**

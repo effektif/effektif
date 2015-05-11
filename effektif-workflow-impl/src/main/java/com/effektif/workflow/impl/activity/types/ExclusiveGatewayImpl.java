@@ -53,22 +53,24 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   public void execute(ActivityInstanceImpl activityInstance) {
     ActivityImpl activity = activityInstance.activity;
     List<TransitionImpl> outgoingTransitions = activity.outgoingTransitions;
-    TransitionImpl defaultTransition = activity.defaultTransition;
-    // if there are less than two edges, ignore the conditions
-    if (outgoingTransitions != null && outgoingTransitions.size() > 0) {
-      TransitionImpl transition = findFirstTransitionThatMeetsCondition(activityInstance, outgoingTransitions);
-      if (transition != null) {
-        activityInstance.takeTransition(transition);
-      } else if (defaultTransition != null) {
-        activityInstance.takeTransition(defaultTransition);
-      } else {
-        activityInstance.end(true);
-      }
-      return;
-    }
 
-    // no outgoing transitions. just end here and notify the parent this execution path ended.
-    activityInstance.end();
+    TransitionImpl transition = findFirstTransitionThatMeetsCondition(activityInstance, outgoingTransitions);
+    if (transition==null) {
+      if (activity.defaultTransition!=null) {
+        transition = activity.defaultTransition;
+      } else if (outgoingTransitions!=null && outgoingTransitions.size()==1) {
+        transition = outgoingTransitions.get(0);
+      } else if (outgoingTransitions!=null && outgoingTransitions.size()>1) {
+        // TODO create an event to let the user decide
+      }
+    }
+    
+    if (transition!=null) {
+      activityInstance.takeTransition(transition);
+    } else {
+      // no outgoing transitions. just end here and notify the parent this execution path ended.
+      activityInstance.end(true);
+    }
   }
 
   protected TransitionImpl findFirstTransitionThatMeetsCondition(ActivityInstanceImpl activityInstance, List<TransitionImpl> outgoingTransitions) {
