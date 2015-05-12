@@ -26,7 +26,7 @@ import com.effektif.workflow.api.types.MoneyType;
 public class MoneyTypeImpl extends JavaBeanTypeImpl<MoneyType> {
   
   public MoneyTypeImpl() {
-    super(MoneyType.INSTANCE, Money.class);
+    super(MoneyType.INSTANCE);
   }
 
   @Override

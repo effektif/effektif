@@ -40,7 +40,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
   }
   
   public ListTypeImpl(ListType listType) {
-    super(listType, List.class);
+    super(listType);
   }
   
   @Override

@@ -33,14 +33,16 @@ import com.effektif.workflow.impl.json.JavaBeanValueMapper;
  */
 public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   
-  public JavaBeanValueMapper valueMapper;
+  protected JavaBeanValueMapper valueMapper;
+  protected Class<?> valueClass;
   
   public JavaBeanTypeImpl() {
     super((T) new JavaBeanType(), null);
   }
   
-  public JavaBeanTypeImpl(DataType typeApi, Class< ? > valueClass) {
-    super((T) typeApi, valueClass);
+  public JavaBeanTypeImpl(DataType typeApi) {
+    super((T) typeApi, null);
+    this.valueClass = (Class<?>)typeApi.getValueType();
   }
 
   public void setConfiguration(Configuration configuration) {
@@ -104,7 +106,6 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
     return internalValue;
   }
   
-  @Override
   public Class< ? > getValueClass() {
     return valueClass;
   }
@@ -112,6 +113,4 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   public void setJsonService(JavaBeanValueMapper jsonMapper) {
     this.valueMapper = jsonMapper;
   }
-  
-  
 }

@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.deprecated.identity.Group;
 public class GroupTypeImpl extends JavaBeanTypeImpl<GroupType> {
   
   public GroupTypeImpl() {
-    super(GroupType.INSTANCE, Group.class);
+    super(GroupType.INSTANCE);
   }
   
   @Override

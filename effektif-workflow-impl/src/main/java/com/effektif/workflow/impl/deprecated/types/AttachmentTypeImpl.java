@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.deprecated.types;
 
-import com.effektif.workflow.api.deprecated.model.Attachment;
 import com.effektif.workflow.impl.data.AbstractDataType;
 
 
@@ -25,7 +24,7 @@ import com.effektif.workflow.impl.data.AbstractDataType;
 public class AttachmentTypeImpl extends AbstractDataType<AttachmentType> {
 
   public AttachmentTypeImpl() {
-    super(AttachmentType.INSTANCE, Attachment.class);
+    super(AttachmentType.INSTANCE);
   }
 
   @Override

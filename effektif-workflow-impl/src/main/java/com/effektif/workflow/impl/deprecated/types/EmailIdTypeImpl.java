@@ -34,7 +34,7 @@ public class EmailIdTypeImpl extends AbstractDataType<EmailIdType> {
   protected EmailTypeImpl emailTypeImpl = null;
   
   public EmailIdTypeImpl() {
-    super(EmailIdType.INSTANCE, EmailId.class);
+    super(EmailIdType.INSTANCE);
   }
   
   @Override

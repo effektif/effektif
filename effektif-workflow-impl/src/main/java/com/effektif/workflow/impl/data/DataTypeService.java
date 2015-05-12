@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.data;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,7 +56,7 @@ public class DataTypeService implements Initializable {
   protected Map<Class<? extends DataType>,DataTypeImpl> singletons = new ConcurrentHashMap<>();
   protected Map<Class<? extends DataType>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
-  protected Map<Class<?>, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
+  protected Map<Type, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
 
   @Override
   public void initialize(Brewery brewery) {
@@ -96,20 +97,25 @@ public class DataTypeService implements Initializable {
     }
   }
   
-  public void registerDataType(DataTypeImpl dataType) {
-    Class apiClass = dataType.getApiClass();
+  public void registerDataType(DataTypeImpl dataTypeImpl) {
+    Class apiClass = dataTypeImpl.getApiClass();
     if (apiClass!=null) {
-      if (dataType.isStatic()) {
-        singletons.put(apiClass, dataType);
+      if (dataTypeImpl.isStatic()) {
+        singletons.put(apiClass, dataTypeImpl);
       } else {
-        Constructor< ? > constructor = findDataTypeConstructor(dataType.getClass());
+        Constructor< ? > constructor = findDataTypeConstructor(dataTypeImpl.getClass());
         dataTypeConstructors.put(apiClass, constructor);
       }
-    }
-    Class valueClass = dataType.getValueClass();
-    if (valueClass!=null) {
-      if (!dataTypesByValueClass.containsKey(valueClass)) {
-        dataTypesByValueClass.put(valueClass, dataType);
+      try {
+        DataType dataType = (DataType) apiClass.newInstance();
+        Type valueType = dataType.getValueType();
+        if (valueType!=null) {
+          if (!dataTypesByValueClass.containsKey(valueType)) {
+            dataTypesByValueClass.put(valueType, dataTypeImpl);
+          }
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -122,12 +128,12 @@ public class DataTypeService implements Initializable {
         return constructor;
       }
     }
-    throw new RuntimeException("Constructor not found "+dataTypeClass.getName()+"("+DataType.class.getName()+","+Configuration.class.getName()+")");
+    throw new RuntimeException("Constructor not found "+dataTypeClass.getName()+"("+DataType.class.getName()+")");
   }
 
   public void registerJavaBeanType(Class<?> javaBeanClass) {
     JavaBeanType javaBeanTypeApi = new JavaBeanType().javaClass(javaBeanClass);
-    JavaBeanTypeImpl javaBeanTypeImpl = new JavaBeanTypeImpl(javaBeanTypeApi, javaBeanClass);
+    JavaBeanTypeImpl javaBeanTypeImpl = new JavaBeanTypeImpl(javaBeanTypeApi);
     javaBeanTypeImpl.setConfiguration(configuration);
     javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
     registerDataType(javaBeanTypeImpl);

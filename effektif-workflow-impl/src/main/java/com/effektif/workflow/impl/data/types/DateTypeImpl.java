@@ -32,7 +32,7 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   public static DateTimeFormatter printer = ISODateTimeFormat.dateTime();
 
   public DateTypeImpl() {
-    super(DateType.INSTANCE, Boolean.class);
+    super(DateType.INSTANCE);
   }
 
   @Override

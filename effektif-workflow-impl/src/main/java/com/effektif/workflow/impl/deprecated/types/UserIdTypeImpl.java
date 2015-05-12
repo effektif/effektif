@@ -36,7 +36,7 @@ public class UserIdTypeImpl extends AbstractDataType<UserIdType> {
   protected UserTypeImpl userTypeImpl;
 
   public UserIdTypeImpl() {
-    super(UserIdType.INSTANCE, String.class);
+    super(UserIdType.INSTANCE);
   }
   
   @Override

@@ -25,7 +25,6 @@ public interface DataTypeImpl<T extends DataType> extends Plugin {
   
   void setConfiguration(Configuration configuration);
 
-  Class<?> getValueClass();
   T getDataType();
   Class<? extends DataType> getApiClass();
 
