@@ -87,6 +87,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     }
   }
 
+  @Override
   public void onwards() {
     if (log.isDebugEnabled())
       log.debug("Onwards "+this);

@@ -32,7 +32,7 @@ import com.effektif.workflow.test.WorkflowTest;
 /**
  * @author Tom Baeyens
  */
-public class EmbeddedSuprocessTest extends WorkflowTest {
+public class EmbeddedSubprocessTest extends WorkflowTest {
   
   /**          +-------------+
    *           | sub         |
@@ -81,7 +81,7 @@ public class EmbeddedSuprocessTest extends WorkflowTest {
    * </pre>
    * TODO Work out why execution doesn't stop at t3, and make the test pass.
    */
-//  @Test
+  @Test
   public void testNestedSubprocess() {
     // @formatter:off
     Workflow workflow = new Workflow()

@@ -498,9 +498,13 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
           }
         }
       } else {
-        end();
+        onwards();
       }
     }
+  }
+
+  public void onwards() {
+    end();
   }
 
   /** only activity instances that are associated with tasks have a taskid reference.
