@@ -79,7 +79,6 @@ public class EmbeddedSubprocessTest extends WorkflowTest {
    *     └───────────────────────┘
    *
    * </pre>
-   * TODO Work out why execution doesn't stop at t3, and make the test pass.
    */
   @Test
   public void testNestedSubprocess() {
