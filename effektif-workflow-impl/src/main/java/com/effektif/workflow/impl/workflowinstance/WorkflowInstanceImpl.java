@@ -178,12 +178,16 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
           activityInstance.onwards();
         }
   
-      } else if (STATE_NOTIFYING.equals(activityInstance.workState)) {
+      } else if (STATE_NOTIFY_PARENT.equals(activityInstance.workState)) {
         if (log.isDebugEnabled()) {
           log.debug("Notifying parent of "+activityInstance);
         }
         activityInstance.parent.activityInstanceEnded(activityInstance);
         activityInstance.workState = null;
+      } else if (activityInstance.workState==null) {
+        if (log.isDebugEnabled()) {
+          log.debug("Activity instance workState is null "+activityInstance);
+        }
       }
     }
     if (hasAsyncWork()) {

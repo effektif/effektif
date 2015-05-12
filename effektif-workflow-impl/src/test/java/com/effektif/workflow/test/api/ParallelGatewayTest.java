@@ -691,16 +691,16 @@ public class ParallelGatewayTest extends WorkflowTest {
    * there are no remaining executions.
    * <pre>
    *
-   *  ◯─→<+>─→[t1]─→<+>─→◯
-   *      │          ↑
-   *      └─→<X>─────┘
-   *          │
-   *          └─→[t2]─→◯
+   *  (start)→<fork>─-→[t1]─→<join>─→(end)
+   *      │              ↑
+   *      └─→<condition>─┘
+   *            │
+   *            └─→[t2]─→(parallelEnd)
    *
    * </pre>
    * TODO Instead of ending, the process gets into an infinite loop, repeating the flow from 'join' to 'end'.
    */
-//  @Test
+  @Test
   public void testParallelFlowEndEvent() {
     // @formatter:off
     Workflow workflow = new Workflow()

@@ -493,6 +493,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         for (ActivityInstanceImpl joiningActivityInstance: joiningActivityInstances) {
           if (!onwardedActivities.contains(joiningActivityInstance.activity)) {
             onwardedActivities.add(joiningActivityInstance.activity);
+            joiningActivityInstance.setWorkState(null);
             joiningActivityInstance.onwards();
           }
         }

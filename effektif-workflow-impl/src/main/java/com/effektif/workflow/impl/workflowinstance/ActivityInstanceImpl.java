@@ -42,7 +42,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public static final String STATE_STARTING = "starting"; 
   public static final String STATE_STARTING_MULTI_CONTAINER = "startingMultiParent"; 
   public static final String STATE_STARTING_MULTI_INSTANCE = "startingMultiInstance"; 
-  public static final String STATE_NOTIFYING = "notifying"; 
+  public static final String STATE_NOTIFY_PARENT = "notifying"; 
   public static final String STATE_JOINING = "joining"; 
   public static final String STATE_WAITING = "waiting"; 
 
@@ -102,7 +102,11 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
     } else {
       // Propagate completion upwards
-      end(true);
+      if (end==null) {
+        end(true);
+      } else {
+        notifyParent();
+      }
     }
   }
 
@@ -118,8 +122,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       setEnd(Time.now());
       workflow.workflowEngine.notifyActivityInstanceEnded(this);
       if (notifyParent) {
-        setWorkState(STATE_NOTIFYING);
-        workflowInstance.addWork(this);
+        notifyParent();
 
       } else {
         setWorkState(null); // means please archive me.
@@ -127,7 +130,13 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     }
   }
 
+  protected void notifyParent() {
+    setWorkState(STATE_NOTIFY_PARENT);
+    workflowInstance.addWork(this);
+  }
+
   public void setWorkState(String workState) {
+    log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
     this.workState = workState;
     if (updates!=null) {
       getUpdates().isWorkStateChanged = true;
@@ -156,13 +165,17 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     if (transition.id!=null || activity.activityType.saveTransitionsTaken()) {
       addTransitionTaken(transition.id);
     }
-    ActivityImpl to = transition.to;
-    end(to==null);
     ActivityInstanceImpl toActivityInstance = null;
+    ActivityImpl to = transition.to;
     if (to!=null) {
-      if (log.isDebugEnabled())
+      end(true);
+      if (log.isDebugEnabled()) {
         log.debug("Taking transition to "+to);
+      }
       toActivityInstance = parent.createActivityInstance(to);
+    } else {
+      end(false);
+      notifyParent();
     }
     workflow.workflowEngine.notifyTransitionTaken(this, transition, toActivityInstance);
   }
