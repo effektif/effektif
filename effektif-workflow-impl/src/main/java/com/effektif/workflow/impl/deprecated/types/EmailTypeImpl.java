@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
 public class EmailTypeImpl extends JavaBeanTypeImpl<EmailType> {
   
   public EmailTypeImpl() {
-    super(EmailType.INSTANCE, PersistentEmail.class);
+    super(EmailType.INSTANCE);
   }
 
   @Override

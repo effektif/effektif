@@ -27,13 +27,11 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
   
   protected T type;
   protected Class<? extends DataType> apiClass;
-  protected Class<?> valueClass;
   protected Configuration configuration;
 
-  public AbstractDataType(T typeApi, Class< ? > valueClass) {
+  public AbstractDataType(T typeApi) {
     this.type = typeApi;
     this.apiClass = typeApi!=null ? typeApi.getClass() : null;
-    this.valueClass = valueClass;
   }
   
   public void setConfiguration(Configuration configuration) {
@@ -62,11 +60,6 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     return apiClass;
   }
 
-  @Override
-  public Class< ? > getValueClass() {
-    return valueClass;
-  }
-  
   @Override
   public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
     return jsonValue;

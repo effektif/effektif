@@ -29,7 +29,7 @@ public class EmailAddressTypeImpl extends AbstractDataType<EmailAddressType> {
   }
   
   public EmailAddressTypeImpl(EmailAddressType emailAddressType) {
-    super(emailAddressType, String.class);
+    super(emailAddressType);
   }
   
   @Override

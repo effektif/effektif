@@ -30,7 +30,7 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
   }
   
   public TextTypeImpl(TextType textType) {
-    super(textType, String.class);
+    super(textType);
   }
   
   @Override

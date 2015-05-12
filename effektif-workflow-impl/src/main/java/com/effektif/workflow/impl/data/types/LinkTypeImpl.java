@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.deprecated.model.Link;
 import com.effektif.workflow.api.types.LinkType;
 
 /**
@@ -24,7 +23,7 @@ import com.effektif.workflow.api.types.LinkType;
 public class LinkTypeImpl extends JavaBeanTypeImpl<LinkType> {
 
   public LinkTypeImpl() {
-    super(LinkType.INSTANCE, Link.class);
+    super(LinkType.INSTANCE);
   }
 
   @Override

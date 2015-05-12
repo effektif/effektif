@@ -33,7 +33,7 @@ public class GroupIdTypeImpl extends AbstractDataType<GroupIdType> {
   protected GroupTypeImpl groupTypeImpl;
   
   public GroupIdTypeImpl() {
-    super(new GroupIdType(), GroupId.class);
+    super(new GroupIdType());
   }
 
   public void setConfiguration(Configuration configuration) {

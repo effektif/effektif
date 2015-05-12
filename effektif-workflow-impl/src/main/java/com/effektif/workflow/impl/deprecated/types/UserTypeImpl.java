@@ -16,7 +16,6 @@
 package com.effektif.workflow.impl.deprecated.types;
 
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
-import com.effektif.workflow.impl.deprecated.identity.User;
 
 
 /**
@@ -25,7 +24,7 @@ import com.effektif.workflow.impl.deprecated.identity.User;
 public class UserTypeImpl extends JavaBeanTypeImpl<UserType> {
   
   public UserTypeImpl() {
-    super(UserType.INSTANCE, User.class);
+    super(UserType.INSTANCE);
   }
 
   @Override

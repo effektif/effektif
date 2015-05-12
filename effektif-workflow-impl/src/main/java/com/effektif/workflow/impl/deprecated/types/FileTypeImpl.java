@@ -25,7 +25,7 @@ import com.effektif.workflow.impl.deprecated.file.File;
 public class FileTypeImpl extends JavaBeanTypeImpl<FileType> {
   
   public FileTypeImpl() {
-    super(FileType.INSTANCE, File.class);
+    super(FileType.INSTANCE);
   }
   
   @Override

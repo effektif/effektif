@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.List;
@@ -35,6 +35,7 @@ import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.EmailAddressType;
+import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.LinkType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.MoneyType;
@@ -313,7 +314,28 @@ public class VariableTypesTest extends WorkflowTest {
     assertEquals(file1.getId().getInternal(), fileIds.get(0).getInternal());
     assertEquals(file2.getId().getInternal(), fileIds.get(1).getInternal());
   }
+
+  public static class MyBean {
+    String name;
+    List<String> values;
+  }
   
+  @Test
+  public void testJavaBeanType() {
+    Workflow workflow = new Workflow()
+      .variable("v", new JavaBeanType().javaClass(MyBean.class));
+    
+    deploy(workflow);
+    
+    MyBean myBean = new MyBean();
+
+    WorkflowInstance workflowInstance = start(createTriggerInstance(workflow)
+      .data("v", myBean));
+    
+    MyBean retrievedBean = workflowInstance.getVariableValue("v");
+    assertNotNull(retrievedBean);
+  }
+
   protected void assertEqualsVariableValue(String variableId, VariableValues expected, VariableValues actual) {
     assertEquals(expected.getValue(variableId), actual.getValue(variableId));
   }

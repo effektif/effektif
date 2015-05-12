@@ -37,7 +37,7 @@ public class FileIdTypeImpl extends AbstractDataType<FileIdType> {
   protected FileTypeImpl fileTypeImpl;
   
   public FileIdTypeImpl() {
-    super(FileIdType.INSTANCE, FileId.class);
+    super(FileIdType.INSTANCE);
   }
   
   @Override

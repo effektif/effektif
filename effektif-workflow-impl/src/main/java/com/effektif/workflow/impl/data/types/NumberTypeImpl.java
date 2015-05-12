@@ -33,7 +33,7 @@ public class NumberTypeImpl extends AbstractDataType<NumberType> {
   }
   
   public NumberTypeImpl(NumberType numberType) {
-    super(numberType, Number.class);
+    super(numberType);
   }
   
   @Override

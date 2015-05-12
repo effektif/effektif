@@ -32,11 +32,11 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
   public Map<String,ObjectFieldImpl> fields;
 
   public ObjectTypeImpl() {
-    super((T)ObjectType.INSTANCE, Map.class);
+    super((T)ObjectType.INSTANCE);
   }
 
   public ObjectTypeImpl(T typeApi, Class< ? > valueClass) {
-    super(typeApi, valueClass);
+    super(typeApi);
   }
 
   @Override

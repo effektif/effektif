@@ -29,11 +29,11 @@ import com.effektif.workflow.impl.data.InvalidValueException;
 public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   
   public ChoiceTypeImpl() {
-    super(new ChoiceType(), String.class);
+    super(new ChoiceType());
   }
 
   public ChoiceTypeImpl(ChoiceType choiceType) {
-    super(choiceType, String.class);
+    super(choiceType);
   }
 
   @Override
