@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -101,30 +102,40 @@ public class MongoQuery {
       if (groupIds != null) {
         identityIds.addAll(groupIds);
       }
-      BasicDBList or = new BasicDBList();
-      or.add(new BasicDBObject("access", new BasicDBObject("$exists", false)));
+      BasicDBList actionClauses = new BasicDBList();
+      actionClauses.add(new BasicDBObject("access", new BasicDBObject("$exists", false)));
       if (identityIds != null && !identityIds.isEmpty()) {
         for (String action : actions) {
-          or.add(new BasicDBObject("access." + action + ".id", new BasicDBObject("$in", identityIds)));
+          actionClauses.add(new BasicDBObject("access." + action + ".id", new BasicDBObject("$in", identityIds)));
         }
       }
-      query.append("$or", or);
+      or(actionClauses);
     }
     return this;
   }
-  
+
+  /**
+   * Adds a list of clauses to the query as disjunction (logical OR).
+   */
   public MongoQuery or(BasicDBObject... orClauses) {
-    if (orClauses==null || orClauses.length==0) {
+    BasicDBList clauses = new BasicDBList();
+    for (BasicDBObject orClause: orClauses) {
+      clauses.add(orClause);
+    }
+    return or(clauses);
+  }
+
+  /**
+   * Adds a list of clauses to the query as disjunction (logical OR).
+   */
+  public MongoQuery or(BasicDBList clauses) {
+    if (clauses==null || clauses.size()==0) {
       return this;
     }
-    BasicDBList or = new BasicDBList();
-    for (BasicDBObject orClause: orClauses) {
-      or.add(orClause);
-    }
-    query.append("$or", or);
+    query.append("$or", clauses);
     return this;
   }
-  
+
   public MongoQuery doesNotExist(String field) {
     query.append(field, new BasicDBObject("$exists", false));
     return this;

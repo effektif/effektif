@@ -15,6 +15,7 @@
  */
 package com.effektif.mongo;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,12 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
-
+import org.joda.time.LocalDateTime;
+import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePartial;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class PrettyPrinter {
 
@@ -83,13 +89,17 @@ public class PrettyPrinter {
     jsonText.append(spaces.substring(0,indent));
   }
 
-  
-  static SimpleDateFormat dateFormat = initializeDateFormat();
-  static SimpleDateFormat initializeDateFormat() {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+  public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+  private static final SimpleDateFormat DATE_FORMAT = initializeDateFormat();
+  private static final SimpleDateFormat initializeDateFormat() {
+    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
     dateFormat.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
     return dateFormat;
   }
+
+  private static final DateTimeFormatter JODA_DATE_FORMAT = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN);
+
 
   @SuppressWarnings({ "unchecked" })
   public static void jsonObjectToTextFormatted(Object jsonObject, int indent, StringBuffer jsonText) {
@@ -108,7 +118,9 @@ public class PrettyPrinter {
     } else if (jsonObject instanceof ObjectId) {
       jsonText.append("{ \"$oid\" : \""+jsonObject.toString()+"\" }");
     } else if (jsonObject instanceof Date) {
-      jsonText.append("{ \"$date\" : \""+dateFormat.format(jsonObject)+"\" }");
+      jsonText.append("{ \"$date\" : \""+ DATE_FORMAT.format(jsonObject)+"\" }");
+    } else if (jsonObject instanceof LocalDateTime) {
+      jsonObjectToTextFormatted(((LocalDateTime) jsonObject).toDate(), indent, jsonText);
     } else if (jsonObject instanceof Number || jsonObject instanceof Boolean) {
       jsonText.append(jsonObject.toString());
     } else if (jsonObject.getClass().isArray()) {

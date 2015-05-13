@@ -46,6 +46,7 @@ import com.effektif.workflow.impl.json.types.EnumMapperFactory;
 import com.effektif.workflow.impl.json.types.ListMapperFactory;
 import com.effektif.workflow.impl.json.types.MapMapperFactory;
 import com.effektif.workflow.impl.json.types.NumberMapperFactory;
+import com.effektif.workflow.impl.json.types.EnumSetMapperFactory;
 import com.effektif.workflow.impl.json.types.StringMapper;
 import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
 import com.effektif.workflow.impl.json.types.ValueMapper;
@@ -81,6 +82,7 @@ public class MappingsBuilder {
     typeMapperFactory(new EnumMapperFactory());
     typeMapperFactory(new ArrayMapperFactory());
     typeMapperFactory(new ListMapperFactory());
+    typeMapperFactory(new EnumSetMapperFactory());
     typeMapperFactory(new MapMapperFactory());
     typeMapperFactory(new BindingMapperFactory());
     loadPlugins();

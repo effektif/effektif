@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 
@@ -41,10 +43,13 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.deprecated.TaskStore;
 import com.effektif.workflow.impl.util.Time;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import static com.effektif.workflow.api.deprecated.task.TaskQuery.DueDateFilter.*;
 
 public class MongoTaskStore implements TaskStore, Brewable {
   
@@ -55,14 +60,15 @@ public class MongoTaskStore implements TaskStore, Brewable {
   
   public interface FieldsTask {
     String _ID = "_id";
+    String ACTIVITY_NOTIFY = "activityNotify";
+    String ASSIGNEE_ID = "assigneeId";
+    String COMPLETED = "completed";
+    String DUE_DATE = "dueDate";
+    String HAS_WORKFLOW_FORM = "hasWorkflowForm";
+    String LAST_UPDATED = "lastUpdated";
     String NAME = "name";
     String ORGANIZATION_ID = "organizationId";
-    String ASSIGNEE_ID = "assigneeId";
     String SUBTASK_IDS = "subtaskIds";
-    String LAST_UPDATED = "lastUpdated";
-    String COMPLETED = "completed";
-    String ACTIVITY_NOTIFY = "activityNotify";
-    String HAS_WORKFLOW_FORM = "hasWorkflowForm";
     String WORKFLOW_ID = "workflowId";
     String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
   }
@@ -223,27 +229,55 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
   
   /** builds the query and ensures VIEW access */
-  protected MongoQuery createDbQuery(TaskQuery query, String... accessActions) {
-    if (query==null) {
-      query = new TaskQuery();
+  protected MongoQuery createDbQuery(TaskQuery taskQuery, String... accessActions) {
+    if (taskQuery==null) {
+      taskQuery = new TaskQuery();
     }
     MongoQuery mongoQuery = new MongoQuery();
     if (accessActions!=null) {
       mongoQuery.access(accessActions);
     }
-    if (query.getTaskId()!=null) {
-      mongoQuery.equal(FieldsTask._ID, new ObjectId(query.getTaskId().getInternal()));
+    if (taskQuery.getTaskId()!=null) {
+      mongoQuery.equal(FieldsTask._ID, new ObjectId(taskQuery.getTaskId().getInternal()));
     }
-    if (query.getTaskName()!=null) {
-      mongoQuery.equal(FieldsTask.NAME, Pattern.compile(query.getTaskName()));
+    if (taskQuery.getTaskName()!=null) {
+      mongoQuery.equal(FieldsTask.NAME, Pattern.compile(taskQuery.getTaskName()));
     }
-    if (query.getCompleted()!=null) {
-      if (query.getCompleted()) {
+    if (taskQuery.getCompleted()!=null) {
+      if (taskQuery.getCompleted()) {
         mongoQuery.equal(FieldsTask.COMPLETED, true);
       } else {
         mongoQuery.doesNotExist(FieldsTask.COMPLETED);
       }
     }
+
+    if (!taskQuery.getDueDates().isEmpty()) {
+      BasicDBList dueDateClauses = new BasicDBList();
+      LocalDateTime todayDate = new DateTime().withTimeAtStartOfDay().toLocalDateTime();
+      Date today = todayDate.toDate();
+      Date tomorrow = todayDate.plusDays(1).toDate();
+      Date nextWeek = todayDate.plusWeeks(1).withDayOfWeek(DateTimeConstants.MONDAY).toDate();
+
+      if (taskQuery.getDueDates().contains(OVERDUE)) {
+        dueDateClauses.add(new BasicDBObject(FieldsTask.DUE_DATE, new BasicDBObject("$lt", today)));
+      }
+      if (taskQuery.getDueDates().contains(TODAY)) {
+        // TODO (DUE_DATE $gte today) $and (DUE_DATE $lt tomorrow)
+        throw new NotImplementedException();
+      }
+      if (taskQuery.getDueDates().contains(THIS_WEEK)) {
+        // TODO (DUE_DATE $gte tomorrow) $and (DUE_DATE $lt nextWeek)
+        throw new NotImplementedException();
+      }
+      if (taskQuery.getDueDates().contains(LATER)) {
+        dueDateClauses.add(new BasicDBObject(FieldsTask.DUE_DATE, new BasicDBObject("$gte", nextWeek)));
+      }
+      if (taskQuery.getDueDates().contains(NOT_DUE)) {
+        dueDateClauses.add(new BasicDBObject(FieldsTask.DUE_DATE, new BasicDBObject("$exists", false)));
+      }
+      mongoQuery.or(dueDateClauses);
+    }
+
     return mongoQuery;
   }
 
