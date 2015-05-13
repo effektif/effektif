@@ -20,6 +20,8 @@ import org.joda.time.LocalDateTime;
 
 
 /**
+ * Provides the current date-time in a way that tests can override, to
+ *
  * @author Tom Baeyens
  */
 public class Time {
