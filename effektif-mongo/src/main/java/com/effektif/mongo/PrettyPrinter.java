@@ -16,6 +16,7 @@
 package com.effektif.mongo;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -94,6 +95,8 @@ public class PrettyPrinter {
   public static void jsonObjectToTextFormatted(Object jsonObject, int indent, StringBuffer jsonText) {
     if (jsonObject==null) {
       jsonText.append("null");
+    } else if (jsonObject instanceof Set) {
+      jsonObjectToTextFormatted(new ArrayList().addAll((Set) jsonObject), indent, jsonText);
     } else if (jsonObject instanceof Map) {
       jsonObjectToTextFormatted((Map<String,Object>) jsonObject, indent, jsonText);
     } else if (jsonObject instanceof List) {
@@ -109,7 +112,7 @@ public class PrettyPrinter {
     } else if (jsonObject instanceof Number || jsonObject instanceof Boolean) {
       jsonText.append(jsonObject.toString());
     } else if (jsonObject.getClass().isArray()) {
-      jsonObjectToTextFormatted(Arrays.asList((Object[])jsonObject), indent, jsonText);
+      jsonObjectToTextFormatted(Arrays.asList((Object[]) jsonObject), indent, jsonText);
     } else if (jsonObject instanceof Pattern) {
       jsonText.append("/"+jsonObject.toString()+"/");
     } else {
