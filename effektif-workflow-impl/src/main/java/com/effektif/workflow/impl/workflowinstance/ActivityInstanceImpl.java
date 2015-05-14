@@ -71,11 +71,18 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
 
   public ActivityInstance toActivityInstance() {
+    return toActivityInstance(false);
+  }
+  
+  public ActivityInstance toActivityInstance(boolean includeWorkState) {
     ActivityInstance activityInstance = new ActivityInstance();
     activityInstance.setId(id);
     activityInstance.setActivityId(activity.id);
     activityInstance.setCalledWorkflowInstanceId(calledWorkflowInstanceId);
-    toScopeInstance(activityInstance);
+    toScopeInstance(activityInstance, includeWorkState);
+    if (includeWorkState) {
+      activityInstance.setPropertyOpt("workState", workState);
+    }
     return activityInstance;
   }
   
@@ -137,7 +144,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
 
   public void setWorkState(String workState) {
-    log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
+    // log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
     this.workState = workState;
     if (updates!=null) {
       getUpdates().isWorkStateChanged = true;

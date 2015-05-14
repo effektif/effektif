@@ -18,6 +18,7 @@ package com.effektif.workflow.test;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.deprecated.form.FormInstance;
 import com.effektif.workflow.api.deprecated.task.CaseService;
 import com.effektif.workflow.api.deprecated.task.Task;
@@ -63,6 +65,7 @@ import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import com.effektif.workflow.test.api.JavaServiceTaskTest;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */
@@ -80,6 +83,7 @@ public class WorkflowTest {
   public static final Logger log = LoggerFactory.getLogger(WorkflowTest.class);
   
   public static Configuration cachedConfiguration = null;
+  private static List<String> messages = null;
   
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
@@ -93,7 +97,7 @@ public class WorkflowTest {
 
   @Before
   public void initializeWorkflowEngine() {
-    log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name.getMethodName()+" starting ######################################################## \n");
+    log.debug("\n\n###### Test "+getClass().getSimpleName()+".class, \""+name.getMethodName()+"\" starting ######################################################## \n");
 
     if (workflowEngine==null || taskService==null) {
       if (cachedConfiguration==null) {
@@ -108,6 +112,8 @@ public class WorkflowTest {
       emailStore = configuration.get(EmailStore.class);
       fileService = configuration.get(FileService.class);
     }
+    
+    messages = new ArrayList<>();
   }
   
   @After
@@ -117,6 +123,27 @@ public class WorkflowTest {
       deleteWorkflowEngineContents();
     }
   }
+  
+  public String getMessage(int index) {
+    return messages.get(index);
+  }
+  @SuppressWarnings("unused") // invoked dynamically with reflection 
+  private static void recordMessage(String message) {
+    messages.add(message);
+  }
+  public JavaServiceTask msgValue(String message) {
+    return new JavaServiceTask()
+      .javaClass(JavaServiceTaskTest.class)
+      .methodName("recordMessage")
+      .argValue(message);
+  }
+  public JavaServiceTask msgExpression(String messageExpression) {
+    return new JavaServiceTask()
+      .javaClass(JavaServiceTaskTest.class)
+      .methodName("recordMessage")
+      .argExpression(messageExpression);
+  }
+
 
   public Deployment deploy(Workflow workflow) {
     Deployment deployment = workflowEngine.deployWorkflow(workflow);

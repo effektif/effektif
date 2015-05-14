@@ -261,6 +261,9 @@ public class Reflection {
         }
       }
     }
+    if (clazz.getSuperclass()!=null) {
+      return findMethod(clazz.getSuperclass(), methodName, args);
+    }
     return null;
   }
 

@@ -66,20 +66,29 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
-  public void insertWorkflowInstance(WorkflowInstanceImpl processInstance) {
-    workflowInstances.put(processInstance.id, processInstance);
+  public void insertWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
+    workflowInstances.put(workflowInstance.id, workflowInstance);
   }
 
   @Override
-  public void flush(WorkflowInstanceImpl processInstance) {
+  public void flush(WorkflowInstanceImpl workflowInstance) {
   }
 
   @Override
-  public void flushAndUnlock(WorkflowInstanceImpl processInstance) {
-    lockedWorkflowInstanceIds.remove(processInstance.id);
-    processInstance.removeLock();
+  public void flushAndUnlock(WorkflowInstanceImpl workflowInstance) {
+    lockedWorkflowInstanceIds.remove(workflowInstance.id);
+    workflowInstance.removeLock();
   }
   
+  @Override
+  public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
+    WorkflowInstanceImpl workflowInstance = workflowInstances.get(workflowInstanceId);
+    if (workflowInstance!=null) {
+      workflowInstance.removeLock();
+    }
+    lockedWorkflowInstanceIds.remove(workflowInstanceId);
+  }
+
   @Override
   public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery query) {
     if (query.getWorkflowInstanceId()!=null) {
@@ -115,10 +124,9 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
-      .workflowInstanceId(workflowInstanceId)
-      .activityInstanceId(activityInstanceId);
+      .workflowInstanceId(workflowInstanceId);
     query.setLimit(1);
     List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(query);
     if (workflowInstances==null || workflowInstances.isEmpty()) { 

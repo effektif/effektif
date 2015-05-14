@@ -29,7 +29,6 @@ public class WorkflowInstanceQuery {
   public static final String FIELD_START = "start";
 
   protected WorkflowInstanceId workflowInstanceId;
-  protected String activityInstanceId;
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
@@ -37,19 +36,6 @@ public class WorkflowInstanceQuery {
   public WorkflowInstanceQuery workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     setWorkflowInstanceId(workflowInstanceId);
     return this;
-  }
-  
-  public WorkflowInstanceQuery activityInstanceId(String activityInstanceId) {
-    setActivityInstanceId(activityInstanceId);
-    return this;
-  }
-  
-  public String getActivityInstanceId() {
-    return activityInstanceId;
-  }
-  
-  public void setActivityInstanceId(String activityInstanceId) {
-    this.activityInstanceId = activityInstanceId;
   }
   
   public WorkflowInstanceId getWorkflowInstanceId() {

@@ -123,6 +123,7 @@ public abstract class MongoHelper {
     return (String) dbObject.get(fieldName);
   }
 
+  @Deprecated
   public static TaskId readTaskId(BasicDBObject dbObject, String fieldName) {
     Object oid = dbObject.get(fieldName);
     return oid!=null ? new TaskId(oid.toString()) : null;

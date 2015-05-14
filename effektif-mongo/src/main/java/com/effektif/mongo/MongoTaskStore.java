@@ -105,7 +105,6 @@ public class MongoTaskStore implements TaskStore, Brewable {
     return mongoToTask(dbTask);
   }
   
-
   @Override
   public Task completeTask(TaskId taskId) {
     BasicDBObject query = new MongoQuery()

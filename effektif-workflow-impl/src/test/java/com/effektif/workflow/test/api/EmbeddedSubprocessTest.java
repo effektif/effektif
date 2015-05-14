@@ -68,15 +68,15 @@ public class EmbeddedSubprocessTest extends WorkflowTest {
    * Tests a nested subprocess.
    * <pre>
    *
-   *     ┌───────────────────────┐
-   *     │ subprocess1           │
-   *     │                       │
-   *     │       ┌─────────────┐ │
-   *  ◯──┤       │ subprocess2 │ ├─→[t3]─→◯
-   *     │ [s1]─→┤             │ │
-   *     │       │    [s2]     │ │
-   *     │       └─────────────┘ │
-   *     └───────────────────────┘
+   *           ┌───────────────────────┐
+   *           │ subprocess1           │
+   *           │                       │
+   *           │       ┌─────────────┐ │
+   *  [start]──┤       │ subprocess2 │ ├─→[t3]─>[end]
+   *           │ [s1]─→┤             │ │
+   *           │       │    [s2]     │ │
+   *           │       └─────────────┘ │
+   *           └───────────────────────┘
    *
    * </pre>
    */

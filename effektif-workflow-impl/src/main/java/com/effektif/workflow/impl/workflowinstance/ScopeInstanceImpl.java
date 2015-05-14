@@ -49,6 +49,7 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.fasterxml.jackson.core.io.SegmentedStringWriter;
 
 
 public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
@@ -82,14 +83,14 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   
   public abstract boolean isWorkflowInstance();
   
-  protected void toScopeInstance(ScopeInstance scopeInstance) {
+  protected void toScopeInstance(ScopeInstance scopeInstance, boolean includeWorkState) {
     scopeInstance.setStart(start);
     scopeInstance.setEnd(end);
     scopeInstance.setDuration(duration);
     if (activityInstances!=null && !activityInstances.isEmpty()) {
       List<ActivityInstance> activityInstanceApis = new ArrayList<>();
       for (ActivityInstanceImpl activityInstanceImpl: this.activityInstances) {
-        activityInstanceApis.add(activityInstanceImpl.toActivityInstance());
+        activityInstanceApis.add(activityInstanceImpl.toActivityInstance(includeWorkState));
       }
       scopeInstance.setActivityInstances(activityInstanceApis);
     }
@@ -132,8 +133,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     addActivityInstance(activityInstance);
     activityInstance.initializeVariableInstances();
-    if (log.isDebugEnabled())
-      log.debug("Created "+activityInstance);
+//    if (log.isDebugEnabled())
+//      log.debug("Created "+activityInstance);
     return activityInstance;
   }
   

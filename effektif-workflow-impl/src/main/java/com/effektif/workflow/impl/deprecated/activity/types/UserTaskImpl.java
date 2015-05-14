@@ -74,7 +74,6 @@ public class UserTaskImpl extends AbstractActivityType<UserTask> {
     this.taskStore = parser.getConfiguration(TaskStore.class);
     this.caseStore = parser.getConfiguration(CaseStore.class);
     this.identityService = parser.getConfiguration(IdentityService.class);
-    this.multiInstance = parser.parseMultiInstance(userTask.getMultiInstance());
     this.taskName = parser.parseTextTemplate(userTask.getTaskName(), Hint.TASK_NAME);
     this.assigneeId = parser.parseBinding(userTask.getAssigneeId(), "assigneeId");
     this.candidateIds = parser.parseBindings(userTask.getCandidateIds(), "candidateIds");

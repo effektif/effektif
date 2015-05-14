@@ -31,7 +31,9 @@ public interface WorkflowInstanceStore {
   /** used when rendering a form */
   WorkflowInstanceImpl getWorkflowInstanceImplById(WorkflowInstanceId workflowInstanceId);
 
-  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String activityInstanceId);
+  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
+
+  void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
 
   WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
 

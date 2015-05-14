@@ -151,7 +151,7 @@ public class TaskServiceImpl implements TaskService, Brewable {
     
     String activityInstanceId = task.getActivityInstanceId();
     WorkflowInstanceImpl workflowInstance = workflowEngine.workflowInstanceStore
-            .lockWorkflowInstance(task.getWorkflowInstanceId(), activityInstanceId);
+            .lockWorkflowInstance(task.getWorkflowInstanceId());
       // Commented out when removing user task; TODO resolve dependency.
 //    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
 //    UserTaskImpl userTask = (UserTaskImpl) activityInstance.activity.activityType;

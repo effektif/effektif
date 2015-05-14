@@ -33,25 +33,6 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class JavaServiceTaskTest extends WorkflowTest {
   
-  // Between these lines might move as test infrastructure to WorkflowTest
-  static List<String> messages = new ArrayList<>();
-  public static void hello(String message) {
-    messages.add(message);
-  }
-  protected JavaServiceTask msgValue(String message) {
-    return new JavaServiceTask()
-      .javaClass(JavaServiceTaskTest.class)
-      .methodName("hello")
-      .argValue(message);
-  }
-  protected JavaServiceTask msgExpression(String messageExpression) {
-    return new JavaServiceTask()
-      .javaClass(JavaServiceTaskTest.class)
-      .methodName("hello")
-      .argExpression(messageExpression);
-  }
-  // Between these lines might move as test infrastructure to WorkflowTest
-
   @Test
   public void testJavaServiceTaskStaticMethodValue() {
     Workflow workflow = new Workflow()
@@ -61,7 +42,7 @@ public class JavaServiceTaskTest extends WorkflowTest {
     
     start(workflow);
     
-    assertEquals("world", messages.get(0));
+    assertEquals("world", getMessage(0));
   }
 
   @Test
@@ -74,7 +55,7 @@ public class JavaServiceTaskTest extends WorkflowTest {
     start(createTriggerInstance(workflow)
       .data("msg", "world"));
     
-    assertEquals("world", messages.get(0));
+    assertEquals("world", getMessage(0));
   }
   
   public static class MyBean {

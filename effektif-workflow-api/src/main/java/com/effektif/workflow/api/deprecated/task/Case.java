@@ -16,10 +16,7 @@
 package com.effektif.workflow.api.deprecated.task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 
@@ -38,10 +35,7 @@ import com.effektif.workflow.api.workflow.Extensible;
  */
 public class Case extends Extensible implements AccessControlledObject {
   
-  public static final Set<String> INVALID_PROPERTY_KEYS = new HashSet<>(Arrays.asList(
-          "id", "organizationId", "name", "description", "access", "creatorId",
-          "participantRefs", "taskRefs", "duedate", "lastUpdated", "canceled", "closed",
-          "workflowInstanceId", "sourceWorkflowId", "workflowId", "properties"));
+  public static final String CACHEKEY_CURRENT_CASE = Case.class.getName();
   
   protected CaseId id;
   protected String organizationId;
@@ -224,12 +218,6 @@ public class Case extends Extensible implements AccessControlledObject {
   public Case propertyOpt(String key, Object value) {
     super.propertyOpt(key, value);
     return this;
-  }
-
-  protected void checkPropertyKey(String key) {
-    if (key==null || INVALID_PROPERTY_KEYS.contains(key)) {
-      throw new RuntimeException("Invalid property '"+key+"'");
-    }
   }
 
   public AccessControlList getAccess() {

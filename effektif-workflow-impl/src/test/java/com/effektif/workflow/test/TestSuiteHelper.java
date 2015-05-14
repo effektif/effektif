@@ -76,14 +76,16 @@ public class TestSuiteHelper {
     if (!result.wasSuccessful()) {
       StringWriter msgWriter = new StringWriter();
       PrintWriter out = new PrintWriter(msgWriter);
+      int index=1;
       for (Failure failure: result.getFailures()) {
-        out.println("##### "+failure.getTestHeader()+ "#####");
+        out.println(index+". "+failure.getDescription().getTestClass().getSimpleName()+".class, \""+failure.getDescription().getMethodName()+"\"");
         out.println(failure.getDescription());
         if (failure.getException()!=null) {
           out.println("EXCEPTION ");
           failure.getException().printStackTrace(out);
         }
         out.println("-------------------------------------------------------- ");
+        index++;
       }
       out.flush();
       String msg  = result.getFailureCount()+" failures:\n"+msgWriter.toString();

@@ -46,11 +46,10 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
     return "["+variable.id+"="+value+"]";
   }
 
-  /**
-   * TODO Decide whether variable instance IDs are needed, and copy the id if so.
-   */
   public VariableInstance toVariableInstance() {
     VariableInstance variableInstance = new VariableInstance();
+    // TODO Decide whether variable instance IDs are needed, and copy the id if so.
+    // variableInstance.setId(id);
     variableInstance.setVariableId(variable.id);
     variableInstance.setValue(value);
     variableInstance.setType(type.serialize());
@@ -62,9 +61,6 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   }
 
   public void setValue(Object value) {
-    if (value instanceof TypedValueImpl) {
-      throw new RuntimeException("buuuu");
-    }
     this.value = value;
     if (updates!=null) {
       updates.isValueChanged = true;

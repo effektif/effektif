@@ -26,10 +26,12 @@ import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
+
 import org.junit.Test;
 
 import java.util.List;
@@ -136,38 +138,33 @@ public class CallTest extends WorkflowTest {
   @Test
   public void testCallActivityInputValue() {
     Workflow subWorkflow = new Workflow()
-      .variable("performer", new UserIdType())
-      .activity("subtask", new UserTask()
-        .assigneeExpression("performer")
-      );
+      .variable("performer", TextType.INSTANCE)
+      .activity("message", msgExpression("performer"));
     
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
       .activity("call", new Call()
-        .inputValue("performer", new UserId("552ce4fdc2e610a6a3dedb83"))
+        .inputValue("performer", "walter")
         .subWorkflowId(subWorkflow.getId()));
     
     deploy(superWorkflow);
     
     start(superWorkflow);
     
-    Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("552ce4fdc2e610a6a3dedb83", task.getAssigneeId().getInternal());
+    assertEquals("walter", getMessage(0));
   }
 
   @Test
   public void testCallActivityInputBindingVariable() {
     Workflow subWorkflow = new Workflow()
-      .variable("performer", new UserIdType())
-      .activity("subtask", new UserTask()
-        .assigneeExpression("performer")
-      );
+      .variable("performer", TextType.INSTANCE)
+      .activity("subtask", msgExpression("performer"));
     
     deploy(subWorkflow);
     
     Workflow superWorkflow = new Workflow()
-      .variable("guineapig", new UserIdType())
+      .variable("guineapig", TextType.INSTANCE)
       .activity("call", new Call()
         .inputExpression("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
@@ -176,11 +173,10 @@ public class CallTest extends WorkflowTest {
     
     workflowEngine.start(new TriggerInstance()
       .workflowId(superWorkflow.getId())
-      .data("guineapig", new UserId("552ce4fdc2e610a6a3dedb83"))
+      .data("guineapig", "walter")
     );
 
-    Task task = taskService.findTasks(new TaskQuery()).get(0);
-    assertEquals("552ce4fdc2e610a6a3dedb83", task.getAssigneeId().getInternal());
+    assertEquals("walter", getMessage(0));
   }
 
 }

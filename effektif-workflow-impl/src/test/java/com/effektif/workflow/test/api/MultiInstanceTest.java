@@ -15,18 +15,17 @@
  */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
-import com.effektif.workflow.api.deprecated.activities.UserTask;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.util.Lists;
-import com.effektif.workflow.test.TestHelper;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -36,26 +35,27 @@ import com.effektif.workflow.test.WorkflowTest;
 public class MultiInstanceTest extends WorkflowTest {
   
   @Test
-  public void testMultiInstanceUserTask() throws Exception {
+  public void testMultiInstanceBasics() throws Exception {
     Workflow workflow = new Workflow()
-      .variable("reviewers", new ListType(new UserIdType()))
-      .activity("Review", new UserTask()
-        .assigneeExpression("reviewer")
+      .variable("reviewers", new ListType(TextType.INSTANCE))
+      .activity("Review", msgExpression("reviewer")
         .multiInstance(new MultiInstance()
           .valuesExpression("reviewers")
-          .variable("reviewer", new UserIdType())));
+          .variable("reviewer", TextType.INSTANCE)));
     
     deploy(workflow);
     
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
       .data("reviewers", Lists.of(
-              new UserId(JOHN_ID),
-              new UserId(MARY_ID), 
-              new UserId(JACK_ID))));
+              "jack",
+              "john", 
+              "mary")));
 
-    // TODO make it so that the parent activity 
-    // instance doesn't have a name and doesn't have the empty variable declaration
-    TestHelper.assertOpen(workflowInstance, "Review", "Review", "Review", "Review");
+    assertTrue(workflowInstance.isEnded());
+    
+    assertEquals("jack", getMessage(0));
+    assertEquals("john", getMessage(1));
+    assertEquals("mary", getMessage(2));
   }
 }

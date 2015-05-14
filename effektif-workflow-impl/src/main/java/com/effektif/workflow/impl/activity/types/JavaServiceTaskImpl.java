@@ -22,8 +22,6 @@ import java.util.List;
 import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.util.Reflection;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
@@ -58,13 +56,13 @@ public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
     // TODO add parse warnings if not exactly 1 is specified of : beanName or clazz
     // TODO add parse warnings if no methodName is specified
     
-    if (activity.getJavaClass()!=null && activity.getMethodName()!=null) {
-      for (Method method: activity.getJavaClass().getDeclaredMethods()) {
-        if (method.getName().equals(activity.getMethodName())
-             && Modifier.isStatic(method.getModifiers())) {
-          staticMethod = method;
-        }
+    String methodName = activity.getMethodName();
+    if (activity.getJavaClass()!=null && methodName!=null) {
+      staticMethod = Reflection.findMethod(activity.getJavaClass(), methodName);
+      if (!Modifier.isStatic(staticMethod.getModifiers())) {
+        parser.addWarning("Method '"+methodName+"' is not static");
       }
+      staticMethod.setAccessible(true);
     }
   }
 
@@ -90,13 +88,14 @@ public class JavaServiceTaskImpl extends AbstractActivityType<JavaServiceTask> {
           bean = activityInstance.getConfiguration().get(beanName);
           method = Reflection.findMethod(bean.getClass(), activity.getMethodName(), args);
         }
+        method.setAccessible(true);
       }
       
       Object result = method.invoke(bean, args);
       
       activityInstance.onwards();
     } catch (Exception e) {
-      // TODO handle the exception
+      throw new RuntimeException(e);
     }
   }
 }

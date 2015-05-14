@@ -103,13 +103,17 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public WorkflowInstance toWorkflowInstance() {
+    return toWorkflowInstance(false);
+  }
+  
+  public WorkflowInstance toWorkflowInstance(boolean includeWorkState) {
     WorkflowInstance workflowInstance = new WorkflowInstance();
     workflowInstance.setId(id);
     workflowInstance.setBusinessKey(businessKey);
     workflowInstance.setWorkflowId(workflow.id);
     workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
     workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);
-    toScopeInstance(workflowInstance);
+    toScopeInstance(workflowInstance, includeWorkState);
     return workflowInstance;
   }
   
@@ -180,13 +184,13 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   
       } else if (STATE_NOTIFY_PARENT.equals(activityInstance.workState)) {
         if (log.isDebugEnabled()) {
-          log.debug("Notifying parent of "+activityInstance);
+          log.debug("Notifying "+activityInstance.parent+" that "+activityInstance+" ended");
         }
         activityInstance.parent.activityInstanceEnded(activityInstance);
         activityInstance.workState = null;
       } else if (activityInstance.workState==null) {
         if (log.isDebugEnabled()) {
-          log.debug("Activity instance workState is null "+activityInstance);
+          log.debug("Activity instance "+activityInstance+" is completely done");
         }
       }
     }
@@ -238,8 +242,10 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       if (callerProcessInstance==null) {
         WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
         callerProcessInstance = workflowEngine.lockWorkflowInstanceWithRetry(
-                workflowInstance.callerWorkflowInstanceId,
-                workflowInstance.callerActivityInstanceId);
+                workflowInstance.callerWorkflowInstanceId);
+        if (callerProcessInstance==null) {
+          log.error("Couldn't continue calling activity instance after workflow instance completion");
+        }
       }
       ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
       if (log.isDebugEnabled()) log.debug("Notifying caller "+callerActivityInstance);
@@ -369,9 +375,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   public boolean isIncluded(WorkflowInstanceQuery query) {
     if ( query.getWorkflowInstanceId()!=null && !query.getWorkflowInstanceId().equals(id)) {
-      return false;
-    }
-    if (query.getActivityInstanceId()!=null && !hasActivityInstance(query.getActivityInstanceId())) {
       return false;
     }
     return true;

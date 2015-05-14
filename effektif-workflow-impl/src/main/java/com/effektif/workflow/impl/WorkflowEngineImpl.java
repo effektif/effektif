@@ -203,11 +203,13 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   @Override
   public WorkflowInstance send(Message message) {
-    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(message.getWorkflowInstanceId(), message.getActivityInstanceId());
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(message.getWorkflowInstanceId());
     workflowInstance.setVariableValues(message);
-    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(message.getActivityInstanceId());
-    if (activityInstance.isEnded()) {
-      throw new RuntimeException("Activity instance "+activityInstance+" is already ended");
+    String activityInstanceId = message.getActivityInstanceId();
+    ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
+    if (activityInstance==null) {
+      workflowInstanceStore.unlockWorkflowInstance(message.getWorkflowInstanceId());
+      throw new RuntimeException("Activity instance "+activityInstanceId+" not in workflow instance");
     }
     if (log.isDebugEnabled())
       log.debug("Signalling "+activityInstance);
@@ -241,12 +243,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
   
   public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(
-          final WorkflowInstanceId workflowInstanceId, 
-          final String activityInstanceId) {
+          final WorkflowInstanceId workflowInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {
       @Override
       public WorkflowInstanceImpl tryOnce() {
-        return workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, activityInstanceId);
+        return workflowInstanceStore.lockWorkflowInstance(workflowInstanceId);
       }
       @Override
       protected void failedWaitingForRetry() {
@@ -262,7 +263,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
       @Override
       protected void failedPermanent() {
-        throw new RuntimeException("Couldn't lock process instance with workflowInstanceId="+workflowInstanceId+" and activityInstanceId="+activityInstanceId);
+        throw new RuntimeException("Couldn't lock process instance with workflowInstanceId="+workflowInstanceId);
       }
     };
     return retry.tryManyTimes();
@@ -356,8 +357,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     if (workflowInstanceId==null || variableValues==null) {
       return;
     }
-    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
     ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
+    if (scopeInstance==null) {
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceId);
+      throw new RuntimeException("Workflow instance "+workflowInstanceId+" didn't contain active activityInstanceId "+activityInstanceId);
+    }
     Map<String, TypedValue> values = variableValues!=null ? variableValues.getValues() : null;
     if (values!=null) {
       for (String variableId : values.keySet()) {
@@ -370,8 +375,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   public void setVariableValue(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String variableId, Object value) {
-    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId, activityInstanceId);
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
     ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
+    if (scopeInstance==null) {
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceId);
+      throw new RuntimeException("Workflow instance "+workflowInstanceId+" didn't contain active activityInstanceId "+activityInstanceId);
+    }
     scopeInstance.setVariableValue(variableId, value);
     workflowInstanceStore.flushAndUnlock(workflowInstance);
   }
