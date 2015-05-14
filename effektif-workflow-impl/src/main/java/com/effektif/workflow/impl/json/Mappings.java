@@ -370,14 +370,19 @@ public class Mappings {
     return typeArgs.get(typeArgName);
   }
 
-
+  /**
+   * Updates the given field mappings with mappings for the given type, by recursively scanning its fields.
+   */
   public void scanFields(List<FieldMapping> fieldMappings, Type type) {
+    if (type == null) {
+      throw new IllegalArgumentException("type may not be null");
+    }
     Class<?> clazz = Reflection.getRawClass(type);
     Map<TypeVariable,Type> typeArgs = Reflection.getTypeArgsMap(type);
     Field[] declaredFields = clazz.getDeclaredFields();
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
-        if (!Modifier.isStatic(field.getModifiers()) 
+        if (!Modifier.isStatic(field.getModifiers())
             && field.getAnnotation(JsonIgnore.class)==null) {
           field.setAccessible(true);
           // log.debug("  Scanning "+Reflection.getSimpleName(field));
