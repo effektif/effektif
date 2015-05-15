@@ -19,19 +19,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.deprecated.activities.UserTask;
 import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.deprecated.identity.IdentityService;
 import com.effektif.workflow.impl.deprecated.identity.User;
-import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
@@ -73,49 +69,6 @@ public class ExpressionTest extends WorkflowTest {
     assertEquals("johndoe@localhost",user.getEmail());
   }
 
-  /**
-   * TODO Replace the UserTask with a bean that has a list of values.
-   */
-  @Test
-  public void testBindingExpressionListFlattening() {
-    User johndoe = new User()
-      .id("johndoe")
-      .fullName("John Doe")
-      .email("johndoe@localhost");
-  
-    User joesmoe = new User()
-      .id("joesmoe")
-      .fullName("Joe Smoe")
-      .email("joesmoe@localhost");
-  
-    User jackblack = new User()
-      .id("jackblack")
-      .fullName("Jack Black")
-      .email("jackblack@localhost");
-  
-    IdentityService identityService = configuration.get(IdentityService.class);
-    identityService.createUser(johndoe);
-    identityService.createUser(joesmoe);
-    identityService.createUser(jackblack);
-    
-    Workflow workflow = new Workflow()
-      .variable("manager", new UserIdType())
-      .variable("workers", new ListType(new UserIdType()))
-      .activity("1", new UserTask()
-        .candidateExpression("manager")
-        .candidateExpression("workers"));
-    
-    deploy(workflow);
-    
-    workflowEngine.start(new TriggerInstance()
-      .data("manager", new UserId("johndoe"))
-      .data("workers", Lists.of(new UserId("joesmoe"), new UserId("jackblack")))
-      .workflowId(workflow.getId()));
-    
-    Task task = taskService.findTasks(null).get(0);
-    assertEquals(Lists.of(new UserId("johndoe"), new UserId("joesmoe"), new UserId("jackblack")), task.getCandidateIds());
-  }
-  
   public Object evaluate(DataType type, String variableId, Object value, String expression) {
     Workflow workflow = new Workflow()
       .variable(variableId, type);

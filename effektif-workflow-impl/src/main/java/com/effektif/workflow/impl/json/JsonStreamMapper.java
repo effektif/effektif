@@ -53,6 +53,9 @@ public class JsonStreamMapper {
   }
 
   public <T> T readString(String jsonString, Class<T> clazz) {
+    if (jsonString==null) {
+      return null;
+    }
     Reader reader = new StringReader(jsonString);
     return read(reader, clazz);
   }

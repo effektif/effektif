@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
+import com.effektif.workflow.impl.json.configuration.JsonStreamMapperSupplier;
 import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
@@ -57,6 +59,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.supplier(new MongoClientSupplier(), MongoClient.class);
     brewery.supplier(new MongoDbSupplier(), DB.class);
     brewery.supplier(new MongoGridFSSupplier(), GridFS.class);
+    brewery.supplier(new MongoObjectMapperSupplier(), MongoObjectMapper.class);
     brewery.ingredient(new MongoDb());
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
@@ -65,7 +68,7 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoJobStore());
     brewery.ingredient(new MongoFileService());
     brewery.ingredient(new MongoEmailStore());
-    brewery.ingredient(new MongoObjectMapper());
+    brewery.ingredient(new MongoObjectMappingsBuilder());
     
     // TODO replace this with a default mongo identity service
     brewery.ingredient(new MemoryIdentityService());

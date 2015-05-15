@@ -13,40 +13,26 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import java.util.List;
-import java.util.Map;
-
-import com.effektif.workflow.impl.json.JsonObjectMapper;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Supplier;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.Mappings;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
+
 
 /**
- * A facade for API object serialisation and deserialisation to and from the MongoDB JSON variant.
- *
  * @author Tom Baeyens
  */
-public class MongoObjectMapper extends JsonObjectMapper {
+public class MongoObjectMapperSupplier implements Supplier {
 
-  public MongoObjectMapper() {
-    this(new MongoObjectMappingsBuilder().getMappings());
-  }
-  
-  public MongoObjectMapper(Mappings mappings) {
-    super(mappings);
-  }
-
-  public <T> BasicDBObject write(T bean) {
-    return (BasicDBObject) super.write(bean);
+  @Override
+  public Object supply(Brewery brewery) {
+    MongoObjectMappingsBuilder mongoObjectMappingsBuilder = brewery.get(MongoObjectMappingsBuilder.class);
+    Mappings mappings = mongoObjectMappingsBuilder.getMappings();
+    return new MongoObjectMapper(mappings);
   }
 
   @Override
-  protected Map<String, Object> newObjectMap() {
-    return new BasicDBObject();
-  }
-
-  @Override
-  public List<Object> newArray() {
-    return new BasicDBList();
+  public boolean isSingleton() {
+    return true;
   }
 }

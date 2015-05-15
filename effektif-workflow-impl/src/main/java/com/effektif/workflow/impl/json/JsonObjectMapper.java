@@ -48,6 +48,9 @@ public abstract class JsonObjectMapper {
   }
 
   public <T> T read(Object jsonObject, Type type) {
+    if (jsonObject==null) {
+      return null;
+    }
     JsonObjectReader jsonObjectReader = new JsonObjectReader(mappings);
     return (T) jsonObjectReader.readObject(jsonObject, type);
   }
