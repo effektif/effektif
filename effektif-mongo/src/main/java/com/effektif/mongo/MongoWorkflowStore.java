@@ -175,8 +175,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   @Override
   public WorkflowId findLatestWorkflowIdBySource(String sourceWorkflowId) {
     Exceptions.checkNotNullParameter(sourceWorkflowId, "sourceWorkflowId");
-    BasicDBObject dbQuery = new MongoQuery()
-      .organizationId()
+    BasicDBObject dbQuery = new Query()
       .equal(FieldsWorkflow.SOURCE_WORKFLOW_ID, sourceWorkflowId)
       .get();
     BasicDBObject dbFields = new BasicDBObject(FieldsWorkflow._ID, 1);

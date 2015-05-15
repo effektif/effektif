@@ -61,6 +61,7 @@ public class MappingsBuilder {
   Map<Class, String> baseClasses = new HashMap<>();
   List<Class> subClasses = new ArrayList<>();
   Set<Field> inlineFields = new HashSet<>();
+  Set<Field> ignoredFields = new HashSet<>();
   Map<Field,String> jsonFieldNames = new HashMap<>();
   List<JsonTypeMapperFactory> typeMapperFactories = new ArrayList<>();
   Map<Type,DataType> dataTypesByValueClass = new HashMap<>();
@@ -105,6 +106,11 @@ public class MappingsBuilder {
 
   public MappingsBuilder inline(Class clazz, String fieldName) {
     inlineFields.add(getField(clazz, fieldName));
+    return this;
+  }
+
+  public MappingsBuilder ignore(Class clazz, String fieldName) {
+    ignoredFields.add(getField(clazz, fieldName));
     return this;
   }
 

@@ -36,6 +36,18 @@ import com.effektif.workflow.api.workflow.Extensible;
 public class Case extends Extensible implements AccessControlledObject {
   
   public static final String CACHEKEY_CURRENT_CASE = Case.class.getName();
+
+  public static class Fields {
+    public static final String _ID = "_id";
+    public static final String ORGANIZATION_ID = "organizationId";
+    public static final String CLOSED = "closed";
+    public static final String WORKFLOW_ID = "workflowId";
+    public static final String NAME = "name";
+    public static final String CREATOR_ID = "creatorId";
+    public static final String CREATE_TIME = "createTime";
+    public static final String DUEDATE = "duedate";
+    public static final String CANCELED = "canceled";
+  }
   
   protected CaseId id;
   protected String organizationId;

@@ -16,16 +16,16 @@ package com.effektif.mongo;
 import com.mongodb.BasicDBObject;
 
 
-public class MongoFields {
+public class Fields {
   
   protected BasicDBObject fields = new BasicDBObject();
 
-  public MongoFields include(String field) {
+  public Fields include(String field) {
     fields.put(field, 1);
     return this;
   }
 
-  public MongoFields exclude(String field) {
+  public Fields exclude(String field) {
     fields.put(field, 0);
     return this;
   }

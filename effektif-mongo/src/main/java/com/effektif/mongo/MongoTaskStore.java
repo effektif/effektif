@@ -99,11 +99,11 @@ public class MongoTaskStore implements TaskStore, Brewable {
 
   @Override
   public Task assignTask(TaskId taskId, UserId assignee) {
-    BasicDBObject query = new MongoQuery()
+    BasicDBObject query = new Query()
       ._id(taskId.getInternal())
-      .access(Access.EDIT)
+      // .access(Access.EDIT)
       .get();
-    BasicDBObject update = new MongoUpdate()
+    BasicDBObject update = new Update()
       .set(FieldsTask.ASSIGNEE_ID, assignee.getInternal())
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .get();
@@ -113,11 +113,11 @@ public class MongoTaskStore implements TaskStore, Brewable {
   
   @Override
   public Task completeTask(TaskId taskId) {
-    BasicDBObject query = new MongoQuery()
+    BasicDBObject query = new Query()
       ._id(taskId.getInternal())
-      .access(Access.EDIT)
+      // .access(Access.EDIT)
       .get();
-    BasicDBObject update = new MongoUpdate()
+    BasicDBObject update = new Update()
       .set(FieldsTask.COMPLETED, true)
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .unset(FieldsTask.ACTIVITY_NOTIFY)
@@ -131,11 +131,11 @@ public class MongoTaskStore implements TaskStore, Brewable {
   @Override
   public Task addSubtask(TaskId parentId, Task subtask) {
     TaskId subtaskId = subtask.getId();
-    BasicDBObject query = new MongoQuery()
+    BasicDBObject query = new Query()
       ._id(parentId.getInternal())
-      .access(Access.EDIT)
+      // .access(Access.EDIT)
       .get();
-    BasicDBObject update = new MongoUpdate()
+    BasicDBObject update = new Update()
       .push(FieldsTask.SUBTASK_IDS, new ObjectId(subtaskId.getInternal()))
       .set(FieldsTask.LAST_UPDATED, Time.now().toDate())
       .get();
@@ -228,13 +228,13 @@ public class MongoTaskStore implements TaskStore, Brewable {
   }
   
   /** builds the query and ensures VIEW access */
-  protected MongoQuery createDbQuery(TaskQuery taskQuery, String... accessActions) {
+  protected Query createDbQuery(TaskQuery taskQuery, String... accessActions) {
     if (taskQuery==null) {
       taskQuery = new TaskQuery();
     }
-    MongoQuery mongoQuery = new MongoQuery();
+    Query mongoQuery = new Query();
     if (accessActions!=null) {
-      mongoQuery.access(accessActions);
+      // mongoQuery.access(accessActions);
     }
     if (taskQuery.getTaskId()!=null) {
       mongoQuery.equal(FieldsTask._ID, new ObjectId(taskQuery.getTaskId().getInternal()));

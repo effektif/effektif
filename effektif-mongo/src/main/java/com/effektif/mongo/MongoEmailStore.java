@@ -65,7 +65,7 @@ public class MongoEmailStore implements EmailStore, Brewable {
     Authentication authentication = Authentications.current();
     String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
   
-    BasicDBObject query = new MongoQuery()
+    BasicDBObject query = new Query()
       ._id(new ObjectId(emailId.getInternal()))
       .equalOpt(FieldsFile.ORGANIZATION_ID, organizationId)
       .get();

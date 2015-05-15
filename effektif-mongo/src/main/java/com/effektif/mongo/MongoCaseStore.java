@@ -77,11 +77,11 @@ public class MongoCaseStore implements CaseStore, Brewable {
    * has edit rights and if the db operation succeeded. */
   @Override
   public boolean addTask(CaseId caseId, TaskId taskId) {
-    BasicDBObject query = new MongoQuery()
-      ._id(caseId)
-      .access(Access.EDIT)
+    BasicDBObject query = new Query()
+      ._id(caseId.getInternal())
+      // .access(Access.EDIT)
       .get();
-    BasicDBObject update = new MongoUpdate()
+    BasicDBObject update = new Update()
       .push(FieldsCase.TASK_IDS, new ObjectId(taskId.getInternal()))
       .set(FieldsCase.LAST_UPDATED, Time.now().toDate())
       .get();
@@ -146,13 +146,13 @@ public class MongoCaseStore implements CaseStore, Brewable {
   }
   
   /** builds the query and ensures VIEW access */
-  protected MongoQuery createDbQuery(CaseQuery query, String... accessActions) {
+  protected Query createDbQuery(CaseQuery query, String... accessActions) {
     if (query==null) {
       query = new CaseQuery();
     }
-    MongoQuery dbQuery = new MongoQuery();
+    Query dbQuery = new Query();
     if (accessActions!=null) {
-      dbQuery.access(accessActions);
+      // dbQuery.access(accessActions);
     }
     if (query.getCaseId()!=null) {
       dbQuery._id(query.getCaseId().getInternal());

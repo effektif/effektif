@@ -13,45 +13,43 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import java.util.Map;
-
 import com.mongodb.BasicDBObject;
 
 
-public class MongoUpdate {
+public class Update {
   
   protected BasicDBObject update = new BasicDBObject();
 
-  public MongoUpdate push(String field, Object value) {
+  public Update push(String field, Object value) {
     return push(field, value, null);
   }
 
-  public MongoUpdate push(String field, Object value, String prefix) {
+  public Update push(String field, Object value, String prefix) {
     add("$push", prefix, field, value);
     return this;
   }
 
-  public MongoUpdate setOpt(String field, Object value) {
+  public Update setOpt(String field, Object value) {
     return setOpt(field, value, null);
   }
 
-  public MongoUpdate setOpt(String field, Object value, String prefix) {
+  public Update setOpt(String field, Object value, String prefix) {
     if (value!=null) {
       add("$set", prefix, field, value);
     }
     return this;
   }
 
-  public MongoUpdate unset(String field) {
+  public Update unset(String field) {
     set(field, null, null);
     return this;
   }
 
-  public MongoUpdate set(String field, Object value) {
+  public Update set(String field, Object value) {
     return set(field, value, null);
   }
   
-  public MongoUpdate set(String field, Object value, String prefix) {
+  public Update set(String field, Object value, String prefix) {
     if (value!=null) {
       add("$set", prefix, field, value);
     } else {
@@ -60,33 +58,9 @@ public class MongoUpdate {
     return this;
   }
   
-  public MongoUpdate inc(String field, int amount) {
+  public Update inc(String field, int amount) {
     add("$inc", null, field, amount);
     return this;
-  }
-
-  public MongoUpdate field(String field, Map<String,Object> updates) {
-    field(null, field, updates, null);
-    return this;
-  }
-  
-  public MongoUpdate field(String field, Map<String,Object> updates, String prefix) {
-    field(prefix, field, updates, null);
-    return this;
-  }
-
-  private static interface ValueMapper {
-    Object map(Object value);
-  }
-    
-  private void field(String prefix, String field, Map<String,Object> updates, ValueMapper valueMapper) {
-    if (field!=null && updates!=null && updates.containsKey(field)) {
-      Object value = updates.get(field);
-      if (valueMapper!=null) {
-        value = valueMapper.map(value);
-      }
-      set(field,value);
-    }
   }
 
   private void add(String operation, String prefix, String field, Object value) {

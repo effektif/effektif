@@ -60,6 +60,9 @@ public class Mappings {
   protected Set<Field> inlineFields = new HashSet<>();
   
   /** Initialized from the mapping builder information */
+  protected Set<Field> ignoredFields = new HashSet<>();
+  
+  /** Initialized from the mapping builder information */
   protected List<JsonTypeMapperFactory> jsonTypeMapperFactories = new ArrayList<>();
   
   /** Initialized from the mapping builder information */
@@ -87,6 +90,7 @@ public class Mappings {
 
   public Mappings(MappingsBuilder mappingsBuilder) {
     this.inlineFields = mappingsBuilder.inlineFields;
+    this.ignoredFields = mappingsBuilder.ignoredFields;
     this.jsonFieldNames = mappingsBuilder.jsonFieldNames;
     this.jsonTypeMapperFactories = mappingsBuilder.typeMapperFactories;
     this.dataTypesByValueClass = mappingsBuilder.dataTypesByValueClass;
@@ -383,7 +387,8 @@ public class Mappings {
     if (declaredFields!=null) {
       for (Field field: declaredFields) {
         if (!Modifier.isStatic(field.getModifiers())
-            && field.getAnnotation(JsonIgnore.class)==null) {
+            && field.getAnnotation(JsonIgnore.class)==null
+            && !ignoredFields.contains(field)) {
           field.setAccessible(true);
           // log.debug("  Scanning "+Reflection.getSimpleName(field));
           Type fieldType = field.getGenericType();

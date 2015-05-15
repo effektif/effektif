@@ -107,7 +107,7 @@ public class MongoFileService implements FileService, Brewable {
     Authentication authentication = Authentications.current();
     String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
 
-    BasicDBObject query = new MongoQuery()
+    BasicDBObject query = new Query()
       ._id(new ObjectId(fileId.getInternal()))
       .equalOpt(FieldsFile.ORGANIZATION_ID, organizationId)
       .get();
@@ -127,7 +127,7 @@ public class MongoFileService implements FileService, Brewable {
       }
       Authentication authentication = Authentications.current();
       String organizationId = authentication!=null ? authentication.getOrganizationId() : null;
-      BasicDBObject query = new MongoQuery()
+      BasicDBObject query = new Query()
         .in("_id", dbFileIds)
         .equalOpt(FieldsFile.ORGANIZATION_ID, organizationId)
         .get();
