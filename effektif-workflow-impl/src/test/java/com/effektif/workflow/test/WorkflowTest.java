@@ -254,7 +254,7 @@ public class WorkflowTest {
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       JobStore jobStore = configuration.get(JobStore.class);
-      TaskStore taskStore = configuration.get(TaskStore.class);
+      // TaskStore taskStore = configuration.get(TaskStore.class);
 
       StringBuilder cleanLog = new StringBuilder();
       cleanLog.append("Workflow engine contents\n");
@@ -273,19 +273,19 @@ public class WorkflowTest {
         }
       }
 
-      List<Task> tasks = taskStore.findTasks(new TaskQuery());
-      if (tasks != null && !tasks.isEmpty()) {
-        int i = 0;
-        cleanLog.append("\n=== tasks ======================================================== \n");
-        for (Task task : tasks) {
-          cleanLog.append("--- Task ");
-          cleanLog.append(i);
-          cleanLog.append(" ---\n");
-          cleanLog.append(jsonMapper.write(task));
-          cleanLog.append("\n");
-          i++;
-        }
-      }
+//      List<Task> tasks = taskStore.findTasks(new TaskQuery());
+//      if (tasks != null && !tasks.isEmpty()) {
+//        int i = 0;
+//        cleanLog.append("\n=== tasks ======================================================== \n");
+//        for (Task task : tasks) {
+//          cleanLog.append("--- Task ");
+//          cleanLog.append(i);
+//          cleanLog.append(" ---\n");
+//          cleanLog.append(jsonMapper.write(task));
+//          cleanLog.append("\n");
+//          i++;
+//        }
+//      }
 
       List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery());
       if (workflowInstances != null && !workflowInstances.isEmpty()) {
@@ -324,14 +324,9 @@ public class WorkflowTest {
     WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
-    TaskStore taskStore = configuration.get(TaskStore.class);
-    // emailService.emails.clear();
-    configuration.get(MemoryIdentityService.class).deleteUsers();
-    configuration.get(MemoryIdentityService.class).deleteGroups();
 
     workflowStore.deleteWorkflows(new WorkflowQuery());
     workflowInstanceStore.deleteWorkflowInstances(new WorkflowInstanceQuery());
-    taskStore.deleteTasks(new TaskQuery());
     jobStore.deleteJobs(new JobQuery());
     jobStore.deleteArchivedJobs(new JobQuery());
   }

@@ -30,11 +30,12 @@ public class MemoryConfiguration extends DefaultConfiguration {
   public MemoryConfiguration() {
     brewery.ingredient(new MemoryWorkflowStore());
     brewery.ingredient(new MemoryWorkflowInstanceStore());
-    brewery.ingredient(new MemoryTaskStore());
-    brewery.ingredient(new MemoryCaseStore());
     brewery.ingredient(new MemoryJobStore());
-    brewery.ingredient(new MemoryIdentityService());
-    brewery.ingredient(new MemoryFileService());
-    brewery.ingredient(new MemoryEmailStore());
+
+//    brewery.ingredient(new MemoryTaskStore());
+//    brewery.ingredient(new MemoryCaseStore());
+//    brewery.ingredient(new MemoryIdentityService());
+//    brewery.ingredient(new MemoryFileService());
+//    brewery.ingredient(new MemoryEmailStore());
   }
 }
