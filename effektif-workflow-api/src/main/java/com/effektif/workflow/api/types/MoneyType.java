@@ -15,8 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
-import com.effektif.workflow.api.deprecated.model.Money;
 import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.model.Money;
 
 
 /**

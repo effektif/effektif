@@ -23,13 +23,9 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import com.effektif.workflow.api.deprecated.model.FileId;
-import com.effektif.workflow.api.deprecated.model.Link;
-import com.effektif.workflow.api.deprecated.model.Money;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.types.FileIdType;
-import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.json.GenericType;
+import com.effektif.workflow.api.model.Link;
+import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -42,7 +38,6 @@ import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.deprecated.file.File;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -175,37 +170,6 @@ public class VariableTypesTest extends WorkflowTest {
   }
 
   @Test
-  public void testUserIdType() {
-    Workflow workflow = new Workflow()
-      .variable("v", new UserIdType());
-    
-    deploy(workflow);
-
-    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data("v", new UserId(JOHN_ID)));
-
-    UserId userId = workflowInstance.getVariableValue("v");
-    assertEquals(UserId.class, userId.getClass());
-  }
-
-  @Test
-  public void testListOfUserIdType() {
-    Workflow workflow = new Workflow()
-      .variable("v", new ListType(new UserIdType()));
-    
-    deploy(workflow);
-
-    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data("v", Lists.of(new UserId(JOHN_ID), new UserId(MARY_ID))));
-    
-    List<UserId> userIds = workflowInstance.getVariableValue("v");
-    assertEquals(JOHN_ID, userIds.get(0).getInternal());
-    assertEquals(MARY_ID, userIds.get(1).getInternal());
-  }
-
-  @Test
   public void testLinkType() {
     Workflow workflow = new Workflow()
       .variable("v", new LinkType());
@@ -277,42 +241,6 @@ public class VariableTypesTest extends WorkflowTest {
     assertEquals("USD", moneys.get(0).getCurrency());
     assertEquals(new Double(6d), moneys.get(1).getAmount());
     assertEquals("EUR", moneys.get(1).getCurrency());
-  }
-
-  @Test
-  public void testFileIdType() {
-    Workflow workflow = new Workflow()
-      .variable("v", new FileIdType());
-    
-    deploy(workflow);
-    
-    File file = createTestFile("blabla", "joke.txt", "text/plain");
-
-    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data("v", file.getId()));
-    
-    FileId fileId = workflowInstance.getVariableValue("v", FileId.class);
-    assertEquals(file.getId().getInternal(), fileId.getInternal());
-  }
-
-  @Test
-  public void testListOfFileIdType() {
-    Workflow workflow = new Workflow()
-      .variable("v", new ListType(new FileIdType()));
-    
-    deploy(workflow);
-    
-    File file1 = createTestFile("blabla", "joke.txt", "text/plain");
-    File file2 = createTestFile("oblabl", "hehe.txt", "text/plain");
-
-    WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data("v", Lists.of(file1.getId(), file2.getId())));
-    
-    List<FileId> fileIds = workflowInstance.getVariableValue("v");
-    assertEquals(file1.getId().getInternal(), fileIds.get(0).getInternal());
-    assertEquals(file2.getId().getInternal(), fileIds.get(1).getInternal());
   }
 
   public static class MyBean {

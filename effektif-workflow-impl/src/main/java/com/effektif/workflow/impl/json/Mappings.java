@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.json.JsonIgnore;
@@ -51,10 +48,13 @@ import com.effektif.workflow.impl.util.Reflection;
  */
 public class Mappings {
   
-  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
+  // private static final Logger log = LoggerFactory.getLogger(Mappings.class);
 
   /** Initialized from the mapping builder information */
-  protected Map<Field,String> jsonFieldNames = new HashMap<>();
+  protected Map<Field,String> fieldNames = new HashMap<>();
+  
+  /** Initialized from the mapping builder information */
+  protected Map<Field,JsonTypeMapper<?>> fieldsMappers;
 
   /** Initialized from the mapping builder information */
   protected Set<Field> inlineFields = new HashSet<>();
@@ -91,7 +91,8 @@ public class Mappings {
   public Mappings(MappingsBuilder mappingsBuilder) {
     this.inlineFields = mappingsBuilder.inlineFields;
     this.ignoredFields = mappingsBuilder.ignoredFields;
-    this.jsonFieldNames = mappingsBuilder.jsonFieldNames;
+    this.fieldNames = mappingsBuilder.fieldNames;
+    this.fieldsMappers = mappingsBuilder.fieldsMappers;
     this.jsonTypeMapperFactories = mappingsBuilder.typeMapperFactories;
     this.dataTypesByValueClass = mappingsBuilder.dataTypesByValueClass;
     
@@ -106,7 +107,7 @@ public class Mappings {
   }
 
   public Mappings(Mappings other) {
-    this.jsonFieldNames = other.jsonFieldNames;
+    this.fieldNames = other.fieldNames;
     this.inlineFields = other.inlineFields;
     this.jsonTypeMapperFactories = other.jsonTypeMapperFactories;
     this.dataTypesByValueClass = other.dataTypesByValueClass;
@@ -311,7 +312,7 @@ public class Mappings {
     Class<?> clazz = Reflection.getRawClass(type);
     Set<FieldMapping> inlineFieldMappings = new HashSet<>();
     for (FieldMapping fieldMapping: fieldMappings) {
-      String jsonFieldName = jsonFieldNames.get(fieldMapping.field);
+      String jsonFieldName = fieldNames.get(fieldMapping.field);
       if (jsonFieldName!=null) {
         fieldMapping.jsonFieldName = jsonFieldName;
       }
@@ -390,20 +391,21 @@ public class Mappings {
             && field.getAnnotation(JsonIgnore.class)==null
             && !ignoredFields.contains(field)) {
           field.setAccessible(true);
-          // log.debug("  Scanning "+Reflection.getSimpleName(field));
-          Type fieldType = field.getGenericType();
-          if (fieldType instanceof TypeVariable) {
-            fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : Object.class;
+          JsonTypeMapper jsonTypeMapper = fieldsMappers.get(field);
+          if (jsonTypeMapper==null) {
+            // log.debug("  Scanning "+Reflection.getSimpleName(field));
+            Type fieldType = field.getGenericType();
+            if (fieldType instanceof TypeVariable) {
+              fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : Object.class;
+            }
+            jsonTypeMapper = getTypeMapper(fieldType);
           }
-          JsonTypeMapper jsonTypeMapper = getTypeMapper(fieldType);
           FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
-
           // Annotation-based field name override.
           JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
           if (jsonFieldNameAnnotation != null) {
             fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
           }
-
           fieldMappings.add(fieldMapping);
         }
       }

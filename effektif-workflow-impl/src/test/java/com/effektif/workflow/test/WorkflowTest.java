@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.deprecated.form.FormInstance;
-import com.effektif.workflow.api.deprecated.task.CaseService;
 import com.effektif.workflow.api.deprecated.task.Task;
 import com.effektif.workflow.api.deprecated.task.TaskQuery;
 import com.effektif.workflow.api.deprecated.task.TaskService;
@@ -87,10 +85,14 @@ public class WorkflowTest {
   
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
-  protected CaseService caseService = null;
+  
+  @Deprecated
   protected TaskService taskService = null;
+  @Deprecated
   protected TestOutgoingEmailService emailService = null;
+  @Deprecated
   protected EmailStore emailStore = null;
+  @Deprecated
   protected FileService fileService = null;
   
   @Rule public TestName name = new TestName();
@@ -107,7 +109,6 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
       taskService = configuration.getTaskService();
-      caseService = configuration.get(CaseService.class);
       emailService = configuration.get(TestOutgoingEmailService.class);
       emailStore = configuration.get(EmailStore.class);
       fileService = configuration.get(FileService.class);
@@ -163,12 +164,6 @@ public class WorkflowTest {
   
   public WorkflowInstance start(TriggerInstance triggerInstance) {
     return workflowEngine.start(triggerInstance);
-  }
-  
-  public WorkflowInstance start(Workflow workflow, FormInstance formInstance) {
-    return workflowEngine.start(new TriggerInstance()
-      .workflowId(workflow.getId())
-      .data(FORM_INSTANCE_KEY, formInstance));
   }
   
   public WorkflowInstance sendMessage(WorkflowInstance workflowInstance, String activityInstanceId) {

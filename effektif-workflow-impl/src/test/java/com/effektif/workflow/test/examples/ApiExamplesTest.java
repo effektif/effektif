@@ -15,21 +15,16 @@
  */
 package com.effektif.workflow.test.examples;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.deprecated.task.Task;
-import com.effektif.workflow.api.deprecated.task.TaskQuery;
-import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 
@@ -43,7 +38,6 @@ public class ApiExamplesTest {
     // Create the default (in-memory) workflow engine
     Configuration configuration = new MemoryConfiguration();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
-    TaskService taskService = configuration.getTaskService();
     
     // Create a workflow
     Workflow workflow = new Workflow()
@@ -63,13 +57,6 @@ public class ApiExamplesTest {
       .start(new TriggerInstance()
         .workflowId(workflowId));
     
-    List<Task> tasks = taskService.findTasks(new TaskQuery().open());
-
-    // TODO Uncomment and make the test pass by finding the "Move open issues" ReceiveTask
-//    Task task = tasks.get(0);
-//    assertEquals(1, tasks.size());
-//    taskService.completeTask(task.getId());
-    
-    System.err.println(configuration.get(JsonMapper.class).writeToStringPretty(workflow));
+    System.err.println(configuration.get(JsonStreamMapper.class).write(workflow));
   }
 }

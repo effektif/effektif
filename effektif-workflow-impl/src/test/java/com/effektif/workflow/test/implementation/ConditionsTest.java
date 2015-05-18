@@ -35,8 +35,6 @@ import com.effektif.workflow.api.condition.NotContains;
 import com.effektif.workflow.api.condition.NotContainsIgnoreCase;
 import com.effektif.workflow.api.condition.NotEquals;
 import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.ChoiceType;
@@ -48,8 +46,6 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
-import com.effektif.workflow.impl.deprecated.identity.IdentityService;
-import com.effektif.workflow.impl.deprecated.identity.User;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -318,24 +314,6 @@ public class ConditionsTest extends WorkflowTest {
     assertFalse(evaluateTextExpression(new NotEqualsIgnoreCase(), "hello\nworld", "Hello\nWorld"));
     assertTrue(evaluateTextExpression(new NotEqualsIgnoreCase(), "hello\nworld", "hello world"));
     assertTrue(evaluateTextExpression(new NotEqualsIgnoreCase(), "hello\nworld", "helloworld"));
-  }
-
-  @Test
-  public void testUserEquals() {
-    User johndoe = new User()
-      .id("johndoe")
-      .fullName("John Doe")
-      .email("johndoe@localhost");
-
-    configuration.get(IdentityService.class)
-      .createUser(johndoe);
-
-    UserId johndoeId = johndoe.getId();
-
-    assertTrue(evaluate(UserIdType.INSTANCE, "v", johndoeId, new Equals().leftExpression("v.id").rightValue("johndoe")));
-    assertFalse(
-      evaluate(UserIdType.INSTANCE, "v", johndoeId, new Equals().leftExpression("v.id").rightValue("superman")));
-    assertFalse(evaluate(UserIdType.INSTANCE, "v", null, new Equals().leftExpression("v.id").rightValue("johndoe")));
   }
 
   private boolean evaluateNumberExpression(Comparator condition, Number leftValue, Number rightValue) {

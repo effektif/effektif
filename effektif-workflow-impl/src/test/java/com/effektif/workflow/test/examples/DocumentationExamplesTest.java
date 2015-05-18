@@ -33,7 +33,7 @@ import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 /**
@@ -50,6 +50,7 @@ public class DocumentationExamplesTest extends TestCase {
     if (configuration == null) {
       configuration = new TestConfiguration();
       configuration.getWorkflowEngine();
+      configuration.get(JsonStreamMapper.class).pretty();
     }
   }
 
@@ -129,8 +130,8 @@ public class DocumentationExamplesTest extends TestCase {
 
   private void printJson(Object o) {
     System.out.println("--- " + o.getClass().getSimpleName() + "----------");
-    JsonMapper jsonMapper = configuration.get(JsonMapper.class);
-    System.out.println(jsonMapper.writeToStringPretty(o));
+    JsonStreamMapper jsonMapper = configuration.get(JsonStreamMapper.class);
+    System.out.println(jsonMapper.write(o));
   }
 
   private void print(Activity activity) {

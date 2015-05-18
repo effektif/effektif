@@ -1,4 +1,4 @@
-package com.effektif.workflow.api.deprecated.model;/* Copyright (c) 2015, Effektif GmbH.
+package com.effektif.workflow.api.model;/* Copyright (c) 2015, Effektif GmbH.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
