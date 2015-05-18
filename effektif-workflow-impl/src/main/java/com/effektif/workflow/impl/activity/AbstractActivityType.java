@@ -46,15 +46,6 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   }
   
   @Override
-  public T readBpmn(XmlElement activityXml, DeprecatedBpmnReader deprecatedBpmnReader) {
-    return null;
-  }
-  
-  @Override
-  public void writeBpmn(T activity, XmlElement activityXml, DeprecatedBpmnWriter deprecatedBpmnWriter) {
-  }
-
-  @Override
   public ActivityDescriptor getDescriptor() {
     return null;
   }

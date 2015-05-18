@@ -50,7 +50,6 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   protected MongoCollection workflowsCollection;
   protected ActivityTypeService activityTypeService;
   protected Configuration configuration;
-  protected ScriptService scriptService;
   protected MongoObjectMapper mongoMapper;
   
   public interface FieldsWorkflow {
@@ -81,7 +80,6 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     this.workflowsCollection = mongoDb.createCollection(mongoConfiguration.getWorkflowsCollectionName());
     this.configuration = brewery.get(Configuration.class);
     this.workflowEngine = brewery.get(WorkflowEngineImpl.class);
-    this.scriptService = brewery.get(ScriptService.class);
     this.activityTypeService = brewery.get(ActivityTypeService.class);
     this.mongoMapper = brewery.get(MongoObjectMapper.class);
   }
@@ -90,48 +88,9 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     return (BasicDBObject) mongoMapper.write(workflow);
   }
 
-//  public BasicDBObject workflowApiToMongoAbstract(AbstractWorkflow workflow) {
-//    // We use jackson to serialize the Workflow into workflow json
-//    Map<String,Object> jsonWorkflow = jsonService.objectToJsonMap(workflow);
-//
-//    mongoJsonMapper.createReader().readObject(jsonWorkflow, clazz)
-//
-//    // But there are 3 exceptions that jackson doesn't convert as it should 
-//    BasicDBObject dbWorkflow = new BasicDBObject(); 
-//
-//    // here we remove the id and below we set the _id field on the dbWorkflow 
-//    jsonWorkflow.remove("id");
-//    jsonWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
-//
-//    dbWorkflow.putAll(jsonWorkflow);
-//
-//    // convert the id
-//    writeId(dbWorkflow, FieldsWorkflow._ID, workflow.getId());
-//    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, workflow.getOrganizationId());
-//
-//    return dbWorkflow;
-//  }
-
   public <T extends AbstractWorkflow> T mongoToWorkflowApi(BasicDBObject dbWorkflow, Class<T> workflowClass) {
     return mongoMapper.read(dbWorkflow, workflowClass);
   }
-
-//  public <T extends AbstractWorkflow> T mongoToWorkflowApiAbstract(BasicDBObject dbWorkflow, Class<T> workflowClass) {
-//    if (dbWorkflow==null) {
-//      return null;
-//    }
-//    // convert id
-//    ObjectId workflowId = (ObjectId) dbWorkflow.remove(FieldsWorkflow._ID);
-//    ObjectId organizationId = (ObjectId) dbWorkflow.remove(FieldsWorkflow.ORGANIZATION_ID);
-//    T workflow = jsonService.jsonMapToObject(dbWorkflow, workflowClass);
-//    if (workflowId!=null) {
-//      workflow.id(new WorkflowId(workflowId.toString()));
-//    }
-//    if (organizationId!=null) {
-//      workflow.organizationId(organizationId.toString());
-//    }
-//    return workflow;
-//  }
   
   @Override
   public WorkflowId generateWorkflowId() {

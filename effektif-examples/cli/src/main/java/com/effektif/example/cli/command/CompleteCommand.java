@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.deprecated.task.Task;
+import com.effektif.workflow.api.deprecated.task.TaskService;
 
 /**
  * Completes the task with the given ID.
@@ -29,6 +30,6 @@ public class CompleteCommand implements CommandImpl {
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     final String taskId = command.getArgument();
-    final Task task = configuration.getTaskService().completeTask(new TaskId(taskId));
+    final Task task = configuration.get(TaskService.class).completeTask(new TaskId(taskId));
   }
 }

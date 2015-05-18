@@ -30,7 +30,7 @@ public class TasksCommand implements CommandImpl {
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     out.println("Open tasks:");
-    final TaskService taskService = configuration.getTaskService();
+    final TaskService taskService = configuration.get(TaskService.class);
     for (Task task : taskService.findTasks(new TaskQuery())) {
       if (!task.isCompleted()) {
         out.println(String.format("  %s: %s (%s)", task.getId(), task.getName(), task.getSourceWorkflowId()));

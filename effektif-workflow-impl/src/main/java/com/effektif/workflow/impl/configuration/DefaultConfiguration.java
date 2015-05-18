@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.configuration;
 
-import javax.script.ScriptEngineManager;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.task.TaskService;
@@ -28,11 +26,6 @@ import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
-import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
-import com.effektif.workflow.impl.deprecated.json.Mappings;
-import com.effektif.workflow.impl.deprecated.script.RhinoScriptService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -65,12 +58,11 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.supplier(new JavaBeanValueMapperSupplier(), JavaBeanValueMapper.class);
 
     // deprecated
-    brewery.ingredient(new CaseServiceImpl());
-    brewery.ingredient(new RhinoScriptService());
-    brewery.ingredient(new JsonMapper());
-    brewery.ingredient(new Mappings());
-    brewery.ingredient(new ScriptEngineManager());
-    brewery.ingredient(new TaskServiceImpl());
+//    brewery.ingredient(new RhinoScriptService());
+//    brewery.ingredient(new JsonMapper());
+//    brewery.ingredient(new Mappings());
+//    brewery.ingredient(new ScriptEngineManager());
+//    brewery.ingredient(new TaskServiceImpl());
   }
 
   public WorkflowEngine getWorkflowEngine() {

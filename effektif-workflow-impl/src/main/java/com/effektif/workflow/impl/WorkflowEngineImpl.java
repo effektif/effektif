@@ -39,7 +39,6 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.deprecated.CaseServiceImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -62,7 +61,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowCache workflowCache;
   public WorkflowStore workflowStore;
   public WorkflowInstanceStore workflowInstanceStore;
-  public CaseServiceImpl caseService;
   public Brewery brewery;
   public Configuration configuration;
   public List<WorkflowExecutionListener> workflowExecutionListeners;
@@ -76,7 +74,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowCache = brewery.get(WorkflowCache.class);
     this.workflowStore = brewery.get(WorkflowStore.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
-    this.caseService = brewery.get(CaseServiceImpl.class);
     this.dataTypeService = brewery.get(DataTypeService.class);
     this.brewery = brewery;
     

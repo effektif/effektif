@@ -41,7 +41,7 @@ public class TaskEscalateJobType extends AbstractJobType {
     Job job = jobController.getJob();
     TaskId taskId = job.getTaskId();
     
-    TaskService taskService = jobController.getConfiguration().getTaskService();
+    TaskService taskService = jobController.getConfiguration().get(TaskService.class);
 
     Task task = getTask(taskService, taskId);
     if (task!=null && !task.isCompleted()) {

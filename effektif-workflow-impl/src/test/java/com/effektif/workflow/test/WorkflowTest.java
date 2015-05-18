@@ -86,14 +86,14 @@ public class WorkflowTest {
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   
-  @Deprecated
-  protected TaskService taskService = null;
-  @Deprecated
-  protected TestOutgoingEmailService emailService = null;
-  @Deprecated
-  protected EmailStore emailStore = null;
-  @Deprecated
-  protected FileService fileService = null;
+//  @Deprecated
+//  protected TaskService taskService = null;
+//  @Deprecated
+//  protected TestOutgoingEmailService emailService = null;
+//  @Deprecated
+//  protected EmailStore emailStore = null;
+//  @Deprecated
+//  protected FileService fileService = null;
   
   @Rule public TestName name = new TestName();
 
@@ -101,17 +101,17 @@ public class WorkflowTest {
   public void initializeWorkflowEngine() {
     log.debug("\n\n###### Test "+getClass().getSimpleName()+".class, \""+name.getMethodName()+"\" starting ######################################################## \n");
 
-    if (workflowEngine==null || taskService==null) {
+    if (workflowEngine==null) {
       if (cachedConfiguration==null) {
         cachedConfiguration = new TestConfiguration();
         cachedConfiguration.get(JsonStreamMapper.class).pretty();
       }
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
-      taskService = configuration.getTaskService();
-      emailService = configuration.get(TestOutgoingEmailService.class);
-      emailStore = configuration.get(EmailStore.class);
-      fileService = configuration.get(FileService.class);
+//      taskService = configuration.get(TaskService.class);
+//      emailService = configuration.get(TestOutgoingEmailService.class);
+//      emailStore = configuration.get(EmailStore.class);
+//      fileService = configuration.get(FileService.class);
     }
     
     messages = new ArrayList<>();
@@ -199,19 +199,19 @@ public class WorkflowTest {
     }
   }
   
-  public void assertOpenTaskNames(TaskQuery taskQuery, String... expectedTaskNames) {
-    Set<String> expectedTaskNameSet = new HashSet<>();
-    if (expectedTaskNames!=null) {
-      for (String taskName : expectedTaskNames) {
-        expectedTaskNameSet.add(taskName);
-      }
-    }
-    Set<String> taskNameSet = new HashSet<>();
-    for (Task task: taskService.findTasks(taskQuery)) {
-      taskNameSet.add(task.getName());
-    }
-    assertEquals(expectedTaskNameSet, taskNameSet);
-  }
+//  public void assertOpenTaskNames(TaskQuery taskQuery, String... expectedTaskNames) {
+//    Set<String> expectedTaskNameSet = new HashSet<>();
+//    if (expectedTaskNames!=null) {
+//      for (String taskName : expectedTaskNames) {
+//        expectedTaskNameSet.add(taskName);
+//      }
+//    }
+//    Set<String> taskNameSet = new HashSet<>();
+//    for (Task task: taskService.findTasks(taskQuery)) {
+//      taskNameSet.add(task.getName());
+//    }
+//    assertEquals(expectedTaskNameSet, taskNameSet);
+//  }
   
   public static String getActivityInstanceId(WorkflowInstance workflowInstance, String activityId) {
     ActivityInstance activityInstance = workflowInstance.findOpenActivityInstance(activityId);
@@ -227,24 +227,24 @@ public class WorkflowTest {
       .activityInstanceId(activityInstance.getId()));
   }
   
-  public OutgoingEmail getOutgoingEmail(int index) {
-    if (emailService.emails.size()<=index) {
-      fail("Can't get email "+index+". There were only "+emailService.emails.size());
-    }
-    return emailService.emails.get(index);
-  }
+//  public OutgoingEmail getOutgoingEmail(int index) {
+//    if (emailService.emails.size()<=index) {
+//      fail("Can't get email "+index+". There were only "+emailService.emails.size());
+//    }
+//    return emailService.emails.get(index);
+//  }
   
-  public File createTestFile(String content, String fileName, String contentType) {
-    return createTestFile(content.getBytes(), fileName, contentType);
-  }
-
-  public File createTestFile(byte[] bytes, String fileName, String contentType) {
-    File file = new File()
-      .fileName(fileName)
-      .contentType(contentType);
-    file = fileService.createFile(file, new ByteArrayInputStream(bytes));
-    return file;
-  }
+//  public File createTestFile(String content, String fileName, String contentType) {
+//    return createTestFile(content.getBytes(), fileName, contentType);
+//  }
+//
+//  public File createTestFile(byte[] bytes, String fileName, String contentType) {
+//    File file = new File()
+//      .fileName(fileName)
+//      .contentType(contentType);
+//    file = fileService.createFile(file, new ByteArrayInputStream(bytes));
+//    return file;
+//  }
 
   protected void logWorkflowEngineContents() {
     try {
@@ -325,7 +325,7 @@ public class WorkflowTest {
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
     TaskStore taskStore = configuration.get(TaskStore.class);
-    emailService.emails.clear();
+    // emailService.emails.clear();
     configuration.get(MemoryIdentityService.class).deleteUsers();
     configuration.get(MemoryIdentityService.class).deleteGroups();
 

@@ -15,11 +15,8 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.deprecated.bpmn.DeprecatedBpmnReader;
-import com.effektif.workflow.impl.deprecated.bpmn.DeprecatedBpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
@@ -38,14 +35,6 @@ public interface ActivityType<T extends Activity> extends Plugin {
   
   T getActivity();
   
-  /** first checks if the activityXml element matches this type and if 
-   * it matches, it returns the parsed API activity.
-   * Returns null if the activityElement doesn't match 
-   * @param deprecatedBpmnReader */
-  T readBpmn(XmlElement activityXml, DeprecatedBpmnReader deprecatedBpmnReader);
-
-  void writeBpmn(T activity, XmlElement activityXml, DeprecatedBpmnWriter deprecatedBpmnWriter);
-
   /** called when the process is being validated or deployed.
    * Note that configuration values in the activityApi object could be the target java beans classes, 
    * or the detyped json representation (maps, lists, Strings, etc) if it's coming from json parsing. 

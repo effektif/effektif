@@ -63,11 +63,6 @@ public class DefaultAdapterConfiguration implements Configuration {
   }
 
   @Override
-  public TaskService getTaskService() {
-    return brewery.get(TaskService.class);
-  }
-  
-  @Override
   public Object get(String name) {
     return brewery.get(name);
   }

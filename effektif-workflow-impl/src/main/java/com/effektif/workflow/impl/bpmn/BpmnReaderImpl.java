@@ -15,6 +15,8 @@ package com.effektif.workflow.impl.bpmn;
 
 import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -268,7 +270,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return AbstractJsonReader.toId(readStringAttributeBpmn(localPart), idType);
+    return toId(readStringAttributeBpmn(localPart), idType);
   }
 
   @Override
@@ -276,7 +278,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return AbstractJsonReader.toId(readStringAttributeEffektif(localPart), idType);
+    return toId(readStringAttributeEffektif(localPart), idType);
   }
 
   @Override
@@ -355,13 +357,32 @@ public class BpmnReaderImpl implements BpmnReader {
       return (T) Long.valueOf(value);
     }
     if (Id.class.isAssignableFrom(type)) {
-      return (T) AbstractJsonReader.toId(value, (Class<Id>) type);
+      return (T) toId(value, (Class<Id>) type);
     }
     if (type==LocalDateTime.class) {
       return (T) LocalDateTimeStreamMapper.PARSER.parseLocalDateTime(value);
     }
     throw new RuntimeException("Couldn't parse "+value+" ("+value.getClass().getName()+") as a "+type.getName());
   }
+  
+  /**
+   * Returns an ID type instance, constructed from the given JSON string ID.
+   */
+  private static final Class< ? >[] ID_CONSTRUCTOR_PARAMETERS = new Class< ? >[] { String.class };
+  public static <T extends Id> T toId(Object jsonId, Class<T> idType) {
+    if (jsonId==null) {
+      return null;
+    }
+    try {
+      jsonId = jsonId.toString();
+      Constructor<T> c = idType.getDeclaredConstructor(ID_CONSTRUCTOR_PARAMETERS);
+      return (T) c.newInstance(new Object[] { jsonId });
+    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 
 
 //  @Override

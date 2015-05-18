@@ -28,14 +28,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.json.GenericType;
-import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
 
 
 /**
  * @author Tom Baeyens
  */
 public class Reflection {
+  
+  private static final Logger log = LoggerFactory.getLogger(Reflection.class);
   
   public static List<Field> getNonStaticFieldsRecursive(Class< ? > type) {
     List<Field> fieldCollector = new ArrayList<>();
@@ -75,11 +79,11 @@ public class Reflection {
       try {
         clazz = Class.forName(className);
       } catch (ClassNotFoundException e) {
-        AbstractJsonReader.log.debug("Class not found with effektif classloader: "+className+". Trying context classloader...");
+        log.debug("Class not found with effektif classloader: "+className+". Trying context classloader...");
         try {
           clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e1) {
-          AbstractJsonReader.log.debug("Class not found with context classloader: "+className+". Giving up.");
+          log.debug("Class not found with context classloader: "+className+". Giving up.");
         }
       }
     }

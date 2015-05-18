@@ -31,16 +31,16 @@ import com.effektif.workflow.test.deprecated.serialization.SerializingTaskServic
 public class SerializingWorkflowEngineConfiguration implements Configuration {
 
   WorkflowEngine workflowEngine;
-  TaskService taskService;
+  // TaskService taskService;
   Configuration configuration;
   
   public SerializingWorkflowEngineConfiguration() {
     TestConfiguration configuration = new TestConfiguration();
     WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class); 
-    TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
+    // TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
     JsonStreamMapper jsonStreamMapper = configuration.get(JsonStreamMapper.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonStreamMapper);
-    this.taskService = new SerializingTaskServiceImpl(taskService, jsonStreamMapper);
+    // this.taskService = new SerializingTaskServiceImpl(taskService, jsonStreamMapper);
     
     this.configuration = configuration;
   }
@@ -49,16 +49,16 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     return workflowEngine;
   }
   
-  public TaskService getTaskService() {
-    return taskService;
-  }
+//  public TaskService getTaskService() {
+//    return taskService;
+//  }
 
   @Override
   public <T> T get(Class<T> type) {
     if (WorkflowEngine.class.isAssignableFrom(type)) {
       return (T) workflowEngine;
-    } else if (TaskService.class.isAssignableFrom(type)) {
-      return (T) taskService;
+//    } else if (TaskService.class.isAssignableFrom(type)) {
+//      return (T) taskService;
     }
     return configuration.get(type);
   }
