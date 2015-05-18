@@ -30,8 +30,6 @@ public enum Command {
   HELP(new HelpCommand()),
   QUIT(new QuitCommand()),
   START(new StartCommand()),
-  TASKS(new TasksCommand()),
-  TASK(new TaskCommand()),
   WORKFLOWS(new WorkflowsCommand());
 
   private CommandImpl implementation;

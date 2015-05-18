@@ -34,7 +34,6 @@ import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.deprecated.script.ScriptService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;

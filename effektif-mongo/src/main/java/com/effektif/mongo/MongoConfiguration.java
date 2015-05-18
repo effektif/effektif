@@ -19,10 +19,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.mongo.deprecated.MongoEmailStore;
+import com.effektif.mongo.deprecated.MongoFileService;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.deprecated.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.configuration.JsonStreamMapperSupplier;
-import com.effektif.workflow.impl.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;

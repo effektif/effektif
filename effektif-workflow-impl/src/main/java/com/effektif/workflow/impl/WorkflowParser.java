@@ -36,14 +36,11 @@ import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
-import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
-import com.effektif.workflow.impl.deprecated.script.ScriptImpl;
-import com.effektif.workflow.impl.deprecated.script.ScriptService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -317,19 +314,19 @@ public class WorkflowParser {
     return null;
   }
 
-  public ScriptImpl parseScript(Script script) {
-    if (script==null) {
-      return null;
-    }
-    try {
-      return configuration
-              .get(ScriptService.class)
-              .compile(script, this);
-    } catch (Exception e) {
-      addWarning("Invalid script '%s' : %s", script, e.getMessage());
-    }
-    return null;
-  }
+//  public ScriptImpl parseScript(Script script) {
+//    if (script==null) {
+//      return null;
+//    }
+//    try {
+//      return configuration
+//              .get(ScriptService.class)
+//              .compile(script, this);
+//    } catch (Exception e) {
+//      addWarning("Invalid script '%s' : %s", script, e.getMessage());
+//    }
+//    return null;
+//  }
   
   public TextTemplate parseTextTemplate(String templateText, Hint... hints) {
     if (templateText==null) {
