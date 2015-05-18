@@ -158,6 +158,11 @@ public class Task extends Extensible implements AccessControlledObject {
     this.id = id;
   }
 
+  public Task id(TaskId id) {
+    this.id = id;
+    return this;
+  }
+
   public String getName() {
     return name;
   }
