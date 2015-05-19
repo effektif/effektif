@@ -30,10 +30,6 @@ import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.types.EmailIdType;
-import com.effektif.workflow.api.deprecated.types.FileIdType;
-import com.effektif.workflow.api.deprecated.types.GroupIdType;
-import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.EmailAddressType;
@@ -290,20 +286,16 @@ public abstract class AbstractMapperTest {
     Workflow workflow = new Workflow()
       .variable(new Variable().type(TextType.INSTANCE).id("v").name("version").description("Release version"))
       .variable("mailing-list", EmailAddressType.INSTANCE)
-      .variable("announcement", EmailIdType.INSTANCE)
-      .variable("source-bundle", FileIdType.INSTANCE)
       .variable("release-notes", LinkType.INSTANCE)
       .variable("team-bonus", MoneyType.INSTANCE)
       .variable("bugs-fixed", NumberType.INSTANCE)
-      .variable("dev-team", GroupIdType.INSTANCE)
-      .variable("product-owner", UserIdType.INSTANCE)
       .variable("distribution", new ChoiceType().option("Internal").option("External"))
-      .variable("stakeholders", new ListType().elementType(UserIdType.INSTANCE));
+      .variable("stakeholders", new ListType().elementType(EmailAddressType.INSTANCE));
 
     workflow = serialize(workflow);
 
     assertNotNull(workflow.getVariables());
-    assertEquals(11, workflow.getVariables().size());
+    assertEquals(7, workflow.getVariables().size());
 
     // Basic properties
     assertEquals("v", workflow.getVariables().get(0).getId());
@@ -313,23 +305,19 @@ public abstract class AbstractMapperTest {
 
     // Other static types
     assertEquals(EmailAddressType.class, workflow.getVariables().get(1).getType().getClass());
-    assertEquals(EmailIdType.class, workflow.getVariables().get(2).getType().getClass());
-    assertEquals(FileIdType.class, workflow.getVariables().get(3).getType().getClass());
-    assertEquals(LinkType.class, workflow.getVariables().get(4).getType().getClass());
-    assertEquals(MoneyType.class, workflow.getVariables().get(5).getType().getClass());
-    assertEquals(NumberType.class, workflow.getVariables().get(6).getType().getClass());
-    assertEquals(GroupIdType.class, workflow.getVariables().get(7).getType().getClass());
-    assertEquals(UserIdType.class, workflow.getVariables().get(8).getType().getClass());
+    assertEquals(LinkType.class, workflow.getVariables().get(2).getType().getClass());
+    assertEquals(MoneyType.class, workflow.getVariables().get(3).getType().getClass());
+    assertEquals(NumberType.class, workflow.getVariables().get(4).getType().getClass());
 
     // Complex types
-    assertEquals(ChoiceType.class, workflow.getVariables().get(9).getType().getClass());
-    ChoiceType choiceType = (ChoiceType) workflow.getVariables().get(9).getType();
+    assertEquals(ChoiceType.class, workflow.getVariables().get(5).getType().getClass());
+    ChoiceType choiceType = (ChoiceType) workflow.getVariables().get(5).getType();
     assertEquals(2, choiceType.getOptions().size());
     assertEquals("Internal", choiceType.getOptions().get(0).getId());
     assertEquals("External", choiceType.getOptions().get(1).getId());
 
-    assertEquals(ListType.class, workflow.getVariables().get(10).getType().getClass());
-    ListType listType = (ListType) workflow.getVariables().get(10).getType();
-    assertEquals(UserIdType.class, listType.getElementType().getClass());
+    assertEquals(ListType.class, workflow.getVariables().get(6).getType().getClass());
+    ListType listType = (ListType) workflow.getVariables().get(6).getType();
+    assertEquals(EmailAddressType.class, listType.getElementType().getClass());
   }
 }
