@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.deprecated.model.TaskId;
-import com.effektif.workflow.api.deprecated.task.Task;
-import com.effektif.workflow.api.deprecated.task.TaskQuery;
-import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Simplified version of the command line application in <code>/effektif-examples/cli</code>

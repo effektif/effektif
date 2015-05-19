@@ -15,23 +15,21 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -59,8 +57,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public String workState;
   public WorkflowInstanceId calledWorkflowInstanceId;
   public List<String> transitionsTaken;
-  public TaskId taskId;
-  
+
   public ActivityInstanceImpl() {
   }
 
@@ -280,11 +277,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     return super.hasActivityInstance(activityInstanceId);
   }
 
-  @Override
-  public TaskId findTaskIdRecursive() {
-    return taskId!=null ? taskId : parent.findTaskIdRecursive();
-  }
-  
   public String getId() {
     return id;
   }

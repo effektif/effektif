@@ -57,7 +57,7 @@ public class MongoJobStore implements JobStore, Brewable {
     public String workflowInstanceId = "workflowInstanceId";
     public String lockWorkflowInstance = "lockWorkflowInstance";
     public String activityInstanceId = "activityInstanceId";
-    public String taskId = "taskId";
+//    public String taskId = "taskId";
     public String error = "error";
     public String logs = "logs";
     public String time = "time";

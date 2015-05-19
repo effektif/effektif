@@ -90,8 +90,8 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String UPDATES = "updates";
     String WORK = "work";
     String WORK_ASYNC = "workAsync";
-    @Deprecated
-    String TASK_ID = "taskId";
+//    @Deprecated
+//    String TASK_ID = "taskId";
     String CALLER_WORKFLOW_INSTANCE_ID = "callerWorkflowInstanceId";
     String CALLER_ACTIVITY_INSTANCE_ID = "callerActivityInstanceId";
     String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
@@ -516,8 +516,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     activityInstanceImpl.calledWorkflowInstanceId = readWorkflowInstanceId(dbActivityInstance, ActivityInstanceFields.CALLED_WORKFLOW_INSTANCE_ID);
     activityInstanceImpl.duration = readLong(dbActivityInstance, ActivityInstanceFields.DURATION);
     
-    activityInstanceImpl.taskId = readTaskId(dbActivityInstance, ActivityInstanceFields.TASK_ID);
-
     activityInstanceImpl.workState = readString(dbActivityInstance, ActivityInstanceFields.WORK_STATE);
 
     activityInstanceImpl.configuration = configuration;

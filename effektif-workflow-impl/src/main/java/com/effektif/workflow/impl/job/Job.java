@@ -15,17 +15,15 @@
  */
 package com.effektif.workflow.impl.job;
 
-import java.util.LinkedList;
-
-import org.joda.time.LocalDateTime;
-
-import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.json.JsonIgnore;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import org.joda.time.LocalDateTime;
+
+import java.util.LinkedList;
 
 
 /**
@@ -56,7 +54,6 @@ public class Job {
   public WorkflowId workflowId;
   public WorkflowInstanceId workflowInstanceId;
   public String activityInstanceId;
-  public TaskId taskId;
 
   public boolean isDue() {
     return duedate==null || duedate.compareTo(Time.now())<=0;
@@ -123,11 +120,6 @@ public class Job {
   
   public Job workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
-    return this;
-  }
-  
-  public Job taskId(TaskId taskId) {
-    this.taskId = taskId;
     return this;
   }
   
@@ -225,10 +217,5 @@ public class Job {
   
   public String getActivityInstanceId() {
     return activityInstanceId;
-  }
-
-  
-  public TaskId getTaskId() {
-    return taskId;
   }
 }

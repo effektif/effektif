@@ -15,15 +15,13 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
-import org.joda.time.LocalDateTime;
-
-import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.model.ValueConverter;
 import com.effektif.workflow.api.workflow.Extensible;
+import org.joda.time.LocalDateTime;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 
 /**
@@ -37,8 +35,7 @@ public abstract class ScopeInstance extends Extensible {
   protected List<ActivityInstance> activityInstances;
   protected List<VariableInstance> variableInstances;
   protected List<TimerInstance> timerInstances;
-  protected TaskId taskId;
-  
+
   public ActivityInstance findOpenActivityInstance(String activityId) {
     if (activityId!=null && activityInstances!=null) {
       for (ActivityInstance activityInstance: activityInstances) {
@@ -161,12 +158,5 @@ public abstract class ScopeInstance extends Extensible {
   }
   public void setTimerInstances(List<TimerInstance> timerInstances) {
     this.timerInstances = timerInstances;
-  }
-  
-  public TaskId getTaskId() {
-    return this.taskId;
-  }
-  public void setTaskId(TaskId taskId) {
-    this.taskId = taskId;
   }
 }

@@ -15,7 +15,6 @@
  */
 package com.effektif.mongo;
 
-import com.effektif.workflow.api.deprecated.model.TaskId;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -120,12 +119,6 @@ public abstract class MongoHelper {
 
   public static String readString(BasicDBObject dbObject, String fieldName) {
     return (String) dbObject.get(fieldName);
-  }
-
-  @Deprecated
-  public static TaskId readTaskId(BasicDBObject dbObject, String fieldName) {
-    Object oid = dbObject.get(fieldName);
-    return oid!=null ? new TaskId(oid.toString()) : null;
   }
 
   public static WorkflowId readWorkflowId(BasicDBObject dbObject, String fieldName) {
