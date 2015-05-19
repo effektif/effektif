@@ -18,35 +18,16 @@ package com.effektif.workflow.api.workflow;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.effektif.workflow.api.deprecated.json.JsonReadable;
-import com.effektif.workflow.api.deprecated.json.JsonReader;
-import com.effektif.workflow.api.deprecated.json.JsonWritable;
-import com.effektif.workflow.api.deprecated.json.JsonWriter;
-
 
 /**
  * @author Tom Baeyens
  */
-public class Script implements JsonReadable, JsonWritable {
+public class Script {
 
   protected String language;
   protected String script;
   /** Maps script variable names to workflow variable IDs. */
   protected Map<String, String> mappings;
-
-  @Override
-  public void readJson(JsonReader r) {
-    language = r.readString("language");
-    script = r.readString("script");
-    mappings = r.readMap("mappings");
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("language", language);
-    w.writeString("script", script);
-    w.writeMap("mappings", mappings);
-  }
 
   public String getLanguage() {
     return this.language;

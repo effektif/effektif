@@ -17,16 +17,12 @@ package com.effektif.workflow.api.types;
 
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.deprecated.json.JsonReadable;
-import com.effektif.workflow.api.deprecated.json.JsonReader;
-import com.effektif.workflow.api.deprecated.json.JsonWritable;
-import com.effektif.workflow.api.deprecated.json.JsonWriter;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ChoiceOption implements JsonReadable, JsonWritable, BpmnWritable {
+public class ChoiceOption implements BpmnWritable {
   
   protected String id;
 
@@ -37,16 +33,6 @@ public class ChoiceOption implements JsonReadable, JsonWritable, BpmnWritable {
     w.endElement();
   }
 
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readString("id");
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("id", id);
-  }
-  
   public String getId() {
     return this.id;
   }

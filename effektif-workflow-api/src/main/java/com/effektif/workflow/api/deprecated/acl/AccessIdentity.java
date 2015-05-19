@@ -19,16 +19,12 @@ import com.effektif.workflow.api.bpmn.BpmnReadable;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.deprecated.json.JsonReadable;
-import com.effektif.workflow.api.deprecated.json.JsonReader;
-import com.effektif.workflow.api.deprecated.json.JsonWritable;
-import com.effektif.workflow.api.deprecated.json.JsonWriter;
 
 
 /**
  * @author Tom Baeyens
  */
-public class AccessIdentity implements BpmnReadable, BpmnWritable, JsonReadable, JsonWritable {
+public class AccessIdentity implements BpmnReadable, BpmnWritable {
   
   protected String id;
 
@@ -41,16 +37,6 @@ public class AccessIdentity implements BpmnReadable, BpmnWritable, JsonReadable,
     } if (id!=null) {
       this.id = id.toString();
     }
-  }
-
-  @Override
-  public void readJson(JsonReader r) {
-    id = r.readString("id");
-  }
-
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeString("id", id);
   }
 
   public String getId() {

@@ -25,30 +25,16 @@ import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
-import com.effektif.workflow.api.deprecated.json.JsonReadable;
-import com.effektif.workflow.api.deprecated.json.JsonReader;
-import com.effektif.workflow.api.deprecated.json.JsonWritable;
-import com.effektif.workflow.api.deprecated.json.JsonWriter;
 
 /** Specifies which actions are permitted by whom on a given entity.
  *  
  * @author Tom Baeyens 
  */
-public class AccessControlList implements BpmnReadable, BpmnWritable, JsonWritable, JsonReadable {
+public class AccessControlList implements BpmnReadable, BpmnWritable {
   
   /** maps actions to lists of identities */
   protected Map<String,List<AccessIdentity>> permissions;
 
-  @Override
-  public void readJson(JsonReader r) {
-    permissions = r.readMap("permissions");
-  }
-  
-  @Override
-  public void writeJson(JsonWriter w) {
-    w.writeMap("permissions", permissions);
-  }
-  
   public Map<String,List<AccessIdentity>> getPermissions() {
     return this.permissions;
   }
