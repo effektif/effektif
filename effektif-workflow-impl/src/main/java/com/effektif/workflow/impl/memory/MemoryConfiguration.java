@@ -36,6 +36,5 @@ public class MemoryConfiguration extends DefaultConfiguration {
 //    brewery.ingredient(new MemoryCaseStore());
 //    brewery.ingredient(new MemoryIdentityService());
 //    brewery.ingredient(new MemoryFileService());
-//    brewery.ingredient(new MemoryEmailStore());
   }
 }

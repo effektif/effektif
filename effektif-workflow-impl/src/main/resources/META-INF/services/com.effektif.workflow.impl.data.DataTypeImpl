@@ -11,12 +11,3 @@ com.effektif.workflow.impl.data.types.MoneyTypeImpl
 com.effektif.workflow.impl.data.types.NumberTypeImpl
 com.effektif.workflow.impl.data.types.ObjectTypeImpl
 com.effektif.workflow.impl.data.types.TextTypeImpl
-com.effektif.workflow.impl.deprecated.types.AttachmentTypeImpl
-com.effektif.workflow.impl.deprecated.types.EmailTypeImpl
-com.effektif.workflow.impl.deprecated.types.EmailIdTypeImpl
-com.effektif.workflow.impl.deprecated.types.FileIdTypeImpl
-com.effektif.workflow.impl.deprecated.types.FileTypeImpl
-com.effektif.workflow.impl.deprecated.types.GroupIdTypeImpl
-com.effektif.workflow.impl.deprecated.types.GroupTypeImpl
-com.effektif.workflow.impl.deprecated.types.UserIdTypeImpl
-com.effektif.workflow.impl.deprecated.types.UserTypeImpl
