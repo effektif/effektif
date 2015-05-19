@@ -15,24 +15,9 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.model.CaseId;
-import com.effektif.workflow.api.deprecated.task.Case;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
@@ -48,6 +33,22 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_NOTIFY_PARENT;
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING;
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_INSTANCE;
 
 
 /**
@@ -75,7 +76,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
    * if the workflow instance is already locked and use this one instead of 
    * going to the db. */
   public Map<WorkflowInstanceId,WorkflowInstanceImpl> lockedWorkflowInstances;
-  public Case caze;
   public CaseId caseId;
 
   public WorkflowInstanceImpl() {
