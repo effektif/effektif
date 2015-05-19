@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.test.deprecated.serialization;
 
-import static org.junit.Assert.*;
-
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
@@ -32,8 +30,6 @@ import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
 import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
 import com.effektif.workflow.api.deprecated.acl.UserIdentity;
-import com.effektif.workflow.api.deprecated.form.Form;
-import com.effektif.workflow.api.deprecated.form.FormField;
 import com.effektif.workflow.api.deprecated.types.EmailIdType;
 import com.effektif.workflow.api.deprecated.types.FileIdType;
 import com.effektif.workflow.api.deprecated.types.GroupIdType;
@@ -52,6 +48,11 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -197,23 +198,6 @@ public abstract class AbstractMapperTest {
     assertEquals("codeComplete", activity.getId());
     assertEquals("code complete", activity.getName());
     assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
-  }
-
-  /** this shows what properties to set when setting or updating a form in a workflow */
-//  @Test
-  public void testFormInput() {
-    Form form = new Form()
-      .description("Form description")
-      .field("v1")
-      .field(new FormField().bindingExpression("v2").readOnly().required());
-    form = serialize(form);
-    assertEquals(Form.class, form.getClass());
-    assertEquals("Form description", form.getDescription());
-    assertEquals(2, form.getFields().size());
-    assertEquals("v1", form.getFields().get(0).getBinding().getExpression());
-    assertEquals("v2", form.getFields().get(1).getBinding().getExpression());
-    assertTrue(form.getFields().get(1).isReadOnly());
-    assertTrue(form.getFields().get(1).isRequired());
   }
 
 //  @Test
