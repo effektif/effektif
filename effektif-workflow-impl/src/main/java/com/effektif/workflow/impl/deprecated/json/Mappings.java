@@ -78,9 +78,6 @@ import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnReaderImpl;
 import com.effektif.workflow.impl.bpmn.BpmnTypeMapping;
-import com.effektif.workflow.impl.deprecated.job.TaskEscalateJobType;
-import com.effektif.workflow.impl.deprecated.job.TaskReminderJobType;
-import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.json.BeanMapping;
 import com.effektif.workflow.impl.json.TypeField;
 
@@ -146,10 +143,6 @@ public class Mappings {
     registerSubClass(HasValue.class);
     registerSubClass(IsFalse.class);
     registerSubClass(IsTrue.class);
-
-    registerBaseClass(JobType.class);
-    registerSubClass(TaskEscalateJobType.class);
-    registerSubClass(TaskReminderJobType.class);
   }
 
   public void registerBaseClass(Class<?> baseClass) {

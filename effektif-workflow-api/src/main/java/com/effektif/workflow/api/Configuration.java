@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.api;
 
-import com.effektif.workflow.api.deprecated.task.TaskService;
-
 
 /**
  * A workflow engine runtime configuration.

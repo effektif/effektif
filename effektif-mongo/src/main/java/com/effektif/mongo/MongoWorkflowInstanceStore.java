@@ -516,7 +516,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     activityInstanceImpl.calledWorkflowInstanceId = readWorkflowInstanceId(dbActivityInstance, ActivityInstanceFields.CALLED_WORKFLOW_INSTANCE_ID);
     activityInstanceImpl.duration = readLong(dbActivityInstance, ActivityInstanceFields.DURATION);
     
-    // Deprecated
     activityInstanceImpl.taskId = readTaskId(dbActivityInstance, ActivityInstanceFields.TASK_ID);
 
     activityInstanceImpl.workState = readString(dbActivityInstance, ActivityInstanceFields.WORK_STATE);

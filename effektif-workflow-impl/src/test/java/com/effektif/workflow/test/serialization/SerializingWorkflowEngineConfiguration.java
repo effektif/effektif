@@ -17,12 +17,9 @@ package com.effektif.workflow.test.serialization;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
-import com.effektif.workflow.impl.deprecated.TaskServiceImpl;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-import com.effektif.workflow.test.deprecated.serialization.SerializingTaskServiceImpl;
 
 
 /**

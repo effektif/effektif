@@ -15,10 +15,8 @@
  */
 package com.effektif.adapter;
 
-import com.effektif.workflow.api.deprecated.task.Task;
-
 
 public interface AssignmentAdapter {
 
-  void assign(Task task);
+//  void assign(Task task);
 }

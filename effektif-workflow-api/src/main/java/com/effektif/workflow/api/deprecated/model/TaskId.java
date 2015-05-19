@@ -19,7 +19,7 @@ import com.effektif.workflow.api.model.Id;
 
 
 /**
- * Unique identifier for a {@link com.effektif.workflow.api.deprecated.task.Task}.
+ * Unique identifier for a task.
  *
  * @author Tom Baeyens
  */
