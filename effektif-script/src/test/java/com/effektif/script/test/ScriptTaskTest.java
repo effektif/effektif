@@ -8,8 +8,8 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.deprecated.identity.IdentityService;
-import com.effektif.workflow.impl.deprecated.identity.User;
+//import com.effektif.workflow.impl.deprecated.identity.IdentityService;
+//import com.effektif.workflow.impl.deprecated.identity.User;
 import com.effektif.workflow.test.WorkflowTest;
 import org.junit.Test;
 
@@ -42,13 +42,13 @@ public class ScriptTaskTest extends WorkflowTest {
 
   @Test
   public void testScriptDereferencing() {
-    User johndoe = new User()
-      .id(JOHN_ID)
-      .fullName("John Doe")
-      .email("johndoe@localhost");
-
-    configuration.get(IdentityService.class)
-      .createUser(johndoe);
+//    User johndoe = new User()
+//      .id(JOHN_ID)
+//      .fullName("John Doe")
+//      .email("johndoe@localhost");
+//
+//    configuration.get(IdentityService.class)
+//      .createUser(johndoe);
 
     Workflow workflow = new Workflow()
       .variable("user", new TextType())
