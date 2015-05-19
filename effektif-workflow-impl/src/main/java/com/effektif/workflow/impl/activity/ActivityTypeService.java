@@ -26,7 +26,7 @@ import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Startable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 
@@ -34,7 +34,7 @@ import com.effektif.workflow.impl.util.Exceptions;
 /**
  * @author Tom Baeyens
  */
-public class ActivityTypeService implements Initializable {
+public class ActivityTypeService implements Startable {
   
   // private static final Logger log = LoggerFactory.getLogger(ActivityTypeService.class);
   
@@ -53,7 +53,7 @@ public class ActivityTypeService implements Initializable {
   }
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void start(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     initializeActivityTypes();
     initializeTriggerTypes();

@@ -43,6 +43,7 @@ public class Application implements Runnable {
     this.in = in;
     this.out = out;
     configuration = new MemoryConfiguration();
+    configuration.start();
   }
 
   /**

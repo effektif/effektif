@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.configuration;
 
+import java.util.ServiceLoader;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.deprecated.task.TaskService;
@@ -57,12 +59,10 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.supplier(new JsonStreamMapperSupplier(), JsonStreamMapper.class);
     brewery.supplier(new JavaBeanValueMapperSupplier(), JavaBeanValueMapper.class);
 
-    // deprecated
-//    brewery.ingredient(new RhinoScriptService());
-//    brewery.ingredient(new JsonMapper());
-//    brewery.ingredient(new Mappings());
-//    brewery.ingredient(new ScriptEngineManager());
-//    brewery.ingredient(new TaskServiceImpl());
+    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class);
+    for (Plugin plugin: loader) {
+      plugin.plugin(brewery);
+    }
   }
 
   public WorkflowEngine getWorkflowEngine() {
@@ -106,5 +106,15 @@ public abstract class DefaultConfiguration implements Configuration {
   @Override
   public void set(Object bean) {
     brewery.ingredient(bean);
+  }
+
+  @Override
+  public void start() {
+    brewery.start();
+  }
+
+  @Override
+  public void stop() {
+    brewery.stop();
   }
 }

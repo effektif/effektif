@@ -105,13 +105,10 @@ public class WorkflowTest {
       if (cachedConfiguration==null) {
         cachedConfiguration = new TestConfiguration();
         cachedConfiguration.get(JsonStreamMapper.class).pretty();
+        cachedConfiguration.start();
       }
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
-//      taskService = configuration.get(TaskService.class);
-//      emailService = configuration.get(TestOutgoingEmailService.class);
-//      emailStore = configuration.get(EmailStore.class);
-//      fileService = configuration.get(FileService.class);
     }
     
     messages = new ArrayList<>();

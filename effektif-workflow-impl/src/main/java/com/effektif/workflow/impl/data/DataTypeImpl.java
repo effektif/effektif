@@ -17,11 +17,11 @@ package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.impl.activity.Plugin;
+import com.effektif.workflow.impl.configuration.Plugin;
 import com.effektif.workflow.impl.template.Hints;
 
 
-public interface DataTypeImpl<T extends DataType> extends Plugin {
+public interface DataTypeImpl<T extends DataType> {
   
   void setConfiguration(Configuration configuration);
 

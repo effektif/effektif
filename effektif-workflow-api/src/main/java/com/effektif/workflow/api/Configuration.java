@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api;
 
-import com.effektif.workflow.api.deprecated.task.TaskService;
 
 
 /**
@@ -39,4 +38,7 @@ public interface Configuration {
   Object get(String name);
   void set(Object bean, String name);
   void set(Object bean);
+
+  void start();
+  void stop();
 }

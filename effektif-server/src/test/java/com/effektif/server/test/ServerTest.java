@@ -73,6 +73,7 @@ public class ServerTest extends JerseyTest {
     }
     configuration = new MongoConfiguration()
       .server("localhost", 27017);
+    configuration.start();
     return configuration;
   }
   

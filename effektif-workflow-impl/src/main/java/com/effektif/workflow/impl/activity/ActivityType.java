@@ -26,7 +26,7 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  *
  * @see <a href="https://github.com/effektif/effektif/wiki/Activity-types">Activity types</a>
  */
-public interface ActivityType<T extends Activity> extends Plugin {
+public interface ActivityType<T extends Activity> {
   
   /** provides the data structure to the UI how this activity can be configured so that the UI can show a dialog */
   ActivityDescriptor getDescriptor();

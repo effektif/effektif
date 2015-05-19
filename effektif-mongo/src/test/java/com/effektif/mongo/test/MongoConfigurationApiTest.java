@@ -32,5 +32,6 @@ public class MongoConfigurationApiTest {
       .server("localhost") // localhost is the default
       .databaseName("databasename")
       .authentication("username", "password", "database");
+    configuration.start();
   }
 }

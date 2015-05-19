@@ -21,18 +21,18 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Startable;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ConditionServiceImpl implements ConditionService, Initializable {
+public class ConditionServiceImpl implements ConditionService, Startable {
 
   Map<Class<? extends Condition>,Class<? extends ConditionImpl>> impls = new HashMap<>();
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void start(Brewery brewery) {
     ServiceLoader<ConditionImpl> activityTypeLoader = ServiceLoader.load(ConditionImpl.class);
     for (ConditionImpl condition: activityTypeLoader) {
       Class apiType = condition.getApiType();

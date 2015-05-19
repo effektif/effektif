@@ -64,8 +64,10 @@ public abstract class AbstractMapperTest {
   protected static Mappings mappings = null; 
           
   public static void initializeMappings() {
-    mappings = new TestConfiguration().get(Mappings.class);
+    TestConfiguration configuration = new TestConfiguration();
+    mappings = configuration.get(Mappings.class);
     mappings.pretty();
+    configuration.start();
   }
 
   // ID values for tests, overridden by valid Object IDs in MongoDB JSON tests.

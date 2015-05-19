@@ -16,6 +16,16 @@
 package com.effektif.workflow.impl.configuration;
 
 
+/** factory constructing new objects that are requested from the brewery.
+ * 
+ * This can be used if the created object is a singleton, but based on 
+ * other configurable objects in the brewery. In this case ensure that 
+ * {@link #isSingleton()} returns true.
+ * 
+ * Or it can also be used when a new object needs to be created each 
+ * time it is requested from the brewery.  In this case, ensure that 
+ * {@link #isSingleton()} returns false.
+ */
 public interface Supplier {
   
   Object supply(Brewery brewery);

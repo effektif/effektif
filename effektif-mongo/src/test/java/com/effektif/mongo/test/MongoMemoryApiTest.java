@@ -18,6 +18,7 @@ package com.effektif.mongo.test;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.effektif.mongo.MongoConfiguration;
 import com.effektif.mongo.MongoMemoryConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
@@ -42,9 +43,11 @@ public class MongoMemoryApiTest {
   }
 
   public static Configuration createMongoMemoryWorkflowEngineConfiguration() {
-    return new MongoMemoryConfiguration()
+    MongoConfiguration configuration = new MongoMemoryConfiguration()
       .ingredient(new TestOutgoingEmailService())
       .prettyPrint()
       .synchronous();
+    configuration.start();
+    return configuration;
   }
 }

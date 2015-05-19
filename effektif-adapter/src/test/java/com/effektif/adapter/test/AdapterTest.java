@@ -58,12 +58,14 @@ public class AdapterTest {
     // adds the adapter by configuring the URL
     TestConfiguration configuration = new TestConfiguration()
       .registerIngredient(new MemoryAdapterService());
+    configuration.start();
 
-    WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     AdapterService adapterService = configuration.get(AdapterService.class);
     Adapter adapter = adapterService.saveAdapter(new Adapter().url("http://localhost:"+port+"/"));
     adapterService.refreshAdapter(adapter.getId()); // TODO (*) replace this with the line below
     // adapterServer.pushDescriptorsToEffektif("apikey");
+
+    WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
 
     
     // Next, the user is able to start building and executing workflows 

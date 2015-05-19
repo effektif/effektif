@@ -60,6 +60,7 @@ public class WorkflowServer {
 
   public void start() {
     try {
+      configuration.start();
       URI baseUri = new URI(baseUrl);
       ResourceConfig config = buildRestApplication(configuration);
       Server server = JettyHttpContainerFactory.createServer(baseUri, config);

@@ -67,4 +67,14 @@ public class DefaultAdapterConfiguration implements Configuration {
   public void set(Object bean) {
     brewery.ingredient(bean);
   }
+
+  @Override
+  public void start() {
+    brewery.start();
+  }
+
+  @Override
+  public void stop() {
+    brewery.stop();
+  }
 }

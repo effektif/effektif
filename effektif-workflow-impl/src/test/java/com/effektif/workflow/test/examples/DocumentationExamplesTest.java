@@ -49,8 +49,9 @@ public class DocumentationExamplesTest extends TestCase {
   public void setUp() throws Exception {
     if (configuration == null) {
       configuration = new TestConfiguration();
-      configuration.getWorkflowEngine();
       configuration.get(JsonStreamMapper.class).pretty();
+      configuration.start();
+      configuration.getWorkflowEngine();
     }
   }
 

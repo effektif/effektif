@@ -19,15 +19,10 @@ import java.io.InputStreamReader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.deprecated.model.TaskId;
-import com.effektif.workflow.api.deprecated.task.Task;
-import com.effektif.workflow.api.deprecated.task.TaskQuery;
-import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
 
 /**
@@ -36,9 +31,13 @@ import com.effektif.workflow.impl.memory.MemoryConfiguration;
  */
 public class Application {
 
-  private static Configuration configuration = new MemoryConfiguration();
-  private static WorkflowEngine engine = configuration.getWorkflowEngine();
-//  private static JsonMapper jsonMapper = configuration.get(JsonMapper.class);
+  private static Configuration configuration;
+  private static WorkflowEngine engine;
+  static {
+    configuration = new MemoryConfiguration();
+    configuration.start();
+    engine = configuration.getWorkflowEngine();
+  }
 
   public static void main(String... arguments) {
     Deployment deployment = engine.deployWorkflow(SoftwareRelease.workflow).checkNoErrorsAndNoWarnings();

@@ -37,6 +37,7 @@ public class ApiExamplesTest {
   public void testApiExample() {
     // Create the default (in-memory) workflow engine
     Configuration configuration = new MemoryConfiguration();
+    configuration.start();
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     
     // Create a workflow

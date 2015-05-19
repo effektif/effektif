@@ -32,7 +32,7 @@ import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Initializable;
+import com.effektif.workflow.impl.configuration.Startable;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
@@ -47,7 +47,7 @@ import com.effektif.workflow.impl.data.types.TextTypeImpl;
  *
  * @author Tom Baeyens
  */
-public class DataTypeService implements Initializable {
+public class DataTypeService implements Startable {
   
   // private static final Logger log = LoggerFactory.getLogger(DataTypeService.class);
   
@@ -59,7 +59,7 @@ public class DataTypeService implements Initializable {
   protected Map<Type, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
 
   @Override
-  public void initialize(Brewery brewery) {
+  public void start(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     initializeDataTypes();
   }

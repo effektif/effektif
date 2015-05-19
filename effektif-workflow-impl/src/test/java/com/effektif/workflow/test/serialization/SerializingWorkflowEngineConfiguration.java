@@ -37,11 +37,8 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
   public SerializingWorkflowEngineConfiguration() {
     TestConfiguration configuration = new TestConfiguration();
     WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class); 
-    // TaskServiceImpl taskService = configuration.get(TaskServiceImpl.class); 
     JsonStreamMapper jsonStreamMapper = configuration.get(JsonStreamMapper.class);
     this.workflowEngine = new SerializingWorkflowEngineImpl(workflowEngine, jsonStreamMapper);
-    // this.taskService = new SerializingTaskServiceImpl(taskService, jsonStreamMapper);
-    
     this.configuration = configuration;
   }
   
@@ -49,16 +46,10 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
     return workflowEngine;
   }
   
-//  public TaskService getTaskService() {
-//    return taskService;
-//  }
-
   @Override
   public <T> T get(Class<T> type) {
     if (WorkflowEngine.class.isAssignableFrom(type)) {
       return (T) workflowEngine;
-//    } else if (TaskService.class.isAssignableFrom(type)) {
-//      return (T) taskService;
     }
     return configuration.get(type);
   }
@@ -76,5 +67,15 @@ public class SerializingWorkflowEngineConfiguration implements Configuration {
   @Override
   public void set(Object bean) {
     configuration.set(bean);
+  }
+
+  @Override
+  public void start() {
+    configuration.start();
+  }
+
+  @Override
+  public void stop() {
+    configuration.stop();
   }
 }

@@ -59,11 +59,13 @@ public class MongoApiTest {
   }
 
   public static Configuration createMongoTestConfiguration() {
-    return new MongoConfiguration()
+    MongoConfiguration configuration = new MongoConfiguration()
       .databaseName("effektif-test")
       .ingredient(new TestOutgoingEmailService())
       .prettyPrint()
       .synchronous();
+    configuration.start();
+    return configuration;
   }
 
 }

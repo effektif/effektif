@@ -22,6 +22,7 @@ import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
@@ -36,10 +37,13 @@ public class SlackTest {
     slackService.addAccount(new SlackAccount("slackaccountid"));
 
     TestConfiguration configuration = new TestConfiguration();
-    configuration.getBrewery().ingredient(slackService);
-    
+    // TODO register the slackService and the SlackPostImpl 
+    // to the brewery with an auto-loaded {@link Plugin}
+    Brewery brewery = configuration.getBrewery();
+    brewery.ingredient(slackService);
     ActivityTypeService activityTypeService = configuration.get(ActivityTypeService.class);
     activityTypeService.registerActivityType(new SlackPostImpl());
+    configuration.start();
     
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     // TaskService taskService = configuration.getTaskService();
