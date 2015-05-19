@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.deprecated.model;
+package com.effektif.email;
 
 import java.io.InputStream;
 

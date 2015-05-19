@@ -38,9 +38,6 @@ import javax.mail.util.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.deprecated.model.Attachment;
-
-
 /** default impl that sends emails using javax.mail.
  * 
  * @author Tom Baeyens

@@ -6,7 +6,6 @@ package com.effektif.email;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.effektif.workflow.api.deprecated.model.Attachment;
 import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
