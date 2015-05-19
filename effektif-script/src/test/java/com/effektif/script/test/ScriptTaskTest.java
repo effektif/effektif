@@ -3,13 +3,7 @@
  */
 package com.effektif.script.test;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.effektif.script.ScriptTask;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.api.deprecated.types.UserIdType;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
@@ -17,6 +11,9 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.deprecated.identity.IdentityService;
 import com.effektif.workflow.impl.deprecated.identity.User;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -54,7 +51,7 @@ public class ScriptTaskTest extends WorkflowTest {
       .createUser(johndoe);
 
     Workflow workflow = new Workflow()
-      .variable("user", new UserIdType())
+      .variable("user", new TextType())
       .variable("name", new TextType())
       .activity("s", new ScriptTask()
         .script("name = user.fullName;"));
@@ -63,7 +60,7 @@ public class ScriptTaskTest extends WorkflowTest {
     
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data("user", new UserId(JOHN_ID)));
+      .data("user", JOHN_ID));
 
     assertEquals("John Doe", workflowInstance.getVariableValue("name"));
   }
