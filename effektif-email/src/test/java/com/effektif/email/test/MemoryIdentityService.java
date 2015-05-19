@@ -15,16 +15,16 @@
  */
 package com.effektif.email.test;
 
+import com.effektif.email.identity.Group;
+import com.effektif.email.identity.IdentityService;
+import com.effektif.email.identity.User;
+import com.effektif.workflow.api.deprecated.model.GroupId;
+import com.effektif.workflow.api.deprecated.model.UserId;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.effektif.workflow.api.deprecated.model.GroupId;
-import com.effektif.workflow.api.deprecated.model.UserId;
-import com.effektif.workflow.impl.deprecated.identity.Group;
-import com.effektif.workflow.impl.deprecated.identity.IdentityService;
-import com.effektif.workflow.impl.deprecated.identity.User;
 
 
 /**

@@ -3,23 +3,23 @@
  */
 package com.effektif.email;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.effektif.email.file.File;
+import com.effektif.email.file.FileAttachment;
+import com.effektif.email.file.FileService;
+import com.effektif.email.identity.IdentityService;
 import com.effektif.workflow.api.deprecated.model.FileId;
 import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.deprecated.file.File;
-import com.effektif.workflow.impl.deprecated.file.FileAttachment;
-import com.effektif.workflow.impl.deprecated.file.FileService;
-import com.effektif.workflow.impl.deprecated.identity.IdentityService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -28,8 +28,8 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 public class EmailTaskImpl extends AbstractActivityType<EmailTask> {
 
   protected OutgoingEmailService outgoingEmailService; 
-  protected IdentityService identityService; 
-  protected FileService fileService; 
+  protected IdentityService identityService;
+  protected FileService fileService;
 
   protected BindingImpl<String> fromEmailAddress;
 
