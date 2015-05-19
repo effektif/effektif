@@ -15,16 +15,14 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import org.joda.time.LocalDateTime;
-
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.deprecated.acl.AccessControlList;
-import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.DataType;
+import org.joda.time.LocalDateTime;
 
 
 /**
@@ -53,7 +51,7 @@ public class Workflow extends AbstractWorkflow {
   
   protected String sourceWorkflowId;
   protected LocalDateTime createTime;
-  protected UserId creatorId;
+  protected String creatorId;
 
 //  @Override
 //  public void readJson(JsonReader r) {
@@ -167,14 +165,14 @@ public class Workflow extends AbstractWorkflow {
     return this;
   }
   
-  public UserId getCreatorId() {
+  public String getCreatorId() {
     return this.creatorId;
   }
-  public void setCreatorId(UserId creatorId) {
-    this.creatorId = creatorId;
+  public void setCreatorId(String id) {
+    this.creatorId = id;
   }
-  public Workflow creatorId(UserId creatorId) {
-    this.creatorId = creatorId;
+  public Workflow creatorId(String id) {
+    this.creatorId = id;
     return this;
   }
 

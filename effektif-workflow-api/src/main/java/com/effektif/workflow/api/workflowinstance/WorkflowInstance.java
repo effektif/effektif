@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
-import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -31,7 +30,7 @@ public class WorkflowInstance extends ScopeInstance {
   protected String organizationId;
   protected WorkflowId workflowId;
   protected String businessKey;
-  protected UserId creatorId;
+  protected String creatorId;
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
   protected String caseId;
@@ -71,11 +70,11 @@ public class WorkflowInstance extends ScopeInstance {
     this.workflowId = workflowId;
   }
   
-  public UserId getCreatorId() {
+  public String getCreatorId() {
     return this.creatorId;
   }
-  public void setCreatorId(UserId creatorId) {
-    this.creatorId = creatorId;
+  public void setCreatorId(String id) {
+    this.creatorId = id;
   }
 
   public String getCaseId() {
