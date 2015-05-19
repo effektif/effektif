@@ -13,24 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.email;
+package com.effektif.email;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.effektif.workflow.api.deprecated.model.EmailId;
-import com.effektif.workflow.api.deprecated.model.FileId;
+import com.effektif.workflow.api.deprecated.model.Attachment;
 
 
 /**
  * @author Tom Baeyens
  */
-public class PersistentEmail {
+public class OutgoingEmail {
 
-  protected EmailId id;
-  protected String organizationId;
+  protected List<Attachment> attachments;
+
+  public List<Attachment> getAttachments() {
+    return this.attachments;
+  }
+  public void setAttachments(List<Attachment> attachments) {
+    this.attachments = attachments;
+  }
+  public void addAttachment(Attachment attachment) {
+    if (this.attachments==null) {
+      this.attachments = new ArrayList<>();
+    }
+    this.attachments.add(attachment);
+  }
+  public OutgoingEmail attachment(Attachment attachment) {
+    addAttachment(attachment);
+    return this;
+  }
+  
   protected String from;
   protected String replyTo;
   protected Map<String,String> headers;
@@ -40,29 +56,14 @@ public class PersistentEmail {
   protected String subject;
   protected String bodyText;
   protected String bodyHtml;
-  protected List<FileId> attachmentFileIds;
 
-  public EmailId getId() {
-    return this.id;
-  }
-  public void setId(EmailId id) {
-    this.id = id;
-  }
-
-  public String getOrganizationId() {
-    return this.organizationId;
-  }
-  public void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
-  }
-  
   public String getFrom() {
     return this.from;
   }
   public void setFrom(String from) {
     this.from = from;
   }
-  public PersistentEmail from(String from) {
+  public OutgoingEmail from(String from) {
     this.from = from;
     return this;
   }
@@ -73,7 +74,7 @@ public class PersistentEmail {
   public void setReplyTo(String replyTo) {
     this.replyTo = replyTo;
   }
-  public PersistentEmail replyTo(String replyTo) {
+  public OutgoingEmail replyTo(String replyTo) {
     this.replyTo = replyTo;
     return this;
   }
@@ -84,7 +85,7 @@ public class PersistentEmail {
   public void setHeaders(Map<String,String> headers) {
     this.headers = headers;
   }
-  public PersistentEmail headers(String headerName, String headerValue) {
+  public OutgoingEmail headers(String headerName, String headerValue) {
     if (headers==null) {
       headers = new HashMap<>();
     }
@@ -98,7 +99,7 @@ public class PersistentEmail {
   public void setTo(List<String> to) {
     this.to = to;
   }
-  public PersistentEmail to(List<String> to) {
+  public OutgoingEmail to(List<String> to) {
     this.to = to;
     return this;
   }
@@ -109,7 +110,7 @@ public class PersistentEmail {
   public void setCc(List<String> cc) {
     this.cc = cc;
   }
-  public PersistentEmail cc(List<String> cc) {
+  public OutgoingEmail cc(List<String> cc) {
     this.cc = cc;
     return this;
   }
@@ -120,7 +121,7 @@ public class PersistentEmail {
   public void setBcc(List<String> bcc) {
     this.bcc = bcc;
   }
-  public PersistentEmail bcc(List<String> bcc) {
+  public OutgoingEmail bcc(List<String> bcc) {
     this.bcc = bcc;
     return this;
   }
@@ -131,7 +132,7 @@ public class PersistentEmail {
   public void setSubject(String subject) {
     this.subject = subject;
   }
-  public PersistentEmail subject(String subject) {
+  public OutgoingEmail subject(String subject) {
     this.subject = subject;
     return this;
   }
@@ -142,7 +143,7 @@ public class PersistentEmail {
   public void setBodyText(String bodyText) {
     this.bodyText = bodyText;
   }
-  public PersistentEmail bodyText(String bodyText) {
+  public OutgoingEmail bodyText(String bodyText) {
     this.bodyText = bodyText;
     return this;
   }
@@ -153,22 +154,8 @@ public class PersistentEmail {
   public void setBodyHtml(String bodyHtml) {
     this.bodyHtml = bodyHtml;
   }
-  public PersistentEmail bodyHtml(String bodyHtml) {
+  public OutgoingEmail bodyHtml(String bodyHtml) {
     this.bodyHtml = bodyHtml;
-    return this;
-  }
-
-  public List<FileId> getAttachmentFileIds() {
-    return this.attachmentFileIds;
-  }
-  public void setAttachmentFileIds(List<FileId> attachmentFileIds) {
-    this.attachmentFileIds = attachmentFileIds;
-  }
-  public PersistentEmail attachmentFileId(FileId attachmentFileId) {
-    if (attachmentFileIds==null) {
-      attachmentFileIds = new ArrayList<>();
-    }
-    attachmentFileIds.add(attachmentFileId);
     return this;
   }
 }

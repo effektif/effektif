@@ -15,16 +15,7 @@
  */
 package com.effektif.mongo;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.effektif.mongo.deprecated.MongoEmailStore;
-import com.effektif.mongo.deprecated.MongoFileService;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
-import com.effektif.workflow.impl.deprecated.memory.MemoryIdentityService;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
-import com.effektif.workflow.impl.json.configuration.JsonStreamMapperSupplier;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -32,6 +23,10 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.gridfs.GridFS;
+
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @see <a href="https://github.com/effektif/effektif/wiki/Workflow-engine-types#mongodb-workflow-engine">MongoDB workflow engine</a>
@@ -65,15 +60,8 @@ public class MongoConfiguration extends DefaultConfiguration {
     brewery.ingredient(new MongoDb());
     brewery.ingredient(new MongoWorkflowStore());
     brewery.ingredient(new MongoWorkflowInstanceStore());
-    brewery.ingredient(new MongoTaskStore());
-    brewery.ingredient(new MongoCaseStore());
     brewery.ingredient(new MongoJobStore());
-    brewery.ingredient(new MongoFileService());
-    brewery.ingredient(new MongoEmailStore());
     brewery.ingredient(new MongoObjectMappingsBuilder());
-    
-    // TODO replace this with a default mongo identity service
-    brewery.ingredient(new MemoryIdentityService());
   }
   
   public MongoConfiguration db(DB db) {

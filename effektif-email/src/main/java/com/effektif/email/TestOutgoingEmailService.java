@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.email;
+package com.effektif.email;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-
-/**
- * API for sending emails, used for notifications and the email task.
+/** service for testing that stores the sent emails in a list 
+ * instead of sending them.
  * 
  * @author Tom Baeyens
  */
-public interface OutgoingEmailService {
+public class TestOutgoingEmailService implements OutgoingEmailService {
+  
+  public List<OutgoingEmail> emails = new ArrayList<>();
 
-  void send(OutgoingEmail email);
+  @Override
+  public void send(OutgoingEmail email) {
+    emails.add(email);
+  }
 
-  String validate(String emailAddress);
+  @Override
+  public String validate(String emailAddress) {
+    return OutgoingEmailServiceImpl.validateEmailAddress(emailAddress);
+  }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.memory;
+package com.effektif.email.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -39,23 +39,23 @@ import com.effektif.workflow.impl.util.Time;
  * @author Tom Baeyens
  */
 public class MemoryFileService implements FileService {
-  
+
   Map<FileId,File> files = new HashMap<>();
   Map<String,byte[]> fileStreams = new HashMap<>();
   long nextFileId = 1;
   long nextFileStreamId = 1;
-  
+
   @Override
   public File createFile(File file, InputStream fileStream) {
     initializeNewFile(file);
-    
+
     String fileStreamId = file.getId().getInternal();
     byte[] stream = Streams.read(fileStream);
     fileStreams.put(fileStreamId, stream);
     file.setStreamId(fileStreamId);
-    
+
     files.put(file.getId(), file);
-    
+
     return file;
   }
 
@@ -84,7 +84,7 @@ public class MemoryFileService implements FileService {
     }
 
     initializeNewFile(file);
-    
+
     files.put(file.getId(), file);
 
     return file;
@@ -94,7 +94,7 @@ public class MemoryFileService implements FileService {
   public File getFileById(FileId fileId) {
     return files.get(fileId);
   }
-  
+
   @Override
   public List<File> getFilesByIds(Collection<FileId> fileIds) {
     if (fileIds==null) {

@@ -15,17 +15,13 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import org.slf4j.Logger;
-
-import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.deprecated.bpmn.DeprecatedBpmnReader;
-import com.effektif.workflow.impl.deprecated.bpmn.DeprecatedBpmnWriter;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import org.slf4j.Logger;
 
 
 public abstract class AbstractActivityType<T extends Activity> implements ActivityType<T> {

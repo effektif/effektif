@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.api.deprecated.model;
+package com.effektif.email;
 
-import com.effektif.workflow.api.model.Id;
 
 
 /**
- * Unique identifier for a {@link com.effektif.workflow.api.deprecated.task.Task}.
- *
+ * API for sending emails, used for notifications and the email task.
+ * 
  * @author Tom Baeyens
  */
-public class TaskId extends Id {
+public interface OutgoingEmailService {
 
-  public TaskId() {
-  }
+  void send(OutgoingEmail email);
 
-  public TaskId(String id) {
-    super(id);
-  }
+  String validate(String emailAddress);
 }

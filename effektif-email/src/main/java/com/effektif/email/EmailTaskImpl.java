@@ -12,8 +12,6 @@ import com.effektif.workflow.api.deprecated.model.GroupId;
 import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
-import com.effektif.workflow.impl.deprecated.email.OutgoingEmail;
-import com.effektif.workflow.impl.deprecated.email.OutgoingEmailService;
 import com.effektif.workflow.impl.deprecated.file.File;
 import com.effektif.workflow.impl.deprecated.file.FileAttachment;
 import com.effektif.workflow.impl.deprecated.file.FileService;

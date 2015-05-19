@@ -13,23 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.bpmn;
 
-import static com.effektif.workflow.impl.bpmn.Bpmn.*;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.Stack;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
@@ -42,10 +25,27 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
-import com.effektif.workflow.impl.deprecated.json.AbstractJsonReader;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeMapping;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.Stack;
+
+import static com.effektif.workflow.impl.bpmn.Bpmn.BPMN_URI;
+import static com.effektif.workflow.impl.bpmn.Bpmn.EFFEKTIF_URI;
+import static com.effektif.workflow.impl.bpmn.Bpmn.KEY_DEFINITIONS;
 
 /**
  * @author Tom Baeyens

@@ -15,11 +15,12 @@
  */
 package com.effektif.adapter.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-
+import com.effektif.workflow.api.datasource.ItemReference;
+import com.effektif.workflow.api.json.GenericType;
+import com.effektif.workflow.impl.configuration.Brewable;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -31,13 +32,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.datasource.ItemReference;
-import com.effektif.workflow.api.json.GenericType;
-import com.effektif.workflow.impl.configuration.Brewable;
-import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.deprecated.json.JsonMapper;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 
 public abstract class AbstractAdapterService implements AdapterService, Brewable {

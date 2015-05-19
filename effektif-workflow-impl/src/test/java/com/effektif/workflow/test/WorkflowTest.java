@@ -15,30 +15,9 @@
  */
 package com.effektif.workflow.test;
 
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.deprecated.task.Task;
-import com.effektif.workflow.api.deprecated.task.TaskQuery;
-import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -50,13 +29,6 @@ import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.WorkflowStore;
-import com.effektif.workflow.impl.deprecated.TaskStore;
-import com.effektif.workflow.impl.deprecated.email.EmailStore;
-import com.effektif.workflow.impl.deprecated.email.OutgoingEmail;
-import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
-import com.effektif.workflow.impl.deprecated.file.File;
-import com.effektif.workflow.impl.deprecated.file.FileService;
-import com.effektif.workflow.impl.deprecated.memory.MemoryIdentityService;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
@@ -64,6 +36,21 @@ import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.api.JavaServiceTaskTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */
@@ -88,10 +75,6 @@ public class WorkflowTest {
   
 //  @Deprecated
 //  protected TaskService taskService = null;
-//  @Deprecated
-//  protected TestOutgoingEmailService emailService = null;
-//  @Deprecated
-//  protected EmailStore emailStore = null;
 //  @Deprecated
 //  protected FileService fileService = null;
   

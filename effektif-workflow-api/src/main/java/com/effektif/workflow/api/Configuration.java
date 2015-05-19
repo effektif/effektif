@@ -16,7 +16,6 @@
 package com.effektif.workflow.api;
 
 
-
 /**
  * A workflow engine runtime configuration.
  * Instantiate one of the implementing classes like

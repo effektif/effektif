@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.identity;
+package com.effektif.email;
 
-import java.util.List;
-
-import com.effektif.workflow.api.deprecated.model.GroupId;
-import com.effektif.workflow.api.deprecated.model.UserId;
+import com.effektif.workflow.api.deprecated.model.EmailId;
 
 
 /**
+ * Persistence API for storing sent or received email messages.
+ * 
  * @author Tom Baeyens
  */
-public interface IdentityService {
+public interface EmailStore {
 
-  User createUser(User user);
-  List<String> getUsersEmailAddresses(List<UserId> userIds);
-  User findUserById(UserId userId);
+  /** Stores the given email and updates the id. */
+  void insertEmail(PersistentEmail email);
 
-  Group createGroup(Group group);
-  List<String> getGroupsEmailAddresses(List<GroupId> groupIds);
-  Group findGroupById(GroupId groupId);
-  List<Group> findGroupByIds(List<GroupId> groupIds);
+  PersistentEmail findEmailById(EmailId emailId);
 }

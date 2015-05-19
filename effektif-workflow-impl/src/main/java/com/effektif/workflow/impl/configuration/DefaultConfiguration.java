@@ -19,7 +19,6 @@ import java.util.ServiceLoader;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.deprecated.task.TaskService;
 import com.effektif.workflow.impl.AsynchronousExecutorService;
 import com.effektif.workflow.impl.ConditionServiceImpl;
 import com.effektif.workflow.impl.SimpleWorkflowCache;
@@ -69,10 +68,6 @@ public abstract class DefaultConfiguration implements Configuration {
     return brewery.get(WorkflowEngine.class);
   }
 
-  public TaskService getTaskService() {
-    return brewery.get(TaskService.class);
-  }
-  
   public DefaultConfiguration ingredient(Object ingredient) {
     brewery.ingredient(ingredient);
     return this;

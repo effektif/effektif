@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.memory;
+package com.effektif.email.test;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.effektif.email.EmailStore;
+import com.effektif.email.PersistentEmail;
 import com.effektif.workflow.api.deprecated.acl.Authentication;
 import com.effektif.workflow.api.deprecated.acl.Authentications;
 import com.effektif.workflow.api.deprecated.model.EmailId;
-import com.effektif.workflow.impl.deprecated.email.EmailStore;
-import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -31,7 +31,7 @@ import com.effektif.workflow.impl.deprecated.email.PersistentEmail;
  * @author Tom Baeyens
  */
 public class MemoryEmailStore implements EmailStore {
-  
+
   Map<EmailId, PersistentEmail> emails = new ConcurrentHashMap<>();
   long nextId = 1;
 

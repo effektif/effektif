@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.memory;
+package com.effektif.email.test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +31,9 @@ import com.effektif.workflow.impl.deprecated.identity.User;
  * @author Tom Baeyens
  */
 public class MemoryIdentityService implements IdentityService {
-  
-  Map<UserId, User> users = new HashMap<>(); 
-  Map<GroupId, Group> groups = new HashMap<>(); 
+
+  Map<UserId, User> users = new HashMap<>();
+  Map<GroupId, Group> groups = new HashMap<>();
 
   public User createUser(User user) {
     users.put(user.getId(), user);
@@ -97,9 +97,9 @@ public class MemoryIdentityService implements IdentityService {
   }
 
   public void deleteUsers() {
-    users = new HashMap<>(); 
+    users = new HashMap<>();
   }
   public void deleteGroups() {
-    groups = new HashMap<>(); 
+    groups = new HashMap<>();
   }
 }
