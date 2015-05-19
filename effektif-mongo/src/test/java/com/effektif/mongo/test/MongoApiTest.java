@@ -15,14 +15,12 @@
  */
 package com.effektif.mongo.test;
 
-import org.junit.Test;
-
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.impl.deprecated.email.TestOutgoingEmailService;
 import com.effektif.workflow.test.TestSuiteHelper;
 import com.effektif.workflow.test.WorkflowTest;
 import com.mongodb.DB;
+import org.junit.Test;
 
 
 public class MongoApiTest {
@@ -61,7 +59,6 @@ public class MongoApiTest {
   public static Configuration createMongoTestConfiguration() {
     return new MongoConfiguration()
       .databaseName("effektif-test")
-      .ingredient(new TestOutgoingEmailService())
       .prettyPrint()
       .synchronous();
   }

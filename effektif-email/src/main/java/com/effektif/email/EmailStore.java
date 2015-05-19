@@ -13,28 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.deprecated.email;
+package com.effektif.email;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.effektif.workflow.api.deprecated.model.EmailId;
 
 
-/** service for testing that stores the sent emails in a list 
- * instead of sending them.
+/**
+ * Persistence API for storing sent or received email messages.
  * 
  * @author Tom Baeyens
  */
-public class TestOutgoingEmailService implements OutgoingEmailService {
-  
-  public List<OutgoingEmail> emails = new ArrayList<>();
+public interface EmailStore {
 
-  @Override
-  public void send(OutgoingEmail email) {
-    emails.add(email);
-  }
+  /** Stores the given email and updates the id. */
+  void insertEmail(PersistentEmail email);
 
-  @Override
-  public String validate(String emailAddress) {
-    return OutgoingEmailServiceImpl.validateEmailAddress(emailAddress);
-  }
+  PersistentEmail findEmailById(EmailId emailId);
 }

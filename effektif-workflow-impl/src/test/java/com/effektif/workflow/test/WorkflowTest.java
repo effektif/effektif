@@ -76,10 +76,6 @@ public class WorkflowTest {
 //  @Deprecated
 //  protected TaskService taskService = null;
 //  @Deprecated
-//  protected TestOutgoingEmailService emailService = null;
-//  @Deprecated
-//  protected EmailStore emailStore = null;
-//  @Deprecated
 //  protected FileService fileService = null;
   
   @Rule public TestName name = new TestName();
@@ -96,8 +92,6 @@ public class WorkflowTest {
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
 //      taskService = configuration.get(TaskService.class);
-//      emailService = configuration.get(TestOutgoingEmailService.class);
-//      emailStore = configuration.get(EmailStore.class);
 //      fileService = configuration.get(FileService.class);
     }
     
