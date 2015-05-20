@@ -16,11 +16,14 @@
 package com.effektif.example.cli.command;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.deprecated.model.TaskId;
-import com.effektif.workflow.api.deprecated.task.Task;
-import com.effektif.workflow.api.deprecated.task.TaskService;
+import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 /**
  * Completes the task with the given ID.
@@ -29,7 +32,19 @@ public class CompleteCommand implements CommandImpl {
 
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
-    final String taskId = command.getArgument();
-    final Task task = configuration.get(TaskService.class).completeTask(new TaskId(taskId));
+    final String workflowInstanceIdString = command.getArgument();
+    // TODO also get the second argument
+    final String activityInstanceId = null;
+    final WorkflowInstanceId workflowInstanceId = new WorkflowInstanceId(workflowInstanceIdString);
+    
+    WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
+    List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery()
+      .workflowInstanceId(workflowInstanceId));
+    
+    WorkflowInstance workflowInstance = workflowInstances.get(0);
+    workflowInstance.findOpenActivityInstance(null);
+    workflowEngine.send(new Message()
+      .workflowInstanceId(workflowInstanceId)
+      .activityInstanceId(activityInstanceId));
   }
 }

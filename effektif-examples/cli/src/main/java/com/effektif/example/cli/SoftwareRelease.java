@@ -15,7 +15,7 @@
  */
 package com.effektif.example.cli;
 
-import com.effektif.workflow.api.deprecated.activities.UserTask;
+import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.workflow.Workflow;
 
 
@@ -26,7 +26,7 @@ public class SoftwareRelease {
 
   public static Workflow workflow = new Workflow()
     .sourceWorkflowId("release")
-    .activity("Move open issues", new UserTask()
+    .activity("Move open issues", new ReceiveTask()
       .transitionToNext())
-    .activity("Check continuous integration", new UserTask());
+    .activity("Check continuous integration", new ReceiveTask());
 }

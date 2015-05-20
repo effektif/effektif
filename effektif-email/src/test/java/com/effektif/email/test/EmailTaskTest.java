@@ -5,17 +5,18 @@ package com.effektif.email.test;
 
 import static org.junit.Assert.*;
 
-import com.effektif.email.EmailStore;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
-import com.effektif.workflow.impl.memory.TestConfiguration;
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.effektif.email.EmailTask;
-import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.email.OutgoingEmail;
 import com.effektif.email.TestOutgoingEmailService;
+import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
+import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -24,23 +25,19 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class EmailTaskTest extends WorkflowTest {
 
-  protected EmailStore emailStore = null;
   protected TestOutgoingEmailService emailService = null;
 
   @Before
   public void initializeWorkflowEngine() {
     if (cachedConfiguration==null) {
       TestConfiguration testConfiguration = new TestConfiguration();
-      testConfiguration.ingredient(new MemoryEmailStore());
-      testConfiguration.ingredient(new MemoryFileService());
-      testConfiguration.ingredient(new MemoryIdentityService());
       testConfiguration.ingredient(new TestOutgoingEmailService());
       cachedConfiguration = testConfiguration;
       cachedConfiguration.get(JsonStreamMapper.class).pretty();
     }
     super.initializeWorkflowEngine();
     emailService = configuration.get(TestOutgoingEmailService.class);
-    emailStore = configuration.get(EmailStore.class);
+    emailService.reset();
   }
 
   @Test

@@ -109,36 +109,13 @@
   </build>
   
   <profiles>
-    <profile>
-      <id>update-license</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.mycila</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <version>2.5</version>
-            <configuration>
-              <header>files/license.header.txt</header>
-              <encoding>UTF-8</encoding>
-              <includes>
-                <include>**/src/**/*.java</include>
-              </includes>
-              <mapping>
-                <java>SLASHSTAR_STYLE</java>
-              </mapping>
-            </configuration>
-            <executions>
-              <execution>
-                <id>format-license</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>format</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
+      <profile> 
+      <id>ci</id>
+      <modules>
+        <module>effektif-examples/cli</module>
+        <module>effektif-email</module>
+        <module>effektif-script</module>
+      </modules>
     </profile>
     
     <profile> 
@@ -196,6 +173,37 @@
       </build>
     </profile>
 
+    <profile>
+      <id>update-license</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>2.5</version>
+            <configuration>
+              <header>files/license.header.txt</header>
+              <encoding>UTF-8</encoding>
+              <includes>
+                <include>**/src/**/*.java</include>
+              </includes>
+              <mapping>
+                <java>SLASHSTAR_STYLE</java>
+              </mapping>
+            </configuration>
+            <executions>
+              <execution>
+                <id>format-license</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>format</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 </project>

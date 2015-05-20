@@ -21,6 +21,7 @@ import java.util.Map;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
@@ -41,13 +42,21 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
 
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
-    ObjectFieldImpl field = fields.get(fieldName);
-    if (field==null) {
-      throw new RuntimeException("Field '"+fieldName+"' doesn't exist in type "+getClass().getSimpleName());
+    ObjectFieldImpl field = fields!=null ? fields.get(fieldName) : null;
+    if (field!=null) {
+      DataTypeImpl fieldType = field.type;
+      Object fieldValue = field.getFieldValue(value);
+      return new TypedValueImpl(fieldType, fieldValue);
     }
-    DataTypeImpl fieldType = field.type;
-    Object fieldValue = field.getFieldValue(value);
-    return new TypedValueImpl(fieldType, fieldValue);
+    if (value instanceof Map) {
+      Map mapValue = (Map) value;
+      Object fieldValue = mapValue.get(fieldName);
+      DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+      Class<?> fieldValueClass = fieldValue!=null ? fieldValue.getClass() : null;
+      DataTypeImpl fieldDataType = dataTypeService.getDataTypeByValue(fieldValueClass);
+      return new TypedValueImpl(fieldDataType, fieldValue);
+    }
+    throw new RuntimeException("Field '"+fieldName+"' doesn't exist in type "+getClass().getSimpleName());
   }
 
   public void addField(ObjectFieldImpl field) {

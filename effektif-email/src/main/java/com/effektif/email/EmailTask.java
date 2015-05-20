@@ -10,9 +10,6 @@ import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.deprecated.model.FileId;
-import com.effektif.workflow.api.deprecated.model.GroupId;
-import com.effektif.workflow.api.deprecated.model.UserId;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
@@ -37,42 +34,24 @@ import com.effektif.workflow.api.workflow.Variable;
 public class EmailTask extends Activity {
 
   protected Binding<String> fromEmailAddress;
-
   protected List<Binding<String>> toEmailAddresses;
-  protected List<Binding<UserId>> toUserIds;
-  protected List<Binding<GroupId>> toGroupIds;
-
   protected List<Binding<String>> ccEmailAddresses;
-  protected List<Binding<UserId>> ccUserIds;
-  protected List<Binding<GroupId>> ccGroupIds;
-
   protected List<Binding<String>> bccEmailAddresses;
-  protected List<Binding<UserId>> bccUserIds;
-  protected List<Binding<GroupId>> bccGroupIds;
 
   protected String subject;
   protected String bodyText;
   protected String bodyHtml;
-  
-  protected List<Binding<FileId>> attachmentFileIds;
   
   @Override
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
     fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
     toEmailAddresses = r.readBindings("toEmailAddress", String.class);
-    toUserIds = r.readBindings("toUserId", UserId.class);
-    toGroupIds = r.readBindings("toGroupId", GroupId.class);
     ccEmailAddresses = r.readBindings("ccEmailAddress", String.class);
-    ccUserIds = r.readBindings("ccUserId", UserId.class);
-    ccGroupIds = r.readBindings("ccGroupId", GroupId.class);
     bccEmailAddresses = r.readBindings("bccEmailAddress", String.class);
-    bccUserIds = r.readBindings("bccUserId", UserId.class);
-    bccGroupIds = r.readBindings("bccGroupId", GroupId.class);
     subject = r.readTextEffektif("subject");
     bodyText = r.readTextEffektif("bodyText");
     bodyHtml = r.readTextEffektif("bodyHtml");
-    attachmentFileIds = r.readBindings("attachmentFileId", FileId.class);
     r.endExtensionElements();
     super.readBpmn(r);
   }
@@ -83,58 +62,13 @@ public class EmailTask extends Activity {
     w.startExtensionElements();
     w.writeBinding("fromEmailAddress", fromEmailAddress);
     w.writeBindings("toEmailAddress", toEmailAddresses);
-    w.writeBindings("toUserId", toUserIds);
-    w.writeBindings("toGroupId", toGroupIds);
     w.writeBindings("ccEmailAddress", ccEmailAddresses);
-    w.writeBindings("ccUserId", ccUserIds);
-    w.writeBindings("ccGroupId", ccGroupIds);
     w.writeBindings("bccEmailAddress", bccEmailAddresses);
-    w.writeBindings("bccUserId", bccUserIds);
-    w.writeBindings("bccGroupId", bccGroupIds);
     w.writeTextEffektif("subject", subject);
     w.writeCDataTextEffektif("bodyText", bodyText);
     w.writeCDataTextEffektif("bodyHtml", bodyHtml);
-    w.writeBindings("attachmentFileId", attachmentFileIds);
     w.endExtensionElements();
   }
-
-//  @Override
-//  public void readJson(JsonReader r) {
-//    fromEmailAddress = r.readBinding("fromEmailAddress");
-//    toEmailAddresses = r.readList("toEmailAddresses");
-//    toUserIds = r.readList("toUserIds");
-//    toGroupIds = r.readList("toGroupIds");
-//    ccEmailAddresses = r.readList("ccEmailAddresses");
-//    ccUserIds = r.readList("ccUserIds");
-//    ccGroupIds = r.readList("ccGroupIds");
-//    bccEmailAddresses = r.readList("bccEmailAddresses");
-//    bccUserIds = r.readList("bccUserIds");
-//    bccGroupIds = r.readList("bccGroupIds");
-//    subject = r.readString("subject");
-//    bodyText = r.readString("bodyText");
-//    bodyHtml = r.readString("bodyHtml");
-//    attachmentFileIds = r.readList("attachmentFileIds");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeBinding("fromEmailAddress", fromEmailAddress);
-//    w.writeList("toEmailAddresses", toEmailAddresses);
-//    w.writeList("toUserIds", toUserIds);
-//    w.writeList("toGroupIds", toGroupIds);
-//    w.writeList("ccEmailAddresses", ccEmailAddresses);
-//    w.writeList("ccUserIds", ccUserIds);
-//    w.writeList("ccGroupIds", ccGroupIds);
-//    w.writeList("bccEmailAddresses", bccEmailAddresses);
-//    w.writeList("bccUserIds", bccUserIds);
-//    w.writeList("bccGroupIds", bccGroupIds);
-//    w.writeString("subject", subject);
-//    w.writeString("bodyText", bodyText);
-//    w.writeString("bodyHtml", bodyHtml);
-//    w.writeList("attachmentFileIds", attachmentFileIds);
-//  }
 
   @Override
   public EmailTask id(String id) {
@@ -158,56 +92,6 @@ public class EmailTask extends Activity {
     return this;
   }
 
-  public List<Binding<UserId>> getToUserIds() {
-    return this.toUserIds;
-  }
-  public void setToUserIds(List<Binding<UserId>> toUserIds) {
-    this.toUserIds = toUserIds;
-  }
-  public EmailTask toUserId(String toUserId) {
-    return toUserId(new UserId(toUserId));
-  }
-  public EmailTask toUserId(UserId toUserId) {
-    addToUserIdBinding(new Binding<UserId>().value(toUserId));
-    return this;
-  }
-  /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask toUserIdExpression(String expression) {
-    addToUserIdBinding(new Binding<UserId>().expression(expression));
-    return this;
-  }
-  protected void addToUserIdBinding(Binding<UserId> toUserIdBinding) {
-    if (toUserIds==null) {
-      toUserIds = new ArrayList<>();
-    }
-    toUserIds.add(toUserIdBinding);
-  }
-  
-  public List<Binding<GroupId>> getToGroupIds() {
-    return this.toGroupIds;
-  }
-  public void setToGroupIds(List<Binding<GroupId>> toGroupIds) {
-    this.toGroupIds = toGroupIds;
-  }
-  public EmailTask toGroupId(String toGroupId) {
-    return toGroupId(new GroupId(toGroupId));
-  }
-  public EmailTask toGroupId(GroupId toGroupId) {
-    addToGroupIdBinding(new Binding<GroupId>().value(toGroupId));
-    return this;
-  }
-  /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask toGroupIdExpression(String expression) {
-    addToGroupIdBinding(new Binding<GroupId>().expression(expression));
-    return this;
-  }
-  protected void addToGroupIdBinding(Binding<GroupId> toGroupIdBinding) {
-    if (toGroupIds==null) {
-      toGroupIds = new ArrayList<>();
-    }
-    toGroupIds.add(toGroupIdBinding);
-  }
-  
   public List<Binding<String>> getToEmailAddresses() {
     return this.toEmailAddresses;
   }
@@ -230,56 +114,6 @@ public class EmailTask extends Activity {
       toEmailAddresses = new ArrayList<>();
     }
     toEmailAddresses.add(toEmailAddressBinding);
-  }
-
-  public List<Binding<UserId>> getCcUserIds() {
-    return this.ccUserIds;
-  }
-  public void setCcUserIds(List<Binding<UserId>> ccUserIds) {
-    this.ccUserIds = ccUserIds;
-  }
-  public EmailTask ccUserId(String ccUserId) {
-    return ccUserId(new UserId(ccUserId));
-  }
-  public EmailTask ccUserId(UserId ccUserId) {
-    addCcUserIdBinding(new Binding<UserId>().value(ccUserId));
-    return this;
-  }
-  /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask ccUserIdExpression(String expression) {
-    addCcUserIdBinding(new Binding<UserId>().expression(expression));
-    return this;
-  }
-  protected void addCcUserIdBinding(Binding<UserId> ccUserIdBinding) {
-    if (ccUserIds==null) {
-      ccUserIds = new ArrayList<>();
-    }
-    ccUserIds.add(ccUserIdBinding);
-  }
-  
-  public List<Binding<GroupId>> getCcGroupIds() {
-    return this.ccGroupIds;
-  }
-  public void setCcGroupIds(List<Binding<GroupId>> ccGroupIds) {
-    this.ccGroupIds = ccGroupIds;
-  }
-  public EmailTask ccGroupId(String ccGroupId) {
-    return ccGroupId(new GroupId(ccGroupId));
-  }
-  public EmailTask ccGroupId(GroupId ccGroupId) {
-    addCcGroupIdBinding(new Binding<GroupId>().value(ccGroupId));
-    return this;
-  }
-  /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask ccGroupIdExpression(String expression) {
-    addCcGroupIdBinding(new Binding<GroupId>().expression(expression));
-    return this;
-  }
-  protected void addCcGroupIdBinding(Binding<GroupId> ccGroupIdBinding) {
-    if (ccGroupIds==null) {
-      ccGroupIds = new ArrayList<>();
-    }
-    ccGroupIds.add(ccGroupIdBinding);
   }
   
   public List<Binding<String>> getCcEmailAddresses() {
@@ -304,55 +138,6 @@ public class EmailTask extends Activity {
     ccEmailAddresses.add(ccEmailAddressBinding);
   }
 
-  public List<Binding<UserId>> getBccUserIds() {
-    return this.bccUserIds;
-  }
-  public void setBccUserIds(List<Binding<UserId>> bccUserIds) {
-    this.bccUserIds = bccUserIds;
-  }
-  public EmailTask bccUserId(String bccUserId) {
-    return bccUserId(new UserId(bccUserId));
-  }
-  public EmailTask bccUserId(UserId bccUserId) {
-    addBccUserIdBinding(new Binding<UserId>().value(bccUserId));
-    return this;
-  }
-  /** adds the user specified in a variable as a recipient. */ 
-  public EmailTask bccUserIdExpression(String expression) {
-    addBccUserIdBinding(new Binding<UserId>().expression(expression));
-    return this;
-  }
-  protected void addBccUserIdBinding(Binding<UserId> bccUserIdBinding) {
-    if (bccUserIds==null) {
-      bccUserIds = new ArrayList<>();
-    }
-    bccUserIds.add(bccUserIdBinding);
-  }
-  
-  public List<Binding<GroupId>> getBccGroupIds() {
-    return this.bccGroupIds;
-  }
-  public void setBccGroupIds(List<Binding<GroupId>> bccGroupIds) {
-    this.bccGroupIds = bccGroupIds;
-  }
-  public EmailTask bccGroupId(String bccGroupId) {
-    return bccGroupId(new GroupId(bccGroupId));
-  }
-  public EmailTask bccGroupId(GroupId bccGroupId) {
-    addBccGroupIdBinding(new Binding<GroupId>().value(bccGroupId));
-    return this;
-  }
-  /** adds the user specified in nested field inside a variable as a recipient. */ 
-  public EmailTask bccGroupIdExpression(String expression) {
-    addBccGroupIdBinding(new Binding<GroupId>().expression(expression));
-    return this;
-  }
-  protected void addBccGroupIdBinding(Binding<GroupId> bccGroupIdBinding) {
-    if (bccGroupIds==null) {
-      bccGroupIds = new ArrayList<>();
-    }
-    bccGroupIds.add(bccGroupIdBinding);
-  }
   
   public List<Binding<String>> getBccEmailAddresses() {
     return this.bccEmailAddresses;
@@ -413,28 +198,6 @@ public class EmailTask extends Activity {
 
   public void setBodyHtml(String bodyHtmlBinding) {
     this.bodyHtml = bodyHtmlBinding;
-  }
-
-  public List<Binding<FileId>> getAttachmentFileIds() {
-    return this.attachmentFileIds;
-  }
-  public void setAttachments(List<Binding<FileId>> attachments) {
-    this.attachmentFileIds = attachments;
-  }
-  public EmailTask attachment(FileId attachmentFileId) {
-    addAttachment(new Binding<FileId>().value(attachmentFileId));
-    return this;
-  }
-  /** adds the user specified in nested field inside a variable as a recipient. */ 
-  public EmailTask attachmentExpression(String expression) {
-    addAttachment(new Binding<FileId>().expression(expression));
-    return this;
-  }
-  protected void addAttachment(Binding<FileId> attachment) {
-    if (attachmentFileIds==null) {
-      attachmentFileIds = new ArrayList<>();
-    }
-    attachmentFileIds.add(attachment);
   }
 
   /**

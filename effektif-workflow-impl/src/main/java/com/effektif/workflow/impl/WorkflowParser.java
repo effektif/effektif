@@ -313,20 +313,6 @@ public class WorkflowParser {
     }
     return null;
   }
-
-//  public ScriptImpl parseScript(Script script) {
-//    if (script==null) {
-//      return null;
-//    }
-//    try {
-//      return configuration
-//              .get(ScriptService.class)
-//              .compile(script, this);
-//    } catch (Exception e) {
-//      addWarning("Invalid script '%s' : %s", script, e.getMessage());
-//    }
-//    return null;
-//  }
   
   public TextTemplate parseTextTemplate(String templateText, Hint... hints) {
     if (templateText==null) {

@@ -29,22 +29,29 @@ import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Plugin;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 /**
  * @author Tom Baeyens
  */
-public class RhinoScriptService implements ScriptService, Brewable {
+public class RhinoScriptService implements ScriptService, Brewable, Plugin {
 
   private static final Logger log = LoggerFactory.getLogger(RhinoScriptService.class);
   
   protected ContextFactory contextFactory;
   
   @Override
+  public void plugin(Brewery brewery) {
+    brewery.ingredient(this);
+  }
+
+  @Override
   public void brew(Brewery brewery) {
     this.contextFactory = ContextFactory.getGlobal();
   }
+
 
   @Override
   public ScriptImpl compile(final Script script, final WorkflowParser parser) {

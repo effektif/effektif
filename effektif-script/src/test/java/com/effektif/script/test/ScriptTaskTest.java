@@ -3,17 +3,20 @@
  */
 package com.effektif.script.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+
 import com.effektif.script.ScriptTask;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-//import com.effektif.workflow.impl.deprecated.identity.IdentityService;
-//import com.effektif.workflow.impl.deprecated.identity.User;
+import com.effektif.workflow.impl.data.types.ObjectType;
 import com.effektif.workflow.test.WorkflowTest;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -42,16 +45,11 @@ public class ScriptTaskTest extends WorkflowTest {
 
   @Test
   public void testScriptDereferencing() {
-//    User johndoe = new User()
-//      .id(JOHN_ID)
-//      .fullName("John Doe")
-//      .email("johndoe@localhost");
-//
-//    configuration.get(IdentityService.class)
-//      .createUser(johndoe);
+    Map<String,Object> johndoe = new HashMap<>();
+    johndoe.put("fullName", "John Doe");
 
     Workflow workflow = new Workflow()
-      .variable("user", new TextType())
+      .variable("user", new ObjectType())
       .variable("name", new TextType())
       .activity("s", new ScriptTask()
         .script("name = user.fullName;"));
@@ -60,7 +58,7 @@ public class ScriptTaskTest extends WorkflowTest {
     
     WorkflowInstance workflowInstance = workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId())
-      .data("user", JOHN_ID));
+      .data("user", johndoe));
 
     assertEquals("John Doe", workflowInstance.getVariableValue("name"));
   }

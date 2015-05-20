@@ -26,11 +26,15 @@ import java.util.List;
  */
 public class TestOutgoingEmailService implements OutgoingEmailService {
   
-  public List<OutgoingEmail> emails = new ArrayList<>();
+  public List<OutgoingEmail> emails;
 
   @Override
   public void send(OutgoingEmail email) {
     emails.add(email);
+  }
+  
+  public void reset() {
+    emails = new ArrayList<>();
   }
 
   @Override

@@ -38,17 +38,24 @@ import javax.mail.util.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Plugin;
+
 /** default impl that sends emails using javax.mail.
  * 
  * @author Tom Baeyens
  */
-public class OutgoingEmailServiceImpl implements OutgoingEmailService {
+public class OutgoingEmailServiceImpl implements OutgoingEmailService, Plugin {
 
   private static final Logger log = LoggerFactory.getLogger(OutgoingEmailServiceImpl.class);
   
   protected Properties properties = new Properties();
   protected Authenticator authenticator = null;
   
+  @Override
+  public void plugin(Brewery brewery) {
+  }
+
   public OutgoingEmailServiceImpl() {
     properties = new Properties();
     property("mail.transport.protocol", "smtp");

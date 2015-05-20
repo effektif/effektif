@@ -5,6 +5,7 @@ package com.effektif.script;
 
 import java.util.Map;
 
+import com.effektif.workflow.api.workflow.Script;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.data.TypedValueImpl;
@@ -28,8 +29,17 @@ public class ScriptTaskImpl extends AbstractActivityType<ScriptTask> {
   public void parse(ActivityImpl activityImpl, ScriptTask scriptTask, WorkflowParser parser) {
     super.parse(activityImpl, scriptTask, parser);
     this.scriptService = parser.getConfiguration(ScriptService.class);
-    // this.script = parser.parseScript(scriptTask.getScript());
+    
+    Script script = scriptTask.getScript();
+    if (script!=null) {
+      try {
+        this.script = scriptService.compile(script, parser);
+      } catch (Exception e) {
+        parser.addWarning("Invalid script '%s' : %s", script, e.getMessage());
+      }
+    }
   }
+  
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {

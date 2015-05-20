@@ -15,6 +15,8 @@
  */
 package com.effektif.script.test;
 
+import static org.junit.Assert.*;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -32,7 +34,6 @@ import com.effektif.script.RhinoVariableScope;
  */
 public class RhinoTest {
 
-  @SuppressWarnings("restriction")
   @Test 
   public void testRhinoScriptResolving() {
 
@@ -50,8 +51,6 @@ public class RhinoTest {
         }
       }
     });
-    
-    
     
     Object result = contextFactory.call(new ContextAction() {
       public Object run(Context context) {
@@ -74,10 +73,12 @@ public class RhinoTest {
         return result;
       }
     });
+    
+    assertNotNull(result);
   }
   
-  @SuppressWarnings("restriction")
   public static class MagicScriptableObject extends org.mozilla.javascript.ScriptableObject {
+    private static final long serialVersionUID = 1L;
     String name;
     public MagicScriptableObject(String name) {
       this.name = name;
