@@ -76,7 +76,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
    * if the workflow instance is already locked and use this one instead of 
    * going to the db. */
   public Map<WorkflowInstanceId,WorkflowInstanceImpl> lockedWorkflowInstances;
-  public CaseId caseId;
 
   public WorkflowInstanceImpl() {
   }
