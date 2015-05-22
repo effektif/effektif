@@ -15,17 +15,18 @@
  */
 package com.effektif.mongo;
 
-import com.effektif.workflow.api.model.Id;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.mongodb.BasicDBObject;
-import org.bson.types.ObjectId;
-import org.joda.time.LocalDateTime;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.bson.types.ObjectId;
+import org.joda.time.LocalDateTime;
+
+import com.effektif.workflow.api.model.Id;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.mongodb.BasicDBObject;
 
 
 public abstract class MongoHelper {
@@ -155,5 +156,15 @@ public abstract class MongoHelper {
       return new LocalDateTime((Date)object);
     }
     throw new RuntimeException("date conversion problem: "+object+" ("+object.getClass().getName()+")");
+  }
+
+  public static ObjectId toObjectId(Id id) {
+    if (id!=null) {
+      String idString = id.getInternal();
+      if (idString!=null) {
+        return new ObjectId(idString);
+      }
+    }
+    return null;
   }
 }

@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl.json.configuration;
 
 import com.effektif.workflow.impl.json.MappingsBuilder;
+import com.effektif.workflow.impl.json.types.DateStreamMapper;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
 import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
@@ -27,6 +28,7 @@ public class JsonStreamMappingsBuilder extends MappingsBuilder {
   public JsonStreamMappingsBuilder() {
     configureDefaults();
     typeMapperFactory(new LocalDateTimeStreamMapper());
+    typeMapperFactory(new DateStreamMapper());
     typeMapperFactory(new WorkflowIdStreamMapper());
     typeMapperFactory(new WorkflowInstanceIdStreamMapper());
   }

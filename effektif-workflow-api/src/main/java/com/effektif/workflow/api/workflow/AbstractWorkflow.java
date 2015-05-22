@@ -17,7 +17,6 @@ package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.model.WorkflowId;
 
 
@@ -27,11 +26,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 public abstract class AbstractWorkflow extends Scope {
 
   protected WorkflowId id;
-
   protected Trigger trigger;
-  
-  protected AccessControlList access;
-  
   protected Boolean enableCases;
   protected String caseNameTemplate;
   
@@ -85,17 +80,6 @@ public abstract class AbstractWorkflow extends Scope {
     return this;
   }
   
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public AccessControlList getAccess() {
-    return this.access;
-  }
-  /** the access control list specifies which actions are permitted by whom.
-   * If not specified, all is allowed. */
-  public void setAccess(AccessControlList access) {
-    this.access = access;
-  }
-
   /** optional template to initialize the name of cases */
   public String getCaseNameTemplate() {
     return this.caseNameTemplate;

@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.workflow;
 
 import java.util.List;
 
-import com.effektif.workflow.api.deprecated.acl.AccessControlList;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Trigger;
@@ -40,7 +39,6 @@ public class WorkflowImpl extends ScopeImpl {
   public String sourceWorkflowId;
   public List<ActivityImpl> startActivities;
   public AbstractTriggerImpl trigger;
-  public AccessControlList access;
   public boolean enableCases;
   public TextTemplate caseNameTemplate;
   
@@ -54,7 +52,6 @@ public class WorkflowImpl extends ScopeImpl {
     this.startActivities = parser.getStartActivities(this);
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
     this.sourceWorkflowId = workflow.getSourceWorkflowId();
-    this.access = workflow.getAccess();
     this.caseNameTemplate = parser.parseTextTemplate(workflow.getCaseNameTemplate(), Hint.CASE_NAME_TEMPLATE);
     this.enableCases = workflow.isEnableCases();
     
@@ -73,13 +70,11 @@ public class WorkflowImpl extends ScopeImpl {
   public String toString() {
     return id!=null ? id.toString() : Integer.toString(System.identityHashCode(this));
   }
-
   
   public WorkflowEngineImpl getWorkflowEngine() {
     return workflowEngine;
   }
 
-  
   public String getSourceWorkflowId() {
     return sourceWorkflowId;
   }
@@ -87,15 +82,9 @@ public class WorkflowImpl extends ScopeImpl {
   public List<ActivityImpl> getStartActivities() {
     return startActivities;
   }
-
   
   public AbstractTriggerImpl getTrigger() {
     return trigger;
-  }
-
-  
-  public AccessControlList getAccess() {
-    return access;
   }
 
   public WorkflowId getId() {

@@ -14,11 +14,13 @@
 package com.effektif.mongo;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 
 
 public class Query {
@@ -29,6 +31,11 @@ public class Query {
   
   public Query _id(ObjectId id) {
     query.append("_id", id);
+    return this;
+  }
+
+  public Query _ids(List<ObjectId> ids) {
+    in("_id", ids);
     return this;
   }
 
@@ -121,5 +128,14 @@ public class Query {
   
   public Integer getLimit() {
     return limit;
+  }
+
+  public void applyPage(DBCursor dbCursor) {
+    if (skip!=null) {
+      dbCursor.skip(skip);
+    }
+    if (limit!=null) {
+      dbCursor.limit(limit);
+    }
   }
 }

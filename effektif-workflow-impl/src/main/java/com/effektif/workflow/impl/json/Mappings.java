@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.json.JsonFieldName;
 import com.effektif.workflow.api.json.JsonIgnore;
@@ -48,7 +51,7 @@ import com.effektif.workflow.impl.util.Reflection;
  */
 public class Mappings {
   
-  // private static final Logger log = LoggerFactory.getLogger(Mappings.class);
+  private static final Logger log = LoggerFactory.getLogger(Mappings.class);
 
   /** Initialized from the mapping builder information */
   protected Map<Field,String> fieldNames = new HashMap<>();
@@ -416,7 +419,11 @@ public class Mappings {
     Class<? > superclass = clazz.getSuperclass();
     if (Object.class!=superclass) {
       Type supertype = Reflection.getSuperclass(type);
-      scanFields(fieldMappings, supertype);
+      if (supertype!=null) {
+        scanFields(fieldMappings, supertype);
+      } else {
+        throw new RuntimeException("TODO find out which field is not handled properly");
+      }
     }
   }
 }

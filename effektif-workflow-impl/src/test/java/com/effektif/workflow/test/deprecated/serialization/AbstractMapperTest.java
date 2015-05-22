@@ -13,6 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.test.deprecated.serialization;
 
+import static org.junit.Assert.*;
+
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
@@ -25,11 +27,6 @@ import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.IsTrue;
-import com.effektif.workflow.api.deprecated.acl.Access;
-import com.effektif.workflow.api.deprecated.acl.AccessControlList;
-import com.effektif.workflow.api.deprecated.acl.GroupIdentity;
-import com.effektif.workflow.api.deprecated.acl.OrganizationIdentity;
-import com.effektif.workflow.api.deprecated.acl.UserIdentity;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.EmailAddressType;
@@ -44,11 +41,6 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -244,41 +236,6 @@ public abstract class AbstractMapperTest {
     assertEquals(workflowId(), workflow.getSourceWorkflowId());
     assertEquals(StartEvent.class, workflow.getActivities().get(0).getClass());
     assertEquals("s", workflow.getActivities().get(0).getId());
-  }
-
-//  @Test
-  public void testWorkflowAccess() {
-    Workflow workflow = new Workflow();
-    OrganizationIdentity organization = new OrganizationIdentity("acme");
-    UserIdentity user = new UserIdentity("alice");
-    GroupIdentity group = new GroupIdentity("dev");
-
-    workflow.setAccess(new AccessControlList()
-      .permission(organization, Access.CASES_VIEW)
-      .permission(user, Access.CASES_EDIT)
-      .permission(organization, Access.VIEW)
-      .permission(user, Access.EDIT)
-      .permission(group, Access.START));
-
-    workflow = serialize(workflow);
-    assertNotNull(workflow.getAccess());
-    assertNotNull(workflow.getAccess().getPermissions());
-    assertEquals(5, workflow.getAccess().getPermissions().size());
-
-    assertEquals(1, workflow.getAccess().getPermissions().get(Access.CASES_VIEW).size());
-    assertTrue(workflow.getAccess().getPermissions().get(Access.CASES_VIEW).contains(organization));
-
-    assertEquals(1, workflow.getAccess().getPermissions().get(Access.CASES_EDIT).size());
-    assertTrue(workflow.getAccess().getPermissions().get(Access.CASES_EDIT).contains(user));
-
-    assertEquals(1, workflow.getAccess().getPermissions().get(Access.VIEW).size());
-    assertTrue(workflow.getAccess().getPermissions().get(Access.VIEW).contains(organization));
-
-    assertEquals(1, workflow.getAccess().getPermissions().get(Access.EDIT).size());
-    assertTrue(workflow.getAccess().getPermissions().get(Access.EDIT).contains(user));
-
-    assertEquals(1, workflow.getAccess().getPermissions().get(Access.START).size());
-    assertTrue(workflow.getAccess().getPermissions().get(Access.START).contains(group));
   }
 
 //  @Test
