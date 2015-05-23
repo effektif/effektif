@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.json;
+package com.effektif.workflow.test.serialization;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,37 +34,45 @@ import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 
 /**
- * Tests workflow serialisation to BPMN, by running {@link WorkflowStreamTest} with a different serialisation.
- *
- * @author Peter Hilton
+ * @author Tom Baeyens
  */
-public class WorkflowBpmnTest extends WorkflowStreamTest {
+public class BpmnMapperTest extends WorkflowStreamTest {
 
-  private static final Logger log = LoggerFactory.getLogger(WorkflowBpmnTest.class);
-  private static BpmnMapper bpmnMapper;
+  protected static final Logger log = LoggerFactory.getLogger(BpmnMapperTest.class);
+  static BpmnMapper bpmnMapper;
   
   @BeforeClass
   public static void initialize() {
-    bpmnMapper = new BpmnMapper();
+    if (bpmnMapper==null) {
+      bpmnMapper = new BpmnMapper();
+    }
   }
-
+  
+  public static BpmnMapper getBpmnMapper() {
+    initialize();
+    return bpmnMapper;
+  }
+  
   @Override
   public <T> T serialize(T o) {
     Workflow w = null;
     if (o instanceof Activity) {
-      w = new Workflow().activity((Activity) o);
+      w = new Workflow()
+      .activity((Activity)o);
     } else {
       w = (Workflow) o;
     }
 
-    String xmlString = bpmnMapper.writeToString(w);
-
+    String xmlString = bpmnMapper
+      .writeToString(w);
+    
     log.info("\n" + xmlString + "\n");
 
     validateBpmnXml(xmlString);
 
-    w = bpmnMapper.readFromString(xmlString);
-
+    w = bpmnMapper
+      .readFromString(xmlString);
+    
     if (o instanceof Activity) {
       return (T) w.getActivities().get(0);
     } else {
@@ -75,8 +83,8 @@ public class WorkflowBpmnTest extends WorkflowStreamTest {
   /**
    * Performs XML schema validation on the generated XML using the BPMN 2.0 schema.
    */
-  private void validateBpmnXml(String bpmnDocument) {
-    String directory = WorkflowBpmnTest.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
+  protected void validateBpmnXml(String bpmnDocument) {
+    String directory = BpmnMapperTest.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
     File schemaFile = new File(directory, "bpmn/xsd/BPMN20.xsd");
     Source xml = new StreamSource(new StringReader(bpmnDocument));
     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -89,4 +97,5 @@ public class WorkflowBpmnTest extends WorkflowStreamTest {
     } catch (IOException e) {
       throw new RuntimeException("IOException during BPMN XML validation: " + e.getMessage());
     }
-  }}
+  }
+}

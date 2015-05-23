@@ -18,7 +18,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 
 import com.effektif.mongo.MongoObjectMapper;
-import com.effektif.workflow.test.json.WorkflowStreamTest;
+import com.effektif.workflow.test.serialization.WorkflowStreamTest;
 
 
 /**

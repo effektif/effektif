@@ -294,9 +294,7 @@ public class WorkflowParser {
       return null;
     }
     MultiInstanceImpl multiInstanceImpl = new MultiInstanceImpl();
-    pushContext("multiInstance", multiInstance, null, null);
     multiInstanceImpl.parse(multiInstance, this);
-    popContext();
     return multiInstanceImpl;
   }
 
