@@ -72,6 +72,9 @@ public class JsonStreamMapper {
   public <T> T read(Reader reader, Type type) {
     try {
       Object beanJsonObject = objectMapper.readValue(reader, Object.class);
+      if (beanJsonObject==null) {
+        return null;
+      }
       JsonStreamReader jsonStreamReader = new JsonStreamReader(mappings);
       return (T) jsonStreamReader.readObject(beanJsonObject, type);
     } catch (Exception e) {
