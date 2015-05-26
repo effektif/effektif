@@ -16,29 +16,31 @@
 package com.effektif.example.cli.command;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 /**
- * Completes the task with the given ID, by signalling the activity instance with a message.
+ * Returns a list of open tasks for the running workflows.
  */
-public class CompleteCommand implements CommandImpl {
+public class TasksCommand implements CommandImpl {
 
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
-    final TaskId taskId = new TaskId(command.getArgument());
-
-    final Message message = new Message()
-      .workflowInstanceId(taskId.getWorkflowInstanceId())
-      .activityInstanceId(taskId.getActivityInstanceId());
+    out.println("Open tasks:");
 
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
-    workflowEngine.send(message);
+
+    for (WorkflowInstance workflowInstance : workflowEngine.findWorkflowInstances(new WorkflowInstanceQuery())) {
+      for (ActivityInstance task : workflowInstance.getActivityInstances()) {
+        if (task.isOpen()) {
+          out.println(String.format("  %s-%s (%s)", workflowInstance.getId(), task.getId(), task.getActivityId()));
+        }
+      }
+    }
+    out.println();
   }
 }

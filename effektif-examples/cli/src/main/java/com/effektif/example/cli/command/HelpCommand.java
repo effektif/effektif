@@ -29,12 +29,12 @@ public class HelpCommand implements CommandImpl {
   @Override
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     out.println("Commands:");
-    out.println("  complete [ID]   Completes the task with the given ID");
+    out.println("  complete [ID]   Completes a task (task ID)");
     out.println("  help            List commands");
-    out.println("  start [ID]      Start the workflow with the given ID");
-    out.println("  tasks           List open tasks (ID and name)");
-    out.println("  task [ID]       Show details of the task with the given ID");
-    out.println("  workflows       List deployed workflows (ID)");
+    out.println("  start [ID]      Start a workflow (workflow ID)");
+    out.println("  tasks           List open tasks for all workflows");
+    out.println("  task [ID]       Show task details (task ID)");
+    out.println("  workflows       List deployed workflows");
     out.println("  quit            Exit command line");
     out.println("");
   }
