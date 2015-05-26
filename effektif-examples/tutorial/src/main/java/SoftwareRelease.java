@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.workflow.Workflow;
 
@@ -22,7 +21,7 @@ public class SoftwareRelease {
   public static Workflow workflow = new Workflow()
     .sourceWorkflowId("release")
     .name("Software release")
-    .activity("Move open issues", new NoneTask()
+    .activity("Move open issues", new ReceiveTask()
       .transitionToNext())
     .activity("Check continuous integration", new ReceiveTask());
 }
