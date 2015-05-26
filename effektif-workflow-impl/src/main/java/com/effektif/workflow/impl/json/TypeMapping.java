@@ -16,6 +16,10 @@ package com.effektif.workflow.impl.json;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.util.Reflection;
 
 
@@ -23,6 +27,8 @@ import com.effektif.workflow.impl.util.Reflection;
  * @author Tom Baeyens
  */
 public class TypeMapping {
+  
+  private static final Logger log = LoggerFactory.getLogger(TypeMapping.class);
 
   Type type;
   Class<?> rawClass;
@@ -31,6 +37,10 @@ public class TypeMapping {
   public TypeMapping(Type type) {
     this.type = type;
     this.rawClass = Reflection.getRawClass(type);
+    if (Binding.class==rawClass) {
+      log.debug("type: "+type+" ("+type.getClass().getSimpleName()+") isParameterized:"+isParameterized());
+      log.debug("");
+    }
   }
   
   public boolean isParameterized() {

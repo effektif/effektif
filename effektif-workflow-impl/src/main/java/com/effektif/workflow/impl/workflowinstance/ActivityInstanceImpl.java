@@ -286,23 +286,25 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
 
   // TODO add the expected type for conversion?
-  public Object getInputValue(String key) {
-    InputParameterImpl parameter = activity.in!=null ? activity.in.get(key) : null;
-    if (parameter.binding!=null) {
-      return getValue(parameter.binding);
-    }
-    if (parameter.bindings!=null) {
-      List<Object> values = new ArrayList<>();
-      for (BindingImpl<?> binding: parameter.bindings) {
-        Object value = getValue(binding);
-        if (value instanceof Collection) {
-          values.addAll((Collection)value);
-        } else {
-          values.add(value);
-        }
+  public <T> T getInputValue(String key) {
+    InputParameterImpl parameter = activity.inputs!=null ? activity.inputs.get(key) : null;
+    if (parameter!=null) {
+      if (parameter.binding != null) {
+        return (T) getValue(parameter.binding);
       }
-      return values;
-    } 
+      if (parameter.bindings != null) {
+        List<Object> values = new ArrayList<>();
+        for (BindingImpl< ? > binding : parameter.bindings) {
+          Object value = getValue(binding);
+          if (value instanceof Collection) {
+            values.addAll((Collection) value);
+          } else {
+            values.add(value);
+          }
+        }
+        return (T) values;
+      }
+    }
     return null;
   }
 }

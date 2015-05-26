@@ -96,6 +96,12 @@ public class Binding<T> {
   public void setDataType(DataType dataType) {
     this.dataType = dataType;
   }
+  
+  public Binding<T> dataType(DataType dataType) {
+    this.dataType = dataType;
+    return this;
+  }
+  
   @Override
   public String toString() {
     return "Binding[value=" + value + ",dataType=" + dataType + ",expression=" + expression + "]";

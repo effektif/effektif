@@ -23,6 +23,7 @@ import java.util.Map;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.types.DataType;
 
 
 /** Base class containing the configuration data for 
@@ -36,7 +37,7 @@ public abstract class Activity extends Scope {
   protected String defaultTransitionId;
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
-  protected Map<String,InputParameter> in;
+  protected Map<String,InputParameter> inputs;
   protected Map<String,OutputParameter> out;
   
   @Override
@@ -122,14 +123,20 @@ public abstract class Activity extends Scope {
     this.outgoingTransitions = outgoingTransitions;
   }
   
-  public Map<String, InputParameter> getIn() {
-    return in;
+  public Map<String, InputParameter> getInputs() {
+    return inputs;
   }
-  public void setIn(Map<String, InputParameter> in) {
-    this.in = in;
+  public void setInputs(Map<String, InputParameter> in) {
+    this.inputs = in;
   }
   public Activity inValue(String key, Object value) {
-    inBinding(key, new Binding().value(value));
+    inValue(key, value, null);
+    return this;
+  }
+  public Activity inValue(String key, Object value, DataType dataType) {
+    inBinding(key, new Binding()
+      .value(value)
+      .dataType(dataType));
     return this;
   }
   public Activity inExpression(String key, String expression) {
@@ -137,20 +144,20 @@ public abstract class Activity extends Scope {
     return this;
   }
   public Activity inBinding(String key, Binding<?> binding) {
-    if (in==null) {
-      in = new HashMap<>();
+    if (inputs==null) {
+      inputs = new HashMap<>();
     }
-    in.put(key, new InputParameter().binding(binding));
+    inputs.put(key, new InputParameter().binding(binding));
     return this;
   }
   public Activity inListBinding(String key, Binding<?> inBinding) {
-    if (in==null) {
-      in = new HashMap<>();
+    if (inputs==null) {
+      inputs = new HashMap<>();
     }
-    InputParameter inParameter = in.get(key);
+    InputParameter inParameter = inputs.get(key);
     if (inParameter==null) {
       inParameter = new InputParameter();
-      in.put(key, inParameter);
+      inputs.put(key, inParameter);
     }
     inParameter.addBinding(inBinding);
     return this;

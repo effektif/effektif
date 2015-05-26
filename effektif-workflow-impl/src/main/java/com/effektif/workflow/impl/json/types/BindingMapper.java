@@ -13,11 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonWriter;
 import com.effektif.workflow.impl.json.TypeMapping;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -27,15 +30,24 @@ import com.effektif.workflow.impl.json.TypeMapping;
  */
 public class BindingMapper extends BeanMapper<Binding> {
   
+  boolean isParameterized = false;
+  
   public BindingMapper(TypeMapping typeMapping) {
     super(typeMapping);
+    if (typeMapping.isParameterized()) {
+      Type typeArg = Reflection.getTypeArg(typeMapping.getType(), 0);
+      if (typeArg!=null 
+          && typeArg!=Object.class) {
+        isParameterized = true;
+      }
+    }
   }
   
   @Override
   public void write(Binding typeValue, JsonWriter jsonWriter) {
     DataType dataType = typeValue.getDataType();
     Object value = typeValue.getValue();
-    if (!typeMapping.isParameterized() // if it's parameterized, then the this.typeMapping already performed the deserialization of the value
+    if (!isParameterized // if it's parameterized, then the this.typeMapping already performed the deserialization of the value
         && dataType==null 
         && value!=null) {
       dataType = mappings.getTypeByValue(value);
@@ -49,7 +61,7 @@ public class BindingMapper extends BeanMapper<Binding> {
     Binding binding = super.read(jsonValue, jsonReader);
     DataType dataType = binding.getDataType();
     Object jsonVariableValue = binding.getValue();
-    if (!typeMapping.isParameterized() // if it's parameterized, then the this.typeMapping already performed the deserialization of the value 
+    if (!isParameterized // if it's parameterized, then the this.typeMapping already performed the deserialization of the value 
         && jsonVariableValue!=null 
         && dataType!=null) {
       Object objectVariableValue = jsonReader.readObject(jsonVariableValue, dataType.getValueType());

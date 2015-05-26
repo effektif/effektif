@@ -110,15 +110,22 @@ public class Reflection {
     if (type instanceof ParameterizedType) {
       Type[] typeArgs = ((ParameterizedType) type).getActualTypeArguments();
       if (typeArgs!=null && i<typeArgs.length) {
-        return typeArgs[i];
+        return resolveWildCard(typeArgs[i]);
       }
     } else if (type instanceof GenericType) {
       Type[] typeArgs = ((GenericType) type).getTypeArgs();
       if (typeArgs!=null && i<typeArgs.length) {
-        return typeArgs[i];
+        return resolveWildCard(typeArgs[i]);
       }
     }
     return null;
+  }
+
+  private static Type resolveWildCard(Type type) {
+    if (type instanceof WildcardType) {
+      return ((WildcardType)type).getUpperBounds()[0];
+    }
+    return type;
   }
 
   /** converts ParameterizedType into GenericType */
@@ -236,11 +243,9 @@ public class Reflection {
     }
     Class<?> rawClass = getRawClass(type);
     Map<TypeVariable,Type> typeVariables = new HashMap<>();
-    // Map<String,Type> typeArgsMap = new HashMap<>();
     TypeVariable<?>[] typeParameters = rawClass.getTypeParameters();
     for (int i=0; i<typeArgs.length; i++) {
       typeVariables.put(typeParameters[i], typeArgs[i]);
-      // typeArgsMap.put(typeParameters[i].toString(), typeArgs[i]);
     }
     return typeVariables;
   }

@@ -46,8 +46,8 @@ public class ActivityImpl extends ScopeImpl {
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitions} */
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
-  public Map<String,InputParameterImpl> in;
-  public Map<String,OutputParameterImpl> out;
+  public Map<String,InputParameterImpl> inputs;
+  public Map<String,OutputParameterImpl> outputs;
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
@@ -83,10 +83,10 @@ public class ActivityImpl extends ScopeImpl {
       activity.setOutgoingTransitions(null);
     }
     
-    Map<String, InputParameter> in = activity.getIn();
+    Map<String, InputParameter> in = activity.getInputs();
     if (in!=null) {
-      this.in = new HashMap<>();
-      parser.pushContext("in", in, this.in, null);
+      this.inputs = new HashMap<>();
+      parser.pushContext("in", in, this.inputs, null);
       for (String key: in.keySet()) {
         InputParameter inParameter = in.get(key);
         InputParameterImpl inParameterImpl = new InputParameterImpl(key);
@@ -104,20 +104,20 @@ public class ActivityImpl extends ScopeImpl {
         }
         inParameterImpl.properties = inParameter.getProperties();
         parser.popContext();
-        this.in.put(key, inParameterImpl);
+        this.inputs.put(key, inParameterImpl);
       }
       parser.popContext();
     }
     
     Map<String, OutputParameter> out = activity.getOut();
     if (out!=null) {
-      this.out = new HashMap<>();
+      this.outputs = new HashMap<>();
       for (String key: out.keySet()) {
         OutputParameter outParameter = out.get(key);
         OutputParameterImpl outParameterImpl = new OutputParameterImpl(key);
         outParameterImpl.variableId = outParameter.getVariableId();
         outParameterImpl.properties = outParameter.getProperties();
-        this.out.put(key, outParameterImpl);
+        this.outputs.put(key, outParameterImpl);
       }
     }
   }
