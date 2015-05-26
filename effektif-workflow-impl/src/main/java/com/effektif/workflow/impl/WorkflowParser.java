@@ -235,8 +235,7 @@ public class WorkflowParser {
     }
     return bindingImpl;
   }
-
-
+  
   public void addError(String message, Object... messageArgs) {
     ParseContext currentContext = contextStack.peek();
     issues.addIssue(IssueType.error, getPathText(), currentContext.getLine(), currentContext.getColumn(), message, messageArgs);

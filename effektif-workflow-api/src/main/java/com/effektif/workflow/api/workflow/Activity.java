@@ -16,7 +16,9 @@
 package com.effektif.workflow.api.workflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
@@ -34,34 +36,20 @@ public abstract class Activity extends Scope {
   protected String defaultTransitionId;
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
-  
-//  @Override
-//  public void readJson(JsonReader r) {
-//    id = r.readString("id");
-//    super.readJson(r);
-//    defaultTransitionId = r.readString("defaultTransitionId");
-//    // multiInstance = r.readObject("multiInstance", MultiInstance.class);
-//    outgoingTransitions = r.readList("outgoingTransitions");
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    w.writeString("id", id);
-//    super.writeJson(w);
-//    w.writeString("defaultTransitionId", defaultTransitionId);
-//    w.writeWritable("multiInstance", multiInstance);
-//    w.writeList("outgoingTransitions", outgoingTransitions);
-//  }
+  protected Map<String,InputParameter> in;
+  protected Map<String,OutputParameter> out;
   
   @Override
   public void readBpmn(BpmnReader r) {
     id = r.readStringAttributeBpmn("id");
+    // outgoing transitions doesn't have to be bpmnized
     super.readBpmn(r);
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.writeStringAttributeBpmn("id", id);
+    // outgoing transitions doesn't have to be bpmnized
     super.writeBpmn(w);
   }
   
@@ -132,6 +120,55 @@ public abstract class Activity extends Scope {
   
   public void setOutgoingTransitions(List<Transition> outgoingTransitions) {
     this.outgoingTransitions = outgoingTransitions;
+  }
+  
+  public Map<String, InputParameter> getIn() {
+    return in;
+  }
+  public void setIn(Map<String, InputParameter> in) {
+    this.in = in;
+  }
+  public Activity inValue(String key, Object value) {
+    inBinding(key, new Binding().value(value));
+    return this;
+  }
+  public Activity inExpression(String key, String expression) {
+    inBinding(key, new Binding().expression(expression));
+    return this;
+  }
+  public Activity inBinding(String key, Binding<?> binding) {
+    if (in==null) {
+      in = new HashMap<>();
+    }
+    in.put(key, new InputParameter().binding(binding));
+    return this;
+  }
+  public Activity inListBinding(String key, Binding<?> inBinding) {
+    if (in==null) {
+      in = new HashMap<>();
+    }
+    InputParameter inParameter = in.get(key);
+    if (inParameter==null) {
+      inParameter = new InputParameter();
+      in.put(key, inParameter);
+    }
+    inParameter.addBinding(inBinding);
+    return this;
+  }
+
+  public Map<String, OutputParameter> getOut() {
+    return out;
+  }
+  public void setOut(Map<String, OutputParameter> out) {
+    this.out = out;
+  }
+  public Activity out(String key, String outputVariableId) {
+    if (out==null) {
+      out = new HashMap<>();
+    }
+    out.put(key, new OutputParameter()
+      .variableId(outputVariableId));
+    return this;
   }
 
   @Override

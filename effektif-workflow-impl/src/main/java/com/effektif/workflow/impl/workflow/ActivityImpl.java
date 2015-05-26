@@ -16,9 +16,14 @@
 package com.effektif.workflow.impl.workflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.InputParameter;
+import com.effektif.workflow.api.workflow.OutputParameter;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -41,6 +46,8 @@ public class ActivityImpl extends ScopeImpl {
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitions} */
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
+  public Map<String,InputParameterImpl> in;
+  public Map<String,OutputParameterImpl> out;
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
@@ -74,6 +81,44 @@ public class ActivityImpl extends ScopeImpl {
         parentScope.transition(transition);
       }
       activity.setOutgoingTransitions(null);
+    }
+    
+    Map<String, InputParameter> in = activity.getIn();
+    if (in!=null) {
+      this.in = new HashMap<>();
+      parser.pushContext("in", in, this.in, null);
+      for (String key: in.keySet()) {
+        InputParameter inParameter = in.get(key);
+        InputParameterImpl inParameterImpl = new InputParameterImpl(key);
+        parser.pushContext(key, inParameter, inParameterImpl, null);
+        Binding< ? > singleBinding = inParameter.getBinding();
+        if (singleBinding!=null) {
+          inParameterImpl.binding = parser.parseBinding(singleBinding, "binding");
+        }
+        List<Binding<?>> listBindings = inParameter.getBindings();
+        if (listBindings!=null) {
+          inParameterImpl.bindings = new ArrayList<>();
+          for (Binding<?> listBinding: listBindings) {
+            inParameterImpl.bindings.add(parser.parseBinding(listBinding, "binding"));
+          }
+        }
+        inParameterImpl.properties = inParameter.getProperties();
+        parser.popContext();
+        this.in.put(key, inParameterImpl);
+      }
+      parser.popContext();
+    }
+    
+    Map<String, OutputParameter> out = activity.getOut();
+    if (out!=null) {
+      this.out = new HashMap<>();
+      for (String key: out.keySet()) {
+        OutputParameter outParameter = out.get(key);
+        OutputParameterImpl outParameterImpl = new OutputParameterImpl(key);
+        outParameterImpl.variableId = outParameter.getVariableId();
+        outParameterImpl.properties = outParameter.getProperties();
+        this.out.put(key, outParameterImpl);
+      }
     }
   }
   

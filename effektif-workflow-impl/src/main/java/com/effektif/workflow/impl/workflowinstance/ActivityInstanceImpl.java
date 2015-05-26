@@ -15,21 +15,25 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -279,5 +283,26 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
 
   public String getId() {
     return id;
+  }
+
+  // TODO add the expected type for conversion?
+  public Object getInputValue(String key) {
+    InputParameterImpl parameter = activity.in!=null ? activity.in.get(key) : null;
+    if (parameter.binding!=null) {
+      return getValue(parameter.binding);
+    }
+    if (parameter.bindings!=null) {
+      List<Object> values = new ArrayList<>();
+      for (BindingImpl<?> binding: parameter.bindings) {
+        Object value = getValue(binding);
+        if (value instanceof Collection) {
+          values.addAll((Collection)value);
+        } else {
+          values.add(value);
+        }
+      }
+      return values;
+    } 
+    return null;
   }
 }

@@ -34,6 +34,8 @@ import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -249,5 +251,20 @@ public class WorkflowStreamTest {
     assertEquals("codeComplete", activity.getId());
     assertEquals("code complete", activity.getName());
     assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
+  }
+
+  @Test // TODO
+  public void testInOutParameters() {
+    Workflow workflow = new Workflow()
+      .activity("a", new NoneTask()
+        .inValue("in1", "value1")
+        .inExpression("in2", "expression2")
+        .inListBinding("in3", new Binding<Object>().value("listValue1"))
+        .inListBinding("in3", new Binding<Object>().expression("listExpression2")));
+    workflow = serialize(workflow);
+    
+    Activity activity = workflow.getActivities().get(0);
+    assertEquals("value1", activity.getIn().get("in1").getBinding().getValue());
+    assertEquals("expression2", activity.getIn().get("in2").getBinding().getExpression());
   }
 }

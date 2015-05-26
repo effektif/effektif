@@ -315,10 +315,12 @@ public class Mappings {
     Class<?> clazz = Reflection.getRawClass(type);
     Set<FieldMapping> inlineFieldMappings = new HashSet<>();
     for (FieldMapping fieldMapping: fieldMappings) {
+      // apply the json field name overwriting
       String jsonFieldName = fieldNames.get(fieldMapping.field);
       if (jsonFieldName!=null) {
         fieldMapping.jsonFieldName = jsonFieldName;
       }
+      // capture the inline field mappings in a collection
       if (inlineFields.contains(fieldMapping.field)) {
         inlineFieldMappings.add(fieldMapping);
       }

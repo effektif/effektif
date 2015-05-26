@@ -338,6 +338,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   public void setVariableValue(VariableInstanceImpl variableInstance, Object value) {
+    log.debug("Updating variable '"+variableInstance.variable.id+" to "+value);
     variableInstance.setValue(value);
     if (updates!=null) {
       updates.isVariableInstancesChanged = true;
