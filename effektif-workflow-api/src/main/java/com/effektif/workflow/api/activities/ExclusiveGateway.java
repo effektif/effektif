@@ -35,18 +35,6 @@ import com.effektif.workflow.api.workflow.Transition;
 public class ExclusiveGateway extends Activity {
 
   @Override
-  public void readBpmn(BpmnReader r) {
-    super.readBpmn(r);
-    defaultTransitionId = r.readStringAttributeEffektif("defaultTransitionId");
-  }
-
-  @Override
-  public void writeBpmn(BpmnWriter w) {
-    super.writeBpmn(w);
-    w.writeStringAttributeEffektif("defaultTransitionId", defaultTransitionId);
-  }
-  
-  @Override
   public ExclusiveGateway id(String id) {
     super.id(id);
     return this;

@@ -89,12 +89,15 @@ public interface BpmnWriter {
   /** Writes an element in the Effektif namespace with the value as a text attribute. */
   void writeStringValue(String localPart, String attributeName, Object value);
 
-  /** write an element in the BPMN namespace with the value as content text.  if necessary, the value will be wrapped
-   * automatic in a CDATA section */
-  void writeTextBpmn(String localPart, Object value);
+  /** Writes text as the body of the current element. */
+  void writeText(String value);
 
-  /** write an element in the Effektif namespace with the value as content text. */
-  void writeTextEffektif(String localPart, Object value);
+  /** Writes an element in the BPMN namespace with the value as content text.
+   * If necessary, the value will be wrapped in a CDATA section. */
+  void writeTextElementBpmn(String localPart, Object value);
+
+  /** Writes an element in the Effektif namespace with the value as content text. */
+  void writeTextElementEffektif(String localPart, Object value);
 
   /** Writes a <code>type</code> attribute whose value is a data type name. */
   void writeTypeAttribute(Object o);

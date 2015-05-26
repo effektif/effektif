@@ -374,16 +374,23 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   @Override
-  public void writeTextBpmn(String localPart, Object value) {
-    writeText(BPMN_URI, localPart, value);
+  public void writeText(String value) {
+    if (value != null) {
+      xml.addText(value);
+    }
   }
 
   @Override
-  public void writeTextEffektif(String localPart, Object value) {
-    writeText(EFFEKTIF_URI, localPart, value);
+  public void writeTextElementBpmn(String localPart, Object value) {
+    writeTextElement(BPMN_URI, localPart, value);
   }
 
-  protected void writeText(String namespaceUri, String localPart, Object value) {
+  @Override
+  public void writeTextElementEffektif(String localPart, Object value) {
+    writeTextElement(EFFEKTIF_URI, localPart, value);
+  }
+
+  protected void writeTextElement(String namespaceUri, String localPart, Object value) {
     if (value!=null) {
       xml.createElement(namespaceUri, localPart).addText(value);
     }

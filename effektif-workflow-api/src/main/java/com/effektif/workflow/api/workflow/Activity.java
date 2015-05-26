@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.types.DataType;
 
@@ -42,16 +43,27 @@ public abstract class Activity extends Scope {
   
   @Override
   public void readBpmn(BpmnReader r) {
-    id = r.readStringAttributeBpmn("id");
-    // outgoing transitions doesn't have to be bpmnized
     super.readBpmn(r);
+    id = r.readStringAttributeBpmn("id");
+    defaultTransitionId = r.readStringAttributeEffektif("defaultTransitionId");
+    r.startExtensionElements();
+    for (XmlElement element : r.readElementsEffektif("multiInstance")) {
+      r.startElement(element);
+      multiInstance = new MultiInstance();
+      multiInstance.readBpmn(r);
+      r.endElement();
+    }
+    r.endExtensionElements();
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.writeStringAttributeBpmn("id", id);
-    // outgoing transitions doesn't have to be bpmnized
     super.writeBpmn(w);
+    w.writeStringAttributeBpmn("id", id);
+    w.writeStringAttributeEffektif("defaultTransitionId", defaultTransitionId);
+    if (multiInstance != null) {
+      multiInstance.writeBpmn(w);
+    }
   }
   
   public String getId() {

@@ -18,19 +18,62 @@ package com.effektif.workflow.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.bpmn.BpmnReadable;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWritable;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.types.DataType;
 
 
 /**
+ * Models multiple instances of a workflow activity, where each instance has a specified workflow variable set to one
+ * of the values in a collection.
+ *
+ * Note that BPMN supports an <code>isSequential</code> flag to indicate whether the multiple instances are executed
+ * sequentially or in parallel.
+ *
  * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
  * @author Tom Baeyens
  */
-public class MultiInstance {
+public class MultiInstance implements BpmnReadable, BpmnWritable {
 
   protected Variable variable;
   protected List<Binding<Object>> values;
 
-//  @Override
+  /**
+   * Reads the multi-instance model from extension elements, ignoring the BPMN multiInstanceLoopCharacteristics element.
+   */
+  @Override
+  public void readBpmn(BpmnReader r) {
+    for (XmlElement element : r.readElementsEffektif("variable")) {
+      r.startElement(element);
+      variable = new Variable();
+      variable.setId(r.readStringAttributeBpmn("id"));
+      variable.setType(r.readTypeAttributeEffektif());
+      r.endElement();
+    }
+    values = r.readBindings("value", Object.class);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startExtensionElements();
+    w.startElementEffektif("multiInstance");
+    w.startElementEffektif("variable");
+    w.writeStringAttributeEffektif("id", variable.getId());
+    w.writeTypeAttribute(variable.getType());
+    w.endElement();
+    w.writeBindings("value", values);
+    w.endElement();
+    w.endExtensionElements();
+
+    // TODO Don't write the multiInstanceLoopCharacteristics if it's already in Element.bpmn
+    w.startElementBpmn("multiInstanceLoopCharacteristics");
+    w.endElement();
+  }
+
+  //  @Override
 //  public void readJson(JsonReader r) {
 //    variable = r.readObject("variable");
 //    values = r.readList("values");
@@ -75,4 +118,5 @@ public class MultiInstance {
     values.add(valueBinding);
     return this;
   }
+
 }

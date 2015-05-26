@@ -124,7 +124,7 @@ public interface BpmnReader {
   /** Reads a string field as an attribute on the current xml element in the Effektif namespace */
   String readStringAttributeEffektif(String localPart);
 
-  /** Reads an id as an attribute on the current xml element in the BPMN namespace */
+  /** Reads an id as an attribute on the current xml element in the BPMN namespace. */
   <T extends Id> T readIdAttributeBpmn(String localPart, Class<T> idType);
 
   /** Reads an id as an attribute on the current xml element in the Effektif namespace */
@@ -139,7 +139,10 @@ public interface BpmnReader {
   /** Reads a string from the ‘value’ attribute in the named element in the Effektif namespace. */
   String readStringValue(String localPart);
 
-  /** Reads a string as content text in the current xml element */
+  /** Reads a string as content text in the current xml element in the BPMN namespace. */
+  String readTextBpmn(String localPart);
+
+  /** Reads a string as content text in the current xml element in the Effektif namespace. */
   String readTextEffektif(String localPart);
 
   /** TODO */

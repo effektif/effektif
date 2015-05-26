@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import static org.junit.Assert.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,10 +34,15 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 /**
@@ -125,7 +128,23 @@ public class WorkflowStreamTest {
     assertEquals(now, workflow.getCreateTime());
   }
 
-  @Test 
+  @Test
+  public void testActivity() {
+    Activity activity = new NoneTask()
+      .id("verifyRequirements")
+      .defaultTransitionId("continue")
+      .multiInstance(new MultiInstance()
+        .valuesExpression("reviewers")
+        .variable("reviewer", TextType.INSTANCE));
+    activity = serialize(activity);
+    assertEquals("verifyRequirements", activity.getId());
+    assertEquals("continue", activity.getDefaultTransitionId());
+    assertNotNull(activity.getMultiInstance());
+    assertEquals("reviewer", activity.getMultiInstance().getVariable().getId());
+    assertEquals("reviewers", activity.getMultiInstance().getValues().get(0).getExpression());
+  }
+
+  @Test
   public void testCall() {
     LocalDateTime now = new LocalDateTime();
     Workflow workflow = new Workflow()
