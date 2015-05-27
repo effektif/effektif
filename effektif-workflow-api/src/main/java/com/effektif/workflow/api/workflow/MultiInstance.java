@@ -58,18 +58,12 @@ public class MultiInstance implements BpmnReadable, BpmnWritable {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startExtensionElements();
     w.startElementEffektif("multiInstance");
     w.startElementEffektif("variable");
     w.writeStringAttributeEffektif("id", variable.getId());
     w.writeTypeAttribute(variable.getType());
     w.endElement();
     w.writeBindings("value", values);
-    w.endElement();
-    w.endExtensionElements();
-
-    // TODO Don't write the multiInstanceLoopCharacteristics if it's already in Element.bpmn
-    w.startElementBpmn("multiInstanceLoopCharacteristics");
     w.endElement();
   }
 

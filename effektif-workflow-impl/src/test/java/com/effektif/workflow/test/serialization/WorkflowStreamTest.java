@@ -272,14 +272,14 @@ public class WorkflowStreamTest {
     assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
   }
 
-  // @Test 
+//  @Test
   public void testInOutParameters() {
     Workflow workflow = new Workflow()
       .activity("a", new NoneTask()
         .inValue("in1", "value1")
         .inExpression("in2", "expression2")
-        .inListBinding("in3", new Binding<Object>().value("listValue1"))
-        .inListBinding("in3", new Binding<Object>().expression("listExpression2"))
+        .inListBinding("in3", new Binding().value("listValue1"))
+        .inListBinding("in3", new Binding().expression("listExpression2"))
         .out("out1", "var1"));
     workflow = serialize(workflow);
     

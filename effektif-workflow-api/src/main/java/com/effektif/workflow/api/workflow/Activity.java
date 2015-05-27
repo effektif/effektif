@@ -26,8 +26,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.types.DataType;
 
-
-/** Base class containing the configuration data for 
+/** Base class containing the configuration data for
  * specific activity types.
  * 
  * @author Tom Baeyens
@@ -47,23 +46,94 @@ public abstract class Activity extends Scope {
     id = r.readStringAttributeBpmn("id");
     defaultTransitionId = r.readStringAttributeEffektif("defaultTransitionId");
     r.startExtensionElements();
+
     for (XmlElement element : r.readElementsEffektif("multiInstance")) {
       r.startElement(element);
       multiInstance = new MultiInstance();
       multiInstance.readBpmn(r);
       r.endElement();
     }
+
+    for (XmlElement element : r.readElementsEffektif("inputParameter")) {
+      if (inputs == null) {
+        inputs = new HashMap<>();
+      }
+      r.startElement(element);
+      String key = r.readStringAttributeEffektif("key");
+      List<Binding<Object>> bindings = r.readBindings("binding", Object.class);
+
+      InputParameter parameter = new InputParameter();
+      if (bindings != null) {
+        if (bindings.size() == 1) {
+          parameter.setBinding(bindings.get(0));
+        }
+        else {
+          List untypedBindings = bindings;
+          parameter.setBindings(untypedBindings);
+        }
+      }
+      inputs.put(key, parameter);
+      r.endElement();
+    }
+
+    for (XmlElement element : r.readElementsEffektif("outputParameter")) {
+      if (out == null) {
+        out = new HashMap<>();
+      }
+      r.startElement(element);
+      String key = r.readStringAttributeEffektif("key");
+      String variableId = r.readStringAttributeEffektif("id");
+      out.put(key, new OutputParameter().variableId(variableId));
+      r.endElement();
+    }
+
     r.endExtensionElements();
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    super.writeBpmn(w);
     w.writeStringAttributeBpmn("id", id);
     w.writeStringAttributeEffektif("defaultTransitionId", defaultTransitionId);
-    if (multiInstance != null) {
-      multiInstance.writeBpmn(w);
+
+    super.writeBpmn(w);
+
+    if (multiInstance != null || inputs != null || out != null) {
+      w.startExtensionElements();
+
+      if (multiInstance != null) {
+        multiInstance.writeBpmn(w);
+      }
+
+      if (inputs != null) {
+        for (Map.Entry<String, InputParameter> parameter : inputs.entrySet()) {
+          w.startElementEffektif("inputParameter");
+          w.writeStringAttributeEffektif("key", parameter.getKey());
+          w.writeBinding("binding", parameter.getValue().getBinding());
+          // TODO Is there a cleaner way to get around the generic types than assigning to List without a type parameter?
+          List bindings = parameter.getValue().getBindings();
+          w.writeBindings("binding", bindings);
+          w.endElement();
+        }
+      }
+
+      if (out != null) {
+        for (Map.Entry<String, OutputParameter> parameter : out.entrySet()) {
+          w.startElementEffektif("outputParameter");
+          w.writeStringAttributeEffektif("key", parameter.getKey());
+          w.writeStringAttributeEffektif("id", parameter.getValue().getVariableId());
+          w.endElement();
+        }
+      }
+
+      w.endExtensionElements();
     }
+
+    if (multiInstance != null) {
+      // TODO Don't write the multiInstanceLoopCharacteristics if it's already in Element.bpmn
+      w.startElementBpmn("multiInstanceLoopCharacteristics");
+      w.endElement();
+    }
+
   }
   
   public String getId() {
@@ -146,8 +216,7 @@ public abstract class Activity extends Scope {
     return this;
   }
   public Activity inValue(String key, Object value, DataType dataType) {
-    inBinding(key, new Binding()
-      .value(value)
+    inBinding(key, new Binding().value(value)
       .dataType(dataType));
     return this;
   }
