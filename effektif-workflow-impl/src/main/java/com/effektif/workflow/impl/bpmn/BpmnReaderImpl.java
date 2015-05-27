@@ -314,7 +314,6 @@ public class BpmnReaderImpl implements BpmnReader {
       String value = element.getAttribute(EFFEKTIF_URI, "value");
       String typeName = element.getAttribute(EFFEKTIF_URI, "type");
       DataType type = convertType(typeName);
-      log.debug("type = " + type);
       binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
       binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
       bindings.add(binding);
