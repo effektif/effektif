@@ -18,6 +18,8 @@ import com.effektif.workflow.impl.json.Mappings;
 
 
 /**
+ * Maps values of some type to a JSON string field for serialisation and deserialisation.
+ *
  * @author Tom Baeyens
  */
 public abstract class AbstractTypeMapper<T> implements JsonTypeMapper<T> {
