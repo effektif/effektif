@@ -39,7 +39,7 @@ public abstract class Activity extends Scope {
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
   protected Map<String,InputParameter> inputs;
-  protected Map<String,OutputParameter> out;
+  protected Map<String,OutputParameter> outputs;
   
   @Override
   public void readBpmn(BpmnReader r) {
@@ -53,6 +53,8 @@ public abstract class Activity extends Scope {
       multiInstance.readBpmn(r);
       r.endElement();
     }
+    // TODO add input
+    // TODO add output (also see Trigger)
     r.endExtensionElements();
   }
 
@@ -64,6 +66,8 @@ public abstract class Activity extends Scope {
     if (multiInstance != null) {
       multiInstance.writeBpmn(w);
     }
+    // TODO add input
+    // TODO add output (also see Trigger)
   }
   
   public String getId() {
@@ -138,55 +142,59 @@ public abstract class Activity extends Scope {
   public Map<String, InputParameter> getInputs() {
     return inputs;
   }
-  public void setInputs(Map<String, InputParameter> in) {
-    this.inputs = in;
+  public void setInputs(Map<String, InputParameter> inputs) {
+    this.inputs = inputs;
   }
-  public Activity inValue(String key, Object value) {
-    inValue(key, value, null);
+  public Activity inputValue(String key, Object value) {
+    inputValue(key, value, null);
     return this;
   }
-  public Activity inValue(String key, Object value, DataType dataType) {
-    inBinding(key, new Binding()
+  public Activity inputValue(String key, Object value, DataType dataType) {
+    inputBinding(key, new Binding()
       .value(value)
       .dataType(dataType));
     return this;
   }
-  public Activity inExpression(String key, String expression) {
-    inBinding(key, new Binding().expression(expression));
+  public Activity inputExpression(String key, String expression) {
+    inputBinding(key, new Binding().expression(expression));
     return this;
   }
-  public Activity inBinding(String key, Binding<?> binding) {
+  public Activity inputBinding(String key, Binding<?> binding) {
     if (inputs==null) {
       inputs = new HashMap<>();
     }
     inputs.put(key, new InputParameter().binding(binding));
     return this;
   }
-  public Activity inListBinding(String key, Binding<?> inBinding) {
+  public Activity inputListBinding(String key, Binding<?> inputBinding) {
     if (inputs==null) {
       inputs = new HashMap<>();
     }
-    InputParameter inParameter = inputs.get(key);
-    if (inParameter==null) {
-      inParameter = new InputParameter();
-      inputs.put(key, inParameter);
+    InputParameter inputParameter = inputs.get(key);
+    if (inputParameter==null) {
+      inputParameter = new InputParameter();
+      inputs.put(key, inputParameter);
     }
-    inParameter.addBinding(inBinding);
+    inputParameter.addBinding(inputBinding);
     return this;
   }
 
-  public Map<String, OutputParameter> getOut() {
-    return out;
+  public Map<String, OutputParameter> getOutputs() {
+    return outputs;
   }
-  public void setOut(Map<String, OutputParameter> out) {
-    this.out = out;
+  public void setOutputs(Map<String, OutputParameter> outputs) {
+    this.outputs = outputs;
   }
-  public Activity out(String key, String outputVariableId) {
-    if (out==null) {
-      out = new HashMap<>();
+  public Activity output(String key, String outputVariableId) {
+    output(key, new OutputParameter().variableId(outputVariableId));
+    return this;
+  }
+  
+  public Activity output(String key, OutputParameter outputParameter) {
+    if (outputs==null) {
+      outputs = new HashMap<>();
     }
-    out.put(key, new OutputParameter()
-      .variableId(outputVariableId));
+    outputs.put(key, outputParameter);
     return this;
   }
 

@@ -64,7 +64,7 @@ public class EmailTask extends Activity {
     w.writeBindings("toEmailAddress", toEmailAddresses);
     w.writeBindings("ccEmailAddress", ccEmailAddresses);
     w.writeBindings("bccEmailAddress", bccEmailAddresses);
-    w.writeTextEffektif("subject", subject);
+    w.writeTextElementEffektif("subject", subject);
     w.writeCDataTextEffektif("bodyText", bodyText);
     w.writeCDataTextEffektif("bodyHtml", bodyHtml);
     w.endExtensionElements();

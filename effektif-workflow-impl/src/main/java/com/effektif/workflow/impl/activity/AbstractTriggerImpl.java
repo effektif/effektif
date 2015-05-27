@@ -15,10 +15,14 @@
  */
 package com.effektif.workflow.impl.activity;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -28,6 +32,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
  */
 public abstract class AbstractTriggerImpl<T extends Trigger> {
   
+  Map<String,OutputParameterImpl> outputs;
   Class<T> triggerApiClass;
   
   public AbstractTriggerImpl(Class<T> triggerApiClass) {
@@ -46,6 +51,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
    * Parses the {@link com.effektif.workflow.api.workflow.Trigger} to set up this object.
    */
   public void parse(WorkflowImpl workflow, T trigger, WorkflowParser parser) {
+    this.outputs = parser.parseOutputs(trigger.getOutputs());
   }
 
   public void published(WorkflowImpl workflow) {
@@ -56,6 +62,18 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
    * {@link com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl} when starting a workflow.
    */
   public void applyTriggerData(WorkflowInstanceImpl workflowInstance, TriggerInstance triggerInstance) {
+    Map<String, TypedValue> data = triggerInstance.getData();
+    if (data!=null) {
+      for (String key: data.keySet()) {
+        TypedValue typedValue = data.get(key);
+        Object value = typedValue!=null ? typedValue.getValue() : null;
+        OutputParameterImpl output = outputs!=null ? outputs.get(key) : null;
+        String variableId = output!=null ? output.variableId : null;
+        if (value!=null && variableId!=null) {
+          workflowInstance.setVariableValue(variableId, value);
+        }
+      }
+    }
   }
 
   public DataTypeImpl<?> getDataTypeForTriggerKey(String triggerKey) {

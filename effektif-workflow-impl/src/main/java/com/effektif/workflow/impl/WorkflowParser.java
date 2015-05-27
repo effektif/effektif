@@ -16,9 +16,11 @@
 package com.effektif.workflow.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -34,6 +36,7 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Element;
 import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.OutputParameter;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Transition;
@@ -47,6 +50,7 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
+import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
@@ -324,6 +328,21 @@ public class WorkflowParser {
       if (elementImpl instanceof ScopeImpl) {
         return (ScopeImpl) elementImpl;
       }
+    }
+    return null;
+  }
+
+  public Map<String, OutputParameterImpl> parseOutputs(Map<String, OutputParameter> outputs) {
+    if (outputs!=null) {
+      Map<String, OutputParameterImpl> outputImpls = new HashMap<>();
+      for (String key: outputs.keySet()) {
+        OutputParameter outParameter = outputs.get(key);
+        OutputParameterImpl outParameterImpl = new OutputParameterImpl(key);
+        outParameterImpl.variableId = outParameter.getVariableId();
+        outParameterImpl.properties = outParameter.getProperties();
+        outputImpls.put(key, outParameterImpl);
+      }
+      return outputImpls;
     }
     return null;
   }

@@ -15,12 +15,50 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.effektif.workflow.api.bpmn.BpmnReadable;
+import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 
 /**
  * @author Tom Baeyens
  */
 public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
+  protected Map<String,OutputParameter> outputs;
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    // TODO add output parameters
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.startElementEffektif("trigger");
+    w.endElement();
+    // TODO add output parameters
+  }
+  
+  public Map<String, OutputParameter> getOutputs() {
+    return outputs;
+  }
+  public void setOutputs(Map<String, OutputParameter> outputs) {
+    this.outputs = outputs;
+  }
+  
+  public Trigger output(String key, String outputVariableId) {
+    output(key, new OutputParameter().variableId(outputVariableId));
+    return this;
+  }
+  
+  public Trigger output(String key, OutputParameter outputParameter) {
+    if (outputs==null) {
+      outputs = new HashMap<>();
+    }
+    outputs.put(key, outputParameter);
+    return this;
+  }
 }

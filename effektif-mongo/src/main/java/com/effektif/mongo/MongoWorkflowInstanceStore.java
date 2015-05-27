@@ -418,7 +418,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 //    writeLongOpt(dbWorkflowInstance, WorkflowInstanceFields.DURATION, workflowInstance.duration);
 //    writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.LOCK, writeLock(workflowInstance.lock));
 //    
-    writeVariableInstances(dbWorkflowInstance, workflowInstance);
+    // writeVariableInstances(dbWorkflowInstance, workflowInstance);
 //    writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.WORK, writeWork(workflowInstance.work));
 //    writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.WORK_ASYNC, writeWork(workflowInstance.workAsync));
 //    writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.JOBS, writeJobs(workflowInstance.jobs));

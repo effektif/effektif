@@ -43,7 +43,7 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   
   @Override
   public String toString() {
-    return "["+variable.id+"="+value+"]";
+    return "("+variable.id+"="+value+")";
   }
 
   public VariableInstance toVariableInstance() {

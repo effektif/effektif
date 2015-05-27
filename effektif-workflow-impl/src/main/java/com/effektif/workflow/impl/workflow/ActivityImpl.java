@@ -109,19 +109,9 @@ public class ActivityImpl extends ScopeImpl {
       parser.popContext();
     }
     
-    Map<String, OutputParameter> out = activity.getOut();
-    if (out!=null) {
-      this.outputs = new HashMap<>();
-      for (String key: out.keySet()) {
-        OutputParameter outParameter = out.get(key);
-        OutputParameterImpl outParameterImpl = new OutputParameterImpl(key);
-        outParameterImpl.variableId = outParameter.getVariableId();
-        outParameterImpl.properties = outParameter.getProperties();
-        this.outputs.put(key, outParameterImpl);
-      }
-    }
+    this.outputs = parser.parseOutputs(activity.getOutputs());
   }
-  
+
   public boolean isMultiInstance() {
     return activityType.getMultiInstance() != null; 
   }
