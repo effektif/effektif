@@ -25,6 +25,8 @@ import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.impl.json.JsonObjectReader;
+import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeMapping;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
@@ -48,6 +50,21 @@ import static com.effektif.workflow.impl.bpmn.Bpmn.EFFEKTIF_URI;
 import static com.effektif.workflow.impl.bpmn.Bpmn.KEY_DEFINITIONS;
 
 /**
+ * This implementation of the BPMN reader is based on reading single values from XML elements and attributes into
+ * single-valued (mostly primitive) types. Complex types and arbitrary Java beans are not supported
+ *
+ * To support complex types in the future, a preferable alternative to implementing an bean mapping framework will be to
+ * leverage the existing JSON mapping implementation, which supports nested structures, and read complex objects from
+ * JSON embedded in CDATA sections in the BPMN. For example, something like:
+ *
+ * <pre>
+ *   <e:input key="user">
+ *     <e:binding type="json"><![CDATA[
+ *       { type: "user", id: 42, name: "Joe Bloggs" }
+ *     ]]></e:binding>
+ *   </e:input>
+ * </pre>
+ *
  * @author Tom Baeyens
  */
 public class BpmnReaderImpl implements BpmnReader {
@@ -321,6 +338,7 @@ public class BpmnReaderImpl implements BpmnReader {
     return bindings;
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T parseText(String value, Class<T> type) {
     if (value==null) {
       return null;
@@ -343,7 +361,13 @@ public class BpmnReaderImpl implements BpmnReader {
     if (type==LocalDateTime.class) {
       return (T) LocalDateTimeStreamMapper.PARSER.parseLocalDateTime(value);
     }
-    throw new RuntimeException("Couldn't parse "+value+" ("+value.getClass().getName()+") as a "+type.getName());
+
+    // Use a registered JSON type mapper to parse the value.
+    JsonObjectReader jsonReader = new JsonObjectReader(bpmnMappings);
+    JsonTypeMapper typeMapper = bpmnMappings.getTypeMapper(type);
+    Map<String,Object> jsonValue = new HashMap<>();
+    jsonValue.put("value", value);
+    return (T) typeMapper.read(jsonValue, jsonReader);
   }
   
   /**
