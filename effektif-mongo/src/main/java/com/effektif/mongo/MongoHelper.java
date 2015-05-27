@@ -17,6 +17,7 @@ package com.effektif.mongo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 
 public abstract class MongoHelper {
@@ -167,4 +169,20 @@ public abstract class MongoHelper {
     }
     return null;
   }
+  
+  public static Map<String,Object> toMap(DBObject dbObject) {
+    if (dbObject==null) {
+      return null;
+    }
+    Map<String,Object> map = new HashMap<>();
+    for (String key: dbObject.keySet()) {
+      Object value = dbObject.get(key);
+      if (value instanceof DBObject) {
+        value = toMap((DBObject)value);
+      }
+      map.put(key, value);
+    }
+    return map;
+  }
+  
 }
