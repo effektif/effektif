@@ -272,7 +272,7 @@ public class WorkflowStreamTest {
     assertEquals("Starts the process when the code is ready to release.", activity.getDescription());
   }
 
-  // @Test 
+//  @Test
   public void testInOutParameters() {
     Workflow workflow = new Workflow()
       .activity("a", new NoneTask()

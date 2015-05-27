@@ -98,10 +98,7 @@ public interface BpmnReader {
 
   /** Returns a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
-  <T> List<Binding<T>> readBindings(String elementName, Class<T> type);
-
-  /** Returns a map of string input bindings with string keys, e.g. <e:input key="a" value="42"/>. */
-  Map<String,Binding> readInputBindings();
+  <T> List<Binding<T>> readBindings(String elementName);
 
   /** Returns a the {@link Trigger} instance specified by the Effektif <code>type</code> parameter. */
   Trigger readTriggerEffektif();

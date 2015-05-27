@@ -26,10 +26,9 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.types.DataType;
 
-
-/** Base class containing the configuration data for 
- * specific activity types.
- * 
+/**
+ * Base class containing the configuration data for specific activity types.
+ *
  * @author Tom Baeyens
  */
 public abstract class Activity extends Scope {
@@ -47,27 +46,93 @@ public abstract class Activity extends Scope {
     id = r.readStringAttributeBpmn("id");
     defaultTransitionId = r.readStringAttributeEffektif("defaultTransitionId");
     r.startExtensionElements();
+
     for (XmlElement element : r.readElementsEffektif("multiInstance")) {
       r.startElement(element);
       multiInstance = new MultiInstance();
       multiInstance.readBpmn(r);
       r.endElement();
     }
-    // TODO add input
-    // TODO add output (also see Trigger)
+
+    for (XmlElement element : r.readElementsEffektif("input")) {
+      if (inputs == null) {
+        inputs = new HashMap<>();
+      }
+      r.startElement(element);
+      String key = r.readStringAttributeEffektif("key");
+      List<Binding<Object>> bindings = r.readBindings("binding");
+
+      InputParameter parameter = new InputParameter();
+      if (bindings != null) {
+        if (bindings.size() == 1) {
+          parameter.setBinding(bindings.get(0));
+        }
+        else {
+          List untypedBindings = bindings;
+          parameter.setBindings(untypedBindings);
+        }
+      }
+      inputs.put(key, parameter);
+      r.endElement();
+    }
+
+    for (XmlElement element : r.readElementsEffektif("output")) {
+      if (outputs == null) {
+        outputs = new HashMap<>();
+      }
+      r.startElement(element);
+      String key = r.readStringAttributeEffektif("key");
+      String variableId = r.readStringAttributeEffektif("id");
+      outputs.put(key, new OutputParameter().variableId(variableId));
+      r.endElement();
+    }
+
     r.endExtensionElements();
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    super.writeBpmn(w);
     w.writeStringAttributeBpmn("id", id);
     w.writeStringAttributeEffektif("defaultTransitionId", defaultTransitionId);
-    if (multiInstance != null) {
-      multiInstance.writeBpmn(w);
+
+    super.writeBpmn(w);
+
+    if (multiInstance != null || inputs != null || outputs != null) {
+      w.startExtensionElements();
+
+      if (multiInstance != null) {
+        multiInstance.writeBpmn(w);
+      }
+
+      if (inputs != null) {
+        for (Map.Entry<String, InputParameter> parameter : inputs.entrySet()) {
+          w.startElementEffektif("input");
+          w.writeStringAttributeEffektif("key", parameter.getKey());
+          w.writeBinding("binding", parameter.getValue().getBinding());
+          // TODO Is there a cleaner way to get around the generic types than assigning to List without a type parameter?
+          List bindings = parameter.getValue().getBindings();
+          w.writeBindings("binding", bindings);
+          w.endElement();
+        }
+      }
+
+      if (outputs != null) {
+        for (Map.Entry<String, OutputParameter> parameter : outputs.entrySet()) {
+          w.startElementEffektif("output");
+          w.writeStringAttributeEffektif("key", parameter.getKey());
+          w.writeStringAttributeEffektif("id", parameter.getValue().getVariableId());
+          w.endElement();
+        }
+      }
+
+      w.endExtensionElements();
     }
-    // TODO add input
-    // TODO add output (also see Trigger)
+
+    if (multiInstance != null) {
+      // TODO Don't write the multiInstanceLoopCharacteristics if it's already in Element.bpmn
+      w.startElementBpmn("multiInstanceLoopCharacteristics");
+      w.endElement();
+    }
   }
   
   public String getId() {
@@ -145,20 +210,24 @@ public abstract class Activity extends Scope {
   public void setInputs(Map<String, InputParameter> inputs) {
     this.inputs = inputs;
   }
+
   public Activity inputValue(String key, Object value) {
     inputValue(key, value, null);
     return this;
   }
+
   public Activity inputValue(String key, Object value, DataType dataType) {
     inputBinding(key, new Binding()
       .value(value)
       .dataType(dataType));
     return this;
   }
+
   public Activity inputExpression(String key, String expression) {
     inputBinding(key, new Binding().expression(expression));
     return this;
   }
+
   public Activity inputBinding(String key, Binding<?> binding) {
     if (inputs==null) {
       inputs = new HashMap<>();
@@ -166,6 +235,7 @@ public abstract class Activity extends Scope {
     inputs.put(key, new InputParameter().binding(binding));
     return this;
   }
+
   public Activity inputListBinding(String key, Binding<?> inputBinding) {
     if (inputs==null) {
       inputs = new HashMap<>();

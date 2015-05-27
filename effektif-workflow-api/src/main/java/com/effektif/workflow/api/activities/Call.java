@@ -45,10 +45,6 @@ public class Call extends AbstractBindableActivity {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
     subWorkflowSource = r.readStringAttributeEffektif("subWorkflowSource");
     super.readBpmn(r);
-
-    r.startExtensionElements();
-    inputBindings = r.readInputBindings();
-    r.endExtensionElements();
   }
 
   @Override
@@ -56,14 +52,6 @@ public class Call extends AbstractBindableActivity {
     super.writeBpmn(w);
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
     w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
-
-    w.startExtensionElements();
-    if (inputBindings != null) {
-      for (String key : inputBindings.keySet()) {
-        w.writeBinding("input", inputBindings.get(key), key);
-      }
-    }
-    w.endExtensionElements();
   }
 
 //  @Override
@@ -111,7 +99,13 @@ public class Call extends AbstractBindableActivity {
   public void setSubWorkflowSource(String subWorkflowSource) {
     this.subWorkflowSource = subWorkflowSource;
   }
-  
+
+
+  @Override
+  public Call inputExpression(String key, String expression) {
+    super.inputExpression(key, expression);
+    return this;
+  }
 
   @Override
   public Call inputValue(String subWorkflowKey, Object value) {
@@ -120,8 +114,8 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
-  public Call outputBinding(String subWorkflowKey, String variableId) {
-    super.outputBinding(subWorkflowKey, variableId);
+  public Call output(String subWorkflowKey, String variableId) {
+    super.output(subWorkflowKey, variableId);
     return this;
   }
 
@@ -173,12 +167,6 @@ public class Call extends AbstractBindableActivity {
   @Override
   public Call property(String key, Object value) {
     super.property(key, value);
-    return this;
-  }
-
-  @Override
-  public Call inputExpression(String key, String expression) {
-    super.inputExpression(key, expression);
     return this;
   }
   @Override

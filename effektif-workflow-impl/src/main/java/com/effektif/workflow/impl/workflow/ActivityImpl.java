@@ -23,7 +23,6 @@ import java.util.Map;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.InputParameter;
-import com.effektif.workflow.api.workflow.OutputParameter;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;

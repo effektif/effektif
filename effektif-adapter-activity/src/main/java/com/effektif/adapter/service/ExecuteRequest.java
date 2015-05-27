@@ -23,6 +23,8 @@ import com.effektif.workflow.api.model.WorkflowInstanceId;
 
 
 /**
+ * TODO Rename to a noun phrase name: should this be ExecutionRequest?
+ *
  * @author Tom Baeyens
  */
 public class ExecuteRequest {

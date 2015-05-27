@@ -294,7 +294,7 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    List<Binding<T>> bindings = readBindings(localPart, type);
+    List<Binding<T>> bindings = readBindings(localPart);
     if (bindings.isEmpty()) {
       return new Binding<T>();
     } else {
@@ -304,38 +304,20 @@ public class BpmnReaderImpl implements BpmnReader {
 
   /** Returns a list of bindings from the extension elements with the given name. */
   @Override
-  public <T> List<Binding<T>> readBindings(String localPart, Class<T> type) {
+  public <T> List<Binding<T>> readBindings(String localPart) {
     if (currentXml==null) {
       return null;
     }
     List<Binding<T>> bindings = new ArrayList<>();
     for (XmlElement element: currentXml.removeElements(EFFEKTIF_URI, localPart)) {
-      Binding<T> binding = new Binding<T>();
+      Binding binding = new Binding();
       String value = element.getAttribute(EFFEKTIF_URI, "value");
-      binding.setValue(parseText(value, type));
+      String typeName = element.getAttribute(EFFEKTIF_URI, "type");
+      DataType type = convertType(typeName);
+      log.debug("type = " + type);
+      binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
       binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
       bindings.add(binding);
-    }
-    return bindings;
-  }
-
-  @Override
-  public Map<String, Binding> readInputBindings() {
-    Map<String, Binding> bindings = new HashMap<>();
-    for (XmlElement element: currentXml.removeElements(EFFEKTIF_URI, "input")) {
-      startElement(element);
-      String key = element.getAttribute(EFFEKTIF_URI, "key");
-      if (key != null) {
-        Binding binding = new Binding();
-        String value = element.getAttribute(EFFEKTIF_URI, "value");
-        if (value != null) {
-          DataType type = readTypeAttributeEffektif();
-          binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
-        }
-        binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
-        bindings.put(key, binding);
-      }
-      endElement();
     }
     return bindings;
   }
@@ -430,15 +412,18 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   private DataType readTypeAttributeEffektif(String attributeName) {
-    try {
-      String typeName = readStringAttributeEffektif(attributeName);
-      PolymorphicMapping dataTypeMapping = bpmnMappings.getPolymorphicMapping(DataType.class);
-      DataType type = (DataType) dataTypeMapping.getTypeMapping(typeName).instantiate();
-      type.readBpmn(this);
-      return type;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    String typeName = readStringAttributeEffektif(attributeName);
+    return convertType(typeName);
+  }
+
+  private DataType convertType(String typeName) {
+    if (typeName == null) {
+      typeName = "text";
     }
+    PolymorphicMapping dataTypeMapping = bpmnMappings.getPolymorphicMapping(DataType.class);
+    DataType type = (DataType) dataTypeMapping.getTypeMapping(typeName).instantiate();
+    type.readBpmn(this);
+    return type;
   }
 
   @Override
