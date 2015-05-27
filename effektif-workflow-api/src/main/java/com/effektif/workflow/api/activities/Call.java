@@ -99,7 +99,13 @@ public class Call extends AbstractBindableActivity {
   public void setSubWorkflowSource(String subWorkflowSource) {
     this.subWorkflowSource = subWorkflowSource;
   }
-  
+
+
+  @Override
+  public Call inputExpression(String key, String expression) {
+    super.inputExpression(key, expression);
+    return this;
+  }
 
   @Override
   public Call inputValue(String subWorkflowKey, Object value) {
@@ -108,8 +114,8 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
-  public Call outputBinding(String subWorkflowKey, String variableId) {
-    super.outputBinding(subWorkflowKey, variableId);
+  public Call output(String subWorkflowKey, String variableId) {
+    super.output(subWorkflowKey, variableId);
     return this;
   }
 
@@ -161,12 +167,6 @@ public class Call extends AbstractBindableActivity {
   @Override
   public Call property(String key, Object value) {
     super.property(key, value);
-    return this;
-  }
-
-  @Override
-  public Call inputExpression(String key, String expression) {
-    super.inputExpression(key, expression);
     return this;
   }
   @Override

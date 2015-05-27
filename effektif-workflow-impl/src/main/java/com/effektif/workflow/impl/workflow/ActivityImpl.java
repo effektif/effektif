@@ -109,7 +109,7 @@ public class ActivityImpl extends ScopeImpl {
       parser.popContext();
     }
     
-    Map<String, OutputParameter> out = activity.getOut();
+    Map<String, OutputParameter> out = activity.getOutputs();
     if (out!=null) {
       this.outputs = new HashMap<>();
       for (String key: out.keySet()) {

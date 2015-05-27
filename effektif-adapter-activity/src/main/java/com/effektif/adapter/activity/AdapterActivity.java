@@ -63,7 +63,13 @@ public class AdapterActivity extends AbstractBindableActivity {
     this.activityKey = activityKey;
     return this;
   }
-  
+
+  @Override
+  public AdapterActivity inputExpression(String key, String expression) {
+    super.inputExpression(key, expression);
+    return this;
+  }
+
   @Override
   public AdapterActivity inputValue(String adapterKey, Object value) {
     super.inputValue(adapterKey, value);
@@ -71,8 +77,8 @@ public class AdapterActivity extends AbstractBindableActivity {
   }
 
   @Override
-  public AdapterActivity outputBinding(String adapterKey, String variableId) {
-    super.outputBinding(adapterKey, variableId);
+  public AdapterActivity output(String adapterKey, String variableId) {
+    super.output(adapterKey, variableId);
     return this;
   }
 
@@ -126,31 +132,31 @@ public class AdapterActivity extends AbstractBindableActivity {
     super.property(key, value);
     return this;
   }
-  @Override
-  public AdapterActivity inputExpression(String key, String expression) {
-    super.inputExpression(key, expression);
-    return this;
-  }
+
   @Override
   public AdapterActivity transitionToNext() {
     super.transitionToNext();
     return this;
   }
+
   @Override
   public AdapterActivity activity(String id, Activity activity) {
     super.activity(id, activity);
     return this;
   }
+
   @Override
   public AdapterActivity transition(String id, Transition transition) {
     super.transition(id, transition);
     return this;
   }
+
   @Override
   public AdapterActivity variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }
+
   @Override
   public AdapterActivity name(String name) {
     super.name(name);

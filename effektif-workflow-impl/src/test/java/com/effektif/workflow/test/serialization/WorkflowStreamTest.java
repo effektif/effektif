@@ -276,11 +276,11 @@ public class WorkflowStreamTest {
   public void testInOutParameters() {
     Workflow workflow = new Workflow()
       .activity("a", new NoneTask()
-        .inValue("in1", "value1")
-        .inExpression("in2", "expression2")
-        .inListBinding("in3", new Binding().value("listValue1"))
-        .inListBinding("in3", new Binding().expression("listExpression2"))
-        .out("out1", "var1"));
+        .inputValue("in1", "value1")
+        .inputExpression("in2", "expression2")
+        .inputListBinding("in3", new Binding().value("listValue1"))
+        .inputListBinding("in3", new Binding().expression("listExpression2"))
+        .output("out1", "var1"));
     workflow = serialize(workflow);
     
     Activity activity = workflow.getActivities().get(0);
@@ -288,6 +288,6 @@ public class WorkflowStreamTest {
     assertEquals("expression2", activity.getInputs().get("in2").getBinding().getExpression());
     assertEquals("listValue1", activity.getInputs().get("in3").getBindings().get(0).getValue());
     assertEquals("listExpression2", activity.getInputs().get("in3").getBindings().get(1).getExpression());
-    assertEquals("var1", activity.getOut().get("out1").getVariableId());
+    assertEquals("var1", activity.getOutputs().get("out1").getVariableId());
   }
 }

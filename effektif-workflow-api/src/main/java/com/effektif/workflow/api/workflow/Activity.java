@@ -38,7 +38,7 @@ public abstract class Activity extends Scope {
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
   protected Map<String,InputParameter> inputs;
-  protected Map<String,OutputParameter> out;
+  protected Map<String,OutputParameter> outputs;
   
   @Override
   public void readBpmn(BpmnReader r) {
@@ -77,13 +77,13 @@ public abstract class Activity extends Scope {
     }
 
     for (XmlElement element : r.readElementsEffektif("output")) {
-      if (out == null) {
-        out = new HashMap<>();
+      if (outputs == null) {
+        outputs = new HashMap<>();
       }
       r.startElement(element);
       String key = r.readStringAttributeEffektif("key");
       String variableId = r.readStringAttributeEffektif("id");
-      out.put(key, new OutputParameter().variableId(variableId));
+      outputs.put(key, new OutputParameter().variableId(variableId));
       r.endElement();
     }
 
@@ -97,7 +97,7 @@ public abstract class Activity extends Scope {
 
     super.writeBpmn(w);
 
-    if (multiInstance != null || inputs != null || out != null) {
+    if (multiInstance != null || inputs != null || outputs != null) {
       w.startExtensionElements();
 
       if (multiInstance != null) {
@@ -116,8 +116,8 @@ public abstract class Activity extends Scope {
         }
       }
 
-      if (out != null) {
-        for (Map.Entry<String, OutputParameter> parameter : out.entrySet()) {
+      if (outputs != null) {
+        for (Map.Entry<String, OutputParameter> parameter : outputs.entrySet()) {
           w.startElementEffektif("output");
           w.writeStringAttributeEffektif("key", parameter.getKey());
           w.writeStringAttributeEffektif("id", parameter.getValue().getVariableId());
@@ -211,51 +211,54 @@ public abstract class Activity extends Scope {
   public void setInputs(Map<String, InputParameter> in) {
     this.inputs = in;
   }
-  public Activity inValue(String key, Object value) {
-    inValue(key, value, null);
+
+  public Activity inputValue(String key, Object value) {
+    inputValue(key, value, null);
     return this;
   }
-  public Activity inValue(String key, Object value, DataType dataType) {
-    inBinding(key, new Binding().value(value)
-      .dataType(dataType));
+
+  public Activity inputValue(String key, Object value, DataType dataType) {
+    inputBinding(key, new Binding().value(value).dataType(dataType));
     return this;
   }
-  public Activity inExpression(String key, String expression) {
-    inBinding(key, new Binding().expression(expression));
+
+  public Activity inputExpression(String key, String expression) {
+    inputBinding(key, new Binding().expression(expression));
     return this;
   }
-  public Activity inBinding(String key, Binding<?> binding) {
+
+  public Activity inputBinding(String key, Binding<?> binding) {
     if (inputs==null) {
       inputs = new HashMap<>();
     }
     inputs.put(key, new InputParameter().binding(binding));
     return this;
   }
-  public Activity inListBinding(String key, Binding<?> inBinding) {
+
+  public Activity inputListBinding(String key, Binding<?> inBinding) {
     if (inputs==null) {
       inputs = new HashMap<>();
     }
-    InputParameter inParameter = inputs.get(key);
-    if (inParameter==null) {
-      inParameter = new InputParameter();
-      inputs.put(key, inParameter);
+    InputParameter parameter = inputs.get(key);
+    if (parameter==null) {
+      parameter = new InputParameter();
+      inputs.put(key, parameter);
     }
-    inParameter.addBinding(inBinding);
+    parameter.addBinding(inBinding);
     return this;
   }
 
-  public Map<String, OutputParameter> getOut() {
-    return out;
+  public Map<String, OutputParameter> getOutputs() {
+    return outputs;
   }
-  public void setOut(Map<String, OutputParameter> out) {
-    this.out = out;
+  public void setOutputs(Map<String, OutputParameter> outputs) {
+    this.outputs = outputs;
   }
-  public Activity out(String key, String outputVariableId) {
-    if (out==null) {
-      out = new HashMap<>();
+  public Activity output(String key, String outputVariableId) {
+    if (outputs ==null) {
+      outputs = new HashMap<>();
     }
-    out.put(key, new OutputParameter()
-      .variableId(outputVariableId));
+    outputs.put(key, new OutputParameter().variableId(outputVariableId));
     return this;
   }
 

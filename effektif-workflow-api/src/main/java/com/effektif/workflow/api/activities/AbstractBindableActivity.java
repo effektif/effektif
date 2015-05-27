@@ -27,35 +27,12 @@ import com.effektif.workflow.api.workflow.OutputParameter;
  * An activity that supports input and output bindings. Input bindings expose workflow variables as input to the
  * activity. Output bindings specify variables from the activity that will update workflow variables.
  *
+ * The input and output bindings’ data is delegated to the activity input and output parameter.
+ *
  * @author Tom Baeyens
  */
 public class AbstractBindableActivity extends Activity {
 
-  /** copies the static value to the adapter activity when it is invoked,
-   * This method uses reflection and the data type service to find the type form the value. */
-  public AbstractBindableActivity inputValue(String key, Object value) {
-    inValue(key, value);
-    return this;
-  }
-  
-  /** copies the variable from this workflow to the adapter activity when it is invoked */
-  public AbstractBindableActivity inputExpression(String key, String expression) {
-    inExpression(key, expression);
-    return this;
-  }
-
-  /** copies the value specified in the binding from this workflow to the adapter activity when it is invoked */
-  protected AbstractBindableActivity addInputBinding(String key, Binding binding) {
-    inBinding(key, binding);
-    return this;
-  }
-
-  /** copies the adapter output value into a variable of this workflow when the activity is finished */
-  public AbstractBindableActivity outputBinding(String key, String variableId) {
-    out(key, variableId);
-    return this;
-  }
-  
   public Map<String, Binding> getInputBindings() {
     if (inputs == null) {
       return null;
@@ -71,11 +48,11 @@ public class AbstractBindableActivity extends Activity {
   }
 
   public Map<String, String> getOutputBindings() {
-    if (out == null) {
+    if (outputs == null) {
       return null;
     }
     Map<String,String> bindings = new HashMap<>();
-    for (Map.Entry<String, OutputParameter> parameter : out.entrySet()) {
+    for (Map.Entry<String, OutputParameter> parameter : outputs.entrySet()) {
       bindings.put(parameter.getKey(), parameter.getValue().getVariableId());
     }
     return bindings;
