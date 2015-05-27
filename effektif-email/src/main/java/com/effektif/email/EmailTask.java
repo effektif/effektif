@@ -46,9 +46,9 @@ public class EmailTask extends Activity {
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
     fromEmailAddress = r.readBinding("fromEmailAddress", String.class);
-    toEmailAddresses = r.readBindings("toEmailAddress", String.class);
-    ccEmailAddresses = r.readBindings("ccEmailAddress", String.class);
-    bccEmailAddresses = r.readBindings("bccEmailAddress", String.class);
+    toEmailAddresses = r.readBindings("toEmailAddress");
+    ccEmailAddresses = r.readBindings("ccEmailAddress");
+    bccEmailAddresses = r.readBindings("bccEmailAddress");
     subject = r.readTextEffektif("subject");
     bodyText = r.readTextEffektif("bodyText");
     bodyHtml = r.readTextEffektif("bodyHtml");
