@@ -22,6 +22,7 @@ import com.effektif.workflow.api.bpmn.BpmnReadable;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 
 /**
  * @author Tom Baeyens
@@ -32,14 +33,28 @@ public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
   @Override
   public void readBpmn(BpmnReader r) {
-    // TODO add output parameters
+    for (XmlElement element : r.readElementsEffektif("output")) {
+      if (outputs == null) {
+        outputs = new HashMap<>();
+      }
+      r.startElement(element);
+      String key = r.readStringAttributeEffektif("key");
+      String variableId = r.readStringAttributeEffektif("id");
+      outputs.put(key, new OutputParameter().variableId(variableId));
+      r.endElement();
+    }
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif("trigger");
-    w.endElement();
-    // TODO add output parameters
+    if (outputs != null) {
+      for (Map.Entry<String, OutputParameter> parameter : outputs.entrySet()) {
+        w.startElementEffektif("output");
+        w.writeStringAttributeEffektif("key", parameter.getKey());
+        w.writeStringAttributeEffektif("id", parameter.getValue().getVariableId());
+        w.endElement();
+      }
+    }
   }
   
   public Map<String, OutputParameter> getOutputs() {
