@@ -53,7 +53,7 @@ public class MultiInstance implements BpmnReadable, BpmnWritable {
       variable.setType(r.readTypeAttributeEffektif());
       r.endElement();
     }
-    values = r.readBindings("value", Object.class);
+    values = r.readBindings("value");
   }
 
   @Override

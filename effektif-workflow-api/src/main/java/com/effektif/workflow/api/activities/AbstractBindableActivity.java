@@ -20,77 +20,64 @@ import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
-
+import com.effektif.workflow.api.workflow.InputParameter;
+import com.effektif.workflow.api.workflow.OutputParameter;
 
 /**
+ * An activity that supports input and output bindings. Input bindings expose workflow variables as input to the
+ * activity. Output bindings specify variables from the activity that will update workflow variables.
+ *
  * @author Tom Baeyens
  */
 public class AbstractBindableActivity extends Activity {
 
-  protected Map<String,Binding> inputBindings; 
-  protected Map<String,String> outputBindings;
-  
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeMap("inputBindings", inputBindings);
-//    w.writeMap("outputBindings", outputBindings);
-//  }
-//  
-//  @Override
-//  public void readJson(JsonReader r) {
-//    inputBindings = r.readMap("inputBindings");
-//    outputBindings = r.readMap("outputBindings");
-//    super.readJson(r);
-//  }
-  
   /** copies the static value to the adapter activity when it is invoked,
    * This method uses reflection and the data type service to find the type form the value. */
   public AbstractBindableActivity inputValue(String key, Object value) {
-    addInputBinding(key, new Binding().value(value));
+    inValue(key, value);
     return this;
   }
   
   /** copies the variable from this workflow to the adapter activity when it is invoked */
   public AbstractBindableActivity inputExpression(String key, String expression) {
-    addInputBinding(key, new Binding().expression(expression));
+    inExpression(key, expression);
     return this;
   }
 
   /** copies the value specified in the binding from this workflow to the adapter activity when it is invoked */
   protected AbstractBindableActivity addInputBinding(String key, Binding binding) {
-    if (inputBindings==null) {
-      inputBindings = new HashMap<>();
-    }
-    inputBindings.put(key, binding);
+    inBinding(key, binding);
     return this;
   }
 
   /** copies the adapter output value into a variable of this workflow when the activity is finished */
   public AbstractBindableActivity outputBinding(String key, String variableId) {
-    if (outputBindings==null) {
-      outputBindings = new HashMap<>();
-    }
-    outputBindings.put(key, variableId);
+    out(key, variableId);
     return this;
   }
   
   public Map<String, Binding> getInputBindings() {
-    return inputBindings;
+    if (inputs == null) {
+      return null;
+    }
+    Map<String,Binding> bindings = new HashMap<>();
+    for (Map.Entry<String, InputParameter> parameter : inputs.entrySet()) {
+      Binding<?> binding = parameter.getValue().getBinding();
+      if (binding != null) {
+        bindings.put(parameter.getKey(), binding);
+      }
+    }
+    return bindings;
   }
 
-  
-  public void setInputBindings(Map<String, Binding> inputBindings) {
-    this.inputBindings = inputBindings;
-  }
-
-  
   public Map<String, String> getOutputBindings() {
-    return outputBindings;
-  }
-
-  
-  public void setOutputBindings(Map<String, String> outputBindings) {
-    this.outputBindings = outputBindings;
+    if (out == null) {
+      return null;
+    }
+    Map<String,String> bindings = new HashMap<>();
+    for (Map.Entry<String, OutputParameter> parameter : out.entrySet()) {
+      bindings.put(parameter.getKey(), parameter.getValue().getVariableId());
+    }
+    return bindings;
   }
 }

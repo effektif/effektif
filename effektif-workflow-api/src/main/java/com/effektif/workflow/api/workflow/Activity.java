@@ -26,9 +26,9 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.types.DataType;
 
-/** Base class containing the configuration data for
- * specific activity types.
- * 
+/**
+ * Base class containing the configuration data for specific activity types.
+ *
  * @author Tom Baeyens
  */
 public abstract class Activity extends Scope {
@@ -54,13 +54,13 @@ public abstract class Activity extends Scope {
       r.endElement();
     }
 
-    for (XmlElement element : r.readElementsEffektif("inputParameter")) {
+    for (XmlElement element : r.readElementsEffektif("input")) {
       if (inputs == null) {
         inputs = new HashMap<>();
       }
       r.startElement(element);
       String key = r.readStringAttributeEffektif("key");
-      List<Binding<Object>> bindings = r.readBindings("binding", Object.class);
+      List<Binding<Object>> bindings = r.readBindings("binding");
 
       InputParameter parameter = new InputParameter();
       if (bindings != null) {
@@ -76,7 +76,7 @@ public abstract class Activity extends Scope {
       r.endElement();
     }
 
-    for (XmlElement element : r.readElementsEffektif("outputParameter")) {
+    for (XmlElement element : r.readElementsEffektif("output")) {
       if (out == null) {
         out = new HashMap<>();
       }
@@ -106,7 +106,7 @@ public abstract class Activity extends Scope {
 
       if (inputs != null) {
         for (Map.Entry<String, InputParameter> parameter : inputs.entrySet()) {
-          w.startElementEffektif("inputParameter");
+          w.startElementEffektif("input");
           w.writeStringAttributeEffektif("key", parameter.getKey());
           w.writeBinding("binding", parameter.getValue().getBinding());
           // TODO Is there a cleaner way to get around the generic types than assigning to List without a type parameter?
@@ -118,7 +118,7 @@ public abstract class Activity extends Scope {
 
       if (out != null) {
         for (Map.Entry<String, OutputParameter> parameter : out.entrySet()) {
-          w.startElementEffektif("outputParameter");
+          w.startElementEffektif("output");
           w.writeStringAttributeEffektif("key", parameter.getKey());
           w.writeStringAttributeEffektif("id", parameter.getValue().getVariableId());
           w.endElement();

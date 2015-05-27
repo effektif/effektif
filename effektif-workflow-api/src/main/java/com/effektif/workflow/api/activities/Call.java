@@ -45,10 +45,6 @@ public class Call extends AbstractBindableActivity {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
     subWorkflowSource = r.readStringAttributeEffektif("subWorkflowSource");
     super.readBpmn(r);
-
-    r.startExtensionElements();
-    inputBindings = r.readInputBindings();
-    r.endExtensionElements();
   }
 
   @Override
@@ -56,14 +52,6 @@ public class Call extends AbstractBindableActivity {
     super.writeBpmn(w);
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
     w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
-
-    w.startExtensionElements();
-    if (inputBindings != null) {
-      for (String key : inputBindings.keySet()) {
-        w.writeBinding("input", inputBindings.get(key), key);
-      }
-    }
-    w.endExtensionElements();
   }
 
 //  @Override
