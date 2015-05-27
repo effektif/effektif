@@ -46,7 +46,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
   protected String filesCollectionName = "files";
-  protected String emailsCollectionName = "emails";
+  protected String emailsCollectionName = "mails"; // if you change this, also change it in the other places
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
