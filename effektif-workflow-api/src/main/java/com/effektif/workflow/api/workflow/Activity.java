@@ -54,28 +54,36 @@ public abstract class Activity extends Scope {
       r.endElement();
     }
 
-    for (XmlElement element : r.readElementsEffektif("input")) {
+    // Read input parameters.
+    for (XmlElement inputElement : r.readElementsEffektif("input")) {
       if (inputs == null) {
         inputs = new HashMap<>();
       }
-      r.startElement(element);
-      String key = r.readStringAttributeEffektif("key");
-      List<Binding<Object>> bindings = r.readBindings("binding");
-
+      r.startElement(inputElement);
       InputParameter parameter = new InputParameter();
-      if (bindings != null) {
-        if (bindings.size() == 1) {
-          parameter.setBinding(bindings.get(0));
-        }
-        else {
-          List untypedBindings = bindings;
-          parameter.setBindings(untypedBindings);
-        }
+
+      // Read single binding
+      String key = r.readStringAttributeEffektif("key");
+      List<Binding<Object>> singleBinding = r.readBindings("binding");
+      if (singleBinding != null && !singleBinding.isEmpty()) {
+        parameter.setBinding(singleBinding.get(0));
       }
-      inputs.put(key, parameter);
+
+      // Read nested bindings list
+      for (XmlElement bindingsElement : r.readElementsEffektif("bindings")) {
+        r.startElement(bindingsElement);
+        List bindings = r.readBindings("binding");
+        parameter.setBindings(bindings);
+        r.endElement();
+      }
+
+      if (parameter.getBinding() != null || parameter.getBindings() != null) {
+        inputs.put(key, parameter);
+      }
       r.endElement();
     }
 
+    // Read ouput parameters.
     for (XmlElement element : r.readElementsEffektif("output")) {
       if (outputs == null) {
         outputs = new HashMap<>();
@@ -105,13 +113,20 @@ public abstract class Activity extends Scope {
       }
 
       if (inputs != null) {
-        for (Map.Entry<String, InputParameter> parameter : inputs.entrySet()) {
+        for (Map.Entry<String, InputParameter> input : inputs.entrySet()) {
           w.startElementEffektif("input");
-          w.writeStringAttributeEffektif("key", parameter.getKey());
-          w.writeBinding("binding", parameter.getValue().getBinding());
-          // TODO Is there a cleaner way to get around the generic types than assigning to List without a type parameter?
-          List bindings = parameter.getValue().getBindings();
-          w.writeBindings("binding", bindings);
+          w.writeStringAttributeEffektif("key", input.getKey());
+          InputParameter parameter = input.getValue();
+          if (parameter.getBinding() != null) {
+            w.writeBinding("binding", parameter.getBinding());
+          }
+          if (parameter.getBindings() != null) {
+            w.startElementEffektif("bindings");
+            w.writeStringAttributeEffektif("key", input.getKey());
+            List bindings = parameter.getBindings();
+            w.writeBindings("binding", bindings);
+            w.endElement();
+          }
           w.endElement();
         }
       }
@@ -170,19 +185,18 @@ public abstract class Activity extends Scope {
     this.multiInstance = multiInstance;
     return this;
   }
-
   public Activity transitionTo(String toActivityId) {
     transitionTo(new Transition().to(toActivityId));
     return this;
   }
-  
+
   public Activity transitionWithConditionTo(Condition condition, String toActivityId) {
     transitionTo(new Transition()
       .condition(condition)
       .to(toActivityId));
     return this;
   }
-  
+
   public Activity transitionToNext() {
     transitionTo(new Transition().toNext());
     return this;
@@ -195,18 +209,19 @@ public abstract class Activity extends Scope {
     this.outgoingTransitions.add(transition);
     return this;
   }
-  
+
   public List<Transition> getOutgoingTransitions() {
     return outgoingTransitions;
   }
-  
+
   public void setOutgoingTransitions(List<Transition> outgoingTransitions) {
     this.outgoingTransitions = outgoingTransitions;
   }
-  
+
   public Map<String, InputParameter> getInputs() {
     return inputs;
   }
+
   public void setInputs(Map<String, InputParameter> inputs) {
     this.inputs = inputs;
   }
@@ -215,11 +230,8 @@ public abstract class Activity extends Scope {
     inputValue(key, value, null);
     return this;
   }
-
   public Activity inputValue(String key, Object value, DataType dataType) {
-    inputBinding(key, new Binding()
-      .value(value)
-      .dataType(dataType));
+    inputBinding(key, new Binding().value(value).dataType(dataType));
     return this;
   }
 
@@ -236,26 +248,37 @@ public abstract class Activity extends Scope {
     return this;
   }
 
-  public Activity inputListValue(String key, Object value) {
-    inputListBinding(key, new Binding<Object>().value(value));
-    return this;
-  }
-
   public Activity inputListExpression(String key, String expression) {
     inputListBinding(key, new Binding<Object>().expression(expression));
     return this;
+  }
+
+  public Activity inputListValue(String key, Object value) {
+    inputListBinding(key, new Binding().value(value));
+    return this;
+  }
+  protected void setInputBindings(String key, List<Binding<?>> bindings) {
+    if (inputs==null) {
+      inputs = new HashMap<>();
+    }
+    InputParameter parameter = inputs.get(key);
+    if (parameter==null) {
+      parameter = new InputParameter();
+      inputs.put(key, parameter);
+    }
+    parameter.setBindings(bindings);
   }
 
   public Activity inputListBinding(String key, Binding<?> inputBinding) {
     if (inputs==null) {
       inputs = new HashMap<>();
     }
-    InputParameter inputParameter = inputs.get(key);
-    if (inputParameter==null) {
-      inputParameter = new InputParameter();
-      inputs.put(key, inputParameter);
+    InputParameter parameter = inputs.get(key);
+    if (parameter==null) {
+      parameter = new InputParameter();
+      inputs.put(key, parameter);
     }
-    inputParameter.addBinding(inputBinding);
+    parameter.addBinding(inputBinding);
     return this;
   }
 
