@@ -236,6 +236,16 @@ public abstract class Activity extends Scope {
     return this;
   }
 
+  public Activity inputListValue(String key, Object value) {
+    inputListBinding(key, new Binding<Object>().value(value));
+    return this;
+  }
+
+  public Activity inputListExpression(String key, String expression) {
+    inputListBinding(key, new Binding<Object>().expression(expression));
+    return this;
+  }
+
   public Activity inputListBinding(String key, Binding<?> inputBinding) {
     if (inputs==null) {
       inputs = new HashMap<>();
