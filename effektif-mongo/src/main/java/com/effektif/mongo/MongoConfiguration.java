@@ -41,12 +41,8 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected List<MongoCredential> credentials;
   protected String workflowsCollectionName = "workflows";
   protected String workflowInstancesCollectionName = "workflowInstances";
-  protected String tasksCollectionName = "tasks-v3";
-  protected String casesCollectionName = "cases";
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
-  protected String filesCollectionName = "files";
-  protected String emailsCollectionName = "mails"; // if you change this, also change it in the other places
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
@@ -192,30 +188,6 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.workflowsCollectionName = workflowsCollectionName;
   }
 
-  public String getTasksCollectionName() {
-    return tasksCollectionName;
-  }
-
-  public void setTasksCollectionName(String tasksCollectionName) {
-    this.tasksCollectionName = tasksCollectionName;
-  }
-
-  public String getCasesCollectionName() {
-    return casesCollectionName;
-  }
-
-  public void setCasesCollectionName(String casesCollectionName) {
-    this.casesCollectionName = casesCollectionName;
-  }
-
-  public String getFilesCollectionName() {
-    return filesCollectionName;
-  }
-  
-  public void setFilesCollectionName(String filesCollectionName) {
-    this.filesCollectionName = filesCollectionName;
-  }
-
   public String getJobsCollectionName() {
     return jobsCollectionName;
   }
@@ -231,13 +203,6 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.jobsArchivedCollectionName = jobsArchivedCollectionName;
   }
   
-  public String getEmailsCollectionName() {
-    return this.emailsCollectionName;
-  }
-  public void setEmailsCollectionName(String emailsCollectionName) {
-    this.emailsCollectionName = emailsCollectionName;
-  }
-
   public boolean isPretty() {
     return isPretty;
   }
