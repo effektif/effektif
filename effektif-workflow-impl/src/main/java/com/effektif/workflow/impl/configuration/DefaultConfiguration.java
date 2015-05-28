@@ -26,6 +26,8 @@ import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineConfiguration;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.bpmn.BpmnMapper;
+import com.effektif.workflow.impl.bpmn.BpmnMapperSupplier;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.json.JavaBeanValueMapper;
@@ -57,6 +59,7 @@ public abstract class DefaultConfiguration implements Configuration {
 
     brewery.supplier(new JsonStreamMapperSupplier(), JsonStreamMapper.class);
     brewery.supplier(new JavaBeanValueMapperSupplier(), JavaBeanValueMapper.class);
+    brewery.supplier(new BpmnMapperSupplier(), BpmnMapper.class);
 
     ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class);
     for (Plugin plugin: loader) {

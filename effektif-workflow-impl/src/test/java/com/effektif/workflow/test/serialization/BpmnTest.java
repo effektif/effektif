@@ -33,18 +33,21 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 
-/**
- * @author Tom Baeyens
- */
-public class BpmnMapperTest extends WorkflowStreamTest {
 
-  protected static final Logger log = LoggerFactory.getLogger(BpmnMapperTest.class);
+/**
+ * Tests workflow serialisation to BPMN, by running {@link WorkflowStreamTest} with a different serialisation.
+ *
+ * @author Peter Hilton
+ */
+public class BpmnTest extends WorkflowStreamTest {
+
+  protected static final Logger log = LoggerFactory.getLogger(BpmnTest.class);
   static BpmnMapper bpmnMapper;
   
   @BeforeClass
   public static void initialize() {
     if (bpmnMapper==null) {
-      bpmnMapper = new BpmnMapper();
+      bpmnMapper = BpmnMapper.createBpmnMapperForTest();
     }
   }
   
@@ -84,7 +87,7 @@ public class BpmnMapperTest extends WorkflowStreamTest {
    * Performs XML schema validation on the generated XML using the BPMN 2.0 schema.
    */
   protected void validateBpmnXml(String bpmnDocument) {
-    String directory = BpmnMapperTest.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
+    String directory = BpmnTest.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
     File schemaFile = new File(directory, "bpmn/xsd/BPMN20.xsd");
     Source xml = new StreamSource(new StringReader(bpmnDocument));
     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

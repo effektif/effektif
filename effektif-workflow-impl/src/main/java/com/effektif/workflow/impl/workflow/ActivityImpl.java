@@ -82,12 +82,12 @@ public class ActivityImpl extends ScopeImpl {
       activity.setOutgoingTransitions(null);
     }
     
-    Map<String, InputParameter> in = activity.getInputs();
-    if (in!=null) {
+    Map<String, InputParameter> inputs = activity.getInputs();
+    if (inputs!=null) {
       this.inputs = new HashMap<>();
-      parser.pushContext("in", in, this.inputs, null);
-      for (String key: in.keySet()) {
-        InputParameter inParameter = in.get(key);
+      parser.pushContext("in", inputs, this.inputs, null);
+      for (String key: inputs.keySet()) {
+        InputParameter inParameter = inputs.get(key);
         InputParameterImpl inParameterImpl = new InputParameterImpl(key);
         parser.pushContext(key, inParameter, inParameterImpl, null);
         Binding< ? > singleBinding = inParameter.getBinding();

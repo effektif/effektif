@@ -29,6 +29,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.json.Mappings;
+import com.effektif.workflow.impl.json.MappingsBuilder;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeField;
 
@@ -41,9 +42,17 @@ public class BpmnMappings extends Mappings {
   Map<Class<?>, BpmnTypeMapping> bpmnTypeMappingsByClass = new HashMap<>();
   Map<String, List<BpmnTypeMapping>> bpmnTypeMappingsByElement = new HashMap<>();
 
-  public BpmnMappings(BpmnMappingsBuilder bpmnMappingsBuilder) {
-    super(bpmnMappingsBuilder);
-    
+  public BpmnMappings(MappingsBuilder mappingsBuilder) {
+    super(mappingsBuilder);
+    initializeBpmnMappingFields();
+  }
+
+  public BpmnMappings(Mappings mappings) {
+    super(mappings);
+    initializeBpmnMappingFields();
+  }
+
+  protected void initializeBpmnMappingFields() {
     PolymorphicMapping activityMapping = polymorphicMappings.get(Activity.class);
     for (Class activitySubclass: activityMapping.getSubClasses()) {
       registerBpmnSubclass(activitySubclass);

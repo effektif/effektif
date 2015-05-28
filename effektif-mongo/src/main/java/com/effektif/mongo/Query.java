@@ -73,8 +73,18 @@ public class Query {
     return this;
   }
 
+  public Query gte(String fieldName, Object dbValue) {
+    query.put(fieldName, new BasicDBObject("$gte", dbValue));
+    return this;
+  }
+
   public Query lt(String fieldName, Object dbValue) {
     query.put(fieldName, new BasicDBObject("$lt", dbValue));
+    return this;
+  }
+
+  public Query lte(String fieldName, Object dbValue) {
+    query.put(fieldName, new BasicDBObject("$lte", dbValue));
     return this;
   }
 
@@ -108,6 +118,36 @@ public class Query {
     return this;
   }
 
+  /**
+   * Adds a list of clauses to the query as conjunction (logical AND).
+   */
+  public Query and(BasicDBObject... andClauses) {
+    BasicDBList clauses = new BasicDBList();
+    for (BasicDBObject andClause: andClauses) {
+      clauses.add(andClause);
+    }
+    return and(clauses);
+  }
+  
+  public Query and(Query... andClauses) {
+    BasicDBList clauses = new BasicDBList();
+    for (Query andClause: andClauses) {
+      clauses.add(andClause);
+    }
+    return and(clauses);
+  }
+
+  /**
+   * Adds a list of clauses to the query as conjunction (logical AND).
+   */
+  public Query and(BasicDBList clauses) {
+    if (clauses==null || clauses.size()==0) {
+      return this;
+    }
+    query.append("$and", clauses);
+    return this;
+  }
+  
   public Query doesNotExist(String field) {
     query.append(field, new BasicDBObject("$exists", false));
     return this;

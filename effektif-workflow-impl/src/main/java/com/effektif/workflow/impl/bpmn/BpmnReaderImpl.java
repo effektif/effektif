@@ -26,10 +26,12 @@ import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.json.JsonObjectReader;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
 import com.effektif.workflow.impl.json.TypeMapping;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
+
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +92,12 @@ public class BpmnReaderImpl implements BpmnReader {
    * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
    * The current implementation assumes that all namespaces are defined in the root element */
   protected Map<String,String> prefixes = new HashMap<>();
+  
+  protected JsonStreamMapper jsonStreamMapper;
 
-  public BpmnReaderImpl(BpmnMappings bpmnMappings) {
+  public BpmnReaderImpl(BpmnMappings bpmnMappings, JsonStreamMapper jsonStreamMapper) {
     this.bpmnMappings = bpmnMappings;
+    this.jsonStreamMapper = jsonStreamMapper;
   }
   
   protected Workflow readDefinitions(XmlElement definitionsXml) {
@@ -365,9 +370,7 @@ public class BpmnReaderImpl implements BpmnReader {
     // Use a registered JSON type mapper to parse the value.
     JsonObjectReader jsonReader = new JsonObjectReader(bpmnMappings);
     JsonTypeMapper typeMapper = bpmnMappings.getTypeMapper(type);
-    Map<String,Object> jsonValue = new HashMap<>();
-    jsonValue.put("value", value);
-    return (T) typeMapper.read(jsonValue, jsonReader);
+    return (T) typeMapper.read(value, jsonReader);
   }
   
   /**

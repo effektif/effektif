@@ -25,6 +25,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Workflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 /**
  * A facade for API object BPMN serialisation and deserialisation,
@@ -35,9 +36,15 @@ import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 public class BpmnMapper {
 
   private BpmnMappings bpmnMappings;
+  private JsonStreamMapper jsonStreamMapper;
+  
+  public static BpmnMapper createBpmnMapperForTest() {
+    return new BpmnMapper(new JsonStreamMapper());
+  }
 
-  public BpmnMapper() {
-    this.bpmnMappings = new BpmnMappingsBuilder().getMappings();
+  public BpmnMapper(JsonStreamMapper jsonStreamMapper) {
+    this.bpmnMappings = new BpmnMappings(jsonStreamMapper.getMappings());
+    this.jsonStreamMapper = jsonStreamMapper;
   }
 
   public Workflow readFromString(String bpmnString) {
@@ -46,7 +53,7 @@ public class BpmnMapper {
 
   public Workflow readFromReader(java.io.Reader reader) {
     XmlElement xmlRoot = XmlReader.parseXml(reader);
-    return new BpmnReaderImpl(bpmnMappings).readDefinitions(xmlRoot);
+    return new BpmnReaderImpl(bpmnMappings, jsonStreamMapper).readDefinitions(xmlRoot);
   }
 
   public void writeToStream(Workflow workflow, OutputStream out) {
@@ -70,7 +77,7 @@ public class BpmnMapper {
     if (xmlRoot != null && xmlRoot.elements != null) {
       try {
         T condition = conditionClass.newInstance();
-        BpmnReaderImpl reader = new BpmnReaderImpl(bpmnMappings);
+        BpmnReaderImpl reader = new BpmnReaderImpl(bpmnMappings, jsonStreamMapper);
         reader.currentXml = xmlRoot;
         condition.readBpmn(reader);
         return condition;

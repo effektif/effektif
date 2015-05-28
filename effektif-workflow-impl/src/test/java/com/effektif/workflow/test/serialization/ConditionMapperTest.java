@@ -56,7 +56,7 @@ public class ConditionMapperTest {
 
   @BeforeClass
   public static void initialize() {
-    bpmnMapper = BpmnMapperTest.getBpmnMapper();
+    bpmnMapper = BpmnTest.getBpmnMapper();
   }
 
   @Test
