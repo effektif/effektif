@@ -15,8 +15,11 @@
  */
 package com.effektif.workflow.impl.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,4 +32,47 @@ public class Lists {
     return Arrays.asList(elements);
   }
 
+  
+  public static <T> void collect(Collection<T> collector, T element) {
+    if (element!=null) {
+      collector.add(element);
+    }
+  }
+  public static <T> void collect(Collection<T> collector, Collection<T> elements) {
+    if (elements!=null) {
+      for (T element: elements) {
+        if (element!=null) {
+          collector.add(element);
+        }
+      }
+    }
+  }
+
+
+  public static <K,V> List<V> getValues(List<K> keys, Map<K,V> map) {
+    if (keys==null
+        || keys.isEmpty()) {
+      return null;
+    }
+    List<V> values = new ArrayList<>(keys.size());
+    for (K key: keys) {
+      V value = map.get(key);
+      if (value==null) {
+        throw new RuntimeException("No value for key "+key+" in map "+map);
+      } 
+      values.add(value);
+    }
+    return values;
+  }
+
+  public static <K,V> V getValue(K key, Map<K,V> map) {
+    if (key==null) {
+      return null;
+    }
+    V value = map.get(key);
+    if (value==null) {
+      throw new RuntimeException("No value for key "+key+" in map "+map);
+    } 
+    return value;
+  }
 }
