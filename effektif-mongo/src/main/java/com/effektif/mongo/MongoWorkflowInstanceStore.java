@@ -150,8 +150,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
   @Override
   public void flush(WorkflowInstanceImpl workflowInstance) {
-    if (log.isDebugEnabled())
-      log.debug("Flushing...");
+    if (log.isDebugEnabled()) log.debug("Flushing workflow instance...");
     
     WorkflowInstanceUpdates updates = workflowInstance.getUpdates();
     
@@ -166,7 +165,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     BasicDBObject update = new BasicDBObject();
 
     if (updates.isEndChanged) {
-      if (log.isDebugEnabled()) log.debug("  Workflow instance ended");
+      // if (log.isDebugEnabled()) log.debug("  Workflow instance ended");
       sets.append(WorkflowInstanceFields.END, workflowInstance.end.toDate());
       sets.append(WorkflowInstanceFields.DURATION, workflowInstance.duration);
     }
@@ -176,7 +175,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     // We do archive the ended (and joined) activity instances into a separate collection 
     // that doesn't have to be loaded.
     if (updates.isActivityInstancesChanged) {
-      if (log.isDebugEnabled()) log.debug("  Activity instances changed");
+      // if (log.isDebugEnabled()) log.debug("  Activity instances changed");
       BasicDBList dbArchivedActivityInstances = new BasicDBList();
       collectArchivedActivities(workflowInstance, dbArchivedActivityInstances);
       BasicDBList dbActivityInstances = writeActiveActivityInstances(workflowInstance.activityInstances);
@@ -185,18 +184,18 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         update.append("$push", new BasicDBObject(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances));
       }
     } else {
-      if (log.isDebugEnabled()) log.debug("  No activity instances changed");
+      // if (log.isDebugEnabled()) log.debug("  No activity instances changed");
     }
     
     if (updates.isVariableInstancesChanged) {
-      if (log.isDebugEnabled()) log.debug("  Variable instances changed");
+      // if (log.isDebugEnabled()) log.debug("  Variable instances changed");
       writeVariableInstances(sets, workflowInstance);
     } else {
-      if (log.isDebugEnabled()) log.debug("  No variable instances changed");
+      // if (log.isDebugEnabled()) log.debug("  No variable instances changed");
     }
 
     if (updates.isWorkChanged) {
-      if (log.isDebugEnabled()) log.debug("  Work changed");
+      // if (log.isDebugEnabled()) log.debug("  Work changed");
       List<String> work = writeWork(workflowInstance.work);
       if (work!=null) {
         sets.put(WorkflowInstanceFields.WORK, work);
@@ -204,11 +203,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         unsets.put(WorkflowInstanceFields.WORK, 1);
       }
     } else {
-      if (log.isDebugEnabled()) log.debug("  No work changed");
+      // if (log.isDebugEnabled()) log.debug("  No work changed");
     }
 
     if (updates.isAsyncWorkChanged) {
-      if (log.isDebugEnabled()) log.debug("  Aync work changed");
+      // if (log.isDebugEnabled()) log.debug("  Aync work changed");
       List<String> workAsync = writeWork(workflowInstance.workAsync);
       if (workAsync!=null) {
         sets.put(WorkflowInstanceFields.WORK_ASYNC, workAsync);
@@ -216,27 +215,27 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         unsets.put(WorkflowInstanceFields.WORK_ASYNC, 1);
       }
     } else {
-      if (log.isDebugEnabled()) log.debug("  No async work changed");
+      // if (log.isDebugEnabled()) log.debug("  No async work changed");
     }
 
     if (updates.isNextActivityInstanceIdChanged) {
-      if (log.isDebugEnabled()) log.debug("  Next activity instance changed");
+      // if (log.isDebugEnabled()) log.debug("  Next activity instance changed");
       sets.put(WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
     }
 
     if (updates.isNextVariableInstanceIdChanged) {
-      if (log.isDebugEnabled()) log.debug("  Next variable instance changed");
+      // if (log.isDebugEnabled()) log.debug("  Next variable instance changed");
       sets.put(WorkflowInstanceFields.NEXT_VARIABLE_INSTANCE_ID, workflowInstance.nextVariableInstanceId);
     }
 
     if (updates.isLockChanged) {
-      if (log.isDebugEnabled()) log.debug("  Lock changed");
+      // if (log.isDebugEnabled()) log.debug("  Lock changed");
       // a lock is only removed 
       unsets.put(WorkflowInstanceFields.LOCK, 1);
     }
     
     if (updates.isJobsChanged) {
-      if (log.isDebugEnabled()) log.debug("  Jobs changed");
+      // if (log.isDebugEnabled()) log.debug("  Jobs changed");
       List<BasicDBObject> dbJobs = writeJobs(workflowInstance.jobs);
       if (dbJobs!=null) {
         sets.put(WorkflowInstanceFields.JOBS, dbJobs);
@@ -244,24 +243,24 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         unsets.put(WorkflowInstanceFields.JOBS, 1);
       }
     } else {
-      if (log.isDebugEnabled()) log.debug("  No jobs changed");
+      // if (log.isDebugEnabled()) log.debug("  No jobs changed");
     }
 
     if (!sets.isEmpty()) {
       update.append("$set", sets);
     } else {
-      if (log.isDebugEnabled()) log.debug("  No sets");
+      // if (log.isDebugEnabled()) log.debug("  No sets");
     }
     if (!unsets.isEmpty()) {
       update.append("$unset", unsets);
     } else {
-      if (log.isDebugEnabled()) log.debug("  No unsets");
+      // if (log.isDebugEnabled()) log.debug("  No unsets");
     }
     
     if (!update.isEmpty()) {
       workflowInstancesCollection.update("flush-workflow-instance", query, update, false, false);
     } else {
-      if (log.isDebugEnabled()) log.debug("  Nothing to flush");
+      // if (log.isDebugEnabled()) log.debug("  Nothing to flush");
     }
     
     // reset the update tracking as all changes have been saved
@@ -346,16 +345,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   
   @Override
   public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    DBObject query = createLockQuery();
-    query.put(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId.getInternal()));
-    
-    DBObject update = BasicDBObjectBuilder.start()
-      .push("$unset")
-        .add(WorkflowInstanceFields.LOCK, 1)
-      .pop()
-      .get();
-
-    workflowInstancesCollection.update("unlock-workflow-instance", query, update);
+    workflowInstancesCollection.update("unlock-workflow-instance", 
+      new Query()
+        ._id(new ObjectId(workflowInstanceId.getInternal()))
+        .get(), 
+      new Update()
+        .unset(WorkflowInstanceFields.LOCK)
+        .get());
   }
 
   public DBObject createLockQuery() {

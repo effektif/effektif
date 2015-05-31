@@ -391,6 +391,7 @@ public class Mappings {
     Map<TypeVariable,Type> typeArgs = Reflection.getTypeArgsMap(type);
     Field[] declaredFields = clazz.getDeclaredFields();
     if (declaredFields!=null) {
+      int index = 0;
       for (Field field: declaredFields) {
         if (!Modifier.isStatic(field.getModifiers())
             && field.getAnnotation(JsonIgnore.class)==null
@@ -411,7 +412,8 @@ public class Mappings {
           if (jsonFieldNameAnnotation != null) {
             fieldMapping.setJsonFieldName(jsonFieldNameAnnotation.value());
           }
-          fieldMappings.add(fieldMapping);
+          fieldMappings.add(index, fieldMapping);
+          index++;
         }
       }
     }

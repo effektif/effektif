@@ -33,13 +33,13 @@ public interface WorkflowInstanceStore {
 
   WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
 
-  void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
-
   WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
 
   void flush(WorkflowInstanceImpl workflowInstance);
 
   void flushAndUnlock(WorkflowInstanceImpl workflowInstance);
+
+  void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
 
   List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
