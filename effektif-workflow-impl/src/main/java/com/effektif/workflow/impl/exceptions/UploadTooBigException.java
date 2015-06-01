@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Effektif GmbH.
+ * Copyright (c) 2015, Effektif GmbH.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.effektif.workflow.impl.exceptions;
-
-
-
 
 /**
  * @author Tom Baeyens
+ *
+ * TODO Move to engine {@link com.effektif.workflow.impl.exceptions}
  */
-public class BadRequestException extends HttpMappedException {
+public class UploadTooBigException extends HttpMappedException {
 
   private static final long serialVersionUID = 1L;
 
-  public BadRequestException(String message) {
+  public UploadTooBigException(String message) {
     super(message);
-  }
-  
-  public BadRequestException(String message, Throwable t) {
-    super(message, t);
   }
 
   @Override
   public int getStatusCode() {
-    return HttpStatusCode.BAD_REQUEST;
-  }
-
-  public static void checkTrue(boolean condition, String message) {
-    if (!condition) {
-      throw new BadRequestException(message);
-    }
-  }
-
-  public static void checkNotNull(Object object, String message) {
-    checkTrue(object!=null, message);
+    return HttpStatusCode.REQUEST_ENTITY_TOO_LARGE;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Effektif GmbH.
+ * Copyright (c) 2015, Effektif GmbH.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,50 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.effektif.workflow.impl.exceptions;
-
-
-
 
 /**
  * @author Tom Baeyens
+ *
+ * TODO Move to engine {@link com.effektif.workflow.impl.exceptions}
  */
-public class NotFoundException extends HttpMappedException {
+public class InternalServerException extends HttpMappedException {
 
   private static final long serialVersionUID = 1L;
 
-  public NotFoundException() {
-    super("Not found");
-  }
-  
-  public NotFoundException(String message) {
+  public InternalServerException(String message) {
     super(message);
   }
-
-  public NotFoundException(String message, Throwable t) {
+  
+  public InternalServerException(String message, Throwable t) {
     super(message, t);
   }
 
   @Override
   public int getStatusCode() {
-    return HttpStatusCode.NOT_FOUND;
-  }
-
-  public static void checkTrue(boolean condition) {
-   checkTrue(condition, null);
+    return HttpStatusCode.INTERNAL_SERVER_ERROR;
   }
 
   public static void checkTrue(boolean condition, String message) {
     if (!condition) {
-      throw new NotFoundException(message);
+      throw new InternalServerException(message);
     }
   }
 
-  public static void checkNotNull(Object object) {
-    checkTrue(object != null, null);
-  }
-
   public static void checkNotNull(Object object, String message) {
-    checkTrue(object != null, message);
+    checkTrue(object!=null, message);
   }
 }
