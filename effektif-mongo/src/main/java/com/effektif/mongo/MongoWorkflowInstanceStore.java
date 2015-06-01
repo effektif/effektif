@@ -63,6 +63,8 @@ import com.mongodb.DBObject;
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
   
+  private static final String RECENTLY_ARCHIVED_ACTIVITY_INSTANCES = "recentlyArchivedActivityInstances";
+
   public static final Logger log = MongoDb.log;
 
   protected Configuration configuration;
@@ -176,13 +178,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     // that doesn't have to be loaded.
     if (updates.isActivityInstancesChanged) {
       // if (log.isDebugEnabled()) log.debug("  Activity instances changed");
-      BasicDBList dbArchivedActivityInstances = new BasicDBList();
-      collectArchivedActivities(workflowInstance, dbArchivedActivityInstances);
+//      BasicDBList dbArchivedActivityInstances = new BasicDBList();
+//      collectArchivedActivities(workflowInstance, dbArchivedActivityInstances);
       BasicDBList dbActivityInstances = writeActiveActivityInstances(workflowInstance.activityInstances);
       sets.append(WorkflowInstanceFields.ACTIVITY_INSTANCES, dbActivityInstances);
-      if (!dbArchivedActivityInstances.isEmpty()) {
-        update.append("$push", new BasicDBObject(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances));
-      }
+//      if (!dbArchivedActivityInstances.isEmpty()) {
+//        update.append("$push", new BasicDBObject(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances));
+//      }
     } else {
       // if (log.isDebugEnabled()) log.debug("  No activity instances changed");
     }
@@ -379,12 +381,12 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
   
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
-    BasicDBList dbArchivedActivityInstances = new BasicDBList();
-    collectArchivedActivities(workflowInstance, dbArchivedActivityInstances);
+//    BasicDBList dbArchivedActivityInstances = new BasicDBList();
+//    collectArchivedActivities(workflowInstance, dbArchivedActivityInstances);
     BasicDBObject dbWorkflowInstance = mongoMapper.write(workflowInstance.toWorkflowInstance(true));
-    if (!dbArchivedActivityInstances.isEmpty()) {
-      writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances);
-    }
+//    if (!dbArchivedActivityInstances.isEmpty()) {
+//      writeObjectOpt(dbWorkflowInstance, WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances);
+//    }
     if (storeWorkflowIdsAsStrings) {
       writeString(dbWorkflowInstance, WorkflowInstanceFields.WORKFLOW_ID, workflowInstance.workflow.id.getInternal());
     }

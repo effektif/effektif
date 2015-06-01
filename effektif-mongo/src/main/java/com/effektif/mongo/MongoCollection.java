@@ -139,6 +139,17 @@ public class MongoCollection {
     return writeResult;
   }
 
+  public long count(String description, DBObject query) {
+    if (log.isDebugEnabled()) { 
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query));
+    }
+    Long count = dbCollection.count(query);
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+dbCollection.getName()+"-- "+count);
+    }
+    return count;
+  }
+
   public String toString(Object o) {
     return o!=null ? (isPretty ? PrettyPrinter.toJsonPrettyPrint(o) : o.toString()) : "null";
   }
