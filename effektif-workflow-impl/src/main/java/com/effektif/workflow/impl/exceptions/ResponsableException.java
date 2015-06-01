@@ -17,10 +17,14 @@ package com.effektif.workflow.impl.exceptions;
 
 
 
-/** Exceptions that can be mapped easily to return HTTP error responses.
- * The messages and content is always safe to send to the client. 
+/**
+ * A {@link RuntimeException} that will be mapped to an HTTP error response in the REST API.
+ * This means that the the messages and content must be safe to return to the client.
  * 
  * @author Tom Baeyens
+ *
+ * TODO Rename because ‘responsable’ is not a word, and about being used in an HTTP response, and nothing to do with
+ * being ‘responsible’.
  */
 public abstract class ResponsableException extends RuntimeException {
 

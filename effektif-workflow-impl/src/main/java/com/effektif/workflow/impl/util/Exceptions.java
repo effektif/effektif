@@ -18,6 +18,9 @@ package com.effektif.workflow.impl.util;
 
 /**
  * @author Tom Baeyens
+ *
+ * TODO Replace use of these helper methods with specific execption helpers, e.g.
+ * {@link com.effektif.workflow.impl.exceptions.NotFoundException#checkNotNull(Object, String)}
  */
 public class Exceptions {
 
