@@ -40,14 +40,18 @@ public abstract class AbstractBeanMapper<T extends Object> extends AbstractTypeM
 
   @Override
   public T read(Object jsonValue, JsonReader jsonReader) {
-    Map<String,Object> jsonObject = (Map<String, Object>) jsonValue;
-    TypeMapping typeMapping = getTypeMapping(jsonObject);
-    Object bean = typeMapping.instantiate();
-    List<FieldMapping> fieldMappings = typeMapping.getFieldMappings();
-    for (FieldMapping fieldMapping: fieldMappings) {
-      fieldMapping.readField(jsonObject, bean, jsonReader);
+    try {
+      Map<String,Object> jsonObject = (Map<String, Object>) jsonValue;
+      TypeMapping typeMapping = getTypeMapping(jsonObject);
+      Object bean = typeMapping.instantiate();
+      List<FieldMapping> fieldMappings = typeMapping.getFieldMappings();
+      for (FieldMapping fieldMapping: fieldMappings) {
+        fieldMapping.readField(jsonObject, bean, jsonReader);
+      }
+      return (T) bean;
+    } catch (ClassCastException e) {
+      throw new RuntimeException("Couldn't cast "+jsonValue+" to a map", e);
     }
-    return (T) bean;
   }
 
   @Override
