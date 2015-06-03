@@ -33,13 +33,6 @@ public class MongoApiTest {
     WorkflowTest.OPS_ID = "5530a4aec2e610258e946fe4";
   }
   
-//  @Test
-//  public void testA() {
-//    for (int i = 0; i < 15; i++) {
-//      System.err.println(ObjectId.get().toString());
-//    }
-//  }
-  
   @Test
   public void testApiWithMongoConfiguration() {
     Configuration configuration = createMongoTestConfiguration();
