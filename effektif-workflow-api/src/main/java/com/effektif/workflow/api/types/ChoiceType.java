@@ -28,7 +28,7 @@ import com.effektif.workflow.api.json.TypeName;
  * 
  * @author Tom Baeyens
  */
-@TypeName("decision")
+@TypeName("choice")
 public class ChoiceType extends TextType {
 
   protected List<ChoiceOption> options;
