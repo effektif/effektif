@@ -75,13 +75,20 @@ public class JsonStreamMapper {
       if (beanJsonObject==null) {
         return null;
       }
-      JsonStreamReader jsonStreamReader = new JsonStreamReader(mappings);
-      return (T) jsonStreamReader.readObject(beanJsonObject, type);
+      return readJsonObject(beanJsonObject, type);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
-  
+
+  public <T> T readJsonObject(Object jsonObject, Type type) {
+    if (jsonObject==null) {
+      return null;
+    }
+    JsonStreamReader jsonStreamReader = new JsonStreamReader(mappings);
+    return (T) jsonStreamReader.readObject(jsonObject, type);
+  }
+
   public <T> String write(T o) {
     StringWriter stringWriter = new StringWriter();
     write(o, stringWriter);

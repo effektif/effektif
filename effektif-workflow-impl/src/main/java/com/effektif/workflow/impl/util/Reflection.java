@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -290,5 +291,25 @@ public class Reflection {
       }
     }
     return true;
+  }
+
+  public static Object invokeGetter(Object object, String propertyName) {
+    String getterName = "get"+propertyName.substring(0, 1).toUpperCase()+propertyName.substring(1);
+    try {
+      Method method = Reflection.findMethod(object.getClass(), getterName);
+      return method.invoke(object);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException("Couldn't invoke "+getterName+": "+e.getMessage(), e);
+    }
+  }
+
+  public static void invokeSetter(Object object, String propertyName, Object value) {
+    String setterName = "set"+propertyName.substring(0, 1).toUpperCase()+propertyName.substring(1);
+    try {
+      Method method = Reflection.findMethod(object.getClass(), setterName);
+      method.invoke(object, new Object[]{value});
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException("Couldn't invoke "+setterName+": "+e.getMessage(), e);
+    }
   }
 }
