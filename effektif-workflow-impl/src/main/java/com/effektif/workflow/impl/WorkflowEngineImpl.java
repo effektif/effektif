@@ -33,7 +33,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
@@ -93,7 +93,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   /// Workflow methods ////////////////////////////////////////////////////////////
 
   @Override
-  public Deployment deployWorkflow(Workflow workflow) {
+  public Deployment deployWorkflow(ExecutableWorkflow workflow) {
     if (log.isDebugEnabled()) {
       log.debug("Deploying workflow");
     }
@@ -120,7 +120,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
   
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery workflowQuery) {
+  public List<ExecutableWorkflow> findWorkflows(WorkflowQuery workflowQuery) {
     return workflowStore.findWorkflows(workflowQuery);
   }
   
@@ -235,7 +235,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowImpl getWorkflowImpl(WorkflowId workflowId) {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
-      Workflow workflow = workflowStore.loadWorkflowById(workflowId);
+      ExecutableWorkflow workflow = workflowStore.loadWorkflowById(workflowId);
       WorkflowParser parser = WorkflowParser.parse(configuration, workflow);
       workflowImpl = parser.getWorkflow();
       workflowCache.put(workflowImpl);

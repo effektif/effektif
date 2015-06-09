@@ -27,7 +27,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.WorkflowStore;
@@ -63,10 +63,10 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     } else if (subWorkflowSource!=null) {
       workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSource);
     }
-    Workflow subWorkflow = null;
+    ExecutableWorkflow subWorkflow = null;
     if (workflowQuery!=null) {
       WorkflowEngine workflowEngine = parser.configuration.getWorkflowEngine();
-      List<Workflow> workflows = workflowEngine.findWorkflows(workflowQuery);
+      List<ExecutableWorkflow> workflows = workflowEngine.findWorkflows(workflowQuery);
       if (workflows!=null && !workflows.isEmpty()) {
         subWorkflow = workflows.get(0);
       }

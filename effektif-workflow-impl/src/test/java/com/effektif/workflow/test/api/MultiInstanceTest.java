@@ -23,7 +23,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.MultiInstance;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
@@ -36,7 +36,7 @@ public class MultiInstanceTest extends WorkflowTest {
   
   @Test
   public void testMultiInstanceBasics() throws Exception {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("reviewers", new ListType(TextType.INSTANCE))
       .activity("Review", msgExpression("reviewer")
         .multiInstance(new MultiInstance()

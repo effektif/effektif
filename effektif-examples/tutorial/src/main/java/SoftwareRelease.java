@@ -15,10 +15,10 @@
  */
 
 import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 
 public class SoftwareRelease {
-  public static Workflow workflow = new Workflow()
+  public static ExecutableWorkflow workflow = new ExecutableWorkflow()
     .sourceWorkflowId("release")
     .name("Software release")
     .activity("Move open issues", new ReceiveTask()

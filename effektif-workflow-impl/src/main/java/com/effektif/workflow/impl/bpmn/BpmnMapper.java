@@ -22,7 +22,7 @@ import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -47,23 +47,23 @@ public class BpmnMapper {
     this.jsonStreamMapper = jsonStreamMapper;
   }
 
-  public Workflow readFromString(String bpmnString) {
+  public ExecutableWorkflow readFromString(String bpmnString) {
     return readFromReader(new StringReader(bpmnString));
   }
 
-  public Workflow readFromReader(java.io.Reader reader) {
+  public ExecutableWorkflow readFromReader(java.io.Reader reader) {
     XmlElement xmlRoot = XmlReader.parseXml(reader);
     return new BpmnReaderImpl(bpmnMappings, jsonStreamMapper).readDefinitions(xmlRoot);
   }
 
-  public void writeToStream(Workflow workflow, OutputStream out) {
+  public void writeToStream(ExecutableWorkflow workflow, OutputStream out) {
     XmlElement bpmnDefinitions = new BpmnWriterImpl(bpmnMappings).writeDefinitions(workflow);
     XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
     xmlWriter.writeDocument(bpmnDefinitions);
     xmlWriter.flush();
   }
 
-  public String writeToString(Workflow workflow) {
+  public String writeToString(ExecutableWorkflow workflow) {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     writeToStream(workflow, stream);
     return stream.toString();

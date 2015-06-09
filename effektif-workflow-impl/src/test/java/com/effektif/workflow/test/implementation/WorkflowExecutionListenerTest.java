@@ -29,7 +29,7 @@ import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowExecutionListener;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
@@ -95,7 +95,7 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
 
   @Test
   public void testBasicEvents() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("s", new StartEvent()
         .transitionTo("t"))
       .activity("t", new NoneTask()
@@ -122,7 +122,7 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     //           /- a -\
     //  s - g1 -X       X- g2 - e
     //           \- b -/
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("s", new NoneTask()
         .transitionTo("g1"))
       .activity("g1", new ParallelGateway()
@@ -168,7 +168,7 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     //           /- - -\
     //  s - g1 -X       X- g2 - e
     //           \- b -/
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("s", new StartEvent()
         .transitionTo("g1"))
       .activity("g1", new ParallelGateway()

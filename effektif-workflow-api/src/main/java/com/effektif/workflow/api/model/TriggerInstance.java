@@ -16,7 +16,7 @@
 package com.effektif.workflow.api.model;
 
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 
 
 /**
@@ -56,7 +56,7 @@ public class TriggerInstance extends DataContainer {
   }
   
   /** use the lastest version of the workflow for the given source.
-   * @see Workflow#sourceWorkflowId(String) */
+   * @see ExecutableWorkflow#sourceWorkflowId(String) */
   public TriggerInstance sourceWorkflowId(String sourceWorkflowId) {
     this.sourceWorkflowId = sourceWorkflowId;
     return this;

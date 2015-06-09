@@ -24,7 +24,7 @@ import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
 
@@ -39,9 +39,9 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 public interface WorkflowEngine {
 
   /** Validates and deploys if there are no errors. */
-  Deployment deployWorkflow(Workflow workflow);
+  Deployment deployWorkflow(ExecutableWorkflow workflow);
   
-  List<Workflow> findWorkflows(WorkflowQuery workflowQuery);
+  List<ExecutableWorkflow> findWorkflows(WorkflowQuery workflowQuery);
 
   void deleteWorkflows(WorkflowQuery workflowQuery);
 

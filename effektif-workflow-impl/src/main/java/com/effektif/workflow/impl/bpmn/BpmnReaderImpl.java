@@ -24,7 +24,7 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.JsonObjectReader;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
@@ -100,8 +100,8 @@ public class BpmnReaderImpl implements BpmnReader {
     this.jsonStreamMapper = jsonStreamMapper;
   }
   
-  protected Workflow readDefinitions(XmlElement definitionsXml) {
-    Workflow workflow = null;
+  protected ExecutableWorkflow readDefinitions(XmlElement definitionsXml) {
+    ExecutableWorkflow workflow = null;
 
     // see #prefixes for more details about the limitations of namespaces
     initializeNamespacePrefixes(definitionsXml);
@@ -133,8 +133,8 @@ public class BpmnReaderImpl implements BpmnReader {
     }
   }
 
-  protected Workflow readWorkflow(XmlElement processXml) {
-    Workflow workflow = new Workflow();
+  protected ExecutableWorkflow readWorkflow(XmlElement processXml) {
+    ExecutableWorkflow workflow = new ExecutableWorkflow();
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);

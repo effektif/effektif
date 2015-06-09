@@ -26,7 +26,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
   @Test
   public void testSingleOutgoingFlow() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("gateway"))
       .activity("gateway", new ExclusiveGateway()
@@ -81,7 +81,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
   @Test
   public void testSingleOutgoingFlowDefault() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("gateway"))
       .activity("gateway", new ExclusiveGateway()
@@ -110,7 +110,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
   @Test
   public void testDefaultTransition() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("gateway"))
       .activity("gateway", new ExclusiveGateway()
@@ -138,7 +138,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
   @Test
   public void testSimpleCondition() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("waitingRequired", new BooleanType())
       .activity("start", new StartEvent()
         .transitionTo("gateway"))
@@ -164,7 +164,7 @@ public class ExclusiveGatewayTest extends WorkflowTest {
 
   @Test
   public void testExclusiveGateway() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new NumberType())
       .activity("start", new StartEvent()
         .transitionTo("?"))

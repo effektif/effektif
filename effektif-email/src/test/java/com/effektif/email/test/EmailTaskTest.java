@@ -14,7 +14,7 @@ import com.effektif.email.EmailTask;
 import com.effektif.email.OutgoingEmail;
 import com.effektif.email.TestOutgoingEmailService;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
@@ -42,7 +42,7 @@ public class EmailTaskTest extends WorkflowTest {
 
   @Test
   public void testEmailTaskBasics() throws Exception {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("1", new EmailTask()
         .to("johndoe@example.com")
         .subject("hi")
@@ -64,7 +64,7 @@ public class EmailTaskTest extends WorkflowTest {
 
   @Test
   public void testEmailTemplateVariables() throws Exception {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("1", new EmailTask()
         .subject("ba{{fruit}}na")
         .bodyText("im{{animal}}la")

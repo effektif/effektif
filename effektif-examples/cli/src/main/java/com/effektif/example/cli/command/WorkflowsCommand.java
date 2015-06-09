@@ -22,7 +22,7 @@ import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -35,7 +35,7 @@ public class WorkflowsCommand implements CommandImpl {
   public void execute(CommandLine command, Configuration configuration, PrintWriter out) {
     out.println("Deployed workflows:");
     final WorkflowEngine engine = configuration.getWorkflowEngine();
-    for (Workflow workflow : engine.findWorkflows(new WorkflowQuery())) {
+    for (ExecutableWorkflow workflow : engine.findWorkflows(new WorkflowQuery())) {
       out.println("  " + workflow.getSourceWorkflowId());
     }
     out.println();

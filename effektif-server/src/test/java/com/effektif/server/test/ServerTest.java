@@ -40,7 +40,7 @@ import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 
@@ -86,7 +86,7 @@ public class ServerTest extends JerseyTest {
   @Test
   public void test() {
     // Create a workflow
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .sourceWorkflowId("Server test workflow")
       .activity("One", new StartEvent()
         .transitionToNext())

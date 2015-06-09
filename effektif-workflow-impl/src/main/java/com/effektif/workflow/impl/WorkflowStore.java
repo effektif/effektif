@@ -19,29 +19,29 @@ import java.util.List;
 
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 
 
-/** stores and retrieves {@link Workflow workflows}.
+/** stores and retrieves {@link ExecutableWorkflow workflows}.
  * 
  * The workflow store stores and retrieves the API form of the workflow.
- * Compiling the {@link Workflow} into an executable {@link WorkflowImpl} 
+ * Compiling the {@link ExecutableWorkflow} into an executable {@link WorkflowImpl} 
  * is done by the {@link WorkflowEngineImpl workflow engine} */
 public interface WorkflowStore {
 
   /** creates a (globally) unique id to be used for a new workflow being deployed */
   WorkflowId generateWorkflowId();
 
-  void insertWorkflow(Workflow workflow);
+  void insertWorkflow(ExecutableWorkflow workflow);
 
   /** loads the api workflow representation from the store */
-  List<Workflow> findWorkflows(WorkflowQuery query);
+  List<ExecutableWorkflow> findWorkflows(WorkflowQuery query);
 
   void deleteWorkflows(WorkflowQuery workflowQuery);
 
   WorkflowId findLatestWorkflowIdBySource(String sourceWorkflowId);
 
   /** loads the executable workflow */
-  Workflow loadWorkflowById(WorkflowId workflowId);
+  ExecutableWorkflow loadWorkflowById(WorkflowId workflowId);
 }

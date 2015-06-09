@@ -23,7 +23,7 @@ import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
@@ -126,18 +126,18 @@ public class WorkflowTest {
   }
 
 
-  public Deployment deploy(Workflow workflow) {
+  public Deployment deploy(ExecutableWorkflow workflow) {
     Deployment deployment = workflowEngine.deployWorkflow(workflow);
     deployment.checkNoErrors();
     workflow.setId(deployment.getWorkflowId());
     return deployment;
   }
 
-  public TriggerInstance createTriggerInstance(Workflow workflow) {
+  public TriggerInstance createTriggerInstance(ExecutableWorkflow workflow) {
     return new TriggerInstance().workflowId(workflow.getId());
   }
 
-  public WorkflowInstance start(Workflow workflow) {
+  public WorkflowInstance start(ExecutableWorkflow workflow) {
     return workflowEngine.start(new TriggerInstance()
       .workflowId(workflow.getId()));
   }
@@ -281,11 +281,11 @@ public class WorkflowTest {
         }
       }
 
-      List<Workflow> workflows = workflowStore.findWorkflows(new WorkflowQuery());
+      List<ExecutableWorkflow> workflows = workflowStore.findWorkflows(new WorkflowQuery());
       if (workflows != null && !workflows.isEmpty()) {
         int i = 0;
         cleanLog.append("\n=== workflows ======================================================== \n");
-        for (Workflow workflow : workflows) {
+        for (ExecutableWorkflow workflow : workflows) {
           cleanLog.append("--- Deleted workflow ");
           cleanLog.append(i);
           cleanLog.append(" ---\n");

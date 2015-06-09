@@ -6,7 +6,7 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class ParallelEmbeddedSubprocessTest extends WorkflowTest {
   @Test
   public void testSubprocessParallelGateway() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("subprocess"))
       .activity("subprocess", new EmbeddedSubprocess()
@@ -84,7 +84,7 @@ public class ParallelEmbeddedSubprocessTest extends WorkflowTest {
   @Test
   public void testParallelGatewaySubprocess() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
       .activity("fork", new ParallelGateway()

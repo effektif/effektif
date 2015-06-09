@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.effektif.script.ScriptTask;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.data.types.ObjectType;
 import com.effektif.workflow.test.WorkflowTest;
@@ -26,7 +26,7 @@ public class ScriptTaskTest extends WorkflowTest {
   
   @Test
   public void testScript() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("n", new TextType())
       .variable("m", new TextType())
       .activity("s", new ScriptTask()
@@ -48,7 +48,7 @@ public class ScriptTaskTest extends WorkflowTest {
     Map<String,Object> johndoe = new HashMap<>();
     johndoe.put("fullName", "John Doe");
 
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("user", new ObjectType())
       .variable("name", new TextType())
       .activity("s", new ScriptTask()

@@ -36,7 +36,7 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
 
@@ -90,7 +90,7 @@ public class WorkflowStreamTest {
     
     String workflowIdInternal = getWorkflowIdInternal();
     
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .id(new WorkflowId(workflowIdInternal))
       .name("Software release")
       .description("Regular software production release process.")
@@ -147,7 +147,7 @@ public class WorkflowStreamTest {
   @Test
   public void testCall() {
     LocalDateTime now = new LocalDateTime();
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity(new Call()
       .id("runTests")
       .inputValue("d", now)
@@ -194,7 +194,7 @@ public class WorkflowStreamTest {
 
   @Test
   public void testEmbeddedSubprocess() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("phase1",
         new EmbeddedSubprocess().name("phase one").activity("start", new StartEvent()).activity("end", new EndEvent())
           .transition(new Transition().from("start").to("end")));
@@ -274,7 +274,7 @@ public class WorkflowStreamTest {
 
 //  @Test
   public void testInOutParameters() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("a", new NoneTask()
         .inputValue("in1", "value1")
         .inputExpression("in2", "expression2")

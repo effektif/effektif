@@ -22,7 +22,7 @@ import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.MemoryConfiguration;
@@ -41,7 +41,7 @@ public class ApiExamplesTest {
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     
     // Create a workflow
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .sourceWorkflowId("Release")
       .activity("Move open issues", new ReceiveTask()
         .transitionToNext())

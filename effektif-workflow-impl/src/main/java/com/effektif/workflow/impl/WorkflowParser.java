@@ -41,7 +41,7 @@ import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.template.Hint;
@@ -120,8 +120,8 @@ public class WorkflowParser {
       return ((Transition)object).getId();
     } else if (object instanceof Variable) {
       return ((Variable)object).getId();
-    } else if (object instanceof Workflow) {
-      WorkflowId workflowId = ((Workflow)object).getId();
+    } else if (object instanceof ExecutableWorkflow) {
+      WorkflowId workflowId = ((ExecutableWorkflow)object).getId();
       return workflowId!=null ? workflowId.getInternal() : null;
     }
     return null;

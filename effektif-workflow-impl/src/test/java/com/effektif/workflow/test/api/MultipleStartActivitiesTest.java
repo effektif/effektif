@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -32,7 +32,7 @@ public class MultipleStartActivitiesTest extends WorkflowTest {
   
   @Test
   public void testDefaultStartActivitiesParallelExecution() {
-    Workflow workflow = new Workflow() 
+    ExecutableWorkflow workflow = new ExecutableWorkflow() 
       .activity("one", new ReceiveTask())
       .activity("two", new ReceiveTask()
         .transitionTo("three"))

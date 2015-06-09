@@ -29,7 +29,7 @@ import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -59,7 +59,7 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
   }
 
   @Override
-  public Deployment deployWorkflow(Workflow workflow) {
+  public Deployment deployWorkflow(ExecutableWorkflow workflow) {
     log.debug("deployWorkflow");
     workflow = wireize(" >>workflow>> ", workflow);
     Deployment deployment = workflowEngine.deployWorkflow(workflow);
@@ -67,15 +67,15 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
+  public List<ExecutableWorkflow> findWorkflows(WorkflowQuery query) {
     log.debug("findWorkflow");
     query = wireize(" >>query>> ", query);
-    List<Workflow> workflows = workflowEngine.findWorkflows(query);
+    List<ExecutableWorkflow> workflows = workflowEngine.findWorkflows(query);
     if (workflows==null) {
       return null;
     }
-    List<Workflow> wirizedWorkflows = new ArrayList<>(workflows.size());
-    for (Workflow workflow: workflows) {
+    List<ExecutableWorkflow> wirizedWorkflows = new ArrayList<>(workflows.size());
+    for (ExecutableWorkflow workflow: workflows) {
       wirizedWorkflows.add(wireize("  <<workflow<< ", workflow));
     }
     return wirizedWorkflows;

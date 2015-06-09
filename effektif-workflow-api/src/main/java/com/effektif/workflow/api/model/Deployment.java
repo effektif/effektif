@@ -19,7 +19,7 @@ import com.effektif.workflow.api.workflow.ParseIssues;
 
 
 /**
- * Wrapper for a deployed {@link com.effektif.workflow.api.workflow.Workflow}.
+ * Wrapper for a deployed {@link com.effektif.workflow.api.workflow.ExecutableWorkflow}.
  *
  * @author Tom Baeyens
  */

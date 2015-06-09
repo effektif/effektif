@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 
 
@@ -58,12 +58,12 @@ public class BpmnTest extends WorkflowStreamTest {
   
   @Override
   public <T> T serialize(T o) {
-    Workflow w = null;
+    ExecutableWorkflow w = null;
     if (o instanceof Activity) {
-      w = new Workflow()
+      w = new ExecutableWorkflow()
       .activity((Activity)o);
     } else {
-      w = (Workflow) o;
+      w = (ExecutableWorkflow) o;
     }
 
     String xmlString = bpmnMapper

@@ -28,7 +28,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -113,7 +113,7 @@ public class Application {
   }
 
   private static void listWorkflows() {
-    for (Workflow workflow : engine.findWorkflows(new WorkflowQuery())) {
+    for (ExecutableWorkflow workflow : engine.findWorkflows(new WorkflowQuery())) {
       System.out.println(workflow.getSourceWorkflowId());
     }
   }

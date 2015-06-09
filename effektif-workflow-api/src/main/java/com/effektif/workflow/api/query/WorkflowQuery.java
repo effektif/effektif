@@ -20,7 +20,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 
 
 /**
- * A query for finding {@link com.effektif.workflow.api.workflow.Workflow} definitions
+ * A query for finding {@link com.effektif.workflow.api.workflow.ExecutableWorkflow} definitions
  * using {@link com.effektif.workflow.api.WorkflowEngine#findWorkflows(WorkflowQuery)}.
  *
  * @author Tom Baeyens

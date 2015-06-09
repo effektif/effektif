@@ -24,7 +24,7 @@ import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -43,7 +43,7 @@ public class EmbeddedSubprocessTest extends WorkflowTest {
    */ 
   @Test 
   public void testSubprocess() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("sub"))
       .activity("sub", new EmbeddedSubprocess()
@@ -83,7 +83,7 @@ public class EmbeddedSubprocessTest extends WorkflowTest {
   @Test
   public void testNestedSubprocess() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("subprocess1"))
       .activity("subprocess1", new EmbeddedSubprocess()

@@ -30,7 +30,7 @@ import com.effektif.adapter.service.MemoryAdapterService;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.datasource.ItemReference;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
 
@@ -70,7 +70,7 @@ public class AdapterTest {
     
     // Next, the user is able to start building and executing workflows 
     // with the new activity 
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("hello", new AdapterActivity()
         .adapterId(adapter.getId()) // TODO (*) replace with the line below
         // .adapterServerId("coca-cola")

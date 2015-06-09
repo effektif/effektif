@@ -33,7 +33,7 @@ import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.Mappings;
 
 
@@ -176,7 +176,7 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
   
-  protected XmlElement writeDefinitions(Workflow workflow) {
+  protected XmlElement writeDefinitions(ExecutableWorkflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
     xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
@@ -184,7 +184,7 @@ public class BpmnWriterImpl implements BpmnWriter {
     return xml;
   }
 
-  protected void writeWorkflow(Workflow workflow) {
+  protected void writeWorkflow(ExecutableWorkflow workflow) {
     startScope(workflow);
     // Add the ‘process’ element as the first child element of the ‘definitions’ element.
     startElementBpmn("process", workflow.getBpmn(), 0);

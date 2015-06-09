@@ -27,7 +27,7 @@ import com.effektif.workflow.api.query.OrderBy;
 import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
@@ -97,29 +97,29 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public void insertWorkflow(Workflow workflow) {
+  public void insertWorkflow(ExecutableWorkflow workflow) {
     BasicDBObject dbWorkflow = workflowApiToMongo(workflow);
     workflowsCollection.insert("insert-workflow", dbWorkflow);
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
+  public List<ExecutableWorkflow> findWorkflows(WorkflowQuery query) {
     if (query==null) {
       query = new WorkflowQuery();
     }
-    List<Workflow> workflows = new ArrayList<>();
+    List<ExecutableWorkflow> workflows = new ArrayList<>();
     DBCursor cursor = createWorkflowDbCursor(query);
     while (cursor.hasNext()) {
       BasicDBObject dbWorkflow = (BasicDBObject) cursor.next();
-      Workflow workflow = mongoToWorkflowApi(dbWorkflow, Workflow.class);
+      ExecutableWorkflow workflow = mongoToWorkflowApi(dbWorkflow, ExecutableWorkflow.class);
       workflows.add(workflow);
     }
     return workflows;
   }
 
   @Override
-  public Workflow loadWorkflowById(WorkflowId workflowId) {
-    List<Workflow> workflows = findWorkflows(new WorkflowQuery()
+  public ExecutableWorkflow loadWorkflowById(WorkflowId workflowId) {
+    List<ExecutableWorkflow> workflows = findWorkflows(new WorkflowQuery()
       .workflowId(workflowId));
     return !workflows.isEmpty() ? workflows.get(0) : null;
   }

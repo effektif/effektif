@@ -38,7 +38,7 @@ import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
@@ -192,7 +192,7 @@ public abstract class AbstractMapperTest {
   public void testTransition() {
     Condition condition = new IsTrue().left(new Binding().expression("testsPassed"));
 
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent())
       .activity("smokeTest", new NoneTask())
       .activity("checkTestResult", new ExclusiveGateway().defaultTransitionId("to-failed"))
@@ -218,7 +218,7 @@ public abstract class AbstractMapperTest {
 
 //  @Test
   public void testWorkflow() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .id(new WorkflowId(workflowId()))
       .name("Software release")
       .description("Regular software production release process.")
@@ -240,7 +240,7 @@ public abstract class AbstractMapperTest {
 
 //  @Test
   public void testVariables() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable(new Variable().type(TextType.INSTANCE).id("v").name("version").description("Release version"))
       .variable("mailing-list", EmailAddressType.INSTANCE)
       .variable("release-notes", LinkType.INSTANCE)

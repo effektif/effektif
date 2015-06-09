@@ -41,7 +41,7 @@ import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
@@ -325,7 +325,7 @@ public class ConditionsTest extends WorkflowTest {
   }
 
   private boolean evaluate(DataType type, String variableId, Object value, Condition condition) {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable(variableId, type);
     
     deploy(workflow);

@@ -16,7 +16,7 @@
 package com.effektif.example.cli;
 
 import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 
 
 /**
@@ -24,7 +24,7 @@ import com.effektif.workflow.api.workflow.Workflow;
  */
 public class SoftwareRelease {
 
-  public static Workflow workflow = new Workflow()
+  public static ExecutableWorkflow workflow = new ExecutableWorkflow()
     .sourceWorkflowId("release")
     .activity("Move open issues", new ReceiveTask()
       .transitionToNext())

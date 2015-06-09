@@ -23,7 +23,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 
 
 /** 
- * common data fields for any object in a {@link Workflow}. 
+ * common data fields for any object in a {@link ExecutableWorkflow}. 
  * 
  * @author Tom Baeyens
  */

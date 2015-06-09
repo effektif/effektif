@@ -20,7 +20,7 @@ import org.junit.Test;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.memory.TestConfiguration;
@@ -48,7 +48,7 @@ public class SlackTest {
     WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
     // TaskService taskService = configuration.getTaskService();
   
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("1", new SlackPost()
         .slackAccountId("slackaccountid")
         .channel("channel1")

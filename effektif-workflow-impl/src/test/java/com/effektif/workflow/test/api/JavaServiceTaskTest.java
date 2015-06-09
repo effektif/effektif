@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -35,7 +35,7 @@ public class JavaServiceTaskTest extends WorkflowTest {
   
   @Test
   public void testJavaServiceTaskStaticMethodValue() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("invoke hello", msgValue("world"));
     
     deploy(workflow);
@@ -47,7 +47,7 @@ public class JavaServiceTaskTest extends WorkflowTest {
 
   @Test
   public void testJavaServiceTaskStaticMethodExpression() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("invoke hello", msgExpression("msg"));
     
     deploy(workflow);
@@ -67,7 +67,7 @@ public class JavaServiceTaskTest extends WorkflowTest {
 
   @Test
   public void testJavaServiceTaskBean() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("invoke bean", new JavaServiceTask()
       .beanName("myBean")
       .methodName("hello")

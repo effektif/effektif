@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 
 
@@ -44,7 +44,7 @@ public class DeployResource {
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public Deployment deploy(Workflow workflow) {
+  public Deployment deploy(ExecutableWorkflow workflow) {
     return workflowEngine.deployWorkflow(workflow);
   }
 }

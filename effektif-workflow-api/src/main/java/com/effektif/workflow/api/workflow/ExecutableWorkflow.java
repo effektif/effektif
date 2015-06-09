@@ -47,8 +47,9 @@ import com.effektif.workflow.api.types.DataType;
  *
  * @author Tom Baeyens
  */
-public class Workflow extends AbstractWorkflow {
+public class ExecutableWorkflow extends AbstractWorkflow {
   
+  /** @see #sourceWorkflowId(String) */
   protected String sourceWorkflowId;
   protected LocalDateTime createTime;
   protected String creatorId;
@@ -151,7 +152,7 @@ public class Workflow extends AbstractWorkflow {
    * 3) The Effektif product editor.  In that case, the workflows you see in the tool 
    * are in fact editor workflows.  You'll find the editor workflow id as the sourceWorkflowId 
    * in the deployed processes.*/
-  public Workflow sourceWorkflowId(String sourceWorkflowId) {
+  public ExecutableWorkflow sourceWorkflowId(String sourceWorkflowId) {
     this.sourceWorkflowId = sourceWorkflowId;
     return this;
   }
@@ -162,7 +163,7 @@ public class Workflow extends AbstractWorkflow {
   public void setCreateTime(LocalDateTime createTime) {
     this.createTime = createTime;
   }
-  public Workflow createTime(LocalDateTime createTime) {
+  public ExecutableWorkflow createTime(LocalDateTime createTime) {
     this.createTime = createTime;
     return this;
   }
@@ -173,87 +174,87 @@ public class Workflow extends AbstractWorkflow {
   public void setCreatorId(String id) {
     this.creatorId = id;
   }
-  public Workflow creatorId(String id) {
+  public ExecutableWorkflow creatorId(String id) {
     this.creatorId = id;
     return this;
   }
 
   /** add an activity to the workflow */
   @Override
-  public Workflow activity(Activity activity) {
+  public ExecutableWorkflow activity(Activity activity) {
     super.activity(activity);
     return this;
   }
   /** add an activity to the workflow */
   @Override
-  public Workflow activity(String id, Activity activity) {
+  public ExecutableWorkflow activity(String id, Activity activity) {
     super.activity(id, activity);
     return this;
   }
   /** add a transition to this workflow where the id is specified in the transition */
   @Override
-  public Workflow transition(Transition transition) {
+  public ExecutableWorkflow transition(Transition transition) {
     super.transition(transition);
     return this;
   }
   /** add a transition to this workflow and set the given id. */
   @Override
-  public Workflow transition(String id, Transition transition) {
+  public ExecutableWorkflow transition(String id, Transition transition) {
     super.transition(id, transition);
     return this;
   }
   /** add a variable to this workflow and set the given id. */
   @Override
-  public Workflow variable(String id, DataType type) {
+  public ExecutableWorkflow variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }
   /** add a timer to this workflow. */
   @Override
-  public Workflow timer(Timer timer) {
+  public ExecutableWorkflow timer(Timer timer) {
     super.timer(timer);
     return this;
   }
   /** sets the id of this workflow.
    * The id is not really used during execution. */
   @Override
-  public Workflow id(WorkflowId id) {
+  public ExecutableWorkflow id(WorkflowId id) {
     super.id(id);
     return this;
   }
   
   @Override
-  public Workflow name(String name) {
+  public ExecutableWorkflow name(String name) {
     super.name(name);
     return this;
   }
 
   @Override
-  public Workflow description(String description) {
+  public ExecutableWorkflow description(String description) {
     super.description(description);
     return this;
   }
 
   @Override
-  public Workflow property(String key, Object value) {
+  public ExecutableWorkflow property(String key, Object value) {
     super.property(key, value);
     return this;
   }
   
   @Override
-  public Workflow propertyOpt(String key, Object value) {
+  public ExecutableWorkflow propertyOpt(String key, Object value) {
     super.propertyOpt(key, value);
     return this;
   }
 
   @Override
-  public Workflow trigger(Trigger trigger) {
+  public ExecutableWorkflow trigger(Trigger trigger) {
     super.trigger(trigger);
     return this;
   }
 
   @Override
-  public Workflow variable(Variable variable) {
+  public ExecutableWorkflow variable(Variable variable) {
     super.variable(variable);
     return this;
   }

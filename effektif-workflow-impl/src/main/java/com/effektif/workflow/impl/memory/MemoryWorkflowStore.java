@@ -25,7 +25,7 @@ import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.WorkflowStore;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
@@ -36,7 +36,7 @@ import com.effektif.workflow.impl.configuration.Brewery;
  */
 public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
-  protected Map<WorkflowId, Workflow> workflows;
+  protected Map<WorkflowId, ExecutableWorkflow> workflows;
 
   public MemoryWorkflowStore() {
   }
@@ -52,18 +52,18 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
   }
 
   @Override
-  public void insertWorkflow(Workflow workflow) {
+  public void insertWorkflow(ExecutableWorkflow workflow) {
     workflows.put(workflow.getId(), workflow);
   }
 
   @Override
-  public List<Workflow> findWorkflows(WorkflowQuery query) {
+  public List<ExecutableWorkflow> findWorkflows(WorkflowQuery query) {
     if (query==null) {
       query = new WorkflowQuery();
     }
-    List<Workflow> result = new ArrayList<>();
+    List<ExecutableWorkflow> result = new ArrayList<>();
     if (query.getWorkflowId()!=null) {
-      Workflow workflow = workflows.get(query.getWorkflowId());
+      ExecutableWorkflow workflow = workflows.get(query.getWorkflowId());
       if (workflow!=null) {
         result.add(workflow);
       }
@@ -81,7 +81,7 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     return result;
   }
   
-  protected void filterByName(List<Workflow> result, String name) {
+  protected void filterByName(List<ExecutableWorkflow> result, String name) {
     for (int i=result.size()-1; i>=0; i--) {
       if (!name.equals(result.get(i).getSourceWorkflowId())) {
         result.remove(i);
@@ -94,9 +94,9 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
     if (workflowName==null) {
       return null;
     }
-    Workflow latestWorkflow = null;
+    ExecutableWorkflow latestWorkflow = null;
     LocalDateTime latestDeployTime = null;
-    for (Workflow workflow: workflows.values()) {
+    for (ExecutableWorkflow workflow: workflows.values()) {
       if ( workflowName.equals(workflow.getSourceWorkflowId())
            && (latestDeployTime==null || latestDeployTime.isAfter(workflow.getCreateTime())) ) {
         latestWorkflow = workflow;
@@ -108,13 +108,13 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
   @Override
   public void deleteWorkflows(WorkflowQuery query) {
-    for (Workflow workflow: findWorkflows(query)) {
+    for (ExecutableWorkflow workflow: findWorkflows(query)) {
       workflows.remove(workflow.getId());
     }
   }
 
   @Override
-  public Workflow loadWorkflowById(WorkflowId workflowId) {
+  public ExecutableWorkflow loadWorkflowById(WorkflowId workflowId) {
     return workflows.get(workflowId);
   }
 }

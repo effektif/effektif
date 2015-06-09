@@ -22,7 +22,7 @@ import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
@@ -43,12 +43,12 @@ public class CallTest extends WorkflowTest {
   
   @Test
   public void testCallActivity() {
-    Workflow subWorkflow = new Workflow()
+    ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("subtask", new ReceiveTask());
     
     deploy(subWorkflow);
     
-    Workflow superWorkflow = new Workflow()
+    ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .activity("call", new Call()
         .subWorkflowId(subWorkflow.getId()));
 
@@ -81,12 +81,12 @@ public class CallTest extends WorkflowTest {
 
   @Test
   public void testTwoCallActivitiesInSequence() {
-    Workflow subWorkflow = new Workflow()
+    ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("auto", new NoneTask());
     
     deploy(subWorkflow);
     
-    Workflow superWorkflow = new Workflow()
+    ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .activity("call1", new Call()
         .subWorkflowId(subWorkflow.getId())
         .transitionToNext())
@@ -107,12 +107,12 @@ public class CallTest extends WorkflowTest {
 
   @Test
   public void testTwoCallActivitiesInparallel() {
-    Workflow subWorkflow = new Workflow()
+    ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("auto", new NoneTask());
     
     deploy(subWorkflow);
     
-    Workflow superWorkflow = new Workflow()
+    ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .activity("call1", new Call()
         .subWorkflowId(subWorkflow.getId()))
       .activity("call2", new Call()
@@ -132,13 +132,13 @@ public class CallTest extends WorkflowTest {
 
   @Test
   public void testCallActivityInputValue() {
-    Workflow subWorkflow = new Workflow()
+    ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .variable("performer", TextType.INSTANCE)
       .activity("message", msgExpression("performer"));
     
     deploy(subWorkflow);
     
-    Workflow superWorkflow = new Workflow()
+    ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .activity("call", new Call()
         .inputValue("performer", "walter")
         .subWorkflowId(subWorkflow.getId()));
@@ -152,13 +152,13 @@ public class CallTest extends WorkflowTest {
 
   @Test
   public void testCallActivityInputBindingVariable() {
-    Workflow subWorkflow = new Workflow()
+    ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .variable("performer", TextType.INSTANCE)
       .activity("subtask", msgExpression("performer"));
     
     deploy(subWorkflow);
     
-    Workflow superWorkflow = new Workflow()
+    ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .variable("guineapig", TextType.INSTANCE)
       .activity("call", new Call()
         .inputExpression("performer", "guineapig")

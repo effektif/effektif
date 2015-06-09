@@ -28,7 +28,7 @@ import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testParallelTasks() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
       .activity("fork", new ParallelGateway().transitionTo("t1").transitionTo("t2"))
@@ -91,7 +91,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testAutomaticTasks() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent().transitionTo("fork"))
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
@@ -122,7 +122,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testMixedTasks() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
       .activity("fork", new ParallelGateway()
@@ -166,7 +166,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testMultiplePaths() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
       .activity("fork", new ParallelGateway()
@@ -213,7 +213,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testComplexParallelGateway() {
 
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("f1"))
       .activity("f1", new ParallelGateway()
@@ -261,7 +261,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testComplexParallelGatewayAutomaticTasks() {
 
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("f1"))
       .activity("f1", new ParallelGateway()
@@ -304,7 +304,7 @@ public class ParallelGatewayTest extends WorkflowTest {
        The fact that there is nothing more to do should fire the + parallel gateway.
     */
 
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("t1", new ReceiveTask()
         .transitionTo("+"))
       .activity("t2", new ReceiveTask()
@@ -344,7 +344,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testCombineDefaultOutgoingParallelWithGatewayParallel() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("one", new ReceiveTask()
         .transitionTo("two")
         .transitionTo("fork"))
@@ -389,7 +389,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testJoinInLoop() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
       .activity("fork", new ParallelGateway().transitionTo("t1").transitionTo("t2"))
@@ -434,7 +434,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testLooseEnd() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent().transitionTo("fork"))
       .activity("fork", new ParallelGateway()
         .transitionTo("t1")
@@ -461,7 +461,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testHasNoValidOutgoingFlow() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent().transitionTo("fork"))
       .activity("fork", new ParallelGateway().transitionTo((String) null));
 
@@ -485,7 +485,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testAndXorCombination() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("dealSize", new NumberType())
       .activity("start", new StartEvent().transitionTo("fork"))
       .activity("fork", new ParallelGateway()
@@ -540,7 +540,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testAndXorCombinationWithLooseEnd() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("dealSize", new NumberType())
       .activity("start", new StartEvent().transitionTo("fork"))
       .activity("fork", new ParallelGateway()
@@ -590,7 +590,7 @@ public class ParallelGatewayTest extends WorkflowTest {
    */
   @Test
   public void testMultipleStepsBeforeJoin() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent().transitionTo("fork"))
       .activity("fork", new ParallelGateway().transitionTo("t1").transitionTo("t3").transitionTo("t5"))
       .activity("t1", new ReceiveTask()
@@ -640,7 +640,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testParallelGatewayInsideExclusiveGateway() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("repeatRequired", new BooleanType())
       .activity("start", new StartEvent()
         .transitionTo("eg1"))
@@ -703,7 +703,7 @@ public class ParallelGatewayTest extends WorkflowTest {
   @Test
   public void testParallelFlowEndEvent() {
     // @formatter:off
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("start", new StartEvent()
         .transitionTo("fork"))
       .activity("fork", new ParallelGateway()

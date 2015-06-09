@@ -32,7 +32,7 @@ import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 
@@ -138,7 +138,7 @@ public class DocumentationExamplesTest extends TestCase {
   private void print(Activity activity) {
     printJson(activity);
 
-    Workflow workflow = new Workflow().activity(activity);
+    ExecutableWorkflow workflow = new ExecutableWorkflow().activity(activity);
     // System.out.println(BpmnWriter.writeBpmnDocumentString(workflow, configuration));
   }
 }

@@ -36,7 +36,7 @@ import com.effektif.workflow.api.types.LinkType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.workflow.Workflow;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
@@ -49,7 +49,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testDateType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new DateType());
     
     deploy(workflow);
@@ -65,7 +65,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testDateTypeSetVariables() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new DateType());
     
     deploy(workflow);
@@ -88,7 +88,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testListOfDatesType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new ListType(new DateType()));
     
     deploy(workflow);
@@ -107,7 +107,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testEmailAddressType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new EmailAddressType());
 
     deploy(workflow);
@@ -121,7 +121,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testListOfEmailAddressesType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new ListType(new EmailAddressType()));
 
     deploy(workflow);
@@ -140,7 +140,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testNumberType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new NumberType());
 
     deploy(workflow);
@@ -154,7 +154,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testListOfNumbersType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new ListType(new NumberType()));
 
     deploy(workflow);
@@ -171,7 +171,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testLinkType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new LinkType());
     
     deploy(workflow);
@@ -189,7 +189,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testListOfLinkType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new ListType(new LinkType()));
     
     deploy(workflow);
@@ -209,7 +209,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testMoneyType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new MoneyType());
     
     deploy(workflow);
@@ -225,7 +225,7 @@ public class VariableTypesTest extends WorkflowTest {
 
   @Test
   public void testListOfMoneyType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new ListType(new MoneyType()));
     
     deploy(workflow);
@@ -250,7 +250,7 @@ public class VariableTypesTest extends WorkflowTest {
   
   @Test
   public void testJavaBeanType() {
-    Workflow workflow = new Workflow()
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("v", new JavaBeanType().javaClass(MyBean.class));
     
     deploy(workflow);
