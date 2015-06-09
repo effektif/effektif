@@ -67,8 +67,7 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testEmbeddedSubprocess() {
-    EmbeddedSubprocess activity = new EmbeddedSubprocess();
-    activity.setId("phase1");
+    EmbeddedSubprocess activity = new EmbeddedSubprocess().id("phase1");
     print(activity);
   }
 
@@ -76,6 +75,8 @@ public class DocumentationExamplesTest extends TestCase {
   public void testEndEvent() {
     EndEvent activity = new EndEvent();
     activity.setId("releaseComplete");
+    activity.setName("software released");
+    activity.setDescription("Ends the process when the release is complete.");
     print(activity);
   }
 
@@ -89,43 +90,39 @@ public class DocumentationExamplesTest extends TestCase {
 
   @Test
   public void testHttpServiceTask() {
-    HttpServiceTask activity = new HttpServiceTask();
-    activity.setId("publishReleaseNotes");
+    HttpServiceTask activity = new HttpServiceTask().id("publishReleaseNotes");
     print(activity);
   }
 
   @Test
   public void testJavaServiceTask() {
-    JavaServiceTask activity = new JavaServiceTask();
-    activity.setId("profilePerformance");
+    JavaServiceTask activity = new JavaServiceTask().id("profilePerformance");
     print(activity);
   }
 
   @Test
   public void testNoneTask() {
-    NoneTask activity = new NoneTask();
-    activity.setId("verifyRequirements");
+    NoneTask activity = new NoneTask().id("verifyRequirements");
     print(activity);
   }
 
   @Test
   public void testParallelGateway() {
-    ParallelGateway activity = new ParallelGateway();
-    activity.setId("fork");
+    ParallelGateway activity = new ParallelGateway().id("fork");
     print(activity);
   }
 
   @Test
   public void testReceiveTask() {
-    ReceiveTask activity = new ReceiveTask();
-    activity.setId("buildComplete");
+    ReceiveTask activity = new ReceiveTask().id("buildComplete");
     print(activity);
   }
 
   @Test
   public void testStartEvent() {
-    StartEvent activity = new StartEvent();
-    activity.setId("codeComplete");
+    StartEvent activity = new StartEvent().id("codeComplete");
+    activity.setName("code complete");
+    activity.setDescription("Starts the process when the code is ready to release.");
     print(activity);
   }
 
