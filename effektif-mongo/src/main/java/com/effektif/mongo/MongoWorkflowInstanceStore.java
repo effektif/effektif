@@ -311,7 +311,9 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   
   @Override
   public WorkflowInstanceImpl getWorkflowInstanceImplById(WorkflowInstanceId workflowInstanceId) {
-    Exceptions.checkNotNullParameter(workflowInstanceId, "workflowInstanceId");
+    if (workflowInstanceId==null) {
+      return null;
+    }
     DBObject query = createLockQuery();
     query.put(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId.getInternal()));
     

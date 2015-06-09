@@ -28,6 +28,7 @@ public class Query {
   public Integer skip;
   public Integer limit;
   public BasicDBObject query = new BasicDBObject();
+  public BasicDBObject orderBy = null;
   
   public Query _id(ObjectId id) {
     query.append("_id", id);
@@ -158,6 +159,22 @@ public class Query {
     return this;
   }
   
+  public Query orderAsc(String field) {
+    if (orderBy==null) {
+      orderBy = new BasicDBObject();
+    }
+    orderBy.append(field, 1);
+    return this;
+  }
+  
+  public Query orderDesc(String field) {
+    if (orderBy==null) {
+      orderBy = new BasicDBObject();
+    }
+    orderBy.append(field, -1);
+    return this;
+  }
+  
   public BasicDBObject get() {
     return query;
   }
@@ -170,12 +187,15 @@ public class Query {
     return limit;
   }
 
-  public void applyPage(DBCursor dbCursor) {
+  public void applyCursorConfigs(DBCursor dbCursor) {
     if (skip!=null) {
       dbCursor.skip(skip);
     }
     if (limit!=null) {
       dbCursor.limit(limit);
+    }
+    if (orderBy!=null) {
+      dbCursor.sort(orderBy);
     }
   }
 }
