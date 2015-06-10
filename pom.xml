@@ -24,6 +24,15 @@
     </license>
   </licenses>
 
+  <developers>
+    <!--  developer info is here to prevent an error when uploading to maven central (oss.sonatype.org) -->
+    <developer>
+      <name>Tom Baeyens</name>
+      <email>tom@effektif.com</email>
+      <organization>Effektif</organization>
+    </developer>
+  </developers>
+
   <modules>
     <module>effektif-workflow-api</module>
     <module>effektif-workflow-impl</module>
