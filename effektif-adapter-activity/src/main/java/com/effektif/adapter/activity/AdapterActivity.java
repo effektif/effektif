@@ -16,6 +16,10 @@
 package com.effektif.adapter.activity;
 
 import com.effektif.workflow.api.activities.AbstractBindableActivity;
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
@@ -31,10 +35,24 @@ import com.effektif.workflow.api.workflow.Variable;
  * @author Tom Baeyens
  */
 @TypeName("adapterActivity")
+@BpmnElement("serviceTask")
+@BpmnTypeAttribute(attribute="type", value="adapter")
 public class AdapterActivity extends AbstractBindableActivity {
 
   protected String adapterId;
   protected String activityKey;
+  
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+    // TODO read adapterId & activityKey as effektif attributes to BPMN
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    // TODO add adapterId & activityKey as effektif attributes to BPMN
+  }
 
   @Override
   public AdapterActivity id(String id) {
