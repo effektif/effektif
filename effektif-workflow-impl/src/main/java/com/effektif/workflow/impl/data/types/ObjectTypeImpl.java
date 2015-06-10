@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -39,6 +40,19 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
   public ObjectTypeImpl(T typeApi, Class< ? > valueClass) {
     super(typeApi);
   }
+  
+  @Override
+  public DataTypeImpl parseDereference(String field, WorkflowParser parser) {
+    if (fields!=null) {
+      ObjectFieldImpl objectField = fields.get(field);
+      if (objectField!=null) {
+        return objectField.type;
+      } else {
+        parser.addWarning("Field '%s' does not exist", field);
+      }
+    }
+    return new AnyTypeImpl();
+  }
 
   @Override
   public TypedValueImpl dereference(Object value, String fieldName) {
@@ -56,7 +70,7 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
       DataTypeImpl fieldDataType = dataTypeService.getDataTypeByValue(fieldValueClass);
       return new TypedValueImpl(fieldDataType, fieldValue);
     }
-    throw new RuntimeException("Field '"+fieldName+"' doesn't exist in type "+getClass().getSimpleName());
+    return null;
   }
 
   public void addField(ObjectFieldImpl field) {

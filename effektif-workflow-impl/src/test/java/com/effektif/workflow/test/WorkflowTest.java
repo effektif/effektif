@@ -114,13 +114,13 @@ public class WorkflowTest {
   }
   public JavaServiceTask msgValue(String message) {
     return new JavaServiceTask()
-      .javaClass(JavaServiceTaskTest.class)
+      .javaClass(WorkflowTest.class)
       .methodName("recordMessage")
       .argValue(message);
   }
   public JavaServiceTask msgExpression(String messageExpression) {
     return new JavaServiceTask()
-      .javaClass(JavaServiceTaskTest.class)
+      .javaClass(WorkflowTest.class)
       .methodName("recordMessage")
       .argExpression(messageExpression);
   }

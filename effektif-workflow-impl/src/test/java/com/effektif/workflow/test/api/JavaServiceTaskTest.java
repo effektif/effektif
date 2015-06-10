@@ -17,14 +17,10 @@ package com.effektif.workflow.test.api;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 
 import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 
 

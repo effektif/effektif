@@ -21,7 +21,6 @@ import java.util.StringTokenizer;
 
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.DataTypeImpl;
-import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 /**
@@ -37,7 +36,6 @@ public class ExpressionImpl {
     if (expression==null || "".equals(expression)) {
       return;
     }
-
     StringTokenizer stringTokenizer = new StringTokenizer(expression, ".");
     boolean isError = false;
     while (stringTokenizer.hasMoreTokens() && !isError) {
@@ -61,13 +59,7 @@ public class ExpressionImpl {
         }
         fields.add(field);
         if (type!=null) {
-          TypedValueImpl typedValue = type.dereference(null, field);
-          if (typedValue == null) {
-            parser.addWarning("Field '%s' does not exist", field);
-            isError = true;
-          } else {
-            type = typedValue.type;
-          }
+          type = type.parseDereference(field, parser);
         }
       }
     }

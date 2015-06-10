@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.impl.configuration.Plugin;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.template.Hints;
 
 
@@ -40,7 +40,8 @@ public interface DataTypeImpl<T extends DataType> {
 
   String convertInternalToText(Object value, Hints hints);
 
-  /** The returned value is never null. */
+  DataTypeImpl parseDereference(String field, WorkflowParser parser);
+  
   TypedValueImpl dereference(Object value, String field);
 
 }

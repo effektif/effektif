@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.template.Hints;
 
 
@@ -72,15 +73,16 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
   }
 
+  @Override
+  public DataTypeImpl parseDereference(String field, WorkflowParser parser) {
+    return null;
+  }
+
+  @Override
   public TypedValueImpl dereference(Object value, String field) {
     return null;
   }
 
-//  @Override
-//  public TypeGenerator getTypeGenerator() {
-//    return null;
-//  }
-  
   @Override
   public T serialize() {
     return type;

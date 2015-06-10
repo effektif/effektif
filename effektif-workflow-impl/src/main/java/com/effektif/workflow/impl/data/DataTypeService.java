@@ -145,7 +145,11 @@ public class DataTypeService implements Startable {
       dataType = dataTypesByValueClass.get(valueClass);
     }
     if (dataType==null) {
-      dataType = new AnyTypeImpl();
+      if (Map.class.isAssignableFrom(valueClass)) {
+        dataType = new ObjectTypeImpl();
+      } else {
+        dataType = new AnyTypeImpl();
+      }
       dataType.setConfiguration(configuration);
     }
     return dataType;

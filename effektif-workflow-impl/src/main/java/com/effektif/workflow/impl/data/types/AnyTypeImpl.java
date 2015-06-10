@@ -15,7 +15,12 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import java.util.Map;
+
 import com.effektif.workflow.impl.data.AbstractDataType;
+import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 
 
 /**
@@ -26,4 +31,19 @@ public class AnyTypeImpl extends AbstractDataType<AnyType> {
   public AnyTypeImpl() {
     super(AnyType.INSTANCE);
   }
+
+  @Override
+  public TypedValueImpl dereference(Object value, String field) {
+    if (value instanceof Map) {
+      Map mapValue = (Map) value;
+      Object fieldValue = mapValue.get(field);
+      DataTypeService dataTypeService = configuration.get(DataTypeService.class);
+      Class<?> fieldValueClass = fieldValue!=null ? fieldValue.getClass() : null;
+      DataTypeImpl fieldDataType = dataTypeService.getDataTypeByValue(fieldValueClass);
+      return new TypedValueImpl(fieldDataType, fieldValue);
+    }
+    return null;
+  }
+  
+  
 }
