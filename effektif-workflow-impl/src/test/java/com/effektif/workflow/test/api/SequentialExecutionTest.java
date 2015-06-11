@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -31,7 +32,7 @@ import com.effektif.workflow.test.WorkflowTest;
 public class SequentialExecutionTest extends WorkflowTest {
   
   @Test
-  public void testOne() {
+  public void testSequentialExecution() {
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("one", new ReceiveTask()
         .transitionTo("two"))
@@ -60,6 +61,25 @@ public class SequentialExecutionTest extends WorkflowTest {
     String threeId = getActivityInstanceId(workflowInstance, "three");
 
     workflowInstance = sendMessage(workflowInstance, threeId);
+
+    assertTrue(workflowInstance.isEnded());
+  }
+
+  @Test
+  public void testDanglingTransition() {
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .activity("one", new ReceiveTask())
+      .transition(new Transition().from("one"));
+    
+    deploy(workflow);
+    
+    WorkflowInstance workflowInstance = start(workflow);
+    
+    assertOpen(workflowInstance, "one");
+    
+    String oneId = getActivityInstanceId(workflowInstance, "one");
+    
+    workflowInstance = sendMessage(workflowInstance, oneId);
 
     assertTrue(workflowInstance.isEnded());
   }

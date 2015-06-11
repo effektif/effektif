@@ -95,7 +95,9 @@ public class Query {
   public Query or(BasicDBObject... orClauses) {
     BasicDBList clauses = new BasicDBList();
     for (BasicDBObject orClause: orClauses) {
-      clauses.add(orClause);
+      if (orClause!=null) {
+        clauses.add(orClause);
+      }
     }
     return or(clauses);
   }
@@ -103,7 +105,9 @@ public class Query {
   public Query or(Query... orClauses) {
     BasicDBList clauses = new BasicDBList();
     for (Query orClause: orClauses) {
-      clauses.add(orClause);
+      if (orClause!=null) {
+        clauses.add(orClause.get());
+      }
     }
     return or(clauses);
   }
@@ -125,7 +129,9 @@ public class Query {
   public Query and(BasicDBObject... andClauses) {
     BasicDBList clauses = new BasicDBList();
     for (BasicDBObject andClause: andClauses) {
-      clauses.add(andClause);
+      if (andClause!=null) {
+        clauses.add(andClause);
+      }
     }
     return and(clauses);
   }
@@ -133,7 +139,9 @@ public class Query {
   public Query and(Query... andClauses) {
     BasicDBList clauses = new BasicDBList();
     for (Query andClause: andClauses) {
-      clauses.add(andClause);
+      if (andClause!=null) {
+        clauses.add(andClause);
+      }
     }
     return and(clauses);
   }
