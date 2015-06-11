@@ -90,4 +90,8 @@ public class WorkflowImpl extends ScopeImpl {
   public WorkflowId getId() {
     return id;
   }
+
+  public String getName() {
+    return name;
+  }
 }

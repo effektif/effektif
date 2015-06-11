@@ -29,6 +29,16 @@ public class Update {
     return this;
   }
 
+  public Update addToSet(String field, Object value) {
+    addToSet(field, value, null);
+    return this;
+  }
+
+  public Update addToSet(String field, Object value, String prefix) {
+    add("$addToSet", prefix, field, value);
+    return this;
+  }
+
   public Update setOpt(String field, Object value) {
     return setOpt(field, value, null);
   }
