@@ -148,38 +148,30 @@ public class RelativeTime {
     return !(isUnitSeconds() || isUnitMinutes() || isUnitHours());
   }
   
-  public LocalDateTime resolve() {
-    return resolve(this);
-  }
-
-  public static LocalDateTime resolve(RelativeTime relativeTime) {
-    return resolve(relativeTime, new LocalDateTime());
-  }
-  
-  public static LocalDateTime resolve(RelativeTime relativeTime, LocalDateTime base) {
-    if (relativeTime==null || relativeTime.time==null || relativeTime.unit==null) {
+  public LocalDateTime resolve(LocalDateTime base) {
+    if (this.time==null || this.unit==null) {
       return null;
     }
 
-    int time = relativeTime.time;
-    if (relativeTime.before!=null) {
+    int time = this.time;
+    if (this.before!=null) {
       time = -time;
     }
 
     ReadablePeriod period = null;
-    if (relativeTime.isUnitDays()) {
+    if (this.isUnitDays()) {
       period = Days.days(time);
-    } else if (relativeTime.isUnitWeeks()) {
+    } else if (this.isUnitWeeks()) {
       period = Weeks.weeks(time);
-    } else if (relativeTime.isUnitHours()) {
+    } else if (this.isUnitHours()) {
       period = Hours.hours(time);
-    } else if (relativeTime.isUnitMonths()) {
+    } else if (this.isUnitMonths()) {
       period = Months.months(time);
-    } else if (relativeTime.isUnitYears()) {
+    } else if (this.isUnitYears()) {
       period = Years.years(time);
-    } else if (relativeTime.isUnitMinutes()) {
+    } else if (this.isUnitMinutes()) {
       period = Minutes.minutes(time);
-    } else if (relativeTime.isUnitSeconds()) {
+    } else if (this.isUnitSeconds()) {
       period = Seconds.seconds(time);
     } else {
       return null;

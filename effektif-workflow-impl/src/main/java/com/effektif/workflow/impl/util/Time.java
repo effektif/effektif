@@ -18,6 +18,8 @@ package com.effektif.workflow.impl.util;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.model.RelativeTime;
+
 
 /**
  * Provides the current date-time in a way that tests can override, to
@@ -34,4 +36,10 @@ public class Time {
     }
     return new LocalDateTime(DateTimeZone.UTC);
   }
+  
+  public static LocalDateTime resolve(RelativeTime relativeTime) {
+    return relativeTime.resolve(now());
+  }
+  
+
 }
