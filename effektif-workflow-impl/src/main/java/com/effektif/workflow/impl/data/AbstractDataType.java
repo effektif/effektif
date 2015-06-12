@@ -39,19 +39,6 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     this.configuration = configuration;
   }
   
-  protected <D extends DataTypeImpl> D getSingletonDataType(Class<D> dataTypeClass) {
-    DataTypeService dataTypeService = this.configuration.get(DataTypeService.class);
-    for (DataTypeImpl dataType: dataTypeService.singletons.values()) {
-      if (dataTypeClass.equals(dataType.getClass())) {
-        return (D) dataType;
-      }
-    }
-    for (Entry<Class< ? extends DataType>, DataTypeImpl> entry: dataTypeService.singletons.entrySet()) {
-      System.err.println(entry.getKey().toString()+" -> "+entry.getValue().toString());
-    }
-    throw new RuntimeException("Couldn't find singleton "+dataTypeClass.getName());
-  }
-  
   @Override
   public boolean isStatic() {
     return true;

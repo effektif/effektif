@@ -53,7 +53,7 @@ public class NotFoundException extends HttpMappedException {
   }
 
   public static void checkNotNull(Object object) {
-    checkTrue(object != null, null);
+    checkTrue(object!=null, "Not found");
   }
 
   public static void checkNotNull(Object object, String message) {
