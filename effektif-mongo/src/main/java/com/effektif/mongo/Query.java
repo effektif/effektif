@@ -62,6 +62,11 @@ public class Query {
     return this;
   }
 
+  public Query notEqual(String fieldName, Object dbValue) {
+    query.put(fieldName, new BasicDBObject("$ne", dbValue));
+    return this;
+  }
+
   public Query equalOpt(String fieldName, Object dbValue) {
     if (dbValue!=null) {
       query.put(fieldName, dbValue);
@@ -124,6 +129,19 @@ public class Query {
   }
 
   /**
+   * Adds a list of clauses to the query as disjunction (logical OR).
+   */
+  public Query or(List<? extends Query> clauses) {
+    BasicDBList dbClauses = new BasicDBList();
+    for (Query orClause: clauses) {
+      if (orClause!=null) {
+        dbClauses.add(orClause.get());
+      }
+    }
+    return or(dbClauses);
+  }
+
+  /**
    * Adds a list of clauses to the query as conjunction (logical AND).
    */
   public Query and(BasicDBObject... andClauses) {
@@ -140,7 +158,17 @@ public class Query {
     BasicDBList clauses = new BasicDBList();
     for (Query andClause: andClauses) {
       if (andClause!=null) {
-        clauses.add(andClause);
+        clauses.add(andClause.get());
+      }
+    }
+    return and(clauses);
+  }
+
+  public Query and(List<? extends Query> andClauses) {
+    BasicDBList clauses = new BasicDBList();
+    for (Query andClause: andClauses) {
+      if (andClause!=null) {
+        clauses.add(andClause.get());
       }
     }
     return and(clauses);
