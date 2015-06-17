@@ -105,6 +105,15 @@ public class MappingsBuilder {
     return this;
   }
 
+  public MappingsBuilder subClasses(Class... subClasses) {
+    if (subClasses!=null) {
+      for (Class subClass: subClasses) {
+        this.subClasses.add(subClass);
+      }
+    }
+    return this;
+  }
+
   public MappingsBuilder inline(Class clazz, String fieldName) {
     inlineFields.add(getField(clazz, fieldName));
     return this;
