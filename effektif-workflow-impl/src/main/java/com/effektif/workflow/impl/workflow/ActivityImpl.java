@@ -76,7 +76,7 @@ public class ActivityImpl extends ScopeImpl {
 
     if (activity.getOutgoingTransitions()!=null) {
       for (Transition transition: activity.getOutgoingTransitions()) {
-        transition.from(activity.getId());
+        transition.fromId(activity.getId());
         parentScope.transition(transition);
       }
       activity.setOutgoingTransitions(null);

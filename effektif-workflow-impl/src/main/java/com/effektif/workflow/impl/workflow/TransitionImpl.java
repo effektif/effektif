@@ -57,7 +57,7 @@ public class TransitionImpl {
       activityHavingThisAsDefault.defaultTransition = this;
     }
 
-    String fromId = transition.getFrom();
+    String fromId = transition.getFromId();
     if (fromId==null) {
       parser.addWarning("Transition has no 'from' specified");
     } else {
@@ -76,13 +76,13 @@ public class TransitionImpl {
       this.to = parentImpl.getNextActivity(from);
       if (this.to!=null) {
         this.to.addIncomingTransition(this);
-        transition.to(this.to.getId());
+        transition.toId(this.to.getId());
         transition.setToNext(null);
       } else {
         parser.addWarning("Transition has no next");
       }
     } else {
-      toId = transition.getTo();
+      toId = transition.getToId();
       if (toId==null) {
         parser.addWarning("Transition has no 'to' specified");
       } else {

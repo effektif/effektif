@@ -32,10 +32,10 @@ public class Transition extends Element {
   protected String id;
 
   /** The {@link com.effektif.workflow.api.workflow.Activity#id} for the activity this transition leaves from. */
-  protected String from;
+  protected String fromId;
 
   /** The {@link com.effektif.workflow.api.workflow.Activity#id} for the activity this transition goes to. */
-  protected String to;
+  protected String toId;
 
   protected Condition condition;
   protected Boolean isToNext;
@@ -64,8 +64,8 @@ public class Transition extends Element {
   public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
     id = r.readStringAttributeBpmn("id");
-    from = r.readStringAttributeBpmn("sourceRef");
-    to = r.readStringAttributeBpmn("targetRef");
+    fromId = r.readStringAttributeBpmn("sourceRef");
+    toId = r.readStringAttributeBpmn("targetRef");
 
     r.startExtensionElements();
     for (XmlElement conditionElement : r.readElementsEffektif("condition")) {
@@ -81,8 +81,8 @@ public class Transition extends Element {
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.writeStringAttributeBpmn("id", id);
-    w.writeStringAttributeBpmn("sourceRef", from);
-    w.writeStringAttributeBpmn("targetRef", to);
+    w.writeStringAttributeBpmn("sourceRef", fromId);
+    w.writeStringAttributeBpmn("targetRef", toId);
 
     if (condition != null) {
       w.startExtensionElements();
@@ -107,25 +107,25 @@ public class Transition extends Element {
   public Transition() {
   }
   
-  public String getFrom() {
-    return this.from;
+  public String getFromId() {
+    return this.fromId;
   }
-  public void setFrom(String from) {
-    this.from = from;
+  public void setFromId(String fromId) {
+    this.fromId = fromId;
   }
-  public Transition from(String from) {
-    this.from = from;
+  public Transition fromId(String fromId) {
+    this.fromId = fromId;
     return this;
   }
   
-  public String getTo() {
-    return this.to;
+  public String getToId() {
+    return this.toId;
   }
-  public void setTo(String to) {
-    this.to = to;
+  public void setToId(String toId) {
+    this.toId = toId;
   }
-  public Transition to(String to) {
-    this.to = to;
+  public Transition toId(String toId) {
+    this.toId = toId;
     return this;
   }
   
@@ -177,6 +177,6 @@ public class Transition extends Element {
 
   @Override
   public String toString() {
-    return "("+(from!=null?from:" ")+")--"+(id!=null?id+"--":"")+">("+(to!=null?to:" ")+")";
+    return "("+(fromId!=null?fromId:" ")+")--"+(id!=null?id+"--":"")+">("+(toId!=null?toId:" ")+")";
   }
 }

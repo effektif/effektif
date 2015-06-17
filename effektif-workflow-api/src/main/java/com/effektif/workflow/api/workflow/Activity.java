@@ -186,14 +186,14 @@ public abstract class Activity extends Scope {
     return this;
   }
   public Activity transitionTo(String toActivityId) {
-    transitionTo(new Transition().to(toActivityId));
+    transitionTo(new Transition().toId(toActivityId));
     return this;
   }
 
   public Activity transitionWithConditionTo(Condition condition, String toActivityId) {
     transitionTo(new Transition()
       .condition(condition)
-      .to(toActivityId));
+      .toId(toActivityId));
     return this;
   }
 

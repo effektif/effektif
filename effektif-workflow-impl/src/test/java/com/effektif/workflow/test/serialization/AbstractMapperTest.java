@@ -198,18 +198,18 @@ public abstract class AbstractMapperTest {
       .activity("checkTestResult", new ExclusiveGateway().defaultTransitionId("to-failed"))
       .activity("passed", new EndEvent())
       .activity("failed", new EndEvent())
-      .transition("to-smokeTest", new Transition().from("start").to("smokeTest").description("Starting the process"))
-      .transition("to-checkTestResult", new Transition().from("smokeTest").to("checkTestResult"))
-      .transition("to-passed", new Transition().from("checkTestResult").to("passed").condition(condition))
-      .transition("to-failed", new Transition().from("checkTestResult").to("failed"));
+      .transition("to-smokeTest", new Transition().fromId("start").toId("smokeTest").description("Starting the process"))
+      .transition("to-checkTestResult", new Transition().fromId("smokeTest").toId("checkTestResult"))
+      .transition("to-passed", new Transition().fromId("checkTestResult").toId("passed").condition(condition))
+      .transition("to-failed", new Transition().fromId("checkTestResult").toId("failed"));
 
     workflow = serialize(workflow);
 
     assertEquals(4, workflow.getTransitions().size());
     assertEquals("to-smokeTest", workflow.getTransitions().get(0).getId());
     assertEquals("Starting the process", workflow.getTransitions().get(0).getDescription());
-    assertEquals("start", workflow.getTransitions().get(0).getFrom());
-    assertEquals("smokeTest", workflow.getTransitions().get(0).getTo());
+    assertEquals("start", workflow.getTransitions().get(0).getFromId());
+    assertEquals("smokeTest", workflow.getTransitions().get(0).getToId());
 
     assertEquals("to-passed", workflow.getTransitions().get(2).getId());
     IsTrue deserialisedCondition = (IsTrue) workflow.getTransitions().get(2).getCondition();
@@ -226,7 +226,7 @@ public abstract class AbstractMapperTest {
       .variable("v", TextType.INSTANCE)
       .activity("s", new StartEvent())
       .activity("task", new NoneTask())
-      .transition(new Transition().from("s").to("task"));
+      .transition(new Transition().fromId("s").toId("task"));
 
     workflow = serialize(workflow);
 

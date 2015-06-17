@@ -99,7 +99,7 @@ public class WorkflowStreamTest {
       .variable("v", TextType.INSTANCE)
       .activity("start", new StartEvent())
       .activity("end", new EndEvent())
-      .transition(new Transition().from("start").to("end"))
+      .transition(new Transition().fromId("start").toId("end"))
       .property("str", "s")
       .property("lis", Lists.of("a", 1, true))
       .property("num", Long.MAX_VALUE)
@@ -115,8 +115,8 @@ public class WorkflowStreamTest {
     assertEquals("source", workflow.getSourceWorkflowId());
     assertEquals("start", ((StartEvent)workflow.getActivities().get(0)).getId());
     assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
-    assertEquals("start", workflow.getTransitions().get(0).getFrom());
-    assertEquals("end", workflow.getTransitions().get(0).getTo());
+    assertEquals("start", workflow.getTransitions().get(0).getFromId());
+    assertEquals("end", workflow.getTransitions().get(0).getToId());
 
     // Not tested, pending implementation.
     //assertEquals(p.get("str"), workflow.getProperty("str"));
@@ -197,7 +197,7 @@ public class WorkflowStreamTest {
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("phase1",
         new EmbeddedSubprocess().name("phase one").activity("start", new StartEvent()).activity("end", new EndEvent())
-          .transition(new Transition().from("start").to("end")));
+          .transition(new Transition().fromId("start").toId("end")));
     
     workflow = serialize(workflow);
     
@@ -210,8 +210,8 @@ public class WorkflowStreamTest {
     EndEvent endEvent = (EndEvent) embeddedSubprocess.getActivities().get(1);
     assertEquals("end", endEvent.getId());
     Transition transition = embeddedSubprocess.getTransitions().get(0);
-    assertEquals("start", transition.getFrom());
-    assertEquals("end", transition.getTo());
+    assertEquals("start", transition.getFromId());
+    assertEquals("end", transition.getToId());
   }
 
   @Test

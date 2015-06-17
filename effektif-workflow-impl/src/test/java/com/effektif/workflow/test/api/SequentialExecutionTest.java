@@ -69,7 +69,7 @@ public class SequentialExecutionTest extends WorkflowTest {
   public void testDanglingTransition() {
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity("one", new ReceiveTask())
-      .transition(new Transition().from("one"));
+      .transition(new Transition().fromId("one"));
     
     deploy(workflow);
     
