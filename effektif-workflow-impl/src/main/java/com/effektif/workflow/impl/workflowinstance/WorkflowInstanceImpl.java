@@ -370,10 +370,24 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public boolean isIncluded(WorkflowInstanceQuery query) {
+
+    boolean res = true;
+
     if ( query.getWorkflowInstanceId()!=null && !query.getWorkflowInstanceId().equals(id)) {
-      return false;
+      res = false;
     }
-    return true;
+
+    if (res && query.getActivityId()!=null && hasActivityInstances()) {
+      res = false;
+      for (ActivityInstanceImpl activityInstance : activityInstances) {
+        if (activityInstance.activity.getId().equals(query.getActivityId().getInternal())
+                && !activityInstance.isEnded()) {
+          res = true;
+          break;
+        }
+      }
+    }
+    return res;
   }
 
   public String generateNextActivityInstanceId() {
