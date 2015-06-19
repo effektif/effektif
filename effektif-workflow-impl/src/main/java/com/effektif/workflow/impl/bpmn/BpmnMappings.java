@@ -91,7 +91,7 @@ public class BpmnMappings extends Mappings {
   }
 
   public BpmnTypeMapping getBpmnTypeMapping(XmlElement activityXml, BpmnReaderImpl bpmnReaderImpl) {
-    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(activityXml.getName());
+    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(activityXml.getLocalBPMNName());
     if (typeMappings!=null) {
       if (typeMappings.size()==1) {
         return typeMappings.get(0);

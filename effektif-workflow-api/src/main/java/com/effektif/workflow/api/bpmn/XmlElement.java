@@ -67,6 +67,12 @@ public class XmlElement {
     return name;
   }
 
+  public String getLocalBPMNName() {
+    String localPart = this.name.contains(":") ? this.name.substring(this.name.indexOf(':') + 1) : this.name;
+
+    return this.is("http://www.omg.org/spec/BPMN/20100524/MODEL", localPart) ? localPart : null;
+  }
+
   // namespaces ///////////////////////////////////////////////////////////////////////////
   
   /** maps namespace uris to prefixes */
