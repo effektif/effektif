@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -33,9 +34,9 @@ import com.effektif.workflow.impl.json.Mappings;
  */
 public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime> implements JsonTypeMapperFactory {
 
-  public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
   public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
-
+  public static DateTimeFormatter PRINTER = ISODateTimeFormat.dateTime();
+  
   @Override
   public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
     if (clazz==LocalDateTime.class) {
@@ -46,7 +47,7 @@ public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime>
   
   @Override
   public void write(LocalDateTime objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeString(PRINTER.print(objectValue));
+    jsonWriter.writeString(PRINTER.print(objectValue.toDateTime(DateTimeZone.UTC)));
   }
 
   @Override
