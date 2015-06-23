@@ -44,6 +44,8 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -72,6 +74,7 @@ public class WorkflowParser {
   public Set<String> activityIds = new HashSet<>();
   public Set<String> variableIds = new HashSet<>();
   public Set<String> transitionIds = new HashSet<>();
+  public WorkflowParseListener workflowParseListener;
   
   private class ParseContext {
     ParseContext(String property, Object element, Object elementImpl, Integer index) {
@@ -127,26 +130,36 @@ public class WorkflowParser {
     return null;
   }
 
-  /**
-   * Parses the content of <code>workflowApi</code> into <code>workflowImpl</code> and
-   * adds any parse issues to <code>workflowApi</code>.
-   * Use one parser for each parse.
-   */
-  public static WorkflowParser parse(Configuration configuration, AbstractWorkflow workflowApi) {
-    WorkflowParser parser = new WorkflowParser(configuration);
-    parser.workflow = new WorkflowImpl();
-    parser.workflow.id = workflowApi.getId();
-    parser.pushContext("workflow", workflowApi, parser.workflow, null);
-    parser.workflow.parse(workflowApi, parser);
-    parser.popContext();
-    return parser;
-  }
-
   public WorkflowParser(Configuration configuration) {
     this.configuration = configuration;
     this.path = new LinkedList<>();
     this.contextStack = new Stack<>();
     this.issues = new ParseIssues();
+    
+    // this cast is necessary to get the workflow parse listener optional
+    // because the brewery.getOpt method is not available on the configuration itself
+    if (configuration instanceof DefaultConfiguration) {
+      DefaultConfiguration defaultConfiguration = (DefaultConfiguration)configuration;
+      Brewery brewery = defaultConfiguration.getBrewery();
+      this.workflowParseListener = brewery.getOpt(WorkflowParseListener.class);
+    }
+  }
+
+  /**
+   * Parses the content of <code>workflowApi</code> into <code>workflowImpl</code> and
+   * adds any parse issues to <code>workflowApi</code>.
+   * Use one parser for each parse.
+   */
+  public WorkflowImpl parse(AbstractWorkflow workflowApi) {
+    workflow = new WorkflowImpl();
+    workflow.id = workflowApi.getId();
+    pushContext("workflow", workflowApi, workflow, null);
+    workflow.parse(workflowApi, this);
+    popContext();
+    if (this.workflowParseListener!=null) {
+      this.workflowParseListener.workflowParsed(workflowApi, workflow, this);
+    }
+    return workflow;
   }
 
   public void pushContext(String property, Object element, Object elementImpl, Integer index) {

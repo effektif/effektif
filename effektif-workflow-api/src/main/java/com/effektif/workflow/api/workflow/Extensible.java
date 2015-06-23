@@ -39,7 +39,6 @@ public abstract class Extensible {
 
   private static Map<Class,Set<String>> invalidPropertyKeysByClass = new ConcurrentHashMap<>();
 
-
   protected Map<String,Object> properties;
   
   /** @see Extensible */
