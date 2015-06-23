@@ -66,12 +66,22 @@ public class DataTypeService implements Startable {
   }
 
   protected void initializeDataTypes() {
+    ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
+    for (DataTypeImpl dataType: dataTypeLoader) {
+      // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
+      registerDataType(dataType);
+    }
+    for (DataTypeImpl dataType: dataTypeLoader) {
+      dataType.setConfiguration(configuration);
+    }
+
     // For undeclared variables a new variable instance 
     // will be created on the fly when a value is set.  
     // dataType.getValueClass(); is used.  Since more 
     // dataTypes have String as a value type, 
     // we need to register the types we want to use 
-    // during auto-creation first.
+    // during auto-creation afterwards.
+    // See (*) in registerDataType(DataTypeImpl dataTypeImpl) below
     BooleanTypeImpl booleanTypeImpl = new BooleanTypeImpl();
     booleanTypeImpl.setConfiguration(configuration);
     registerDataType(booleanTypeImpl);
@@ -87,15 +97,6 @@ public class DataTypeService implements Startable {
     ObjectTypeImpl objectTypeImpl = new ObjectTypeImpl();
     objectTypeImpl.setConfiguration(configuration);
     registerDataType(objectTypeImpl);
-
-    ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
-    for (DataTypeImpl dataType: dataTypeLoader) {
-      // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
-      registerDataType(dataType);
-    }
-    for (DataTypeImpl dataType: dataTypeLoader) {
-      dataType.setConfiguration(configuration);
-    }
   }
   
   public void registerDataType(DataTypeImpl dataTypeImpl) {
@@ -111,9 +112,9 @@ public class DataTypeService implements Startable {
         DataType dataType = (DataType) apiClass.newInstance();
         Type valueType = dataType.getValueType();
         if (valueType!=null) {
-          if (!dataTypesByValueClass.containsKey(valueType)) {
-            dataTypesByValueClass.put(valueType, dataTypeImpl);
-          }
+          // (*) If multiple datatypes have the same valueType (like string, date etc),
+          // the last one wins
+          dataTypesByValueClass.put(valueType, dataTypeImpl);
         }
       } catch (Exception e) {
         throw new RuntimeException(e);

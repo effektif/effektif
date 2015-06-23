@@ -15,12 +15,17 @@
  */
 package com.effektif.workflow.api.model;
 
+import java.text.DecimalFormat;
+
 
 /**
  * @author Tom Baeyens
  */
 public class Money {
-
+  
+  static DecimalFormat integerFormatter = new DecimalFormat("###");
+  static DecimalFormat decimalFormatter = new DecimalFormat("###.##");
+  
   protected Double amount;
 
   public Double getAmount() {
@@ -45,5 +50,24 @@ public class Money {
   public Money currency(String currency) {
     this.currency = currency;
     return this;
+  }
+  
+  @Override
+  public String toString() {
+    StringBuilder moneyText = new StringBuilder();
+    if (amount!=null) {
+      if (amount==Math.floor(amount) && !Double.isInfinite(amount)) {
+        moneyText.append(integerFormatter.format(amount));
+      } else {
+        moneyText.append(decimalFormatter.format(amount));
+      }
+    } else {
+      moneyText.append("0");
+    }
+    if (currency!=null) {
+      moneyText.append(" ");
+      moneyText.append(currency);
+    }
+    return moneyText.toString();
   }
 }
