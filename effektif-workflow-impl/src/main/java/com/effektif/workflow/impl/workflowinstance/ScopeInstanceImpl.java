@@ -163,7 +163,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     variableInstance.configuration = configuration;
     variableInstance.workflowInstance = workflowInstance;
     variableInstance.type = variable.type;
-    variableInstance.setValue(variable.initialValue);
+    variableInstance.setValue(variable.defaultValue);
     variableInstance.variable = variable;
     if (updates!=null) {
       variableInstance.updates = new VariableInstanceUpdates(true);
