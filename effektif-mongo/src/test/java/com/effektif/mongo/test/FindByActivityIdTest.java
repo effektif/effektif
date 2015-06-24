@@ -4,7 +4,6 @@ import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.*;
-import com.effektif.workflow.api.model.ActivityId;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
@@ -31,6 +30,9 @@ public class FindByActivityIdTest {
         WorkflowEngine workflowEngine = cachedConfiguration.getWorkflowEngine();
 
         // Create a workflow
+        ExecutableWorkflow f = new ExecutableWorkflow();
+
+
         ExecutableWorkflow workflow1 = new ExecutableWorkflow()
                 .sourceWorkflowId("Server test workflow")
                 .activity("One", new StartEvent()
@@ -52,7 +54,7 @@ public class FindByActivityIdTest {
 
         // Now find all workflowInstances in a particular ActivityId, they should be in "Three"
         WorkflowInstanceQuery workflowInstanceQuery = new WorkflowInstanceQuery()
-                .activityId(new ActivityId("Three"));
+                .activityId("Three");
 
         WorkflowInstanceQuery workflowInstanceQuery2 = new WorkflowInstanceQuery();
 //                .workflowInstanceId(workflowInstance.getId());
@@ -61,8 +63,20 @@ public class FindByActivityIdTest {
 
         List<WorkflowInstance> workflowInstances2 = workflowEngine.findWorkflowInstances(workflowInstanceQuery2);
 
-        System.out.println("Nr of workflowInstances found: " + workflowInstances.size());
-        System.out.println("Nr of workflowInstances found: " + workflowInstances2.size());
+        System.out.println("Nr of workflowInstances found: " + workflowInstances.size() + " (should be 1)");
+        System.out.println("Nr of workflowInstances found: " + workflowInstances2.size() + " (should be 1)");
+
+        TriggerInstance start2 = new TriggerInstance()
+                .workflowId(deployment.getWorkflowId());
+
+        workflowInstance = workflowEngine.start(start);
+
+        List<WorkflowInstance> workflowInstances3 = workflowEngine.findWorkflowInstances(workflowInstanceQuery2);
+
+        System.out.println("Nr of workflowInstances found: " + workflowInstances.size() + " (should be 1)");
+        System.out.println("Nr of workflowInstances found: " + workflowInstances2.size() + " (should be 1)");
+        System.out.println("Nr of workflowInstances found: " + workflowInstances3.size() + " (should be 2)");
+
     }
 
 }
