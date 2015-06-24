@@ -15,11 +15,10 @@
  */
 package com.effektif.workflow.api.query;
 
+import com.effektif.workflow.api.model.WorkflowInstanceId;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.effektif.workflow.api.model.ActivityId;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
 
 
 /**
@@ -30,7 +29,7 @@ public class WorkflowInstanceQuery {
   public static final String FIELD_START = "start";
 
   protected WorkflowInstanceId workflowInstanceId;
-  protected ActivityId activityId;
+  protected String activityId;
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
@@ -49,16 +48,16 @@ public class WorkflowInstanceQuery {
   }
 
 
-  public WorkflowInstanceQuery activityId(ActivityId activityId) {
+  public WorkflowInstanceQuery activityId(String activityId) {
     setActivityId(activityId);
     return this;
   }
 
-  public ActivityId getActivityId() {
+  public String getActivityId() {
     return activityId;
   }
 
-  public void setActivityId(ActivityId activityId) {
+  public void setActivityId(String activityId) {
     this.activityId = activityId;
   }
 

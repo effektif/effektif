@@ -302,13 +302,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     if (query.getWorkflowInstanceId() != null) {
       dbQuery.append(WorkflowInstanceFields._ID, new ObjectId(query.getWorkflowInstanceId().getInternal()));
     }
-    //<editor-fold desc="activityId">
+
     if (query.getActivityId() != null) {
       dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES
-              , new BasicDBObject("$elemMatch", new BasicDBObject(ActivityInstanceFields.ACTIVITY_ID, query.getActivityId().getInternal())
+              , new BasicDBObject("$elemMatch", new BasicDBObject(ActivityInstanceFields.ACTIVITY_ID, query.getActivityId())
               .append(ActivityInstanceFields.WORK_STATE, new BasicDBObject("$exists", true))));
     }
-    //</editor-fold>
+
     return dbQuery;
   }
   
