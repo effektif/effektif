@@ -29,6 +29,33 @@ public class Update {
     return this;
   }
 
+  public Update pushAll(String field, Object value) {
+    return pushAll(field, value, null);
+  }
+
+  public Update pushAll(String field, Object value, String prefix) {
+    add("$pushAll", prefix, field, value);
+    return this;
+  }
+
+  public Update pull(String field, Object value) {
+    return pull(field, value, null);
+  }
+
+  public Update pull(String field, Object value, String prefix) {
+    add("$pull", prefix, field, value);
+    return this;
+  }
+
+  public Update pullAll(String field, Object value) {
+    return pullAll(field, value, null);
+  }
+
+  public Update pullAll(String field, Object value, String prefix) {
+    add("$pullAll", prefix, field, value);
+    return this;
+  }
+
   public Update addToSet(String field, Object value) {
     addToSet(field, value, null);
     return this;

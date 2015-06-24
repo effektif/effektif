@@ -33,18 +33,6 @@ public abstract class Scope extends Element {
   protected List<Variable> variables;
   protected List<Timer> timers;
 
-//  @Override
-//  public void readJson(JsonReader r) {
-//    activities =  r.readList("activities");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    w.writeList("activities", activities);
-//    super.writeJson(w);
-//  }
-  
   @Override
   public void readBpmn(BpmnReader r) {
     r.readScope();
@@ -73,9 +61,47 @@ public abstract class Scope extends Element {
       this.activities = new ArrayList<>();
     }
     this.activities.add(activity);
+
+    if (activity.outgoingTransitions!=null) {
+      for (Transition outgoingTransition: activity.outgoingTransitions) {
+        outgoingTransition.fromId = activity.id;
+      }
+      if (!hasOutgoingTransitionsToNext(activity)) {
+        if (activity.outgoingTransitions!=null) {
+          transitions(activity.outgoingTransitions);
+          activity.outgoingTransitions = null;
+        }
+      }
+    }
+    
+    int previousIndex = this.activities.size()-2;
+    Activity previousActivity = previousIndex>=0 ? this.activities.get(previousIndex) : null;
+    if (previousActivity!=null && hasOutgoingTransitionsToNext(previousActivity)) {
+      for (Transition outgoingTransition: previousActivity.outgoingTransitions) {
+        if (outgoingTransition.isToNext()) {
+          outgoingTransition.toId = activity.id;
+          outgoingTransition.isToNext = null;
+        }
+      }
+      transitions(previousActivity.outgoingTransitions);
+      previousActivity.outgoingTransitions = null;
+    }
+
     return this;
   }
   
+  private boolean hasOutgoingTransitionsToNext(Activity activity) {
+    if (activity.outgoingTransitions==null) {
+      return false;
+    }
+    for (Transition outgoingTransition: activity.outgoingTransitions) {
+      if (outgoingTransition.isToNext()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public List<Transition> getTransitions() {
     return this.transitions;
   }
@@ -92,6 +118,14 @@ public abstract class Scope extends Element {
       this.transitions = new ArrayList<>();
     }
     this.transitions.add(transition);
+    return this;
+  }
+  public Scope transitions(List<Transition> transitions) {
+    if (transitions!=null) {
+      for (Transition transition: transitions) {
+        transition(transition);
+      }
+    }
     return this;
   }
   

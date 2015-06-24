@@ -28,7 +28,6 @@ public abstract class AbstractWorkflow extends Scope {
   protected WorkflowId id;
   protected Trigger trigger;
   protected Boolean enableCases;
-  protected String caseNameTemplate;
   
   public abstract String getSourceWorkflowId();
   
@@ -80,14 +79,6 @@ public abstract class AbstractWorkflow extends Scope {
     return this;
   }
   
-  /** optional template to initialize the name of cases */
-  public String getCaseNameTemplate() {
-    return this.caseNameTemplate;
-  }
-  public void setCaseNameTemplate(String caseNameTemplate) {
-    this.caseNameTemplate = caseNameTemplate;
-  }
-
   public Boolean getEnableCases() {
     return this.enableCases;
   }

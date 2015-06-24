@@ -15,13 +15,19 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import java.util.Locale;
+
 import org.joda.time.LocalDateTime;
+import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePartial;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
+import com.effektif.workflow.impl.template.Hints;
 
 /**
  * @author Tom Baeyens
@@ -54,5 +60,15 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
       return null;
     }
     return DateTypeImpl.printer.print((LocalDateTime)internalValue);
+  }
+  
+  @Override
+  public String convertInternalToText(Object value, Hints hints) {
+    DateTimeFormatter textFormatter = DateTimeFormat.longDate().withLocale(getLocale());
+    return value!=null ? textFormatter.print((ReadablePartial)value) : null;
+  }
+
+  protected Locale getLocale() {
+    return Locale.getDefault();
   }
 }

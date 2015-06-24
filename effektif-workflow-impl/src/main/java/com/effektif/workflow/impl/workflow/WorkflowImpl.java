@@ -24,8 +24,6 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
-import com.effektif.workflow.impl.template.Hint;
-import com.effektif.workflow.impl.template.TextTemplate;
 
 
 /**
@@ -40,7 +38,6 @@ public class WorkflowImpl extends ScopeImpl {
   public List<ActivityImpl> startActivities;
   public AbstractTriggerImpl trigger;
   public boolean enableCases;
-  public TextTemplate caseNameTemplate;
   
   public WorkflowImpl() {
   }
@@ -52,7 +49,6 @@ public class WorkflowImpl extends ScopeImpl {
     this.startActivities = parser.getStartActivities(this);
     this.workflowEngine = configuration.get(WorkflowEngineImpl.class);
     this.sourceWorkflowId = workflow.getSourceWorkflowId();
-    this.caseNameTemplate = parser.parseTextTemplate(workflow.getCaseNameTemplate(), Hint.CASE_NAME_TEMPLATE);
     this.enableCases = workflow.isEnableCases();
     
     Trigger triggerApi = workflow.getTrigger();

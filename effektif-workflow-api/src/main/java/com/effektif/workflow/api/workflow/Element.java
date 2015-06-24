@@ -15,6 +15,9 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.bpmn.BpmnReadable;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
@@ -28,6 +31,8 @@ import com.effektif.workflow.api.bpmn.XmlElement;
  * @author Tom Baeyens
  */
 public abstract class Element extends Extensible implements BpmnReadable, BpmnWritable {
+  
+  protected static final Logger log = LoggerFactory.getLogger(Element.class);
   
   protected String name;
   protected String description;

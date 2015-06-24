@@ -35,7 +35,6 @@ import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -61,7 +60,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowCache workflowCache;
   public WorkflowStore workflowStore;
   public WorkflowInstanceStore workflowInstanceStore;
-  public Brewery brewery;
   public Configuration configuration;
   public List<WorkflowExecutionListener> workflowExecutionListeners;
   public DataTypeService dataTypeService;
@@ -75,12 +73,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowStore = brewery.get(WorkflowStore.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.dataTypeService = brewery.get(DataTypeService.class);
-    this.brewery = brewery;
-    
-    // ensuring the default activity types are registered
-    brewery.get(ActivityTypeService.class);
-    // ensuring the default data types are registered
-    brewery.get(DataTypeService.class);
   }
   
   public void startup() {
@@ -98,7 +90,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       log.debug("Deploying workflow");
     }
     
-    WorkflowParser parser = WorkflowParser.parse(configuration, workflow);
+    WorkflowParser parser = new WorkflowParser(configuration);
+    parser.parse(workflow);
 
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
@@ -236,8 +229,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
       ExecutableWorkflow workflow = workflowStore.loadWorkflowById(workflowId);
-      WorkflowParser parser = WorkflowParser.parse(configuration, workflow);
-      workflowImpl = parser.getWorkflow();
+      WorkflowParser parser = new WorkflowParser(configuration);
+      workflowImpl = parser.parse(workflow);
       workflowCache.put(workflowImpl);
     }
     return workflowImpl;

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Extensible;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -31,7 +32,7 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
 
 
-public abstract class ScopeImpl {
+public abstract class ScopeImpl extends Extensible {
 
   public ScopeImpl parent;
   public Configuration configuration;

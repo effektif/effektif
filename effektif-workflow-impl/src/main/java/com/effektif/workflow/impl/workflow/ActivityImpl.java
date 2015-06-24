@@ -74,14 +74,6 @@ public class ActivityImpl extends ScopeImpl {
       parser.addError("Activity '%s' has no activityType configured", id);
     }
 
-    if (activity.getOutgoingTransitions()!=null) {
-      for (Transition transition: activity.getOutgoingTransitions()) {
-        transition.fromId(activity.getId());
-        parentScope.transition(transition);
-      }
-      activity.setOutgoingTransitions(null);
-    }
-    
     Map<String, InputParameter> inputs = activity.getInputs();
     if (inputs!=null) {
       this.inputs = new HashMap<>();
