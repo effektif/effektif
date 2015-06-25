@@ -38,20 +38,7 @@ import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
-import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
-import com.effektif.workflow.impl.json.types.BindingMapperFactory;
-import com.effektif.workflow.impl.json.types.BooleanMapper;
-import com.effektif.workflow.impl.json.types.ClassMapper;
-import com.effektif.workflow.impl.json.types.EnumMapperFactory;
-import com.effektif.workflow.impl.json.types.ListMapperFactory;
-import com.effektif.workflow.impl.json.types.MapMapperFactory;
-import com.effektif.workflow.impl.json.types.NumberMapperFactory;
-import com.effektif.workflow.impl.json.types.EnumSetMapperFactory;
-import com.effektif.workflow.impl.json.types.StringMapper;
-import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
-import com.effektif.workflow.impl.json.types.ValueMapper;
-import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
-
+import com.effektif.workflow.impl.json.types.*;
 
 /**
  * @author Tom Baeyens
@@ -79,6 +66,7 @@ public class MappingsBuilder {
     typeMapperFactory(new BooleanMapper());
     typeMapperFactory(new ClassMapper());
     typeMapperFactory(new NumberMapperFactory());
+    typeMapperFactory(new VariableMapperFactory());
     typeMapperFactory(new VariableInstanceMapperFactory());
     typeMapperFactory(new TypedValueMapperFactory());
     typeMapperFactory(new EnumMapperFactory());
