@@ -20,13 +20,21 @@ public class Fields {
   
   protected BasicDBObject fields = new BasicDBObject();
 
-  public Fields include(String field) {
-    fields.put(field, 1);
+  public Fields include(String... fields) {
+    if (fields!=null) {
+      for (String field: fields) {
+        this.fields.put(field, 1);
+      }
+    }
     return this;
   }
 
-  public Fields exclude(String field) {
-    fields.put(field, 0);
+  public Fields exclude(String... fields) {
+    if (fields!=null) {
+      for (String field: fields) {
+        this.fields.put(field, 0);
+      }
+    }
     return this;
   }
 
