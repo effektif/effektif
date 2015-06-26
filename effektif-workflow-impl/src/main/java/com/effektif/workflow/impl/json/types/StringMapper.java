@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
@@ -44,6 +45,9 @@ public class StringMapper extends AbstractTypeMapper<String> implements JsonType
 
   @Override
   public String read(Object jsonValue, JsonReader jsonReader) {
+    if (!String.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid text value ‘%s’", jsonValue));
+    }
     return (String) jsonValue;
   }
 }
