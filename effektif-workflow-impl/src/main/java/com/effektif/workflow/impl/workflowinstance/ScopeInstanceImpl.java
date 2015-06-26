@@ -245,6 +245,19 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return values;
   }
 
+  public TypedValueImpl getTypedValue(BindingImpl binding) {
+    if (binding==null) {
+      return null;
+    }
+    if (binding.value!=null) {
+      return new TypedValueImpl(binding.type, binding.value);
+    }
+    if (binding.expression!=null) {
+      return getTypedValue(binding.expression);
+    }
+    return null;
+  }
+
   public TypedValueImpl getTypedValue(ExpressionImpl expression) {
     VariableInstanceImpl variableInstance = getVariableInstance(expression);
     if (expression.fields==null) {
