@@ -426,7 +426,8 @@ public class Mappings {
       if (supertype!=null) {
         scanFields(fieldMappings, supertype);
       } else {
-        throw new RuntimeException("TODO find out which field is not handled properly");
+        // TODO find out which field is not handled properly
+        throw new RuntimeException("null supertype for " + type );
       }
     }
   }

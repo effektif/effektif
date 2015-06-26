@@ -163,7 +163,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     variableInstance.configuration = configuration;
     variableInstance.workflowInstance = workflowInstance;
     variableInstance.type = variable.type;
-    variableInstance.setValue(variable.initialValue);
+    variableInstance.setValue(variable.defaultValue);
     variableInstance.variable = variable;
     if (updates!=null) {
       variableInstance.updates = new VariableInstanceUpdates(true);
@@ -243,6 +243,19 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
     return values;
+  }
+
+  public TypedValueImpl getTypedValue(BindingImpl binding) {
+    if (binding==null) {
+      return null;
+    }
+    if (binding.value!=null) {
+      return new TypedValueImpl(binding.type, binding.value);
+    }
+    if (binding.expression!=null) {
+      return getTypedValue(binding.expression);
+    }
+    return null;
   }
 
   public TypedValueImpl getTypedValue(ExpressionImpl expression) {

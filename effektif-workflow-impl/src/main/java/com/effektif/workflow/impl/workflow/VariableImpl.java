@@ -34,7 +34,7 @@ public class VariableImpl {
   public Variable variable;
   public String id;
   public DataTypeImpl type;
-  public Object initialValue;
+  public Object defaultValue;
 
   public void parse(Variable variable, ScopeImpl parentImpl, WorkflowParser parser) {
     this.id = variable.getId();
@@ -57,6 +57,7 @@ public class VariableImpl {
       parser.addWarning("Variable '%s' does not have a type", id);
       this.type = new AnyTypeImpl();
     }
+    this.defaultValue = variable.getDefaultValue();
   }
 
   public Variable serialize() {

@@ -16,6 +16,7 @@ package com.effektif.workflow.impl.json.types;
 import java.lang.reflect.Type;
 
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
@@ -45,6 +46,9 @@ public class WorkflowIdStreamMapper extends AbstractTypeMapper<WorkflowId> imple
 
   @Override
   public WorkflowId read(Object jsonValue, JsonReader jsonReader) {
+    if (!String.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid workflow ID ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
+    }
     return new WorkflowId((String)jsonValue);
   }
 }

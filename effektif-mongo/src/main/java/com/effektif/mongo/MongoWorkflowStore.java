@@ -58,6 +58,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     String DEPLOYED_TIME = "deployedTime";
     String DEPLOYED_BY = "deployedBy";
     String SOURCE_WORKFLOW_ID = "sourceWorkflowId";
+    String CREATE_TIME = "createTime";
   }
 
   public interface FieldsWorkflowVersions {
@@ -133,11 +134,13 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   @Override
   public WorkflowId findLatestWorkflowIdBySource(String sourceWorkflowId) {
     Exceptions.checkNotNullParameter(sourceWorkflowId, "sourceWorkflowId");
-    BasicDBObject dbQuery = new Query()
+    Query query = new Query()
       .equal(FieldsWorkflow.SOURCE_WORKFLOW_ID, sourceWorkflowId)
-      .get();
-    BasicDBObject dbFields = new BasicDBObject(FieldsWorkflow._ID, 1);
-    BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", dbQuery, dbFields);
+      .orderAsc(FieldsWorkflow.CREATE_TIME)
+      .page(0,  1);
+    Fields fields = new Fields()
+      .include(FieldsWorkflow._ID);
+    BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", query.get(), fields.get());
     return dbWorkflow!=null ? new WorkflowId(dbWorkflow.get("_id").toString()) : null;
   }
 

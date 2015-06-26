@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonObjectWriter;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
@@ -49,6 +50,9 @@ public class LocalDateTimeValueMapper extends AbstractTypeMapper<LocalDateTime> 
 
   @Override
   public LocalDateTime read(Object jsonValue, JsonReader jsonReader) {
+    if (!LocalDateTime.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid date-time ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
+    }
     return (LocalDateTime) jsonValue;
   }
 }

@@ -30,7 +30,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
   protected Map<String,OutputParameter> outputs;
-
+  
   @Override
   public void readBpmn(BpmnReader r) {
     for (XmlElement element : r.readElementsEffektif("output")) {

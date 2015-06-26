@@ -27,6 +27,7 @@ public class Variable extends Element {
   
   protected String id;
   protected DataType type;
+  protected Object defaultValue;
 
 //  @Override
 //  public void readJson(JsonReader r) {
@@ -61,6 +62,17 @@ public class Variable extends Element {
   }
   public Variable type(DataType type) {
     this.type = type;
+    return this;
+  }
+
+  public Object getDefaultValue() {
+    return this.defaultValue;
+  }
+  public void setDefaultValue(Object defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+  public Variable defaultValue(Object defaultValue) {
+    this.defaultValue = defaultValue;
     return this;
   }
 

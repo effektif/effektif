@@ -20,6 +20,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
@@ -52,8 +53,8 @@ public class LocalDateTimeStreamMapper extends AbstractTypeMapper<LocalDateTime>
 
   @Override
   public LocalDateTime read(Object jsonValue, JsonReader jsonReader) {
-    if (!(jsonValue instanceof String)) {
-      throw new RuntimeException("Expected date in iso string format, but was "+jsonValue+" ("+jsonValue.getClass().getName()+")");
+    if (!String.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid ISO format date ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
     }
     return PARSER.parseLocalDateTime((String)jsonValue);
   }

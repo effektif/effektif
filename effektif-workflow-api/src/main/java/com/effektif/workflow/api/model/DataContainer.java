@@ -61,6 +61,21 @@ public class DataContainer {
     return this;
   }
 
+  public DataContainer data(Map<String,Object> data) {
+    if (data!=null) {
+      for (String key: data.keySet()) {
+        Object value = data.get(key);
+        if (value instanceof TypedValue) {
+          setTypedValue(key, (TypedValue) value);
+        } else {
+          setData(key, value);
+        }
+      }
+    }
+    return this;
+  }
+
+
   public Map<String, TypedValue> getData() {
     return data;
   }

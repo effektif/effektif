@@ -35,17 +35,18 @@ import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.Element;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.OutputParameter;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
 import com.effektif.workflow.api.workflow.ParseIssues;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -243,6 +244,8 @@ public class WorkflowParser {
     BindingImpl<T> bindingImpl = new BindingImpl<>();
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
+      DataTypeService ds = configuration.get(DataTypeService.class);
+      bindingImpl.type = ds.createDataType(type);
     }
     String expression = binding.getExpression();
     if (expression!=null) {

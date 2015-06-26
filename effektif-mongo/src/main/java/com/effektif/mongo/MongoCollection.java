@@ -15,11 +15,14 @@
  */
 package com.effektif.mongo;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
+import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -148,6 +151,14 @@ public class MongoCollection {
       log.debug("<-"+dbCollection.getName()+"-- "+count);
     }
     return count;
+  }
+  
+  public Iterator<BasicDBObject> aggregate(String description, List<DBObject> pipeline) {
+    if (log.isDebugEnabled()) {
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(pipeline));
+    }
+    AggregationOutput aggregationOutput = dbCollection.aggregate(pipeline);
+    return new LoggingIterator(this, aggregationOutput.results().iterator());
   }
 
   public String toString(Object o) {
