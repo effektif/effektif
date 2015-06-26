@@ -23,11 +23,10 @@ import com.effektif.workflow.api.model.WorkflowInstanceId;
 /**
  * @author Tom Baeyens
  */
-@JsonPropertyOrder({"id", "organizationId", "workflowId", "start", "end", "duration", "activityInstances", "variableInstances", "timerInstances"})
+@JsonPropertyOrder({"id", "workflowId", "start", "end", "duration", "activityInstances", "variableInstances", "timerInstances"})
 public class WorkflowInstance extends ScopeInstance {
 
   protected WorkflowInstanceId id;
-  protected String organizationId;
   protected WorkflowId workflowId;
   protected String businessKey;
   protected String creatorId;
@@ -40,13 +39,6 @@ public class WorkflowInstance extends ScopeInstance {
   }
   public void setId(WorkflowInstanceId id) {
     this.id = id;
-  }
-
-  public String getOrganizationId() {
-    return this.organizationId;
-  }
-  public void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
   }
 
   public WorkflowInstanceId getCallerWorkflowInstanceId() {
