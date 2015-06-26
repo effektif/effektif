@@ -45,12 +45,19 @@ public class AdapterActivity extends AbstractBindableActivity {
   @Override
   public void readBpmn(BpmnReader r) {
     super.readBpmn(r);
+
+    this.adapterId = r.readStringAttributeEffektif("adapterId");
+    this.activityKey = r.readStringAttributeEffektif("activityKey");
+
     // TODO read adapterId & activityKey as effektif attributes to BPMN
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
+
+    w.writeStringAttributeEffektif("adapterId", this.adapterId);
+    w.writeStringAttributeEffektif("activityKey", activityKey);
     // TODO add adapterId & activityKey as effektif attributes to BPMN
   }
 
