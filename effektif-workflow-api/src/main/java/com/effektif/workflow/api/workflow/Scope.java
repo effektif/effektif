@@ -150,7 +150,6 @@ public abstract class Scope extends Element {
     return this;
   }
 
-  
   public List<Timer> getTimers() {
     return this.timers;
   }
