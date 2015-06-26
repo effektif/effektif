@@ -43,6 +43,7 @@ public abstract class ScopeImpl extends Extensible {
   public List<TransitionImpl> transitions;
 
   public void parse(Scope scope, ScopeImpl parentImpl, WorkflowParser parser) {
+    this.properties = scope.getProperties();
     this.configuration = parser.configuration;
     if (parentImpl!=null) {
       this.parent = parentImpl;
