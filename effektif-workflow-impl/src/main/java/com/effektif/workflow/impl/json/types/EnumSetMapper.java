@@ -18,6 +18,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -40,6 +41,9 @@ public class EnumSetMapper extends AbstractTypeMapper<EnumSet> {
 
   @Override
   public EnumSet read(Object jsonValue, JsonReader jsonReader) {
+    if (!Collection.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid Collection value ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
+    }
     EnumSet set = EnumSet.noneOf(clazz);
     Collection jsonCollection = (Collection) jsonValue;
     for (Object jsonElement : jsonCollection) {

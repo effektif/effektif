@@ -46,7 +46,7 @@ public class StringMapper extends AbstractTypeMapper<String> implements JsonType
   @Override
   public String read(Object jsonValue, JsonReader jsonReader) {
     if (!String.class.isAssignableFrom(jsonValue.getClass())) {
-      throw new InvalidValueException(String.format("Invalid text value ‘%s’", jsonValue));
+      throw new InvalidValueException(String.format("Invalid text value ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
     }
     return (String) jsonValue;
   }

@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -38,6 +39,9 @@ public class ListMapper extends AbstractTypeMapper<List> {
 
   @Override
   public List read(Object jsonValue, JsonReader jsonReader) {
+    if (!Collection.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid Collection value ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
+    }
     List list = new ArrayList();
     Collection jsonCollection = (Collection) jsonValue;
     Iterator jsonIterator = jsonCollection.iterator();
