@@ -60,6 +60,6 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
         }
       }
     }
-    throw new InvalidValueException("Invalid value '"+internalValue+"'.  Expected one of "+options+" (or null)");
+    throw new InvalidValueException("Invalid value '"+internalValue+"'. Expected one of "+options+" (or null).");
   }
 }

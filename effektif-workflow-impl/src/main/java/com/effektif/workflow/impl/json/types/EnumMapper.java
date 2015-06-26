@@ -15,6 +15,7 @@ package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
@@ -44,6 +45,9 @@ public class EnumMapper extends AbstractTypeMapper<Enum> implements JsonTypeMapp
 
   @Override
   public Enum read(Object jsonValue, JsonReader jsonReader) {
+    if (!String.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid enumeration value ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
+    }
     return Enum.valueOf(enumClass, (String) jsonValue);
   }
 }

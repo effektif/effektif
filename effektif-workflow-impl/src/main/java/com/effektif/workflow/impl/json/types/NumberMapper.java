@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 
 import com.effektif.workflow.api.model.ValueConverter;
 import com.effektif.workflow.api.model.ValueConverter.Converter;
+import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonWriter;
 
@@ -45,6 +46,9 @@ public class NumberMapper extends AbstractTypeMapper<Number> {
   public Number read(Object jsonValue, JsonReader jsonReader) {
     if (jsonValue==null) {
       return null;
+    }
+    if (!Number.class.isAssignableFrom(jsonValue.getClass())) {
+      throw new InvalidValueException(String.format("Invalid numeric value ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
     }
     Number number = (Number) jsonValue;
     if (number.getClass()!=numberClass

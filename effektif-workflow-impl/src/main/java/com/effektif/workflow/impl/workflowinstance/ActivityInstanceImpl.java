@@ -132,7 +132,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       workflow.workflowEngine.notifyActivityInstanceEnded(this);
       if (notifyParent) {
         notifyParent();
-
       } else {
         setWorkState(null); // means please archive me.
       }

@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.template.Hints;
@@ -39,6 +40,12 @@ public interface DataTypeImpl<T extends DataType> {
   Object convertInternalToJsonValue(Object internalValue);
 
   String convertInternalToText(Object value, Hints hints);
+
+  /**
+   * Performs additional validation on a value that has successfully been deserialised, such as checking that a
+   * {@link ChoiceType} value is actually one of the choice options.
+   */
+  void validateInternalValue(Object internalValue) throws InvalidValueException;
 
   DataTypeImpl parseDereference(String field, WorkflowParser parser);
   

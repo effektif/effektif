@@ -57,6 +57,7 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     return internalValue;
   }
 
+  @Override
   public void validateInternalValue(Object internalValue) throws InvalidValueException {
   }
 
