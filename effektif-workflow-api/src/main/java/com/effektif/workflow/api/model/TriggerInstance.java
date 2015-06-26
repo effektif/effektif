@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.model;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 
@@ -133,6 +135,12 @@ public class TriggerInstance extends DataContainer {
   @Override
   public TriggerInstance typedValue(String key, TypedValue value) {
     super.typedValue(key, value);
+    return this;
+  }
+  
+  @Override
+  public TriggerInstance data(Map<String, Object> data) {
+    super.data(data);
     return this;
   }
 }
