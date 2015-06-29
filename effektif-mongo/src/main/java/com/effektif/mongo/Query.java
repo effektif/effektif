@@ -35,7 +35,7 @@ public class Query {
     return this;
   }
 
-  public Query _ids(List<ObjectId> ids) {
+  public Query _ids(Collection<ObjectId> ids) {
     in("_id", ids);
     return this;
   }

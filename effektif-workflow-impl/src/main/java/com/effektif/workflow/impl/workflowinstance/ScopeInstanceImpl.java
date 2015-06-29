@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
+import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.DataContainer;
 import com.effektif.workflow.api.model.TypedValue;
@@ -34,6 +35,7 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
+
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -267,19 +269,21 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   protected TypedValueImpl getTypedValueField(VariableInstanceImpl variableInstance, List<String> fields) {
-    TypedValueImpl typedValue = new TypedValueImpl(variableInstance.type, variableInstance.getValue());
+    return resolveFields(variableInstance.type, variableInstance.getValue(), fields, configuration);
+  }
+
+  public static TypedValueImpl resolveFields(DataTypeImpl<?> type, Object value, List<String> fields, Configuration configuration) {
+    TypedValueImpl typedValue = new TypedValueImpl(type, value);
     if (fields!=null) {
       for (int i=0; i<fields.size() && typedValue!=null; i++) {
         String field = fields.get(i);
-        Object value = typedValue.value;
-        if (value!=null) {
-          DataTypeImpl type = typedValue.type;
+        if (typedValue.value!=null) {
           if ( (value instanceof Collection)
                && ! (type instanceof ListTypeImpl) ){
-            type = new ListTypeImpl((ListType)type);
-            type.setConfiguration(configuration);
+            typedValue.type = new ListTypeImpl((ListType)type);
+            typedValue.type.setConfiguration(configuration);
           }
-          typedValue = typedValue.type.dereference(value, field);
+          typedValue = typedValue.type.dereference(typedValue.value, field);
         } else {
           typedValue = null; 
         }

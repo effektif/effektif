@@ -18,6 +18,7 @@ package com.effektif.mongo;
 import static com.effektif.mongo.MongoHelper.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,7 +34,6 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -63,8 +63,6 @@ import com.mongodb.DBObject;
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
   
-  private static final String RECENTLY_ARCHIVED_ACTIVITY_INSTANCES = "recentlyArchivedActivityInstances";
-
   public static final Logger log = MongoDb.log;
 
   protected Configuration configuration;
@@ -278,7 +276,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   @Override
   public List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery query) {
     BasicDBObject dbQuery = createDbQuery(query);
-    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instances", dbQuery);
+    return findWorkflowInstances(dbQuery);
+  }
+
+  public List<WorkflowInstanceImpl> findWorkflowInstances(BasicDBObject dbQuery) {
+    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instance-impls", dbQuery);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
     while (workflowInstanceCursor.hasNext()) {
       BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
@@ -682,5 +684,20 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       jobs.add(job);
     }
     return jobs;
+  }
+
+  public LinkedHashMap<WorkflowInstanceId, WorkflowInstanceImpl> findWorkflowInstanceMap(Collection<ObjectId> workflowInstanceIds) {
+    LinkedHashMap<WorkflowInstanceId, WorkflowInstanceImpl> workflowInstanceMap = new LinkedHashMap<>();
+    if (workflowInstanceIds!=null && !workflowInstanceIds.isEmpty()) {
+      Query query = new Query()
+        .in(WorkflowInstanceFields._ID, workflowInstanceIds);
+      DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instance", query.get());
+      while (workflowInstanceCursor.hasNext()) {
+        BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
+        WorkflowInstanceImpl workflowInstance = readWorkflowInstanceImpl(dbWorkflowInstance);
+        workflowInstanceMap.put(workflowInstance.getId(), workflowInstance);
+      }
+    }
+    return workflowInstanceMap;
   }
 }

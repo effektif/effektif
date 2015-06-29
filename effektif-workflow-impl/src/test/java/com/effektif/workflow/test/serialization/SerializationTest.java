@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runners.model.InitializationError;
 
 import com.effektif.workflow.test.TestSuiteHelper;
+import com.effektif.workflow.test.api.ExpressionTest;
 
 /**
  * @author Tom Baeyens
@@ -29,7 +30,7 @@ public class SerializationTest {
   public void testSerialization() throws InitializationError {
     TestSuiteHelper.run(new SerializingWorkflowEngineConfiguration()
       // use the next line if you only want to run 1 test
-//       , CallTest.class, "testCallActivityInputValue"
+      // , ExpressionTest.class, "testObjectTypeExpression"
       );
   }
 }
