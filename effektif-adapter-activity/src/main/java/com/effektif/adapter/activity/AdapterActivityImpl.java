@@ -15,10 +15,6 @@
  */
 package com.effektif.adapter.activity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.effektif.adapter.service.Adapter;
 import com.effektif.adapter.service.AdapterService;
 import com.effektif.adapter.service.ExecuteRequest;
@@ -29,13 +25,15 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
 import com.effektif.workflow.impl.activity.InputParameter;
-import com.effektif.workflow.impl.activity.OutputParameter;
 import com.effektif.workflow.impl.activity.types.AbstractBindableActivityImpl;
-import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -149,8 +147,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         activityInstance.setVariableValue(variableId, typedValue.getValue());
       }
     }
-    
-    if (executeResponse.isOnwards()) {
+
+    if (executeResponse != null && executeResponse.isOnwards()) {
       activityInstance.onwards();
     }
   }
