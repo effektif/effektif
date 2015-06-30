@@ -110,10 +110,14 @@ public class MongoCollection {
   }
 
   public BasicDBObject findOne(String description, DBObject query, DBObject fields) {
+    return findOne(description, query, fields, null);
+  }
+
+  public BasicDBObject findOne(String description, DBObject query, DBObject fields, DBObject orderBy) {
     if (log.isDebugEnabled()) {
-      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query));
+      log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query)+(orderBy!=null ? ", orderBy="+orderBy : ""));
     }
-    BasicDBObject dbObject = (BasicDBObject) dbCollection.findOne(query, fields);
+    BasicDBObject dbObject = (BasicDBObject) dbCollection.findOne(query, fields, orderBy);
     if (log.isDebugEnabled()) {
       log.debug("<-"+dbCollection.getName()+"-- "+toString(dbObject));
     }
