@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 
+import com.mongodb.gridfs.GridFSDBFile;
+
 public class PrettyPrinter {
 
   public static String toJsonPrettyPrint(Object jsonObject) {
@@ -117,6 +119,8 @@ public class PrettyPrinter {
       jsonObjectToTextFormatted(Arrays.asList((Object[]) jsonObject), indent, jsonText);
     } else if (jsonObject instanceof Pattern) {
       jsonText.append("/"+jsonObject.toString()+"/");
+    } else if (jsonObject instanceof GridFSDBFile) {
+      jsonText.append("/"+((GridFSDBFile)jsonObject).getFilename()+"/");
     } else {
       throw new RuntimeException("couldn't pretty print "+jsonObject.getClass().getName());
     }

@@ -252,6 +252,7 @@ public class WorkflowParser {
       bindingImpl.expression = new ExpressionImpl();
       pushContext("expression", expression, bindingImpl.expression, null);
       bindingImpl.expression.parse(expression, this);
+      popContext();
     }
     return bindingImpl;
   }
