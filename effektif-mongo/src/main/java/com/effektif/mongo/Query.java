@@ -56,7 +56,11 @@ public class Query {
     return this;
   }
 
-  
+  public Query nin(String fieldName, Collection<?> values) {
+    query.put(fieldName, new BasicDBObject("$nin", values));
+    return this;
+  }
+
   public Query equal(String fieldName, Object dbValue) {
     query.put(fieldName, dbValue);
     return this;
