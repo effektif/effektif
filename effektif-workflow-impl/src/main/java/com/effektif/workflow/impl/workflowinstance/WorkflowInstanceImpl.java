@@ -369,11 +369,31 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     super.trackUpdates(isNew);
   }
 
+  /***
+   * isIncluded
+   * @param query, with any combination of ActivityId and WorkflowInstanceId set or not set.
+   *               When set, the value is taken into account, otherwise it is ignored.
+   *               If both ActivityId and WorkflowInstanceId are null (empty query), true is returned
+   */
   public boolean isIncluded(WorkflowInstanceQuery query) {
-    if ( query.getWorkflowInstanceId()!=null && !query.getWorkflowInstanceId().equals(id)) {
-      return false;
+
+    if (query.getActivityId() == null && query.getWorkflowInstanceId() == null) return true;
+
+    if (query.getWorkflowInstanceId()!=null
+            && query.getWorkflowInstanceId().equals(id)) {
+      return true;
     }
-    return true;
+
+    if (query.getActivityId()!=null && hasActivityInstances()) {
+      for (ActivityInstanceImpl activityInstance : activityInstances) {
+        if (activityInstance.activity.getId().equals(query.getActivityId())
+                && !activityInstance.isEnded()) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   public String generateNextActivityInstanceId() {

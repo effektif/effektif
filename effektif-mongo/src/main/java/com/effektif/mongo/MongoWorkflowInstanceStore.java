@@ -297,13 +297,20 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   protected BasicDBObject createDbQuery(WorkflowInstanceQuery query) {
-    if (query==null) {
+    if (query == null) {
       query = new WorkflowInstanceQuery();
     }
     BasicDBObject dbQuery = new BasicDBObject();
-    if (query.getWorkflowInstanceId()!=null) {
+    if (query.getWorkflowInstanceId() != null) {
       dbQuery.append(WorkflowInstanceFields._ID, new ObjectId(query.getWorkflowInstanceId().getInternal()));
     }
+
+    if (query.getActivityId() != null) {
+      dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES
+              , new BasicDBObject("$elemMatch", new BasicDBObject(ActivityInstanceFields.ACTIVITY_ID, query.getActivityId())
+              .append(ActivityInstanceFields.WORK_STATE, new BasicDBObject("$exists", true))));
+    }
+
     return dbQuery;
   }
   
