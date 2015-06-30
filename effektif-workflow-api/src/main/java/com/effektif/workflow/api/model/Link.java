@@ -44,4 +44,31 @@ public class Link {
     this.url = url;
     return this;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    Link link = (Link) o;
+
+    if (!name.equals(link.name))
+      return false;
+    return url.equals(link.url);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name.hashCode();
+    result = 31 * result + url.hashCode();
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s (%s)", name, url);
+  }
 }
