@@ -56,7 +56,11 @@ public class Query {
     return this;
   }
 
-  
+  public Query nin(String fieldName, Collection<?> values) {
+    query.put(fieldName, new BasicDBObject("$nin", values));
+    return this;
+  }
+
   public Query equal(String fieldName, Object dbValue) {
     query.put(fieldName, dbValue);
     return this;
@@ -124,7 +128,17 @@ public class Query {
     if (clauses==null || clauses.size()==0) {
       return this;
     }
-    query.append("$or", clauses);
+    if (query.containsField("$or")) {
+      BasicDBList andClauses = new BasicDBList();
+      andClauses.add(new BasicDBObject("$or", query.remove("$or")));
+      andClauses.add(new BasicDBObject("$or", clauses));
+      and(andClauses);
+    } else if (query.containsField("$and")) {
+      BasicDBList andClauses = (BasicDBList) query.get("$and");
+      andClauses.add(clauses);
+    } else {
+      query.append("$or", clauses);
+    }
     return this;
   }
 
@@ -181,7 +195,12 @@ public class Query {
     if (clauses==null || clauses.size()==0) {
       return this;
     }
-    query.append("$and", clauses);
+    if (query.containsField("$and")) {
+      BasicDBList existingAndClauses = (BasicDBList) query.get("$and");
+      existingAndClauses.add(clauses);
+    } else {
+      query.append("$and", clauses);
+    }
     return this;
   }
   

@@ -94,8 +94,8 @@ public class TextTemplate {
     @Override
     public void append(StringBuilder out, ScopeInstanceImpl scopeInstance, Hints hints) {
       TypedValueImpl typedFieldValue = scopeInstance.getTypedValue(expression);
-      String text = typedFieldValue.type.convertInternalToText(typedFieldValue.value, hints);
-      if (text!=null) {
+      if (typedFieldValue!=null) {
+        String text = typedFieldValue.type.convertInternalToText(typedFieldValue.value, hints);
         out.append(text);
       }
     }

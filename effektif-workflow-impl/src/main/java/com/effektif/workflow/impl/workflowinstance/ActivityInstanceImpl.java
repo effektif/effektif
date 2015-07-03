@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
+import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -106,8 +107,10 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       // Note that process concurrency does not require java concurrency
       end(false);
       for (TransitionImpl transitionDefinition: activity.outgoingTransitions) {
-        // TODO evaluate conditions if there are any
-        takeTransition(transitionDefinition);
+        ConditionImpl condition = transitionDefinition.condition;
+        if (condition!=null ? condition.eval(this) : true) {
+          takeTransition(transitionDefinition);
+        }
       }
     } else {
       // Propagate completion upwards

@@ -51,7 +51,29 @@ public class Money {
     this.currency = currency;
     return this;
   }
-  
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    Money money = (Money) o;
+
+    if (!amount.equals(money.amount))
+      return false;
+    return currency.equals(money.currency);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = amount.hashCode();
+    result = 31 * result + currency.hashCode();
+    return result;
+  }
+
   @Override
   public String toString() {
     StringBuilder moneyText = new StringBuilder();

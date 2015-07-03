@@ -136,11 +136,11 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     Exceptions.checkNotNullParameter(sourceWorkflowId, "sourceWorkflowId");
     Query query = new Query()
       .equal(FieldsWorkflow.SOURCE_WORKFLOW_ID, sourceWorkflowId)
-      .orderAsc(FieldsWorkflow.CREATE_TIME)
+      .orderDesc(FieldsWorkflow.CREATE_TIME)
       .page(0,  1);
     Fields fields = new Fields()
       .include(FieldsWorkflow._ID);
-    BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", query.get(), fields.get());
+    BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", query.get(), fields.get(), query.orderBy);
     return dbWorkflow!=null ? new WorkflowId(dbWorkflow.get("_id").toString()) : null;
   }
 

@@ -28,23 +28,9 @@ public abstract class AbstractWorkflow extends Scope {
   protected WorkflowId id;
   protected Trigger trigger;
   protected Boolean enableCases;
-  
+
   public abstract String getSourceWorkflowId();
   
-//  @Override
-//  public void readJson(JsonReader r) {
-//    id = r.readId();
-//    trigger = r.readObject("trigger");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    w.writeId(id);
-//    w.writeWritable("trigger", trigger);
-//    super.writeJson(w);
-//  }
-
   @Override
   public void readBpmn(BpmnReader r) {
     id = r.readIdAttributeBpmn("id", WorkflowId.class);
