@@ -16,9 +16,6 @@ package com.effektif.workflow.impl.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * An API for serialising values to JSON.
  *
@@ -26,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class JsonWriter {
   
-  private static final Logger log = LoggerFactory.getLogger(JsonWriter.class);
+  // private static final Logger log = LoggerFactory.getLogger(JsonWriter.class);
   
   Mappings mappings;
   List<Object> loopCheckBeans = new ArrayList<>();
@@ -53,7 +50,7 @@ public abstract class JsonWriter {
     if (o!=null) {
       Class<?> clazz = o.getClass();
       JsonTypeMapper jsonTypeMapper = mappings.getTypeMapper(clazz);
-      log.debug("using type mapper "+jsonTypeMapper.getClass().getSimpleName()+" to write object "+o+" ("+o.getClass().getSimpleName()+")");
+      // log.debug("using type mapper "+jsonTypeMapper.getClass().getSimpleName()+" to write object "+o+" ("+o.getClass().getSimpleName()+")");
       jsonTypeMapper.write(o, this);
     } else {
       writeNull();
