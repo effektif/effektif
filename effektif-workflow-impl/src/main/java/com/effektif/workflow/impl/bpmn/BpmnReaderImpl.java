@@ -19,37 +19,18 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.impl.json.JsonObjectReader;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
-import com.effektif.workflow.impl.json.JsonTypeMapper;
-import com.effektif.workflow.impl.json.PolymorphicMapping;
-import com.effektif.workflow.impl.json.TypeMapping;
+import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.impl.json.*;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
-
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.Stack;
+import java.util.*;
 
-import static com.effektif.workflow.impl.bpmn.Bpmn.BPMN_URI;
-import static com.effektif.workflow.impl.bpmn.Bpmn.EFFEKTIF_URI;
-import static com.effektif.workflow.impl.bpmn.Bpmn.KEY_DEFINITIONS;
+import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
 /**
  * This implementation of the BPMN reader is based on reading single values from XML elements and attributes into
@@ -365,6 +346,9 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     if (type==LocalDateTime.class) {
       return (T) LocalDateTimeStreamMapper.PARSER.parseLocalDateTime(value);
+    }
+    if (type==Number.class) {
+      return (T) Double.valueOf(value);
     }
 
     // Use a registered JSON type mapper to parse the value.
