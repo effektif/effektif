@@ -431,4 +431,64 @@ public class Mappings {
       }
     }
   }
+
+  
+  public Map<Type, DataType> getDataTypesByValueClass() {
+    return dataTypesByValueClass;
+  }
+
+  
+  public void setDataTypesByValueClass(Map<Type, DataType> dataTypesByValueClass) {
+    this.dataTypesByValueClass = dataTypesByValueClass;
+  }
+
+  
+  public Map<Field, String> getFieldNames() {
+    return fieldNames;
+  }
+
+  
+  public Map<Field, JsonTypeMapper< ? >> getFieldsMappers() {
+    return fieldsMappers;
+  }
+
+  
+  public Set<Field> getInlineFields() {
+    return inlineFields;
+  }
+
+  
+  public Set<Field> getIgnoredFields() {
+    return ignoredFields;
+  }
+
+  
+  public List<JsonTypeMapperFactory> getJsonTypeMapperFactories() {
+    return jsonTypeMapperFactories;
+  }
+
+  
+  public Map<Class< ? >, PolymorphicMapping> getPolymorphicMappings() {
+    return polymorphicMappings;
+  }
+
+  
+  public Map<Class< ? >, TypeField> getTypeFields() {
+    return typeFields;
+  }
+
+  
+  public Map<Type, TypeMapping> getTypeMappings() {
+    return typeMappings;
+  }
+
+  
+  public Map<Type, JsonTypeMapper> getTypeMappers() {
+    return typeMappers;
+  }
+
+  
+  public Map<Class< ? >, Map<String, Type>> getFieldTypes() {
+    return fieldTypes;
+  }
 }

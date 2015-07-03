@@ -68,4 +68,8 @@ public abstract class JsonObjectMapper {
   public List<Object> newArray() {
     return new ArrayList<>();
   }
+
+  public Mappings getMappings() {
+    return mappings;
+  }
 }

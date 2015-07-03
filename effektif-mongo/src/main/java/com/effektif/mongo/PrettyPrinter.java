@@ -98,7 +98,7 @@ public class PrettyPrinter {
     if (jsonObject==null) {
       jsonText.append("null");
     } else if (jsonObject instanceof Set) {
-      jsonObjectToTextFormatted(new ArrayList().addAll((Set) jsonObject), indent, jsonText);
+      jsonObjectToTextFormatted(new ArrayList((Set) jsonObject), indent, jsonText);
     } else if (jsonObject instanceof Map) {
       jsonObjectToTextFormatted((Map<String,Object>) jsonObject, indent, jsonText);
     } else if (jsonObject instanceof List) {
