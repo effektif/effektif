@@ -22,11 +22,7 @@ import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.MultiInstance;
-import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.api.workflow.*;
 
 
 /** 
@@ -48,8 +44,6 @@ public class AdapterActivity extends AbstractBindableActivity {
 
     this.adapterId = r.readStringAttributeEffektif("adapterId");
     this.activityKey = r.readStringAttributeEffektif("activityKey");
-
-    // TODO read adapterId & activityKey as effektif attributes to BPMN
   }
 
   @Override
@@ -58,7 +52,6 @@ public class AdapterActivity extends AbstractBindableActivity {
 
     w.writeStringAttributeEffektif("adapterId", this.adapterId);
     w.writeStringAttributeEffektif("activityKey", activityKey);
-    // TODO add adapterId & activityKey as effektif attributes to BPMN
   }
 
   @Override
