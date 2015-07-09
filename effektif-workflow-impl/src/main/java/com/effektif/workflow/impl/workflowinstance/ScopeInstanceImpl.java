@@ -262,6 +262,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public TypedValueImpl getTypedValue(ExpressionImpl expression) {
     VariableInstanceImpl variableInstance = getVariableInstance(expression);
+    if (variableInstance == null) {
+      return null;
+    }
     if (expression.fields==null) {
       return variableInstance.getTypedValue();
     }
