@@ -1,12 +1,12 @@
 package com.effektif.workflow.impl.json.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.json.TypeMapping;
-
-import java.lang.reflect.Type;
 
 /**
  * @author Christian Wiggert

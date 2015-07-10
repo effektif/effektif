@@ -15,7 +15,6 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.types.MoneyType;
 
 

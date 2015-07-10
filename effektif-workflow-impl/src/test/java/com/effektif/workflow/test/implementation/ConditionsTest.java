@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.test.implementation;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.effektif.workflow.api.condition.Comparator;
@@ -48,9 +50,6 @@ import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Tom Baeyens

@@ -16,7 +16,6 @@ package com.effektif.workflow.impl.bpmn;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
-import com.effektif.workflow.impl.json.configuration.JsonStreamMappingsBuilder;
 
 
 /**

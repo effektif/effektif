@@ -13,24 +13,41 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.bpmn;
 
+import static com.effektif.workflow.impl.bpmn.Bpmn.*;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.Stack;
+
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.*;
-import com.effektif.workflow.impl.json.*;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.impl.json.JsonObjectReader;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
+import com.effektif.workflow.impl.json.JsonTypeMapper;
+import com.effektif.workflow.impl.json.PolymorphicMapping;
+import com.effektif.workflow.impl.json.TypeMapping;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
-import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
 /**
  * This implementation of the BPMN reader is based on reading single values from XML elements and attributes into

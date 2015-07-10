@@ -31,9 +31,9 @@ import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.Mappings;
 
 

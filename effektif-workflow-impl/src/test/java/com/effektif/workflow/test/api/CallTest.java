@@ -15,6 +15,12 @@
  */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
+
+import org.junit.Test;
+
 import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ReceiveTask;
@@ -26,14 +32,6 @@ import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
-
-import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 
 /**

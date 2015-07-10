@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.json.types;
 
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.effektif.workflow.impl.data.InvalidValueException;

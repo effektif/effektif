@@ -15,6 +15,21 @@
  */
 package com.effektif.workflow.test;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.JavaServiceTask;
@@ -35,22 +50,6 @@ import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-import com.effektif.workflow.test.api.JavaServiceTaskTest;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 
 /** Base class that allows to reuse tests and run them on different process engines. */

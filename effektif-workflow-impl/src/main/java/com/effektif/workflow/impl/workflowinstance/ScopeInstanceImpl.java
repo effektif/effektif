@@ -15,6 +15,20 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.DataContainer;
@@ -35,21 +49,6 @@ import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING;
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 
 
 public abstract class ScopeInstanceImpl extends BaseInstanceImpl {

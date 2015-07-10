@@ -1,16 +1,15 @@
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
-import org.joda.time.LocalDateTime;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Christian Wiggert

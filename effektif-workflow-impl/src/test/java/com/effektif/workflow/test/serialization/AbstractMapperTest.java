@@ -36,9 +36,9 @@ import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 

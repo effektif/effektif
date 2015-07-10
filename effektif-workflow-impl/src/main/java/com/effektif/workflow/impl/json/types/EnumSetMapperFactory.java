@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
 import java.util.EnumSet;
-import java.util.Set;
 
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;

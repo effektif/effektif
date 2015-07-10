@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.data;
 
-import java.util.Map.Entry;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.types.DataType;

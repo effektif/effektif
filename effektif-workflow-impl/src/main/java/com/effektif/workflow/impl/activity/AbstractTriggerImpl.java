@@ -21,7 +21,6 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;

@@ -15,6 +15,10 @@
  */
 package com.effektif.workflow.test.api;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
 import com.effektif.workflow.api.activities.NoneTask;
@@ -27,14 +31,10 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
-import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests BPMN execution semantics for parallel executions using parallel gateways.
