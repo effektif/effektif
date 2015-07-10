@@ -17,8 +17,10 @@ package com.effektif.workflow.impl.workflowinstance;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.LocalDateTime;
@@ -289,7 +291,14 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
 
   // TODO add the expected type for conversion?
   public <T> T getInputValue(String key) {
-    InputParameterImpl parameter = activity.inputs!=null ? activity.inputs.get(key) : null;
+    if (activity==null || activity.activityType==null || activity.activityType.getInputs()==null) {
+      return null;
+    }
+    InputParameterImpl parameter = (InputParameterImpl) activity.activityType.getInputs().get(key);
+    return getInputValue(parameter);
+  }
+
+  protected <T> T getInputValue(InputParameterImpl parameter) {
     if (parameter!=null) {
       if (parameter.binding != null) {
         return (T) getValue(parameter.binding);
@@ -308,5 +317,20 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
     }
     return null;
+  }
+
+  public Map<String, Object> getInputValues() {
+    Map<String,Object> inputValues = new HashMap<>();
+    if (activity!=null && activity.activityType!=null && activity.activityType.getInputs()!=null) {
+      Map<String,InputParameterImpl> inputs = activity.activityType.getInputs();
+      for (String inputKey: inputs.keySet()) {
+        InputParameterImpl inputParameter = inputs.get(inputKey);
+        Object inputValue = getInputValue(inputParameter);
+        if (inputValue!=null) {
+          inputValues.put(inputKey, inputValue);
+        }
+      }
+    }
+    return inputValues;
   }
 }

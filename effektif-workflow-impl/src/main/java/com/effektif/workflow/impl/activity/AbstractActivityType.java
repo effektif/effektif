@@ -15,13 +15,23 @@
  */
 package com.effektif.workflow.impl.activity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
+import com.effektif.workflow.api.workflow.InputParameter;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
+import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-import org.slf4j.Logger;
 
 
 public abstract class AbstractActivityType<T extends Activity> implements ActivityType<T> {
@@ -32,6 +42,8 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   public T activity;
   public Class<?> activityApiClass;
   public MultiInstanceImpl multiInstance;
+  public Map<String,InputParameterImpl> inputs;
+  public Map<String,OutputParameterImpl> outputs;
 
   public AbstractActivityType(Class<T> activityApiClass) {
     this.activityApiClass = activityApiClass;
@@ -50,6 +62,35 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   public void parse(ActivityImpl activityImpl, T activity, WorkflowParser parser) {
     this.activity = activity;
     this.multiInstance = parser.parseMultiInstance(activity.getMultiInstance());
+    
+    Map<String, InputParameter> inputs = activity.getInputs();
+    if (inputs!=null) {
+      this.inputs = new HashMap<>();
+      parser.pushContext("inputs", inputs, this.inputs, null);
+      for (String key: inputs.keySet()) {
+        InputParameter inParameter = inputs.get(key);
+        InputParameterImpl inParameterImpl = new InputParameterImpl(key);
+        parser.pushContext(key, inParameter, inParameterImpl, null);
+        Binding< ? > singleBinding = inParameter.getBinding();
+        if (singleBinding!=null) {
+          inParameterImpl.binding = parser.parseBinding(singleBinding, "binding");
+        }
+        List<Binding<?>> listBindings = inParameter.getBindings();
+        if (listBindings!=null) {
+          inParameterImpl.bindings = new ArrayList<>();
+          for (Binding<?> listBinding: listBindings) {
+            inParameterImpl.bindings.add(parser.parseBinding(listBinding, "binding"));
+          }
+        }
+        inParameterImpl.properties = inParameter.getProperties();
+        parser.popContext();
+        this.inputs.put(key, inParameterImpl);
+      }
+      parser.popContext();
+    }
+    
+    this.outputs = parser.parseOutputs(activity.getOutputs());
+
   }
   
   /** returns the API activity object */
@@ -88,6 +129,14 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   @Override
   public boolean saveTransitionsTaken() {
     return false;
+  }
+  
+  public Map<String, InputParameterImpl> getInputs() {
+    return inputs;
+  }
+
+  public Map<String, OutputParameterImpl> getOutputs() {
+    return outputs;
   }
   
 //  @SuppressWarnings({ "rawtypes", "unchecked" })

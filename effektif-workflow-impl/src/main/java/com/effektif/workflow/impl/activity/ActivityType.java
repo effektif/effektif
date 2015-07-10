@@ -15,10 +15,14 @@
  */
 package com.effektif.workflow.impl.activity;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
+import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
+import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 /**
@@ -56,5 +60,7 @@ public interface ActivityType<T extends Activity> {
   boolean saveTransitionsTaken();
 
   MultiInstanceImpl getMultiInstance();
-
+  
+  Map<String,InputParameterImpl> getInputs();
+  Map<String,OutputParameterImpl> getOutputs();
 }

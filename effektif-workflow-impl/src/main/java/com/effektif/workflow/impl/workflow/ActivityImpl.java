@@ -16,15 +16,10 @@
 package com.effektif.workflow.impl.workflow;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.InputParameter;
 import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
@@ -45,8 +40,6 @@ public class ActivityImpl extends ScopeImpl {
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitions} */
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
-  public Map<String,InputParameterImpl> inputs;
-  public Map<String,OutputParameterImpl> outputs;
   
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
@@ -73,34 +66,6 @@ public class ActivityImpl extends ScopeImpl {
     if (this.activityType==null) {
       parser.addError("Activity '%s' has no activityType configured", id);
     }
-
-    Map<String, InputParameter> inputs = activity.getInputs();
-    if (inputs!=null) {
-      this.inputs = new HashMap<>();
-      parser.pushContext("in", inputs, this.inputs, null);
-      for (String key: inputs.keySet()) {
-        InputParameter inParameter = inputs.get(key);
-        InputParameterImpl inParameterImpl = new InputParameterImpl(key);
-        parser.pushContext(key, inParameter, inParameterImpl, null);
-        Binding< ? > singleBinding = inParameter.getBinding();
-        if (singleBinding!=null) {
-          inParameterImpl.binding = parser.parseBinding(singleBinding, "binding");
-        }
-        List<Binding<?>> listBindings = inParameter.getBindings();
-        if (listBindings!=null) {
-          inParameterImpl.bindings = new ArrayList<>();
-          for (Binding<?> listBinding: listBindings) {
-            inParameterImpl.bindings.add(parser.parseBinding(listBinding, "binding"));
-          }
-        }
-        inParameterImpl.properties = inParameter.getProperties();
-        parser.popContext();
-        this.inputs.put(key, inParameterImpl);
-      }
-      parser.popContext();
-    }
-    
-    this.outputs = parser.parseOutputs(activity.getOutputs());
   }
 
   public boolean isMultiInstance() {

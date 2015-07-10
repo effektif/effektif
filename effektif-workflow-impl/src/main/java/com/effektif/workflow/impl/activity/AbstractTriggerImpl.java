@@ -75,8 +75,4 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
       }
     }
   }
-
-  public DataTypeImpl<?> getDataTypeForTriggerKey(String triggerKey) {
-    return null;
-  }
 }
