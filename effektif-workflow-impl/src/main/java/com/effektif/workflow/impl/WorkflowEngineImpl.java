@@ -229,9 +229,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
       ExecutableWorkflow workflow = workflowStore.loadWorkflowById(workflowId);
-      WorkflowParser parser = new WorkflowParser(configuration);
-      workflowImpl = parser.parse(workflow);
-      workflowCache.put(workflowImpl);
+      if (workflow != null) {
+        WorkflowParser parser = new WorkflowParser(configuration);
+        workflowImpl = parser.parse(workflow);
+        workflowCache.put(workflowImpl);
+      }
     }
     return workflowImpl;
   }
