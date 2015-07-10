@@ -38,7 +38,7 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   
   public static final Logger log = WorkflowEngineImpl.log;
   
-  /** the api activity containing the serializable configuration */ 
+  /** the api activity containing the serializable configuration */
   public T activity;
   public Class<?> activityApiClass;
   public MultiInstanceImpl multiInstance;

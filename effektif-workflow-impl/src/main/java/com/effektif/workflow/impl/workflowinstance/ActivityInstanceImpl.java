@@ -28,9 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
+import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -295,40 +300,65 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       return null;
     }
     InputParameterImpl parameter = (InputParameterImpl) activity.activityType.getInputs().get(key);
-    return getInputValue(parameter);
+    TypedValueImpl typedValue = getInputTypedValue(parameter);
+    return (T) (typedValue!=null ? typedValue.value : null);
   }
 
-  protected <T> T getInputValue(InputParameterImpl parameter) {
+  protected TypedValueImpl getInputTypedValue(InputParameterImpl parameter) {
     if (parameter!=null) {
       if (parameter.binding != null) {
-        return (T) getValue(parameter.binding);
+        return getTypedValue(parameter.binding);
       }
       if (parameter.bindings != null) {
+        DataTypeImpl<?> listType = null;
         List<Object> values = new ArrayList<>();
         for (BindingImpl< ? > binding : parameter.bindings) {
-          Object value = getValue(binding);
-          if (value instanceof Collection) {
-            values.addAll((Collection) value);
-          } else {
-            values.add(value);
+          TypedValueImpl typedValue = getTypedValue(binding);
+          if (typedValue!=null) {
+            if (typedValue.getValue() instanceof Collection) {
+              if (listType==null && typedValue.getType()!=null) {
+                listType = typedValue.getType(); 
+              }
+              Collection value = (Collection) typedValue.value;
+              if (value!=null) {
+                values.addAll(value);
+              }
+            } else {
+              if (listType==null && typedValue.getType()!=null) {
+                listType = new ListTypeImpl(typedValue.getType());
+              }
+              values.add(typedValue.value);
+            }
           }
         }
-        return (T) values;
+        return new TypedValueImpl(listType, values);
       }
     }
     return null;
   }
 
-  public Map<String, Object> getInputValues() {
-    Map<String,Object> inputValues = new HashMap<>();
+  public Map<String, TypedValueImpl> getInputValueImpls() {
+    Map<String,TypedValueImpl> inputValues = new HashMap<>();
     if (activity!=null && activity.activityType!=null && activity.activityType.getInputs()!=null) {
       Map<String,InputParameterImpl> inputs = activity.activityType.getInputs();
       for (String inputKey: inputs.keySet()) {
         InputParameterImpl inputParameter = inputs.get(inputKey);
-        Object inputValue = getInputValue(inputParameter);
+        TypedValueImpl inputValue = getInputTypedValue(inputParameter);
         if (inputValue!=null) {
           inputValues.put(inputKey, inputValue);
         }
+      }
+    }
+    return inputValues;
+  }
+
+  public Map<String, TypedValue> getInputValues() {
+    Map<String, TypedValue> inputValues = new HashMap<>();
+    Map<String,TypedValueImpl> inputValueImpls = getInputValueImpls();
+    if (inputValueImpls!=null) {
+      for (String key: inputValueImpls.keySet()) {
+        TypedValueImpl typedValueImpl = inputValueImpls.get(key);
+        inputValues.put(key, typedValueImpl.toTypedValue());
       }
     }
     return inputValues;

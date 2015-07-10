@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.data;
 
+import com.effektif.workflow.api.model.TypedValue;
+
 
 
 /**
@@ -44,5 +46,9 @@ public class TypedValueImpl {
   
   public void setValue(Object value) {
     this.value = value;
+  }
+
+  public TypedValue toTypedValue() {
+    return new TypedValue(value, type!=null ? type.serialize() : null);
   }
 }

@@ -39,6 +39,11 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     this(new ListType());
   }
   
+  public ListTypeImpl(DataTypeImpl elementType) {
+    this(new ListType(elementType.serialize()));
+    this.elementType = elementType;
+  }
+  
   public ListTypeImpl(ListType listType) {
     super(listType);
   }

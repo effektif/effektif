@@ -33,18 +33,6 @@ public class ChoiceType extends TextType {
 
   protected List<ChoiceOption> options;
   
-//  @Override
-//  public void readJson(JsonReader r) {
-//    options = r.readList("options");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeList("options", options);
-//  }
-
   @Override
   public void readBpmn(BpmnReader r) {
     for (XmlElement optionElement : r.readElementsEffektif("option")) {
