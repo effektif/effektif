@@ -100,4 +100,11 @@ public class TransitionImpl {
       parser.popContext();
     }
   }
+
+  @Override
+  public String toString() {
+    String fromId = from!=null ? from.id : null;
+    String toId = to!=null ? to.id : null;
+    return "("+(fromId!=null?fromId:" ")+")--"+(id!=null?id+"--":"")+">("+(toId!=null?toId:" ")+")";
+  }
 }

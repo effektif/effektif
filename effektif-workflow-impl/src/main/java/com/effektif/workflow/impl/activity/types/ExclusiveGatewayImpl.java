@@ -20,7 +20,10 @@ import java.util.Map;
 
 import javax.script.CompiledScript;
 
+import org.slf4j.Logger;
+
 import com.effektif.workflow.api.activities.ExclusiveGateway;
+import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
@@ -34,6 +37,8 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  * @author Tom Baeyens
  */
 public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway> {
+  
+  private static final Logger log = WorkflowEngineImpl.log;
 
   ConditionService conditionService;
   CompiledScript transitionIdExpression;
@@ -68,6 +73,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
     if (transition!=null) {
       activityInstance.takeTransition(transition);
     } else {
+      log.debug("No transition selected. Gateway "+activity+" ends flow");
       // no outgoing transitions. just end here and notify the parent this execution path ended.
       activityInstance.end(true);
     }
@@ -78,7 +84,10 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
       for (TransitionImpl outgoingTransition: outgoingTransitions) {
         // condition must be true and the transition must have a target
         if (meetsCondition(outgoingTransition, activityInstance)) {
+          log.debug("Excl gw takes transition "+outgoingTransition);
           return outgoingTransition;
+        } else {
+          log.debug("Excl gw condition "+outgoingTransition.condition+" not met: "+outgoingTransition);
         }
       }
     }

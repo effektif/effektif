@@ -45,13 +45,13 @@ public class BindingMapper extends BeanMapper<Binding> {
   
   @Override
   public void write(Binding typeValue, JsonWriter jsonWriter) {
-    DataType dataType = typeValue.getDataType();
+    DataType dataType = typeValue.getType();
     Object value = typeValue.getValue();
     if (!isParameterized // if it's parameterized, then the this.typeMapping already performed the deserialization of the value
         && dataType==null 
         && value!=null) {
       dataType = mappings.getTypeByValue(value);
-      typeValue.setDataType(dataType);
+      typeValue.setType(dataType);
     }
     super.write(typeValue, jsonWriter);
   }
@@ -59,7 +59,7 @@ public class BindingMapper extends BeanMapper<Binding> {
   @Override
   public Binding read(Object jsonValue, JsonReader jsonReader) {
     Binding binding = super.read(jsonValue, jsonReader);
-    DataType dataType = binding.getDataType();
+    DataType dataType = binding.getType();
     Object jsonVariableValue = binding.getValue();
     if (!isParameterized // if it's parameterized, then the this.typeMapping already performed the deserialization of the value 
         && jsonVariableValue!=null 

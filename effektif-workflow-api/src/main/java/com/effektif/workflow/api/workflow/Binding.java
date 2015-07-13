@@ -35,7 +35,7 @@ import com.effektif.workflow.api.types.DataType;
 public class Binding<T> {
 
   protected T value;
-  protected DataType dataType;
+  protected DataType type;
   protected String expression;
 
   /**
@@ -89,21 +89,21 @@ public class Binding<T> {
     return value == null && expression == null;
   }
   
-  public DataType getDataType() {
-    return dataType;
+  public DataType getType() {
+    return type;
   }
   
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
+  public void setType(DataType type) {
+    this.type = type;
   }
   
-  public Binding<T> dataType(DataType dataType) {
-    this.dataType = dataType;
+  public Binding<T> type(DataType type) {
+    this.type = type;
     return this;
   }
   
   @Override
   public String toString() {
-    return "Binding[value=" + value + ",dataType=" + dataType + ",expression=" + expression + "]";
+    return "Binding[value=" + value + ",dataType=" + type + ",expression=" + expression + "]";
   }
 }

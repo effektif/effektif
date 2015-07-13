@@ -231,7 +231,7 @@ public abstract class Activity extends Scope {
     return this;
   }
   public Activity inputValue(String key, Object value, DataType dataType) {
-    inputBinding(key, new Binding().value(value).dataType(dataType));
+    inputBinding(key, new Binding().value(value).type(dataType));
     return this;
   }
 
