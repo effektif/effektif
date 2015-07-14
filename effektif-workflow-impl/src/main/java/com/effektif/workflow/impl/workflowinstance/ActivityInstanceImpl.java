@@ -52,7 +52,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public static final String STATE_STARTING = "starting"; 
   public static final String STATE_STARTING_MULTI_CONTAINER = "startingMultiParent"; 
   public static final String STATE_STARTING_MULTI_INSTANCE = "startingMultiInstance"; 
-  public static final String STATE_NOTIFY_PARENT = "notifying"; 
+  public static final String STATE_PROPAGATE_TO_PARENT = "propagateToParent"; 
   public static final String STATE_JOINING = "joining"; 
   public static final String STATE_WAITING = "waiting"; 
 
@@ -112,7 +112,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     if (activity.hasOutgoingTransitionDefinitions()) {
       // Ensure that each transition is taken
       // Note that process concurrency does not require java concurrency
-      end(false);
+      end();
       for (TransitionImpl transitionDefinition: activity.outgoingTransitions) {
         ConditionImpl condition = transitionDefinition.condition;
         if (condition!=null ? condition.eval(this) : true) {
@@ -121,40 +121,34 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
     } else {
       // Propagate completion upwards
-      if (end==null) {
-        end(true);
-      } else {
-        notifyParent();
-      }
+      end();
+      propagateToParent();
     }
   }
 
-  public void end() {
-    end(true);
+  public void endAndPropagateToParent() {
+    end();
+    propagateToParent();
   }
 
-  public void end(boolean notifyParent) {
+  public void end() {
     if (end==null) {
       if (hasOpenActivityInstances()) {
         throw new RuntimeException("Can't end this activity instance. There are open activity instances: " +this);
       }
       setEnd(Time.now());
       workflow.workflowEngine.notifyActivityInstanceEnded(this);
-      if (notifyParent) {
-        notifyParent();
-      } else {
-        setWorkState(null); // means please archive me.
-      }
+      setWorkState(null);
     }
   }
 
-  protected void notifyParent() {
-    setWorkState(STATE_NOTIFY_PARENT);
+  public void propagateToParent() {
+    setWorkState(STATE_PROPAGATE_TO_PARENT);
     workflowInstance.addWork(this);
   }
 
   public void setWorkState(String workState) {
-    // log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
+    log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
     this.workState = workState;
     if (updates!=null) {
       getUpdates().isWorkStateChanged = true;
@@ -186,14 +180,15 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     ActivityInstanceImpl toActivityInstance = null;
     ActivityImpl to = transition.to;
     if (to!=null) {
-      end(true);
+      end();
       if (log.isDebugEnabled()) {
         log.debug("Taking transition to "+to);
       }
       toActivityInstance = parent.createActivityInstance(to);
     } else {
-      end(false);
-      notifyParent();
+      log.debug("Dangling transition.  Propagating to parent.");
+      end();
+      propagateToParent();
     }
     workflow.workflowEngine.notifyTransitionTaken(this, transition, toActivityInstance);
   }
@@ -228,8 +223,10 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public String toString() {
-    String activityDefinitionType = activity.activityType.getActivityApiClass().getSimpleName();
-    return "("+(activity.id!=null?activity.id+"|":"")+id+"|"+activityDefinitionType+")";
+    String activityTypeName = activity.activityType.getActivityApiClass().getSimpleName();
+    String activityId = activity.id; 
+    String activityName = activity.activity.getName();
+    return "("+activityTypeName+"|"+(activityName!=null?activityName+"|":"")+(activityId!=null?activityId+"|":"")+id+")";
   }
   
   public void setEnd(LocalDateTime end) {

@@ -75,7 +75,8 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
     } else {
       log.debug("No transition selected. Gateway "+activity+" ends flow");
       // no outgoing transitions. just end here and notify the parent this execution path ended.
-      activityInstance.end(true);
+      activityInstance.end();
+      activityInstance.propagateToParent();
     }
   }
 
@@ -95,8 +96,11 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   }
 
   protected boolean meetsCondition(TransitionImpl outgoingTransition, ActivityInstanceImpl activityInstance) {
-    ConditionImpl condition = outgoingTransition.condition;
-    return condition!=null ? condition.eval(activityInstance) : false;
+    boolean meetsCondition = false;
+    if (outgoingTransition.condition!=null) {
+      meetsCondition = outgoingTransition.condition.eval(activityInstance);
+    }
+    return meetsCondition;
   }
 
   @Override

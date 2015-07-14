@@ -134,7 +134,9 @@ public class ActivityImpl extends ScopeImpl {
   }
 
   public String toString() {
-    return id!=null ? "["+id.toString()+"]" : "["+Integer.toString(System.identityHashCode(this))+"]";
+    String activityName = activity.getName();
+    String activityTypeName = activityType.getActivityApiClass().getSimpleName();
+    return "["+activityTypeName+"|"+(activityName!=null?activityName+"|":"")+(id!=null?id.toString():Integer.toString(System.identityHashCode(this)))+"]";
   }
 
   public String getId() {

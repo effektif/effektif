@@ -64,7 +64,7 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
-    activityInstance.end(false);
+    activityInstance.end();
     boolean hasOtherUnfinishedActivities = false;
 
     List<ActivityInstanceImpl> otherJoiningActivityInstances = new ArrayList<>();

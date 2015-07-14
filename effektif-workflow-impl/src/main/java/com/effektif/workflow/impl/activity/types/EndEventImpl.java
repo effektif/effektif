@@ -32,6 +32,7 @@ public class EndEventImpl extends AbstractActivityType<EndEvent> {
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     activityInstance.end();
+    activityInstance.propagateToParent();
   }
 
   @Override

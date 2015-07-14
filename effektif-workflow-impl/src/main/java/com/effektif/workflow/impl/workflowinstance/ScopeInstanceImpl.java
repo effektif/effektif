@@ -395,7 +395,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
   }
   
-  public abstract void end();
+  public abstract void endAndPropagateToParent();
 
   public boolean hasOpenActivityInstances() {
     if (activityInstances==null) {
@@ -523,6 +523,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   }
 
   public void onwards() {
-    end();
+    endAndPropagateToParent();
   }
 }

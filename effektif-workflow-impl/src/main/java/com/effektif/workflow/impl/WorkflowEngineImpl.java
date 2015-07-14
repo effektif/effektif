@@ -169,7 +169,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         workflowInstance.execute(startActivityDefinition);
       }
     } else {
-      workflowInstance.end();
+      workflowInstance.endAndPropagateToParent();
     }
     
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);

@@ -178,9 +178,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
           activityInstance.onwards();
         }
   
-      } else if (STATE_NOTIFY_PARENT.equals(activityInstance.workState)) {
+      } else if (STATE_PROPAGATE_TO_PARENT.equals(activityInstance.workState)) {
         if (log.isDebugEnabled()) {
-          log.debug("Notifying "+activityInstance.parent+" that "+activityInstance+" ended");
+          log.debug("Propagating end of "+activityInstance+" to parent "+activityInstance.parent);
         }
         activityInstance.parent.activityInstanceEnded(activityInstance);
         activityInstance.workState = null;
@@ -309,14 +309,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return work!=null && !work.isEmpty();
   }
 
-  public void end() {
+  public void endAndPropagateToParent() {
     if (this.end==null) {
       if (hasOpenActivityInstances()) {
         throw new RuntimeException("Can't end this process instance. There are open activity instances: "+this);
       }
       setEnd(Time.now());
-      if (log.isDebugEnabled())
+      if (log.isDebugEnabled()) {
         log.debug("Ends "+this);
+      }
       workflowInstanceEnded();
     }
   }

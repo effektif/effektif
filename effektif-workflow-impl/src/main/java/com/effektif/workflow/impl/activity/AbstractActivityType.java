@@ -108,6 +108,7 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   public void ended(ActivityInstanceImpl activityInstance, ActivityInstanceImpl nestedEndedActivityInstance) {
     if (!activityInstance.hasOpenActivityInstances()) {
       activityInstance.end();
+      activityInstance.propagateToParent();
     }
   }
   
