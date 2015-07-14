@@ -148,7 +148,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
 
   public void setWorkState(String workState) {
-    log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
+    // log.debug("Setting workstate of "+this+" from "+this.workState+" to "+workState);
     this.workState = workState;
     if (updates!=null) {
       getUpdates().isWorkStateChanged = true;
