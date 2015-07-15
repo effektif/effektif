@@ -213,6 +213,11 @@ public class Query {
     query.append(field, new BasicDBObject("$exists", true));
     return this;
   }
+
+  public Query elemMatch(String field, Object dbValue) {
+    query.append(field, new BasicDBObject("$elemMatch", dbValue));
+    return this;
+  }
   
   public Query orderAsc(String field) {
     if (orderBy==null) {
