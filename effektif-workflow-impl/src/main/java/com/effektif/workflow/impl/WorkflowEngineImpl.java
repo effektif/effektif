@@ -309,12 +309,15 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowExecutionListeners = workflowExecutionListeners;
   }
   
-  public void notifyActivityInstanceStarted(ActivityInstanceImpl activityInstance) {
+  public boolean notifyActivityInstanceStarted(ActivityInstanceImpl activityInstance) {
     if (workflowExecutionListeners!=null) {
       for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
-        workflowExecutionListener.started(activityInstance);
+        if (!workflowExecutionListener.starting(activityInstance)) {
+          return false;
+        }
       }
     }
+    return true;
   }
 
   public void notifyActivityInstanceEnded(ActivityInstanceImpl activityInstance) {
@@ -328,7 +331,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public void notifyTransitionTaken(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo) {
     if (workflowExecutionListeners!=null) {
       for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
-        workflowExecutionListener.transition(activityInstanceFrom, transition, activityInstanceTo);
+        workflowExecutionListener.transitioning(activityInstanceFrom, transition, activityInstanceTo);
       }
     }
   }

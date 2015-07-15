@@ -96,10 +96,11 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public void execute() {
-    workflow.workflowEngine.notifyActivityInstanceStarted(this);
-    activity.activityType.execute(this);
-    if (START_WORKSTATES.contains(workState)) {
-      setWorkState(ActivityInstanceImpl.STATE_WAITING);
+    if (workflow.workflowEngine.notifyActivityInstanceStarted(this)) {
+      activity.activityType.execute(this);
+      if (START_WORKSTATES.contains(workState)) {
+        setWorkState(ActivityInstanceImpl.STATE_WAITING);
+      }
     }
   }
 

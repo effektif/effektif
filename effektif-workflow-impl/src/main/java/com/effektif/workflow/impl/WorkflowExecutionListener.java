@@ -32,27 +32,29 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 public interface WorkflowExecutionListener {
   /**
    * Called whenever an activity is started on a workflow instance. It will be called after
-   * {@link #transition(ActivityInstanceImpl, TransitionImpl, ActivityInstanceImpl)} is triggered.
+   * {@link #transitioning(ActivityInstanceImpl, TransitionImpl, ActivityInstanceImpl)} is triggered.
    *
    * @param activityInstance the {@link ActivityInstanceImpl} that is started.
+   * @return true if the activityInstance should be started, false otherwise
    */
-  void started(ActivityInstanceImpl activityInstance);
+  boolean starting(ActivityInstanceImpl activityInstance);
 
   /**
    * Called whenever an activity is ended on a workflow instance. It will be called before
-   * {@link #transition(ActivityInstanceImpl, TransitionImpl, ActivityInstanceImpl)} is triggered.
+   * {@link #transitioning(ActivityInstanceImpl, TransitionImpl, ActivityInstanceImpl)} is triggered.
    *
    * @param activityInstance the {@link ActivityInstanceImpl} that is ended.
    */
   void ended(ActivityInstanceImpl activityInstance);
 
   /**
-   * Called whenever a transition is taken. It will be called after {@link #started(ActivityInstanceImpl)} and before
+   * Called whenever a transition is taken. It will be called after {@link #starting(ActivityInstanceImpl)} and before
    * {@link #ended(ActivityInstanceImpl)}.
    *
    * @param from the {@link ActivityInstanceImpl} that triggered this transition.
    * @param transition the actual transition that is taken.
    * @param to the {@link ActivityInstanceImpl} that will be started next based on the transition.
+   * @return true if the activityInstance should be started, false otherwise
    */
-  void transition(ActivityInstanceImpl from, TransitionImpl transition, ActivityInstanceImpl to);
+  boolean transitioning(ActivityInstanceImpl from, TransitionImpl transition, ActivityInstanceImpl to);
 }

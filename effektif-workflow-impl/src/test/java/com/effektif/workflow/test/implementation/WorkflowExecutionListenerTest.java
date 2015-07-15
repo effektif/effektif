@@ -61,8 +61,9 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     }
 
     @Override
-    public void started(ActivityInstanceImpl instance) {
+    public boolean starting(ActivityInstanceImpl instance) {
       events.add("start " + instance.activity.id);
+      return true;
     }
 
     @Override
@@ -71,8 +72,9 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     }
 
     @Override
-    public void transition(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo) {
+    public boolean transitioning(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo) {
       events.add("take "+transition.from.id+"->"+transition.to.id);
+      return true;
     }
   }
 
