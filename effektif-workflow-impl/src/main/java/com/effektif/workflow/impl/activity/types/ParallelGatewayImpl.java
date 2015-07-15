@@ -80,17 +80,18 @@ public class ParallelGatewayImpl extends AbstractActivityType<ParallelGateway> {
       }
     }
     
-    if ( hasOutgoingTransitions
-         && ( otherJoiningActivityInstances.size()==(nbrOfIncomingTransitions-1)
-              || !hasOtherUnfinishedActivities
-            )
-       ) {
-      if (log.isDebugEnabled())
-        log.debug("Firing parallel gateway");
+    if ( !hasOutgoingTransitions ) {
+      activityInstance.propagateToParent();
+    
+    } else if ( otherJoiningActivityInstances.size()==(nbrOfIncomingTransitions-1)
+                || !hasOtherUnfinishedActivities
+              ) {
+      if (log.isDebugEnabled()) log.debug("Firing parallel gateway");
       for (ActivityInstanceImpl otherJoiningActivityInstance: otherJoiningActivityInstances) {
         activityInstance.removeJoining(otherJoiningActivityInstance);
       }
       activityInstance.onwards();
+    
     } else {
       activityInstance.setJoining();
     }
