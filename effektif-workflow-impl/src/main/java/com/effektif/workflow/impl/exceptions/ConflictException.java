@@ -15,9 +15,6 @@
  */
 package com.effektif.workflow.impl.exceptions;
 
-/**
- * TODO Move to engine {@link com.effektif.workflow.impl.exceptions}
- */
 public class ConflictException extends HttpMappedException {
 
   public ConflictException(String message) {
@@ -29,6 +26,16 @@ public class ConflictException extends HttpMappedException {
   @Override
   public int getStatusCode() {
     return HttpStatusCode.CONFLICT;
+  }
+
+  public static void checkTrue(boolean condition, String message) {
+    if (!condition) {
+      throw new ConflictException(message);
+    }
+  }
+
+  public static void checkNotNull(Object object, String message) {
+    checkTrue(object!=null, message);
   }
 
 }
