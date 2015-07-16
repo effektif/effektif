@@ -73,6 +73,7 @@ public class ExecutableWorkflow extends AbstractWorkflow {
   @Override
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
+    name = r.readStringAttributeBpmn("name");
     sourceWorkflowId = r.readStringValue("sourceWorkflowId");
     createTime = r.readDateValue("createTime");
 
