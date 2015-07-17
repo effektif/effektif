@@ -24,7 +24,6 @@ import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import com.effektif.workflow.api.json.GenericType;
-import com.effektif.workflow.api.model.Link;
 import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.VariableValues;
@@ -178,13 +177,10 @@ public class VariableTypesTest extends WorkflowTest {
 
     WorkflowInstance workflowInstance = workflowEngine.start(
       new TriggerInstance().workflowId(workflow.getId())
-        .data("v", new Link().name("Effektif").url("http://www.effektif.com/")));
+        .data("v", "http://www.effektif.com/"));
     
-    Object value = workflowInstance.getVariableValue("v", Link.class);
-    assertEquals(Link.class, value.getClass());
-    Link link = (Link) value;
-    assertEquals("Effektif", link.getName());
-    assertEquals("http://www.effektif.com/", link.getUrl());
+    Object link = workflowInstance.getVariableValue("v");
+    assertEquals("http://www.effektif.com/", link);
   }
 
   @Test
@@ -197,14 +193,12 @@ public class VariableTypesTest extends WorkflowTest {
     WorkflowInstance workflowInstance = workflowEngine.start(
       new TriggerInstance().workflowId(workflow.getId())
         .data("v", Lists.of(
-                new Link().name("Effektif").url("http://effektif.com/"),
-                new Link().name("Signavio").url("http://signavio.com/"))));
+                "http://effektif.com/",
+                "http://signavio.com/")));
     
-    List<Link> links = (List<Link>) workflowInstance.getVariableValue("v");
-    assertEquals("Effektif", links.get(0).getName());
-    assertEquals("http://effektif.com/", links.get(0).getUrl());
-    assertEquals("Signavio", links.get(1).getName());
-    assertEquals("http://signavio.com/", links.get(1).getUrl());
+    List<String> links = (List<String>) workflowInstance.getVariableValue("v");
+    assertEquals("http://effektif.com/", links.get(0));
+    assertEquals("http://signavio.com/", links.get(1));
   }
 
   @Test

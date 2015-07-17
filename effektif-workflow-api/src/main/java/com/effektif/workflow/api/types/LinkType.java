@@ -16,18 +16,13 @@
 package com.effektif.workflow.api.types;
 
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.model.Link;
 
 /**
  * @author Peter Hilton
  */
 @TypeName("link")
-public class LinkType extends JavaBeanType {
+public class LinkType extends TextType {
 
   public static final LinkType INSTANCE = new LinkType();
-
-  public LinkType() {
-    super(Link.class);
-  }
 
 }

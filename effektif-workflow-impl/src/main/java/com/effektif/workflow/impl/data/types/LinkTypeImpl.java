@@ -15,12 +15,16 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import java.util.regex.Pattern;
+
 import com.effektif.workflow.api.types.LinkType;
 
 /**
  * @author Peter Hilton
  */
-public class LinkTypeImpl extends JavaBeanTypeImpl<LinkType> {
+public class LinkTypeImpl extends TextTypeImpl {
+
+  static Pattern pattern = Pattern.compile("[-A-Z0-9+&@#/%?=~_|!:,.;]*", Pattern.CASE_INSENSITIVE);
 
   public LinkTypeImpl() {
     super(LinkType.INSTANCE);
