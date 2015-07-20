@@ -17,13 +17,20 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCursor;
 
 
 public class Query {
+  
+  public static final int ORDER_ASCENDING = 1;
+  public static final int ORDER_DESCENDING = -1;
+
+  public static final Logger log = MongoDb.log;
   
   public Integer skip;
   public Integer limit;
@@ -220,18 +227,20 @@ public class Query {
   }
   
   public Query orderAsc(String field) {
-    if (orderBy==null) {
-      orderBy = new BasicDBObject();
-    }
-    orderBy.append(field, 1);
+    orderBy(field, ORDER_ASCENDING);
+    return this;
+  }
+
+  public Query orderDesc(String field) {
+    orderBy(field, ORDER_DESCENDING);
     return this;
   }
   
-  public Query orderDesc(String field) {
+  public Query orderBy(String field, int direction) {
     if (orderBy==null) {
       orderBy = new BasicDBObject();
     }
-    orderBy.append(field, -1);
+    orderBy.append(field, direction);
     return this;
   }
   
@@ -248,13 +257,17 @@ public class Query {
   }
 
   public void applyCursorConfigs(DBCursor dbCursor) {
-    if (skip!=null) {
-      dbCursor.skip(skip);
-    }
-    if (limit!=null) {
-      dbCursor.limit(limit);
+    if (skip!=null || limit!=null) {
+      log.debug("Applying page to cursor: skip="+skip+", limit="+limit);
+      if (skip!=null) {
+        dbCursor.skip(skip);
+      }
+      if (limit!=null) {
+        dbCursor.limit(limit);
+      }
     }
     if (orderBy!=null) {
+      log.debug("Applying sort to cursor: "+orderBy);
       dbCursor.sort(orderBy);
     }
   }
