@@ -259,7 +259,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
       @Override
       protected void failedPermanent() {
-        throw new RuntimeException("Couldn't lock process instance with workflowInstanceId="+workflowInstanceId);
+        throw new RuntimeException("Couldn't lock workflow instance " + workflowInstanceId);
       }
     };
     return retry.tryManyTimes();

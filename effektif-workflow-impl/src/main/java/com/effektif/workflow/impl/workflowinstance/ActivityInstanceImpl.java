@@ -209,6 +209,9 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
 
   @Override
   public ActivityInstanceImpl findActivityInstance(String activityInstanceId) {
+    if (activityInstanceId == null) {
+      return null;
+    }
     if (activityInstanceId.equals(this.id)) {
       return this;
     }
