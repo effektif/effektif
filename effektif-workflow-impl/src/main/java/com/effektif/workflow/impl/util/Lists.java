@@ -29,7 +29,9 @@ public class Lists {
 
   @SafeVarargs
   public static <T> List<T> of(T... elements) {
-    return Arrays.asList(elements);
+    // Arrays.asList produces unmodifyable lists
+    // Sometimes we need mofyable lists
+    return new ArrayList<T>(Arrays.asList(elements));
   }
 
   
