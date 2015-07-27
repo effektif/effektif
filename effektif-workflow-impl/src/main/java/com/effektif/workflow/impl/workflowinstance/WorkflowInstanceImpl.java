@@ -62,6 +62,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Queue<ActivityInstanceImpl> workAsync;
   public WorkflowInstanceId callerWorkflowInstanceId;
   public String callerActivityInstanceId;
+  public List<String> startActivityIds;
   public Boolean isAsync;
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
@@ -94,6 +95,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.businessKey = triggerInstance.getBusinessKey();
     this.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
     this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
+    this.startActivityIds = triggerInstance.getStartActivityIds();
     this.lock = lock;
     this.initializeVariableInstances();
   }

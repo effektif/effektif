@@ -166,7 +166,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     
     if (workflow.startActivities!=null) {
       for (ActivityImpl startActivityDefinition: workflow.startActivities) {
-        workflowInstance.execute(startActivityDefinition);
+        if (workflowInstance.startActivityIds == null
+                || workflowInstance.startActivityIds.contains(startActivityDefinition.getId())) {
+          workflowInstance.execute(startActivityDefinition);
+        }
       }
     } else {
       workflowInstance.endAndPropagateToParent();

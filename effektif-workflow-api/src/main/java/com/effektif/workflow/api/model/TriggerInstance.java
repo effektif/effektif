@@ -15,10 +15,12 @@
  */
 package com.effektif.workflow.api.model;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -32,6 +34,7 @@ public class TriggerInstance extends DataContainer {
   protected WorkflowInstanceId workflowInstanceId;
   protected WorkflowId workflowId;
   protected String sourceWorkflowId;
+  List<String> startActivityIds;
   protected String businessKey;
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
@@ -49,7 +52,28 @@ public class TriggerInstance extends DataContainer {
     this.workflowId = workflowId;
     return this;
   }
-  
+
+  public List<String> getStartActivityIds() {
+    return startActivityIds;
+  }
+
+  public void setStartActivityIds(List<String> startActivityIds) {
+    this.startActivityIds = startActivityIds;
+  }
+
+  /***
+   * When there are multiple start events, starting all of them at the same time might not be desirable.
+   * To only start one (or multiple) use addStartActivityId once (or multiple times with different activityIds).
+   * If addStartActivityId is not called, all startEvents will be started/triggered.
+   * @param startActivityId
+   * @return TriggerInstance object, for linking several calls...
+   */
+  public TriggerInstance addStartActivityId(String startActivityId) {
+    if(this.startActivityIds == null) this.startActivityIds = new ArrayList<>();
+    this.startActivityIds.add(startActivityId);
+    return this;
+  }
+
   public String getSourceWorkflowId() {
     return this.sourceWorkflowId;
   }
