@@ -15,22 +15,9 @@
  */
 package com.effektif.workflow.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.TypedValue;
-import com.effektif.workflow.api.model.VariableValues;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.model.*;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
@@ -47,6 +34,12 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tom Baeyens
@@ -166,7 +159,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     
     if (workflow.startActivities!=null) {
       for (ActivityImpl startActivityDefinition: workflow.startActivities) {
-        workflowInstance.execute(startActivityDefinition);
+        if (workflowInstance.startActivityIds == null
+                || workflowInstance.startActivityIds.contains(startActivityDefinition.getId())) {
+          workflowInstance.execute(startActivityDefinition);
+        }
       }
     } else {
       workflowInstance.endAndPropagateToParent();

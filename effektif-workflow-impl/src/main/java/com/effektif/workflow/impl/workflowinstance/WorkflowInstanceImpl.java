@@ -15,20 +15,6 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TriggerInstance;
@@ -46,6 +32,13 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
 
 
 /**
@@ -62,6 +55,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Queue<ActivityInstanceImpl> workAsync;
   public WorkflowInstanceId callerWorkflowInstanceId;
   public String callerActivityInstanceId;
+  public List<String> startActivityIds;
   public Boolean isAsync;
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
@@ -94,6 +88,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.businessKey = triggerInstance.getBusinessKey();
     this.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
     this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
+    this.startActivityIds = triggerInstance.getStartActivityIds();
     this.lock = lock;
     this.initializeVariableInstances();
   }
