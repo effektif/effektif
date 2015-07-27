@@ -20,11 +20,11 @@ package com.effektif.workflow.impl.exceptions;
  */
 public interface HttpStatusCode {
   int BAD_REQUEST = 400;
-  int CONFLICT = 409;
+  int UNAUTHORIZED = 401;
   int FORBIDDEN = 403;
   int NOT_FOUND = 404;
-  int INTERNAL_SERVER_ERROR = 500;
+  int CONFLICT = 409;
   int PRECONDITION_FAILED = 412;
   int REQUEST_ENTITY_TOO_LARGE = 413;
-  int UNAUTHORIZED = 401;
+  int INTERNAL_SERVER_ERROR = 500;
 }

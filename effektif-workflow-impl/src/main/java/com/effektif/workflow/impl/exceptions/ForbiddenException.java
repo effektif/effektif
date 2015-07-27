@@ -38,4 +38,13 @@ public class ForbiddenException extends HttpMappedException {
     return HttpStatusCode.FORBIDDEN;
   }
 
+  public static void checkTrue(boolean condition, String message) {
+    if (!condition) {
+      throw new ForbiddenException(message);
+    }
+  }
+
+  public static void checkNotNull(Object object, String message) {
+    checkTrue(object!=null, message);
+  }
 }
