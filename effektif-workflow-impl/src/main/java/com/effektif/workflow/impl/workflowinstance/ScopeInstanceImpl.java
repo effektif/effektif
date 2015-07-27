@@ -279,16 +279,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     if (fields!=null) {
       for (int i=0; i<fields.size() && typedValue!=null; i++) {
         String field = fields.get(i);
-        if (typedValue.value!=null) {
-          if ( (value instanceof Collection)
-               && ! (type instanceof ListTypeImpl) ){
-            typedValue.type = new ListTypeImpl((ListType)type);
-            typedValue.type.setConfiguration(configuration);
-          }
-          typedValue = typedValue.type.dereference(typedValue.value, field);
-        } else {
-          typedValue = null; 
+        if ( (value instanceof Collection)
+             && ! (type instanceof ListTypeImpl) ){
+          typedValue.type = new ListTypeImpl((ListType)type);
+          typedValue.type.setConfiguration(configuration);
         }
+        typedValue = typedValue.type.dereference(typedValue.value, field);
       }
     }
     return typedValue;
