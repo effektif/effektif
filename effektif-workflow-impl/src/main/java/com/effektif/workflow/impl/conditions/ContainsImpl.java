@@ -39,5 +39,9 @@ public class ContainsImpl extends ComparatorImpl {
     String rightString = (String) rightValue;
     return leftString.contains(rightString);
   }
-  
+
+  @Override
+  public String getComparatorSymbol() {
+    return "<contains>";
+  }
 }

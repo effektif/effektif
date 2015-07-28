@@ -65,4 +65,23 @@ public class AndImpl implements ConditionImpl<And> {
       }
     }
   }
+  
+  public String toString() {
+    if (conditions==null || conditions.isEmpty()) {
+      return "true(empty&&)";
+    }
+    StringBuilder string = null;
+    for (ConditionImpl condition: conditions) {
+      if (string==null) {
+        string = new StringBuilder();
+        string.append("(");
+        string.append(condition.toString());
+      } else {
+        string.append(" && ");
+        string.append(condition.toString());
+      }
+    }
+    string.append(")");
+    return string.toString();
+  }
 }

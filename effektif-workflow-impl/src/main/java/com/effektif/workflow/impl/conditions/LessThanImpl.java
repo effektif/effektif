@@ -41,4 +41,8 @@ public class LessThanImpl extends ComparatorImpl {
     }
     return ((Number)leftValue).doubleValue() < ((Number)rightValue).doubleValue();
   }
+  
+  public String getComparatorSymbol() {
+    return "<";
+  }
 }

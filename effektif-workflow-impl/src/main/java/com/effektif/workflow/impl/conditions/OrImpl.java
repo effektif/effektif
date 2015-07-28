@@ -45,6 +45,9 @@ public class OrImpl implements ConditionImpl<Or> {
 
   @Override
   public boolean eval(ScopeInstanceImpl scopeInstance) {
+    if (conditions==null || conditions.isEmpty()) {
+      return true;
+    }
     for (ConditionImpl condition: conditions) {
       if (condition.eval(scopeInstance)) {
         return true;
@@ -64,5 +67,24 @@ public class OrImpl implements ConditionImpl<Or> {
         this.conditions.add(conditionImpl);
       }
     }
+  }
+
+  public String toString() {
+    if (conditions==null || conditions.isEmpty()) {
+      return "true(empty||)";
+    }
+    StringBuilder string = null;
+    for (ConditionImpl condition: conditions) {
+      if (string==null) {
+        string = new StringBuilder();
+        string.append("(");
+        string.append(condition.toString());
+      } else {
+        string.append(" || ");
+        string.append(condition.toString());
+      }
+    }
+    string.append(")");
+    return string.toString();
   }
 }
