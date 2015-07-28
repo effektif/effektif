@@ -39,4 +39,10 @@ public class EqualsImpl extends ComparatorImpl {
     if (leftValue==null && rightValue!=null) return false;
     return leftValue.equals(rightValue);
   }
+  
+  @Override
+  public String getComparatorSymbol() {
+    return "==";
+  }
+
 }

@@ -39,5 +39,10 @@ public class ContainsIgnoreCaseImpl extends ComparatorImpl {
     String rightString = (String) rightValue;
     return leftString.toLowerCase().contains(rightString.toLowerCase());
   }
+
+  @Override
+  public String getComparatorSymbol() {
+    return "<contains-ignore-case>";
+  }
   
 }

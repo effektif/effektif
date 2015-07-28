@@ -41,4 +41,9 @@ public class EqualsIgnoreCaseImpl extends ComparatorImpl {
     String rightString = (String) rightValue;
     return leftString.trim().equalsIgnoreCase(rightString.trim());
   }
+
+  @Override
+  public String getComparatorSymbol() {
+    return "<equals-ignore-case>";
+  }
 }
