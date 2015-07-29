@@ -51,6 +51,19 @@ public class Brewery {
   /** maps object names to brews, which are the final cached objects that are delivered */
   Map<String,Object> brews = new HashMap<>();
   
+  /** creates a deep copy of all the collection fields, convenient 
+   * for testing. */
+  public Brewery createCopy() {
+    Brewery copy = new Brewery();
+    copy.startables = new ArrayList<>(startables);
+    copy.stopables = new ArrayList<>(stopables);
+    copy.aliases = new HashMap<>(aliases);
+    copy.suppliers = new HashMap<>(suppliers);
+    copy.ingredients = new HashMap<>(ingredients);
+    copy.brews = new HashMap<>(brews);
+    return copy;
+  }
+  
   @SuppressWarnings("unchecked")
   public <T> T get(Class<T> type) {
     Exceptions.checkNotNullParameter(type, "type");
