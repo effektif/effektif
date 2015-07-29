@@ -85,6 +85,11 @@ public abstract class DefaultConfiguration implements Configuration {
   public Brewery getBrewery() {
     return brewery;
   }
+  
+  public void setBrewery(Brewery brewery) {
+    this.brewery = brewery;
+  }
+
 
   @Override
   public <T> T get(Class<T> type) {
