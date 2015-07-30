@@ -34,10 +34,10 @@ public interface DataTypeImpl<T extends DataType> {
 
   T serialize();
 
-  /** only returns valid internal values. */
-  Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
-
-  Object convertInternalToJsonValue(Object internalValue);
+//  /** only returns valid internal values. */
+//  Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
+//
+//  Object convertInternalToJsonValue(Object internalValue);
 
   String convertInternalToText(Object value, Hints hints);
 

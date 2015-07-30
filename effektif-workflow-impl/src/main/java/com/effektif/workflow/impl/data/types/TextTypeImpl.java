@@ -33,11 +33,11 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
     super(textType);
   }
   
-  @Override
-  public Object convertJsonToInternalValue(Object valueApi) throws InvalidValueException {
-    if (valueApi==null || (valueApi instanceof String)) {
-      return valueApi;
-    }
-    throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getName());
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object valueApi) throws InvalidValueException {
+//    if (valueApi==null || (valueApi instanceof String)) {
+//      return valueApi;
+//    }
+//    throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getName());
+//  }
 }

@@ -91,20 +91,20 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    if (jsonValue==null) return null;
-    if (Map.class.isAssignableFrom(jsonValue.getClass())) {
-      return valueMapper.read(jsonValue, valueClass);
-    }
-    throw new InvalidValueException("Couldn't convert json: "+jsonValue+" ("+jsonValue.getClass().getName()+")");
-  }
-  
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue;
-  }
+//  @SuppressWarnings("unchecked")
+//  @Override
+//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+//    if (jsonValue==null) return null;
+//    if (Map.class.isAssignableFrom(jsonValue.getClass())) {
+//      return valueMapper.read(jsonValue, valueClass);
+//    }
+//    throw new InvalidValueException("Couldn't convert json: "+jsonValue+" ("+jsonValue.getClass().getName()+")");
+//  }
+//  
+//  @Override
+//  public Object convertInternalToJsonValue(Object internalValue) {
+//    return internalValue;
+//  }
   
   public Class< ? > getValueClass() {
     return valueClass;

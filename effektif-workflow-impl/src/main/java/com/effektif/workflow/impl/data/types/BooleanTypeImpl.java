@@ -29,11 +29,11 @@ public class BooleanTypeImpl extends AbstractDataType<BooleanType> {
     super(BooleanType.INSTANCE);
   }
   
-  @Override
-  public Object convertJsonToInternalValue(Object valueApi) throws InvalidValueException {
-    if (valueApi==null || (valueApi instanceof Boolean)) {
-      return valueApi;
-    }
-    throw new InvalidValueException("Expected boolean, but was "+valueApi.getClass().getSimpleName());
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object valueApi) throws InvalidValueException {
+//    if (valueApi==null || (valueApi instanceof Boolean)) {
+//      return valueApi;
+//    }
+//    throw new InvalidValueException("Expected boolean, but was "+valueApi.getClass().getSimpleName());
+//  }
 }

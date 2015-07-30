@@ -36,33 +36,33 @@ public class NumberTypeImpl extends AbstractDataType<NumberType> {
     super(numberType);
   }
   
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    // the next section keeps the java types predictable based on the values
-    
-    // keep big decimals and big integers as they are
-    if ( (jsonValue instanceof BigDecimal)
-         || (jsonValue instanceof BigInteger) ) {
-      return jsonValue;
-    } else if (jsonValue instanceof Number) {
-      Number number = (Number) jsonValue;
-      
-      // convert all numbers with a decimal fraction to doubles
-      double doubleValue = number.doubleValue();
-      if ( Math.rint(doubleValue)!=doubleValue
-           || Double.NEGATIVE_INFINITY==doubleValue
-           || Double.POSITIVE_INFINITY==doubleValue ) {
-        return doubleValue;
-      }
-      // we use long for all integer values
-      return number.longValue();
-    } else if (jsonValue instanceof String) { 
-      try {
-        return Double.parseDouble((String) jsonValue);
-      } catch (NumberFormatException e) {
-        throw new InvalidValueException("Invalid number string "+jsonValue);
-      }
-    }
-    return null;
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+//    // the next section keeps the java types predictable based on the values
+//    
+//    // keep big decimals and big integers as they are
+//    if ( (jsonValue instanceof BigDecimal)
+//         || (jsonValue instanceof BigInteger) ) {
+//      return jsonValue;
+//    } else if (jsonValue instanceof Number) {
+//      Number number = (Number) jsonValue;
+//      
+//      // convert all numbers with a decimal fraction to doubles
+//      double doubleValue = number.doubleValue();
+//      if ( Math.rint(doubleValue)!=doubleValue
+//           || Double.NEGATIVE_INFINITY==doubleValue
+//           || Double.POSITIVE_INFINITY==doubleValue ) {
+//        return doubleValue;
+//      }
+//      // we use long for all integer values
+//      return number.longValue();
+//    } else if (jsonValue instanceof String) { 
+//      try {
+//        return Double.parseDouble((String) jsonValue);
+//      } catch (NumberFormatException e) {
+//        throw new InvalidValueException("Invalid number string "+jsonValue);
+//      }
+//    }
+//    return null;
+//  }
 }

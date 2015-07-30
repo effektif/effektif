@@ -84,6 +84,11 @@ public class MemoryJobStore implements JobStore {
       }
     }
   }
+  
+  @Override
+  public void deleteAllJobs() {
+    jobs = new LinkedHashMap<>();
+  }
 
   @Override
   public void deleteJobById(String jobId) {
@@ -107,5 +112,9 @@ public class MemoryJobStore implements JobStore {
         archivedJobs.remove(job);
       }
     }
+  }
+  @Override
+  public void deleteAllArchivedJobs() {
+    archivedJobs = new ArrayList<>();
   }
 }

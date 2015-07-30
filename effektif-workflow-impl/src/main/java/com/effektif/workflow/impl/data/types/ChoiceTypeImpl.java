@@ -41,11 +41,11 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
     return false;
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    validateInternalValue(jsonValue);
-    return jsonValue; 
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+//    validateInternalValue(jsonValue);
+//    return jsonValue; 
+//  }
 
   @Override
   public void validateInternalValue(Object internalValue) throws InvalidValueException {

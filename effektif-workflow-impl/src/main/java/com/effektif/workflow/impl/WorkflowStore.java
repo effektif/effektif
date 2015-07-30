@@ -44,4 +44,6 @@ public interface WorkflowStore {
 
   /** loads the executable workflow */
   ExecutableWorkflow loadWorkflowById(WorkflowId workflowId);
+
+  void deleteAllWorkflows();
 }

@@ -40,26 +40,26 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
     super(DateType.INSTANCE);
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    if (jsonValue==null) {
-      return null;
-    }
-    try {
-      String timeString = (String) jsonValue;
-      return DateTypeImpl.formatter.parseLocalDateTime(timeString);
-    } catch (ClassCastException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    if (internalValue==null) {
-      return null;
-    }
-    return DateTypeImpl.printer.print((LocalDateTime)internalValue);
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+//    if (jsonValue==null) {
+//      return null;
+//    }
+//    try {
+//      String timeString = (String) jsonValue;
+//      return DateTypeImpl.formatter.parseLocalDateTime(timeString);
+//    } catch (ClassCastException e) {
+//      throw new RuntimeException(e);
+//    }
+//  }
+//
+//  @Override
+//  public Object convertInternalToJsonValue(Object internalValue) {
+//    if (internalValue==null) {
+//      return null;
+//    }
+//    return DateTypeImpl.printer.print((LocalDateTime)internalValue);
+//  }
   
   @Override
   public String convertInternalToText(Object value, Hints hints) {

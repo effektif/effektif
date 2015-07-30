@@ -43,6 +43,10 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
 
   @Override
   public void brew(Brewery brewery) {
+    initializeWorkflows();
+  }
+
+  protected void initializeWorkflows() {
     this.workflows = new ConcurrentHashMap<>();
   }
   
@@ -112,6 +116,12 @@ public class MemoryWorkflowStore implements WorkflowStore, Brewable {
       workflows.remove(workflow.getId());
     }
   }
+  
+  @Override
+  public void deleteAllWorkflows() {
+    initializeWorkflows();
+  }
+
 
   @Override
   public ExecutableWorkflow loadWorkflowById(WorkflowId workflowId) {

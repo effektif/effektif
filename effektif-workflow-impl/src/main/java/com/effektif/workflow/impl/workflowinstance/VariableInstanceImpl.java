@@ -84,4 +84,13 @@ public class VariableInstanceImpl extends BaseInstanceImpl {
   public void setId(String id) {
     this.id = id;
   }
+  public VariableImpl getVariable() {
+    return variable;
+  }
+  public DataTypeImpl getType() {
+    return type;
+  }
+  public VariableInstanceUpdates getUpdates() {
+    return updates;
+  }
 }

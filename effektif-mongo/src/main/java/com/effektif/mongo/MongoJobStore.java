@@ -241,6 +241,11 @@ public class MongoJobStore implements JobStore, Brewable {
     jobsCollection.remove("delete-jobs", createDbQuery(query));
   }
 
+  @Override
+  public void deleteAllJobs() {
+    jobsCollection.remove("delete-all-jobs", new BasicDBObject(), false);
+  }
+
   public List<Job> findJobs(JobQuery jobQuery) {
     return findJobs(jobsCollection, jobQuery);
   }
@@ -289,5 +294,10 @@ public class MongoJobStore implements JobStore, Brewable {
   @Override
   public void deleteArchivedJobs(JobQuery query) {
     archivedJobsCollection.remove("delete-archived-jobs", createDbQuery(query));
+  }
+
+  @Override
+  public void deleteAllArchivedJobs() {
+    archivedJobsCollection.remove("delete-all-archived-jobs", new BasicDBObject(), false);
   }
 }

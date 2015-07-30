@@ -30,15 +30,15 @@ public class ObjectIdTypeImpl extends AbstractDataType<ObjectIdType> {
     super(ObjectIdType.INSTANCE);
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return new ObjectId((String)jsonValue);
-  }
-
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue.toString();
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+//    return new ObjectId((String)jsonValue);
+//  }
+//
+//  @Override
+//  public Object convertInternalToJsonValue(Object internalValue) {
+//    return internalValue.toString();
+//  }
 
   @Override
   public String convertInternalToText(Object value, Hints hints) {

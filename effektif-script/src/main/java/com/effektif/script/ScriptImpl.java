@@ -17,7 +17,6 @@ package com.effektif.script;
 
 import java.util.Map;
 
-import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -30,7 +29,6 @@ public class ScriptImpl {
   public Object compiledScript;
   /** maps script variable names to workflow variable ids */ 
   public Map<String, String> mappings;
-  public DataTypeImpl expectedResultType;
   public boolean readOnly;
   
   public boolean evaluate(ScopeInstanceImpl scopeInstance) {

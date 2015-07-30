@@ -45,4 +45,6 @@ public interface WorkflowInstanceStore {
 
   void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
+  void deleteAllWorkflowInstances();
+
 }

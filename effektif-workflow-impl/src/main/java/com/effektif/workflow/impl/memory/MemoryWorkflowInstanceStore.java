@@ -55,9 +55,13 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
 
   @Override
   public void brew(Brewery brewery) {
+    initializeWorkflowInstances();
+    this.workflowEngineId = brewery.get(WorkflowEngineImpl.class).id;
+  }
+
+  protected void initializeWorkflowInstances() {
     this.workflowInstances = new ConcurrentHashMap<>();
     this.lockedWorkflowInstanceIds = Collections.newSetFromMap(new ConcurrentHashMap<WorkflowInstanceId, Boolean>());
-    this.workflowEngineId = brewery.get(WorkflowEngineImpl.class).id;
   }
   
   @Override
@@ -171,5 +175,10 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
       }
     }
     return null;
+  }
+
+  @Override
+  public void deleteAllWorkflowInstances() {
+    initializeWorkflowInstances();
   }
 }

@@ -85,9 +85,6 @@ public class RhinoScriptService implements ScriptService, Brewable, Plugin {
           org.mozilla.javascript.Script rhinoCompiledScript = (org.mozilla.javascript.Script) script.compiledScript;
           Object result = rhinoCompiledScript.exec(context, rhinoVariableScope);
           
-          if (script.expectedResultType!=null && result!=null) {
-            result = script.expectedResultType.convertJsonToInternalValue(result);
-          }
           scriptResult.setResult(result);
           scriptResult.setUpdates(rhinoVariableScope.getUpdatedVariableValues());
           

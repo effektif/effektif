@@ -63,23 +63,23 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     return false;
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    if (jsonValue==null) {
-      return null;
-    }
-    if (!(jsonValue instanceof List)) {
-      throw new InvalidValueException("Json value must be a list, but was "+jsonValue+" ("+jsonValue.getClass().getName()+")");
-    }
-    @SuppressWarnings("unchecked")
-    java.util.List<Object> list = (java.util.List<Object>) jsonValue;
-    for (int i=0; i<list.size(); i++) {
-      Object elementJsonValue = list.get(i);
-      Object elementInternalValue = elementType.convertJsonToInternalValue(elementJsonValue);
-      list.set(i, elementInternalValue);
-    }
-    return list;
-  }
+//  @Override
+//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
+//    if (jsonValue==null) {
+//      return null;
+//    }
+//    if (!(jsonValue instanceof List)) {
+//      throw new InvalidValueException("Json value must be a list, but was "+jsonValue+" ("+jsonValue.getClass().getName()+")");
+//    }
+//    @SuppressWarnings("unchecked")
+//    java.util.List<Object> list = (java.util.List<Object>) jsonValue;
+//    for (int i=0; i<list.size(); i++) {
+//      Object elementJsonValue = list.get(i);
+//      Object elementInternalValue = elementType.convertJsonToInternalValue(elementJsonValue);
+//      list.set(i, elementInternalValue);
+//    }
+//    return list;
+//  }
   
   @Override
   public TypedValueImpl dereference(Object value, String field) {
@@ -95,18 +95,18 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     return new TypedValueImpl(this, fieldValues);
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    if (internalValue==null) {
-      return null;
-    }
-    java.util.List<Object> internalValues = (java.util.List<Object>) internalValue;
-    java.util.List<Object> jsonValues = new ArrayList<>(internalValues.size());
-    for (Object elementInternalValue: internalValues) {
-      Object elementJsonValue = elementType.convertInternalToJsonValue(elementInternalValue);
-      jsonValues.add(elementJsonValue);
-    }
-    return jsonValues;
-  }
+//  @SuppressWarnings("unchecked")
+//  @Override
+//  public Object convertInternalToJsonValue(Object internalValue) {
+//    if (internalValue==null) {
+//      return null;
+//    }
+//    java.util.List<Object> internalValues = (java.util.List<Object>) internalValue;
+//    java.util.List<Object> jsonValues = new ArrayList<>(internalValues.size());
+//    for (Object elementInternalValue: internalValues) {
+//      Object elementJsonValue = elementType.convertInternalToJsonValue(elementInternalValue);
+//      jsonValues.add(elementJsonValue);
+//    }
+//    return jsonValues;
+//  }
 }
