@@ -15,45 +15,23 @@
  */
 package com.effektif.workflow.impl.exceptions;
 
-
-
-
-/**
- * @author Tom Baeyens
- */
-public class NotFoundException extends HttpMappedException {
+public class NoContentException extends HttpMappedException {
 
   private static final long serialVersionUID = 1L;
 
-  public NotFoundException() {
-    super("Not found");
-  }
-  
-  public NotFoundException(String message) {
+  public NoContentException(String message) {
     super(message);
-  }
-
-  public NotFoundException(String message, Throwable t) {
-    super(message, t);
   }
 
   @Override
   public int getStatusCode() {
-    return HttpStatusCode.NOT_FOUND;
-  }
-
-  public static void checkTrue(boolean condition) {
-   checkTrue(condition, null);
+    return HttpStatusCode.NO_CONTENT;
   }
 
   public static void checkTrue(boolean condition, String message) {
     if (!condition) {
-      throw new NotFoundException(message);
+      throw new NoContentException(message);
     }
-  }
-
-  public static void checkNotNull(Object object) {
-    checkTrue(object!=null, "Not found");
   }
 
   public static void checkNotNull(Object object, String message) {
