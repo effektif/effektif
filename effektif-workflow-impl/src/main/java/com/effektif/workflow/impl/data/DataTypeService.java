@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,9 +38,11 @@ import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -138,6 +141,16 @@ public class DataTypeService implements Startable {
     javaBeanTypeImpl.setConfiguration(configuration);
     javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
     registerDataType(javaBeanTypeImpl);
+  }
+
+  public DataTypeImpl getDataTypeByValue(Type type) {
+    Class< ? > rawClass = Reflection.getRawClass(type);
+    if (rawClass==List.class) {
+      Type elementType = Reflection.getTypeArg(type, 0);
+      DataTypeImpl elementDataType = getDataTypeByValue(elementType);
+      return new ListTypeImpl(elementDataType);
+    }
+    return getDataTypeByValue(rawClass);
   }
 
   public DataTypeImpl getDataTypeByValue(Class<?> valueClass) {

@@ -32,11 +32,4 @@ public class EmailAddressTypeImpl extends AbstractDataType<EmailAddressType> {
     super(emailAddressType);
   }
   
-//  @Override
-//  public Object convertJsonToInternalValue(Object valueApi) throws InvalidValueException {
-//    if (valueApi==null || (valueApi instanceof String)) {
-//      return valueApi;
-//    }
-//    throw new InvalidValueException("Expected email address (string), but was "+valueApi.getClass().getName());
-//  }
 }
