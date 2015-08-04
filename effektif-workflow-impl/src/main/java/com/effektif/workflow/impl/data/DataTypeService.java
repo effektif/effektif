@@ -60,6 +60,9 @@ public class DataTypeService implements Startable {
   protected Map<Class<? extends DataType>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
   protected Map<Type, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
+  
+  public DataTypeService() {
+  }
 
   @Override
   public void start(Brewery brewery) {
@@ -103,24 +106,27 @@ public class DataTypeService implements Startable {
   
   public void registerDataType(DataTypeImpl dataTypeImpl) {
     Class apiClass = dataTypeImpl.getApiClass();
-    if (apiClass!=null) {
-      if (dataTypeImpl.isStatic()) {
-        singletons.put(apiClass, dataTypeImpl);
-      } else {
-        Constructor< ? > constructor = findDataTypeConstructor(dataTypeImpl.getClass());
-        dataTypeConstructors.put(apiClass, constructor);
+    if (apiClass==null 
+        || singletons.containsKey(apiClass)
+        || dataTypeConstructors.containsKey(apiClass)) {
+      return;
+    }
+    if (dataTypeImpl.isStatic()) {
+      singletons.put(apiClass, dataTypeImpl);
+    } else {
+      Constructor< ? > constructor = findDataTypeConstructor(dataTypeImpl.getClass());
+      dataTypeConstructors.put(apiClass, constructor);
+    }
+    try {
+      DataType dataType = (DataType) apiClass.newInstance();
+      Type valueType = dataType.getValueType();
+      if (valueType!=null) {
+        // (*) If multiple datatypes have the same valueType (like string, date etc),
+        // the last one wins
+        dataTypesByValueClass.put(valueType, dataTypeImpl);
       }
-      try {
-        DataType dataType = (DataType) apiClass.newInstance();
-        Type valueType = dataType.getValueType();
-        if (valueType!=null) {
-          // (*) If multiple datatypes have the same valueType (like string, date etc),
-          // the last one wins
-          dataTypesByValueClass.put(valueType, dataTypeImpl);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
   
