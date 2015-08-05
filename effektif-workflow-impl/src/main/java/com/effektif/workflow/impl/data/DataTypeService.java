@@ -62,24 +62,12 @@ public class DataTypeService implements Startable {
   protected Map<Type, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
   
   public DataTypeService() {
-  }
-
-  @Override
-  public void start(Brewery brewery) {
-    this.configuration = brewery.get(Configuration.class);
-    initializeDataTypes();
-  }
-
-  protected void initializeDataTypes() {
     ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
     for (DataTypeImpl dataType: dataTypeLoader) {
       // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
       registerDataType(dataType);
     }
-    for (DataTypeImpl dataType: dataTypeLoader) {
-      dataType.setConfiguration(configuration);
-    }
-
+    
     // For undeclared variables a new variable instance 
     // will be created on the fly when a value is set.  
     // dataType.getValueClass(); is used.  Since more 
@@ -103,12 +91,18 @@ public class DataTypeService implements Startable {
     objectTypeImpl.setConfiguration(configuration);
     registerDataType(objectTypeImpl);
   }
-  
+
+  @Override
+  public void start(Brewery brewery) {
+    this.configuration = brewery.get(Configuration.class);
+    for (DataTypeImpl dataType: singletons.values()) {
+      dataType.setConfiguration(configuration);
+    }
+  }
+
   public void registerDataType(DataTypeImpl dataTypeImpl) {
     Class apiClass = dataTypeImpl.getApiClass();
-    if (apiClass==null 
-        || singletons.containsKey(apiClass)
-        || dataTypeConstructors.containsKey(apiClass)) {
+    if (apiClass==null) {
       return;
     }
     if (dataTypeImpl.isStatic()) {
