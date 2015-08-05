@@ -32,5 +32,9 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
   public TextTypeImpl(TextType textType) {
     super(textType);
   }
-  
+
+  @Override
+  public boolean isStatic() {
+    return false;
+  }
 }

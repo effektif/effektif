@@ -26,11 +26,20 @@ import com.effektif.workflow.api.json.TypeName;
 @TypeName("text")
 public class TextType extends DataType {
 
-  public static final TextType INSTANCE = new TextType(); 
+  public static final TextType INSTANCE = new TextType();
+  private Boolean multiLine;
 
   @Override
   public Type getValueType() {
     return String.class;
   }
 
+  public boolean isMultiLine() {
+    return Boolean.TRUE.equals(multiLine);
+  }
+
+  public TextType multiLine() {
+    multiLine = Boolean.TRUE;
+    return this;
+  }
 }

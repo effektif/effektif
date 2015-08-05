@@ -27,11 +27,43 @@ import com.effektif.workflow.api.json.TypeName;
 @TypeName("date")
 public class DateType extends DataType {
 
+  private enum Kind {
+    datetime, date, time;
+  }
+
   public static final DateType INSTANCE = new DateType();
-  
+
+  private Kind kind = Kind.datetime;
+
   @Override
   public Type getValueType() {
     return LocalDateTime.class;
   }
 
+  public String getKind() {
+    return kind.toString();
+  }
+
+  public boolean isDate() {
+    return Kind.date.equals(kind);
+  }
+
+  public boolean isDateTime() {
+    return Kind.datetime.equals(kind);
+  }
+
+  public boolean isTime() {
+    return Kind.time.equals(kind);
+  }
+
+
+  public DateType date() {
+    kind = Kind.date;
+    return this;
+  }
+
+  public DateType time() {
+    kind = Kind.time;
+    return this;
+  }
 }
