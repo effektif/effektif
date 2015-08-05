@@ -83,4 +83,9 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
   public T getDataType() {
     return type;
   }
+
+  @Override
+  public TypeDescriptor typeDescriptor() {
+    return isStatic() ? new TypeDescriptor().primitive() : new TypeDescriptor();
+  }
 }

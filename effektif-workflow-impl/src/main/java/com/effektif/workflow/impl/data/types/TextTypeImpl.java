@@ -15,10 +15,11 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
-
+import com.effektif.workflow.impl.data.TypeDescriptor;
 
 /**
  * @author Tom Baeyens
@@ -36,5 +37,10 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
   @Override
   public boolean isStatic() {
     return false;
+  }
+
+  @Override
+  public TypeDescriptor typeDescriptor() {
+    return new TypeDescriptor().field("multiLine", new BooleanType());
   }
 }

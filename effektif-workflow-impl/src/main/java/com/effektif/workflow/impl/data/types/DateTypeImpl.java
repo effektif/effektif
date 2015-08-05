@@ -23,7 +23,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.types.DateType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
+import com.effektif.workflow.impl.data.TypeDescriptor;
 import com.effektif.workflow.impl.template.Hints;
 
 /**
@@ -76,5 +78,10 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   @Override
   public boolean isStatic() {
     return false;
+  }
+
+  @Override
+  public TypeDescriptor typeDescriptor() {
+    return new TypeDescriptor().field("kind", new TextType());
   }
 }
