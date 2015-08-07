@@ -41,6 +41,6 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
 
   @Override
   public TypeDescriptor typeDescriptor() {
-    return new TypeDescriptor().field("multiLine", new BooleanType());
+    return new TypeDescriptor().primitive().configuration("multiLine", new BooleanType());
   }
 }

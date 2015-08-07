@@ -19,6 +19,8 @@ import java.util.List;
 
 import com.effektif.workflow.api.types.ChoiceOption;
 import com.effektif.workflow.api.types.ChoiceType;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.data.TypeDescriptor;
@@ -65,6 +67,6 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
 
   @Override
   public TypeDescriptor typeDescriptor() {
-    return new TypeDescriptor().primitive();
+    return new TypeDescriptor().primitive().configuration("options", new ListType(new TextType()));
   }
 }

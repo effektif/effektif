@@ -30,8 +30,7 @@ public class LinkTypeImpl extends TextTypeImpl {
     super(LinkType.INSTANCE);
   }
 
-  @Override
-  public boolean isStatic() {
-    return true;
+  public LinkTypeImpl(LinkType type) {
+    super(type);
   }
 }

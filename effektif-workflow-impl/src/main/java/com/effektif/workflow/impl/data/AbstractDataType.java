@@ -84,6 +84,9 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     return type;
   }
 
+  /**
+   * Static types are always primitive types, but some primitive types add configuration and must override this method.
+   */
   @Override
   public TypeDescriptor typeDescriptor() {
     return isStatic() ? new TypeDescriptor().primitive() : new TypeDescriptor();

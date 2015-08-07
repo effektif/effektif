@@ -29,7 +29,11 @@ public interface DataTypeImpl<T extends DataType> {
   T getDataType();
   Class<? extends DataType> getApiClass();
 
-  /** Indicates that this type doesn’t have to be serialised. */
+  /**
+   * Indicates that this type doesn’t have to be serialised, because it’s okay to always use a single instance of the
+   * type. A static type is always a primitive (single-valued) type, but a primitive type is not static if it has
+   * additional {@link TypeDescriptor#configuration}.
+   */
   boolean isStatic();
 
   T serialize();

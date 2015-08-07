@@ -22,6 +22,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
@@ -82,6 +83,7 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
 
   @Override
   public TypeDescriptor typeDescriptor() {
-    return new TypeDescriptor().field("kind", new TextType());
+    ChoiceType kindChoice = new ChoiceType().option("date").option("datetime").option("time");
+    return new TypeDescriptor().primitive().configuration("kind", kindChoice);
   }
 }
