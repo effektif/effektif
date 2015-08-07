@@ -44,6 +44,6 @@ public class MoneyTypeImpl extends JavaBeanTypeImpl<MoneyType> {
     for (String currency : CURRENCIES) {
       choice.option(currency);
     }
-    return new TypeDescriptor().mutable().field("amount", new NumberType()).field("currency", choice);
+    return new TypeDescriptor(typeName()).mutable().field("amount", new NumberType()).field("currency", choice);
   }
 }

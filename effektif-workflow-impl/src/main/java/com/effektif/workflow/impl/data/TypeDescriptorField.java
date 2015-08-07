@@ -7,11 +7,11 @@ import com.effektif.workflow.api.types.DataType;
  */
 public class TypeDescriptorField {
 
-    private String name;
+    private String key;
     private DataType type;
 
-    public TypeDescriptorField(String name, DataType type) {
-      this.name = name;
+    public TypeDescriptorField(String key, DataType type) {
+      this.key = key;
       this.type = type;
     }
 }

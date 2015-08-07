@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.XmlElement;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.template.Hints;
@@ -84,11 +85,16 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     return type;
   }
 
+  protected String typeName() {
+    TypeName typeName = apiClass.getAnnotation(TypeName.class);
+    return typeName == null ? null : typeName.value();
+  }
+
   /**
    * Static types are always primitive types, but some primitive types add configuration and must override this method.
    */
   @Override
   public TypeDescriptor typeDescriptor() {
-    return isStatic() ? new TypeDescriptor().primitive() : new TypeDescriptor();
+    return isStatic() ? new TypeDescriptor(typeName()).primitive() : new TypeDescriptor(typeName());
   }
 }

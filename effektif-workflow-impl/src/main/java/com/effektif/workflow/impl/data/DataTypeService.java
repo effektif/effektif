@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.data;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -221,7 +222,7 @@ public class DataTypeService implements Startable {
   /**
    * Returns a map of data type class type descriptors, used as reference data for external services.
    */
-  public Map<String,TypeDescriptor> getTypeDescriptors() {
+  public List<TypeDescriptor> getTypeDescriptors() {
     // Collect all data types.
     Map<Class<? extends DataType>, DataTypeImpl> dataTypes = new HashMap<>();
     dataTypes.putAll(singletons);
@@ -234,12 +235,9 @@ public class DataTypeService implements Startable {
     }
 
     // Change keys to serialisation type names, change values to type descriptors.
-    Map<String,TypeDescriptor> typeDescriptors = new HashMap<>();
+    List<TypeDescriptor> typeDescriptors = new ArrayList<>();
     for (Class<? extends DataType> dataType : dataTypes.keySet()) {
-      TypeName typeName = dataType.getAnnotation(TypeName.class);
-      if (typeName != null) {
-        typeDescriptors.put(typeName.value(), dataTypes.get(dataType).typeDescriptor());
-      }
+      typeDescriptors.add(dataTypes.get(dataType).typeDescriptor());
     }
     return typeDescriptors;
   }

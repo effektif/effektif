@@ -10,11 +10,20 @@ import com.effektif.workflow.api.types.DataType;
  */
 public class TypeDescriptor {
 
+  private String id;
+
+  /** Indicates that (complex) values of this type may have their fields modified within a script. */
   private Boolean mutable;
+
+  /** Indicates that values of this time are a single value. */
   private Boolean primitive;
 
   private List<TypeDescriptorField> configuration;
   private List<TypeDescriptorField> fields;
+
+  public TypeDescriptor(String id) {
+    this.id = id;
+  }
 
   public TypeDescriptor mutable() {
     mutable = Boolean.TRUE;

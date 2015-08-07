@@ -84,6 +84,6 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   @Override
   public TypeDescriptor typeDescriptor() {
     ChoiceType kindChoice = new ChoiceType().option("date").option("datetime").option("time");
-    return new TypeDescriptor().primitive().configuration("kind", kindChoice);
+    return new TypeDescriptor(typeName()).primitive().configuration("kind", kindChoice);
   }
 }

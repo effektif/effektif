@@ -67,6 +67,6 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
 
   @Override
   public TypeDescriptor typeDescriptor() {
-    return new TypeDescriptor().primitive().configuration("options", new ListType(new TextType()));
+    return new TypeDescriptor(typeName()).primitive().configuration("options", new ListType(new TextType()));
   }
 }
