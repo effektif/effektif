@@ -75,57 +75,6 @@ public class WorkflowStreamTest {
     return "wid";
   }
   
-  @Test 
-  public void testWorkflow() {
-    LocalDateTime now = new LocalDateTime();
-
-    Map<String,Object> p = new HashMap<>();
-    p.put("str", "s");
-    p.put("lis", Lists.of("a", 1, true));
-    p.put("num", Long.MAX_VALUE);
-    p.put("dou", Double.MAX_VALUE);
-    p.put("boo", true);
-    
-    String workflowIdInternal = getWorkflowIdInternal();
-    
-    ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .id(new WorkflowId(workflowIdInternal))
-      .name("Software release")
-      .description("Regular software production release process.")
-      .createTime(now)
-      .sourceWorkflowId("source")
-      .variable("v", TextType.INSTANCE)
-      .activity("start", new StartEvent())
-      .activity("end", new EndEvent())
-      .transition(new Transition().fromId("start").toId("end"))
-      .property("str", "s")
-      .property("lis", Lists.of("a", 1, true))
-      .property("num", Long.MAX_VALUE)
-      .property("dou", Double.MAX_VALUE)
-      .property("boo", true);
-    
-    workflow = serialize(workflow);
-    
-    assertNotNull(workflow);
-    assertEquals(workflowIdInternal, workflow.getId().getInternal());
-    assertEquals("Software release", workflow.getName());
-    assertEquals("Regular software production release process.", workflow.getDescription());
-    assertEquals("source", workflow.getSourceWorkflowId());
-    assertEquals("start", ((StartEvent)workflow.getActivities().get(0)).getId());
-    assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
-    assertEquals("start", workflow.getTransitions().get(0).getFromId());
-    assertEquals("end", workflow.getTransitions().get(0).getToId());
-
-    // Not tested, pending implementation.
-    //assertEquals(p.get("str"), workflow.getProperty("str"));
-    //assertEquals(p.get("lis"), workflow.getProperty("lis"));
-    //assertEquals(p.get("num"), workflow.getProperty("num"));
-    //assertEquals(p.get("dou"), workflow.getProperty("dou"));
-    //assertEquals(p.get("boo"), workflow.getProperty("boo"));
-
-    assertEquals(now, workflow.getCreateTime());
-  }
-
   @Test
   public void testActivity() {
     Activity activity = new NoneTask()
@@ -155,7 +104,7 @@ public class WorkflowStreamTest {
       .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
     workflow = serialize(workflow);
-    
+
     assertNotNull(workflow);
     Call call = (Call) workflow.getActivities().get(0);
     assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
@@ -164,7 +113,7 @@ public class WorkflowStreamTest {
     assertEquals("string", call.getInputBindings().get("s").getValue());
     assertEquals("version", call.getInputBindings().get("v").getExpression());
   }
-  
+
   @Test
   public void testEndEvent() {
     EndEvent activity = new EndEvent();
@@ -188,6 +137,61 @@ public class WorkflowStreamTest {
     assertEquals(ExclusiveGateway.class, activity.getClass());
     assertEquals("test-ok", activity.getId());
     assertEquals("proceed", activity.getDefaultTransitionId());
+  }
+
+  @Test
+  public void testExecutableWorkflow() {
+    LocalDateTime now = new LocalDateTime();
+
+    Map<String,Object> p = new HashMap<>();
+    p.put("str", "s");
+    p.put("lis", Lists.of("a", 1, true));
+    p.put("num", Long.MAX_VALUE);
+    p.put("dou", Double.MAX_VALUE);
+    p.put("boo", true);
+
+    String workflowIdInternal = getWorkflowIdInternal();
+
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .id(new WorkflowId(workflowIdInternal))
+      .name("Software release")
+      .description("Regular software production release process.")
+      .createTime(now)
+      .creatorId("iamdevloper")
+      .sourceWorkflowId("source")
+      .variable("v", TextType.INSTANCE)
+      .activity("start", new StartEvent())
+      .activity("end", new EndEvent())
+      .transition(new Transition().fromId("start").toId("end"))
+      .property("str", "s")
+      .property("lis", Lists.of("a", 1, true))
+      .property("num", Long.MAX_VALUE)
+      .property("dou", Double.MAX_VALUE)
+      .property("boo", true);
+    workflow.setEnableCases(true);
+
+    workflow = serialize(workflow);
+
+    assertNotNull(workflow);
+    assertEquals(workflowIdInternal, workflow.getId().getInternal());
+    assertEquals("Software release", workflow.getName());
+    assertEquals("Regular software production release process.", workflow.getDescription());
+    assertEquals(now, workflow.getCreateTime());
+    assertEquals("iamdevloper", workflow.getCreatorId());
+    assertEquals("source", workflow.getSourceWorkflowId());
+    assertEquals("start", ((StartEvent)workflow.getActivities().get(0)).getId());
+    assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
+    assertEquals("start", workflow.getTransitions().get(0).getFromId());
+    assertEquals("end", workflow.getTransitions().get(0).getToId());
+
+    // Not tested, pending implementation.
+    //    assertEquals(p.get("str"), workflow.getProperty("str"));
+    //    assertEquals(p.get("lis"), workflow.getProperty("lis"));
+    //    assertEquals(p.get("num"), workflow.getProperty("num"));
+    //    assertEquals(p.get("dou"), workflow.getProperty("dou"));
+    //    assertEquals(p.get("boo"), workflow.getProperty("boo"));
+
+    assertTrue(workflow.isEnableCases());
   }
 
   @Test
