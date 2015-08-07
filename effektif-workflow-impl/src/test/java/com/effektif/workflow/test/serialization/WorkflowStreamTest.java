@@ -33,6 +33,15 @@ import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.types.BooleanType;
+import com.effektif.workflow.api.types.ChoiceType;
+import com.effektif.workflow.api.types.DateType;
+import com.effektif.workflow.api.types.EmailAddressType;
+import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.api.types.LinkType;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.MoneyType;
+import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -96,12 +105,12 @@ public class WorkflowStreamTest {
     LocalDateTime now = new LocalDateTime();
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity(new Call()
-      .id("runTests")
-      .inputValue("d", now)
-      .inputValue("s", "string")
-      .inputExpression("v", "version")
-      .subWorkflowSource("Run tests")
-      .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
+        .id("runTests")
+        .inputValue("d", now)
+        .inputValue("s", "string")
+        .inputExpression("v", "version")
+        .subWorkflowSource("Run tests")
+        .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
     workflow = serialize(workflow);
 
@@ -291,5 +300,50 @@ public class WorkflowStreamTest {
     assertEquals("listValue1", activity.getInputs().get("in3").getBindings().get(0).getValue());
     assertEquals("listExpression2", activity.getInputs().get("in3").getBindings().get(1).getExpression());
     assertEquals("var1", activity.getOutputs().get("out1").getVariableId());
+  }
+
+  @Test
+  public void testVariables() {
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .variable("variable01", BooleanType.INSTANCE)
+      .variable("variable02", new ChoiceType().option("Red pill").option("Blue pill"))
+      .variable("variable03", new DateType().date())
+      .variable("variable04", EmailAddressType.INSTANCE)
+      .variable("variable05", new JavaBeanType(Integer.class))
+      .variable("variable06", LinkType.INSTANCE)
+      .variable("variable07", new ListType(NumberType.INSTANCE))
+      .variable("variable08", MoneyType.INSTANCE)
+      .variable("variable09", NumberType.INSTANCE)
+      .variable("variable10", new TextType().multiLine());
+
+    workflow = serialize(workflow);
+
+    assertNotNull(workflow.getVariables());
+    assertEquals(10, workflow.getVariables().size());
+
+    assertEquals(BooleanType.class, workflow.getVariables().get(0).getType().getClass());
+
+    assertEquals(ChoiceType.class, workflow.getVariables().get(1).getType().getClass());
+    assertEquals("Red pill", ((ChoiceType) workflow.getVariables().get(1).getType()).getOptions().get(0).getId());
+
+    assertEquals(DateType.class, workflow.getVariables().get(2).getType().getClass());
+    assertEquals("date", ((DateType) workflow.getVariables().get(2).getType()).getKind());
+
+    assertEquals(EmailAddressType.class, workflow.getVariables().get(3).getType().getClass());
+
+    assertEquals(JavaBeanType.class, workflow.getVariables().get(4).getType().getClass());
+    assertEquals(Integer.class, ((JavaBeanType) workflow.getVariables().get(4).getType()).getJavaClass());
+
+    assertEquals(LinkType.class, workflow.getVariables().get(5).getType().getClass());
+
+    assertEquals(ListType.class, workflow.getVariables().get(6).getType().getClass());
+    assertEquals(NumberType.class, ((ListType) workflow.getVariables().get(6).getType()).getElementType().getClass());
+
+    assertEquals(MoneyType.class, workflow.getVariables().get(7).getType().getClass());
+    assertEquals(NumberType.class, workflow.getVariables().get(8).getType().getClass());
+
+    assertEquals(TextType.class, workflow.getVariables().get(9).getType().getClass());
+    assertTrue(((TextType) workflow.getVariables().get(9).getType()).isMultiLine());
+
   }
 }

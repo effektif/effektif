@@ -19,6 +19,9 @@ import java.lang.reflect.Type;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 
 /**
@@ -65,5 +68,17 @@ public class DateType extends DataType {
   public DateType time() {
     kind = Kind.time;
     return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    String kindName = r.readStringAttributeEffektif("kind");
+    this.kind = kindName == null ? Kind.datetime : Kind.valueOf(kindName);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("kind", kind);
   }
 }
