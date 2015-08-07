@@ -31,9 +31,19 @@ public class DateType extends DataType {
     datetime, date, time;
   }
 
-  public static final DateType INSTANCE = new DateType();
+  public static final DateType DATETIME = new DateType();
+  public static final DateType DATE = new DateType(Kind.date);
+  public static final DateType TIME = new DateType(Kind.time);
 
-  private Kind kind = Kind.datetime;
+  private Kind kind;
+
+  public DateType() {
+    this(Kind.datetime);
+  }
+
+  public DateType(Kind kind) {
+    this.kind = kind;
+  }
 
   @Override
   public Type getValueType() {
