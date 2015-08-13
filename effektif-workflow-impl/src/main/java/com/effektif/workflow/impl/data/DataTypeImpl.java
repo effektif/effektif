@@ -54,9 +54,4 @@ public interface DataTypeImpl<T extends DataType> {
   DataTypeImpl parseDereference(String field, WorkflowParser parser);
   
   TypedValueImpl dereference(Object value, String field);
-
-  /**
-   * Returns the type descriptor that describes this data type for serialisation.
-   */
-  TypeDescriptor typeDescriptor();
 }

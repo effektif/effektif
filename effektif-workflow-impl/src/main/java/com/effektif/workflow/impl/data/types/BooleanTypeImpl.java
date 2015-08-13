@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 
 
 /**

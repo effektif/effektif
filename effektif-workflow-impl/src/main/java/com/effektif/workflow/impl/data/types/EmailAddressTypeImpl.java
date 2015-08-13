@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 
 /**
  * @author Peter Hilton

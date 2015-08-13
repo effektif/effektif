@@ -24,8 +24,6 @@ import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.data.InvalidValueException;
-import com.effektif.workflow.impl.data.TypeDescriptor;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.template.Hints;
 

@@ -22,11 +22,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.DateType;
-import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.TypeDescriptor;
 import com.effektif.workflow.impl.template.Hints;
 
 /**
@@ -45,27 +42,6 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
     super(type);
   }
 
-//  @Override
-//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-//    if (jsonValue==null) {
-//      return null;
-//    }
-//    try {
-//      String timeString = (String) jsonValue;
-//      return DateTypeImpl.formatter.parseLocalDateTime(timeString);
-//    } catch (ClassCastException e) {
-//      throw new RuntimeException(e);
-//    }
-//  }
-//
-//  @Override
-//  public Object convertInternalToJsonValue(Object internalValue) {
-//    if (internalValue==null) {
-//      return null;
-//    }
-//    return DateTypeImpl.printer.print((LocalDateTime)internalValue);
-//  }
-  
   @Override
   public String convertInternalToText(Object value, Hints hints) {
     DateTimeFormatter textFormatter = DateTimeFormat.longDate().withLocale(getLocale());
@@ -79,11 +55,5 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   @Override
   public boolean isStatic() {
     return false;
-  }
-
-  @Override
-  public TypeDescriptor typeDescriptor() {
-    ChoiceType kindChoice = new ChoiceType().option("date").option("datetime").option("time");
-    return new TypeDescriptor(typeName()).primitive().configuration("kind", kindChoice);
   }
 }

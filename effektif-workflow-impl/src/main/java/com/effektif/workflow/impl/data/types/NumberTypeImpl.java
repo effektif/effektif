@@ -15,12 +15,8 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 
 
 /**

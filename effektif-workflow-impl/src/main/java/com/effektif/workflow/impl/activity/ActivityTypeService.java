@@ -108,16 +108,16 @@ public class ActivityTypeService implements Startable {
     }
   }
 
-  public AbstractTriggerImpl instantiateTriggerType(Trigger triggerApi) {
-    Exceptions.checkNotNullParameter(triggerApi, "triggerApi");
-    Class<? extends AbstractTriggerImpl> triggerTypeClass = triggerClasses.get(triggerApi.getClass());
-    if (triggerTypeClass==null) {
-      throw new RuntimeException("No trigger type defined for "+triggerApi.getClass().getName());
+  public AbstractTriggerImpl instantiateTriggerType(Trigger trigger) {
+    Exceptions.checkNotNullParameter(trigger, "trigger");
+    Class<? extends AbstractTriggerImpl> triggerImplClass = triggerClasses.get(trigger.getClass());
+    if (triggerImplClass==null) {
+      throw new RuntimeException("No trigger type defined for "+trigger.getClass().getName());
     }
     try {
-      return triggerTypeClass.newInstance();
+      return triggerImplClass.newInstance();
     } catch (Exception e) {
-      throw new RuntimeException("Couldn't instantiate "+triggerTypeClass+": "+e.getMessage(), e);
+      throw new RuntimeException("Couldn't instantiate "+triggerImplClass+": "+e.getMessage(), e);
     }
   }
 

@@ -15,10 +15,7 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.api.types.MoneyType;
-import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.impl.data.TypeDescriptor;
 
 /**
  * @author Tom Baeyens
@@ -36,14 +33,5 @@ public class MoneyTypeImpl extends JavaBeanTypeImpl<MoneyType> {
   @Override
   public boolean isStatic() {
     return true;
-  }
-
-  @Override
-  public TypeDescriptor typeDescriptor() {
-    ChoiceType choice = new ChoiceType();
-    for (String currency : CURRENCIES) {
-      choice.option(currency);
-    }
-    return new TypeDescriptor(typeName()).mutable().field("amount", new NumberType()).field("currency", choice);
   }
 }

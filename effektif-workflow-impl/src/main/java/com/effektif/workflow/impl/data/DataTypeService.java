@@ -18,7 +18,6 @@ package com.effektif.workflow.impl.data;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,7 +27,6 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
@@ -217,28 +215,5 @@ public class DataTypeService implements Startable {
       }
     }
     throw new RuntimeException("No DataType defined for "+type.getClass().getName());
-  }
-
-  /**
-   * Returns a map of data type class type descriptors, used as reference data for external services.
-   */
-  public List<TypeDescriptor> getTypeDescriptors() {
-    // Collect all data types.
-    Map<Class<? extends DataType>, DataTypeImpl> dataTypes = new HashMap<>();
-    dataTypes.putAll(singletons);
-    for (Class<? extends DataType> dataType : dataTypeConstructors.keySet()) {
-      try {
-        dataTypes.put(dataType, createDataType(dataType.newInstance()));
-      } catch (InstantiationException | IllegalAccessException e) {
-        throw new RuntimeException("Couldn't instantiate data type "+dataType+": "+e.getMessage(), e);
-      }
-    }
-
-    // Change keys to serialisation type names, change values to type descriptors.
-    List<TypeDescriptor> typeDescriptors = new ArrayList<>();
-    for (Class<? extends DataType> dataType : dataTypes.keySet()) {
-      typeDescriptors.add(dataTypes.get(dataType).typeDescriptor());
-    }
-    return typeDescriptors;
   }
 }
