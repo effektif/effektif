@@ -40,18 +40,6 @@ public class JavaBeanType extends DataType {
     javaClass(javaClass);
   }
   
-//  @Override
-//  public void readJson(JsonReader r) {
-//    javaClass = r.readClass("javaClass");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeClass("javaClass", javaClass);
-//  }
-
   public Class<?> getJavaClass() {
     return this.javaClass;
   }
