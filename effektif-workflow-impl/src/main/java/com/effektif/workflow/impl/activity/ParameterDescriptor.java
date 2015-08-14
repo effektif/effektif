@@ -16,17 +16,23 @@
 package com.effektif.workflow.impl.activity;
 
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.ListType;
 
 
 /**
  * @author Tom Baeyens
  */
-public class Parameter {
+public class ParameterDescriptor {
 
   protected String key;
   protected DataType type;
-  protected String label;
+  protected String name;
   protected String description;
+  protected String autoBindKey;
+
+  public boolean isList() {
+    return type!=null && ListType.class.isAssignableFrom(type.getClass());
+  }
 
   public String getDescription() {
     return this.description;
@@ -34,7 +40,7 @@ public class Parameter {
   public void setDescription(String description) {
     this.description = description;
   }
-  public Parameter description(String description) {
+  public ParameterDescriptor description(String description) {
     this.description = description;
     return this;
   }
@@ -45,7 +51,7 @@ public class Parameter {
   public void setKey(String key) {
     this.key = key;
   }
-  public Parameter key(String key) {
+  public ParameterDescriptor key(String key) {
     this.key = key;
     return this;
   }
@@ -56,19 +62,30 @@ public class Parameter {
   public void setType(DataType type) {
     this.type = type;
   }
-  public Parameter type(DataType type) {
+  public ParameterDescriptor type(DataType type) {
     this.type = type;
     return this;
   }
 
-  public String getLabel() {
-    return this.label;
+  public String getName() {
+    return this.name;
   }
-  public void setLabel(String label) {
-    this.label = label;
+  public void setName(String name) {
+    this.name = name;
   }
-  public Parameter label(String label) {
-    this.label = label;
+  public ParameterDescriptor name(String name) {
+    this.name = name;
+    return this;
+  }
+
+  public String getAutoBindKey() {
+    return this.autoBindKey;
+  }
+  public void setAutoBindKey(String autoBindKey) {
+    this.autoBindKey = autoBindKey;
+  }
+  public ParameterDescriptor autoBindKey(String autoBindKey) {
+    this.autoBindKey = autoBindKey;
     return this;
   }
 }

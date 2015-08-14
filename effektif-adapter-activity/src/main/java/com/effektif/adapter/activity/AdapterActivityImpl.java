@@ -24,7 +24,7 @@ import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityDescriptor;
-import com.effektif.workflow.impl.activity.InputParameter;
+import com.effektif.workflow.impl.activity.InputDescriptor;
 import com.effektif.workflow.impl.activity.types.AbstractBindableActivityImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -46,8 +46,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   protected DataTypeService dataTypeService;
   protected AdapterService adapterService;
   protected ActivityDescriptor descriptor;
-//  protected Map<String,DataTypeImpl> outputParameterDataTypes;
-  protected Map<String, InputParameter> inputParameters;
+  protected Map<String, InputDescriptor> inputDescriptors;
   
   public AdapterActivityImpl() {
     super(AdapterActivity.class);
@@ -60,24 +59,11 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     this.activityKey = adapterActivity.getActivityKey();
     this.dataTypeService = parser.getConfiguration(DataTypeService.class);
     this.adapterService = parser.getConfiguration(AdapterService.class);
+    
     Adapter adapter = adapterService.findAdapterById(adapterId);
     this.descriptor = adapter!=null ? adapter.getActivityDescriptor(activityKey) : null;
     if (descriptor!=null) {
-//      Map<String, OutputParameter> outputParameters = descriptor.getOutputParameters();
-//      if (outputParameters!=null) {
-//        this.outputParameterDataTypes = new HashMap<>();
-//        DataTypeService dataTypeService = parser.getConfiguration(DataTypeService.class);
-//        for (String outputParameterKey: outputParameters.keySet()) {
-//          // IDEA if there there is a difference between the parameter type and the 
-//          //      configured variable type (@see this.outputBindings),
-//          //      then we could coerse (=apply a conversion) 
-//          OutputParameter outputParameter = outputParameters.get(outputParameterKey);
-//          DataType type = outputParameter.getType();
-//          DataTypeImpl dataType = dataTypeService.createDataType(type);
-//          outputParameterDataTypes.put(outputParameterKey, dataType);
-//        }
-//      }
-      inputParameters = descriptor.getInputParameters();
+      inputDescriptors = descriptor.getInputDescriptors();
     }
     
     Map<String, Binding> inputBindingsApi = adapterActivity.getInputBindings();
@@ -85,14 +71,14 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
       for (Map.Entry<String, Binding> entry: inputBindingsApi.entrySet()) {
         String key = entry.getKey();
         Binding inputBinding = entry.getValue();
-        InputParameter inputParameter = inputParameters!=null ? inputParameters.get(key) : null;
-        parser.pushContext("inputBindings["+key+"]", inputParameter, null, null);
-        if (inputParameter==null) {
+        InputDescriptor inputDescriptor = inputDescriptors!=null ? inputDescriptors.get(key) : null;
+        parser.pushContext("inputBindings["+key+"]", inputDescriptor, null, null);
+        if (inputDescriptor==null) {
           parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activity.getId());
         }
-        DataType type = inputParameter.getType();
-        String bindingName = inputParameter.getKey();
-        boolean required = inputParameter.isRequired();
+        DataType type = inputDescriptor.getType();
+        String bindingName = inputDescriptor.getKey();
+        boolean required = inputDescriptor.isRequired();
         BindingImpl<?> bindingImpl = parser.parseBinding(inputBinding, bindingName, required, type);
         if (bindingImpl!=null) {
           if (inputBindings==null) {
@@ -154,8 +140,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
   }
 
   protected boolean isList(String adapterKey) {
-    InputParameter inputParameter = inputParameters!=null ? inputParameters.get(adapterKey) : null;
-    return inputParameter!=null ? inputParameter.isList() : false;
+    InputDescriptor inputDescriptor = inputDescriptors!=null ? inputDescriptors.get(adapterKey) : null;
+    return inputDescriptor!=null ? inputDescriptor.isList() : false;
   }
 
   public AdapterActivityImpl adapterId(String adapterId) {

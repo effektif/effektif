@@ -20,83 +20,85 @@ import java.util.Map;
 
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflow.Extensible;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ActivityDescriptor {
+public class ActivityDescriptor extends Extensible {
 
-  protected String activityKey;
-  protected String label;
+  protected String key;
+  protected String name;
   protected String description;
+  protected String icon;
 
-  protected Map<String,InputParameter> inputParameters;
-  protected Map<String,OutputParameter> outputParameters;
+  protected Map<String,InputDescriptor> inputDescriptors;
+  protected Map<String,OutputDescriptor> outputDescriptors;
 
   public ActivityDescriptor inputParameterString(String inputParameterKey, String inputParameterLabel) {
-    inputParameter(inputParameterKey, inputParameterLabel, new TextType());
+    inputDescriptor(inputParameterKey, inputParameterLabel, new TextType());
     return this;
   }
 
-  public ActivityDescriptor inputParameter(String inputParameterKey, String inputParameterLabel, DataType type) {
-    inputParameter(new InputParameter()
+  public ActivityDescriptor inputDescriptor(String inputParameterKey, String inputParameterLabel, DataType type) {
+    inputDescriptor(new InputDescriptor()
       .key(inputParameterKey)
-      .label(inputParameterLabel)
+      .name(inputParameterLabel)
       .type(type)
     );
     return this;
   }
 
-  public ActivityDescriptor inputParameter(InputParameter parameter) {
-    if (inputParameters==null) {
-      inputParameters = new HashMap<>();
+  public ActivityDescriptor inputDescriptor(InputDescriptor inputDescriptor) {
+    if (inputDescriptors==null) {
+      inputDescriptors = new HashMap<>();
     }
-    inputParameters.put(parameter.key, parameter);
+    inputDescriptors.put(inputDescriptor.key, inputDescriptor);
     return this;
   }
 
-  public ActivityDescriptor outputParameterString(String outputParameterKey, String outputParameterLabel) {
-    outputParameter(outputParameterKey, outputParameterLabel, new TextType());
+  public ActivityDescriptor outputDescriptorString(String outputParameterKey, String outputParameterLabel) {
+    outputDescriptor(outputParameterKey, outputParameterLabel, new TextType());
     return this;
   }
 
-  public ActivityDescriptor outputParameter(String outputParameterKey, String outputParameterLabel, DataType type) {
-    outputParameter(new OutputParameter()
+  public ActivityDescriptor outputDescriptor(String outputParameterKey, String outputParameterLabel, DataType type) {
+    outputDescriptor(new OutputDescriptor()
       .key(outputParameterKey)
-      .label(outputParameterLabel)
+      .name(outputParameterLabel)
       .type(type)
     );
     return this;
   }
   
-  public ActivityDescriptor outputParameter(OutputParameter outputParameter) {
-    if (outputParameters==null) {
-      outputParameters = new HashMap<>();
+  public ActivityDescriptor outputDescriptor(OutputDescriptor outputParameter) {
+    if (outputDescriptors==null) {
+      outputDescriptors = new HashMap<>();
     }
-    outputParameters.put(outputParameter.key, outputParameter);
+    outputDescriptors.put(outputParameter.key, outputParameter);
     return this;
   }
 
-  public String getActivityKey() {
-    return this.activityKey;
+  public String getKey() {
+    return this.key;
   }
-  public void setActivityKey(String activityKey) {
-    this.activityKey = activityKey;
+  public void setKey(String key) {
+    this.key = key;
   }
-  public ActivityDescriptor activityKey(String activityKey) {
-    this.activityKey = activityKey;
+  public ActivityDescriptor key(String key) {
+    this.key = key;
     return this;
   }
 
-  public String getLabel() {
-    return this.label;
+  public String getName() {
+    return this.name;
   }
-  public void setLabel(String label) {
-    this.label = label;
+  public void setName(String name) {
+    this.name = name;
   }
-  public ActivityDescriptor label(String label) {
-    this.label = label;
+  public ActivityDescriptor name(String name) {
+    this.name = name;
     return this;
   }
 
@@ -111,22 +113,30 @@ public class ActivityDescriptor {
     return this;
   }
   
-  public Map<String, InputParameter> getInputParameters() {
-    return inputParameters;
+  public String getIcon() {
+    return this.icon;
+  }
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+  public ActivityDescriptor icon(String icon) {
+    this.icon = icon;
+    return this;
   }
 
-  
-  public void setInputParameters(Map<String, InputParameter> inputParameters) {
-    this.inputParameters = inputParameters;
+  public Map<String, InputDescriptor> getInputDescriptors() {
+    return inputDescriptors;
   }
 
-  
-  public Map<String, OutputParameter> getOutputParameters() {
-    return outputParameters;
+  public void setInputDescriptors(Map<String, InputDescriptor> inputDescriptors) {
+    this.inputDescriptors = inputDescriptors;
   }
 
-  
-  public void setOutputParameters(Map<String, OutputParameter> outputParameters) {
-    this.outputParameters = outputParameters;
+  public Map<String, OutputDescriptor> getOutputDescriptors() {
+    return outputDescriptors;
+  }
+
+  public void setOutputDescriptors(Map<String, OutputDescriptor> outputParameters) {
+    this.outputDescriptors = outputParameters;
   }
 }

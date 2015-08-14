@@ -60,7 +60,7 @@ public class ExecuteResource {
   }
 
   public void addActivityAdapter(ActivityAdapter activityAdapter) {
-    String activityKey = activityAdapter.getDescriptor().getActivityKey();
+    String activityKey = activityAdapter.getDescriptor().getKey();
     log.debug("Adding activity '"+activityKey+"' --> "+activityAdapter);
     activityAdapters.put(activityKey, activityAdapter);
   }

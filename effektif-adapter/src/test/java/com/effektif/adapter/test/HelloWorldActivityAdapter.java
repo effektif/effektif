@@ -33,9 +33,9 @@ public class HelloWorldActivityAdapter implements ActivityAdapter {
   @Override
   public ActivityDescriptor getDescriptor() {
     return new ActivityDescriptor()
-      .activityKey("hello")
+      .key("hello")
       .inputParameterString(NAME, "Name")
-      .outputParameterString(GREETING, "Message");
+      .outputDescriptorString(GREETING, "Message");
   }
 
   @Override
