@@ -17,8 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
-
 
 /**
  * @author Tom Baeyens
@@ -32,12 +30,9 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
   public TextTypeImpl(TextType textType) {
     super(textType);
   }
-  
+
   @Override
-  public Object convertJsonToInternalValue(Object valueApi) throws InvalidValueException {
-    if (valueApi==null || (valueApi instanceof String)) {
-      return valueApi;
-    }
-    throw new InvalidValueException("Expected string, but was "+valueApi.getClass().getName());
+  public boolean isStatic() {
+    return false;
   }
 }

@@ -27,10 +27,12 @@ public interface JobStore {
   List<Job> findJobs(JobQuery jobQuery);
   void deleteJobById(String jobId);
   void deleteJobs(JobQuery jobQuery);
+  void deleteAllJobs();
 
   void saveArchivedJob(Job job);
   List<Job> findArchivedJobs(JobQuery jobQuery);
   void deleteArchivedJobs(JobQuery jobQuery);
+  void deleteAllArchivedJobs();
 
   /** locks a job not having a {@link Job#lock} specified
    * and retrieves it from the store */

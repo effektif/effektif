@@ -136,8 +136,15 @@ public class MongoCollection {
   }
   
   public WriteResult remove(String description, DBObject query) {
+    return remove(description, query, true);
+  }
+
+  public WriteResult remove(String description, DBObject query, boolean checkForEmptyQuery) {
     if (log.isDebugEnabled()) { 
       log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(query));
+    }
+    if (checkForEmptyQuery && (query==null || ((BasicDBObject)query).isEmpty())) {
+      throw new RuntimeException("I assume this is a bug. Protection against deleting the whole collection");
     }
     WriteResult writeResult = dbCollection.remove(query);
     if (log.isDebugEnabled()) {

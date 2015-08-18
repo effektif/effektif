@@ -29,15 +29,19 @@ public interface DataTypeImpl<T extends DataType> {
   T getDataType();
   Class<? extends DataType> getApiClass();
 
-  /** Indicates that this type doesn’t have to be serialised. */
+  /**
+   * Indicates that this type doesn’t have to be serialised, because it’s okay to always use a single instance of the
+   * type. A static type is always a primitive (single-valued) type, but a primitive type is not static if it has
+   * additional {@link TypeDescriptor#configuration}.
+   */
   boolean isStatic();
 
   T serialize();
 
-  /** only returns valid internal values. */
-  Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
-
-  Object convertInternalToJsonValue(Object internalValue);
+//  /** only returns valid internal values. */
+//  Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException;
+//
+//  Object convertInternalToJsonValue(Object internalValue);
 
   String convertInternalToText(Object value, Hints hints);
 
@@ -50,5 +54,4 @@ public interface DataTypeImpl<T extends DataType> {
   DataTypeImpl parseDereference(String field, WorkflowParser parser);
   
   TypedValueImpl dereference(Object value, String field);
-
 }

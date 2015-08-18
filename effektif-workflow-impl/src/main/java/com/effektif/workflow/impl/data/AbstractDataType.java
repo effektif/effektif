@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.bpmn.XmlElement;
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.template.Hints;
@@ -28,9 +29,9 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
   protected Class<? extends DataType> apiClass;
   protected Configuration configuration;
 
-  public AbstractDataType(T typeApi) {
-    this.type = typeApi;
-    this.apiClass = typeApi!=null ? typeApi.getClass() : null;
+  public AbstractDataType(T type) {
+    this.type = type;
+    this.apiClass = type!=null ? type.getClass() : null;
   }
   
   public void setConfiguration(Configuration configuration) {
@@ -44,15 +45,6 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
   
   public Class<? extends DataType> getApiClass() {
     return apiClass;
-  }
-
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    return jsonValue;
-  }
-
-  public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue;
   }
 
   @Override
@@ -91,5 +83,10 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
   
   public T getDataType() {
     return type;
+  }
+
+  protected String typeName() {
+    TypeName typeName = apiClass.getAnnotation(TypeName.class);
+    return typeName == null ? null : typeName.value();
   }
 }

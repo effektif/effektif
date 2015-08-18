@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.data;
 
 
+
 /**
  * @author Tom Baeyens
  */
@@ -25,5 +26,15 @@ public class InvalidValueException extends RuntimeException {
 
   public InvalidValueException(String message) {
     super(message);
+  }
+
+  public static void checkTrue(boolean condition, String message) {
+    if (!condition) {
+      throw new InvalidValueException(message);
+    }
+  }
+
+  public static void checkNotNull(Object object, String message) {
+    checkTrue(object!=null, message);
   }
 }

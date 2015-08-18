@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import java.util.Locale;
 
-import org.joda.time.LocalDateTime;
 import org.joda.time.ReadablePartial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,7 +24,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.types.DateType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.template.Hints;
 
 /**
@@ -37,30 +35,13 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   public static DateTimeFormatter printer = ISODateTimeFormat.dateTime();
 
   public DateTypeImpl() {
-    super(DateType.INSTANCE);
+    super(DateType.DATETIME);
   }
 
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    if (jsonValue==null) {
-      return null;
-    }
-    try {
-      String timeString = (String) jsonValue;
-      return DateTypeImpl.formatter.parseLocalDateTime(timeString);
-    } catch (ClassCastException e) {
-      throw new RuntimeException(e);
-    }
+  public DateTypeImpl(DateType type) {
+    super(type);
   }
 
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    if (internalValue==null) {
-      return null;
-    }
-    return DateTypeImpl.printer.print((LocalDateTime)internalValue);
-  }
-  
   @Override
   public String convertInternalToText(Object value, Hints hints) {
     DateTimeFormatter textFormatter = DateTimeFormat.longDate().withLocale(getLocale());
@@ -69,5 +50,10 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
 
   protected Locale getLocale() {
     return Locale.getDefault();
+  }
+
+  @Override
+  public boolean isStatic() {
+    return false;
   }
 }

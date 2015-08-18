@@ -252,20 +252,6 @@ public class WorkflowTest {
         }
       }
 
-//      List<Task> tasks = taskStore.findTasks(new TaskQuery());
-//      if (tasks != null && !tasks.isEmpty()) {
-//        int i = 0;
-//        cleanLog.append("\n=== tasks ======================================================== \n");
-//        for (Task task : tasks) {
-//          cleanLog.append("--- Task ");
-//          cleanLog.append(i);
-//          cleanLog.append(" ---\n");
-//          cleanLog.append(jsonMapper.write(task));
-//          cleanLog.append("\n");
-//          i++;
-//        }
-//      }
-
       List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery());
       if (workflowInstances != null && !workflowInstances.isEmpty()) {
         int i = 0;
@@ -304,9 +290,9 @@ public class WorkflowTest {
     WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     JobStore jobStore = configuration.get(JobStore.class);
 
-    workflowStore.deleteWorkflows(new WorkflowQuery());
-    workflowInstanceStore.deleteWorkflowInstances(new WorkflowInstanceQuery());
-    jobStore.deleteJobs(new JobQuery());
-    jobStore.deleteArchivedJobs(new JobQuery());
+    workflowStore.deleteAllWorkflows();
+    workflowInstanceStore.deleteAllWorkflowInstances();
+    jobStore.deleteAllJobs();
+    jobStore.deleteAllArchivedJobs();
   }
 }

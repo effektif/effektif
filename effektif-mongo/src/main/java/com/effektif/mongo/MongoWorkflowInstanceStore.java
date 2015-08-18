@@ -295,6 +295,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     BasicDBObject query = createDbQuery(workflowInstanceQuery);
     workflowInstancesCollection.remove("delete-workflow-instances", query);
   }
+  
+  @Override
+  public void deleteAllWorkflowInstances() {
+    workflowInstancesCollection.remove("delete-workflow-instances-unchecked", new BasicDBObject(), false);
+  }
 
   protected BasicDBObject createDbQuery(WorkflowInstanceQuery query) {
     if (query == null) {

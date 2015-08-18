@@ -22,7 +22,6 @@ import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.InvalidValueException;
 
-
 /**
  * @author Tom Baeyens
  */
@@ -39,12 +38,6 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   @Override
   public boolean isStatic() {
     return false;
-  }
-
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    validateInternalValue(jsonValue);
-    return jsonValue; 
   }
 
   @Override

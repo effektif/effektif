@@ -19,6 +19,9 @@ import java.lang.reflect.Type;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 
 /**
@@ -27,11 +30,65 @@ import com.effektif.workflow.api.json.TypeName;
 @TypeName("date")
 public class DateType extends DataType {
 
-  public static final DateType INSTANCE = new DateType();
-  
+  private enum Kind {
+    datetime, date, time;
+  }
+
+  public static final DateType DATETIME = new DateType();
+  public static final DateType DATE = new DateType(Kind.date);
+  public static final DateType TIME = new DateType(Kind.time);
+
+  private Kind kind;
+
+  public DateType() {
+    this(Kind.datetime);
+  }
+
+  public DateType(Kind kind) {
+    this.kind = kind;
+  }
+
   @Override
   public Type getValueType() {
     return LocalDateTime.class;
   }
 
+  public String getKind() {
+    return kind.toString();
+  }
+
+  public boolean isDate() {
+    return Kind.date.equals(kind);
+  }
+
+  public boolean isDateTime() {
+    return Kind.datetime.equals(kind);
+  }
+
+  public boolean isTime() {
+    return Kind.time.equals(kind);
+  }
+
+
+  public DateType date() {
+    kind = Kind.date;
+    return this;
+  }
+
+  public DateType time() {
+    kind = Kind.time;
+    return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    String kindName = r.readStringAttributeEffektif("kind");
+    this.kind = kindName == null ? Kind.datetime : Kind.valueOf(kindName);
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("kind", kind);
+  }
 }

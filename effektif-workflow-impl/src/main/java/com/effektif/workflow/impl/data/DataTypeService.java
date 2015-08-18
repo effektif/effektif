@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,9 +38,11 @@ import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
 import com.effektif.workflow.impl.data.types.DateTypeImpl;
 import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
+import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.data.types.NumberTypeImpl;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.data.types.TextTypeImpl;
+import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -57,23 +60,14 @@ public class DataTypeService implements Startable {
   protected Map<Class<? extends DataType>,Constructor<?>> dataTypeConstructors = new ConcurrentHashMap<>();
   protected Map<Class<?>, JavaBeanTypeImpl> javaBeanTypes = new HashMap<>();
   protected Map<Type, DataTypeImpl> dataTypesByValueClass = new HashMap<>();
-
-  @Override
-  public void start(Brewery brewery) {
-    this.configuration = brewery.get(Configuration.class);
-    initializeDataTypes();
-  }
-
-  protected void initializeDataTypes() {
+  
+  public DataTypeService() {
     ServiceLoader<DataTypeImpl> dataTypeLoader = ServiceLoader.load(DataTypeImpl.class);
     for (DataTypeImpl dataType: dataTypeLoader) {
       // log.debug("Registering dynamically loaded data type "+dataType.getClass().getSimpleName());
       registerDataType(dataType);
     }
-    for (DataTypeImpl dataType: dataTypeLoader) {
-      dataType.setConfiguration(configuration);
-    }
-
+    
     // For undeclared variables a new variable instance 
     // will be created on the fly when a value is set.  
     // dataType.getValueClass(); is used.  Since more 
@@ -97,27 +91,36 @@ public class DataTypeService implements Startable {
     objectTypeImpl.setConfiguration(configuration);
     registerDataType(objectTypeImpl);
   }
-  
+
+  @Override
+  public void start(Brewery brewery) {
+    this.configuration = brewery.get(Configuration.class);
+    for (DataTypeImpl dataType: singletons.values()) {
+      dataType.setConfiguration(configuration);
+    }
+  }
+
   public void registerDataType(DataTypeImpl dataTypeImpl) {
     Class apiClass = dataTypeImpl.getApiClass();
-    if (apiClass!=null) {
-      if (dataTypeImpl.isStatic()) {
-        singletons.put(apiClass, dataTypeImpl);
-      } else {
-        Constructor< ? > constructor = findDataTypeConstructor(dataTypeImpl.getClass());
-        dataTypeConstructors.put(apiClass, constructor);
+    if (apiClass==null) {
+      return;
+    }
+    if (dataTypeImpl.isStatic()) {
+      singletons.put(apiClass, dataTypeImpl);
+    } else {
+      Constructor< ? > constructor = findDataTypeConstructor(dataTypeImpl.getClass());
+      dataTypeConstructors.put(apiClass, constructor);
+    }
+    try {
+      DataType dataType = (DataType) apiClass.newInstance();
+      Type valueType = dataType.getValueType();
+      if (valueType!=null) {
+        // (*) If multiple datatypes have the same valueType (like string, date etc),
+        // the last one wins
+        dataTypesByValueClass.put(valueType, dataTypeImpl);
       }
-      try {
-        DataType dataType = (DataType) apiClass.newInstance();
-        Type valueType = dataType.getValueType();
-        if (valueType!=null) {
-          // (*) If multiple datatypes have the same valueType (like string, date etc),
-          // the last one wins
-          dataTypesByValueClass.put(valueType, dataTypeImpl);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
   
@@ -138,6 +141,16 @@ public class DataTypeService implements Startable {
     javaBeanTypeImpl.setConfiguration(configuration);
     javaBeanTypes.put(javaBeanClass, javaBeanTypeImpl);
     registerDataType(javaBeanTypeImpl);
+  }
+
+  public DataTypeImpl getDataTypeByValue(Type type) {
+    Class< ? > rawClass = Reflection.getRawClass(type);
+    if (rawClass==List.class) {
+      Type elementType = Reflection.getTypeArg(type, 0);
+      DataTypeImpl elementDataType = getDataTypeByValue(elementType);
+      return new ListTypeImpl(elementDataType);
+    }
+    return getDataTypeByValue(rawClass);
   }
 
   public DataTypeImpl getDataTypeByValue(Class<?> valueClass) {
@@ -203,5 +216,4 @@ public class DataTypeService implements Startable {
     }
     throw new RuntimeException("No DataType defined for "+type.getClass().getName());
   }
-
 }

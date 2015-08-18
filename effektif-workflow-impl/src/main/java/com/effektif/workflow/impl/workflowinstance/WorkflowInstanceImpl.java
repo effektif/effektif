@@ -67,6 +67,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
   public List<Job> jobs;
+  
   /** local cache of the locked workflow instance for the purpose of the 
    * call activity.  in case the subprocess is fully synchronous and it 
    * finishes and wants to continue the parent, that parent is already 
@@ -196,8 +197,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       if (log.isDebugEnabled())
         log.debug("Going asynchronous "+this);
       workflowInstanceStore.flush(this);
-      ExecutorService executor = configuration.get(ExecutorService.class);
-      executor.execute(new Runnable(){
+      Runnable asyncContinuation = new Runnable(){
         public void run() {
           try {
             work = workAsync;
@@ -211,7 +211,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
           } catch (Throwable e) {
             e.printStackTrace();
           }
-        }});
+        }};
+        WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
+        workflowEngine.continueAsync(asyncContinuation);
     } else {
       workflowInstanceStore.flushAndUnlock(this);
     }

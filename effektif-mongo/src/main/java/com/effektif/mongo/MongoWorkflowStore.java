@@ -130,6 +130,11 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     BasicDBObject dbQuery = createDbQuery(query);
     workflowsCollection.remove("delete-workflows", dbQuery);
   }
+  
+  @Override
+  public void deleteAllWorkflows() {
+    workflowsCollection.remove("delete-workflows-unchecked", new BasicDBObject(), false);
+  }
 
   @Override
   public WorkflowId findLatestWorkflowIdBySource(String sourceWorkflowId) {

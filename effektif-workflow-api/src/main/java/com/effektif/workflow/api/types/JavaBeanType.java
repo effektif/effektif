@@ -17,6 +17,9 @@ package com.effektif.workflow.api.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -37,18 +40,6 @@ public class JavaBeanType extends DataType {
     javaClass(javaClass);
   }
   
-//  @Override
-//  public void readJson(JsonReader r) {
-//    javaClass = r.readClass("javaClass");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeClass("javaClass", javaClass);
-//  }
-
   public Class<?> getJavaClass() {
     return this.javaClass;
   }
@@ -65,4 +56,19 @@ public class JavaBeanType extends DataType {
     return javaClass;
   }
 
+  @Override
+  public void readBpmn(BpmnReader r) {
+    String className = r.readStringAttributeEffektif("class");
+    try {
+      javaClass = Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException("Cannot read JavaBeanType BPMN - class not found: " + className);
+    }
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("class", javaClass.getName());
+  }
 }

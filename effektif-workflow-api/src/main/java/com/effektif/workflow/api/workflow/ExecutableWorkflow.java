@@ -76,8 +76,10 @@ public class ExecutableWorkflow extends AbstractWorkflow {
     name = r.readStringAttributeBpmn("name");
     sourceWorkflowId = r.readStringValue("sourceWorkflowId");
     createTime = r.readDateValue("createTime");
+    creatorId = r.readStringValue("creatorId");
+    enableCases = Boolean.valueOf(r.readStringValue("enableCases"));
 
-// TODO move access control in a property?
+    // TODO move access control in a property?
 //    for (XmlElement nestedElemenet : r.readElementsEffektif("access")) {
 //      r.startElement(nestedElemenet);
 //      access = new AccessControlList();
@@ -106,6 +108,8 @@ public class ExecutableWorkflow extends AbstractWorkflow {
     super.writeBpmn(w);
     w.startElementBpmn("extensionElements", 0);
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
+    w.writeStringValue("creatorId", "value", creatorId);
+    w.writeStringValue("enableCases", "value", enableCases);
 
     if (createTime != null) {
       w.startElementEffektif("createTime");

@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.DataType;
@@ -71,7 +70,7 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
 
   protected void addField(Field field) {
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
-    DataTypeImpl dataType = dataTypeService.getDataTypeByValue(field.getType());
+    DataTypeImpl dataType = dataTypeService.getDataTypeByValue(field.getGenericType());
     JavaBeanFieldImpl javaBeanField = new JavaBeanFieldImpl(field, dataType);
     addField(javaBeanField);
   }
@@ -91,21 +90,6 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-    if (jsonValue==null) return null;
-    if (Map.class.isAssignableFrom(jsonValue.getClass())) {
-      return valueMapper.read(jsonValue, valueClass);
-    }
-    throw new InvalidValueException("Couldn't convert json: "+jsonValue+" ("+jsonValue.getClass().getName()+")");
-  }
-  
-  @Override
-  public Object convertInternalToJsonValue(Object internalValue) {
-    return internalValue;
-  }
-  
   public Class< ? > getValueClass() {
     return valueClass;
   }

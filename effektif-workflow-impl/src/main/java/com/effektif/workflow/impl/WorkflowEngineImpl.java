@@ -63,6 +63,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public Configuration configuration;
   public List<WorkflowExecutionListener> workflowExecutionListeners;
   public DataTypeService dataTypeService;
+
   
   @Override
   public void brew(Brewery brewery) {
@@ -394,5 +395,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       Exceptions.checkNotNull(scopeInstance);
     }
     return scopeInstance;
+  }
+
+  public void continueAsync(Runnable asyncContinuation) {
+
+    executorService.execute(asyncContinuation);
   }
 }

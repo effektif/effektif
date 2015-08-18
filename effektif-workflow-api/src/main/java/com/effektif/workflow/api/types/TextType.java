@@ -17,6 +17,8 @@ package com.effektif.workflow.api.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -26,11 +28,31 @@ import com.effektif.workflow.api.json.TypeName;
 @TypeName("text")
 public class TextType extends DataType {
 
-  public static final TextType INSTANCE = new TextType(); 
+  public static final TextType INSTANCE = new TextType();
+  private Boolean multiLine;
 
   @Override
   public Type getValueType() {
     return String.class;
   }
 
+  public boolean isMultiLine() {
+    return Boolean.TRUE.equals(multiLine);
+  }
+
+  public TextType multiLine() {
+    multiLine = Boolean.TRUE;
+    return this;
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    multiLine = Boolean.valueOf(r.readStringAttributeEffektif("multiLine"));
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("multiLine", multiLine);
+  }
 }

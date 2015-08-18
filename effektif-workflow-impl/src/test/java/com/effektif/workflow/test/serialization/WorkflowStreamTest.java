@@ -33,6 +33,15 @@ import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.types.BooleanType;
+import com.effektif.workflow.api.types.ChoiceType;
+import com.effektif.workflow.api.types.DateType;
+import com.effektif.workflow.api.types.EmailAddressType;
+import com.effektif.workflow.api.types.JavaBeanType;
+import com.effektif.workflow.api.types.LinkType;
+import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.api.types.MoneyType;
+import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
@@ -75,57 +84,6 @@ public class WorkflowStreamTest {
     return "wid";
   }
   
-  @Test 
-  public void testWorkflow() {
-    LocalDateTime now = new LocalDateTime();
-
-    Map<String,Object> p = new HashMap<>();
-    p.put("str", "s");
-    p.put("lis", Lists.of("a", 1, true));
-    p.put("num", Long.MAX_VALUE);
-    p.put("dou", Double.MAX_VALUE);
-    p.put("boo", true);
-    
-    String workflowIdInternal = getWorkflowIdInternal();
-    
-    ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .id(new WorkflowId(workflowIdInternal))
-      .name("Software release")
-      .description("Regular software production release process.")
-      .createTime(now)
-      .sourceWorkflowId("source")
-      .variable("v", TextType.INSTANCE)
-      .activity("start", new StartEvent())
-      .activity("end", new EndEvent())
-      .transition(new Transition().fromId("start").toId("end"))
-      .property("str", "s")
-      .property("lis", Lists.of("a", 1, true))
-      .property("num", Long.MAX_VALUE)
-      .property("dou", Double.MAX_VALUE)
-      .property("boo", true);
-    
-    workflow = serialize(workflow);
-    
-    assertNotNull(workflow);
-    assertEquals(workflowIdInternal, workflow.getId().getInternal());
-    assertEquals("Software release", workflow.getName());
-    assertEquals("Regular software production release process.", workflow.getDescription());
-    assertEquals("source", workflow.getSourceWorkflowId());
-    assertEquals("start", ((StartEvent)workflow.getActivities().get(0)).getId());
-    assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
-    assertEquals("start", workflow.getTransitions().get(0).getFromId());
-    assertEquals("end", workflow.getTransitions().get(0).getToId());
-
-    // Not tested, pending implementation.
-    //assertEquals(p.get("str"), workflow.getProperty("str"));
-    //assertEquals(p.get("lis"), workflow.getProperty("lis"));
-    //assertEquals(p.get("num"), workflow.getProperty("num"));
-    //assertEquals(p.get("dou"), workflow.getProperty("dou"));
-    //assertEquals(p.get("boo"), workflow.getProperty("boo"));
-
-    assertEquals(now, workflow.getCreateTime());
-  }
-
   @Test
   public void testActivity() {
     Activity activity = new NoneTask()
@@ -147,15 +105,15 @@ public class WorkflowStreamTest {
     LocalDateTime now = new LocalDateTime();
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity(new Call()
-      .id("runTests")
-      .inputValue("d", now)
-      .inputValue("s", "string")
-      .inputExpression("v", "version")
-      .subWorkflowSource("Run tests")
-      .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
+        .id("runTests")
+        .inputValue("d", now)
+        .inputValue("s", "string")
+        .inputExpression("v", "version")
+        .subWorkflowSource("Run tests")
+        .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
     workflow = serialize(workflow);
-    
+
     assertNotNull(workflow);
     Call call = (Call) workflow.getActivities().get(0);
     assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
@@ -164,7 +122,7 @@ public class WorkflowStreamTest {
     assertEquals("string", call.getInputBindings().get("s").getValue());
     assertEquals("version", call.getInputBindings().get("v").getExpression());
   }
-  
+
   @Test
   public void testEndEvent() {
     EndEvent activity = new EndEvent();
@@ -188,6 +146,61 @@ public class WorkflowStreamTest {
     assertEquals(ExclusiveGateway.class, activity.getClass());
     assertEquals("test-ok", activity.getId());
     assertEquals("proceed", activity.getDefaultTransitionId());
+  }
+
+  @Test
+  public void testExecutableWorkflow() {
+    LocalDateTime now = new LocalDateTime();
+
+    Map<String,Object> p = new HashMap<>();
+    p.put("str", "s");
+    p.put("lis", Lists.of("a", 1, true));
+    p.put("num", Long.MAX_VALUE);
+    p.put("dou", Double.MAX_VALUE);
+    p.put("boo", true);
+
+    String workflowIdInternal = getWorkflowIdInternal();
+
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .id(new WorkflowId(workflowIdInternal))
+      .name("Software release")
+      .description("Regular software production release process.")
+      .createTime(now)
+      .creatorId("iamdevloper")
+      .sourceWorkflowId("source")
+      .variable("v", TextType.INSTANCE)
+      .activity("start", new StartEvent())
+      .activity("end", new EndEvent())
+      .transition(new Transition().fromId("start").toId("end"))
+      .property("str", "s")
+      .property("lis", Lists.of("a", 1, true))
+      .property("num", Long.MAX_VALUE)
+      .property("dou", Double.MAX_VALUE)
+      .property("boo", true);
+    workflow.setEnableCases(true);
+
+    workflow = serialize(workflow);
+
+    assertNotNull(workflow);
+    assertEquals(workflowIdInternal, workflow.getId().getInternal());
+    assertEquals("Software release", workflow.getName());
+    assertEquals("Regular software production release process.", workflow.getDescription());
+    assertEquals(now, workflow.getCreateTime());
+    assertEquals("iamdevloper", workflow.getCreatorId());
+    assertEquals("source", workflow.getSourceWorkflowId());
+    assertEquals("start", ((StartEvent)workflow.getActivities().get(0)).getId());
+    assertEquals("end", ((EndEvent)workflow.getActivities().get(1)).getId());
+    assertEquals("start", workflow.getTransitions().get(0).getFromId());
+    assertEquals("end", workflow.getTransitions().get(0).getToId());
+
+    // Not tested, pending implementation.
+    //    assertEquals(p.get("str"), workflow.getProperty("str"));
+    //    assertEquals(p.get("lis"), workflow.getProperty("lis"));
+    //    assertEquals(p.get("num"), workflow.getProperty("num"));
+    //    assertEquals(p.get("dou"), workflow.getProperty("dou"));
+    //    assertEquals(p.get("boo"), workflow.getProperty("boo"));
+
+    assertTrue(workflow.isEnableCases());
   }
 
   @Test
@@ -287,5 +300,50 @@ public class WorkflowStreamTest {
     assertEquals("listValue1", activity.getInputs().get("in3").getBindings().get(0).getValue());
     assertEquals("listExpression2", activity.getInputs().get("in3").getBindings().get(1).getExpression());
     assertEquals("var1", activity.getOutputs().get("out1").getVariableId());
+  }
+
+  @Test
+  public void testVariables() {
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .variable("variable01", BooleanType.INSTANCE)
+      .variable("variable02", new ChoiceType().option("Red pill").option("Blue pill"))
+      .variable("variable03", new DateType().date())
+      .variable("variable04", EmailAddressType.INSTANCE)
+      .variable("variable05", new JavaBeanType(Integer.class))
+      .variable("variable06", LinkType.INSTANCE)
+      .variable("variable07", new ListType(NumberType.INSTANCE))
+      .variable("variable08", MoneyType.INSTANCE)
+      .variable("variable09", NumberType.INSTANCE)
+      .variable("variable10", new TextType().multiLine());
+
+    workflow = serialize(workflow);
+
+    assertNotNull(workflow.getVariables());
+    assertEquals(10, workflow.getVariables().size());
+
+    assertEquals(BooleanType.class, workflow.getVariables().get(0).getType().getClass());
+
+    assertEquals(ChoiceType.class, workflow.getVariables().get(1).getType().getClass());
+    assertEquals("Red pill", ((ChoiceType) workflow.getVariables().get(1).getType()).getOptions().get(0).getId());
+
+    assertEquals(DateType.class, workflow.getVariables().get(2).getType().getClass());
+    assertEquals("date", ((DateType) workflow.getVariables().get(2).getType()).getKind());
+
+    assertEquals(EmailAddressType.class, workflow.getVariables().get(3).getType().getClass());
+
+    assertEquals(JavaBeanType.class, workflow.getVariables().get(4).getType().getClass());
+    assertEquals(Integer.class, ((JavaBeanType) workflow.getVariables().get(4).getType()).getJavaClass());
+
+    assertEquals(LinkType.class, workflow.getVariables().get(5).getType().getClass());
+
+    assertEquals(ListType.class, workflow.getVariables().get(6).getType().getClass());
+    assertEquals(NumberType.class, ((ListType) workflow.getVariables().get(6).getType()).getElementType().getClass());
+
+    assertEquals(MoneyType.class, workflow.getVariables().get(7).getType().getClass());
+    assertEquals(NumberType.class, workflow.getVariables().get(8).getType().getClass());
+
+    assertEquals(TextType.class, workflow.getVariables().get(9).getType().getClass());
+    assertTrue(((TextType) workflow.getVariables().get(9).getType()).isMultiLine());
+
   }
 }

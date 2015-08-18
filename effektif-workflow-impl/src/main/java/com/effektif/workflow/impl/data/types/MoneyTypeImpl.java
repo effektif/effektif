@@ -17,8 +17,6 @@ package com.effektif.workflow.impl.data.types;
 
 import com.effektif.workflow.api.types.MoneyType;
 
-
-
 /**
  * @author Tom Baeyens
  */
@@ -27,6 +25,10 @@ public class MoneyTypeImpl extends JavaBeanTypeImpl<MoneyType> {
   public MoneyTypeImpl() {
     super(MoneyType.INSTANCE);
   }
+
+  private static final String[] CURRENCIES = new String[] { "EUR", "USD", "JPY", "BGN", "CZK", "DKK", "GBP", "HUF",
+    "LTL", "PLN", "RON", "SEK", "CHF", "NOK", "HRK", "RUB", "TRY", "AUD", "BRL", "CAD", "CNY", "HKD", "IDR", "ILS",
+    "INR", "KRW", "MXN", "MYR", "NZD", "PHP", "SGD", "THB", "ZAR" };
 
   @Override
   public boolean isStatic() {

@@ -24,14 +24,13 @@ import com.effektif.workflow.api.types.LinkType;
  */
 public class LinkTypeImpl extends TextTypeImpl {
 
-  static Pattern pattern = Pattern.compile("[-A-Z0-9+&@#/%?=~_|!:,.;]*", Pattern.CASE_INSENSITIVE);
+  static Pattern validCharacters = Pattern.compile("[-A-Z0-9+&@#/%?=~_|!:,.;]*", Pattern.CASE_INSENSITIVE);
 
   public LinkTypeImpl() {
     super(LinkType.INSTANCE);
   }
 
-  @Override
-  public boolean isStatic() {
-    return true;
+  public LinkTypeImpl(LinkType type) {
+    super(type);
   }
 }

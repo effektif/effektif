@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.lang.reflect.Type;
+
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.Money;
 
@@ -23,11 +25,13 @@ import com.effektif.workflow.api.model.Money;
  * @author Tom Baeyens
  */
 @TypeName("money")
-public class MoneyType extends JavaBeanType {
+public class MoneyType extends DataType {
 
   public static final MoneyType INSTANCE = new MoneyType();
 
-  public MoneyType() {
-    super(Money.class);
-  } 
+  @Override
+  public Type getValueType() {
+    return Money.class;
+  }
+  
 }

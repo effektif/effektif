@@ -65,9 +65,6 @@ public abstract class AbstractWorkflow extends Scope {
     return this;
   }
   
-  public Boolean getEnableCases() {
-    return this.enableCases;
-  }
   public boolean isEnableCases() {
     return Boolean.TRUE.equals(this.enableCases);
   }

@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.configuration;
 /**
  * @author Tom Baeyens
  */
-public interface Stopable {
+public interface Stoppable {
 
   void stop(Brewery brewery);
 }

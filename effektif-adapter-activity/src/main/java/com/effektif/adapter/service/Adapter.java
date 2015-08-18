@@ -48,7 +48,7 @@ public class Adapter {
           if (activityDescriptors == null) {
             activityDescriptors = new HashMap<>();
           }
-          activityDescriptors.put(activityDescriptor.getActivityKey(), activityDescriptor);
+          activityDescriptors.put(activityDescriptor.getKey(), activityDescriptor);
         }
       }
       if (adapterDescriptors.getDataSourceDescriptors()!=null) {

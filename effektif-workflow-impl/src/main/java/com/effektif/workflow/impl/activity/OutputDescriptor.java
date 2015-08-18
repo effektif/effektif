@@ -18,31 +18,32 @@ package com.effektif.workflow.impl.activity;
 import com.effektif.workflow.api.types.DataType;
 
 
-/**
+/** describes an output value of an activity.
+ * 
  * @author Tom Baeyens
  */
-public class OutputParameter extends Parameter {
+public class OutputDescriptor extends ParameterDescriptor {
 
   @Override
-  public OutputParameter key(String key) {
+  public OutputDescriptor key(String key) {
     super.key(key);
     return this;
   }
 
   @Override
-  public OutputParameter type(DataType type) {
+  public OutputDescriptor type(DataType type) {
     super.type(type);
     return this;
   }
 
   @Override
-  public OutputParameter label(String label) {
-    super.label(label);
+  public OutputDescriptor name(String name) {
+    super.name(name);
     return this;
   }
 
   @Override
-  public OutputParameter description(String description) {
+  public OutputDescriptor description(String description) {
     super.description(description);
     return this;
   }

@@ -17,9 +17,11 @@ package com.effektif.workflow.impl.configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.util.Exceptions;
 
 
@@ -34,7 +36,7 @@ public class Brewery {
    * suppliers are registered
    * @see #initialize */
   List<Startable> startables = new ArrayList<>();
-  List<Stopable> stopables = new ArrayList<>();
+  List<Stoppable> stopables = new ArrayList<>();
   boolean isStarted = false;
 
   /** maps aliases to object names. 
@@ -120,7 +122,7 @@ public class Brewery {
   public void stop() {
     if (isStarted) {
       isStarted = false;
-      for (Stopable stoppable: stopables) {
+      for (Stoppable stoppable: stopables) {
         stoppable.stop(this);
       }
     }
@@ -175,10 +177,12 @@ public class Brewery {
     alias(name, ingredient.getClass());
     ingredient(ingredient, name);
     if (ingredient instanceof Startable) {
-      startables.add((Startable)ingredient);
+      if (!startables.contains(ingredient)) {
+        startables.add((Startable)ingredient);
+      }
     }
-    if (ingredient instanceof Stopable) {
-      stopables.add((Stopable)ingredient);
+    if (ingredient instanceof Stoppable) {
+      stopables.add((Stoppable)ingredient);
     }
   }
 
@@ -214,6 +218,18 @@ public class Brewery {
           alias(name, superclass);
         }
         alias(name, serviceType.getInterfaces());
+      }
+    }
+  }
+
+  public void removeStartablesByType(Class<?> type) {
+    if (startables!=null) {
+      Iterator<Startable> iterator = startables.iterator();
+      while (iterator.hasNext()) {
+        Startable startable = iterator.next();
+        if (startable.getClass().equals(type)) {
+          iterator.remove();
+        }
       }
     }
   }
