@@ -15,14 +15,18 @@ package com.effektif.workflow.impl.bpmn;
 
 import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
+import java.awt.print.Book;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 
@@ -136,10 +140,11 @@ public class BpmnReaderImpl implements BpmnReader {
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
+    removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;
   }
-  
+
   public void readScope() {
     if (currentXml.elements!=null) {
       Iterator<XmlElement> iterator = currentXml.elements.iterator();
@@ -552,6 +557,28 @@ public class BpmnReaderImpl implements BpmnReader {
       }
     }
     return conditions;
+  }
+
+  /**
+   * Removes transitions to or from a missing activity, probably due to the activity not being imported.
+   */
+  private void removeDanglingTransitions(ExecutableWorkflow workflow) {
+    if (workflow.getTransitions() == null || workflow.getTransitions().isEmpty()) {
+      return;
+    }
+
+    Set<String> activityIds = new HashSet<>();
+    for (Activity activity : workflow.getActivities()) {
+      activityIds.add(activity.getId());
+    }
+
+    ListIterator<Transition> transitionIterator = workflow.getTransitions().listIterator();
+    while(transitionIterator.hasNext()){
+      Transition transition = transitionIterator.next();
+      if (!activityIds.contains(transition.getFromId()) || !activityIds.contains(transition.getToId())) {
+        transitionIterator.remove();
+      }
+    }
   }
 
 //  @Override
