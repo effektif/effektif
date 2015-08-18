@@ -46,6 +46,7 @@ import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.json.JsonObjectReader;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
@@ -120,6 +121,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     if (workflow != null) {
+      readDiagram(workflow, definitionsXml);
       workflow.property(KEY_DEFINITIONS, definitionsXml);
     }
 
@@ -580,6 +582,26 @@ public class BpmnReaderImpl implements BpmnReader {
       }
     }
   }
+
+  /**
+   * Stub for reading the workflow name and description from the diagram element, as there is no diagram model yet.
+   */
+  private void readDiagram(ExecutableWorkflow workflow, XmlElement definitionsXml) {
+    if (definitionsXml==null) {
+      return;
+    }
+    List<XmlElement> xmlElements = definitionsXml.removeElements(BPMN_DI_URI, "BPMNDiagram");
+    for (XmlElement diagramElement: xmlElements) {
+      startElement(diagramElement);
+      if (currentXml==null) {
+        return;
+      }
+      workflow.setName(currentXml.removeAttribute(BPMN_DI_URI, "name"));
+      workflow.setDescription(currentXml.removeAttribute(BPMN_DI_URI, "documentation"));
+      endElement();
+    }
+  }
+
 
 //  @Override
 //  public AccessIdentity readAccessIdentity() {
