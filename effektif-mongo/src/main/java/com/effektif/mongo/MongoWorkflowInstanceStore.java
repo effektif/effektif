@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
@@ -54,11 +55,6 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
@@ -289,7 +285,28 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     }
     return workflowInstances;
   }
-  
+
+  @Override
+  public List<String> findWorkflowInstancesNotLockedByOwner(WorkflowInstanceQuery query, String uniqueLockOwner) {
+    BasicDBObject dbQuery = createDbQuery(query);
+
+    BasicDBList or = new BasicDBList();
+    or.add(new BasicDBObject(WorkflowInstanceFields.LOCK, new BasicDBObject("$exists", false)));
+    or.add(new BasicDBObject(WorkflowInstanceFields.LOCK + "." + WorkflowInstanceLockFields.OWNER, new BasicDBObject("$ne", uniqueLockOwner)));
+
+    dbQuery.append("$or", or);
+
+    BasicDBObject fields = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, true);
+
+    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("", dbQuery, fields);
+    List<String> workflowInstanceIds = new ArrayList<>();
+    while (workflowInstanceCursor.hasNext()) {
+      BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
+      workflowInstanceIds.add(dbWorkflowInstance.getString(WorkflowInstanceFields._ID));
+    }
+    return workflowInstanceIds;
+  }
+
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
     BasicDBObject query = createDbQuery(workflowInstanceQuery);
@@ -340,13 +357,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner) {
     Exceptions.checkNotNullParameter(workflowInstanceId, "workflowInstanceId");
 
     DBObject query = createLockQuery();
     query.put(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId.getInternal()));
     
-    DBObject update = createLockUpdate();
+    DBObject update = createLockUpdate(owner);
     
     DBObject retrieveFields = new BasicDBObject()
           .append(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, false);
@@ -360,7 +377,19 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.trackUpdates(false);
     return workflowInstance;
   }
-  
+
+  public int lockAllWorkflowInstances(String workflowId, String uniqueOwner) {
+
+    DBObject query = createLockQuery();
+    query.put(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowId));
+
+    DBObject update = createLockUpdate(uniqueOwner);
+
+    WriteResult writeResult = workflowInstancesCollection.update("lock-workflowInstance-migrate", query, update, false, true);
+
+    return writeResult.getN();
+  }
+
   @Override
   public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
     workflowInstancesCollection.update("unlock-workflow-instance", 
@@ -380,12 +409,12 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       .get();
   }
 
-  public DBObject createLockUpdate() {
+  public DBObject createLockUpdate(String owner) {
     return BasicDBObjectBuilder.start()
       .push("$set")
         .push(WorkflowInstanceFields.LOCK)
           .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
-          .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
+          .add(WorkflowInstanceLockFields.OWNER, owner)
         .pop()
       .pop()
       .get();

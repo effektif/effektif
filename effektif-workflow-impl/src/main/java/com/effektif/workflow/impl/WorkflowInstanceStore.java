@@ -31,7 +31,9 @@ public interface WorkflowInstanceStore {
   /** used when rendering a form */
   WorkflowInstanceImpl getWorkflowInstanceImplById(WorkflowInstanceId workflowInstanceId);
 
-  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
+  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner);
+
+  int lockAllWorkflowInstances(String workflowId, String uniqueOwner);
 
   WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
 
@@ -43,8 +45,9 @@ public interface WorkflowInstanceStore {
 
   List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
+  List<String> findWorkflowInstancesNotLockedByOwner(WorkflowInstanceQuery unlockedInsQry, String uniqueLockOwner);
+
   void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
   void deleteAllWorkflowInstances();
-
 }
