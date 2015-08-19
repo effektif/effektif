@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.impl.json.JsonObjectMapper;
-import com.effektif.workflow.impl.json.Mappings;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
@@ -27,14 +26,6 @@ import com.mongodb.BasicDBObject;
  * @author Tom Baeyens
  */
 public class MongoObjectMapper extends JsonObjectMapper {
-
-  public MongoObjectMapper() {
-    this(new MongoObjectMappingsBuilder().getMappings());
-  }
-  
-  public MongoObjectMapper(Mappings mappings) {
-    super(mappings);
-  }
 
   public <T> BasicDBObject write(T bean) {
     return (BasicDBObject) super.write(bean);

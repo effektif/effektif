@@ -15,7 +15,9 @@
  */
 package com.effektif.workflow.impl.activity;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.types.DataType;
@@ -50,6 +52,15 @@ public class ActivityDescriptor extends Extensible {
     return this;
   }
 
+  public ActivityDescriptor inputDescriptors(Collection<InputDescriptor> inputDescriptors) {
+    if (inputDescriptors!=null) {
+      for (InputDescriptor inputDescriptor: inputDescriptors) {
+        inputDescriptor(inputDescriptor);
+      }
+    }
+    return this;
+  }
+
   public ActivityDescriptor inputDescriptor(InputDescriptor inputDescriptor) {
     if (inputDescriptors==null) {
       inputDescriptors = new HashMap<>();
@@ -60,6 +71,15 @@ public class ActivityDescriptor extends Extensible {
 
   public ActivityDescriptor outputDescriptorString(String outputParameterKey, String outputParameterLabel) {
     outputDescriptor(outputParameterKey, outputParameterLabel, new TextType());
+    return this;
+  }
+
+  public ActivityDescriptor outputDescriptors(Collection<OutputDescriptor> outputDescriptors) {
+    if (outputDescriptors!=null) {
+      for (OutputDescriptor outputDescriptor: outputDescriptors) {
+        outputDescriptor(outputDescriptor);
+      }
+    }
     return this;
   }
 
@@ -139,4 +159,18 @@ public class ActivityDescriptor extends Extensible {
   public void setOutputDescriptors(Map<String, OutputDescriptor> outputParameters) {
     this.outputDescriptors = outputParameters;
   }
+
+  @Override
+  public ActivityDescriptor property(String key, Object value) {
+    super.property(key, value);
+    return this;
+  }
+
+  @Override
+  public ActivityDescriptor propertyOpt(String key, Object value) {
+    super.propertyOpt(key, value);
+    return this;
+  }
+  
+  
 }

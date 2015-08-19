@@ -39,12 +39,7 @@ public class JsonStreamMapper {
   boolean pretty;
   
   public JsonStreamMapper() {
-    this(new JsonStreamMappingsBuilder().getMappings());
-  }
-  
-  public JsonStreamMapper(Mappings mappings) {
     this.objectMapper = new ObjectMapper();
-    this.mappings = mappings;
   }
 
   public JsonStreamMapper pretty() {
@@ -115,5 +110,8 @@ public class JsonStreamMapper {
   public Mappings getMappings() {
     return mappings;
   }
-
+  
+  public void setMappings(Mappings mappings) {
+    this.mappings = mappings;
+  }
 }

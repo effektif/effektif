@@ -13,11 +13,16 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
+import com.effektif.workflow.impl.json.configuration.JsonStreamMappingsBuilder;
 
 
 /**
  * @author Tom Baeyens
  */
-public class JavaBeanValueMapper extends JsonObjectMapper {
+public class DefaultJsonStreamMapper extends JsonStreamMapper {
+
+  public DefaultJsonStreamMapper() {
+    setMappings(new JsonStreamMappingsBuilder().getMappings());
+  }
 
 }

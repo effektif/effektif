@@ -59,6 +59,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     String DEPLOYED_BY = "deployedBy";
     String SOURCE_WORKFLOW_ID = "sourceWorkflowId";
     String CREATE_TIME = "createTime";
+    String TRIGGER = "trigger";
   }
 
   public interface FieldsWorkflowVersions {
@@ -192,6 +193,12 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     }
     throw new RuntimeException("Unknown field "+field);
   }
+
+  public MongoCollection getWorkflowsCollection() {
+    return workflowsCollection;
+  }
+  
+  
 
 //  interface FieldsScope {
 //    String _ID = "_id";

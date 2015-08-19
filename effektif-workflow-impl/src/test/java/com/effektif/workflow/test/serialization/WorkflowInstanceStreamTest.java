@@ -27,6 +27,7 @@ import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.EmailAddressType;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 
@@ -41,7 +42,7 @@ public class WorkflowInstanceStreamTest {
   
   @BeforeClass
   public static void initialize() {
-    jsonStreamMapper = new JsonStreamMapper();
+    jsonStreamMapper = new DefaultJsonStreamMapper();
     jsonStreamMapper.pretty();
   }
 

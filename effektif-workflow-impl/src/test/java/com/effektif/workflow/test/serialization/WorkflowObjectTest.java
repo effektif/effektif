@@ -13,11 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import java.util.Map;
+import java.io.StringReader;
 
 import org.junit.BeforeClass;
 
-import com.effektif.workflow.impl.json.JavaBeanValueMapper;
+import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 
 
 /**
@@ -25,17 +25,18 @@ import com.effektif.workflow.impl.json.JavaBeanValueMapper;
  */
 public class WorkflowObjectTest extends WorkflowStreamTest {
 
-  static JavaBeanValueMapper jsonObjectMapper = null;
+  static DefaultJsonStreamMapper jsonObjectMapper = null;
   
   @BeforeClass
   public static void initialize() {
-    jsonObjectMapper = new JavaBeanValueMapper();
+    jsonObjectMapper = new DefaultJsonStreamMapper();
   }
 
   @Override
   public <T> T serialize(T o) {
-    Map<String,Object> jsonMap = jsonObjectMapper.write(o);
-    System.out.println(jsonMap.toString());
-    return jsonObjectMapper.read(jsonMap, o.getClass());
+    String jsonString = jsonObjectMapper.write(o);
+    System.out.println(jsonString);
+    StringReader jsonReader = new StringReader(jsonString);
+    return (T) jsonObjectMapper.read(jsonReader, o.getClass());
   }
 }

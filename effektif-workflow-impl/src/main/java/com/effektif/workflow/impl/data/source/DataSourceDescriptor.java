@@ -15,10 +15,6 @@
  */
 package com.effektif.workflow.impl.data.source;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.effektif.workflow.impl.data.types.CustomType;
 
 
 /**
@@ -28,7 +24,6 @@ public class DataSourceDescriptor {
 
   protected String dataSourceKey;
   protected String label;
-  protected Map<String,CustomType> types;
 
   public String getDataSourceKey() {
     return this.dataSourceKey;
@@ -50,20 +45,5 @@ public class DataSourceDescriptor {
   public DataSourceDescriptor label(String label) {
     this.label = label;
     return this;
-  }
-  
-  public Map<String, CustomType> getTypes() {
-    return types;
-  }
-  
-  public void setTypes(Map<String, CustomType> types) {
-    this.types = types;
-  }
-  
-  public void type(CustomType customType) {
-    if (types==null) {
-      this.types = new HashMap<>();
-    }
-    this.types.put(customType.getKey(), customType);
   }
 }

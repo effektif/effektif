@@ -37,7 +37,7 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
     super((T)ObjectType.INSTANCE);
   }
 
-  public ObjectTypeImpl(T typeApi, Class< ? > valueClass) {
+  public ObjectTypeImpl(T typeApi) {
     super(typeApi);
   }
   

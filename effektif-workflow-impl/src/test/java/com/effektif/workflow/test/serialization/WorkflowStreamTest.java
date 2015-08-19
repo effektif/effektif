@@ -48,6 +48,7 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
 
@@ -64,7 +65,7 @@ public class WorkflowStreamTest {
   @BeforeClass
   public static void initialize() {
     if (jsonStreamMapper==null) {
-      jsonStreamMapper = new JsonStreamMapper();
+      jsonStreamMapper = new DefaultJsonStreamMapper();
       jsonStreamMapper.pretty();
     }
   }

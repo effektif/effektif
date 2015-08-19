@@ -14,10 +14,15 @@
 package com.effektif.workflow.impl.json;
 
 
-
 /**
  * @author Tom Baeyens
  */
-public class JavaBeanValueMapper extends JsonObjectMapper {
+public class DefaultJavaBeanValueMapper extends JavaBeanValueMapper {
+
+  public DefaultJavaBeanValueMapper() {
+    setMappings(new MappingsBuilder()
+      .configureDefaults()
+      .getMappings());      
+  }
 
 }

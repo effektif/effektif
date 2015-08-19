@@ -29,20 +29,6 @@ public abstract class JsonObjectMapper {
 
   protected Mappings mappings;
 
-  public JsonObjectMapper() {
-    this(null);
-  }
-  
-  public JsonObjectMapper(Mappings mappings) {
-    if (mappings!=null) {
-      this.mappings = mappings;
-    } else {
-      this.mappings = new MappingsBuilder()
-        .configureDefaults()
-        .getMappings();      
-    }
-  }
-
   public <T> T read(Map<String,Object> beanJsonMap, Class<?> clazz) {
     return read(beanJsonMap, (Type)clazz);
   }
@@ -71,5 +57,9 @@ public abstract class JsonObjectMapper {
 
   public Mappings getMappings() {
     return mappings;
+  }
+ 
+  public void setMappings(Mappings mappings) {
+    this.mappings = mappings;
   }
 }

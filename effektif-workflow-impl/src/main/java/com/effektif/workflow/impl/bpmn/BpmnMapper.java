@@ -25,6 +25,7 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
+import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 
 /**
@@ -39,7 +40,7 @@ public class BpmnMapper {
   private JsonStreamMapper jsonStreamMapper;
   
   public static BpmnMapper createBpmnMapperForTest() {
-    return new BpmnMapper(new JsonStreamMapper());
+    return new BpmnMapper(new DefaultJsonStreamMapper());
   }
 
   public BpmnMapper(JsonStreamMapper jsonStreamMapper) {

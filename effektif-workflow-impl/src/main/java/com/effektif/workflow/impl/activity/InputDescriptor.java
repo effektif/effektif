@@ -22,7 +22,7 @@ import com.effektif.workflow.api.types.DataType;
  * 
  * @author Tom Baeyens
  */
-public class InputDescriptor<T> extends ParameterDescriptor {
+public class InputDescriptor extends ParameterDescriptor {
   
   protected Boolean required;
 
@@ -58,6 +58,12 @@ public class InputDescriptor<T> extends ParameterDescriptor {
   @Override
   public InputDescriptor description(String description) {
     super.description(description);
+    return this;
+  }
+  
+  @Override
+  public InputDescriptor autoBindKey(String autoBindKey) {
+    super.autoBindKey(autoBindKey);
     return this;
   }
 }

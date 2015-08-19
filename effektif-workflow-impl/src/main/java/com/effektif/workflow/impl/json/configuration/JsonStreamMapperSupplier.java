@@ -28,7 +28,9 @@ public class JsonStreamMapperSupplier implements Supplier {
   public Object supply(Brewery brewery) {
     JsonStreamMappingsBuilder jsonStreamMappingsBuilder = brewery.get(JsonStreamMappingsBuilder.class);
     Mappings mappings = jsonStreamMappingsBuilder.getMappings();
-    return new JsonStreamMapper(mappings);
+    JsonStreamMapper jsonStreamMapper = new JsonStreamMapper();
+    jsonStreamMapper.setMappings(mappings);
+    return jsonStreamMapper;
   }
 
   @Override

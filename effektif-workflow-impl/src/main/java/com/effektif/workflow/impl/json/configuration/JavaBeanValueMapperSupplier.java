@@ -28,7 +28,9 @@ public class JavaBeanValueMapperSupplier implements Supplier {
   public Object supply(Brewery brewery) {
     JavaBeanValueMappingsBuilder javaBeanValueMappingsBuilder = brewery.get(JavaBeanValueMappingsBuilder.class);
     Mappings mappings = javaBeanValueMappingsBuilder.getMappings();
-    return new JavaBeanValueMapper(mappings);
+    JavaBeanValueMapper javaBeanValueMapper = new JavaBeanValueMapper();
+    javaBeanValueMapper.setMappings(mappings);
+    return javaBeanValueMapper;
   }
 
   @Override

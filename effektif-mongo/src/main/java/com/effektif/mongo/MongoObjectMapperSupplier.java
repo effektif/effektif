@@ -15,7 +15,6 @@ package com.effektif.mongo;
 
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.Mappings;
 
 
@@ -28,7 +27,9 @@ public class MongoObjectMapperSupplier implements Supplier {
   public Object supply(Brewery brewery) {
     MongoObjectMappingsBuilder mongoObjectMappingsBuilder = brewery.get(MongoObjectMappingsBuilder.class);
     Mappings mappings = mongoObjectMappingsBuilder.getMappings();
-    return new MongoObjectMapper(mappings);
+    MongoObjectMapper mongoObjectMapper = new MongoObjectMapper();
+    mongoObjectMapper.setMappings(mappings);
+    return mongoObjectMapper;
   }
 
   @Override

@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 
+import com.effektif.mongo.DefaultMongoObjectMapper;
 import com.effektif.mongo.MongoObjectMapper;
 import com.effektif.workflow.test.serialization.WorkflowStreamTest;
 
@@ -30,7 +31,7 @@ public class MongoJsonTest extends WorkflowStreamTest {
   
   @BeforeClass
   public static void initialize() {
-    mongoObjectMapper = new MongoObjectMapper();
+    mongoObjectMapper = new DefaultMongoObjectMapper();
   }
 
   @Override

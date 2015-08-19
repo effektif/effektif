@@ -11,13 +11,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.impl.json;
-
+package com.effektif.mongo;
 
 
 /**
  * @author Tom Baeyens
  */
-public class JavaBeanValueMapper extends JsonObjectMapper {
+public class DefaultMongoObjectMapper extends MongoObjectMapper {
 
+  public DefaultMongoObjectMapper() {
+    setMappings(new MongoObjectMappingsBuilder().getMappings());
+  }
 }

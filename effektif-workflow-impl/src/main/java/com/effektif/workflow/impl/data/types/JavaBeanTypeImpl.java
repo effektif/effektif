@@ -36,11 +36,11 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   protected Class<?> valueClass;
   
   public JavaBeanTypeImpl() {
-    super((T) new JavaBeanType(), null);
+    super((T) new JavaBeanType());
   }
   
   public JavaBeanTypeImpl(DataType typeApi) {
-    super((T) typeApi, null);
+    super((T) typeApi);
     this.valueClass = (Class<?>)typeApi.getValueType();
   }
 

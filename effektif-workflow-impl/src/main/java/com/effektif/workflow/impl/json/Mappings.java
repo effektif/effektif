@@ -251,6 +251,9 @@ public class Mappings {
 
   public JsonTypeMapper getTypeMapper(Type type) {
     JsonTypeMapper jsonTypeMapper = typeMappers.get(type);
+    if (jsonTypeMapper!=null) {
+      return jsonTypeMapper;
+    }
 
     Class clazz = Reflection.getRawClass(type);
     for (JsonTypeMapperFactory factory: jsonTypeMapperFactories) {

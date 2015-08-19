@@ -43,6 +43,7 @@ public class MongoConfiguration extends DefaultConfiguration {
   protected String workflowInstancesCollectionName = "workflowInstances";
   protected String jobsCollectionName = "jobs";
   protected String jobsArchivedCollectionName = "jobsArchived";
+  protected String typeCollectionName = "types";
   protected boolean isPretty;
   protected MongoClientOptions.Builder optionBuilder = new MongoClientOptions.Builder();
   protected boolean storeWorkflowIdsAsStrings = false;
@@ -203,6 +204,14 @@ public class MongoConfiguration extends DefaultConfiguration {
     this.jobsArchivedCollectionName = jobsArchivedCollectionName;
   }
   
+  public String getTypeCollectionName() {
+    return typeCollectionName;
+  }
+  
+  public void setTypeCollectionName(String typeCollectionName) {
+    this.typeCollectionName = typeCollectionName;
+  }
+
   public boolean isPretty() {
     return isPretty;
   }
@@ -240,4 +249,5 @@ public class MongoConfiguration extends DefaultConfiguration {
     super.ingredient(ingredient);
     return this;
   }
+
 }

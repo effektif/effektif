@@ -47,4 +47,10 @@ public class OutputDescriptor extends ParameterDescriptor {
     super.description(description);
     return this;
   }
+
+  @Override
+  public OutputDescriptor autoBindKey(String autoBindKey) {
+    super.autoBindKey(autoBindKey);
+    return this;
+  }
 }
