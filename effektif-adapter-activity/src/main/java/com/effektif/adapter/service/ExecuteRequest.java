@@ -34,6 +34,8 @@ public class ExecuteRequest {
   protected String activityKey;
   protected WorkflowInstanceId workflowInstanceId;
   protected String activityInstanceId;
+  protected String activityId;
+  protected String workflowId;
   protected Map<String,TypedValue> inputParameters;
   
   public String getActivityKey() {
@@ -55,6 +57,24 @@ public class ExecuteRequest {
   }
   public ExecuteRequest workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     this.workflowInstanceId = workflowInstanceId;
+    return this;
+  }
+
+  public String getActivityId() {
+    return activityId;
+  }
+
+  public ExecuteRequest activityId(String activityId) {
+    this.activityId = activityId;
+    return this;
+  }
+
+  public String getWorkflowId() {
+    return workflowId;
+  }
+
+  public ExecuteRequest workflowId(String workflowId) {
+    this.workflowId = workflowId;
     return this;
   }
 

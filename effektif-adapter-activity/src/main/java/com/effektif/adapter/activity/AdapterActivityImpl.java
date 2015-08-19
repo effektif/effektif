@@ -29,6 +29,8 @@ import com.effektif.workflow.impl.activity.types.AbstractBindableActivityImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
+import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 import java.util.HashMap;
@@ -74,6 +76,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         InputDescriptor inputDescriptor = inputDescriptors!=null ? inputDescriptors.get(key) : null;
         parser.pushContext("inputBindings["+key+"]", inputDescriptor, null, null);
         if (inputDescriptor==null) {
+          inputDescriptor = substituteMissingDescriptor(parser.workflow, inputBinding);
           parser.addWarning("Unexpected input binding '%s' in activity '%s'", key, activity.getId());
         }
         DataType type = inputDescriptor.getType();
@@ -92,7 +95,18 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
 
     this.outputBindings = activity.getOutputBindings();
   }
-  
+
+  protected InputDescriptor substituteMissingDescriptor(WorkflowImpl workflow, Binding inputBinding) {
+    InputDescriptor inputDescriptor = null;
+    VariableImpl variable = workflow.getVariables().get(inputBinding.getExpression());
+
+    if (variable != null) {
+      inputDescriptor = new InputDescriptor().name(variable.id).type(variable.type.getDataType());
+    }
+
+    return inputDescriptor;
+  }
+
   public ActivityDescriptor getDescriptor() {
     return descriptor;
   }
@@ -102,7 +116,9 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     ExecuteRequest executeRequest = new ExecuteRequest()
       .activityInstanceId(activityInstance.id)
       .workflowInstanceId(activityInstance.workflowInstance.id)
-      .activityKey(activityKey);
+      .activityKey(activityKey)
+      .activityId(activityInstance.activity.id)
+      .workflowId(activityInstance.workflow.id.getInternal());
 
     if (inputBindings!=null) {
       for (String adapterKey: inputBindings.keySet()) {
