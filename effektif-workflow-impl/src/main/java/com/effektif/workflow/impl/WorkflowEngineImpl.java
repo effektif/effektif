@@ -126,6 +126,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
       String uniqueLockOwner = getId() + "-" + uuid.toString();
 
+      log.debug("Migrating workflow " + migrator.sourceWorkflowId + " to workflow with id: " + workflow.getId().getInternal());
+
       WorkflowImpl workflowImpl = getWorkflowImpl(deployment.getWorkflowId());
 
       List<String> workflowInstances = workflowInstanceStore.findWorkflowInstanceIds(new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId));
@@ -137,6 +139,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         wfImpl.migrateToWorkflow(workflowImpl);
         workflowInstanceStore.flushAndUnlock(wfImpl);
       }
+
+      log.debug("Migration ended, nr of objects migrated: " + workflowInstances.size());
     }
 
     return deployment;
