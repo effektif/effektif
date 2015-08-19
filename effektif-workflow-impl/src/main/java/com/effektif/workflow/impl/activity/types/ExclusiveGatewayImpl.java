@@ -37,13 +37,13 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  * @author Tom Baeyens
  */
 public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway> {
-  
+
   private static final Logger log = WorkflowEngineImpl.log;
 
   ConditionService conditionService;
   CompiledScript transitionIdExpression;
-  Map<String,CompiledScript> transitionExpressions;
-  
+  Map<String, CompiledScript> transitionExpressions;
+
   public ExclusiveGatewayImpl() {
     super(ExclusiveGateway.class);
   }
@@ -53,31 +53,48 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
     super.parse(activityImpl, exclusiveGateway, parser);
     conditionService = parser.getConfiguration(ConditionService.class);
   }
-  
+
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     ActivityImpl activity = activityInstance.activity;
     List<TransitionImpl> outgoingTransitions = activity.outgoingTransitions;
 
     TransitionImpl transition = findFirstTransitionThatMeetsCondition(activityInstance, outgoingTransitions);
-    if (transition==null) {
-      if (activity.defaultTransition!=null) {
+    if (transition == null) {
+      if (activity.defaultTransition != null) {
         transition = activity.defaultTransition;
-      } else if (outgoingTransitions!=null && outgoingTransitions.size()==1) {
+      } else if (outgoingTransitions != null && outgoingTransitions.size() == 1) {
         transition = outgoingTransitions.get(0);
-      } else if (outgoingTransitions!=null && outgoingTransitions.size()>1) {
+      } else if (outgoingTransitions != null && outgoingTransitions.size() > 1) {
         // TODO create an event to let the user decide
+        log.warn("No default transition found and more than one outgoing transitions on Exclusive gateway" +
+                ", so looking for a transition without conditions to execute. WorkflowInstanceId: " + activityInstance.getWorkflowInstance().getId().getInternal());
+
+        transition = findFirstTransitionWithoutCondition(activityInstance, outgoingTransitions);
       }
     }
-    
-    if (transition!=null) {
+
+    if (transition != null) {
       activityInstance.takeTransition(transition);
     } else {
-      log.debug("No transition selected. Gateway "+activity+" ends flow");
+      log.debug("No transition selected. Gateway " + activity + " ends flow");
       // no outgoing transitions. just end here and notify the parent this execution path ended.
-      activityInstance.end();
-      activityInstance.propagateToParent();
+
+      // Since there is no transition, the workflow should not end here, so leave the activity open.
+      //activityInstance.end();
+      //activityInstance.propagateToParent();
     }
+  }
+
+  protected TransitionImpl findFirstTransitionWithoutCondition(ActivityInstanceImpl activityInstance, List<TransitionImpl> outgoingTransitions) {
+    if (outgoingTransitions != null) {
+      for (TransitionImpl outgoingTransition : outgoingTransitions) {
+        if (outgoingTransition.condition == null) {
+          return outgoingTransition;
+        }
+      }
+    }
+    return null;
   }
 
   protected TransitionImpl findFirstTransitionThatMeetsCondition(ActivityInstanceImpl activityInstance, List<TransitionImpl> outgoingTransitions) {
