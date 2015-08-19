@@ -15,14 +15,18 @@ package com.effektif.workflow.impl.bpmn;
 
 import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
+import java.awt.print.Book;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 
@@ -42,6 +46,7 @@ import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.json.JsonObjectReader;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
@@ -116,6 +121,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     if (workflow != null) {
+      readDiagram(workflow, definitionsXml);
       workflow.property(KEY_DEFINITIONS, definitionsXml);
     }
 
@@ -136,10 +142,11 @@ public class BpmnReaderImpl implements BpmnReader {
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
+    removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;
   }
-  
+
   public void readScope() {
     if (currentXml.elements!=null) {
       Iterator<XmlElement> iterator = currentXml.elements.iterator();
@@ -553,6 +560,48 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return conditions;
   }
+
+  /**
+   * Removes transitions to or from a missing activity, probably due to the activity not being imported.
+   */
+  private void removeDanglingTransitions(ExecutableWorkflow workflow) {
+    if (workflow.getTransitions() == null || workflow.getTransitions().isEmpty()) {
+      return;
+    }
+
+    Set<String> activityIds = new HashSet<>();
+    for (Activity activity : workflow.getActivities()) {
+      activityIds.add(activity.getId());
+    }
+
+    ListIterator<Transition> transitionIterator = workflow.getTransitions().listIterator();
+    while(transitionIterator.hasNext()){
+      Transition transition = transitionIterator.next();
+      if (!activityIds.contains(transition.getFromId()) || !activityIds.contains(transition.getToId())) {
+        transitionIterator.remove();
+      }
+    }
+  }
+
+  /**
+   * Stub for reading the workflow name and description from the diagram element, as there is no diagram model yet.
+   */
+  private void readDiagram(ExecutableWorkflow workflow, XmlElement definitionsXml) {
+    if (definitionsXml==null) {
+      return;
+    }
+    List<XmlElement> xmlElements = definitionsXml.removeElements(BPMN_DI_URI, "BPMNDiagram");
+    for (XmlElement diagramElement: xmlElements) {
+      startElement(diagramElement);
+      if (currentXml==null) {
+        return;
+      }
+      workflow.setName(currentXml.removeAttribute(BPMN_DI_URI, "name"));
+      workflow.setDescription(currentXml.removeAttribute(BPMN_DI_URI, "documentation"));
+      endElement();
+    }
+  }
+
 
 //  @Override
 //  public AccessIdentity readAccessIdentity() {

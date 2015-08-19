@@ -18,7 +18,7 @@ package com.effektif.workflow.api.workflow;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.model.WorkflowId;
-
+import com.effektif.workflow.api.workflow.diagram.Diagram;
 
 /**
  * @author Tom Baeyens
@@ -28,6 +28,7 @@ public abstract class AbstractWorkflow extends Scope {
   protected WorkflowId id;
   protected Trigger trigger;
   protected Boolean enableCases;
+  protected Diagram diagram;
 
   public abstract String getSourceWorkflowId();
   
@@ -77,5 +78,13 @@ public abstract class AbstractWorkflow extends Scope {
   public AbstractWorkflow enableCases() {
     this.enableCases = true;
     return this;
+  }
+
+  public Diagram getDiagram() {
+    return diagram;
+  }
+
+  public void setDiagram(Diagram diagram) {
+    this.diagram = diagram;
   }
 }
