@@ -229,7 +229,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       // a lock is only removed 
       unsets.put(WorkflowInstanceFields.LOCK, 1);
     }
-    
+
+    if (updates.isWorkflowChanged) {
+      sets.put(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowInstance.getWorkflow().getId().getInternal()));
+    }
+
     if (updates.isJobsChanged) {
       // if (log.isDebugEnabled()) log.debug("  Jobs changed");
       List<BasicDBObject> dbJobs = writeJobs(workflowInstance.jobs);
@@ -275,6 +279,21 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     return findWorkflowInstances(dbQuery);
   }
 
+  public List<String> findWorkflowInstanceIds(WorkflowInstanceQuery query) {
+    BasicDBObject dbQuery = createDbQuery(query);
+    BasicDBObject dbFields = new BasicDBObject(WorkflowInstanceFields._ID, true);
+
+    DBCursor workflowInstanceCursor = workflowInstancesCollection.dbCollection.find(dbQuery, dbFields);
+    List<String> workflowInstances = new ArrayList<>();
+    while (workflowInstanceCursor.hasNext()) {
+      BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
+      workflowInstances.add(dbWorkflowInstance.getString(WorkflowInstanceFields._ID));
+    }
+
+    return workflowInstances;
+
+  }
+
   public List<WorkflowInstanceImpl> findWorkflowInstances(BasicDBObject dbQuery) {
     DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instance-impls", dbQuery);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
@@ -284,27 +303,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       workflowInstances.add(workflowInstance);
     }
     return workflowInstances;
-  }
-
-  @Override
-  public List<String> findWorkflowInstancesNotLockedByOwner(WorkflowInstanceQuery query, String uniqueLockOwner) {
-    BasicDBObject dbQuery = createDbQuery(query);
-
-    BasicDBList or = new BasicDBList();
-    or.add(new BasicDBObject(WorkflowInstanceFields.LOCK, new BasicDBObject("$exists", false)));
-    or.add(new BasicDBObject(WorkflowInstanceFields.LOCK + "." + WorkflowInstanceLockFields.OWNER, new BasicDBObject("$ne", uniqueLockOwner)));
-
-    dbQuery.append("$or", or);
-
-    BasicDBObject fields = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, true);
-
-    DBCursor workflowInstanceCursor = workflowInstancesCollection.find("", dbQuery, fields);
-    List<String> workflowInstanceIds = new ArrayList<>();
-    while (workflowInstanceCursor.hasNext()) {
-      BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
-      workflowInstanceIds.add(dbWorkflowInstance.getString(WorkflowInstanceFields._ID));
-    }
-    return workflowInstanceIds;
   }
 
   @Override
@@ -331,6 +329,10 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES
               , new BasicDBObject("$elemMatch", new BasicDBObject(ActivityInstanceFields.ACTIVITY_ID, query.getActivityId())
               .append(ActivityInstanceFields.WORK_STATE, new BasicDBObject("$exists", true))));
+    }
+
+    if (query.getWorkflowId() != null) {
+      dbQuery.append(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(query.getWorkflowId()));
     }
 
     return dbQuery;
@@ -376,18 +378,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     WorkflowInstanceImpl workflowInstance = readWorkflowInstanceImpl(dbWorkflowInstance);
     workflowInstance.trackUpdates(false);
     return workflowInstance;
-  }
-
-  public int lockAllWorkflowInstances(String workflowId, String uniqueOwner) {
-
-    DBObject query = createLockQuery();
-    query.put(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowId));
-
-    DBObject update = createLockUpdate(uniqueOwner);
-
-    WriteResult writeResult = workflowInstancesCollection.update("lock-workflowInstance-migrate", query, update, false, true);
-
-    return writeResult.getN();
   }
 
   @Override

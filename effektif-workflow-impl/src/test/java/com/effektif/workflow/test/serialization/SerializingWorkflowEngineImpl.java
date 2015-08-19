@@ -18,6 +18,7 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.workflow.WorkflowInstanceMigrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,15 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
     log.debug("deployWorkflow");
     workflow = wireize(" >>workflow>> ", workflow);
     Deployment deployment = workflowEngine.deployWorkflow(workflow);
+    return wireize("  <<deployment<< ", deployment);
+  }
+
+  @Override
+  public Deployment deployWorkflow(ExecutableWorkflow workflow, WorkflowInstanceMigrator migrator) {
+    log.debug("deployWorkflow");
+    workflow = wireize(" >>workflow>> ", workflow);
+    migrator = wireize(" >>migrator>> ", migrator);
+    Deployment deployment = workflowEngine.deployWorkflow(workflow, migrator);
     return wireize("  <<deployment<< ", deployment);
   }
 

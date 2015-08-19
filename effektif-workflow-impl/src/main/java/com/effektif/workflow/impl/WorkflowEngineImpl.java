@@ -120,50 +120,76 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     Deployment deployment = deployWorkflow(workflow);
 
-
-    if (migrator!=null) {
+    if (migrator!=null && migrator.sourceWorkflowId != null) {
       // create a unique lockOwner for the migration
       UUID uuid = UUID.randomUUID();
 
       String uniqueLockOwner = getId() + "-" + uuid.toString();
 
-      // lock all workflow instances that don’t have a lock at the moment, bulk operation.
-      int lockedWorkflowInstances = workflowInstanceStore.lockAllWorkflowInstances(migrator.sourceWorkflowId, uniqueLockOwner);
-
-      // only lock instances that have no lock
-      // if there are workflow instances that still need to be migrated
-      // only lock workflow instances in the previous version!
-      WorkflowInstanceQuery unlockedInsQry = new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId);
-      List<String> workflowInstances = workflowInstanceStore.findWorkflowInstancesNotLockedByOwner(unlockedInsQry, uniqueLockOwner);
-
-      for (String workflowInstanceId : workflowInstances) {
-        try {
-          WorkflowInstanceImpl wfi = lockWorkflowInstanceWithRetry(new WorkflowInstanceId(workflowInstanceId), uniqueLockOwner);
-
-          if (wfi != null) lockedWorkflowInstances++;
-        } catch (RuntimeException rE) {
-          log.warn("Could not migrate workflowInstance with id: " + workflowInstanceId, rE);
-        }
-      }
-
-      log.debug("Locked " + lockedWorkflowInstances + " workflowInstances for migrating from workflow " + migrator.sourceWorkflowId +
-              " to workflow " + deployment.getWorkflowId());
-
-      List<WorkflowInstanceImpl> migratibleWorkflowInstances =  workflowInstanceStore.findLockedWorkflowInstances(new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId), uniqueLockOwner);
-
-      if (migratibleWorkflowInstances.size() != lockedWorkflowInstances) {
-        log.warn("The number of workflowInstances locked is different from the number of workflowInstances that will be migrated to the new workflow.");
-      }
-
       WorkflowImpl workflowImpl = getWorkflowImpl(deployment.getWorkflowId());
 
-      for (WorkflowInstanceImpl worklfowInstance : migratibleWorkflowInstances) {
+      List<String> workflowInstances = workflowInstanceStore.findWorkflowInstanceIds(new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId));
 
-        worklfowInstance.trackUpdates(false);
-        worklfowInstance.migrateToWorkflow(workflowImpl);
-        workflowInstanceStore.flushAndUnlock(worklfowInstance);
+      for (String workflowInstanceId : workflowInstances) {
+        WorkflowInstanceImpl wfImpl = lockWorkflowInstanceWithRetry(new WorkflowInstanceId(workflowInstanceId), uniqueLockOwner);
 
+        wfImpl.trackUpdates(false);
+        wfImpl.migrateToWorkflow(workflowImpl);
+        workflowInstanceStore.flushAndUnlock(wfImpl);
       }
+
+//      List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId));
+//
+//      for (WorkflowInstanceImpl workflowInstance : workflowInstances) {
+//        WorkflowInstanceImpl wfImpl = lockWorkflowInstanceWithRetry(workflowInstance.getId(), uniqueLockOwner);
+//
+//        wfImpl.trackUpdates(false);
+//        wfImpl.migrateToWorkflow(workflowImpl);
+//        workflowInstanceStore.flushAndUnlock(wfImpl);
+//      }
+
+
+//
+//
+//
+//
+//      // lock all workflow instances that don’t have a lock at the moment, bulk operation.
+//      int lockedWorkflowInstances = workflowInstanceStore.lockAllWorkflowInstances(migrator.sourceWorkflowId, uniqueLockOwner);
+//
+//      // only lock instances that have no lock
+//      // if there are workflow instances that still need to be migrated
+//      // only lock workflow instances in the previous version!
+//      WorkflowInstanceQuery unlockedInsQry = new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId);
+//      List<String> workflowInstances = workflowInstanceStore.findWorkflowInstancesNotLockedByOwner(unlockedInsQry, uniqueLockOwner);
+//
+//      for (String workflowInstanceId : workflowInstances) {
+//        try {
+//          WorkflowInstanceImpl wfi = lockWorkflowInstanceWithRetry(new WorkflowInstanceId(workflowInstanceId), uniqueLockOwner);
+//
+//          if (wfi != null) lockedWorkflowInstances++;
+//        } catch (RuntimeException rE) {
+//          log.warn("Could not migrate workflowInstance with id: " + workflowInstanceId, rE);
+//        }
+//      }
+//
+//      log.debug("Locked " + lockedWorkflowInstances + " workflowInstances for migrating from workflow " + migrator.sourceWorkflowId +
+//              " to workflow " + deployment.getWorkflowId());
+//
+//      List<WorkflowInstanceImpl> migratibleWorkflowInstances =  workflowInstanceStore.findLockedWorkflowInstances(new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId), uniqueLockOwner);
+//
+//      if (migratibleWorkflowInstances.size() != lockedWorkflowInstances) {
+//        log.warn("The number of workflowInstances locked is different from the number of workflowInstances that will be migrated to the new workflow.");
+//      }
+//
+//      WorkflowImpl workflowImpl = getWorkflowImpl(deployment.getWorkflowId());
+//
+//      for (WorkflowInstanceImpl worklfowInstance : migratibleWorkflowInstances) {
+//
+//        worklfowInstance.trackUpdates(false);
+//        worklfowInstance.migrateToWorkflow(workflowImpl);
+//        workflowInstanceStore.flushAndUnlock(worklfowInstance);
+//
+//      }
     }
 
     return deployment;
@@ -297,7 +323,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
     return workflowImpl;
   }
-  
+
+  public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(final WorkflowInstanceId workflowInstanceId) {
+    return lockWorkflowInstanceWithRetry(workflowInstanceId, getId());
+  }
+
   public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(final WorkflowInstanceId workflowInstanceId, final String owner) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {
       @Override

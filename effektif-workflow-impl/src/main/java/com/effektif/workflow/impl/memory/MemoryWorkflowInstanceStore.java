@@ -37,6 +37,7 @@ import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 /**
@@ -131,7 +132,12 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
+  public List<String> findWorkflowInstanceIds(WorkflowInstanceQuery workflowInstanceQuery) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
       .workflowInstanceId(workflowInstanceId);
     query.setLimit(1);

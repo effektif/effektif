@@ -436,4 +436,11 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstanceId getId() {
     return this.id;
   }
+
+  public void migrateToWorkflow(WorkflowImpl workflow) {
+    this.workflow = workflow;
+    if (updates != null) {
+      getUpdates().isWorkflowChanged = true;
+    }
+  }
 }
