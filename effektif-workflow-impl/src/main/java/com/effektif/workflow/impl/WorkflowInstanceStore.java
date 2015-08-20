@@ -33,6 +33,8 @@ public interface WorkflowInstanceStore {
 
   WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner);
 
+  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
+
   WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
 
   void flush(WorkflowInstanceImpl workflowInstance);

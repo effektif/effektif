@@ -381,6 +381,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   @Override
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
+    return lockWorkflowInstance(workflowInstanceId, workflowEngine.getId());
+  }
+
+  @Override
   public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
     workflowInstancesCollection.update("unlock-workflow-instance", 
       new Query()
