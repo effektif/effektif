@@ -113,7 +113,8 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     if (activity.hasOutgoingTransitionDefinitions()) {
       // Ensure that each transition is taken
       // Note that process concurrency does not require java concurrency
-      end();
+      // The end() call already happens in the takeTransition call
+      // end();
       for (TransitionImpl transitionDefinition: activity.outgoingTransitions) {
         ConditionImpl condition = transitionDefinition.condition;
         if (condition!=null ? condition.eval(this) : true) {
@@ -122,8 +123,9 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
     } else {
       // Propagate completion upwards
-      end();
-      propagateToParent();
+      // Since there is no transition, the workflow should not end here, so leave the activity open.
+       end();
+       propagateToParent();
     }
   }
 
