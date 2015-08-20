@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
@@ -55,6 +54,11 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
@@ -279,21 +283,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     return findWorkflowInstances(dbQuery);
   }
 
-  public List<String> findWorkflowInstanceIds(WorkflowInstanceQuery query) {
-    BasicDBObject dbQuery = createDbQuery(query);
-    BasicDBObject dbFields = new BasicDBObject(WorkflowInstanceFields._ID, true);
-
-    DBCursor workflowInstanceCursor = workflowInstancesCollection.dbCollection.find(dbQuery, dbFields);
-    List<String> workflowInstances = new ArrayList<>();
-    while (workflowInstanceCursor.hasNext()) {
-      BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
-      workflowInstances.add(dbWorkflowInstance.getString(WorkflowInstanceFields._ID));
-    }
-
-    return workflowInstances;
-
-  }
-
   public List<WorkflowInstanceImpl> findWorkflowInstances(BasicDBObject dbQuery) {
     DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instance-impls", dbQuery);
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
@@ -359,13 +348,13 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner) {
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
     Exceptions.checkNotNullParameter(workflowInstanceId, "workflowInstanceId");
 
     DBObject query = createLockQuery();
     query.put(WorkflowInstanceFields._ID, new ObjectId(workflowInstanceId.getInternal()));
     
-    DBObject update = createLockUpdate(owner);
+    DBObject update = createLockUpdate();
     
     DBObject retrieveFields = new BasicDBObject()
           .append(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, false);
@@ -380,17 +369,60 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     return workflowInstance;
   }
 
+  // Returns null if all workflowInstances were locked, or the number of unlocked records if not all records of the workflow could be locked.
+  public Long lockAllWorkflowInstances(String workflowId, String uniqueOwner) {
+
+    DBObject query = createLockQuery();
+    query.put(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowId));
+
+    DBObject update = createLockUpdate(uniqueOwner);
+
+    workflowInstancesCollection.update("lock-workflowInstance-migrate", query, update, false, true);
+
+    // Now count the remaining, return null if any remaining
+    BasicDBList or = new BasicDBList();
+    or.add(query);
+    or.add(new BasicDBObject(WorkflowInstanceFields.LOCK + "." + WorkflowInstanceLockFields.OWNER, new BasicDBObject("$ne", uniqueOwner)));
+
+    BasicDBObject countQuery = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowId));
+    countQuery.append("$or", or);
+
+    long count = workflowInstancesCollection.count("count-workflowInstance-migrate", countQuery);
+
+    if (count > 0) return count; // fail
+    else return null; // success
+  }
+
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    return lockWorkflowInstance(workflowInstanceId, workflowEngine.getId());
+  public void migrateAndUnlockAllLockedWorkflowInstances(String fromWorkfowId, String toWorkflowId, String uniqueOwner) {
+    BasicDBObject query;
+    BasicDBObject update;
+
+    query = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, fromWorkfowId)
+            .append(getLockOwnerField(), uniqueOwner);
+
+    BasicDBObject unset = new BasicDBObject(getLockOwnerField(), 1);
+
+    update = new BasicDBObject("$unset", unset);
+
+    if (toWorkflowId != null) {
+      BasicDBObject set = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, toWorkflowId);
+      update.append("$set", set);
+    }
+
+    workflowInstancesCollection.findAndModify("unlock-workflowInstance-migrate", query, update);
+  }
+
+  private static String getLockOwnerField() {
+    return WorkflowInstanceFields.LOCK + "." + WorkflowInstanceLockFields.OWNER;
   }
 
   @Override
   public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    workflowInstancesCollection.update("unlock-workflow-instance", 
+    workflowInstancesCollection.update("unlock-workflow-instance",
       new Query()
         ._id(new ObjectId(workflowInstanceId.getInternal()))
-        .get(), 
+        .get(),
       new Update()
         .unset(WorkflowInstanceFields.LOCK)
         .get());
@@ -402,6 +434,10 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
         .add("$exists", false)
       .pop()
       .get();
+  }
+
+  public DBObject createLockUpdate() {
+    return createLockUpdate(workflowEngine.getId());
   }
 
   public DBObject createLockUpdate(String owner) {

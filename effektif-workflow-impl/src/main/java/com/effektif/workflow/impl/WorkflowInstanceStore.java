@@ -23,7 +23,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 public interface WorkflowInstanceStore {
-  
+
   WorkflowInstanceId generateWorkflowInstanceId();
 
   void insertWorkflowInstance(WorkflowInstanceImpl worklflowInstance);
@@ -31,9 +31,11 @@ public interface WorkflowInstanceStore {
   /** used when rendering a form */
   WorkflowInstanceImpl getWorkflowInstanceImplById(WorkflowInstanceId workflowInstanceId);
 
-  WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner);
-
   WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
+
+  Long lockAllWorkflowInstances(String workflowId, String uniqueOwner);
+
+  void migrateAndUnlockAllLockedWorkflowInstances(String fromWorkflowId, String toWorkflowId, String uniqueOwner);
 
   WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue();
 
@@ -45,9 +47,8 @@ public interface WorkflowInstanceStore {
 
   List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
-  List<String> findWorkflowInstanceIds(WorkflowInstanceQuery workflowInstanceQuery);
-
   void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
   void deleteAllWorkflowInstances();
+
 }

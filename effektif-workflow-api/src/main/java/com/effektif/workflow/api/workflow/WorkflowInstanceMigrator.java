@@ -1,8 +1,7 @@
 package com.effektif.workflow.api.workflow;
 
 /**
- * CumulusPro
- * Created by Jeroen on 13/08/15.
+ * Created by Jeroen on 20/08/15.
  */
 public class WorkflowInstanceMigrator {
 
@@ -11,8 +10,8 @@ public class WorkflowInstanceMigrator {
     }
 
     public WorkflowInstanceMigrator sourceWorkflowId(String sourceWorkflowId) {
-        this.sourceWorkflowId = sourceWorkflowId;
+        this.fromWorkflowId = sourceWorkflowId;
         return this;
     }
-    public String sourceWorkflowId;
+    public String fromWorkflowId;
 }

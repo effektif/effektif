@@ -132,12 +132,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
-  public List<String> findWorkflowInstanceIds(WorkflowInstanceQuery workflowInstanceQuery) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId, String owner) {
+  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
     WorkflowInstanceQuery query = new WorkflowInstanceQuery()
       .workflowInstanceId(workflowInstanceId);
     query.setLimit(1);
@@ -152,8 +147,13 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   }
 
   @Override
-  public WorkflowInstanceImpl lockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    return lockWorkflowInstance(workflowInstanceId, workflowEngineId);
+  public Long lockAllWorkflowInstances(String workflowId, String uniqueOwner) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void migrateAndUnlockAllLockedWorkflowInstances(String fromWorkflowId, String toWorkflowId, String uniqueOwner) {
+    throw new NotImplementedException();
   }
 
   public synchronized void lockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {

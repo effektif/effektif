@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.effektif.workflow.api.workflow.ParseIssue;
 import com.effektif.workflow.api.workflow.WorkflowInstanceMigrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,27 +121,29 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     Deployment deployment = deployWorkflow(workflow);
 
-    if (migrator!=null && migrator.sourceWorkflowId != null) {
+    if (migrator!=null && migrator.fromWorkflowId != null && !deployment.hasErrors()) {
       // create a unique lockOwner for the migration
       UUID uuid = UUID.randomUUID();
 
       String uniqueLockOwner = getId() + "-" + uuid.toString();
 
-      log.debug("Migrating workflow " + migrator.sourceWorkflowId + " to workflow with id: " + workflow.getId().getInternal());
+      log.debug("Migrating workflow " + migrator.fromWorkflowId + " to workflow with id: " + workflow.getId().getInternal());
 
-      WorkflowImpl workflowImpl = getWorkflowImpl(deployment.getWorkflowId());
+      Long lockResult = lockAllWorkflowInstancesWithRetry(migrator.fromWorkflowId, uniqueLockOwner);
 
-      List<String> workflowInstances = workflowInstanceStore.findWorkflowInstanceIds(new WorkflowInstanceQuery().workflowId(migrator.sourceWorkflowId));
+      if (lockResult == null) {
+        // Update to new workflow and unlock all
+        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.fromWorkflowId, deployment.getWorkflowId().getInternal(), uniqueLockOwner);
+      } else {
+        // Just unlock all
+        log.debug("Failed to get a lock on all workflowInstances of workflow " + migrator.fromWorkflowId + ". Unlocking and aborting migration.");
 
-      for (String workflowInstanceId : workflowInstances) {
-        WorkflowInstanceImpl wfImpl = lockWorkflowInstanceWithRetry(new WorkflowInstanceId(workflowInstanceId), uniqueLockOwner);
+        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.fromWorkflowId, deployment.getWorkflowId().getInternal(), uniqueLockOwner);
 
-        wfImpl.trackUpdates(false);
-        wfImpl.migrateToWorkflow(workflowImpl);
-        workflowInstanceStore.flushAndUnlock(wfImpl);
+        deployment.addIssue(ParseIssue.IssueType.error, null, null, null, "Migration of workflowInstances of the old workflow failed, because migration failed to get a lock on all workflowInstances of workflow " + migrator.fromWorkflowId, null);
       }
 
-      log.debug("Migration ended, nr of objects migrated: " + workflowInstances.size());
+      log.debug("Migration of workflowId " + migrator.fromWorkflowId + "to workflowId " + deployment.getWorkflowId() + " ended.");
     }
 
     return deployment;
@@ -275,15 +278,28 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return workflowImpl;
   }
 
-  public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(final WorkflowInstanceId workflowInstanceId) {
-    return lockWorkflowInstanceWithRetry(workflowInstanceId, getId());
+  public Long lockAllWorkflowInstancesWithRetry(final String workflowId, final String uniqueLockOwner) {
+    Retry<Long> retry = new Retry<Long>() {
+      @Override
+      public Long tryOnce() {
+        return workflowInstanceStore.lockAllWorkflowInstances(workflowId, uniqueLockOwner);
+      }
+
+      @Override
+      protected void failedWaitingForRetry() {
+        log.debug("Locking workflowInstances for workflow migration failed.... retrying in " + wait + " millis.");
+      }
+    };
+
+    return retry.tryManyTimes();
   }
 
-  public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(final WorkflowInstanceId workflowInstanceId, final String owner) {
+  public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(
+          final WorkflowInstanceId workflowInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {
       @Override
       public WorkflowInstanceImpl tryOnce() {
-        return workflowInstanceStore.lockWorkflowInstance(workflowInstanceId, owner);
+        return workflowInstanceStore.lockWorkflowInstance(workflowInstanceId);
       }
       @Override
       protected void failedWaitingForRetry() {
