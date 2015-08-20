@@ -85,7 +85,7 @@ public class ActivityImpl extends ScopeImpl {
     outgoingTransitions.add(transitionDefinition);
   }
 
-  public boolean hasOutgoingTransitionDefinitions() {
+  public boolean hasOutgoingTransitions() {
     return outgoingTransitions!=null && !outgoingTransitions.isEmpty();
   }
   

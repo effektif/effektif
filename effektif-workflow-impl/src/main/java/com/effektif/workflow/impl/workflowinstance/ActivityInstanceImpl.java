@@ -104,27 +104,35 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     }
   }
 
+  /** Default BPMN logic when an activity ends */
   @Override
   public void onwards() {
-    if (log.isDebugEnabled())
+    if (log.isDebugEnabled()) {
       log.debug("Onwards "+this);
-    // Default BPMN logic when an activity ends
-    // If there are outgoing transitions (in bpmn they are called sequence flows)
-    if (activity.hasOutgoingTransitionDefinitions()) {
-      // Ensure that each transition is taken
-      // Note that process concurrency does not require java concurrency
-      // The end() call already happens in the takeTransition call
-      // end();
-      for (TransitionImpl transitionDefinition: activity.outgoingTransitions) {
-        ConditionImpl condition = transitionDefinition.condition;
+    }
+    
+    // First we end the activity instance.  
+    // Subsequent invocations to end will be ignored.
+    end();
+
+    boolean isTransitionTaken = false;
+    
+    // Take each outgoing transition 'in parallel'
+    // Note that process concurrency is not the same as java multithreaded computation
+    if (activity.hasOutgoingTransitions()) {
+      for (TransitionImpl transition: activity.outgoingTransitions) {
+        // Only take a transition if there is no condition or if the condition resolves to true.
+        ConditionImpl condition = transition.condition;
         if (condition!=null ? condition.eval(this) : true) {
-          takeTransition(transitionDefinition);
+          isTransitionTaken = true;
+          takeTransition(transition);
         }
       }
-    } else {
-      // Propagate completion upwards
-      // Since there is no transition, the workflow should not end here, so leave the activity open.
-       end();
+    } 
+
+    // if there were no outgoing transitions or none of them could be taken, 
+    if (!isTransitionTaken) {
+      // propagate the execution flow upwards to the parent
        propagateToParent();
     }
   }

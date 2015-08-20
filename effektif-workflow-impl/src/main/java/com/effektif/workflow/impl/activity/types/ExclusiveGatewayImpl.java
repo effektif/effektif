@@ -66,11 +66,7 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
       } else if (outgoingTransitions != null && outgoingTransitions.size() == 1) {
         transition = outgoingTransitions.get(0);
       } else if (outgoingTransitions != null && outgoingTransitions.size() > 1) {
-        // TODO create an event to let the user decide
-        log.warn("No default transition found and more than one outgoing transitions on Exclusive gateway" +
-                ", so looking for a transition without conditions to execute. WorkflowInstanceId: " + activityInstance.getWorkflowInstance().getId().getInternal());
-
-        transition = findFirstTransitionWithoutCondition(activityInstance, outgoingTransitions);
+        transition = handleUndefinedSelection(activityInstance, outgoingTransitions);
       }
     }
 
@@ -78,12 +74,20 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
       activityInstance.takeTransition(transition);
     } else {
       log.debug("No transition selected. Gateway " + activity + " ends flow");
-      // no outgoing transitions. just end here and notify the parent this execution path ended.
-
-      // Since there is no transition, the workflow should not end here, so leave the activity open.
-      //activityInstance.end();
-      //activityInstance.propagateToParent();
+      activityInstance.end();
+      activityInstance.propagateToParent();
     }
+  }
+
+  /** called when this exclusive gateway is 'underspecified' so we have 
+   * to guess what's best to do at this point.
+   *   
+   *  a) there is no outgoing transition with a condition that resolves to true 
+   *  b) there is no default transition specified
+   *  c) and there is more than 1 transition
+   */
+  protected TransitionImpl handleUndefinedSelection(ActivityInstanceImpl activityInstance, List<TransitionImpl> outgoingTransitions) {
+    return findFirstTransitionWithoutCondition(activityInstance, outgoingTransitions);
   }
 
   protected TransitionImpl findFirstTransitionWithoutCondition(ActivityInstanceImpl activityInstance, List<TransitionImpl> outgoingTransitions) {
