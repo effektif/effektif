@@ -79,7 +79,15 @@ public class Diagram {
   public boolean hasEdges() {
     return edges != null && !edges.isEmpty();
   }
-  
+
+  public Diagram addNodes(List<Node> nodes) {
+    ensureCanvas();
+    for (Node node : nodes) {
+      canvas.addNode(node);
+    }
+    return this;
+  }
+
   public Diagram addNode(String activityId, double ulx, double uly, double lrx, double lry) {
     ensureCanvas();
     canvas.addNode(new Node()

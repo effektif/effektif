@@ -36,6 +36,11 @@ public class Bounds {
     this.lowerRight = new Point(lrx, lry);
   }
 
+  public Bounds(Point upperLeft, double width, double height) {
+    this.upperLeft = upperLeft;
+    this.lowerRight = upperLeft.translate(width, height);
+  }
+
   public Bounds lowerRight(Point lowerRight) {
     this.lowerRight = lowerRight;
     return this;

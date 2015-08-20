@@ -22,8 +22,10 @@ public class Bpmn {
 
   public static final String BPMN_URI = "http://www.omg.org/spec/BPMN/20100524/MODEL";
   public static final String BPMN_DI_URI = "http://www.omg.org/spec/BPMN/20100524/DI";
-  public static final String BPMN_DC_URI = "http://www.omg.org/spec/DD/20100524/DC";
   public static final String EFFEKTIF_URI = "effektif.com:1";
+
+  public static final String OMG_DI_URI = "http://www.omg.org/spec/DD/20100524/DI";
+  public static final String OMG_DC_URI = "http://www.omg.org/spec/DD/20100524/DC";
 
   public static final String KEY_BPMN = "bpmn";
   public static final String KEY_DEFINITIONS = "bpmnDefinitions";

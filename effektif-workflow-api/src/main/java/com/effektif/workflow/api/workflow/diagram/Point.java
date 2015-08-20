@@ -20,6 +20,14 @@ package com.effektif.workflow.api.workflow.diagram;
  */
 public class Point {
 
+  public static Point of(double x, double y) {
+    return new Point(x, y);
+  }
+
+  public static Point of(int x, int y) {
+    return new Point(new Integer(x).doubleValue(), new Integer(y).doubleValue());
+  }
+
   public double x;
   public double y;
 
@@ -53,13 +61,15 @@ public class Point {
     }
     return distance(this.x, this.y, other.x, other.y);
   }
-  
-  public static Point of(double x, double y) {
-    return new Point(x, y);
-  }
-  
-  public static Point of(int x, int y) {
-    return new Point(new Integer(x).doubleValue(), new Integer(y).doubleValue());
+
+  /**
+   * Returns a new point translated by the given offset, which must be positive.
+   */
+  public Point translate(double dx, double dy) {
+    if (dx < 0 || dy < 0) {
+      throw new IllegalArgumentException("Both offset coordinates must be positive");
+    }
+    return new Point(x + dx, y + dy);
   }
   
   @Override
