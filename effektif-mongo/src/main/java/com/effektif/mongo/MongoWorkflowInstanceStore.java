@@ -389,8 +389,8 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
     long count = workflowInstancesCollection.count("count-workflowInstance-migrate", countQuery);
 
-    if (count > 0) return count; // fail
-    else return null; // success
+    if (count > 0) return null; // fail
+    else return new Long(0); // success
   }
 
   @Override
@@ -398,19 +398,19 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     BasicDBObject query;
     BasicDBObject update;
 
-    query = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, fromWorkfowId)
+    query = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(fromWorkfowId))
             .append(getLockOwnerField(), uniqueOwner);
 
-    BasicDBObject unset = new BasicDBObject(getLockOwnerField(), 1);
+    BasicDBObject unset = new BasicDBObject(WorkflowInstanceFields.LOCK, 1);
 
     update = new BasicDBObject("$unset", unset);
 
     if (toWorkflowId != null) {
-      BasicDBObject set = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, toWorkflowId);
+      BasicDBObject set = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(toWorkflowId));
       update.append("$set", set);
     }
 
-    workflowInstancesCollection.findAndModify("unlock-workflowInstance-migrate", query, update);
+    workflowInstancesCollection.update("unlock-workflowInstance-migrate", query, update, false, true);
   }
 
   private static String getLockOwnerField() {
