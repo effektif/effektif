@@ -24,6 +24,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class BpmnTest extends WorkflowStreamTest {
   
   @Override
   public <T> T serialize(T o) {
-    ExecutableWorkflow w = null;
+    AbstractWorkflow w = null;
     if (o instanceof Activity) {
       w = new ExecutableWorkflow()
       .activity((Activity)o);

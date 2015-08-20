@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +104,8 @@ public class BpmnReaderImpl implements BpmnReader {
     this.jsonStreamMapper = jsonStreamMapper;
   }
   
-  protected ExecutableWorkflow readDefinitions(XmlElement definitionsXml) {
-    ExecutableWorkflow workflow = null;
+  protected AbstractWorkflow readDefinitions(XmlElement definitionsXml) {
+    AbstractWorkflow workflow = null;
 
     // see #prefixes for more details about the limitations of namespaces
     initializeNamespacePrefixes(definitionsXml);
@@ -137,8 +138,8 @@ public class BpmnReaderImpl implements BpmnReader {
     }
   }
 
-  protected ExecutableWorkflow readWorkflow(XmlElement processXml) {
-    ExecutableWorkflow workflow = new ExecutableWorkflow();
+  protected AbstractWorkflow readWorkflow(XmlElement processXml) {
+    AbstractWorkflow workflow = new ExecutableWorkflow();
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
@@ -564,7 +565,7 @@ public class BpmnReaderImpl implements BpmnReader {
   /**
    * Removes transitions to or from a missing activity, probably due to the activity not being imported.
    */
-  private void removeDanglingTransitions(ExecutableWorkflow workflow) {
+  private void removeDanglingTransitions(AbstractWorkflow workflow) {
     if (workflow.getTransitions() == null || workflow.getTransitions().isEmpty()) {
       return;
     }
@@ -586,7 +587,7 @@ public class BpmnReaderImpl implements BpmnReader {
   /**
    * Stub for reading the workflow name and description from the diagram element, as there is no diagram model yet.
    */
-  private void readDiagram(ExecutableWorkflow workflow, XmlElement definitionsXml) {
+  private void readDiagram(AbstractWorkflow workflow, XmlElement definitionsXml) {
     if (definitionsXml==null) {
       return;
     }

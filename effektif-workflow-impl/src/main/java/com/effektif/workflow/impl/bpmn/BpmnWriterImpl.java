@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -176,7 +177,7 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
   
-  protected XmlElement writeDefinitions(ExecutableWorkflow workflow) {
+  protected XmlElement writeDefinitions(AbstractWorkflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
     xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
@@ -184,12 +185,16 @@ public class BpmnWriterImpl implements BpmnWriter {
     return xml;
   }
 
-  protected void writeWorkflow(ExecutableWorkflow workflow) {
+  protected void writeWorkflow(AbstractWorkflow workflow) {
     startScope(workflow);
     // Add the ‘process’ element as the first child element of the ‘definitions’ element.
     startElementBpmn("process", workflow.getBpmn(), 0);
-    if (workflow.getSourceWorkflowId()==null && workflow.getId()!=null) {
-      workflow.setSourceWorkflowId(workflow.getId().getInternal());
+
+    if (ExecutableWorkflow.class.isAssignableFrom(workflow.getClass())) {
+      ExecutableWorkflow executableWorkflow = (ExecutableWorkflow) workflow;
+      if (executableWorkflow.getSourceWorkflowId() == null && workflow.getId() != null) {
+        executableWorkflow.setSourceWorkflowId(workflow.getId().getInternal());
+      }
     }
 
     // Output documentation, workflow BPMN (extension elements) and scope (activities/transitions) in that order, as
