@@ -95,7 +95,7 @@ public class DiagramTest {
     diagram.addEdge(edgeId, from, to, Point.of(1, 2), Point.of(3, 4), Point.of(5, 6));
     assertEquals(1, diagram.edges.size());
     Edge edge = diagram.edges.get(0);
-    assertEquals(edgeId, edge.id);
+    assertEquals(edgeId, edge.transitionId);
     assertEquals(from, edge.fromId);
     assertEquals(to, edge.toId);
     assertEquals(3, edge.dockers.size());

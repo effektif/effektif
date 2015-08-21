@@ -15,7 +15,6 @@ package com.effektif.workflow.impl.bpmn;
 
 import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
-import java.awt.print.Book;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -51,7 +50,6 @@ import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.api.workflow.Trigger;
-import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
 import com.effektif.workflow.impl.json.JsonObjectReader;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -624,12 +622,12 @@ public class BpmnReaderImpl implements BpmnReader {
     for (XmlElement shapeElement: planeElement.removeElements(BPMN_DI_URI, "BPMNShape")) {
       startElement(shapeElement);
 
+      String id = currentXml.removeAttribute(BPMN_DI_URI, "id");
+      String elementId = currentXml.removeAttribute(BPMN_DI_URI, "bpmnElement");
+      Node node = new Node().id(id).elementId(elementId);
+
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);
-
-        Node node = new Node()
-          .id(currentXml.removeAttribute(BPMN_DI_URI, "id"))
-          .elementId(currentXml.removeAttribute(BPMN_DI_URI, "bpmnElement"));
 
         double x = Double.valueOf(currentXml.removeAttribute(OMG_DC_URI, "x"));
         double y = Double.valueOf(currentXml.removeAttribute(OMG_DC_URI, "y"));
@@ -653,24 +651,23 @@ public class BpmnReaderImpl implements BpmnReader {
    */
   private List<Edge> readEdges(List<Transition> transitions, XmlElement planeElement) {
 
-    Map<String, List<Point>> waypoints = readEdgeWaypoints(planeElement);
+    Map<String, Edge> edgesBySequenceFlowId = readEdgesBySequenceFlowId(planeElement);
 
+    // Add activity IDs from the previously-parsed workflow transitions.
     List<Edge> edges = new ArrayList<>();
     for (Transition transition : transitions) {
       String sequenceFlowId = transition.getId();
-      Edge edge = new Edge().id(sequenceFlowId).dockers(waypoints.get(sequenceFlowId));
-      edge.fromId(transition.getFromId()).toId(transition.getToId());
+      Edge edge = edgesBySequenceFlowId.get(sequenceFlowId)
+        .fromId(transition.getFromId())
+        .toId(transition.getToId());
       edges.add(edge);
     }
     return edges;
   }
 
-  /**
-   * Returns an edge waypoints look-up by BPMN sequence flow ID.
-   */
-  private Map<String, List<Point>> readEdgeWaypoints(XmlElement definitionsXml) {
-    Map<String, List<Point>> waypoints = new HashMap<>();
-    for (XmlElement edgeElement: definitionsXml.removeElements(BPMN_DI_URI, "BPMNEdge")) {
+  private Map<String, Edge> readEdgesBySequenceFlowId(XmlElement planeElement) {
+    Map<String, Edge> edges = new HashMap<>();
+    for (XmlElement edgeElement: planeElement.removeElements(BPMN_DI_URI, "BPMNEdge")) {
       startElement(edgeElement);
       List<Point> edgeWaypoints = new ArrayList<>();
       for (XmlElement pointElement: edgeElement.removeElements(OMG_DI_URI, "waypoint")) {
@@ -681,11 +678,14 @@ public class BpmnReaderImpl implements BpmnReader {
         endElement();
       }
 
+      String id = currentXml.removeAttribute(BPMN_DI_URI, "id");
       String sequenceFlowId = currentXml.removeAttribute(BPMN_DI_URI, "bpmnElement");
-      waypoints.put(sequenceFlowId, edgeWaypoints);
+      Edge edge = new Edge().id(id).transitionId(sequenceFlowId).dockers(edgeWaypoints);
+
+      edges.put(sequenceFlowId, edge);
       endElement();
     }
-    return waypoints;
+    return edges;
   }
 
   //  @Override

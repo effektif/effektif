@@ -45,7 +45,7 @@ public class Edge {
   
   public Edge id(String id) {
     this.id = id;
-    this.transitionId = id;
+//    this.transitionId = id;
     return this;
   }
   
@@ -56,7 +56,7 @@ public class Edge {
   
 
   public Edge transitionId(String transitionId) {
-    this.id = transitionId;
+//    this.id = transitionId;
     this.transitionId = transitionId;
     return this;
   }

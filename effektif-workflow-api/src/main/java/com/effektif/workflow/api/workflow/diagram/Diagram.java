@@ -119,10 +119,10 @@ public class Diagram {
       .dockers(Arrays.asList(dockers)));
   }
 
-  public Edge getEdge(String id) {
-    if (id != null && edges != null) {
+  public Edge getEdge(String transitionId) {
+    if (transitionId != null && edges != null) {
       for (Edge edge : edges) {
-        if (id.equals(edge.id)) {
+        if (transitionId.equals(edge.transitionId)) {
           return edge;
         }
       }
