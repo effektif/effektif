@@ -138,6 +138,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
         log.debug("Locking done, now migrating from workflow " + migrator.fromWorkflowId + " to workflow " + deployment.getWorkflowId() + ", and unlocking.");
 
         workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.fromWorkflowId, deployment.getWorkflowId().getInternal(), uniqueLockOwner);
+
+        log.debug("Migration of workflowId " + migrator.fromWorkflowId + " to workflowId " + deployment.getWorkflowId() + " finished.");
       } else {
         deployment = new Deployment();
         // Just unlock all
@@ -147,8 +149,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
         deployment.addIssue(ParseIssue.IssueType.error, null, null, null, "Migration of workflowInstances of the old workflow failed, because migration failed to get a lock on all workflowInstances of workflow " + migrator.fromWorkflowId, null);
       }
-
-      log.debug("Migration of workflowId " + migrator.fromWorkflowId + " to workflowId " + deployment.getWorkflowId() + " finished.");
     }
 
     return deployment;
@@ -292,7 +292,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
       @Override
       protected void failedWaitingForRetry() {
-        log.debug("Locking workflowInstances for workflow migration failed.... retrying in " + wait + " millis.");
+        log.debug("Locking all workflowInstances for workflow " + workflowId + " failed.... retrying in " + wait + " millis.");
       }
     };
 
