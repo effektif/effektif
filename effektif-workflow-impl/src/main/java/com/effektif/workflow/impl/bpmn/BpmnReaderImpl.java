@@ -126,6 +126,8 @@ public class BpmnReaderImpl implements BpmnReader {
 
     if (workflow != null) {
       readDiagram(workflow, definitionsXml);
+      // Clear the namespaces, because the dots in the URL keys break serialisation.
+      definitionsXml.namespaces = null;
       workflow.property(KEY_DEFINITIONS, definitionsXml);
     }
 
