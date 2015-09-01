@@ -42,7 +42,7 @@ public class ObjectFieldImpl {
   }
 
   public ObjectFieldImpl(Class< ? > objectClass, ObjectField field, Configuration configuration) {
-    this.name = field.getName();
+    this.name = field.getKey();
     DataType fieldType = field.getType();
     DataTypeService dataTypeService = configuration.get(DataTypeService.class);
     this.type = dataTypeService.createDataType(fieldType);

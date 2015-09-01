@@ -24,48 +24,19 @@ import com.effektif.workflow.api.types.DataType;
  */
 public class ObjectField {
   
-  protected String label;
+  protected String key;
+  protected DataType type;
   protected String name;
   protected String description;
-  protected DataType type;
 
-  public ObjectField() {
+  public String getKey() {
+    return this.key;
   }
-
-  public ObjectField(String name) {
-    this.name = name;
+  public void setKey(String key) {
+    this.key = key;
   }
-  
-  public String getLabel() {
-    return this.label;
-  }
-  public void setLabel(String label) {
-    this.label = label;
-  }
-  public ObjectField label(String label) {
-    this.label = label;
-    return this;
-  }
-  
-  public String getDescription() {
-    return this.description;
-  }
-  public void setDescription(String description) {
-    this.description = description;
-  }
-  public ObjectField description(String description) {
-    this.description = description;
-    return this;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-  public void setName(String key) {
-    this.name = key;
-  }
-  public ObjectField name(String name) {
-    this.name = name;
+  public ObjectField key(String key) {
+    this.key = key;
     return this;
   }
   
@@ -80,4 +51,25 @@ public class ObjectField {
     return this;
   }
 
+  public String getName() {
+    return this.name;
+  }
+  public void setName(String name) {
+    this.name = name;
+  }
+  public ObjectField name(String name) {
+    this.name = name;
+    return this;
+  }
+  
+  public String getDescription() {
+    return this.description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  public ObjectField description(String description) {
+    this.description = description;
+    return this;
+  }
 }

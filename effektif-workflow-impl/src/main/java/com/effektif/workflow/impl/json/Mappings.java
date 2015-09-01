@@ -38,6 +38,7 @@ import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
+import com.effektif.workflow.impl.data.types.MapType;
 import com.effektif.workflow.impl.data.types.ObjectType;
 import com.effektif.workflow.impl.json.types.BeanMapper;
 import com.effektif.workflow.impl.json.types.PolymorphicBeanMapper;
@@ -225,7 +226,7 @@ public class Mappings {
       return null;
     }
     DataType valueType = getTypeByCollection(map.values());
-    return new ObjectType(valueType);
+    return new MapType(valueType);
   }
 
   private DataType getTypeByCollection(Collection collection) {
