@@ -16,6 +16,8 @@
 package com.effektif.workflow.api.model;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 
 /**
@@ -23,8 +25,7 @@ import java.text.DecimalFormat;
  */
 public class Money {
   
-  static DecimalFormat integerFormatter = new DecimalFormat("###");
-  static DecimalFormat decimalFormatter = new DecimalFormat("###.##");
+  static DecimalFormat formatter = new DecimalFormat("###.##", new DecimalFormatSymbols(Locale.ENGLISH));
   
   protected Double amount;
 
@@ -78,11 +79,7 @@ public class Money {
   public String toString() {
     StringBuilder moneyText = new StringBuilder();
     if (amount!=null) {
-      if (amount==Math.floor(amount) && !Double.isInfinite(amount)) {
-        moneyText.append(integerFormatter.format(amount));
-      } else {
-        moneyText.append(decimalFormatter.format(amount));
-      }
+      moneyText.append(formatter.format(amount));
     } else {
       moneyText.append("0");
     }
