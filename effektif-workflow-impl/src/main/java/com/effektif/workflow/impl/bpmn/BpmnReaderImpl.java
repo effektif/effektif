@@ -597,8 +597,6 @@ public class BpmnReaderImpl implements BpmnReader {
       return;
     }
 
-    // TODO use workflow.getTransitions()
-
     for (XmlElement diagramElement: definitionsXml.removeElements(BPMN_DI_URI, "BPMNDiagram")) {
       startElement(diagramElement);
       if (currentXml==null) {
