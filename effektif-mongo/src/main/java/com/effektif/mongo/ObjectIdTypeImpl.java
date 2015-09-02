@@ -13,10 +13,7 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import org.bson.types.ObjectId;
-
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.template.Hints;
 
 
@@ -29,16 +26,6 @@ public class ObjectIdTypeImpl extends AbstractDataType<ObjectIdType> {
   public ObjectIdTypeImpl() {
     super(ObjectIdType.INSTANCE);
   }
-
-//  @Override
-//  public Object convertJsonToInternalValue(Object jsonValue) throws InvalidValueException {
-//    return new ObjectId((String)jsonValue);
-//  }
-//
-//  @Override
-//  public Object convertInternalToJsonValue(Object internalValue) {
-//    return internalValue.toString();
-//  }
 
   @Override
   public String convertInternalToText(Object value, Hints hints) {

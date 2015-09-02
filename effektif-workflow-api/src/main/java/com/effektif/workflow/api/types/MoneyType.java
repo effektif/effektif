@@ -28,7 +28,7 @@ import com.effektif.workflow.api.model.Money;
 public class MoneyType extends DataType {
 
   public static final MoneyType INSTANCE = new MoneyType();
-
+  
   @Override
   public Type getValueType() {
     return Money.class;
