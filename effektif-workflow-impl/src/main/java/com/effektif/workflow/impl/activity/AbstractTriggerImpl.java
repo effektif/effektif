@@ -31,8 +31,8 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
  */
 public abstract class AbstractTriggerImpl<T extends Trigger> {
   
-  Map<String,OutputParameterImpl> outputs;
-  Class<T> triggerApiClass;
+  protected Map<String,OutputParameterImpl> outputs;
+  protected Class<T> triggerApiClass;
   
   public AbstractTriggerImpl(Class<T> triggerApiClass) {
     this.triggerApiClass = triggerApiClass;
