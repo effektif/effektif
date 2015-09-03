@@ -11,26 +11,30 @@ import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.WorkflowInstanceMigrator;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+import com.effektif.workflow.impl.memory.MemoryConfiguration;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.List;
 
-/**
- * Created by Jeroen on 12/06/15.
- */
-public class FindByActivityIdTest {
+public class FindAndMigrateTest {
 
-    public static Configuration cachedConfiguration;
+    @Test
+    public void testMemoryConfig() {
+        testFindAndMigrate(new MemoryConfiguration());
+    }
 
-    public static void main(String[] args) {
-
+    @Test
+    public void testMongoConfig() {
         Configuration mongoConfiguration = new MongoConfiguration()
                 .server("localhost")
                 .databaseName("effektif");
+        testFindAndMigrate(mongoConfiguration);
+    }
 
-        cachedConfiguration = mongoConfiguration;
-//        cachedConfiguration = new MemoryConfiguration();
+    public static void testFindAndMigrate(Configuration configuration) {
 
-        WorkflowEngine workflowEngine = cachedConfiguration.getWorkflowEngine();
+        WorkflowEngine workflowEngine = configuration.getWorkflowEngine();
 
         // Create a workflow
         ExecutableWorkflow workflow1 = new ExecutableWorkflow()
@@ -64,8 +68,8 @@ public class FindByActivityIdTest {
         System.out.println("Nr of workflowInstances in activity Three: " + workflowInstancesInThree.size() + " (should be 1)");
         System.out.println("Nr of workflowInstances in the Workflow: " + workflowInstancesInWorkflow.size() + " (should be 1)");
 
-        assert workflowInstancesInThree.size() == 1;
-        assert workflowInstancesInWorkflow.size() == 1;
+        Assert.assertEquals(workflowInstancesInThree.size(), 1);
+        Assert.assertEquals(workflowInstancesInWorkflow.size(), 1);
 
         workflowEngine.start(start);
 
@@ -75,8 +79,8 @@ public class FindByActivityIdTest {
         System.out.println("Now nr of workflowInstances in activity Three: " + workflowInstancesInThree.size() + " (should be 2)");
         System.out.println("Now nr of workflowInstances in the Workflow: " + workflowInstancesInWorkflow.size() + " (should be 2)");
 
-        assert workflowInstancesInThree.size() == 2;
-        assert workflowInstancesInWorkflow.size() == 2;
+        Assert.assertEquals(workflowInstancesInThree.size(), 2);
+        Assert.assertEquals(workflowInstancesInWorkflow.size(), 2);
 
         // Test migration, just redeploy the workflow and migrate workflowInstances.
         WorkflowInstanceMigrator migrator = new WorkflowInstanceMigrator().originalWorkflowId(deployment.getWorkflowId().getInternal());
@@ -95,11 +99,12 @@ public class FindByActivityIdTest {
         System.out.println("After migration, nr of workflowInstances in the new Workflow: " + workflowInstancesInWorkflow.size() + " (should be 2)");
         System.out.println("After migration, nr of workflowInstances in the new Workflow: " + workflowInstancesInOldWorkflow.size() + " (should be 0)");
 
-        assert workflowInstancesInThree.size() == 2;
-        assert workflowInstancesInWorkflow.size() == 2;
-        assert workflowInstancesInOldWorkflow.size() == 0;
+        Assert.assertEquals(workflowInstancesInThree.size(), 2);
+        Assert.assertEquals(workflowInstancesInWorkflow.size(), 2);
+        Assert.assertEquals(workflowInstancesInOldWorkflow.size(), 0);
 
         // clean up
+        workflowEngine.deleteWorkflowInstances(newWorkflowIdQuery);
         workflowEngine.deleteWorkflowInstances(workflowIdQuery);
         workflowEngine.deleteWorkflows(new WorkflowQuery().workflowId(deployment.getWorkflowId()));
         workflowEngine.deleteWorkflows(new WorkflowQuery().workflowId(deployment2.getWorkflowId()));
