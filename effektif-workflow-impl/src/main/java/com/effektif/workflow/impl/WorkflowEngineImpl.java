@@ -121,33 +121,33 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     Deployment deployment = null;
 
-    if (migrator!=null && migrator.fromWorkflowId != null) {
+    if (migrator!=null && migrator.originalWorkflowId != null) {
       // create a unique lockOwner for the migration
       UUID uuid = UUID.randomUUID();
 
       String uniqueLockOwner = getId() + "-" + uuid.toString();
 
-      log.debug("Migration from workflow " + migrator.fromWorkflowId + " started, locking workflowInstances.");
+      log.debug("Migration from workflow " + migrator.originalWorkflowId + " started, locking workflowInstances.");
 
-      Long lockResult = lockAllWorkflowInstancesWithRetry(migrator.fromWorkflowId, uniqueLockOwner);
+      Long lockResult = lockAllWorkflowInstancesWithRetry(migrator.originalWorkflowId, uniqueLockOwner);
 
       if (lockResult != null) {
         // Update to new workflow and unlock all
         deployment = deployWorkflow(workflow);
 
-        log.debug("Locking done, now migrating from workflow " + migrator.fromWorkflowId + " to workflow " + deployment.getWorkflowId() + ", and unlocking.");
+        log.debug("Locking done, now migrating from workflow " + migrator.originalWorkflowId + " to workflow " + deployment.getWorkflowId() + ", and unlocking.");
 
-        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.fromWorkflowId, deployment.getWorkflowId().getInternal(), uniqueLockOwner);
+        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.originalWorkflowId, deployment.getWorkflowId().getInternal(), uniqueLockOwner);
 
-        log.debug("Migration of workflowId " + migrator.fromWorkflowId + " to workflowId " + deployment.getWorkflowId() + " finished.");
+        log.debug("Migration of workflowId " + migrator.originalWorkflowId + " to workflowId " + deployment.getWorkflowId() + " finished.");
       } else {
         deployment = new Deployment();
         // Just unlock all
-        log.debug("Failed to get a lock on all workflowInstances of workflow " + migrator.fromWorkflowId + ". Unlocking and aborting migration.");
+        log.debug("Failed to get a lock on all workflowInstances of workflow " + migrator.originalWorkflowId + ". Unlocking and aborting migration.");
 
-        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.fromWorkflowId, null, uniqueLockOwner);
+        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.originalWorkflowId, null, uniqueLockOwner);
 
-        deployment.addIssue(ParseIssue.IssueType.error, null, null, null, "Migration of workflowInstances of the old workflow failed, because migration failed to get a lock on all workflowInstances of workflow " + migrator.fromWorkflowId, null);
+        deployment.addIssue(ParseIssue.IssueType.error, null, null, null, "Migration of workflowInstances of the old workflow failed, because migration failed to get a lock on all workflowInstances of workflow " + migrator.originalWorkflowId, null);
       }
     }
 

@@ -5,13 +5,10 @@ package com.effektif.workflow.api.workflow;
  */
 public class WorkflowInstanceMigrator {
 
-    public WorkflowInstanceMigrator WorkflowInstanceMigrator() {
+    public WorkflowInstanceMigrator originalWorkflowId(String sourceWorkflowId) {
+        this.originalWorkflowId = sourceWorkflowId;
         return this;
     }
 
-    public WorkflowInstanceMigrator sourceWorkflowId(String sourceWorkflowId) {
-        this.fromWorkflowId = sourceWorkflowId;
-        return this;
-    }
-    public String fromWorkflowId;
+    public String originalWorkflowId;
 }
