@@ -206,6 +206,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
 
+    if (log.isDebugEnabled()) log.debug("Moving workflowInstance to activityId: " + toActivityId);
+
     if (workflowInstance.hasOpenActivityInstances()) {
       ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(toActivityId);
 
