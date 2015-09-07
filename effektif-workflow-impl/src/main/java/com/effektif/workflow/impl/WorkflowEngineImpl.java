@@ -207,8 +207,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
    * Note: If your process contains a parallel gateway, and you move one of the two "instances" to an activity after the
    * merge-parallel gateway, things get messy.... The move() method is not checking for this situation, maybe that is something
    * to implement in the future, or prevent in the user interface.
-   * @param workflowInstanceId
-   * @param toActivityId
    * @return true is the to-activity was found, false otherwise.
    */
 
