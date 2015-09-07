@@ -7,6 +7,7 @@ import com.effektif.workflow.api.activities.*;
 import com.effektif.workflow.api.model.Deployment;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 
@@ -52,23 +53,22 @@ public class FindByActivityIdTest {
 
         WorkflowInstance workflowInstance = workflowEngine.start(start);
 
-        // Now find all workflowInstances in a particular ActivityId, they should be in "Three"
+        // Now check that the workflowInstance is in ActivityId "Three".
         WorkflowInstanceQuery workflowInstanceQuery = new WorkflowInstanceQuery()
                 .activityId("Three");
-
-        WorkflowInstanceQuery workflowInstanceQuery2 = new WorkflowInstanceQuery();
-//                .workflowInstanceId(workflowInstance.getId());
-
         List<WorkflowInstance> workflowInstances = workflowEngine.findWorkflowInstances(workflowInstanceQuery);
-
-        List<WorkflowInstance> workflowInstances2 = workflowEngine.findWorkflowInstances(workflowInstanceQuery2);
-
         System.out.println("Nr of workflowInstances found: " + workflowInstances.size() + " (should be 1)");
+
+        // Find all workflowInstances in the workflow
+        WorkflowInstanceQuery workflowInstanceQuery2 = new WorkflowInstanceQuery();
+        List<WorkflowInstance> workflowInstances2 = workflowEngine.findWorkflowInstances(workflowInstanceQuery2);
         System.out.println("Nr of workflowInstances found: " + workflowInstances2.size() + " (should be 1)");
 
-        TriggerInstance start2 = new TriggerInstance()
-                .workflowId(deployment.getWorkflowId());
+        // Now move the workflowInstance back to activityId "Two", the workflow should automatically advance it to "Three" again
+        workflowEngine.move(workflowInstance.getId(), "Two");
+        List<WorkflowInstance> workflowInstances4 = workflowEngine.findWorkflowInstances(workflowInstanceQuery);
 
+        // Add another workflowInstance to the workflow
         workflowInstance = workflowEngine.start(start);
 
         List<WorkflowInstance> workflowInstances3 = workflowEngine.findWorkflowInstances(workflowInstanceQuery2);
@@ -76,7 +76,14 @@ public class FindByActivityIdTest {
         System.out.println("Nr of workflowInstances found: " + workflowInstances.size() + " (should be 1)");
         System.out.println("Nr of workflowInstances found: " + workflowInstances2.size() + " (should be 1)");
         System.out.println("Nr of workflowInstances found: " + workflowInstances3.size() + " (should be 2)");
+        if(workflowInstances4.size() == 1) {
+            System.out.println("Number of activityInstances should be 5 now, it is: " + workflowInstances4.get(0).getActivityInstances().size());
+        }
+        else System.out.println("Move went wrong....");
 
+        // Cleanup
+        workflowEngine.deleteWorkflowInstances(new WorkflowInstanceQuery().activityId("Three"));
+        workflowEngine.deleteWorkflows(new WorkflowQuery().workflowId(workflow1.getId()));
     }
 
 }
