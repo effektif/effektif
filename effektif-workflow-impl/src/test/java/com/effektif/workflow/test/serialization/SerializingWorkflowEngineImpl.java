@@ -18,15 +18,11 @@ package com.effektif.workflow.test.serialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.effektif.workflow.api.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.VariableValues;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
@@ -105,7 +101,13 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
     workflowInstance = wireize("  <<workflowInstance<< ", workflowInstance);
     return workflowInstance;
   }
-  
+
+  @Override
+  public boolean move(WorkflowInstanceId workflowInstanceId, String toActivityId) {
+    log.debug("moveWorkflowInstance");
+    return workflowEngine.move(workflowInstanceId, toActivityId);
+  }
+
   @Override
   public VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId) {
     log.debug("getVariableValues");

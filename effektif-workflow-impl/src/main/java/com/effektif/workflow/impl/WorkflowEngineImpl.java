@@ -201,6 +201,24 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return send(message, workflowInstance);
   }
 
+  @Override
+  public boolean move(WorkflowInstanceId workflowInstanceId, String toActivityId) {
+
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
+
+    if (workflowInstance.hasOpenActivityInstances()) {
+      ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(toActivityId);
+
+      workflowInstance.execute(activityImpl);
+
+      workflowInstance.executeWork();
+
+      return true;
+    }
+
+    return false;
+  }
+
   public WorkflowInstance send(Message message, WorkflowInstanceImpl workflowInstance) {
     workflowInstance.setVariableValues(message);
     String activityInstanceId = message.getActivityInstanceId();

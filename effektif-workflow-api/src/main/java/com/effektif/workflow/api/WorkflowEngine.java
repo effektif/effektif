@@ -17,11 +17,7 @@ package com.effektif.workflow.api;
 
 import java.util.List;
 
-import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.VariableValues;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.model.*;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
@@ -51,7 +47,9 @@ public interface WorkflowEngine {
   /** Sends a {@link Message message} to an activity instance, most likely this is invoked 
    * to end the specified activity instance and move workflow execution forward from there. */
   WorkflowInstance send(Message message);
-  
+
+  boolean move(WorkflowInstanceId workflowInstanceId, String toActivityId);
+
   VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId);
 
   VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId);
