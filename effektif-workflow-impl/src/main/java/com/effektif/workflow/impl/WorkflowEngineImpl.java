@@ -207,6 +207,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
    * Note: If your process contains a parallel gateway, and you move one of the two "instances" to an activity after the
    * merge-parallel gateway, things get messy.... The move() method is not checking for this situation, maybe that is something
    * to implement in the future, or prevent in the user interface.
+   * Also, sub-processes are not taken into account ie, propagateToParent is not called.
    * @return true is the to-activity was found, false otherwise.
    */
 
@@ -217,7 +218,21 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     if (log.isDebugEnabled()) log.debug("Moving workflowInstance to activityId: " + toActivityId);
 
-    if (workflowInstance.hasOpenActivityInstances()) {
+    if (workflowInstance.activityInstances==null) {
+      return false;
+    }
+
+    ActivityInstanceImpl activityInstanceImpl = null;
+    for (ActivityInstanceImpl activityInstance: workflowInstance.activityInstances) {
+      if (!activityInstance.isEnded()) {
+        activityInstanceImpl = activityInstance;
+        break;
+      }
+    }
+
+    if (activityInstanceImpl != null) {
+      activityInstanceImpl.end();
+
       ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(toActivityId);
 
       workflowInstance.execute(activityImpl);

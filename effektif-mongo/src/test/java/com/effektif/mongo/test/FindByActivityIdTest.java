@@ -14,7 +14,7 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import java.util.List;
 
 /**
- * Created by Jeroen on 12/06/15.
+ * Template for unit test to be created...
  */
 public class FindByActivityIdTest {
 
@@ -22,18 +22,13 @@ public class FindByActivityIdTest {
 
     public static void main(String[] args) {
 
-        Configuration mongoConfiguration = new MongoConfiguration()
+        cachedConfiguration = new MongoConfiguration()
                 .server("localhost")
                 .databaseName("effektif");
-
-        cachedConfiguration = mongoConfiguration;
 
         WorkflowEngine workflowEngine = cachedConfiguration.getWorkflowEngine();
 
         // Create a workflow
-        ExecutableWorkflow f = new ExecutableWorkflow();
-
-
         ExecutableWorkflow workflow1 = new ExecutableWorkflow()
                 .sourceWorkflowId("Server test workflow")
                 .activity("One", new StartEvent()
@@ -69,7 +64,7 @@ public class FindByActivityIdTest {
         List<WorkflowInstance> workflowInstances4 = workflowEngine.findWorkflowInstances(workflowInstanceQuery);
 
         // Add another workflowInstance to the workflow
-        workflowInstance = workflowEngine.start(start);
+        workflowEngine.start(start);
 
         List<WorkflowInstance> workflowInstances3 = workflowEngine.findWorkflowInstances(workflowInstanceQuery2);
 
