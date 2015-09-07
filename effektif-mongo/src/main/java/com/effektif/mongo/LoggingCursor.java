@@ -160,7 +160,8 @@ public class LoggingCursor extends DBCursor {
 
   @Override
   public DBCursor addOption(int option) {
-    return cursor.addOption(option);
+    if (cursor != null) return cursor.addOption(option);
+    else return this;
   }
 
   @Override
