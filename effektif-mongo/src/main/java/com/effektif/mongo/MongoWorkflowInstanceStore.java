@@ -73,15 +73,14 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   protected DataTypeService dataTypeService;
   protected MongoObjectMapper mongoMapper;
   
-  interface ScopeInstanceFields {
+  public interface ScopeInstanceFields {
     String START = "start";
     String END = "end";
     String DURATION = "duration";
   }
   
-  interface WorkflowInstanceFields extends ScopeInstanceFields {
+  public interface WorkflowInstanceFields extends ScopeInstanceFields {
     String _ID = "_id";
-    String ORGANIZATION_ID = "organizationId";
     String WORKFLOW_ID = "workflowId";
     String ACTIVITY_INSTANCES = "activityInstances";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
@@ -101,7 +100,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String BUSINESS_KEY = "businessKey";
   }
   
-  interface ActivityInstanceFields extends ScopeInstanceFields {
+  public interface ActivityInstanceFields extends ScopeInstanceFields {
     String ID = "id";
     String PARENT = "parent";
     String CALLED_WORKFLOW_INSTANCE_ID = "calledWorkflowInstanceId";
@@ -111,12 +110,12 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String TASK_ID = "taskId";
   }
 
-  interface WorkflowInstanceLockFields {
+  public interface WorkflowInstanceLockFields {
     String TIME = "time";
     String OWNER = "owner";
   }
 
-  interface VariableInstanceFields {
+  public interface VariableInstanceFields {
     String _ID = "_id";
     String VARIABLE_ID = "variableId";
     String VALUE = "value";
@@ -711,5 +710,9 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       }
     }
     return workflowInstanceMap;
+  }
+
+  public MongoCollection getWorkflowInstancesCollection() {
+    return workflowInstancesCollection;
   }
 }
