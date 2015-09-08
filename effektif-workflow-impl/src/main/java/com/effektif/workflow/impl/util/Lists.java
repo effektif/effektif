@@ -59,10 +59,9 @@ public class Lists {
     List<V> values = new ArrayList<>(keys.size());
     for (K key: keys) {
       V value = map.get(key);
-      if (value==null) {
-        throw new RuntimeException("No value for key "+key+" in map "+map);
+      if (value!=null) {
+        values.add(value);
       } 
-      values.add(value);
     }
     return values;
   }
@@ -71,10 +70,6 @@ public class Lists {
     if (key==null) {
       return null;
     }
-    V value = map.get(key);
-    if (value==null) {
-      throw new RuntimeException("No value for key "+key+" in map "+map);
-    } 
-    return value;
+    return map.get(key);
   }
 }
