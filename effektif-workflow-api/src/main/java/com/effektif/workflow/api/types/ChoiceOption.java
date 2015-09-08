@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.api.types;
 
+import com.effektif.workflow.api.bpmn.BpmnReadable;
+import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 
@@ -22,15 +24,30 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 /**
  * @author Tom Baeyens
  */
-public class ChoiceOption implements BpmnWritable {
+public class ChoiceOption implements BpmnWritable, BpmnReadable {
   
   protected String id;
+  protected String name;
+
+  public String getName() {
+    return this.name;
+  }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.startElementEffektif("option");
     w.writeStringAttributeEffektif("id", id);
+    w.writeStringAttributeEffektif("name", id);
     w.endElement();
+  }
+  
+  @Override
+  public void readBpmn(BpmnReader r) {
+    id = r.readStringAttributeEffektif("id");
+    name = r.readStringAttributeEffektif("name");
   }
 
   public String getId() {
@@ -43,7 +60,12 @@ public class ChoiceOption implements BpmnWritable {
     this.id = id;
     return this;
   }
-  
+
+  public ChoiceOption name(String name) {
+    this.name = name;
+    return this;
+  }
+
   public String toString() {
     return id;
   }

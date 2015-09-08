@@ -37,7 +37,9 @@ public class ChoiceType extends TextType {
   public void readBpmn(BpmnReader r) {
     for (XmlElement optionElement : r.readElementsEffektif("option")) {
       r.startElement(optionElement);
-      option(r.readStringAttributeEffektif("id"));
+      ChoiceOption option = new ChoiceOption();
+      option.readBpmn(r);
+      option(option);
       r.endElement();
     }
   }
@@ -57,10 +59,15 @@ public class ChoiceType extends TextType {
     this.options = options;
   }
   public ChoiceType option(String option) {
+    option(new ChoiceOption().id(option));
+    return this;
+  }
+  
+  public ChoiceType option(ChoiceOption option) {
     if (options==null) {
       options = new ArrayList<>();
     }
-    options.add(new ChoiceOption().id(option));
+    options.add(option);
     return this;
   }
 }
