@@ -57,7 +57,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public List<WorkflowExecutionListener> workflowExecutionListeners;
   public DataTypeService dataTypeService;
 
-  
+
   @Override
   public void brew(Brewery brewery) {
     this.id = brewery.get(WorkflowEngineConfiguration.class).getWorkflowEngineId();
@@ -68,7 +68,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.dataTypeService = brewery.get(DataTypeService.class);
   }
-  
+
   public void startup() {
   }
 
@@ -83,13 +83,13 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     if (log.isDebugEnabled()) {
       log.debug("Deploying workflow");
     }
-    
+
     WorkflowParser parser = new WorkflowParser(configuration);
     parser.parse(workflow);
 
     if (!parser.hasErrors()) {
       WorkflowImpl workflowImpl = parser.getWorkflow();
-      WorkflowId workflowId; 
+      WorkflowId workflowId;
       if (workflow.getId()==null) {
         workflowId = workflowStore.generateWorkflowId();
         workflow.setId(workflowId);
@@ -102,15 +102,15 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
       workflowCache.put(workflowImpl);
     }
-    
+
     return new Deployment(workflow.getId(), parser.getIssues());
   }
-  
+
   @Override
   public List<ExecutableWorkflow> findWorkflows(WorkflowQuery workflowQuery) {
     return workflowStore.findWorkflows(workflowQuery);
   }
-  
+
   @Override
   public void deleteWorkflows(WorkflowQuery workflowQuery) {
     workflowStore.deleteWorkflows(workflowQuery);
@@ -134,7 +134,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     if (workflowInstanceId==null) {
       workflowInstanceId = workflowInstanceStore.generateWorkflowInstanceId();
     }
-    
+
     WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl(
             configuration,
             workflow,
@@ -149,7 +149,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     } else {
       workflowInstance.setVariableValues(triggerInstance);
     }
-    
+
     return workflowInstance;
   }
 
@@ -157,7 +157,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowInstance startExecute(WorkflowInstanceImpl workflowInstance) {
     WorkflowImpl workflow = workflowInstance.workflow;
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
-    
+
     if (workflow.startActivities!=null) {
       for (ActivityImpl startActivityDefinition: workflow.startActivities) {
         if (workflowInstance.startActivityIds == null
@@ -168,10 +168,10 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     } else {
       workflowInstance.endAndPropagateToParent();
     }
-    
+
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);
     workflowInstance.executeWork();
-    
+
     return workflowInstance.toWorkflowInstance();
   }
 
@@ -216,30 +216,29 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
 
     ActivityInstanceImpl activityInstanceImpl = null;
-    if (activityInstanceId != null) {
-      activityInstanceImpl = workflowInstance.findActivityInstanceByActivityId(activityInstanceId);
-    } else {
+    int openActCount = 0;
+    if (activityInstanceId == null) {
       for (ActivityInstanceImpl activityInstance : workflowInstance.activityInstances) {
         if (!activityInstance.isEnded()) {
           activityInstanceImpl = activityInstance;
-          break;
+          openActCount++;
         }
       }
+    } else {
+      activityInstanceImpl = workflowInstance.findActivityInstanceByActivityId(activityInstanceId);
     }
 
-    if (activityInstanceImpl != null && !activityInstanceImpl.isEnded()) {
-      activityInstanceImpl.end();
+    if (openActCount > 1) throw new RuntimeException("Move cannot be called on a workflowInstance with more than 1 open activityInstance. " +
+            "Propably this workflowInstance is part of a paralell process...");
+
+    if (activityInstanceImpl != null && !activityInstanceImpl.isEnded()) activityInstanceImpl.end();
 
       ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(newActivityId);
       if (activityImpl == null) throw new RuntimeException("To-activityId not found!");
 
       workflowInstance.execute(activityImpl);
       workflowInstance.executeWork();
-
       return workflowInstance.toWorkflowInstance();
-    }
-
-    return null;
   }
 
   public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String newActivityId) {
@@ -272,7 +271,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     List<WorkflowInstanceImpl> workflowInstances = workflowInstanceStore.findWorkflowInstances(query);
     return WorkflowInstanceImpl.toWorkflowInstances(workflowInstances);
   }
-  
+
   /** retrieves the executable form of the workflow using the workflow cache */
   public WorkflowImpl getWorkflowImpl(WorkflowId workflowId) {
     WorkflowImpl workflowImpl = workflowCache.get(workflowId);
@@ -286,7 +285,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
     return workflowImpl;
   }
-  
+
   public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(
           final WorkflowInstanceId workflowInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {
@@ -313,7 +312,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     };
     return retry.tryManyTimes();
   }
-  
+
   public String getId() {
     return id;
   }
@@ -329,7 +328,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public WorkflowStore getWorkflowStore() {
     return workflowStore;
   }
-  
+
   public WorkflowInstanceStore getWorkflowInstanceStore() {
     return workflowInstanceStore;
   }
@@ -340,7 +339,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
     workflowExecutionListeners.add(workflowExecutionListener);
   }
-  
+
   public void removeWorkflowExecutionListener(WorkflowExecutionListener workflowExecutionListener) {
     if (workflowExecutionListeners!=null) {
       workflowExecutionListeners.remove(workflowExecutionListener);
@@ -353,11 +352,11 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   public List<WorkflowExecutionListener> getWorkflowExecutionListeners() {
     return workflowExecutionListeners;
   }
-  
+
   public void setWorkflowExecutionListeners(List<WorkflowExecutionListener> workflowExecutionListeners) {
     this.workflowExecutionListeners = workflowExecutionListeners;
   }
-  
+
   public boolean notifyActivityInstanceStarted(ActivityInstanceImpl activityInstance) {
     if (workflowExecutionListeners!=null) {
       for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
