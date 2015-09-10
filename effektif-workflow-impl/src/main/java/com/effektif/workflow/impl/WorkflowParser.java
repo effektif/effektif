@@ -77,7 +77,7 @@ public class WorkflowParser {
   public Set<String> transitionIds = new HashSet<>();
   public WorkflowParseListener workflowParseListener;
   
-  private class ParseContext {
+  public class ParseContext {
     ParseContext(String property, Object element, Object elementImpl, Integer index) {
       this.property = property;
       this.element = element;
@@ -90,9 +90,9 @@ public class WorkflowParser {
         indexText = Integer.toString(index);
       }
     }
-    Object element;
-    String property;
-    String index;
+    public Object element;
+    public String property;
+    public String index;
     public Object elementImpl;
     public String toString() {
       if (index!=null) {
