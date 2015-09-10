@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.api;
 
-import java.util.List;
-
 import com.effektif.workflow.api.model.*;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
+
+import java.util.List;
 
 
 /**
@@ -48,7 +48,8 @@ public interface WorkflowEngine {
    * to end the specified activity instance and move workflow execution forward from there. */
   WorkflowInstance send(Message message);
 
-  boolean move(WorkflowInstanceId workflowInstanceId, String toActivityId);
+  WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String newActivityId);
+  WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String newActivityId);
 
   VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId);
 

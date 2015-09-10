@@ -15,20 +15,19 @@
  */
 package com.effektif.workflow.test.serialization;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.effektif.workflow.api.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.WorkflowEngine;
+import com.effektif.workflow.api.model.*;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -103,9 +102,14 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
   }
 
   @Override
-  public boolean move(WorkflowInstanceId workflowInstanceId, String toActivityId) {
+  public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String newActivityId) {
     log.debug("moveWorkflowInstance");
-    return workflowEngine.move(workflowInstanceId, toActivityId);
+    return workflowEngine.move(workflowInstanceId, newActivityId);
+  }
+
+  @Override
+  public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String newActivityId) {
+    return move(workflowInstanceId, null, newActivityId);
   }
 
   @Override
