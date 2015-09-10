@@ -195,13 +195,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   /***
-   * To manually move a workflowInstance from the current (open) activityInstance to the specified activityInstance.
+   * To manually move a workflowInstance from the current activityInstance to the specified activityInstance.
    * Any "work" in between will not be executed! Will probably be used during testing of your workflows...
    * Note: If your process contains a parallel gateway, and you move one of the two "instances" to an activity after the
-   * merge-parallel gateway, things get messy.... The move() method is not checking for this situation, maybe that is something
-   * to implement in the future, or prevent in the user interface.
-   * Also, sub-processes are not taken into account ie, propagateToParent is not called.
-   * @return true is the to-activity was found, false otherwise.
+   * merge-parallel gateway, things would get messy.... Because of that, the move does not allow this, it checks for #open activityInstances <= 1
+   * Sub-processes are not taken into account ie, propagateToParent is not called.
+   * @return WorkflowInstance is the to-activity was found and the move was executed, null otherwise.
    */
   @Override
   public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String newActivityId) {
@@ -241,6 +240,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       return workflowInstance.toWorkflowInstance();
   }
 
+  @Override
   public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String newActivityId) {
     return move(workflowInstanceId, null, newActivityId);
   }
