@@ -300,7 +300,7 @@ public class WorkflowStreamTest {
     assertEquals("expression2", activity.getInputs().get("in2").getBinding().getExpression());
     assertEquals("listValue1", activity.getInputs().get("in3").getBindings().get(0).getValue());
     assertEquals("listExpression2", activity.getInputs().get("in3").getBindings().get(1).getExpression());
-    assertEquals("var1", activity.getOutputs().get("out1").getVariableId());
+    assertEquals("var1", activity.getOutputs().get("out1"));
   }
 
   @Test

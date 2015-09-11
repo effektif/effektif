@@ -21,7 +21,6 @@ import java.util.Map;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.InputParameter;
-import com.effektif.workflow.api.workflow.OutputParameter;
 
 /**
  * An activity that supports input and output bindings. Input bindings expose workflow variables as input to the
@@ -52,8 +51,8 @@ public class AbstractBindableActivity extends Activity {
       return null;
     }
     Map<String,String> bindings = new HashMap<>();
-    for (Map.Entry<String, OutputParameter> parameter : outputs.entrySet()) {
-      bindings.put(parameter.getKey(), parameter.getValue().getVariableId());
+    for (Map.Entry<String, String> parameter : outputs.entrySet()) {
+      bindings.put(parameter.getKey(), parameter.getValue());
     }
     return bindings;
   }

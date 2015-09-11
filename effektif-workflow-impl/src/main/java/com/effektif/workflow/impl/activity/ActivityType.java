@@ -22,7 +22,6 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
-import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 /**
@@ -45,7 +44,7 @@ public interface ActivityType<T extends Activity> {
    * 
    * @param activityApi will only contain the activity-specific fields.  The other fields 
    *   may be cleaned if the object gets stored and retrieved from the db storage. */
-  void parse(ActivityImpl activityImpl, T activityApi, WorkflowParser parser);
+  void parse(ActivityImpl activityImpl, T activity, WorkflowParser parser);
 
   boolean isFlushSkippable();
 
@@ -62,5 +61,5 @@ public interface ActivityType<T extends Activity> {
   MultiInstanceImpl getMultiInstance();
   
   Map<String,InputParameterImpl> getInputs();
-  Map<String,OutputParameterImpl> getOutputs();
+  Map<String,String> getOutputs();
 }

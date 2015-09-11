@@ -21,7 +21,6 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
@@ -31,7 +30,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
  */
 public abstract class AbstractTriggerImpl<T extends Trigger> {
   
-  protected Map<String,OutputParameterImpl> outputs;
+  protected Map<String,String> outputs;
   protected Class<T> triggerApiClass;
   
   public AbstractTriggerImpl(Class<T> triggerApiClass) {
@@ -50,7 +49,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
    * Parses the {@link com.effektif.workflow.api.workflow.Trigger} to set up this object.
    */
   public void parse(WorkflowImpl workflow, T trigger, WorkflowParser parser) {
-    this.outputs = parser.parseOutputs(trigger.getOutputs());
+    this.outputs = trigger.getOutputs();
   }
 
   public void published(WorkflowImpl workflow) {
@@ -66,10 +65,9 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
       for (String key: data.keySet()) {
         TypedValue typedValue = data.get(key);
         Object value = typedValue!=null ? typedValue.getValue() : null;
-        OutputParameterImpl output = outputs!=null ? outputs.get(key) : null;
-        String variableId = output!=null ? output.variableId : null;
-        if (value!=null && variableId!=null) {
-          workflowInstance.setVariableValue(variableId, value);
+        String outputVariableId = outputs!=null ? outputs.get(key) : null;
+        if (value!=null && outputVariableId!=null) {
+          workflowInstance.setVariableValue(outputVariableId, value);
         }
       }
     }

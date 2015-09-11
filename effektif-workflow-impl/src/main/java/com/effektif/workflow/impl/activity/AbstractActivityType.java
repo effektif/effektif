@@ -30,7 +30,6 @@ import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
-import com.effektif.workflow.impl.workflow.OutputParameterImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
@@ -43,7 +42,7 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   public Class<?> activityApiClass;
   public MultiInstanceImpl multiInstance;
   public Map<String,InputParameterImpl> inputs;
-  public Map<String,OutputParameterImpl> outputs;
+  public Map<String,String> outputs;
 
   public AbstractActivityType(Class<T> activityApiClass) {
     this.activityApiClass = activityApiClass;
@@ -89,7 +88,7 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
       parser.popContext();
     }
     
-    this.outputs = parser.parseOutputs(activity.getOutputs());
+    this.outputs = activity.getOutputs();
 
   }
   
@@ -132,11 +131,13 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
     return false;
   }
   
+  @Override
   public Map<String, InputParameterImpl> getInputs() {
     return inputs;
   }
 
-  public Map<String, OutputParameterImpl> getOutputs() {
+  @Override
+  public Map<String, String> getOutputs() {
     return outputs;
   }
   

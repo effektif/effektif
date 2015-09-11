@@ -29,7 +29,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
  */
 public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
-  protected Map<String,OutputParameter> outputs;
+  protected Map<String,String> outputs;
   
   @Override
   public void readBpmn(BpmnReader r) {
@@ -40,7 +40,7 @@ public abstract class Trigger implements BpmnReadable, BpmnWritable {
       r.startElement(element);
       String key = r.readStringAttributeEffektif("key");
       String variableId = r.readStringAttributeEffektif("id");
-      outputs.put(key, new OutputParameter().variableId(variableId));
+      outputs.put(key, variableId);
       r.endElement();
     }
   }
@@ -48,32 +48,27 @@ public abstract class Trigger implements BpmnReadable, BpmnWritable {
   @Override
   public void writeBpmn(BpmnWriter w) {
     if (outputs != null) {
-      for (Map.Entry<String, OutputParameter> parameter : outputs.entrySet()) {
+      for (Map.Entry<String, String> parameter : outputs.entrySet()) {
         w.startElementEffektif("output");
         w.writeStringAttributeEffektif("key", parameter.getKey());
-        w.writeStringAttributeEffektif("id", parameter.getValue().getVariableId());
+        w.writeStringAttributeEffektif("id", parameter.getValue());
         w.endElement();
       }
     }
   }
   
-  public Map<String, OutputParameter> getOutputs() {
+  public Map<String, String> getOutputs() {
     return outputs;
   }
-  public void setOutputs(Map<String, OutputParameter> outputs) {
+  public void setOutputs(Map<String, String> outputs) {
     this.outputs = outputs;
   }
   
   public Trigger output(String key, String outputVariableId) {
-    output(key, new OutputParameter().variableId(outputVariableId));
-    return this;
-  }
-  
-  public Trigger output(String key, OutputParameter outputParameter) {
     if (outputs==null) {
       outputs = new HashMap<>();
     }
-    outputs.put(key, outputParameter);
+    outputs.put(key, outputVariableId);
     return this;
   }
 }
