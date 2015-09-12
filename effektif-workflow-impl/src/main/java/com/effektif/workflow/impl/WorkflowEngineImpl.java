@@ -227,17 +227,22 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       activityInstanceImpl = workflowInstance.findActivityInstanceByActivityId(activityInstanceId);
     }
 
-    if (openActCount > 1) throw new RuntimeException("Move cannot be called on a workflowInstance with more than 1 open activityInstance. " +
+    if (openActCount > 1) throw new RuntimeException("Move cannot be called on a workflowInstance with more than one open activityInstance. " +
             "Propably this workflowInstance is part of a paralell process...");
 
+    ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(newActivityId);
+    if (activityImpl == null) throw new RuntimeException("To-activityId not found!");
+
     if (activityInstanceImpl != null && !activityInstanceImpl.isEnded()) activityInstanceImpl.end();
+    if (workflowInstance.isEnded()) {
+      workflowInstance.setEnd(null);
+      workflowInstance.duration = 0L;
+    }
 
-      ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(newActivityId);
-      if (activityImpl == null) throw new RuntimeException("To-activityId not found!");
+    workflowInstance.execute(activityImpl);
+    workflowInstance.executeWork();
 
-      workflowInstance.execute(activityImpl);
-      workflowInstance.executeWork();
-      return workflowInstance.toWorkflowInstance();
+    return workflowInstance.toWorkflowInstance();
   }
 
   @Override
