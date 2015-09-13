@@ -353,7 +353,31 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       getUpdates().isEndChanged = true;
     }
   }
-  
+
+  @Override
+  public void setProperty(String key, Object value) {
+    super.setProperty(key, value);
+    getUpdates().isPropertiesChanged = true;
+  }
+
+  @Override
+  public void setPropertyOpt(String key, Object value) {
+    getUpdates().isPropertiesChanged = true;
+    super.setPropertyOpt(key, value);
+  }
+
+  @Override
+  public void setProperties(Map<String, Object> properties) {
+    getUpdates().isPropertiesChanged = true;
+    super.setProperties(properties);
+  }
+
+  @Override
+  public Object removeProperty(String key) {
+    getUpdates().isPropertiesChanged = true;
+    return super.removeProperty(key);
+  }
+
   /** getter for casting convenience */ 
   @Override
   public WorkflowInstanceUpdates getUpdates() {

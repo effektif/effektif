@@ -182,14 +182,14 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 //      if (!dbArchivedActivityInstances.isEmpty()) {
 //        update.append("$push", new BasicDBObject(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances));
 //      }
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No activity instances changed");
     }
     
     if (updates.isVariableInstancesChanged) {
       // if (log.isDebugEnabled()) log.debug("  Variable instances changed");
       writeVariableInstances(sets, workflowInstance);
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No variable instances changed");
     }
 
@@ -201,7 +201,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       } else {
         unsets.put(WorkflowInstanceFields.WORK, 1);
       }
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No work changed");
     }
 
@@ -213,7 +213,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       } else {
         unsets.put(WorkflowInstanceFields.WORK_ASYNC, 1);
       }
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No async work changed");
     }
 
@@ -241,24 +241,31 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       } else {
         unsets.put(WorkflowInstanceFields.JOBS, 1);
       }
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No jobs changed");
+    }
+
+    if (updates.isPropertiesChanged) {
+      if (workflowInstance.properties != null && workflowInstance.properties.size() > 0)
+        sets.append(WorkflowInstanceFields.PROPERTIES, new BasicDBObject(workflowInstance.getProperties()));
+      else
+        unsets.append(WorkflowInstanceFields.PROPERTIES, 1);
     }
 
     if (!sets.isEmpty()) {
       update.append("$set", sets);
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No sets");
     }
     if (!unsets.isEmpty()) {
       update.append("$unset", unsets);
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  No unsets");
     }
     
     if (!update.isEmpty()) {
       workflowInstancesCollection.update("flush-workflow-instance", query, update, false, false);
-    } else {
+//    } else {
       // if (log.isDebugEnabled()) log.debug("  Nothing to flush");
     }
     
