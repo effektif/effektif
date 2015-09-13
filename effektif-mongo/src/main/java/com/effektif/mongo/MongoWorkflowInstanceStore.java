@@ -15,20 +15,6 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoHelper.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -48,17 +34,14 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
-import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.LockImpl;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.effektif.workflow.impl.workflowinstance.*;
+import com.mongodb.*;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import java.util.*;
+
+import static com.effektif.mongo.MongoHelper.*;
 
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
@@ -166,8 +149,14 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
     if (updates.isEndChanged) {
       // if (log.isDebugEnabled()) log.debug("  Workflow instance ended");
-      sets.append(WorkflowInstanceFields.END, workflowInstance.end.toDate());
-      sets.append(WorkflowInstanceFields.DURATION, workflowInstance.duration);
+      if (workflowInstance.end != null) {
+        sets.append(WorkflowInstanceFields.END, workflowInstance.end.toDate());
+        sets.append(WorkflowInstanceFields.DURATION, workflowInstance.duration);
+      }
+      else {
+        unsets.append(WorkflowInstanceFields.END, 1);
+        unsets.append(WorkflowInstanceFields.DURATION, 1);
+      }
     }
     // MongoDB can't combine updates of array elements together with 
     // adding elements to that array.  That's why we overwrite the whole

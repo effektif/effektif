@@ -202,47 +202,58 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
    * Sub-processes are not taken into account ie, propagateToParent is not called.
    * @return WorkflowInstance is the to-activity was found and the move was executed, null otherwise.
    */
-  @Override
-  public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String newActivityId) {
+  public WorkflowInstance moveImpl(WorkflowInstanceImpl workflowInstanceImpl, String activityInstanceId, String newActivityId) {
 
-    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
+    if(workflowInstanceImpl.lock == null) throw new RuntimeException("WorkflowInstance not locked!");
 
     if (log.isDebugEnabled()) log.debug("Moving workflowInstance to activityId: " + newActivityId);
 
-    if (workflowInstance.activityInstances==null) {
-      log.debug("ActivityInstances == null, returning without doing something.");
-      return null;
-    }
-
-    ActivityInstanceImpl activityInstanceImpl = null;
-    int openActCount = 0;
-    if (activityInstanceId == null) {
-      for (ActivityInstanceImpl activityInstance : workflowInstance.activityInstances) {
-        if (!activityInstance.isEnded()) {
-          activityInstanceImpl = activityInstance;
-          openActCount++;
-        }
+    try {
+      if (workflowInstanceImpl.activityInstances == null) {
+        log.debug("ActivityInstances == null, returning without doing something.");
+        return null;
       }
-    } else {
-      activityInstanceImpl = workflowInstance.findActivityInstanceByActivityId(activityInstanceId);
+
+      ActivityInstanceImpl activityInstanceImpl = null;
+      int openActCount = 0;
+      if (activityInstanceId == null) {
+        for (ActivityInstanceImpl activityInstance : workflowInstanceImpl.activityInstances) {
+          if (!activityInstance.isEnded()) {
+            activityInstanceImpl = activityInstance;
+            openActCount++;
+          }
+        }
+      } else {
+        activityInstanceImpl = workflowInstanceImpl.findActivityInstanceByActivityId(activityInstanceId);
+      }
+
+      if (openActCount > 1)
+        throw new RuntimeException("Move cannot be called on a workflowInstance with more than one open activityInstance. " +
+                "Propably this workflowInstance is part of a paralell process...");
+
+      ActivityImpl activityImpl = workflowInstanceImpl.workflow.findActivityByIdLocal(newActivityId);
+      if (activityImpl == null) throw new RuntimeException("To-activityId not found!");
+
+      if (activityInstanceImpl != null && !activityInstanceImpl.isEnded()) activityInstanceImpl.end();
+      if (workflowInstanceImpl.isEnded()) {
+        workflowInstanceImpl.setEnd(null);
+        workflowInstanceImpl.duration = 0L;
+      }
+
+      workflowInstanceImpl.execute(activityImpl);
+      workflowInstanceImpl.executeWork();
+
+      return workflowInstanceImpl.toWorkflowInstance();
+    } finally {
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceImpl.getId());
     }
+  }
 
-    if (openActCount > 1) throw new RuntimeException("Move cannot be called on a workflowInstance with more than one open activityInstance. " +
-            "Propably this workflowInstance is part of a paralell process...");
+  @Override
+  public WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String newActivityId) {
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
 
-    ActivityImpl activityImpl = workflowInstance.workflow.findActivityByIdLocal(newActivityId);
-    if (activityImpl == null) throw new RuntimeException("To-activityId not found!");
-
-    if (activityInstanceImpl != null && !activityInstanceImpl.isEnded()) activityInstanceImpl.end();
-    if (workflowInstance.isEnded()) {
-      workflowInstance.setEnd(null);
-      workflowInstance.duration = 0L;
-    }
-
-    workflowInstance.execute(activityImpl);
-    workflowInstance.executeWork();
-
-    return workflowInstance.toWorkflowInstance();
+    return moveImpl(workflowInstance, activityInstanceId, newActivityId);
   }
 
   @Override
