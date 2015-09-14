@@ -375,6 +375,20 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     return null;
   }
+
+  /**
+   * Returns the description of the variable specified by the given binding expression.
+   */
+  public String findVariableDescription(BindingImpl binding) {
+    if (binding == null || binding.expression == null) {
+      return null;
+    }
+    VariableInstanceImpl variableInstance = getVariableInstance(binding.expression);
+    if (variableInstance == null || variableInstance.getVariable() == null) {
+      return null;
+    }
+    return variableInstance.getVariable().variable.getDescription();
+  }
   
   protected VariableInstanceImpl getVariableInstanceLocal(String variableId) {
     return variableInstancesMap.get(variableId);
