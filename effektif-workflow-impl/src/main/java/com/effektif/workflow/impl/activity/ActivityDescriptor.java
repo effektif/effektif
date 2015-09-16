@@ -34,6 +34,10 @@ public class ActivityDescriptor extends Extensible {
   protected String name;
   protected String description;
   protected String icon;
+  /**
+   * References another dynamic descriptor.
+   */
+  protected String descriptorId;
 
   protected Map<String,InputDescriptor> inputDescriptors;
   protected Map<String,OutputDescriptor> outputDescriptors;
@@ -132,7 +136,18 @@ public class ActivityDescriptor extends Extensible {
     this.description = description;
     return this;
   }
-  
+
+  public String getDescriptorId() {
+    return this.descriptorId;
+  }
+  public void setDescriptorId(String descriptorId) {
+    this.descriptorId = descriptorId;
+  }
+  public ActivityDescriptor descriptorId(String descriptorId) {
+    this.descriptorId = descriptorId;
+    return this;
+  }
+
   public String getIcon() {
     return this.icon;
   }
