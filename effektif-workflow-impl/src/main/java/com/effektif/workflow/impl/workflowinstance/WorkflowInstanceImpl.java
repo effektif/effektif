@@ -357,7 +357,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   @Override
   public void setProperty(String key, Object value) {
     super.setProperty(key, value);
-    getUpdates().isPropertiesChanged = true;
+    if (updates!=null) {
+      getUpdates().isPropertiesChanged = true;
+    }
   }
 
   @Override
