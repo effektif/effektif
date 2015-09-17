@@ -18,7 +18,10 @@ package com.effektif.workflow.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import com.effektif.workflow.api.workflow.ParseIssue;
+import com.effektif.workflow.api.workflow.WorkflowInstanceMigrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +115,45 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     
     return new Deployment(workflow.getId(), parser.getIssues());
   }
-  
+
+  @Override
+  public Deployment deployWorkflow(ExecutableWorkflow workflow, WorkflowInstanceMigrator migrator) {
+
+    Deployment deployment = null;
+
+    if (migrator!=null && migrator.originalWorkflowId != null) {
+      // create a unique lockOwner for the migration
+      UUID uuid = UUID.randomUUID();
+
+      String uniqueLockOwner = getId() + "-" + uuid.toString();
+
+      log.debug("Migration from workflow " + migrator.originalWorkflowId + " started, locking workflowInstances.");
+
+      Long lockResult = lockAllWorkflowInstancesWithRetry(migrator.originalWorkflowId, uniqueLockOwner);
+
+      if (lockResult != null) {
+        // Update to new workflow and unlock all
+        deployment = deployWorkflow(workflow);
+
+        log.debug("Locking done, now migrating from workflow " + migrator.originalWorkflowId + " to workflow " + deployment.getWorkflowId() + ", and unlocking.");
+
+        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.originalWorkflowId, deployment.getWorkflowId().getInternal(), uniqueLockOwner);
+
+        log.debug("Migration of workflowId " + migrator.originalWorkflowId + " to workflowId " + deployment.getWorkflowId() + " finished.");
+      } else {
+        deployment = new Deployment();
+        // Just unlock all
+        log.debug("Failed to get a lock on all workflowInstances of workflow " + migrator.originalWorkflowId + ". Unlocking and aborting migration.");
+
+        workflowInstanceStore.migrateAndUnlockAllLockedWorkflowInstances(migrator.originalWorkflowId, null, uniqueLockOwner);
+
+        deployment.addIssue(ParseIssue.IssueType.error, null, null, null, "Migration of workflowInstances of the old workflow failed, because migration failed to get a lock on all workflowInstances of workflow " + migrator.originalWorkflowId, null);
+      }
+    }
+
+    return deployment;
+  }
+
   @Override
   public List<ExecutableWorkflow> findWorkflows(WorkflowQuery workflowQuery) {
     return workflowStore.findWorkflows(workflowQuery);
@@ -241,7 +282,23 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     }
     return workflowImpl;
   }
-  
+
+  public Long lockAllWorkflowInstancesWithRetry(final String workflowId, final String uniqueLockOwner) {
+    Retry<Long> retry = new Retry<Long>() {
+      @Override
+      public Long tryOnce() {
+        return workflowInstanceStore.lockAllWorkflowInstances(workflowId, uniqueLockOwner);
+      }
+
+      @Override
+      protected void failedWaitingForRetry() {
+        log.debug("Locking all workflowInstances for workflow " + workflowId + " failed.... retrying in " + wait + " millis.");
+      }
+    };
+
+    return retry.tryManyTimes();
+  }
+
   public WorkflowInstanceImpl lockWorkflowInstanceWithRetry(
           final WorkflowInstanceId workflowInstanceId) {
     Retry<WorkflowInstanceImpl> retry = new Retry<WorkflowInstanceImpl>() {

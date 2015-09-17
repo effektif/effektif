@@ -30,6 +30,7 @@ public class WorkflowInstanceQuery {
 
   protected WorkflowInstanceId workflowInstanceId;
   protected String activityId;
+  protected String workflowId;
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
@@ -61,6 +62,18 @@ public class WorkflowInstanceQuery {
     this.activityId = activityId;
   }
 
+  public WorkflowInstanceQuery workflowId(String workflowId) {
+    setWorkflowId(workflowId);
+    return this;
+  }
+
+  public String getWorkflowId() {
+    return workflowId;
+  }
+
+  public void setWorkflowId(String workflowId) {
+    this.workflowId = workflowId;
+  }
 
   public Integer getSkip() {
     return this.skip;

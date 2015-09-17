@@ -15,27 +15,12 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
-import com.effektif.workflow.impl.ExecutorService;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activity.ActivityType;
@@ -46,6 +31,13 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
 
 
 /**
@@ -376,18 +368,21 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   /***
    * isIncluded
-   * @param query, with any combination of ActivityId and WorkflowInstanceId set or not set.
+   * @param query, with any combination of WorkflowId, ActivityId and WorkflowInstanceId set or not set.
    *               When set, the value is taken into account, otherwise it is ignored.
-   *               If both ActivityId and WorkflowInstanceId are null (empty query), true is returned
+   *               If WorkflowId, ActivityId and WorkflowInstanceId all are null (empty query), true is returned
+   *               Beware: if AT LEAST ONE of the conditions is met, true is returned!
    */
   public boolean isIncluded(WorkflowInstanceQuery query) {
 
-    if (query.getActivityId() == null && query.getWorkflowInstanceId() == null) return true;
+    if (query.getActivityId() == null && query.getWorkflowInstanceId() == null && query.getWorkflowId() == null) return true;
 
     if (query.getWorkflowInstanceId()!=null
             && query.getWorkflowInstanceId().equals(id)) {
       return true;
     }
+
+    if(query.getWorkflowId() != null && query.getWorkflowId().equals(workflow.getId().getInternal())) return true;
 
     if (query.getActivityId()!=null && hasActivityInstances()) {
       for (ActivityInstanceImpl activityInstance : activityInstances) {

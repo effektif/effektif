@@ -232,7 +232,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       // a lock is only removed 
       unsets.put(WorkflowInstanceFields.LOCK, 1);
     }
-    
+
+    if (updates.isWorkflowChanged) {
+      sets.put(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowInstance.getWorkflow().getId().getInternal()));
+    }
+
     if (updates.isJobsChanged) {
       // if (log.isDebugEnabled()) log.debug("  Jobs changed");
       List<BasicDBObject> dbJobs = writeJobs(workflowInstance.jobs);
@@ -288,7 +292,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     }
     return workflowInstances;
   }
-  
+
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery) {
     BasicDBObject query = createDbQuery(workflowInstanceQuery);
@@ -313,6 +317,10 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       dbQuery.append(WorkflowInstanceFields.ACTIVITY_INSTANCES
               , new BasicDBObject("$elemMatch", new BasicDBObject(ActivityInstanceFields.ACTIVITY_ID, query.getActivityId())
               .append(ActivityInstanceFields.WORK_STATE, new BasicDBObject("$exists", true))));
+    }
+
+    if (query.getWorkflowId() != null) {
+      dbQuery.append(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(query.getWorkflowId()));
     }
 
     return dbQuery;
@@ -359,13 +367,61 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.trackUpdates(false);
     return workflowInstance;
   }
-  
+
+  // Returns null if all workflowInstances were locked, or the number of unlocked records if not all records of the workflow could be locked.
+  public Long lockAllWorkflowInstances(String workflowId, String uniqueOwner) {
+
+    DBObject query = createLockQuery();
+    query.put(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowId));
+
+    DBObject update = createLockUpdate(uniqueOwner);
+
+    workflowInstancesCollection.update("lock-workflowInstance-migrate", query, update, false, true);
+
+    // Now count the remaining, return null if any remaining
+    BasicDBList or = new BasicDBList();
+    or.add(query);
+    or.add(new BasicDBObject(WorkflowInstanceFields.LOCK + "." + WorkflowInstanceLockFields.OWNER, new BasicDBObject("$ne", uniqueOwner)));
+
+    BasicDBObject countQuery = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(workflowId));
+    countQuery.append("$or", or);
+
+    long count = workflowInstancesCollection.count("count-workflowInstance-migrate", countQuery);
+
+    if (count > 0) return null; // fail
+    else return new Long(0); // success
+  }
+
+  @Override
+  public void migrateAndUnlockAllLockedWorkflowInstances(String fromWorkfowId, String toWorkflowId, String uniqueOwner) {
+    BasicDBObject query;
+    BasicDBObject update;
+
+    query = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(fromWorkfowId))
+            .append(getLockOwnerField(), uniqueOwner);
+
+    BasicDBObject unset = new BasicDBObject(WorkflowInstanceFields.LOCK, 1);
+
+    update = new BasicDBObject("$unset", unset);
+
+    if (toWorkflowId != null) {
+      BasicDBObject set = new BasicDBObject(WorkflowInstanceFields.WORKFLOW_ID, new ObjectId(toWorkflowId));
+      update.append("$set", set);
+    }
+
+    workflowInstancesCollection.update("unlock-workflowInstance-migrate", query, update, false, true);
+  }
+
+  private static String getLockOwnerField() {
+    return WorkflowInstanceFields.LOCK + "." + WorkflowInstanceLockFields.OWNER;
+  }
+
   @Override
   public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    workflowInstancesCollection.update("unlock-workflow-instance", 
+    workflowInstancesCollection.update("unlock-workflow-instance",
       new Query()
         ._id(new ObjectId(workflowInstanceId.getInternal()))
-        .get(), 
+        .get(),
       new Update()
         .unset(WorkflowInstanceFields.LOCK)
         .get());
@@ -380,11 +436,15 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   public DBObject createLockUpdate() {
+    return createLockUpdate(workflowEngine.getId());
+  }
+
+  public DBObject createLockUpdate(String owner) {
     return BasicDBObjectBuilder.start()
       .push("$set")
         .push(WorkflowInstanceFields.LOCK)
           .add(WorkflowInstanceLockFields.TIME, Time.now().toDate())
-          .add(WorkflowInstanceLockFields.OWNER, workflowEngine.getId())
+          .add(WorkflowInstanceLockFields.OWNER, owner)
         .pop()
       .pop()
       .get();

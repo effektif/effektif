@@ -15,17 +15,7 @@
  */
 package com.effektif.workflow.impl.memory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-
+import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -35,8 +25,13 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
+import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import org.slf4j.Logger;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -47,6 +42,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   private static final Logger log = WorkflowEngineImpl.log;
 
   protected String workflowEngineId;
+  protected WorkflowEngineImpl engine;
   protected Map<WorkflowInstanceId, WorkflowInstanceImpl> workflowInstances;
   protected Set<WorkflowInstanceId> lockedWorkflowInstanceIds;
   
@@ -57,6 +53,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   public void brew(Brewery brewery) {
     initializeWorkflowInstances();
     this.workflowEngineId = brewery.get(WorkflowEngineImpl.class).id;
+    this.engine = brewery.get(WorkflowEngineImpl.class);
   }
 
   protected void initializeWorkflowInstances() {
@@ -100,7 +97,7 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
       if (workflowInstance!=null && workflowInstance.isIncluded(query)) {
         return Lists.of(workflowInstance);
       } else {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
       }
     }
     List<WorkflowInstanceImpl> workflowInstances = new ArrayList<>();
@@ -140,9 +137,39 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
       throw new RuntimeException("Process instance doesn't exist");
     }
     WorkflowInstanceImpl workflowInstance = workflowInstances.get(0);
-    workflowInstanceId = workflowInstance.id;
     lockWorkflowInstance(workflowInstance);
     return workflowInstance;
+  }
+
+  @Override
+  public Long lockAllWorkflowInstances(String workflowId, String uniqueOwner) {
+    long lockedInstances = 0;
+    WorkflowInstanceQuery query = new WorkflowInstanceQuery().workflowId(workflowId);
+    List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(query);
+    for(WorkflowInstanceImpl workflowInstance : workflowInstances) {
+      try {
+        lockWorkflowInstance(workflowInstance);
+      } catch (RuntimeException ex) {
+        lockedInstances++;
+      }
+    }
+
+    if (lockedInstances > 0) return null; // fail
+    else return (long) 0; // success
+  }
+
+  @Override
+  public void migrateAndUnlockAllLockedWorkflowInstances(String fromWorkflowId, String toWorkflowId, String uniqueOwner) {
+    WorkflowInstanceQuery query = new WorkflowInstanceQuery().workflowId(fromWorkflowId);
+
+    WorkflowImpl newWorkflow = engine.getWorkflowImpl(new WorkflowId(toWorkflowId));
+
+    List<WorkflowInstanceImpl> workflowInstances = findWorkflowInstances(query);
+    for(WorkflowInstanceImpl workflowInstance : workflowInstances) {
+      workflowInstance.workflow = newWorkflow;
+
+      flushAndUnlock(workflowInstance);
+    }
   }
 
   public synchronized void lockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
