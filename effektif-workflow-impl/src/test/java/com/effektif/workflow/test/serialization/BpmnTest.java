@@ -24,12 +24,12 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;

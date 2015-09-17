@@ -16,7 +16,6 @@
 package com.effektif.workflow.impl.data;
 
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.WorkflowParser;

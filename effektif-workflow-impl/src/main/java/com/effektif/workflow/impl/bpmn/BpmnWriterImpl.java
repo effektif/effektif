@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -30,6 +29,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;

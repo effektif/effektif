@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
-import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;

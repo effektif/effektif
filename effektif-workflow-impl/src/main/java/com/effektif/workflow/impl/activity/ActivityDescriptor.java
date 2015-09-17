@@ -17,7 +17,6 @@ package com.effektif.workflow.impl.activity;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.effektif.workflow.api.types.DataType;

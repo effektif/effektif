@@ -24,7 +24,6 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.bpmn.xml.XmlReader;
 import com.effektif.workflow.impl.bpmn.xml.XmlWriter;
 import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;

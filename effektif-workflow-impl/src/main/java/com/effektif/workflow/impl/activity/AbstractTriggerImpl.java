@@ -32,6 +32,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
   
   protected Map<String,String> outputs;
   protected Class<T> triggerApiClass;
+  protected T trigger;
   
   public AbstractTriggerImpl(Class<T> triggerApiClass) {
     this.triggerApiClass = triggerApiClass;
@@ -49,6 +50,7 @@ public abstract class AbstractTriggerImpl<T extends Trigger> {
    * Parses the {@link com.effektif.workflow.api.workflow.Trigger} to set up this object.
    */
   public void parse(WorkflowImpl workflow, T trigger, WorkflowParser parser) {
+    this.trigger = trigger;
     this.outputs = trigger.getOutputs();
   }
 

@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.conditions;
 
-import ch.qos.logback.core.util.StringCollectionUtil;
-
 import com.effektif.workflow.api.condition.Comparator;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.util.StringUtil;

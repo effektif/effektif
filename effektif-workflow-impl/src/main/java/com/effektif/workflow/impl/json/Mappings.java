@@ -39,7 +39,6 @@ import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.impl.data.types.MapType;
-import com.effektif.workflow.impl.data.types.ObjectType;
 import com.effektif.workflow.impl.json.types.BeanMapper;
 import com.effektif.workflow.impl.json.types.PolymorphicBeanMapper;
 import com.effektif.workflow.impl.util.Reflection;

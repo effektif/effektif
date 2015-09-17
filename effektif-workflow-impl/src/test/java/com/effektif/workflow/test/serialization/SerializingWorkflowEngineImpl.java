@@ -15,19 +15,24 @@
  */
 package com.effektif.workflow.test.serialization;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.*;
+import com.effektif.workflow.api.model.Deployment;
+import com.effektif.workflow.api.model.Message;
+import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.model.VariableValues;
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
