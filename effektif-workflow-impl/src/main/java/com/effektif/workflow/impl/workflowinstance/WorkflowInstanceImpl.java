@@ -17,13 +17,7 @@ package com.effektif.workflow.impl.workflowinstance;
 
 import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -66,7 +60,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
   public List<Job> jobs;
-  
+  public Set<ActivityInstanceImpl> currentActivityIds = new HashSet<>();
+
   /** local cache of the locked workflow instance for the purpose of the 
    * call activity.  in case the subprocess is fully synchronous and it 
    * finishes and wants to continue the parent, that parent is already 

@@ -68,6 +68,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String ACTIVITY_INSTANCES = "activityInstances";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
     String VARIABLE_INSTANCES = "variableInstances";
+    String CURRENT_ACTIVITIES = "currentActivities";
     String LOCK = "lock";
     String UPDATES = "updates";
     String WORK = "work";
@@ -173,6 +174,15 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 //      }
 //    } else {
       // if (log.isDebugEnabled()) log.debug("  No activity instances changed");
+
+      BasicDBList currentActivityIds = new BasicDBList();
+      for (ActivityInstanceImpl activityInstanceImpl : workflowInstance.currentActivityIds) {
+        if (activityInstanceImpl != null && activityInstanceImpl.getActivity() != null)
+          currentActivityIds.add(activityInstanceImpl.getActivity().getId());
+      }
+      if (currentActivityIds.size() > 0)
+        sets.put(WorkflowInstanceFields.CURRENT_ACTIVITIES, currentActivityIds);
+
     }
     
     if (updates.isVariableInstancesChanged) {
