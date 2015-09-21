@@ -22,6 +22,7 @@ public interface HttpStatusCode {
   int NO_CONTENT = 204;
   int BAD_REQUEST = 400;
   int UNAUTHORIZED = 401;
+  int PAYMENT_REQUIRED = 402;
   int FORBIDDEN = 403;
   int NOT_FOUND = 404;
   int CONFLICT = 409;

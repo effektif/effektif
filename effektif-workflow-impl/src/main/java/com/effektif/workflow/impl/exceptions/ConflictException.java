@@ -21,6 +21,10 @@ public class ConflictException extends HttpMappedException {
     super(message);
   }
 
+  public ConflictException(String message, Throwable t) {
+    super(message, t);
+  }
+
   private static final long serialVersionUID = -8953875700330969620L;
 
   @Override

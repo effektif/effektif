@@ -32,6 +32,9 @@ public class ForbiddenException extends HttpMappedException {
     super(message);
   }
 
+  public ForbiddenException(String message, Throwable t) {
+    super(message, t);
+  }
 
   @Override
   public int getStatusCode() {
