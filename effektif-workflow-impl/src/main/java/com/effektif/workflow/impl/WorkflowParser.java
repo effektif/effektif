@@ -233,7 +233,7 @@ public class WorkflowParser {
     return bindingImpl;
   }
 
-  protected <T> BindingImpl<T> parseBinding(Binding<T> binding, DataType type) {
+  protected <T> BindingImpl<T> parseBinding(Binding<T> binding, DataType targetType) {
     if (binding==null) {
       return null;
     }
@@ -241,6 +241,10 @@ public class WorkflowParser {
     if (binding.getValue()!=null) {
       bindingImpl.value = binding.getValue();
       DataTypeService ds = configuration.get(DataTypeService.class);
+      DataType type = binding.getType(); 
+      if (type==null && targetType!=null) {
+        type = targetType;
+      }
       bindingImpl.type = ds.createDataType(type);
     }
     String expression = binding.getExpression();
