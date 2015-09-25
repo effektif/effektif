@@ -95,6 +95,8 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public void execute() {
+    workflowInstance.currentActivityIds.add(this);
+
     if (workflow.workflowEngine.notifyActivityInstanceStarted(this)) {
       activity.activityType.execute(this);
       if (START_WORKSTATES.contains(workState)) {
@@ -200,6 +202,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       end();
       propagateToParent();
     }
+    workflowInstance.currentActivityIds.remove(this);
     workflow.workflowEngine.notifyTransitionTaken(this, transition, toActivityInstance);
   }
   
