@@ -67,7 +67,7 @@ public class Node {
   public Node getChild(String id) {
     if (id != null && children != null) {
       for (Node node : children) {
-        if (id.equals(node.id)) {
+        if (id.equals(node.elementId)) {
           return node;
         }
       }
