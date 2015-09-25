@@ -36,6 +36,7 @@ import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.*;
 import com.mongodb.*;
+
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
@@ -68,13 +69,11 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String ACTIVITY_INSTANCES = "activityInstances";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
     String VARIABLE_INSTANCES = "variableInstances";
-    String CURRENT_ACTIVITIES = "currentActivities";
+    String OPEN_ACTIVITY_IDS = "openActivityIds";
     String LOCK = "lock";
     String UPDATES = "updates";
     String WORK = "work";
     String WORK_ASYNC = "workAsync";
-//    @Deprecated
-//    String TASK_ID = "taskId";
     String CALLER_WORKFLOW_INSTANCE_ID = "callerWorkflowInstanceId";
     String CALLER_ACTIVITY_INSTANCE_ID = "callerActivityInstanceId";
     String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
@@ -164,84 +163,56 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     // We do archive the ended (and joined) activity instances into a separate collection 
     // that doesn't have to be loaded.
     if (updates.isActivityInstancesChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Activity instances changed");
-//      BasicDBList dbArchivedActivityInstances = new BasicDBList();
-//      collectArchivedActivities(workflowInstance, dbArchivedActivityInstances);
       BasicDBList dbActivityInstances = writeActiveActivityInstances(workflowInstance.activityInstances);
       sets.append(WorkflowInstanceFields.ACTIVITY_INSTANCES, dbActivityInstances);
-//      if (!dbArchivedActivityInstances.isEmpty()) {
-//        update.append("$push", new BasicDBObject(WorkflowInstanceFields.ARCHIVED_ACTIVITY_INSTANCES, dbArchivedActivityInstances));
-//      }
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No activity instances changed");
-
-      BasicDBList currentActivityIds = new BasicDBList();
-      for (ActivityInstanceImpl activityInstanceImpl : workflowInstance.currentActivityIds) {
-        if (activityInstanceImpl != null && activityInstanceImpl.getActivity() != null)
-          currentActivityIds.add(activityInstanceImpl.getActivity().getId());
-      }
-      if (currentActivityIds.size() > 0)
-        sets.put(WorkflowInstanceFields.CURRENT_ACTIVITIES, currentActivityIds);
-
+    }
+    
+    if (updates.isOpenActivityIdsChanged) {
+      sets.append(WorkflowInstanceFields.OPEN_ACTIVITY_IDS, workflowInstance.openActivityIds);
     }
     
     if (updates.isVariableInstancesChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Variable instances changed");
       writeVariableInstances(sets, workflowInstance);
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No variable instances changed");
     }
 
     if (updates.isWorkChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Work changed");
       List<String> work = writeWork(workflowInstance.work);
       if (work!=null) {
         sets.put(WorkflowInstanceFields.WORK, work);
       } else {
         unsets.put(WorkflowInstanceFields.WORK, 1);
       }
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No work changed");
     }
 
     if (updates.isAsyncWorkChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Aync work changed");
       List<String> workAsync = writeWork(workflowInstance.workAsync);
       if (workAsync!=null) {
         sets.put(WorkflowInstanceFields.WORK_ASYNC, workAsync);
       } else {
         unsets.put(WorkflowInstanceFields.WORK_ASYNC, 1);
       }
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No async work changed");
     }
 
     if (updates.isNextActivityInstanceIdChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Next activity instance changed");
       sets.put(WorkflowInstanceFields.NEXT_ACTIVITY_INSTANCE_ID, workflowInstance.nextActivityInstanceId);
     }
 
     if (updates.isNextVariableInstanceIdChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Next variable instance changed");
       sets.put(WorkflowInstanceFields.NEXT_VARIABLE_INSTANCE_ID, workflowInstance.nextVariableInstanceId);
     }
 
     if (updates.isLockChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Lock changed");
       // a lock is only removed 
       unsets.put(WorkflowInstanceFields.LOCK, 1);
     }
     
     if (updates.isJobsChanged) {
-      // if (log.isDebugEnabled()) log.debug("  Jobs changed");
       List<BasicDBObject> dbJobs = writeJobs(workflowInstance.jobs);
       if (dbJobs!=null) {
         sets.put(WorkflowInstanceFields.JOBS, dbJobs);
       } else {
         unsets.put(WorkflowInstanceFields.JOBS, 1);
       }
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No jobs changed");
     }
 
     if (updates.isPropertiesChanged) {
@@ -253,19 +224,12 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
     if (!sets.isEmpty()) {
       update.append("$set", sets);
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No sets");
     }
     if (!unsets.isEmpty()) {
       update.append("$unset", unsets);
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  No unsets");
     }
-    
     if (!update.isEmpty()) {
       workflowInstancesCollection.update("flush-workflow-instance", query, update, false, false);
-//    } else {
-      // if (log.isDebugEnabled()) log.debug("  Nothing to flush");
     }
     
     // reset the update tracking as all changes have been saved
@@ -495,6 +459,9 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.duration = readLong(dbWorkflowInstance, WorkflowInstanceFields.DURATION);
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(WorkflowInstanceFields.LOCK));
     workflowInstance.jobs = readJobs(readList(dbWorkflowInstance, WorkflowInstanceFields.JOBS));
+    
+    Object openActivityIds = readObject(dbWorkflowInstance, WorkflowInstanceFields.OPEN_ACTIVITY_IDS);
+    workflowInstance.openActivityIds = openActivityIds!=null ? new ArrayList<>((List<String>)openActivityIds) : null;
     
     Map<ActivityInstanceImpl, String> allActivityIds = new HashMap<>();
 

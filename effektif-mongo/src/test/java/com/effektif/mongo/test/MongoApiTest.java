@@ -15,12 +15,13 @@
  */
 package com.effektif.mongo.test;
 
+import org.junit.Test;
+
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.test.TestSuiteHelper;
 import com.effektif.workflow.test.WorkflowTest;
 import com.mongodb.DB;
-import org.junit.Test;
 
 
 public class MongoApiTest {
@@ -45,7 +46,7 @@ public class MongoApiTest {
     
     TestSuiteHelper.run(configuration
       // use the next line if you only want to run 1 test
-      // , ParallelGatewayTest.class, "testCombineDefaultOutgoingParallelWithGatewayParallel"
+      // , SequentialExecutionTest.class, "testSequentialExecution"
       );
   }
 
