@@ -65,7 +65,7 @@ public abstract class Comparator extends Condition {
     this.right = new Binding().value(rightValue);
     return this;
   }
-  public Comparator right(String rightExpression) {
+  public Comparator rightExpression(String rightExpression) {
     this.right = new Binding().expression(rightExpression);
     return this;
   }
