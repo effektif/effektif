@@ -35,4 +35,12 @@ public class TextTypeImpl extends AbstractDataType<TextType> {
   public boolean isStatic() {
     return false;
   }
+
+  @Override
+  public String validateInternalValue(Object internalValue) {
+    if (! (internalValue instanceof String)) {
+      return "Texts must be of type "+String.class.getName();
+    }
+    return null;
+  }
 }

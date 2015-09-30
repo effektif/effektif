@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.data.types;
 
 import java.util.Locale;
 
+import org.joda.time.LocalDateTime;
 import org.joda.time.ReadablePartial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -55,5 +56,13 @@ public class DateTypeImpl extends AbstractDataType<DateType> {
   @Override
   public boolean isStatic() {
     return false;
+  }
+  
+  @Override
+  public String validateInternalValue(Object internalValue) {
+    if (! (internalValue instanceof LocalDateTime)) {
+      return "Dates must be "+LocalDateTime.class.getName();
+    }
+    return null;
   }
 }

@@ -33,4 +33,12 @@ public class LinkTypeImpl extends TextTypeImpl {
   public LinkTypeImpl(LinkType type) {
     super(type);
   }
+
+  @Override
+  public String validateInternalValue(Object internalValue) {
+    if (! (internalValue instanceof String)) {
+      return "Links must be of type "+String.class.getName();
+    }
+    return null;
+  }
 }

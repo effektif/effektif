@@ -61,4 +61,12 @@ public class NumberTypeImpl extends AbstractDataType<NumberType> {
 //    }
 //    return null;
 //  }
+
+  @Override
+  public String validateInternalValue(Object internalValue) {
+    if (! (internalValue instanceof Number)) {
+      return "Numbers must be of type "+Number.class.getName();
+    }
+    return null;
+  }
 }

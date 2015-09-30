@@ -35,4 +35,12 @@ public class BooleanTypeImpl extends AbstractDataType<BooleanType> {
 //    }
 //    throw new InvalidValueException("Expected boolean, but was "+valueApi.getClass().getSimpleName());
 //  }
+
+  @Override
+  public String validateInternalValue(Object internalValue) {
+    if (! (internalValue instanceof Boolean)) {
+      return "Booleans must be of type "+Boolean.class.getName();
+    }
+    return null;
+  }
 }

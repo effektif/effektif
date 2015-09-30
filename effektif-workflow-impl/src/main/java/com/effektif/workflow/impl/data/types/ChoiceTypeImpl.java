@@ -20,7 +20,6 @@ import java.util.List;
 import com.effektif.workflow.api.types.ChoiceOption;
 import com.effektif.workflow.api.types.ChoiceType;
 import com.effektif.workflow.impl.data.AbstractDataType;
-import com.effektif.workflow.impl.data.InvalidValueException;
 
 /**
  * @author Tom Baeyens
@@ -41,18 +40,15 @@ public class ChoiceTypeImpl extends AbstractDataType<ChoiceType> {
   }
 
   @Override
-  public void validateInternalValue(Object internalValue) throws InvalidValueException {
-    if (internalValue==null) {
-      return;
-    }
+  public String validateInternalValue(Object internalValue) {
     List<ChoiceOption> options = type.getOptions();
     if (options!=null) {
       for (ChoiceOption option: options) {
         if (internalValue.equals(option.getId())) {
-          return;
+          return null;
         }
       }
     }
-    throw new InvalidValueException("Invalid value '"+internalValue+"'. Expected one of "+options+" (or null).");
+    return "Invalid value '"+internalValue+"'. Expected one of "+options+" (or null).";
   }
 }

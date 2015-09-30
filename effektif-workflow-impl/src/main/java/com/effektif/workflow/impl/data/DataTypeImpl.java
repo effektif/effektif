@@ -45,11 +45,11 @@ public interface DataTypeImpl<T extends DataType> {
 
   String convertInternalToText(Object value, Hints hints);
 
-  /**
-   * Performs additional validation on a value that has successfully been deserialised, such as checking that a
+  /** Performs additional validation on a value that has successfully been deserialised, such as checking that a
    * {@link ChoiceType} value is actually one of the choice options.
-   */
-  void validateInternalValue(Object internalValue) throws InvalidValueException;
+   * @param internalValue is never null
+   * @return null if the value is valid or an error message if the value is not valid. */
+  String validateInternalValue(Object internalValue);
 
   DataTypeImpl parseDereference(String field, WorkflowParser parser);
   

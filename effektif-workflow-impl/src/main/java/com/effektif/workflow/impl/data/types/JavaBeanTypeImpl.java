@@ -23,7 +23,6 @@ import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
-import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 
 
@@ -81,13 +80,11 @@ public class JavaBeanTypeImpl<T extends DataType> extends ObjectTypeImpl<T> {
   }
 
   @Override
-  public void validateInternalValue(Object internalValue) throws InvalidValueException {
-    if (internalValue==null) {
-      return;
-    }
+  public String validateInternalValue(Object internalValue) {
     if (! valueClass.isAssignableFrom(internalValue.getClass())) {
-      throw new InvalidValueException("Invalid internal value: was "+internalValue+" ("+internalValue.getClass().getName()+"), expected "+valueClass.getName());
+      return "Invalid internal value: was "+internalValue+" ("+internalValue.getClass().getName()+"), expected "+valueClass.getName();
     }
+    return null;
   }
 
   public Class< ? > getValueClass() {
