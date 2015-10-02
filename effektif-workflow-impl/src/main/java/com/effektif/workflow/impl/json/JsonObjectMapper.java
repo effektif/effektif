@@ -41,10 +41,10 @@ public abstract class JsonObjectMapper {
     return (T) jsonObjectReader.readObject(jsonObject, type);
   }
 
-  public <T> Map<String,Object> write(T bean) {
+  public <T,R> R write(T bean) {
     JsonObjectWriter jsonObjectWriter = new JsonObjectWriter(mappings, this);
     jsonObjectWriter.writeObject(bean);
-    return (Map<String, Object>) jsonObjectWriter.result;
+    return (R) jsonObjectWriter.result;
   }
   
   protected Map<String, Object> newObjectMap() {

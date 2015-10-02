@@ -27,8 +27,8 @@ import com.mongodb.BasicDBObject;
  */
 public class MongoObjectMapper extends JsonObjectMapper {
 
-  public <T> BasicDBObject write(T bean) {
-    return (BasicDBObject) super.write(bean);
+  public <T,R> R write(T bean) {
+    return (R) super.write(bean);
   }
 
   @Override
