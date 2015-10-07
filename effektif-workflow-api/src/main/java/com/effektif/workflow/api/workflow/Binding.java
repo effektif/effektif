@@ -80,7 +80,7 @@ public class Binding<T> {
 
   /** specifies how a dynamic value is to be fetched from the variables.
    * @see https://github.com/effektif/effektif/wiki/Expressions */
-  public Binding expression(String expression) {
+  public Binding<T> expression(String expression) {
     this.expression = expression;
     return this;
   }
