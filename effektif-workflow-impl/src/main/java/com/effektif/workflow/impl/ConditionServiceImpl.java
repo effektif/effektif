@@ -29,7 +29,7 @@ import com.effektif.workflow.impl.configuration.Startable;
  */
 public class ConditionServiceImpl implements ConditionService, Startable {
 
-  Map<Class<? extends Condition>,Class<? extends ConditionImpl>> impls = new HashMap<>();
+  protected Map<Class<? extends Condition>,Class<? extends ConditionImpl>> impls = new HashMap<>();
 
   @Override
   public void start(Brewery brewery) {
