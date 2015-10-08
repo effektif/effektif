@@ -208,7 +208,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
             }
             executeWork();
           } catch (Throwable e) {
-            e.printStackTrace();
+            log.error("in workflow execution", e);
           }
         }
       };
