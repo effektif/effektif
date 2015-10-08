@@ -65,7 +65,10 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     Adapter adapter = adapterService.findAdapterById(adapterId);
     this.descriptor = adapter!=null ? adapter.getActivityDescriptor(activityKey) : null;
     if (descriptor!=null) {
-      inputDescriptors = descriptor.getInputDescriptors();
+      inputDescriptors = new HashMap<>();
+      for (InputDescriptor desc : descriptor.getInputDescriptors()) {
+        inputDescriptors.put(desc.getKey(), desc);
+      }
     }
     
     Map<String, Binding> inputBindingsApi = adapterActivity.getInputBindings();

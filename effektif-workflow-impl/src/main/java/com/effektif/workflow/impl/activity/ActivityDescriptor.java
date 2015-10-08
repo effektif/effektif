@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Extensible;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -38,8 +38,8 @@ public class ActivityDescriptor extends Extensible {
    */
   protected String descriptorId;
 
-  protected Map<String,InputDescriptor> inputDescriptors;
-  protected Map<String,OutputDescriptor> outputDescriptors;
+  protected List<InputDescriptor> inputDescriptors;
+  protected List<OutputDescriptor> outputDescriptors;
 
   public ActivityDescriptor inputParameterString(String inputParameterKey, String inputParameterLabel) {
     inputDescriptor(inputParameterKey, inputParameterLabel, new TextType());
@@ -66,9 +66,9 @@ public class ActivityDescriptor extends Extensible {
 
   public ActivityDescriptor inputDescriptor(InputDescriptor inputDescriptor) {
     if (inputDescriptors==null) {
-      inputDescriptors = new HashMap<>();
+      inputDescriptors = new ArrayList<>();
     }
-    inputDescriptors.put(inputDescriptor.key, inputDescriptor);
+    inputDescriptors.add(inputDescriptor);
     return this;
   }
 
@@ -97,9 +97,9 @@ public class ActivityDescriptor extends Extensible {
   
   public ActivityDescriptor outputDescriptor(OutputDescriptor outputParameter) {
     if (outputDescriptors==null) {
-      outputDescriptors = new HashMap<>();
+      outputDescriptors = new ArrayList<>();
     }
-    outputDescriptors.put(outputParameter.key, outputParameter);
+    outputDescriptors.add(outputParameter);
     return this;
   }
 
@@ -158,19 +158,19 @@ public class ActivityDescriptor extends Extensible {
     return this;
   }
 
-  public Map<String, InputDescriptor> getInputDescriptors() {
+  public List<InputDescriptor> getInputDescriptors() {
     return inputDescriptors;
   }
 
-  public void setInputDescriptors(Map<String, InputDescriptor> inputDescriptors) {
+  public void setInputDescriptors(List<InputDescriptor> inputDescriptors) {
     this.inputDescriptors = inputDescriptors;
   }
 
-  public Map<String, OutputDescriptor> getOutputDescriptors() {
+  public List<OutputDescriptor> getOutputDescriptors() {
     return outputDescriptors;
   }
 
-  public void setOutputDescriptors(Map<String, OutputDescriptor> outputParameters) {
+  public void setOutputDescriptors(List<OutputDescriptor> outputParameters) {
     this.outputDescriptors = outputParameters;
   }
 
