@@ -145,21 +145,6 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
     return workflowInstance;
   }
 
-  public synchronized void lockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
-    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
-    if (lockedWorkflowInstanceIds.contains(workflowInstanceId)) {
-      throw new RuntimeException("Process instance "+workflowInstanceId+" is already locked");
-    }
-    lockedWorkflowInstanceIds.add(workflowInstanceId);
-    LockImpl lock = new LockImpl();
-    lock.setTime(Time.now());
-    lock.setOwner(workflowEngineId);
-    workflowInstance.setLock(lock);
-    if (log.isDebugEnabled()) { 
-      log.debug("Locked process instance "+workflowInstanceId);
-    }
-  }
-
   @Override
   public WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue() {
     Iterator<WorkflowInstanceImpl> iterator = this.workflowInstances.values().iterator();
@@ -176,6 +161,22 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
     }
     return null;
   }
+
+  public synchronized void lockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
+    WorkflowInstanceId workflowInstanceId = workflowInstance.getId();
+    if (lockedWorkflowInstanceIds.contains(workflowInstanceId)) {
+      throw new RuntimeException("Process instance "+workflowInstanceId+" is already locked");
+    }
+    lockedWorkflowInstanceIds.add(workflowInstanceId);
+    LockImpl lock = new LockImpl();
+    lock.setTime(Time.now());
+    lock.setOwner(workflowEngineId);
+    workflowInstance.setLock(lock);
+    if (log.isDebugEnabled()) { 
+      log.debug("Locked process instance "+workflowInstanceId);
+    }
+  }
+
 
   @Override
   public void deleteAllWorkflowInstances() {

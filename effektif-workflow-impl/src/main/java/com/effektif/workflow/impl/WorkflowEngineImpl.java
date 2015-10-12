@@ -176,6 +176,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       workflowInstance.endAndPropagateToParent();
     }
 
+    notifyInsert(workflowInstance);
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);
     workflowInstance.executeWork();
 
@@ -391,6 +392,14 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return true;
   }
 
+  public void notifyFlush(WorkflowInstanceImpl workflowInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.flush(workflowInstance);
+      }
+    }
+  }
+
   public void notifyActivityInstanceEnded(ActivityInstanceImpl activityInstance) {
     if (workflowExecutionListeners!=null) {
       for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
@@ -406,6 +415,16 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
     }
   }
+  
+  public void notifyInsert(WorkflowInstanceImpl workflowInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.insert(workflowInstance);
+      }
+    }
+  }
+
+
 
   public VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId) {
     return getVariableValues(workflowInstanceId, null);

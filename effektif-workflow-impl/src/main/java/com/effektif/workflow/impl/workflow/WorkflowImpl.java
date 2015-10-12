@@ -24,6 +24,7 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**

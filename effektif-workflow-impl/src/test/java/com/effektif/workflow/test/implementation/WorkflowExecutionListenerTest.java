@@ -34,20 +34,10 @@ import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowExecutionListener;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
-/* Copyright (c) 2014, Effektif GmbH.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License. */
+
+
 /**
  * @author Tom Baeyens
  */
@@ -75,6 +65,16 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     public boolean transitioning(ActivityInstanceImpl activityInstanceFrom, TransitionImpl transition, ActivityInstanceImpl activityInstanceTo) {
       events.add("take "+transition.from.id+"->"+transition.to.id);
       return true;
+    }
+
+    @Override
+    public void flush(WorkflowInstanceImpl workflowInstance) {
+      events.add("flush");
+    }
+
+    @Override
+    public void insert(WorkflowInstanceImpl workflowInstance) {
+      events.add("insert");
     }
   }
 
@@ -109,6 +109,7 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     start(workflow);
 
     int i = 0;
+    assertEquals("insert", listener.getEvents().get(i++));
     assertEquals("start s", listener.getEvents().get(i++));
     assertEquals("end s", listener.getEvents().get(i++));
     assertEquals("take s->t", listener.getEvents().get(i++));
@@ -141,8 +142,11 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     deploy(workflow);
     
     start(workflow);
+    
+    // there are no flush events because the activities used have isFlushSkippable==true
 
     int i = 0;
+    assertEquals("insert", listener.getEvents().get(i++));
     assertEquals("start s", listener.getEvents().get(i++));
     assertEquals("end s", listener.getEvents().get(i++));
     assertEquals("take s->g1", listener.getEvents().get(i++));
@@ -185,7 +189,10 @@ public class WorkflowExecutionListenerTest extends WorkflowTest {
     deploy(workflow);
     start(workflow);
 
+    // there are no flush events because the activities used have isFlushSkippable==true
+
     int i = 0;
+    assertEquals("insert", listener.getEvents().get(i++));
     assertEquals("start s", listener.getEvents().get(i++));
     assertEquals("end s", listener.getEvents().get(i++));
     assertEquals("take s->g1", listener.getEvents().get(i++));

@@ -18,6 +18,7 @@ package com.effektif.workflow.impl;
 
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 /**
  * A listener that notifies workflow execution (instance) related events and can be used to
@@ -30,6 +31,7 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
  * For an example see the unit test suite.
  */
 public interface WorkflowExecutionListener {
+  
   /**
    * Called whenever an activity is started on a workflow instance. It will be called after
    * {@link #transitioning(ActivityInstanceImpl, TransitionImpl, ActivityInstanceImpl)} is triggered.
@@ -57,4 +59,12 @@ public interface WorkflowExecutionListener {
    * @return true if the activityInstance should be started, false otherwise
    */
   boolean transitioning(ActivityInstanceImpl from, TransitionImpl transition, ActivityInstanceImpl to);
+  
+  /** called when the workflow instance is being inserted or updated.
+   * The updates that are about to be flushed are available in workflowInstance.updates */
+  void flush(WorkflowInstanceImpl workflowInstance);
+
+  /** called when the workflow instance is being inserted or updated.
+   * The updates that are about to be flushed are available in workflowInstance.updates */
+  void insert(WorkflowInstanceImpl workflowInstance);
 }

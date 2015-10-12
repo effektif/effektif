@@ -125,7 +125,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public void executeWork() {
-    WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
     boolean isFirst = true;
     while (hasWork()) {
       ActivityInstanceImpl activityInstance = getNextWork();
@@ -137,7 +136,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       if (isFirst || activityType.isFlushSkippable()) {
         isFirst = false;
       } else {
-        workflowInstanceStore.flush(this);
+        flushDbUpdates();
       }
 
       if (STATE_STARTING.equals(activityInstance.workState)) {
@@ -194,7 +193,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     if (hasAsyncWork()) {
       if (log.isDebugEnabled())
         log.debug("Going asynchronous " + this);
-      workflowInstanceStore.flush(this);
+      flushDbUpdates();
       Runnable asyncContinuation = new Runnable() {
 
         public void run() {
@@ -215,8 +214,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
       workflowEngine.continueAsync(asyncContinuation);
     } else {
+      WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       workflowInstanceStore.flushAndUnlock(this);
     }
+  }
+
+  protected void flushDbUpdates() {
+    workflow.workflowEngine.notifyFlush(this);
+    WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
+    workflowInstanceStore.flush(this);
   }
 
   public void addLockedWorkflowInstance(WorkflowInstanceImpl lockedWorkflowInstance) {
