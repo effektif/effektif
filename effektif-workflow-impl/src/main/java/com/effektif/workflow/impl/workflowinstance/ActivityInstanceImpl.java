@@ -96,7 +96,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   
   public void execute() {
     if (workflow.workflowEngine.notifyActivityInstanceStarted(this)) {
-      workflowInstance.addOpenActivityId(activity.getId());
       activity.activityType.execute(this);
       if (START_WORKSTATES.contains(workState)) {
         setWorkState(ActivityInstanceImpl.STATE_WAITING);
@@ -248,7 +247,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     if (start!=null && end!=null) {
       this.duration = end.toDate().getTime()-start.toDate().getTime();
     }
-    workflowInstance.removeOpenActivityId(activity.getId());
     if (updates!=null) {
       updates.isEndChanged = true;
       if (parent!=null) {

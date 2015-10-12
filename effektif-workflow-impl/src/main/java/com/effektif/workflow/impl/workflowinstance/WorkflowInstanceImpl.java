@@ -65,7 +65,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
   public List<Job> jobs;
-  public List<String> openActivityIds;
 
   /**
    * local cache of the locked workflow instance for the purpose of the call
@@ -108,7 +107,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     workflowInstance.setWorkflowId(workflow.id);
     workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
     workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);
-    workflowInstance.setOpenActivityIds(openActivityIds);
     toScopeInstance(workflowInstance, includeWorkState);
     return workflowInstance;
   }
@@ -474,23 +472,5 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   public WorkflowInstanceId getId() {
     return this.id;
-  }
-
-  public void addOpenActivityId(String activityId) {
-    if (openActivityIds==null) {
-      openActivityIds = new ArrayList<>();
-    }
-    openActivityIds.add(activityId);
-    if (updates!=null) {
-      getUpdates().isOpenActivityIdsChanged = true;
-    }
-  }
-
-  public void removeOpenActivityId(String activityId) {
-    if (openActivityIds!=null) {
-      if (openActivityIds.remove(activityId) && updates!=null) {
-        getUpdates().isOpenActivityIdsChanged = true;
-      }
-    }
   }
 }

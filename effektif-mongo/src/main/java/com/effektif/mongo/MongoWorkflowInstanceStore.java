@@ -69,7 +69,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     String ACTIVITY_INSTANCES = "activityInstances";
     String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
     String VARIABLE_INSTANCES = "variableInstances";
-    String OPEN_ACTIVITY_IDS = "openActivityIds";
     String LOCK = "lock";
     String UPDATES = "updates";
     String WORK = "work";
@@ -165,10 +164,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     if (updates.isActivityInstancesChanged) {
       BasicDBList dbActivityInstances = writeActiveActivityInstances(workflowInstance.activityInstances);
       sets.append(WorkflowInstanceFields.ACTIVITY_INSTANCES, dbActivityInstances);
-    }
-    
-    if (updates.isOpenActivityIdsChanged) {
-      sets.append(WorkflowInstanceFields.OPEN_ACTIVITY_IDS, workflowInstance.openActivityIds);
     }
     
     if (updates.isVariableInstancesChanged) {
@@ -460,13 +455,8 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(WorkflowInstanceFields.LOCK));
     workflowInstance.jobs = readJobs(readList(dbWorkflowInstance, WorkflowInstanceFields.JOBS));
     
-    Object openActivityIds = readObject(dbWorkflowInstance, WorkflowInstanceFields.OPEN_ACTIVITY_IDS);
-    workflowInstance.openActivityIds = openActivityIds!=null ? new ArrayList<>((List<String>)openActivityIds) : null;
-    
     Map<ActivityInstanceImpl, String> allActivityIds = new HashMap<>();
-
     readScopeImpl(workflowInstance, dbWorkflowInstance, allActivityIds);
-
     resolveActivityReferences(workflowInstance, workflow, allActivityIds);
     
     workflowInstance.work = readWork(dbWorkflowInstance, WorkflowInstanceFields.WORK, workflowInstance);
