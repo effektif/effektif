@@ -43,14 +43,12 @@ public class Node {
   }
   
   public Node elementId(String elementId) {
-//    this.id = elementId;
     this.elementId = elementId;
     return this;
   }
   
   public Node id(String id) {
     this.id = id;
-//    this.elementId = id;
     return this;
   }
   

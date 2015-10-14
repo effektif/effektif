@@ -627,7 +627,9 @@ public class BpmnReaderImpl implements BpmnReader {
 
       // TODO Decide whether it is correct that a diagram node ID should be the same as its element ID.
 //      Node node = new Node().id(id).elementId(elementId);
-      Node node = new Node().id(elementId).elementId(elementId);
+      Node node = new Node()
+        .id(id)
+        .elementId(elementId);
 
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);
