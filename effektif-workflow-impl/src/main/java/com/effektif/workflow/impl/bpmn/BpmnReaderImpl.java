@@ -625,8 +625,6 @@ public class BpmnReaderImpl implements BpmnReader {
       String id = currentXml.removeAttribute(BPMN_DI_URI, "id");
       String elementId = currentXml.removeAttribute(BPMN_DI_URI, "bpmnElement");
 
-      // TODO Decide whether it is correct that a diagram node ID should be the same as its element ID.
-//      Node node = new Node().id(id).elementId(elementId);
       Node node = new Node()
         .id(id)
         .elementId(elementId);
