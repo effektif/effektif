@@ -34,14 +34,14 @@ import com.mongodb.gridfs.GridFSDBFile;
 
 public class PrettyPrinter {
 
+  private static final String SPACES = "                                                    ";
+
   public static String toJsonPrettyPrint(Object jsonObject) {
     StringBuffer jsonText = new StringBuffer();
     jsonObjectToTextFormatted(jsonObject, 0, jsonText);
     return jsonText.toString();
   }
 
-  static String spaces = "                                                    ";
-  
   public static void jsonObjectToTextFormatted(Map<String,Object> jsonObject, int indent, StringBuffer jsonText) {
     jsonText.append("{ ");
     appendNewLine(indent+2, jsonText);
@@ -82,7 +82,7 @@ public class PrettyPrinter {
 
   private static void appendNewLine(int indent, StringBuffer jsonText) {
     jsonText.append("\n");
-    jsonText.append(spaces.substring(0,indent));
+    jsonText.append(SPACES.substring(0, indent));
   }
 
   public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
