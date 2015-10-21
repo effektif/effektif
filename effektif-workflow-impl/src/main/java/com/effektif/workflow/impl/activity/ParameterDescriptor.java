@@ -17,12 +17,12 @@ package com.effektif.workflow.impl.activity;
 
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.ListType;
-
+import com.effektif.workflow.api.workflow.Extensible;
 
 /**
  * @author Tom Baeyens
  */
-public class ParameterDescriptor {
+public class ParameterDescriptor extends Extensible {
 
   protected String key;
   protected DataType type;
