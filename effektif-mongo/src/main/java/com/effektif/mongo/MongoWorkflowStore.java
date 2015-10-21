@@ -55,7 +55,6 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     String _ID = "_id";
     String NAME = "name";
     String ORGANIZATION_ID = "organizationId";
-    String DEPLOYED_TIME = "deployedTime";
     String DEPLOYED_BY = "deployedBy";
     String SOURCE_WORKFLOW_ID = "sourceWorkflowId";
     String CREATE_TIME = "createTime";
@@ -188,8 +187,8 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   }
   
   private String getDbField(String field) {
-    if (WorkflowQuery.FIELD_DEPLOY_TIME.equals(field)) {
-      return FieldsWorkflow.DEPLOYED_TIME;
+    if (WorkflowQuery.FIELD_CREATE_TIME.equals(field)) {
+      return FieldsWorkflow.CREATE_TIME;
     }
     throw new RuntimeException("Unknown field "+field);
   }

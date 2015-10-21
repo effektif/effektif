@@ -27,7 +27,7 @@ import com.effektif.workflow.api.model.WorkflowId;
  */
 public class WorkflowQuery extends Query {
   
-  public static final String FIELD_DEPLOY_TIME = "deployTime";
+  public static final String FIELD_CREATE_TIME = "createTime";
   
   protected String organizationId;
   protected WorkflowId workflowId;
@@ -66,8 +66,8 @@ public class WorkflowQuery extends Query {
     return this;
   }
 
-  public WorkflowQuery orderByDeployTime(OrderDirection direction) {
-    orderBy(FIELD_DEPLOY_TIME, direction);
+  public WorkflowQuery orderByCreateTime(OrderDirection direction) {
+    orderBy(FIELD_CREATE_TIME, direction);
     return this;
   }
 

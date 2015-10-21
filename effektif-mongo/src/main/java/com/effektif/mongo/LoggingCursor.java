@@ -51,6 +51,18 @@ public class LoggingCursor extends DBCursor {
     return next;
   }
 
+  @Override
+  public DBCursor sort(DBObject orderBy) {
+    log.debug("--"+cursor.getCollection().getName()+"-> sort="+orderBy);
+    return cursor.sort(orderBy);
+  }
+
+  @Override
+  public DBCursor limit(int n) {
+    log.debug("--"+cursor.getCollection().getName()+"-> limit="+n);
+    return cursor.limit(n);
+  }
+
 
   @Override
   public DBCursor comment(String comment) {
@@ -93,11 +105,6 @@ public class LoggingCursor extends DBCursor {
   }
 
   @Override
-  public DBCursor sort(DBObject orderBy) {
-    return cursor.sort(orderBy);
-  }
-
-  @Override
   public DBCursor addSpecial(String name, Object o) {
     return cursor.addSpecial(name, o);
   }
@@ -125,11 +132,6 @@ public class LoggingCursor extends DBCursor {
   @Override
   public DBObject explain() {
     return cursor.explain();
-  }
-
-  @Override
-  public DBCursor limit(int n) {
-    return cursor.limit(n);
   }
 
   @Override
