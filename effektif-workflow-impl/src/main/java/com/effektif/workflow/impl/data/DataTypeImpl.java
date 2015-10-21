@@ -54,4 +54,6 @@ public interface DataTypeImpl<T extends DataType> {
   DataTypeImpl parseDereference(String field, WorkflowParser parser);
   
   TypedValueImpl dereference(Object value, String field);
+
+  String getFieldLabel(String field);
 }

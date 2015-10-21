@@ -71,16 +71,11 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
     return value!=null ? value.toString() : null;
   }
 
-//  /**
-//   * Returns a <code>String</code> binding with the value read from the attribute with the given name.
-//   */
-//  protected String readStringValue(XmlElement xml, String attributeName) {
-//    if (xml == null) {
-//      throw new IllegalArgumentException("null argument to method");
-//    }
-//    return xml.attributes.get(attributeName);
-//  }
-  
+  @Override
+  public String getFieldLabel(String field) {
+    return field;
+  }
+
   public T getDataType() {
     return type;
   }

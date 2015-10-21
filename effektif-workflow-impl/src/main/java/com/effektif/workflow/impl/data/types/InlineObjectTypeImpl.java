@@ -95,7 +95,7 @@ public class InlineObjectTypeImpl extends AbstractDataType<InlineObjectType> {
     if (fields==null) {
       fields = new HashMap<>();
     }
-    fields.put(field.getName(), field);
+    fields.put(field.getKey(), field);
   }
 
   @Override

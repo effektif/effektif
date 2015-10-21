@@ -33,8 +33,8 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
     this.field.setAccessible(true);
   }
 
-  public JavaBeanFieldImpl(String name) {
-    super(name);
+  public JavaBeanFieldImpl(String key) {
+    super(key);
   }
 
   @Override
@@ -45,7 +45,7 @@ public class JavaBeanFieldImpl extends ObjectFieldImpl {
     try {
       return field.get(value);
     } catch (IllegalArgumentException | IllegalAccessException e) {
-      throw new RuntimeException("Couldn't dereference "+name+": "+e.getMessage(), e);
+      throw new RuntimeException("Couldn't dereference "+key+": "+e.getMessage(), e);
     }
   }
 }
