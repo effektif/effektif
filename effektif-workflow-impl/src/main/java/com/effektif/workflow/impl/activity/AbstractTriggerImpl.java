@@ -26,6 +26,8 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 
 
 /**
+ * Implements a trigger by copying its data to the new workflow instance, when executing a workflow.
+ *
  * @author Tom Baeyens
  */
 public abstract class AbstractTriggerImpl<T extends Trigger> {
