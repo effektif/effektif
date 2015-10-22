@@ -24,4 +24,24 @@ public class StringUtil {
     return o!=null ? o.toString() : "null";
   }
 
+  
+  public static String deCamelCase(String identifier) {
+    if (identifier==null || identifier.isEmpty()) {
+      return null;
+    }
+    StringBuilder nameBuilder = new StringBuilder();
+    for (int i=0; i<identifier.length(); i++) {
+      char c = identifier.charAt(i);
+      if (i==0) {
+        nameBuilder.append(Character.toUpperCase(c));
+      } else if (!Character.isLowerCase(c)) {
+        nameBuilder.append(" ");
+        nameBuilder.append(Character.toUpperCase(c));
+      } else {
+        nameBuilder.append(c);
+      }
+    }
+    return nameBuilder.toString();
+  }
+
 }

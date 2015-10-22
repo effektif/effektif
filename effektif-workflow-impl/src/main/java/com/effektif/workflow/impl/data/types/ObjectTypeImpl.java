@@ -79,4 +79,10 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
     }
     fields.put(field.getKey(), field);
   }
+
+  @Override
+  public String getFieldLabel(String field) {
+    ObjectFieldImpl objectField = fields!=null ? fields.get(field) : null;
+    return objectField!=null ? objectField.getName() : field;
+  }
 }

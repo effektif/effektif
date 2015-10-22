@@ -53,7 +53,8 @@ public abstract class AbstractDataType<T extends DataType> implements DataTypeIm
 
   @Override
   public DataTypeImpl parseDereference(String field, WorkflowParser parser) {
-    return null;
+    TypedValueImpl typedValue = dereference(null, field);
+    return typedValue!=null ? typedValue.getType() : null;
   }
 
   @Override

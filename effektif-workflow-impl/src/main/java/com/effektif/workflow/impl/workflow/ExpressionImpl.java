@@ -21,6 +21,7 @@ import java.util.StringTokenizer;
 
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.util.StringUtil;
 
 
 /**
@@ -30,7 +31,19 @@ public class ExpressionImpl {
 
   public DataTypeImpl type;
   public String variableId;
-  public List<String> fields;
+  public List<String> fieldKeys;
+  public List<ExpressionField> fields;
+  
+  public static class ExpressionField {
+    public String fieldKey;
+    public String fieldName;
+    public DataTypeImpl type;
+    public ExpressionField(String fieldKey, String fieldName, DataTypeImpl type) {
+      this.fieldKey = fieldKey;
+      this.fieldName = fieldName;
+      this.type = type;
+    }
+  }
 
   public void parse(String expression, WorkflowParser parser) {
     if (expression==null || "".equals(expression)) {
@@ -54,13 +67,23 @@ public class ExpressionImpl {
         }
       } else {
         String field = token;
-        if (fields==null) {
+        if (fieldKeys==null) {
+          fieldKeys = new ArrayList<>();
           fields = new ArrayList<>();
         }
-        fields.add(field);
+        fieldKeys.add(field);
+        
+        String fieldName = null;
         if (type!=null) {
+          fieldName = type.getFieldLabel(field);
           type = type.parseDereference(field, parser);
         }
+        
+        if (fieldName==null) {
+          fieldName = StringUtil.deCamelCase(field);
+        }
+        
+        fields.add(new ExpressionField(field, fieldName, type));
       }
     }
   }
@@ -68,8 +91,8 @@ public class ExpressionImpl {
   public String toString() {
     StringBuilder text = new StringBuilder();
     text.append(variableId);
-    if (fields!=null) {
-      for (String field: fields) {
+    if (fieldKeys!=null) {
+      for (String field: fieldKeys) {
         text.append(".");
         text.append(field);
       }

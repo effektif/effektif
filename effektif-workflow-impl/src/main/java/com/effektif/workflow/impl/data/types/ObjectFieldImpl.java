@@ -65,23 +65,6 @@ public class ObjectFieldImpl {
   }
   public ObjectFieldImpl key(String key) {
     this.key = key;
-    if (key!=null && !key.isEmpty()) {
-      StringBuilder nameBuilder = new StringBuilder();
-      for (int i=0; i<key.length(); i++) {
-        char c = key.charAt(i);
-        if (i==0) {
-          nameBuilder.append(Character.toUpperCase(c));
-        } else if (!Character.isLowerCase(c)) {
-          nameBuilder.append(" ");
-          nameBuilder.append(Character.toUpperCase(c));
-        } else {
-          nameBuilder.append(c);
-        }
-      }
-      this.name = nameBuilder.toString();
-    } else {
-      this.name = null;
-    }
     return this;
   }
   
