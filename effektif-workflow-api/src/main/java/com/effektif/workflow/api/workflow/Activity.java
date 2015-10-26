@@ -38,6 +38,8 @@ public abstract class Activity extends Scope {
   protected MultiInstance multiInstance;
   protected List<Transition> outgoingTransitions;
   protected Map<String,InputParameter> inputs;
+
+  /** Maps keys to variable IDs. */
   protected Map<String,String> outputs;
   
   @Override
