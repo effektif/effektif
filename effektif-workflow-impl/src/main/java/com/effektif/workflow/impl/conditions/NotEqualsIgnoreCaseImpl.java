@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.conditions;
 
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -31,7 +32,7 @@ public class NotEqualsIgnoreCaseImpl extends EqualsIgnoreCaseImpl {
   }
 
   @Override
-  public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {
+  public boolean compare(TypedValueImpl leftValue, TypedValueImpl rightValue, ScopeInstanceImpl scopeInstance) {
     return !super.compare(leftValue, rightValue, scopeInstance);
   }
 }

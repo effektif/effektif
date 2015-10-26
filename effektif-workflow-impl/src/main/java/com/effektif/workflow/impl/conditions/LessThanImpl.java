@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.conditions;
 
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.LessThan;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -31,15 +32,20 @@ public class LessThanImpl extends ComparatorImpl {
   }
 
   @Override
-  public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {
-    if (leftValue==null && rightValue==null) return true;
-    if (leftValue!=null && rightValue==null) return false;
-    if (leftValue==null && rightValue!=null) return false;
-    if (!(leftValue instanceof Number)
-        || !(rightValue instanceof Number) ) {
+  public boolean compare(TypedValueImpl leftValue, TypedValueImpl rightValue, ScopeInstanceImpl scopeInstance) {
+    if (isNull(leftValue) && isNull(rightValue)) return true;
+    if (isNotNull(leftValue) && isNull(rightValue)) return false;
+    if (isNull(leftValue) && isNotNull(rightValue)) return false;
+
+    if (!(leftValue.value instanceof Number)
+        || !(rightValue.value instanceof Number) ) {
       return false;
     }
-    return ((Number)leftValue).doubleValue() < ((Number)rightValue).doubleValue();
+    
+    Number leftNumber = (Number) leftValue.value; 
+    Number rightNumber = (Number) rightValue.value; 
+
+    return leftNumber.doubleValue() < rightNumber.doubleValue();
   }
   
   public String getComparatorSymbol() {

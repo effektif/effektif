@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.conditions;
 
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.condition.ContainsIgnoreCase;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
@@ -31,12 +32,12 @@ public class ContainsIgnoreCaseImpl extends ComparatorImpl {
   }
   
   @Override
-  public boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance) {
-    if (leftValue==null && rightValue==null) return true;
-    if (leftValue!=null && rightValue==null) return true;
-    if (leftValue==null && rightValue!=null) return false;
-    String leftString = (String) leftValue;
-    String rightString = (String) rightValue;
+  public boolean compare(TypedValueImpl leftValue, TypedValueImpl rightValue, ScopeInstanceImpl scopeInstance) {
+    if (isNull(leftValue) && isNull(rightValue)) return true;
+    if (isNotNull(leftValue) && isNull(rightValue)) return true;
+    if (isNull(leftValue) && isNotNull(rightValue)) return false;
+    String leftString = (String) leftValue.value;
+    String rightString = (String) rightValue.value;
     return leftString.toLowerCase().contains(rightString.toLowerCase());
   }
 

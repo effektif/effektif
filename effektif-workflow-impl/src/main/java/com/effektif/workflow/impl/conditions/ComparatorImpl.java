@@ -16,7 +16,9 @@
 package com.effektif.workflow.impl.conditions;
 
 import com.effektif.workflow.api.condition.Comparator;
+import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.util.StringUtil;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
@@ -54,13 +56,21 @@ public abstract class ComparatorImpl implements ConditionImpl<Comparator> {
   
   @Override
   public boolean eval(ScopeInstanceImpl scopeInstance) {
-    Object leftValue = scopeInstance.getValue(left);
-    Object rightValue = scopeInstance.getValue(right);
+    TypedValueImpl leftTypedValue = scopeInstance.getTypedValue(left);
+    TypedValueImpl rightTypedValue = scopeInstance.getTypedValue(right);
     
-    return compare(leftValue, rightValue, scopeInstance);
+    return compare(leftTypedValue, rightTypedValue, scopeInstance);
   }
 
-  public abstract boolean compare(Object leftValue, Object rightValue, ScopeInstanceImpl scopeInstance);
+  public static boolean isNotNull(TypedValueImpl typedValue) {
+    return !isNull(typedValue);
+  }
+
+  public static boolean isNull(TypedValueImpl typedValue) {
+    return typedValue==null || typedValue.value==null;
+  }
+
+  public abstract boolean compare(TypedValueImpl leftTypedValue, TypedValueImpl rightTypedValue, ScopeInstanceImpl scopeInstance);
   
   @Override
   public void parse(Comparator comparator, ConditionService conditionService, WorkflowParser parser) {
