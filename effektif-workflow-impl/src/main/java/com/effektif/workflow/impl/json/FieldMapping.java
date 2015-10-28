@@ -83,7 +83,7 @@ public class FieldMapping {
         field.set(bean, fieldValue);
       }
     } catch (Exception e) {
-      throw new RuntimeException("Error reading "+field+": "+e.getMessage(), e);
+      throw new RuntimeException("Error reading "+field+": "+e.getMessage()+": "+beanJson, e);
     }
   }
 
