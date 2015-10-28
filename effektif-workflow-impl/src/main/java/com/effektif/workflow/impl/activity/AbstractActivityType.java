@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.InputParameter;
@@ -100,7 +101,8 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
 
   public abstract void execute(ActivityInstanceImpl activityInstance);
 
-  public void message(ActivityInstanceImpl activityInstance) {
+  public void message(ActivityInstanceImpl activityInstance, Message message) {
+    activityInstance.setVariableValues(message);
     activityInstance.onwards();
   }
   

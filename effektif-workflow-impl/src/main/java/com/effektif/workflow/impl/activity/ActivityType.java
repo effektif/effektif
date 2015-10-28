@@ -17,6 +17,7 @@ package com.effektif.workflow.impl.activity;
 
 import java.util.Map;
 
+import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -53,8 +54,9 @@ public interface ActivityType<T extends Activity> {
   /** called when the execution flow arrives in this activity */
   void execute(ActivityInstanceImpl activityInstance);
 
-  /** called when an external signal is invoked on this activity instance through the process engine api */
-  void message(ActivityInstanceImpl activityInstance);
+  /** called when an external signal is invoked on this activity instance through the process engine api 
+   * @param message TODO*/
+  void message(ActivityInstanceImpl activityInstance, Message message);
 
   boolean saveTransitionsTaken();
 

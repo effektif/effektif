@@ -270,7 +270,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   public WorkflowInstance send(Message message, WorkflowInstanceImpl workflowInstance) {
-    workflowInstance.setVariableValues(message);
     String activityInstanceId = message.getActivityInstanceId();
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
     if (activityInstance==null) {
@@ -280,7 +279,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     if (log.isDebugEnabled())
       log.debug("Signalling "+activityInstance);
     ActivityImpl activity = activityInstance.getActivity();
-    activity.activityType.message(activityInstance);
+    activity.activityType.message(activityInstance, message);
     workflowInstance.executeWork();
     return workflowInstance.toWorkflowInstance();
   }
