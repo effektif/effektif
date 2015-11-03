@@ -99,7 +99,13 @@ public class BpmnReaderImpl implements BpmnReader {
    * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
    * The current implementation assumes that all namespaces are defined in the root element */
   protected Map<String,String> prefixes = new HashMap<>();
-  
+
+  /**
+   * Maps collaboration participant IDs to the process ID the participant references,
+   * based on the BPMN document’s
+   */
+  protected Map<String,String> processIds = new HashMap<>();
+
   protected JsonStreamMapper jsonStreamMapper;
 
   public BpmnReaderImpl(BpmnMappings bpmnMappings, JsonStreamMapper jsonStreamMapper) {
@@ -117,6 +123,10 @@ public class BpmnReaderImpl implements BpmnReader {
       Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
       while (iterator.hasNext()) {
         XmlElement definitionElement = iterator.next();
+        if (definitionElement.is(BPMN_URI, "collaboration")) {
+          iterator.remove();
+          readCollaboration(definitionElement);
+        }
         if (definitionElement.is(BPMN_URI, "process") && workflow == null) {
           iterator.remove();
           workflow = readWorkflow(definitionElement);
@@ -133,7 +143,24 @@ public class BpmnReaderImpl implements BpmnReader {
 
     return workflow;
   }
-  
+
+  /**
+   * Populates the {@link #processIds} lookup from <code>definitions/collaboration/partcipant</code> elements.
+   */
+  private void readCollaboration(XmlElement collaboration) {
+    if (collaboration.elements != null) {
+      Iterator<XmlElement> iterator = collaboration.elements.iterator();
+      while (iterator.hasNext()) {
+        XmlElement collaborationElement = iterator.next();
+        if (collaborationElement.is(BPMN_URI, "participant")) {
+          String participantId = collaborationElement.removeAttribute(BPMN_URI, "id");
+          String processId = collaborationElement.removeAttribute(BPMN_URI, "processRef");
+          processIds.put(participantId, processId);
+        }
+      }
+    }
+  }
+
   protected void initializeNamespacePrefixes(XmlElement xmlElement) {
     Map<String, String> namespaces = xmlElement.namespaces;
     if (namespaces != null) {
@@ -623,7 +650,8 @@ public class BpmnReaderImpl implements BpmnReader {
       startElement(shapeElement);
 
       String id = currentXml.removeAttribute(BPMN_DI_URI, "id");
-      String elementId = currentXml.removeAttribute(BPMN_DI_URI, "bpmnElement");
+      String bpmnElementId = currentXml.removeAttribute(BPMN_DI_URI, "bpmnElement");
+      String elementId = processIds.containsKey(bpmnElementId) ? processIds.get(bpmnElementId) : bpmnElementId;
 
       Node node = new Node()
         .id(id)
