@@ -148,9 +148,15 @@ public class BpmnReaderImpl implements BpmnReader {
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
+    readLanes(workflow);
     removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;
+  }
+
+
+  protected void readLanes(AbstractWorkflow workflow) {
+    // Not supported.
   }
 
   public void readScope() {

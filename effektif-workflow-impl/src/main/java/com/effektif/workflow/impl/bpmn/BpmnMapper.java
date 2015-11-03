@@ -37,8 +37,8 @@ import com.effektif.workflow.impl.json.JsonStreamMapper;
  */
 public class BpmnMapper {
 
-  private BpmnMappings bpmnMappings;
-  private JsonStreamMapper jsonStreamMapper;
+  protected BpmnMappings bpmnMappings;
+  protected JsonStreamMapper jsonStreamMapper;
   
   public static BpmnMapper createBpmnMapperForTest() {
     return new BpmnMapper(new DefaultJsonStreamMapper());
