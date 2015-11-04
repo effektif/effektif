@@ -174,8 +174,7 @@ public class BpmnReaderImpl implements BpmnReader {
           iterator.remove();
         }
         else {
-          // Check if the XML element can be parsed as one of the activity types.
-          BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(currentXml, this);
+          BpmnTypeMapping bpmnTypeMapping = getBpmnTypeMapping();
           if (bpmnTypeMapping != null) {
             Activity activity = (Activity) bpmnTypeMapping.instantiate();
             // read the fields
@@ -191,7 +190,14 @@ public class BpmnReaderImpl implements BpmnReader {
       }
     }
   }
-  
+
+  /**
+   * Check if the XML element can be parsed as one of the activity types.
+   */
+  protected BpmnTypeMapping getBpmnTypeMapping() {
+    return bpmnMappings.getBpmnTypeMapping(currentXml, this);
+  }
+
   protected void setUnparsedBpmn(Scope scope, XmlElement unparsedBpmn) {
     unparsedBpmn.name = null;
     scope.setBpmn(unparsedBpmn);
