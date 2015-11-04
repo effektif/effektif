@@ -90,6 +90,21 @@ public abstract class Scope extends Element {
     return this;
   }
   
+  /**
+   * Returns the activity with the given ID.
+   */
+  public Activity findActivity(String activityId) {
+    if (activities == null || activityId == null) {
+      return null;
+    }
+    for (Activity activity : activities) {
+      if (activityId.equals(activity.getId())) {
+        return activity;
+      }
+    }
+    return null;
+  }
+
   private boolean hasOutgoingTransitionsToNext(Activity activity) {
     if (activity.outgoingTransitions==null) {
       return false;
