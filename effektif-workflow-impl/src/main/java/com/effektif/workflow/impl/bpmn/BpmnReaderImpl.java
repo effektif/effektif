@@ -74,6 +74,9 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
  *   </e:input>
  * </pre>
  *
+ * TODO Refactor to make reading use a more consistent API than the current read methods:
+ * a mix between model class readBpmn methods, and read* methods in this class with inconsistent parameter lists.
+ *
  * @author Tom Baeyens
  */
 public class BpmnReaderImpl implements BpmnReader {
