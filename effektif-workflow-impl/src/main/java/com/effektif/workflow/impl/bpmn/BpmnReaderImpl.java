@@ -120,19 +120,22 @@ public class BpmnReaderImpl implements BpmnReader {
       Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
       while (iterator.hasNext()) {
         XmlElement definitionElement = iterator.next();
-        if (definitionElement.is(BPMN_URI, "process") && workflow == null) {
+        boolean processAlreadyParsed = workflow != null;
+        if (definitionElement.is(BPMN_URI, "process") && !processAlreadyParsed) {
           iterator.remove();
           workflow = readWorkflow(definitionElement);
         }
       }
     }
 
-    if (workflow != null) {
-      readDiagram(workflow, definitionsXml);
-      // Clear the namespaces, because the dots in the URL keys break serialisation.
-      definitionsXml.namespaces = null;
-      workflow.property(KEY_DEFINITIONS, definitionsXml);
+    if (workflow == null) {
+      workflow = new ExecutableWorkflow();
     }
+
+    readDiagram(workflow, definitionsXml);
+    // Clear the namespaces, because the dots in the URL keys break serialisation.
+    definitionsXml.namespaces = null;
+    workflow.property(KEY_DEFINITIONS, definitionsXml);
 
     return workflow;
   }
@@ -249,7 +252,7 @@ public class BpmnReaderImpl implements BpmnReader {
   
   @Override
   public void endElement() {
-    currentXml = xmlStack.pop();
+    currentXml = xmlStack.empty() ? null : xmlStack.pop();
   }
   
   public void startScope(Scope scope) {
@@ -622,13 +625,17 @@ public class BpmnReaderImpl implements BpmnReader {
 
       Diagram diagram = new Diagram();
       for (XmlElement planeElement: diagramElement.removeElements(BPMN_DI_URI, "BPMNPlane")) {
-        diagram.edges(readEdges(workflow.getTransitions(), planeElement));
+        if (workflow.getTransitions() != null) {
+          diagram.edges(readEdges(workflow.getTransitions(), planeElement));
+        }
         diagram.addNodes(readShapes(planeElement));
       }
 
       // Reference the process we’re importing from the diagram, setting it directly because the BPMNPlane/@elementId
       // may refer to multiple processes via definitions/collaboration and its nested participants.
-      diagram.canvas.elementId = workflow.getId().getInternal();
+      if (workflow.getId() != null) {
+        diagram.canvas.elementId = workflow.getId().getInternal();
+      }
 
       workflow.setDiagram(diagram);
 
