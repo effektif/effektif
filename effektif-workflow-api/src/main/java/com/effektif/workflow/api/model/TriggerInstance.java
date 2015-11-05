@@ -34,7 +34,7 @@ public class TriggerInstance extends DataContainer {
   protected WorkflowInstanceId workflowInstanceId;
   protected WorkflowId workflowId;
   protected String sourceWorkflowId;
-  List<String> startActivityIds;
+  protected List<String> startActivityIds;
   protected String businessKey;
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
