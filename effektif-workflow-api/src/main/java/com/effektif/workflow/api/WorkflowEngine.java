@@ -51,6 +51,8 @@ public interface WorkflowEngine {
   WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String activityInstanceId, String newActivityId);
   WorkflowInstance move(WorkflowInstanceId workflowInstanceId, String newActivityId);
 
+  WorkflowInstance cancel(WorkflowInstanceId workflowInstanceId);
+
   VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId);
 
   VariableValues getVariableValues(WorkflowInstanceId workflowInstanceId, String activityInstanceId);

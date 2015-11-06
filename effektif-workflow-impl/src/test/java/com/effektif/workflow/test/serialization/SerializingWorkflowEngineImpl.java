@@ -169,4 +169,12 @@ public class SerializingWorkflowEngineImpl implements WorkflowEngine {
     query = wireize(" >>query>>", query);
     workflowEngine.deleteWorkflowInstances(query);
   }
+
+  @Override
+  public WorkflowInstance cancel(WorkflowInstanceId workflowInstanceId) {
+    log.debug("cancel");
+    WorkflowInstance workflowInstance = workflowEngine.cancel(workflowInstanceId);
+    workflowInstance = wireize("  <<workflowInstance<< ", workflowInstance);
+    return workflowInstance;
+  }
 }

@@ -18,6 +18,7 @@ package com.effektif.workflow.api.workflowinstance;
 import com.effektif.workflow.api.json.GenericType;
 import com.effektif.workflow.api.model.ValueConverter;
 import com.effektif.workflow.api.workflow.Extensible;
+
 import org.joda.time.LocalDateTime;
 
 import java.lang.reflect.Type;
@@ -31,10 +32,12 @@ public abstract class ScopeInstance extends Extensible {
 
   protected LocalDateTime start;
   protected LocalDateTime end;
+  protected String endState;
   protected Long duration;
   protected List<ActivityInstance> activityInstances;
   protected List<VariableInstance> variableInstances;
   protected List<TimerInstance> timerInstances;
+  public static final String ENDSTATE_CANCELED = "canceled";
 
   public ActivityInstance findOpenActivityInstance(String activityId) {
     if (activityId!=null && activityInstances!=null) {
@@ -158,5 +161,12 @@ public abstract class ScopeInstance extends Extensible {
   }
   public void setTimerInstances(List<TimerInstance> timerInstances) {
     this.timerInstances = timerInstances;
+  }
+
+  public String getEndState() {
+    return this.endState;
+  }
+  public void setEndState(String endState) {
+    this.endState = endState;
   }
 }

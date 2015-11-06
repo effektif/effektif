@@ -64,6 +64,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   /** maps variable.id's to variable instances */
   public Map<String, VariableInstanceImpl> variableInstancesMap;
   public List<TimerInstanceImpl> timerInstances;
+  public String endState;
 
   // As long as the workflow instance is not saved, the updates collection is null.
   // That means it's not yet necessary to collect the updates. 
@@ -85,6 +86,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   protected void toScopeInstance(ScopeInstance scopeInstance, boolean includeWorkState) {
     scopeInstance.setStart(start);
     scopeInstance.setEnd(end);
+    scopeInstance.setEndState(endState);
     scopeInstance.setDuration(duration);
     if (activityInstances!=null && !activityInstances.isEmpty()) {
       List<ActivityInstance> activityInstanceApis = new ArrayList<>();
@@ -534,5 +536,17 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public void onwards() {
     endAndPropagateToParent();
+  }
+
+  public void cancel() {
+    if (this.end==null) {
+      this.end = Time.now();
+      this.endState = ScopeInstance.ENDSTATE_CANCELED;
+      if (activityInstances!=null) {
+        for (ActivityInstanceImpl activityInstance: activityInstances) {
+          activityInstance.cancel();
+        }
+      }
+    }
   }
 }

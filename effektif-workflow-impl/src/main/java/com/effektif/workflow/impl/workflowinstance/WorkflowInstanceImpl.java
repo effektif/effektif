@@ -193,7 +193,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         log.debug("Going asynchronous " + this);
       flushDbUpdates();
       Runnable asyncContinuation = new Runnable() {
-
         public void run() {
           try {
             work = workAsync;
@@ -212,6 +211,17 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
       workflowEngine.continueAsync(asyncContinuation);
     } else {
+      WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
+      workflowInstanceStore.flushAndUnlock(this);
+    }
+  }
+  
+  public void cancel() {
+    super.cancel();
+    if (updates!=null) {
+      getUpdates().isActivityInstancesChanged = true;
+      getUpdates().isEndStateChanged = true;
+      getUpdates().isEndChanged = true;
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       workflowInstanceStore.flushAndUnlock(this);
     }
@@ -472,5 +482,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   public WorkflowInstanceId getId() {
     return this.id;
+  }
+
+  public String getEndState() {
+    return endState;
   }
 }

@@ -283,6 +283,14 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowInstance.executeWork();
     return workflowInstance.toWorkflowInstance();
   }
+  
+  @Override
+  public WorkflowInstance cancel(WorkflowInstanceId workflowInstanceId) {
+    WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
+    workflowInstance.cancel();
+    return workflowInstance.toWorkflowInstance();
+  }
+
 
   @Override
   public void deleteWorkflowInstances(WorkflowInstanceQuery query) {
@@ -483,7 +491,6 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   public void continueAsync(Runnable asyncContinuation) {
-
     executorService.execute(asyncContinuation);
   }
 }
