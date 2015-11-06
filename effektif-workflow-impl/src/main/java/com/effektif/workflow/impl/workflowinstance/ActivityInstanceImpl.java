@@ -53,7 +53,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public static final String STATE_STARTING_MULTI_INSTANCE = "startingMultiInstance"; 
   public static final String STATE_PROPAGATE_TO_PARENT = "propagateToParent"; 
   public static final String STATE_JOINING = "joining"; 
-  public static final String STATE_WAITING = "waiting"; 
 
   /** @see WorkflowInstanceImpl#isWorkAsync(ActivityInstanceImpl) */
   public static final Set<String> START_WORKSTATES = new HashSet<>(Lists.of(
@@ -97,9 +96,6 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public void execute() {
     if (workflow.workflowEngine.notifyActivityInstanceStarted(this)) {
       activity.activityType.execute(this);
-      if (START_WORKSTATES.contains(workState)) {
-        setWorkState(ActivityInstanceImpl.STATE_WAITING);
-      }
     }
   }
 
