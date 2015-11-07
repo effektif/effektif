@@ -34,8 +34,8 @@ public class Brewery {
   /** initializables will be notified when all the ingredients, brews and 
    * suppliers are registered
    * @see #initialize */
-  List<Startable> startables = new ArrayList<>();
-  List<Stoppable> stopables = new ArrayList<>();
+  List<String> startables = new ArrayList<>();
+  List<String> stopables = new ArrayList<>();
   boolean isStarted = false;
 
   /** maps aliases to object names. 
@@ -112,7 +112,8 @@ public class Brewery {
   public void start() {
     if (!isStarted) {
       isStarted = true;
-      for (Startable startable: startables) {
+      for (String startableName: startables) {
+        Startable startable = (Startable) get(startableName);
         startable.start(this);
       }
     }
@@ -121,7 +122,8 @@ public class Brewery {
   public void stop() {
     if (isStarted) {
       isStarted = false;
-      for (Stoppable stoppable: stopables) {
+      for (String stoppableName: stopables) {
+        Stoppable stoppable = (Stoppable) get(stoppableName);
         stoppable.stop(this);
       }
     }
@@ -177,11 +179,11 @@ public class Brewery {
     ingredient(ingredient, name);
     if (ingredient instanceof Startable) {
       if (!startables.contains(ingredient)) {
-        startables.add((Startable)ingredient);
+        startables.add(name);
       }
     }
     if (ingredient instanceof Stoppable) {
-      stopables.add((Stoppable)ingredient);
+      stopables.add(name);
     }
   }
 
@@ -199,7 +201,7 @@ public class Brewery {
   public void supplier(Supplier supplier, String name) {
     suppliers.put(name, supplier);
     if (supplier instanceof Startable) {
-      startables.add((Startable)supplier);
+      startables.add(name);
     }
   }
 
@@ -223,10 +225,10 @@ public class Brewery {
 
   public void removeStartablesByType(Class<?> type) {
     if (startables!=null) {
-      Iterator<Startable> iterator = startables.iterator();
+      Iterator<String> iterator = startables.iterator();
       while (iterator.hasNext()) {
-        Startable startable = iterator.next();
-        if (startable.getClass().equals(type)) {
+        String startableName = iterator.next();
+        if (startableName.equals(type.getName())) {
           iterator.remove();
         }
       }
