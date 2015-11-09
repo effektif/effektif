@@ -15,7 +15,9 @@
  */
 package com.effektif.mongo;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -173,7 +175,35 @@ public class MongoCollection {
   }
 
   public String toString(Object o) {
-    return o!=null ? (isPretty ? PrettyPrinter.toJsonPrettyPrint(o) : o.toString()) : "null";
+    if (o==null) {
+      return "null";
+    }
+    // removing sensitive info from logging
+    if (Map.class.isAssignableFrom(o.getClass())) {
+      Map<String,Object> oMap = (Map<String,Object>) o;
+      if (containsSensitiveField(oMap)) {
+        Map<String,Object> logCopy = new LinkedHashMap<>(oMap);
+        for (String sensitiveField: SENSITIVE_FIELDS) {
+          if (oMap.get(sensitiveField)!=null) {
+            logCopy.put(sensitiveField, "***");
+          }
+        }
+        o = logCopy;
+      }
+    }
+    return isPretty ? PrettyPrinter.toJsonPrettyPrint(o) : o.toString();
+  }
+
+  private static final List<String> SENSITIVE_FIELDS = Arrays.asList(new String[]{
+    "password","token","accessToken","refreshToken"   
+  }); 
+  private boolean containsSensitiveField(Map<String, Object> oMap) {
+    for (String sensitiveField: SENSITIVE_FIELDS) {
+      if (oMap.get(sensitiveField)!=null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public WriteConcern getWriteConcern(WriteConcern writeConcern) {
