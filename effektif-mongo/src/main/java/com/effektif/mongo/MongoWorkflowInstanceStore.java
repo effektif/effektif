@@ -610,8 +610,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   public LinkedHashMap<WorkflowInstanceId, WorkflowInstanceImpl> findWorkflowInstanceMap(Collection<ObjectId> workflowInstanceIds) {
     LinkedHashMap<WorkflowInstanceId, WorkflowInstanceImpl> workflowInstanceMap = new LinkedHashMap<>();
     if (workflowInstanceIds!=null && !workflowInstanceIds.isEmpty()) {
-      Query query = new Query()
-        .in(_ID, workflowInstanceIds);
+      Query query = new Query()._ids(workflowInstanceIds);
       DBCursor workflowInstanceCursor = workflowInstancesCollection.find("find-workflow-instance", query.get());
       while (workflowInstanceCursor.hasNext()) {
         BasicDBObject dbWorkflowInstance = (BasicDBObject) workflowInstanceCursor.next();
