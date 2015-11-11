@@ -41,7 +41,7 @@ public class Job {
   
   public String id;
   public String key;
-  public LocalDateTime duedate;
+  public LocalDateTime dueDate;
   public LockImpl lock;
   public LinkedList<JobExecution> executions;
   /** retries left.  null when no retries have been performed. 0 when this job has permanently failed. */
@@ -57,7 +57,7 @@ public class Job {
   public String activityInstanceId;
 
   public boolean isDue() {
-    return duedate==null || duedate.compareTo(Time.now())<=0;
+    return dueDate ==null || dueDate.compareTo(Time.now())<=0;
   }
 
   public boolean isDone() {
@@ -94,8 +94,8 @@ public class Job {
     return this;
   }
   
-  public Job duedate(LocalDateTime duedate) {
-    this.duedate = duedate;
+  public Job dueDate(LocalDateTime dueDate) {
+    this.dueDate = dueDate;
     return this;
   }
   
@@ -141,8 +141,8 @@ public class Job {
     rescheduleFor(Time.now().plusMillis((int)delayInMillis));
   }
 
-  public void rescheduleFor(LocalDateTime duedate) {
-    this.duedate = duedate;
+  public void rescheduleFor(LocalDateTime dueDate) {
+    this.dueDate = dueDate;
   }
 
   
@@ -166,8 +166,8 @@ public class Job {
   }
 
   
-  public LocalDateTime getDuedate() {
-    return duedate;
+  public LocalDateTime getDueDate() {
+    return dueDate;
   }
 
   

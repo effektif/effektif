@@ -180,8 +180,8 @@ public class RelativeTime {
     return base.plus(period);
   }
 
-  public static LocalDateTime getToEndOfDay(LocalDateTime duedate) {
-    return duedate.withTime(23, 59, 59, 999);
+  public static LocalDateTime getToEndOfDay(LocalDateTime dueDate) {
+    return dueDate.withTime(23, 59, 59, 999);
   }
 
   /**

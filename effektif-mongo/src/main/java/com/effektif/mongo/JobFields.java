@@ -16,7 +16,7 @@ package com.effektif.mongo;
 interface JobFields {
 
   String KEY = "key";
-  String DUEDATE = "duedate";
+  String DUE_DATE = "dueDate";
   String LOCK = "lock";
   String EXECUTIONS = "executions";
   String RETRIES = "retries";

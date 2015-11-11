@@ -23,12 +23,12 @@ import org.joda.time.LocalDateTime;
  */
 public class TimerInstance {
 
-  protected LocalDateTime duedate;
+  protected LocalDateTime dueDate;
 
-  public LocalDateTime getDuedate() {
-    return this.duedate;
+  public LocalDateTime getDueDate() {
+    return this.dueDate;
   }
-  public void setDuedate(LocalDateTime duedate) {
-    this.duedate = duedate;
+  public void setDueDate(LocalDateTime dueDate) {
+    this.dueDate = dueDate;
   }
 }

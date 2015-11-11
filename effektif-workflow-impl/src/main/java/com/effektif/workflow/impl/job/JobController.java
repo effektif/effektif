@@ -43,7 +43,7 @@ public interface JobController {
   
   /** can be used if the job wants to repeat this job on a later date.
    * JobType impls should NOT perform their own retry, the JobService takes care of that. */
-  void rescheduleFor(LocalDateTime duedate);
+  void rescheduleFor(LocalDateTime dueDate);
   
   void log(String msg);
 }

@@ -26,19 +26,19 @@ import com.effektif.workflow.api.workflowinstance.TimerInstance;
 public class TimerInstanceImpl extends BaseInstanceImpl {
   
   protected String id;
-  protected LocalDateTime duedate;
+  protected LocalDateTime dueDate;
 
   public TimerInstance toTimerInstance() {
     TimerInstance timerInstance = new TimerInstance();
-    timerInstance.setDuedate(duedate);
+    timerInstance.setDueDate(dueDate);
     return timerInstance;
   }
 
-  public LocalDateTime getDuedate() {
-    return this.duedate;
+  public LocalDateTime getDueDate() {
+    return this.dueDate;
   }
-  public void setDuedate(LocalDateTime duedate) {
-    this.duedate = duedate;
+  public void setDueDate(LocalDateTime dueDate) {
+    this.dueDate = dueDate;
   }
 
   public String getId() {

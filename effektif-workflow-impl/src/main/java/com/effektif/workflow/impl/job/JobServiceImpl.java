@@ -189,13 +189,13 @@ public class JobServiceImpl implements JobService, Brewable {
   public void executeJob(JobExecution jobExecution) {
     Job job = jobExecution.job; 
     log.debug("Executing job "+job.id);
-    job.duedate = null;
+    job.dueDate = null;
     job.lock = null;
     JobType jobType = job.jobType;
     try {
       try {
         jobType.execute(jobExecution);
-        if (job.duedate==null) { // if reschedule() was not called...
+        if (job.dueDate ==null) { // if reschedule() was not called...
           job.done = Time.now();
           if (listener!=null) {
             listener.notifyJobDone(jobExecution);

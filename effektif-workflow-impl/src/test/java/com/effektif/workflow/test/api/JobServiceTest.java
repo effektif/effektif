@@ -75,7 +75,7 @@ public class JobServiceTest extends JobWorkflowTest {
 //    
 //    jobService.scheduleJob(new Job()
 //      .jobType(new TestJob())
-//      .duedate(Time.now())
+//      .dueDate(Time.now())
 //      .processInstanceId(workflowInstanceId));
 //    
 //    assertEquals(0, TestJob.jobExecutions.size());
@@ -106,7 +106,7 @@ public class JobServiceTest extends JobWorkflowTest {
 //      .getId();
 //    
 //    jobService.newJob(new TestJob())
-//      .duedate(Time.now())
+//      .dueDate(Time.now())
 //      .processInstanceId(workflowInstanceId)
 //      .save();
 //    
@@ -128,7 +128,7 @@ public class JobServiceTest extends JobWorkflowTest {
   public void testJobOK() throws Exception {
     jobService.saveJob(new Job()
       .jobType(new TestJob())
-      .duedate(Time.now()));
+      .dueDate(Time.now()));
     
     checkWorkflowInstanceJobs();
     assertEquals(0, TestJob.jobExecutions.size());
@@ -147,7 +147,7 @@ public class JobServiceTest extends JobWorkflowTest {
   public void testJobFailAndRecover() throws Exception {
     jobService.saveJob(new Job()
       .jobType(new TestJob())
-      .duedate(Time.now()));
+      .dueDate(Time.now()));
     
     TestJob.throwException = true;
     
@@ -173,7 +173,7 @@ public class JobServiceTest extends JobWorkflowTest {
   public void testJobFailTillDead() throws Exception {
     jobService.saveJob(new Job()
       .jobType(new TestJob())
-      .duedate(Time.now()));
+      .dueDate(Time.now()));
     
     TestJob.throwException = true;
     
@@ -222,12 +222,12 @@ public class JobServiceTest extends JobWorkflowTest {
     jobService.saveJob(new Job()
       .key("uniqueid")
       .jobType(new TestJob())
-      .duedate(Time.now()));
+      .dueDate(Time.now()));
 
     jobService.saveJob(new Job()
       .key("uniqueid")
       .jobType(new TestJob())
-      .duedate(Time.now()));
+      .dueDate(Time.now()));
 
     checkJobs();
     assertEquals(1, TestJob.jobExecutions.size());

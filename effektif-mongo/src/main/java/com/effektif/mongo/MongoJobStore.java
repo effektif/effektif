@@ -110,8 +110,8 @@ public class MongoJobStore implements JobStore, Brewable {
     Date now = Time.now().toDate();
     return BasicDBObjectBuilder.start()
       .append("$or", new DBObject[]{
-        new BasicDBObject(DUEDATE, new BasicDBObject("$exists", false)),
-        new BasicDBObject(DUEDATE, new BasicDBObject("$lte", now))
+        new BasicDBObject(DUE_DATE, new BasicDBObject("$exists", false)),
+        new BasicDBObject(DUE_DATE, new BasicDBObject("$lte", now))
       })
       .push(DONE).append("$exists", false).pop();
   }

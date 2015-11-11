@@ -56,8 +56,8 @@ public class JobExecution implements JobController {
     job.rescheduleFromNow(delayInMillis);
   }
   
-  public void rescheduleFor(LocalDateTime duedate) {
-    job.rescheduleFor(duedate);
+  public void rescheduleFor(LocalDateTime dueDate) {
+    job.rescheduleFor(dueDate);
   }
   
   public void log(String msg) {
