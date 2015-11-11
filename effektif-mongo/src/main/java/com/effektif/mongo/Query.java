@@ -13,42 +13,42 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
+import static com.effektif.mongo.MongoDb._ID;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCursor;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import java.util.Collection;
+import java.util.List;
 
 
 public class Query {
   
+  public static final Logger log = MongoDb.log;
+
   public static final int ORDER_ASCENDING = 1;
   public static final int ORDER_DESCENDING = -1;
 
-  public static final Logger log = MongoDb.log;
-  
   public Integer skip;
   public Integer limit;
   public BasicDBObject query = new BasicDBObject();
   public BasicDBObject orderBy = null;
   
   public Query _id(ObjectId id) {
-    query.append("_id", id);
+    query.append(_ID, id);
     return this;
   }
 
   public Query _ids(Collection<ObjectId> ids) {
-    in("_id", ids);
+    in(_ID, ids);
     return this;
   }
 
   public Query _id(String idString) {
-    query.append("_id", new ObjectId(idString));
+    query.append(_ID, new ObjectId(idString));
     return this;
   }
   

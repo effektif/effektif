@@ -15,6 +15,15 @@
  */
 package com.effektif.mongo;
 
+import static com.effektif.mongo.ActivityInstanceFields.*;
+import static com.effektif.mongo.ActivityInstanceFields.DURATION;
+import static com.effektif.mongo.ActivityInstanceFields.END;
+import static com.effektif.mongo.ActivityInstanceFields.END_STATE;
+import static com.effektif.mongo.ActivityInstanceFields.START;
+import static com.effektif.mongo.MongoDb._ID;
+import static com.effektif.mongo.MongoHelper.*;
+import static com.effektif.mongo.WorkflowInstanceFields.*;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -34,17 +43,28 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
-import com.effektif.workflow.impl.workflowinstance.*;
-import com.mongodb.*;
-
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.LockImpl;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 
-import java.util.*;
-
-import static com.effektif.mongo.ActivityInstanceFields.*;
-import static com.effektif.mongo.WorkflowInstanceFields.*;
-import static com.effektif.mongo.MongoHelper.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
@@ -339,7 +359,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   protected List<String> writeWork(Queue<ActivityInstanceImpl> workQueue) {
     List<String> workActivityInstanceIds = null;
     if (workQueue!=null && !workQueue.isEmpty()) {
-      workActivityInstanceIds = new ArrayList<String>();
+      workActivityInstanceIds = new ArrayList<>();
       for (ActivityInstanceImpl workActivityInstance: workQueue) {
         workActivityInstanceIds.add(workActivityInstance.id);
       }
@@ -394,10 +414,10 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
   protected void readScopeImpl(ScopeInstanceImpl scopeInstance, BasicDBObject dbScopeInstance, Map<ActivityInstanceImpl, String> allActivityIds) {
-    scopeInstance.start = readTime(dbScopeInstance, ScopeInstanceFields.START);
-    scopeInstance.end = readTime(dbScopeInstance, ScopeInstanceFields.END);
-    scopeInstance.endState = readString(dbScopeInstance, ScopeInstanceFields.END_STATE);
-    scopeInstance.duration = readLong(dbScopeInstance, ScopeInstanceFields.DURATION);
+    scopeInstance.start = readTime(dbScopeInstance, START);
+    scopeInstance.end = readTime(dbScopeInstance, END);
+    scopeInstance.endState = readString(dbScopeInstance, END_STATE);
+    scopeInstance.duration = readLong(dbScopeInstance, DURATION);
     readActivityInstances(scopeInstance, dbScopeInstance, allActivityIds);
     readVariableInstances(scopeInstance, dbScopeInstance);
   }
@@ -409,7 +429,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       for (BasicDBObject dbActivityInstance: dbActivityInstances) {
         ActivityInstanceImpl activityInstance = readActivityInstance(scopeInstance, dbActivityInstance, allActivityIds);
         allActivityInstances.put(activityInstance.id, activityInstance);
-        String activityId = readString(dbActivityInstance, ActivityInstanceFields.ACTIVITY_ID);
+        String activityId = readString(dbActivityInstance, ACTIVITY_ID);
         allActivityIds.put(activityInstance, activityId);
         scopeInstance.addActivityInstance(activityInstance);
       }
@@ -418,9 +438,9 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   
   protected ActivityInstanceImpl readActivityInstance(ScopeInstanceImpl parent, BasicDBObject dbActivityInstance, Map<ActivityInstanceImpl, String> allActivityIds) {
     ActivityInstanceImpl activityInstance = new ActivityInstanceImpl();
-    activityInstance.id = readId(dbActivityInstance, ActivityInstanceFields.ID);
-    activityInstance.calledWorkflowInstanceId = readWorkflowInstanceId(dbActivityInstance, ActivityInstanceFields.CALLED_WORKFLOW_INSTANCE_ID);
-    activityInstance.workState = readString(dbActivityInstance, ActivityInstanceFields.WORK_STATE);
+    activityInstance.id = readId(dbActivityInstance, ID);
+    activityInstance.calledWorkflowInstanceId = readWorkflowInstanceId(dbActivityInstance, CALLED_WORKFLOW_INSTANCE_ID);
+    activityInstance.workState = readString(dbActivityInstance, WORK_STATE);
     activityInstance.configuration = configuration;
     activityInstance.parent = parent;
     activityInstance.workflow = parent.workflow;
@@ -544,7 +564,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
           activityInstance.activityInstances = null;
           BasicDBObject dbActivity = mongoMapper.write(activityInstance.toActivityInstance());
           String parentId = (activityInstance.parent.isWorkflowInstance() ? null : ((ActivityInstanceImpl) activityInstance.parent).id);
-          writeString(dbActivity, ActivityInstanceFields.PARENT, parentId);
+          writeString(dbActivity, PARENT, parentId);
           dbArchivedActivityInstances.add(dbActivity);
         }
         collectArchivedActivities(activityInstance, dbArchivedActivityInstances);

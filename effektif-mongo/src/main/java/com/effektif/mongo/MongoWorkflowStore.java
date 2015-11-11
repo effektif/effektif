@@ -15,11 +15,8 @@
  */
 package com.effektif.mongo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
+import static com.effektif.mongo.MongoDb._ID;
+import static com.effektif.mongo.WorkflowFields.*;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
@@ -38,6 +35,11 @@ import com.effektif.workflow.impl.util.Exceptions;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MongoWorkflowStore implements WorkflowStore, Brewable {
@@ -50,28 +52,6 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   protected ActivityTypeService activityTypeService;
   protected Configuration configuration;
   protected MongoObjectMapper mongoMapper;
-  
-  public interface FieldsWorkflow {
-    String _ID = "_id";
-    String NAME = "name";
-    String ORGANIZATION_ID = "organizationId";
-    String DEPLOYED_BY = "deployedBy";
-    String SOURCE_WORKFLOW_ID = "sourceWorkflowId";
-    String CREATE_TIME = "createTime";
-    String TRIGGER = "trigger";
-  }
-
-  public interface FieldsWorkflowVersions {
-    String _ID = "_id";
-    String WORKFLOW_NAME = "workflowName";
-    String VERSION_IDS = "versionIds";
-    String LOCK = "lock";
-  }
-  
-  public interface FieldsWorkflowVersionsLock {
-    String OWNER = "owner";
-    String TIME = "time";
-  }
 
   @Override
   public void brew(Brewery brewery) {
@@ -140,13 +120,13 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   public WorkflowId findLatestWorkflowIdBySource(String sourceWorkflowId) {
     Exceptions.checkNotNullParameter(sourceWorkflowId, "sourceWorkflowId");
     Query query = new Query()
-      .equal(FieldsWorkflow.SOURCE_WORKFLOW_ID, sourceWorkflowId)
-      .orderDesc(FieldsWorkflow.CREATE_TIME)
+      .equal(SOURCE_WORKFLOW_ID, sourceWorkflowId)
+      .orderDesc(CREATE_TIME)
       .page(0,  1);
     Fields fields = new Fields()
-      .include(FieldsWorkflow._ID);
+      .include(_ID);
     BasicDBObject dbWorkflow = workflowsCollection.findOne("find-latest-workflow", query.get(), fields.get(), query.orderBy);
-    return dbWorkflow!=null ? new WorkflowId(dbWorkflow.get("_id").toString()) : null;
+    return dbWorkflow!=null ? new WorkflowId(dbWorkflow.get(_ID).toString()) : null;
   }
 
   public DBCursor createWorkflowDbCursor(WorkflowQuery query) {
@@ -164,14 +144,14 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   protected BasicDBObject createDbQuery(WorkflowQuery query) {
     BasicDBObject dbQuery = new BasicDBObject();
     if (query.getWorkflowId()!=null) {
-      dbQuery.append(FieldsWorkflow._ID, new ObjectId(query.getWorkflowId().getInternal()));
+      dbQuery.append(_ID, new ObjectId(query.getWorkflowId().getInternal()));
     }
 // TODO change to MongoQuery
 //  if (MongoHelper.hasOrganizationId(authorization)) {
-//    dbQuery.append(FieldsWorkflow.ORGANIZATION_ID, authorization.getOrganizationId());
+//    dbQuery.append(ORGANIZATION_ID, authorization.getOrganizationId());
 //  }
     if (query.getWorkflowSource()!=null) {
-      dbQuery.append(FieldsWorkflow.SOURCE_WORKFLOW_ID, query.getWorkflowSource());
+      dbQuery.append(SOURCE_WORKFLOW_ID, query.getWorkflowSource());
     }
     return dbQuery;
   }
@@ -188,7 +168,7 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
   
   private String getDbField(String field) {
     if (WorkflowQuery.FIELD_CREATE_TIME.equals(field)) {
-      return FieldsWorkflow.CREATE_TIME;
+      return CREATE_TIME;
     }
     throw new RuntimeException("Unknown field "+field);
   }
@@ -197,70 +177,16 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
     return workflowsCollection;
   }
   
-  
-
-//  interface FieldsScope {
-//    String _ID = "_id";
-//    String ACTIVITIES = "activities";
-//    String VARIABLES = "variables";
-//    String TRANSITIONS = "transitions";
-//    String TIMERS = "timers";
-//  }
-//
-//  interface FieldsWorkflow extends FieldsScope {
-//    String NAME = "name";
-//    String DEPLOYED_TIME = "deployedTime";
-//    String DEPLOYED_BY = "deployedBy";
-//    String ORGANIZATION_ID = "organizationId";
-//    String WORKFLOW_ID = "workflowId";
-//    String VERSION = "version";
-//  }
-//  
-//  interface FieldsActivity extends FieldsScope {
-//    String DEFAULT_TRANSITION_ID = "defaultTransitionId";
-//    String MULTI_INSTANCE = "multiInstance";
-//    String ACTIVITY_TYPE = "type";
-//  }
-//
-//  interface FieldsBinding {
-//    String EXPRESSION = "expression";
-//    String VARIABLE_ID = "variableId";
-//    String TYPED_VALUE = "value";
-//  }
-//
-//  interface FieldsTypedValue {
-//    String TYPE = "type";
-//    String VALUE = "value";
-//  }
-//
-//  interface FieldsMultiInstance {
-//    String ELEMENT_VARIABLE = "elementVariable";
-//    String VALUE_BINDINGS = "valueBindings";
-//  }
-//  
-//  interface FieldsTransition {
-//    String _ID = "_id";
-//    String FROM = "from";
-//    String TO = "to";
-//    String CONDITION = null;
-//  }
-//
-//  interface FieldsVariable {
-//    String _ID = "_id";
-//    String TYPE = "type";
-//    String INITIAL_VALUE = "initialValue";
-//  }
-//  
 //  public WorkflowImpl readWorkflow(BasicDBObject dbWorkflow) {
 //    WorkflowParser parser = new WorkflowParser(configuration);
 //    
 //    WorkflowImpl workflow = new WorkflowImpl();
-//    workflow.id = readId(dbWorkflow, FieldsWorkflow._ID);
-//    workflow.name = readString(dbWorkflow, FieldsWorkflow.NAME);
-//    workflow.deployedTime = readTime(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME);
-//    workflow.deployedBy = readId(dbWorkflow, FieldsWorkflow.DEPLOYED_BY);
-//    workflow.organizationId = readId(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID);
-//    workflow.version = readLong(dbWorkflow, FieldsWorkflow.VERSION);
+//    workflow.id = readId(dbWorkflow, _ID);
+//    workflow.name = readString(dbWorkflow, NAME);
+//    workflow.deployedTime = readTime(dbWorkflow, DEPLOYED_TIME);
+//    workflow.deployedBy = readId(dbWorkflow, DEPLOYED_BY);
+//    workflow.organizationId = readId(dbWorkflow, ORGANIZATION_ID);
+//    workflow.version = readLong(dbWorkflow, VERSION);
 //    workflow.workflow = workflow;
 //    workflow.configuration = configuration;
 //    
@@ -279,12 +205,12 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //    BasicDBObject dbWorkflow = new BasicDBObject();
 //    Stack<Map<String,Object>> dbObjectStack = new Stack<>();
 //    dbObjectStack.push(dbWorkflow);
-//    writeId(dbWorkflow, FieldsWorkflow._ID, workflow.id);
-//    writeString(dbWorkflow, FieldsWorkflow.NAME, workflow.name);
-//    writeTimeOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_TIME, workflow.deployedTime);
-//    writeIdOpt(dbWorkflow, FieldsWorkflow.DEPLOYED_BY, workflow.deployedBy);
-//    writeIdOpt(dbWorkflow, FieldsWorkflow.ORGANIZATION_ID, workflow.organizationId);
-//    writeObjectOpt(dbWorkflow, FieldsWorkflow.VERSION, workflow.version);
+//    writeId(dbWorkflow, _ID, workflow.id);
+//    writeString(dbWorkflow, NAME, workflow.name);
+//    writeTimeOpt(dbWorkflow, DEPLOYED_TIME, workflow.deployedTime);
+//    writeIdOpt(dbWorkflow, DEPLOYED_BY, workflow.deployedBy);
+//    writeIdOpt(dbWorkflow, ORGANIZATION_ID, workflow.organizationId);
+//    writeObjectOpt(dbWorkflow, VERSION, workflow.version);
 //    
 //    writeActivities(workflow, dbObjectStack);
 //    writeTransitions(workflow, dbObjectStack);
@@ -294,24 +220,24 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //  }
 //  
 //  protected void readActivities(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser, Map<String,String> defaultTransitionIds) {
-//    List<BasicDBObject> dbActivities = readList(dbScope, FieldsWorkflow.ACTIVITIES);
+//    List<BasicDBObject> dbActivities = readList(dbScope, ACTIVITIES);
 //    if (dbActivities!=null) {
 //      for (BasicDBObject dbActivity: dbActivities) {
 //        ActivityImpl activity = new ActivityImpl();
-//        activity.id = readString(dbActivity, FieldsWorkflow._ID);
+//        activity.id = readString(dbActivity, _ID);
 //        activity.workflow = scope.workflow;
 //        activity.configuration = configuration;
 //        activity.parent = scope;
 //        
-//        activity.multiInstance = readMultiInstance(readBasicDBObject(dbActivity, FieldsActivity.MULTI_INSTANCE), parser);
-//        String defaultTransitionId = (String) dbActivity.get(FieldsActivity.DEFAULT_TRANSITION_ID);
+//        activity.multiInstance = readMultiInstance(readBasicDBObject(dbActivity, WorkflowFields.Activity.MULTI_INSTANCE), parser);
+//        String defaultTransitionId = (String) dbActivity.get(WorkflowFields.Activity.DEFAULT_TRANSITION_ID);
 //        if (defaultTransitionId!=null) {
 //          defaultTransitionIds.put(activity.id, defaultTransitionId);
 //        }
 //        
 //        readScope(activity, dbActivity, parser);
 //
-//        Map<String,Object> dbActivityType = readObjectMap(dbActivity, FieldsActivity.ACTIVITY_TYPE);
+//        Map<String,Object> dbActivityType = readObjectMap(dbActivity, WorkflowFields.Activity.ACTIVITY_TYPE);
 //        log.debug("ACTIVITY JSON: "+PrettyPrinter.toJsonPrettyPrint(dbActivityType));
 //        Activity activityApi = null;
 //        try {
@@ -347,17 +273,17 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //        dbObjectStack.push(dbActivity);
 //        
 //        Map<String, Object> dbActivityType = jsonService.objectToJsonMap(activity.activityType.serialize());
-//        writeObjectOpt(dbActivity, FieldsActivity.ACTIVITY_TYPE, dbActivityType);
+//        writeObjectOpt(dbActivity, WorkflowFields.Activity.ACTIVITY_TYPE, dbActivityType);
 //        
-//        writeString(dbActivity, FieldsActivity._ID, activity.id);
-//        writeString(dbActivity, FieldsActivity.DEFAULT_TRANSITION_ID, activity.id);
-//        writeObjectOpt(dbActivity, FieldsActivity.MULTI_INSTANCE, writeMultiInstance(activity.multiInstance));
+//        writeString(dbActivity, WorkflowFields.Activity._ID, activity.id);
+//        writeString(dbActivity, WorkflowFields.Activity.DEFAULT_TRANSITION_ID, activity.id);
+//        writeObjectOpt(dbActivity, WorkflowFields.Activity.MULTI_INSTANCE, writeMultiInstance(activity.multiInstance));
 //        writeActivities(activity, dbObjectStack);
 //        writeTransitions(activity, dbObjectStack);
 //        writeVariables(activity, dbObjectStack);
 //        writeTimers(activity, dbObjectStack);
 //        dbObjectStack.pop();
-//        writeListElementOpt(dbParentScope, FieldsWorkflow.ACTIVITIES, dbActivity);
+//        writeListElementOpt(dbParentScope, ACTIVITIES, dbActivity);
 //      }
 //    }
 //  }
@@ -367,9 +293,9 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //      return null;
 //    }
 //    MultiInstanceImpl multiInstance = new MultiInstanceImpl();
-//    BasicDBObject dbVariable = readBasicDBObject(dbMultiInstance, FieldsMultiInstance.ELEMENT_VARIABLE);
+//    BasicDBObject dbVariable = readBasicDBObject(dbMultiInstance, WorkflowFields.MultiInstance.ELEMENT_VARIABLE);
 //    multiInstance.elementVariable = readVariable(null, dbVariable, parser);
-//    List<BasicDBObject> dbValueBindings = readList(dbVariable, FieldsMultiInstance.VALUE_BINDINGS);
+//    List<BasicDBObject> dbValueBindings = readList(dbVariable, WorkflowFields.MultiInstance.VALUE_BINDINGS);
 //    if (dbValueBindings!=null) {
 //      multiInstance.valueBindings = new ArrayList<>(dbValueBindings.size());
 //      for (BasicDBObject dbValueBinding: dbValueBindings) {
@@ -384,10 +310,10 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //      return null;
 //    }
 //    Map<String, Object> dbMultiInstance = new BasicDBObject();
-//    writeObjectOpt(dbMultiInstance, FieldsMultiInstance.ELEMENT_VARIABLE, writeVariable(multiInstance.elementVariable));
+//    writeObjectOpt(dbMultiInstance, WorkflowFields.MultiInstance.ELEMENT_VARIABLE, writeVariable(multiInstance.elementVariable));
 //    if (multiInstance.valueBindings!=null) {
 //      for (BindingImpl binding: multiInstance.valueBindings) {
-//        writeListElementOpt(dbMultiInstance, FieldsMultiInstance.VALUE_BINDINGS, writeBinding(binding));
+//        writeListElementOpt(dbMultiInstance, WorkflowFields.MultiInstance.VALUE_BINDINGS, writeBinding(binding));
 //      }
 //    }
 //    return dbMultiInstance;
@@ -399,18 +325,18 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //    }
 //    BindingImpl binding = new BindingImpl<>(null);
 //    // i hope a null value for binding.expectedValueType is ok 
-//    binding.typedValue = readTypedValue(readBasicDBObject(dbBinding, FieldsBinding.TYPED_VALUE));
-//    binding.variableId = readString(dbBinding, FieldsBinding.VARIABLE_ID);
-//    binding.expressionText = readString(dbBinding, FieldsBinding.EXPRESSION);
+//    binding.typedValue = readTypedValue(readBasicDBObject(dbBinding, WorkflowFields.Binding.TYPED_VALUE));
+//    binding.variableId = readString(dbBinding, WorkflowFields.Binding.VARIABLE_ID);
+//    binding.expressionText = readString(dbBinding, WorkflowFields.Binding.EXPRESSION);
 //    binding.expression = scriptService.compile(binding.expressionText);
 //    return binding;
 //  }
 //
 //  protected BasicDBObject writeBinding(BindingImpl binding) {
 //    BasicDBObject dbBinding = new BasicDBObject();
-//    writeStringOpt(dbBinding, FieldsBinding.EXPRESSION, binding.expressionText);
-//    writeStringOpt(dbBinding, FieldsBinding.VARIABLE_ID, binding.variableId);
-//    writeObjectOpt(dbBinding, FieldsBinding.TYPED_VALUE, writeTypedValue(binding.typedValue));
+//    writeStringOpt(dbBinding, WorkflowFields.Binding.EXPRESSION, binding.expressionText);
+//    writeStringOpt(dbBinding, WorkflowFields.Binding.VARIABLE_ID, binding.variableId);
+//    writeObjectOpt(dbBinding, WorkflowFields.Binding.TYPED_VALUE, writeTypedValue(binding.typedValue));
 //    return dbBinding;
 //  }
 //
@@ -420,12 +346,12 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //    }
 //    DataType dataType = null;
 //    Object value = null;
-//    Map<String,Object> dbType = readObjectMap(dbTypedValue, FieldsTypedValue.TYPE);
+//    Map<String,Object> dbType = readObjectMap(dbTypedValue, WorkflowFields.TypedValue.TYPE);
 //    if (dbType!=null) {
 //      Type type = jsonService.jsonMapToObject(dbType, Type.class);
 //      dataType = dataTypeService.createDataType(type);
 //      
-//      Object dbValue = readObject(dbTypedValue, FieldsTypedValue.VALUE);
+//      Object dbValue = readObject(dbTypedValue, WorkflowFields.TypedValue.VALUE);
 //      value = dataType.convertJsonToInternalValue(dbValue);
 //    }
 //    return new TypedValueImpl(dataType, value);
@@ -438,34 +364,34 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //    BasicDBObject dbTypedValue = new BasicDBObject();
 //    if (typedValue.type!=null) {
 //      Map<String,Object> dbType = jsonService.objectToJsonMap(typedValue.type.serialize());
-//      writeObjectOpt(dbTypedValue, FieldsTypedValue.TYPE, dbType);
+//      writeObjectOpt(dbTypedValue, WorkflowFields.TypedValue.TYPE, dbType);
 //      if (typedValue.value!=null) {
 //        Object dbValue = typedValue.type.convertInternalToJsonValue(typedValue.value);
-//        writeObjectOpt(dbTypedValue, FieldsTypedValue.VALUE, dbValue);
+//        writeObjectOpt(dbTypedValue, WorkflowFields.TypedValue.VALUE, dbValue);
 //      }
 //    }
 //    return dbTypedValue;
 //  }
 //
 //  protected void readTransitions(ScopeImpl scope, BasicDBObject dbScope) {
-//    List<BasicDBObject> dbTransitions = readList(dbScope, FieldsWorkflow.TRANSITIONS);
+//    List<BasicDBObject> dbTransitions = readList(dbScope, TRANSITIONS);
 //    if (dbTransitions!=null) {
 //      for (BasicDBObject dbTransition: dbTransitions) {
 //        TransitionImpl transition = new TransitionImpl();
-//        transition.id = readString(dbTransition, FieldsTransition._ID);
+//        transition.id = readString(dbTransition, WorkflowFields.Transition._ID);
 //        transition.configuration = configuration;
 //        transition.parent = scope;
 //        transition.workflow = scope.workflow;
 //        
-//        String fromId = readString(dbTransition, FieldsTransition.FROM);
+//        String fromId = readString(dbTransition, WorkflowFields.Transition.FROM);
 //        transition.from = scope.findActivityByIdLocal(fromId);
 //        transition.from.addOutgoingTransition(transition);
 //        
-//        String toId = readString(dbTransition, FieldsTransition.TO);
+//        String toId = readString(dbTransition, WorkflowFields.Transition.TO);
 //        transition.to = scope.findActivityByIdLocal(toId);
 //        transition.to.addIncomingTransition(transition);
 //        
-//        String script = readString(dbTransition, FieldsTransition.CONDITION);
+//        String script = readString(dbTransition, WorkflowFields.Transition.CONDITION);
 //        if (script!=null) {
 //          transition.conditionScriptText = script; 
 //          transition.conditionScript = scriptService.compile(script);
@@ -481,17 +407,17 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //      for (TransitionImpl transition: scope.transitions) {
 //        Map<String,Object> dbParentScope = dbObjectStack.peek(); 
 //        BasicDBObject dbTransition = new BasicDBObject();
-//        writeStringOpt(dbTransition, FieldsTransition._ID, transition.id);
-//        writeObjectOpt(dbTransition, FieldsTransition.FROM, transition.from!=null ? transition.from.id : null);
-//        writeObjectOpt(dbTransition, FieldsTransition.TO, transition.to!=null ? transition.to.id : null);
-//        writeObjectOpt(dbTransition, FieldsTransition.CONDITION, transition.conditionScriptText);
-//        writeListElementOpt(dbParentScope, FieldsScope.TRANSITIONS, dbTransition);
+//        writeStringOpt(dbTransition, WorkflowFields.Transition._ID, transition.id);
+//        writeObjectOpt(dbTransition, WorkflowFields.Transition.FROM, transition.from!=null ? transition.from.id : null);
+//        writeObjectOpt(dbTransition, WorkflowFields.Transition.TO, transition.to!=null ? transition.to.id : null);
+//        writeObjectOpt(dbTransition, WorkflowFields.Transition.CONDITION, transition.conditionScriptText);
+//        writeListElementOpt(dbParentScope, WorkflowFields.Scope.TRANSITIONS, dbTransition);
 //      }
 //    }
 //  }
 //
 //  protected void readVariables(ScopeImpl scope, BasicDBObject dbScope, WorkflowParser parser) {
-//    List<BasicDBObject> dbVariables = readList(dbScope, FieldsWorkflow.VARIABLES);
+//    List<BasicDBObject> dbVariables = readList(dbScope, VARIABLES);
 //    if (dbVariables!=null) {
 //      for (BasicDBObject dbVariable: dbVariables) {
 //        VariableImpl variable = readVariable(scope, dbVariable, parser);
@@ -505,24 +431,24 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //      for (VariableImpl variable: scope.variables.values()) {
 //        Map<String,Object> dbParentScope = dbObjectStack.peek(); 
 //        BasicDBObject dbVariable = writeVariable(variable);
-//        writeListElementOpt(dbParentScope, FieldsScope.VARIABLES, dbVariable);
+//        writeListElementOpt(dbParentScope, WorkflowFields.Scope.VARIABLES, dbVariable);
 //      }
 //    }
 //  }
 //
 //  protected VariableImpl readVariable(ScopeImpl scope, BasicDBObject dbVariable, WorkflowParser parser) {
 //    VariableImpl variable = new VariableImpl();
-//    variable.id = readString(dbVariable, FieldsWorkflow._ID);
+//    variable.id = readString(dbVariable, _ID);
 //    if (scope!=null) {
 //      variable.parent = scope;
 //      variable.workflow = scope.workflow;
 //    }
-//    Map<String,Object> dbType = readObjectMap(dbVariable, FieldsVariable.TYPE);
+//    Map<String,Object> dbType = readObjectMap(dbVariable, WorkflowFields.Variable.TYPE);
 //    if (dbType!=null) {
 //      try {
 //        Type type = jsonService.jsonMapToObject(dbType, Type.class);
 //        variable.type = dataTypeService.createDataType(type);
-//        Object dbInitialValue = dbVariable.get(FieldsVariable.INITIAL_VALUE);
+//        Object dbInitialValue = dbVariable.get(WorkflowFields.Variable.INITIAL_VALUE);
 //        if (dbInitialValue!=null) {
 //          try {
 //            variable.initialValue = variable.type.convertJsonToInternalValue(dbInitialValue);
@@ -539,14 +465,14 @@ public class MongoWorkflowStore implements WorkflowStore, Brewable {
 //
 //  public BasicDBObject writeVariable(VariableImpl variable) {
 //    BasicDBObject dbVariable = new BasicDBObject();
-//    writeString(dbVariable, FieldsWorkflow._ID, variable.id);
+//    writeString(dbVariable, _ID, variable.id);
 //    
 //    if (variable.type!=null) {
 //      Map<String,Object> dbType = jsonService.objectToJsonMap(variable.type);
-//      writeObjectOpt(dbVariable, FieldsVariable.TYPE, dbType);
+//      writeObjectOpt(dbVariable, WorkflowFields.Variable.TYPE, dbType);
 //      if (variable.initialValue!=null) {
 //        Object dbValue = variable.type.convertInternalToJsonValue(variable.initialValue);
-//        writeObjectOpt(dbVariable, FieldsVariable.INITIAL_VALUE, dbValue);
+//        writeObjectOpt(dbVariable, WorkflowFields.Variable.INITIAL_VALUE, dbValue);
 //      }
 //    }
 //

@@ -13,28 +13,26 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+interface JobFields {
 
-public interface JobFields {
-  
-    public String _ID = "_id";
-    public String KEY = "key";
-    public String DUEDATE = "duedate";
-    public String LOCK = "lock";
-    public String EXECUTIONS = "executions";
-    public String RETRIES = "retries";
-    public String RETRY_DELAY = "retryDelay";
-    public String DONE = "done";
-    public String DEAD = "dead";
-    public String ORGANIZATION_ID = "organizationId";
-    public String PROCESS_ID = "processId";
-    public String WORKFLOW_ID = "workflowId";
-    public String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
-    public String LOCK_WORKFLOW_INSTANCE = "lockWorkflowInstance";
-    public String ACTIVITY_INSTANCE_ID = "activityInstanceId";
-    public String ERROR = "error";
-    public String LOGS = "logs";
-    public String TIME = "time";
-    public String DURATION = "duration";
-    public String OWNER = "owner";
-    public String JOB_TYPE = "jobType";
-  }
+  String KEY = "key";
+  String DUEDATE = "duedate";
+  String LOCK = "lock";
+  String EXECUTIONS = "executions";
+  String RETRIES = "retries";
+  String RETRY_DELAY = "retryDelay";
+  String DONE = "done";
+  String DEAD = "dead";
+  String ORGANIZATION_ID = "organizationId";
+  String PROCESS_ID = "processId";
+  String WORKFLOW_ID = "workflowId";
+  String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
+  String LOCK_WORKFLOW_INSTANCE = "lockWorkflowInstance";
+  String ACTIVITY_INSTANCE_ID = "activityInstanceId";
+  String ERROR = "error";
+  String LOGS = "logs";
+  String TIME = "time";
+  String DURATION = "duration";
+  String OWNER = "owner";
+  String JOB_TYPE = "jobType";
+}

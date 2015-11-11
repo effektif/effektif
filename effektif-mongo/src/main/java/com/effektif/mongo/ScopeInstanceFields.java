@@ -13,9 +13,8 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+interface ScopeInstanceFields {
 
-public interface ScopeInstanceFields {
-  
   String START = "start";
   String END = "end";
   String END_STATE = "endState";

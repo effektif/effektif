@@ -27,6 +27,8 @@ public class MongoDb implements Brewable {
   
   public static final Logger log = LoggerFactory.getLogger(MongoDb.class);
 
+  public static final String _ID = "_id";
+
   protected DB db;
   protected boolean isPretty;
   

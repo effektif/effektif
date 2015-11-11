@@ -16,15 +16,8 @@
 package com.effektif.mongo;
 
 import static com.effektif.mongo.JobFields.*;
+import static com.effektif.mongo.MongoDb._ID;
 import static com.effektif.mongo.MongoHelper.*;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.bson.types.ObjectId;
 
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
@@ -38,6 +31,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class MongoJobStore implements JobStore, Brewable {

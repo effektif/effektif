@@ -15,8 +15,8 @@ package com.effektif.mongo;
 
 
 public interface WorkflowInstanceFields extends ScopeInstanceFields {
-  
-  String _ID = "_id";
+
+  String ORGANIZATION_ID = "organizationId";
   String WORKFLOW_ID = "workflowId";
   String ACTIVITY_INSTANCES = "activityInstances";
   String ARCHIVED_ACTIVITY_INSTANCES = "archivedActivities";
@@ -33,13 +33,12 @@ public interface WorkflowInstanceFields extends ScopeInstanceFields {
   String PROPERTIES = "properties";
   String BUSINESS_KEY = "businessKey";
 
-  public interface Lock {
+  interface Lock {
     String TIME = "time";
     String OWNER = "owner";
   }
   
-  public interface VariableInstance {
-    String _ID = "_id";
+  interface VariableInstance {
     String VARIABLE_ID = "variableId";
     String VALUE = "value";
     String TYPE = "type";

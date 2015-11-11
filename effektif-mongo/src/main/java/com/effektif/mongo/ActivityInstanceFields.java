@@ -13,9 +13,8 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+interface ActivityInstanceFields extends ScopeInstanceFields {
 
-public interface ActivityInstanceFields extends ScopeInstanceFields {
-  
   String ID = "id";
   String PARENT = "parent";
   String CALLED_WORKFLOW_INSTANCE_ID = "calledWorkflowInstanceId";

@@ -15,14 +15,7 @@
  */
 package com.effektif.mongo;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
+import static com.effektif.mongo.MongoDb._ID;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
@@ -31,12 +24,20 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MongoCollection {
   
   public static final Logger log = MongoDb.log;
-  
+
   public DBCollection dbCollection;
   public boolean isPretty;
   public WriteConcern defaultWriteConcern;
@@ -70,7 +71,7 @@ public class MongoCollection {
   }
 
   public void updateById(String description, ObjectId id, DBObject dbObject) {
-    update(description, new BasicDBObject("_id", id), dbObject, false, false);
+    update(description, new BasicDBObject(_ID, id), dbObject, false, false);
   }
 
   public WriteResult update(String description, DBObject query, DBObject update) {
