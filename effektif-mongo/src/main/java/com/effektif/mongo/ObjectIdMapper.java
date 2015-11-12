@@ -47,6 +47,10 @@ public class ObjectIdMapper extends AbstractTypeMapper<ObjectId> implements Json
 
   @Override
   public ObjectId read(Object jsonValue, JsonReader jsonReader) {
-    return (ObjectId) jsonValue;
+    try {
+      return (ObjectId) jsonValue;
+    } catch (ClassCastException e) {
+      return null;
+    }
   }
 }
