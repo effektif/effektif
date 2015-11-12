@@ -75,6 +75,11 @@ public class DataContainer {
     return this;
   }
 
+  public void removeData(String key) {
+    if (data != null && key != null) {
+      data.remove(key);
+    }
+  }
 
   public Map<String, TypedValue> getData() {
     return data;
