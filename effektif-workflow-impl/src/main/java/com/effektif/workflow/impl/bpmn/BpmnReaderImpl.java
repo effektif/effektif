@@ -266,21 +266,6 @@ public class BpmnReaderImpl implements BpmnReader {
     this.scope = scopeStack.pop();
   }
   
-//  @Override
-//  public String getQNameBpmn(String localPart) {
-//    return getQName(BPMN_URI, localPart);
-//  }
-//  
-//  @Override
-//  public String getQNameEffektif(String localPart) {
-//    return getQName(EFFEKTIF_URI, localPart);
-//  }
-//  
-//  public String getQName(String namespaceUri, String localName) {
-//    String prefix = prefixes.get(namespaceUri);
-//    return "".equals(prefix) ? localName : prefix + ":" + localName;
-//  }
-  
   @Override
   public void startExtensionElements() {
     XmlElement extensionsXmlElement = currentXml.getElement(BPMN_URI, "extensionElements");

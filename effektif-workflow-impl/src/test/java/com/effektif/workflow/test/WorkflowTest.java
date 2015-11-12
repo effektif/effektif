@@ -72,11 +72,6 @@ public class WorkflowTest {
   protected Configuration configuration = null;
   protected WorkflowEngine workflowEngine = null;
   
-//  @Deprecated
-//  protected TaskService taskService = null;
-//  @Deprecated
-//  protected FileService fileService = null;
-  
   @Rule public TestName name = new TestName();
 
   @Before
@@ -178,20 +173,6 @@ public class WorkflowTest {
     }
   }
   
-//  public void assertOpenTaskNames(TaskQuery taskQuery, String... expectedTaskNames) {
-//    Set<String> expectedTaskNameSet = new HashSet<>();
-//    if (expectedTaskNames!=null) {
-//      for (String taskName : expectedTaskNames) {
-//        expectedTaskNameSet.add(taskName);
-//      }
-//    }
-//    Set<String> taskNameSet = new HashSet<>();
-//    for (Task task: taskService.findTasks(taskQuery)) {
-//      taskNameSet.add(task.getName());
-//    }
-//    assertEquals(expectedTaskNameSet, taskNameSet);
-//  }
-  
   public static String getActivityInstanceId(WorkflowInstance workflowInstance, String activityId) {
     ActivityInstance activityInstance = workflowInstance.findOpenActivityInstance(activityId);
     Assert.assertNotNull("No open activity instance found "+activityId+" not found", activityInstance);
@@ -206,25 +187,6 @@ public class WorkflowTest {
       .activityInstanceId(activityInstance.getId()));
   }
   
-//  public OutgoingEmail getOutgoingEmail(int index) {
-//    if (emailService.emails.size()<=index) {
-//      fail("Can't get email "+index+". There were only "+emailService.emails.size());
-//    }
-//    return emailService.emails.get(index);
-//  }
-  
-//  public File createTestFile(String content, String fileName, String contentType) {
-//    return createTestFile(content.getBytes(), fileName, contentType);
-//  }
-//
-//  public File createTestFile(byte[] bytes, String fileName, String contentType) {
-//    File file = new File()
-//      .fileName(fileName)
-//      .contentType(contentType);
-//    file = fileService.createFile(file, new ByteArrayInputStream(bytes));
-//    return file;
-//  }
-
   protected void logWorkflowEngineContents() {
     try {
       log.debug("\n\n###### Test "+getClass().getSimpleName()+"."+name+" ending ######################################################## \n");
