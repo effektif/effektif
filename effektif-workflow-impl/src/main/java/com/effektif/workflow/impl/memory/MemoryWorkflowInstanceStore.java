@@ -82,15 +82,16 @@ public class MemoryWorkflowInstanceStore implements WorkflowInstanceStore, Brewa
   public void flushAndUnlock(WorkflowInstanceImpl workflowInstance) {
     lockedWorkflowInstanceIds.remove(workflowInstance.id);
     workflowInstance.removeLock();
+    workflowInstance.notifyUnlockListeners();
   }
   
   @Override
-  public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    WorkflowInstanceImpl workflowInstance = workflowInstances.get(workflowInstanceId);
+  public void unlockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     if (workflowInstance!=null) {
       workflowInstance.removeLock();
+      lockedWorkflowInstanceIds.remove(workflowInstance.id);
+      workflowInstance.notifyUnlockListeners();
     }
-    lockedWorkflowInstanceIds.remove(workflowInstanceId);
   }
 
   @Override

@@ -16,7 +16,20 @@
 package com.effektif.workflow.impl.workflowinstance;
 
 
-/**
+/** UnlockListener is a feature to notify external services after 
+ * the workflow instance has been unlocked.
+ * 
+ * Wait states will pause the execution till an external 
+ * message comes in that resumes execution of the workflow instance.
+ * When that message arrives, the workflow instance has to be locked.
+ * When the external work is automatic (not a user task) you may want 
+ * to push a notification to the external service notifying 
+ * a new activity instance has to be performed. 
+ * If that notification is sent straight from inside the execute 
+ * method of the wait state activity, the external service might 
+ * send the message before the workflow instance is unlocked.
+ * This would cause a lock exception and retry.  
+ *    
  * @author Tom Baeyens
  */
 public interface UnlockListener {

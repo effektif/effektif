@@ -253,7 +253,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
       return workflowInstanceImpl.toWorkflowInstance();
     } finally {
-      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceImpl.getId());
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceImpl);
     }
   }
 
@@ -273,7 +273,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     String activityInstanceId = message.getActivityInstanceId();
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
     if (activityInstance==null) {
-      workflowInstanceStore.unlockWorkflowInstance(message.getWorkflowInstanceId());
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstance);
       throw new RuntimeException("Activity instance "+activityInstanceId+" not in workflow instance");
     }
     if (log.isDebugEnabled())
@@ -456,7 +456,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
     ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
     if (scopeInstance==null) {
-      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceId);
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstance);
       throw new RuntimeException("Workflow instance "+workflowInstanceId+" didn't contain active activityInstanceId "+activityInstanceId);
     }
     Map<String, TypedValue> values = variableValues!=null ? variableValues.getValues() : null;
@@ -474,7 +474,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);
     ScopeInstanceImpl scopeInstance = getScopeInstance(workflowInstance, activityInstanceId);
     if (scopeInstance==null) {
-      workflowInstanceStore.unlockWorkflowInstance(workflowInstanceId);
+      workflowInstanceStore.unlockWorkflowInstance(workflowInstance);
       throw new RuntimeException("Workflow instance "+workflowInstanceId+" didn't contain active activityInstanceId "+activityInstanceId);
     }
     scopeInstance.setVariableValue(variableId, value);

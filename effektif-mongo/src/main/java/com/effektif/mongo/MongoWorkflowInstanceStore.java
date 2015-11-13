@@ -215,6 +215,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   public void flushAndUnlock(WorkflowInstanceImpl workflowInstance) {
     workflowInstance.removeLock();
     flush(workflowInstance);
+    workflowInstance.notifyUnlockListeners();
   }
 
   @Override
@@ -306,14 +307,21 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
   
   @Override
-  public void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
-    workflowInstancesCollection.update("unlock-workflow-instance", 
-      new Query()
-        ._id(new ObjectId(workflowInstanceId.getInternal()))
-        .get(), 
-      new Update()
-        .unset(LOCK)
-        .get());
+  public void unlockWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
+    if (workflowInstance!=null) {
+      ObjectId workflowInstanceId = new ObjectId(workflowInstance.id.getInternal());
+      // @formatter:off
+      workflowInstancesCollection.update("unlock-workflow-instance", 
+        new Query()
+          ._id(workflowInstanceId)
+          .get(), 
+        new Update()
+          .unset(LOCK)
+          .get());
+      // @formatter:off
+      
+      workflowInstance.notifyUnlockListeners();
+    }
   }
 
   public DBObject createLockQuery() {

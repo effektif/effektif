@@ -81,7 +81,7 @@ public class ActivityTypeService implements Startable {
     
     TypeName jsonTypeName = activityTypeApiClass.getAnnotation(TypeName.class);
     if (jsonTypeName==null) {
-      throw new RuntimeException("Please add @JsonTypeName annotation to "+activityTypeApiClass);
+      throw new RuntimeException("Please add @TypeName annotation to "+activityTypeApiClass);
     }
     activityTypeDescriptors.put(jsonTypeName.value(), descriptor);
   }

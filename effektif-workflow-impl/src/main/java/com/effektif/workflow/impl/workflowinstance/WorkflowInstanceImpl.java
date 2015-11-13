@@ -65,6 +65,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
   public List<Job> jobs;
+  public List<UnlockListener> unlockListeners;
 
   /**
    * local cache of the locked workflow instance for the purpose of the call
@@ -213,6 +214,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     } else {
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       workflowInstanceStore.flushAndUnlock(this);
+    }
+    notifyUnlockListeners();
+  }
+
+  public void notifyUnlockListeners() {
+    if (unlockListeners!=null) {
+      for (UnlockListener unlockListener: unlockListeners) {
+        unlockListener.unlocked(this);
+      }
     }
   }
   
@@ -486,5 +496,12 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   public String getEndState() {
     return endState;
+  }
+  
+  public void addUnlockListener(UnlockListener unlockListener) {
+    if (unlockListeners==null) {
+      unlockListeners = new ArrayList<>();
+    }
+    unlockListeners.add(unlockListener);
   }
 }

@@ -39,7 +39,7 @@ public interface WorkflowInstanceStore {
 
   void flushAndUnlock(WorkflowInstanceImpl workflowInstance);
 
-  void unlockWorkflowInstance(WorkflowInstanceId workflowInstanceId);
+  void unlockWorkflowInstance(WorkflowInstanceImpl workflowInstance);
 
   List<WorkflowInstanceImpl> findWorkflowInstances(WorkflowInstanceQuery workflowInstanceQuery);
 
