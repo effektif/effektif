@@ -215,7 +215,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       workflowInstanceStore.flushAndUnlock(this);
     }
-    notifyUnlockListeners();
   }
 
   public void notifyUnlockListeners() {
