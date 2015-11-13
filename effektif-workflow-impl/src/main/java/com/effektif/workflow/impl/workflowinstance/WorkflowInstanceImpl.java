@@ -210,21 +210,13 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         }
       };
       WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-      workflowEngine.continueAsync(asyncContinuation);
+      workflowEngine.executeAsync(asyncContinuation);
     } else {
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       workflowInstanceStore.flushAndUnlock(this);
     }
   }
 
-  public void notifyUnlockListeners() {
-    if (unlockListeners!=null) {
-      for (UnlockListener unlockListener: unlockListeners) {
-        unlockListener.unlocked(this);
-      }
-    }
-  }
-  
   public void cancel() {
     super.cancel();
     if (updates!=null) {
@@ -502,5 +494,19 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       unlockListeners = new ArrayList<>();
     }
     unlockListeners.add(unlockListener);
+  }
+
+  public void notifyUnlockListeners() {
+    if (unlockListeners!=null) {
+      WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
+      for (final UnlockListener unlockListener: unlockListeners) {
+        workflowEngine.executeAsync(new Runnable() {
+          @Override
+          public void run() {
+            unlockListener.unlocked(WorkflowInstanceImpl.this);
+          }
+        });
+      }
+    }
   }
 }

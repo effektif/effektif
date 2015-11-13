@@ -490,7 +490,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return scopeInstance;
   }
 
-  public void continueAsync(Runnable asyncContinuation) {
-    executorService.execute(asyncContinuation);
+  public void executeAsync(Runnable asyncWork) {
+    executorService.execute(asyncWork);
   }
 }
