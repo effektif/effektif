@@ -77,7 +77,9 @@ public class Brewery {
     return (T) getOpt(type.getName());
   }
 
-  /** get and do not throw an exception of the object is not found */
+  /**
+   * Returns a named dependency, or throws an exception if not found.
+   */
   public synchronized Object get(String name) {
     Object o = getOpt(name);
     if (o!=null) {
