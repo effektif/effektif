@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.effektif.workflow.api.workflow.diagram.Bounds;
+import com.effektif.workflow.api.workflow.diagram.Diagram;
+import com.effektif.workflow.api.workflow.diagram.Node;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -47,6 +50,7 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   protected BpmnMappings bpmnMappings;
   protected String bpmnPrefix;
+  protected String bpmnDiagramPrefix;
   protected String effektifPrefix;
 
   /** stack of the current scopes */
@@ -96,6 +100,11 @@ public class BpmnWriterImpl implements BpmnWriter {
       newXmlElement.setName(BPMN_URI, localPart);
     }
     startElement(newXmlElement);
+  }
+
+  @Override
+  public void startElementBpmnDiagram(String localPart) {
+    startElement(xml.createElement(BPMN_DI_URI, localPart));
   }
 
   @Override
@@ -171,6 +180,10 @@ public class BpmnWriterImpl implements BpmnWriter {
       bpmnPrefix = "";
       xml.addNamespace(BPMN_URI, bpmnPrefix);
     }
+    if (bpmnDiagramPrefix==null) {
+      bpmnDiagramPrefix = "bpmndi";
+      xml.addNamespace(BPMN_DI_URI, bpmnDiagramPrefix);
+    }
     if (effektifPrefix==null) {
       effektifPrefix = "e";
       xml.addNamespace(EFFEKTIF_URI, effektifPrefix);
@@ -204,8 +217,34 @@ public class BpmnWriterImpl implements BpmnWriter {
     workflow.writeBpmn(this);
     writeDocumentation(workflow.getDescription());
     endElement();
+    writeDiagram(workflow);
   }
-  
+
+  private void writeDiagram(AbstractWorkflow workflow) {
+    Diagram diagram = workflow.getDiagram();
+    if (diagram != null) {
+      startElementBpmnDiagram("BPMNDiagram");
+      writeStringAttributeBpmnDiagram("id", diagram.id);
+      writeStringAttributeBpmnDiagram("name", workflow.getName());
+
+      startElementBpmnDiagram("BPMNPlane");
+      writeStringAttributeBpmnDiagram("bpmnElement", workflow.getId().getInternal());
+
+      if (diagram.canvas != null && diagram.canvas.hasChildren()) {
+        for (Node shape : diagram.canvas.children) {
+          startElementBpmnDiagram("BPMNShape");
+          writeStringAttributeBpmnDiagram("id", shape.id);
+          writeStringAttributeBpmnDiagram("elementId", shape.elementId);
+          writeBpmnDiagramBounds(shape.bounds);
+          endElement();
+        }
+      }
+
+      endElement();
+      endElement();
+    }
+  }
+
   public void writeScope() {
     // transitions and activities are added as the first elements, that's
     // why they are written in reverse order.  the activities will appear
@@ -325,6 +364,13 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   @Override
+  public void writeStringAttributeBpmnDiagram(String localPart, Object value) {
+    if (value!=null) {
+      xml.addAttribute(BPMN_DI_URI, localPart, value);
+    }
+  }
+
+  @Override
   public void writeStringAttributeEffektif(String localPart, Object value) {
     if (value!=null) {
       xml.addAttribute(EFFEKTIF_URI, localPart, value);
@@ -412,6 +458,18 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementEffektif("type");
       bpmnMappings.writeTypeAttribute(this, type, "name");
       type.writeBpmn(this);
+      endElement();
+    }
+  }
+
+  @Override
+  public void writeBpmnDiagramBounds(Bounds bounds) {
+    if (bounds != null && bounds.isValid()) {
+      startElement(xml.createElement(OMG_DC_URI, "Bounds"));
+      xml.addAttribute(OMG_DC_URI, "height", bounds.getHeight());
+      xml.addAttribute(OMG_DC_URI, "width", bounds.getWidth());
+      xml.addAttribute(OMG_DC_URI, "x", bounds.upperLeft.x);
+      xml.addAttribute(OMG_DC_URI, "y", bounds.upperLeft.y);
       endElement();
     }
   }

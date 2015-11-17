@@ -51,7 +51,21 @@ public class Bounds {
     this.upperLeft = upperLeft;
     return this;
   }
-  
+
+  public double getWidth() {
+    if (upperLeft == null || lowerRight == null) {
+      return 0;
+    }
+    return Math.abs(upperLeft.x - lowerRight.x);
+  }
+
+  public double getHeight() {
+    if (upperLeft == null || lowerRight == null) {
+      return 0;
+    }
+    return Math.abs(upperLeft.y - lowerRight.y);
+  }
+
   /**
    * Validates this Bounds and returns true if the distance between the two points is bigger than 0.0 
    * and at least one of the x and y values is different than 0.0.

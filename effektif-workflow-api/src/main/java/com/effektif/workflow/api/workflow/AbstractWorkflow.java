@@ -19,6 +19,7 @@ import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
+import com.effektif.workflow.api.workflow.diagram.Node;
 
 /**
  * @author Tom Baeyens

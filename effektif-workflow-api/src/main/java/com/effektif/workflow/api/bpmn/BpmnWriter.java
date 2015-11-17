@@ -15,6 +15,7 @@ package com.effektif.workflow.api.bpmn;
 
 import java.util.List;
 
+import com.effektif.workflow.api.workflow.diagram.Bounds;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;
@@ -35,6 +36,7 @@ public interface BpmnWriter {
 
   void startElementBpmn(String localPart);
   void startElementBpmn(String localPart, Integer index);
+  void startElementBpmnDiagram(String localPart);
   void startElementEffektif(String localPart);
   void startElementEffektif(String localPart, Integer index);
   void startElementEffektif(Class modelClass);
@@ -62,16 +64,19 @@ public interface BpmnWriter {
   /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
   void writeDocumentation(String documentation);
 
-  /** write a string field as an attribute on the current xml element in the BPMN namespace */
+  /** Writes a string field as an attribute on the current xml element in the BPMN namespace */
   void writeStringAttributeBpmn(String localPart, Object value);
 
-  /** write a string field as an attribute on the current xml element in the Effektif namespace */
+  /** Writes a string field as an attribute on the current xml element in the BPMN namespace */
+  void writeStringAttributeBpmnDiagram(String localPart, Object value);
+
+  /** Writes a string field as an attribute on the current xml element in the Effektif namespace */
   void writeStringAttributeEffektif(String localPart, Object value);
 
-  /** write an id field as an attribute on the current xml element in the BPMN namespace */
+  /** Writes an id field as an attribute on the current xml element in the BPMN namespace */
   void writeIdAttributeBpmn(String localPart, Id value);
 
-  /** write an id field as an attribute on the current xml element in the Effektif namespace */
+  /** Writes an id field as an attribute on the current xml element in the Effektif namespace */
   void writeIdAttributeEffektif(String localPart, Id value);
 
   /** Writes an element in the Effektif namespace with the value as content text, wrapped in a CDATA section. */
@@ -104,4 +109,7 @@ public interface BpmnWriter {
 
   /** Writes a element in the Effektif namespace with the given data type as an attribute. */
   void writeTypeElement(DataType type);
+
+  /** Writes a Bounds element in the OMG DC namespace with the given bounds data. */
+  void writeBpmnDiagramBounds(Bounds bounds);
 }
