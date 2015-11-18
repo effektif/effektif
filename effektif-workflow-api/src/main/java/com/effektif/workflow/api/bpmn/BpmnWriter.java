@@ -109,7 +109,4 @@ public interface BpmnWriter {
 
   /** Writes a element in the Effektif namespace with the given data type as an attribute. */
   void writeTypeElement(DataType type);
-
-  /** Writes a Bounds element in the OMG DC namespace with the given bounds data. */
-  void writeBpmnDiagramBounds(Bounds bounds);
 }

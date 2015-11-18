@@ -21,7 +21,9 @@ import java.util.Stack;
 
 import com.effektif.workflow.api.workflow.diagram.Bounds;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
+import com.effektif.workflow.api.workflow.diagram.Edge;
 import com.effektif.workflow.api.workflow.diagram.Node;
+import com.effektif.workflow.api.workflow.diagram.Point;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -230,7 +232,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementBpmnDiagram("BPMNPlane");
       writeStringAttributeBpmnDiagram("bpmnElement", workflow.getId().getInternal());
 
-      if (diagram.canvas != null && diagram.canvas.hasChildren()) {
+      if (diagram.canvas.hasChildren()) {
         for (Node shape : diagram.canvas.children) {
           startElementBpmnDiagram("BPMNShape");
           writeStringAttributeBpmnDiagram("id", shape.id);
@@ -238,6 +240,14 @@ public class BpmnWriterImpl implements BpmnWriter {
           writeBpmnDiagramBounds(shape.bounds);
           endElement();
         }
+      }
+
+      for (Edge edge : diagram.edges) {
+        startElementBpmnDiagram("BPMNEdge");
+        writeStringAttributeBpmnDiagram("id", edge.id);
+        writeStringAttributeBpmnDiagram("elementId", edge.transitionId);
+        writeBpmnDiagramEdgeDockers(edge.dockers);
+        endElement();
       }
 
       endElement();
@@ -462,8 +472,7 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
-  @Override
-  public void writeBpmnDiagramBounds(Bounds bounds) {
+  private void writeBpmnDiagramBounds(Bounds bounds) {
     if (bounds != null && bounds.isValid()) {
       startElement(xml.createElement(OMG_DC_URI, "Bounds"));
       xml.addAttribute(OMG_DC_URI, "height", bounds.getHeight());
@@ -471,6 +480,17 @@ public class BpmnWriterImpl implements BpmnWriter {
       xml.addAttribute(OMG_DC_URI, "x", bounds.upperLeft.x);
       xml.addAttribute(OMG_DC_URI, "y", bounds.upperLeft.y);
       endElement();
+    }
+  }
+
+  private void writeBpmnDiagramEdgeDockers(List<Point> dockers) {
+    if (dockers != null) {
+      for (Point waypoint : dockers) {
+        startElement(xml.createElement(OMG_DI_URI, "waypoint"));
+        xml.addAttribute(OMG_DI_URI, "x", waypoint.x);
+        xml.addAttribute(OMG_DI_URI, "y", waypoint.y);
+        endElement();
+      }
     }
   }
 }
