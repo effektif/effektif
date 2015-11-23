@@ -59,7 +59,9 @@ public class BpmnMapper {
   }
 
   public void writeToStream(AbstractWorkflow workflow, OutputStream out) {
-    XmlElement bpmnDefinitions = new BpmnWriterImpl(bpmnMappings).writeDefinitions(workflow);
+    XmlElement bpmnDefinitions = new BpmnWriterImpl(bpmnMappings)
+      .writeDefinitions(workflow);
+    
     XmlWriter xmlWriter = new XmlWriter(out, "UTF-8");
     xmlWriter.writeDocument(bpmnDefinitions);
     xmlWriter.flush();

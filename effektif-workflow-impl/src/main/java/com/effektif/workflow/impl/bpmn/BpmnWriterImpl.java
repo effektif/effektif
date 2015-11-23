@@ -81,6 +81,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       if (xml!=null) {
         xml.addElement(childElement, index);
       }
+      childElement.setName(BPMN_URI, localpart);
       startElement(childElement);
     } else {
       throw new RuntimeException("Unknown BPMN source: "+source);
