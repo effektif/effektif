@@ -51,6 +51,7 @@ import com.effektif.workflow.api.workflow.diagram.Diagram;
 import com.effektif.workflow.api.workflow.diagram.Edge;
 import com.effektif.workflow.api.workflow.diagram.Node;
 import com.effektif.workflow.api.workflow.diagram.Point;
+import com.effektif.workflow.impl.exceptions.BadRequestException;
 import com.effektif.workflow.impl.json.JsonObjectReader;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
@@ -619,7 +620,7 @@ public class BpmnReaderImpl implements BpmnReader {
       // Reference the process we’re importing from the diagram, setting it directly because the BPMNPlane/@elementId
       // may refer to multiple processes via definitions/collaboration and its nested participants.
       if (workflow.getId() != null) {
-        diagram.canvas.elementId = workflow.getId().getInternal();
+        diagram.canvas.bpmnElement = workflow.getId().getInternal();
       }
 
       workflow.setDiagram(diagram);
@@ -639,7 +640,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
       Node node = new Node()
         .id(id)
-        .elementId(elementId);
+        .bpmnElement(elementId);
 
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);
@@ -672,9 +673,12 @@ public class BpmnReaderImpl implements BpmnReader {
     List<Edge> edges = new ArrayList<>();
     for (Transition transition : transitions) {
       String sequenceFlowId = transition.getId();
-      Edge edge = edgesBySequenceFlowId.get(sequenceFlowId)
-        .fromId(transition.getFromId())
-        .toId(transition.getToId());
+      Edge edge = edgesBySequenceFlowId.get(sequenceFlowId);
+      if (edge==null) {
+        BadRequestException.checkNotNull(edge, "No edge for sequenceFlow " + sequenceFlowId);
+      }
+      edge.fromId(transition.getFromId())
+          .toId(transition.getToId());
       edges.add(edge);
     }
     return edges;

@@ -236,7 +236,7 @@ public class BpmnWriterImpl implements BpmnWriter {
         for (Node shape : diagram.canvas.children) {
           startElementBpmnDiagram("BPMNShape");
           writeStringAttributeBpmnDiagram("id", shape.id);
-          writeStringAttributeBpmnDiagram("elementId", shape.elementId);
+          writeStringAttributeBpmnDiagram("bpmnElement", shape.bpmnElement);
           writeBpmnDiagramBounds(shape.bounds);
           endElement();
         }
@@ -245,7 +245,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       for (Edge edge : diagram.edges) {
         startElementBpmnDiagram("BPMNEdge");
         writeStringAttributeBpmnDiagram("id", edge.id);
-        writeStringAttributeBpmnDiagram("elementId", edge.transitionId);
+        writeStringAttributeBpmnDiagram("bpmnElement", edge.transitionId);
         writeBpmnDiagramEdgeDockers(edge.dockers);
         endElement();
       }

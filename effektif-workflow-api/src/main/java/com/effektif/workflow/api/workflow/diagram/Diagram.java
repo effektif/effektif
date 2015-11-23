@@ -91,7 +91,7 @@ public class Diagram {
   public Diagram addNode(String activityId, double ulx, double uly, double lrx, double lry) {
     ensureCanvas();
     canvas.addNode(new Node()
-      .elementId(activityId)
+      .bpmnElement(activityId)
       .bounds(new Bounds(ulx, uly, lrx, lry)));
     return this;
   }

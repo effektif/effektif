@@ -19,7 +19,7 @@ public class NodeTest {
   @Test
   public void testCreateEmptyNode() {
     Node node = new Node();
-    assertNull(node.elementId);
+    assertNull(node.bpmnElement);
     assertNull(node.bounds);
     assertNull(node.children);
   }
@@ -30,8 +30,8 @@ public class NodeTest {
     String actId = "1";
     Node node = new Node();
     
-    node.elementId(actId);
-    assertEquals(actId, node.elementId);
+    node.bpmnElement(actId);
+    assertEquals(actId, node.bpmnElement);
 //    assertEquals(actId, node.id);
     
     String actId2 = "2";
@@ -103,12 +103,12 @@ public class NodeTest {
     Bounds bounds = new Bounds(Point.of(1, 2), Point.of(3, 4));
     
     Node node1 = new Node()
-      .elementId(actId)
+      .bpmnElement(actId)
       .bounds(bounds)
       .children(children);
     
     Node node2 = new Node()
-      .elementId(actId)
+      .bpmnElement(actId)
       .bounds(bounds)
       .children(children);
     

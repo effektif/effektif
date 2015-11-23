@@ -26,7 +26,7 @@ public class Node {
   public String id;
   public Bounds bounds;
   public List<Node> children = null;
-  public String elementId;
+  public String bpmnElement;
 
   public Node bounds(Bounds bounds) {
     this.bounds = bounds;
@@ -42,8 +42,8 @@ public class Node {
     return this;
   }
   
-  public Node elementId(String elementId) {
-    this.elementId = elementId;
+  public Node bpmnElement(String bpmnElement) {
+    this.bpmnElement = bpmnElement;
     return this;
   }
   
@@ -65,7 +65,7 @@ public class Node {
   public Node getChild(String id) {
     if (id != null && children != null) {
       for (Node node : children) {
-        if (id.equals(node.elementId)) {
+        if (id.equals(node.bpmnElement)) {
           return node;
         }
       }
@@ -115,7 +115,7 @@ public class Node {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((elementId == null) ? 0 : elementId.hashCode());
+    result = prime * result + ((bpmnElement == null) ? 0 : bpmnElement.hashCode());
     result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
     result = prime * result + ((children == null) ? 0 : children.hashCode());
     return result;
@@ -130,10 +130,10 @@ public class Node {
     if (getClass() != obj.getClass())
       return false;
     Node other = (Node) obj;
-    if (elementId == null) {
-      if (other.elementId != null)
+    if (bpmnElement == null) {
+      if (other.bpmnElement != null)
         return false;
-    } else if (!elementId.equals(other.elementId))
+    } else if (!bpmnElement.equals(other.bpmnElement))
       return false;
     if (bounds == null) {
       if (other.bounds != null)
