@@ -59,7 +59,7 @@ public class XmlElement {
   }
 
   public boolean is(String namespaceUri, String localPart) {
-    return (this.namespaceUri.equals(namespaceUri) && name.equals(localPart))
+    return (this.namespaceUri!= null && this.namespaceUri.equals(namespaceUri) && name.equals(localPart))
            || (name.equals(getNamespacePrefix(namespaceUri)+localPart));
   }
 
