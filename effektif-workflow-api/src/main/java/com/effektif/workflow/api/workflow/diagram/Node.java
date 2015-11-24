@@ -26,7 +26,7 @@ public class Node {
   public String id;
   public Bounds bounds;
   public List<Node> children = null;
-  public String bpmnElement;
+  public String elementId;
 
   public Node bounds(Bounds bounds) {
     this.bounds = bounds;
@@ -42,8 +42,8 @@ public class Node {
     return this;
   }
   
-  public Node bpmnElement(String bpmnElement) {
-    this.bpmnElement = bpmnElement;
+  public Node elementId(String elementId) {
+    this.elementId = elementId;
     return this;
   }
   
@@ -65,7 +65,7 @@ public class Node {
   public Node getChild(String id) {
     if (id != null && children != null) {
       for (Node node : children) {
-        if (id.equals(node.bpmnElement)) {
+        if (id.equals(node.elementId)) {
           return node;
         }
       }
@@ -95,27 +95,11 @@ public class Node {
     return true;
   }
 
-  // TODO Migrate.
-//  public void onClone(CloningContext ctx) {
-//    this.id = ctx.getId(this.id, false);
-//    this.elementId = ctx.getId(this.elementId, false);
-//    if (children != null) {
-//      List<Node> remove = new LinkedList<>();
-//      for (Node node : children) {
-//        node.onClone(ctx);
-//        if (node.id == null) {
-//          remove.add(node);
-//        }
-//      }
-//      this.children.removeAll(remove);
-//    }
-//  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((bpmnElement == null) ? 0 : bpmnElement.hashCode());
+    result = prime * result + ((elementId == null) ? 0 : elementId.hashCode());
     result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
     result = prime * result + ((children == null) ? 0 : children.hashCode());
     return result;
@@ -130,10 +114,10 @@ public class Node {
     if (getClass() != obj.getClass())
       return false;
     Node other = (Node) obj;
-    if (bpmnElement == null) {
-      if (other.bpmnElement != null)
+    if (elementId == null) {
+      if (other.elementId != null)
         return false;
-    } else if (!bpmnElement.equals(other.bpmnElement))
+    } else if (!elementId.equals(other.elementId))
       return false;
     if (bounds == null) {
       if (other.bounds != null)

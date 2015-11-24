@@ -38,7 +38,7 @@ public class DiagramTest {
     assertTrue(diagram.hasChildren());
     assertEquals(1, diagram.canvas.children.size());
     Node node = diagram.canvas.children.get(0);
-    assertEquals(actId, node.bpmnElement);
+    assertEquals(actId, node.elementId);
     assertNotNull(node.bounds);
     assertNotNull(node.bounds.upperLeft);
     assertNotNull(node.bounds.lowerRight);
@@ -59,7 +59,7 @@ public class DiagramTest {
     assertEquals(1l, diagram.version.longValue());
     assertEquals(1, diagram.canvas.children.size());
     Node node = diagram.canvas.children.get(0);
-    assertEquals(actId, node.bpmnElement);
+    assertEquals(actId, node.elementId);
   }
   
   @Test

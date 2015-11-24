@@ -620,7 +620,7 @@ public class BpmnReaderImpl implements BpmnReader {
       // Reference the process we’re importing from the diagram, setting it directly because the BPMNPlane/@elementId
       // may refer to multiple processes via definitions/collaboration and its nested participants.
       if (workflow.getId() != null) {
-        diagram.canvas.bpmnElement = workflow.getId().getInternal();
+        diagram.canvas.elementId = workflow.getId().getInternal();
       }
 
       workflow.setDiagram(diagram);
@@ -640,7 +640,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
       Node node = new Node()
         .id(id)
-        .bpmnElement(elementId);
+        .elementId(elementId);
 
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);

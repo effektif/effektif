@@ -61,14 +61,6 @@ public class Edge {
     return this;
   }
 
-  // TODO Migrate.
-//  public void onClone(CloningContext ctx) {
-//    this.id = ctx.getId(this.id, false);
-//    this.transitionId = ctx.getId(this.transitionId, false);
-//    this.fromId = ctx.getId(this.fromId, false);
-//    this.toId = ctx.getId(this.toId, false);
-//  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
