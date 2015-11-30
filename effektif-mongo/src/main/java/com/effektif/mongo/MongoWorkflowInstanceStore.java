@@ -418,6 +418,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.work = readWork(dbWorkflowInstance, WORK, workflowInstance);
     workflowInstance.workAsync = readWork(dbWorkflowInstance, WORK_ASYNC, workflowInstance);
     workflowInstance.properties = readObjectMap(dbWorkflowInstance, PROPERTIES);
+    workflowInstance.setProperty(ORGANIZATION_ID, readObject(dbWorkflowInstance, ORGANIZATION_ID));
     return workflowInstance;
   }
 
