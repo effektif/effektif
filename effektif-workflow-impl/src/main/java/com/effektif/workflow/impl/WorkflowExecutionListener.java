@@ -33,6 +33,16 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 public interface WorkflowExecutionListener {
   
   /**
+   * Called whenever a new workflow instance is started.
+   * 
+   * It will be called after the variables are initialized with the data 
+   * passed into the workflow instance, but before the first activity is executed.
+   *
+   * @param workflowInstance the {@link WorkflowInstanceImpl} that is started.
+   */
+  void starting(WorkflowInstanceImpl workflowInstance);
+  
+  /**
    * Called whenever an activity is started on a workflow instance. It will be called after
    * {@link #transitioning(ActivityInstanceImpl, TransitionImpl, ActivityInstanceImpl)} is triggered.
    *
@@ -50,6 +60,14 @@ public interface WorkflowExecutionListener {
   void ended(ActivityInstanceImpl activityInstance);
 
   /**
+   * Called whenever an workflow instance is ended.
+   *
+   * @param activityInstance the {@link ActivityInstanceImpl} that is ended.
+   */
+  void ended(WorkflowInstanceImpl workflowInstance);
+  
+
+  /**
    * Called whenever a transition is taken. It will be called after {@link #starting(ActivityInstanceImpl)} and before
    * {@link #ended(ActivityInstanceImpl)}.
    *
@@ -63,6 +81,9 @@ public interface WorkflowExecutionListener {
   /** called when the workflow instance is being inserted or updated.
    * The updates that are about to be flushed are available in workflowInstance.updates */
   void flush(WorkflowInstanceImpl workflowInstance);
+
+  /** called after the workflow instance has been unlocked. */
+  void unlocked(WorkflowInstanceImpl workflowInstance);
 
   /** called when the workflow instance is being inserted or updated.
    * The updates that are about to be flushed are available in workflowInstance.updates */

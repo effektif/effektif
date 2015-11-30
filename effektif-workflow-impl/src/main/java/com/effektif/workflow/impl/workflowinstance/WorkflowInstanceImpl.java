@@ -214,6 +214,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     } else {
       WorkflowInstanceStore workflowInstanceStore = configuration.get(WorkflowInstanceStore.class);
       workflowInstanceStore.flushAndUnlock(this);
+      workflow.workflowEngine.notifyUnlocked(this);
     }
   }
 
@@ -242,6 +243,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public void workflowInstanceEnded() {
+    workflow.workflowEngine.notifyWorkflowInstanceEnded(workflowInstance);
+    
     if (callerWorkflowInstanceId != null) {
       WorkflowInstanceImpl callerProcessInstance = null;
       if (lockedWorkflowInstances != null) {

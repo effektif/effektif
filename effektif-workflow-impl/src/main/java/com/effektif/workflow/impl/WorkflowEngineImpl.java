@@ -156,6 +156,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     } else {
       workflowInstance.setVariableValues(triggerInstance);
     }
+    
+    notifyWorkflowInstanceStarted(workflowInstance);
 
     return workflowInstance;
   }
@@ -388,6 +390,22 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowExecutionListeners = workflowExecutionListeners;
   }
 
+  public void notifyWorkflowInstanceStarted(WorkflowInstanceImpl workflowInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.starting(workflowInstance);
+      }
+    }
+  }
+
+  public void notifyWorkflowInstanceEnded(WorkflowInstanceImpl workflowInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.ended(workflowInstance);
+      }
+    }
+  }
+
   public boolean notifyActivityInstanceStarted(ActivityInstanceImpl activityInstance) {
     if (workflowExecutionListeners!=null) {
       for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
@@ -397,6 +415,14 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
     }
     return true;
+  }
+
+  public void notifyUnlocked(WorkflowInstanceImpl workflowInstance) {
+    if (workflowExecutionListeners!=null) {
+      for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {
+        workflowExecutionListener.unlocked(workflowInstance);
+      }
+    }
   }
 
   public void notifyFlush(WorkflowInstanceImpl workflowInstance) {
