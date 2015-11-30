@@ -38,6 +38,10 @@ public class Edge {
     return this;
   }
 
+  public boolean hasDockers() {
+    return dockers != null && !dockers.isEmpty();
+  }
+
   public Edge fromId(String fromId) {
     this.fromId = fromId;
     return this;
