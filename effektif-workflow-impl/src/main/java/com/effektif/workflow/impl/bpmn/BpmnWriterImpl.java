@@ -243,12 +243,14 @@ public class BpmnWriterImpl implements BpmnWriter {
         }
       }
 
-      for (Edge edge : diagram.edges) {
-        startElementBpmnDiagram("BPMNEdge");
-        writeStringAttributeBpmnDiagram("id", edge.id);
-        writeStringAttributeBpmnDiagram("bpmnElement", edge.transitionId);
-        writeBpmnDiagramEdgeDockers(edge.dockers);
-        endElement();
+      if (diagram.hasEdges()) {
+        for (Edge edge : diagram.edges) {
+          startElementBpmnDiagram("BPMNEdge");
+          writeStringAttributeBpmnDiagram("id", edge.id);
+          writeStringAttributeBpmnDiagram("bpmnElement", edge.transitionId);
+          writeBpmnDiagramEdgeDockers(edge.dockers);
+          endElement();
+        }
       }
 
       endElement();
