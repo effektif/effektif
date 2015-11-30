@@ -624,8 +624,52 @@ public class BpmnReaderImpl implements BpmnReader {
       }
 
       workflow.setDiagram(diagram);
+      removeOrphanedDiagramElements(workflow);
 
       endElement();
+    }
+  }
+
+  /**
+   * Removes diagram shapes that don’t correspond to an imported workflow activity, such as those not supported.
+   */
+  private void removeOrphanedDiagramElements(AbstractWorkflow workflow) {
+    Diagram diagram = workflow.getDiagram();
+    if (diagram == null || !diagram.hasChildren()) {
+      return;
+    }
+
+    // Collect valid activity IDs.
+    Set<String> activityIds = new HashSet<>();
+    for (Activity activity : workflow.getActivities()) {
+      activityIds.add(activity.getId());
+    }
+
+    // Remove orphaned shapes/nodes.
+    if (diagram.hasChildren()) {
+      Iterator<Node> shapeIterator = diagram.canvas.children.iterator();
+      while (shapeIterator.hasNext()) {
+        Node shape = shapeIterator.next();
+        if (!activityIds.contains(shape.elementId)) {
+          shapeIterator.remove();
+        }
+      }
+    }
+
+    // Remove orphaned edges.
+    if (diagram.hasEdges()) {
+      Iterator<Edge> edgeIterator = diagram.edges.iterator();
+      while (edgeIterator.hasNext()) {
+        Edge edge = edgeIterator.next();
+        Transition transition = workflow.findTransition(edge.transitionId);
+        boolean endsExist = activityIds.contains(edge.fromId) && activityIds.contains(edge.toId);
+        boolean transitionValid = transition != null && transition.getFromId().equals(edge.fromId)
+           && transition.getToId().equals(edge.toId);
+        boolean edgeValid = endsExist && transitionValid;
+        if (!edgeValid) {
+          edgeIterator.remove();
+        }
+      }
     }
   }
 

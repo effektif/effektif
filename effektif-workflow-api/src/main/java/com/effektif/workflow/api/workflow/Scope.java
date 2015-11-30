@@ -91,7 +91,7 @@ public abstract class Scope extends Element {
   }
   
   /**
-   * Returns the activity with the given ID.
+   * Returns the activity with the given ID, or null if not found.
    */
   public Activity findActivity(String activityId) {
     if (activities == null || activityId == null) {
@@ -100,6 +100,21 @@ public abstract class Scope extends Element {
     for (Activity activity : activities) {
       if (activityId.equals(activity.getId())) {
         return activity;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the transition with the given ID, or null if not found.
+   */
+  public Transition findTransition(String transitionId) {
+    if (activities == null || transitionId == null) {
+      return null;
+    }
+    for (Transition transition : transitions) {
+      if (transitionId.equals(transition.getId())) {
+        return transition;
       }
     }
     return null;
