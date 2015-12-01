@@ -611,10 +611,11 @@ public class BpmnReaderImpl implements BpmnReader {
 
       Diagram diagram = new Diagram();
       for (XmlElement planeElement: diagramElement.removeElements(BPMN_DI_URI, "BPMNPlane")) {
+        List<Node> shapes = readShapes(planeElement);
+        diagram.addNodes(shapes);
         if (workflow.getTransitions() != null) {
-          diagram.edges(readEdges(workflow.getTransitions(), planeElement));
+          diagram.edges(readEdges(shapes, workflow.getTransitions(), planeElement));
         }
-        diagram.addNodes(readShapes(planeElement));
       }
 
       // Reference the process we’re importing from the diagram, setting it directly because the BPMNPlane/@elementId
@@ -646,6 +647,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     // Remove orphaned shapes/nodes.
+    Set<String> shapeIds = new HashSet<>();
     if (diagram.hasChildren()) {
       Iterator<Node> shapeIterator = diagram.canvas.children.iterator();
       while (shapeIterator.hasNext()) {
@@ -654,6 +656,11 @@ public class BpmnReaderImpl implements BpmnReader {
           shapeIterator.remove();
         }
       }
+
+      // Collect valid shape IDs.
+      for (Node shape : diagram.canvas.children) {
+        shapeIds.add(shape.id);
+      }
     }
 
     // Remove orphaned edges.
@@ -661,11 +668,8 @@ public class BpmnReaderImpl implements BpmnReader {
       Iterator<Edge> edgeIterator = diagram.edges.iterator();
       while (edgeIterator.hasNext()) {
         Edge edge = edgeIterator.next();
-        Transition transition = workflow.findTransition(edge.transitionId);
-        boolean endsExist = activityIds.contains(edge.fromId) && activityIds.contains(edge.toId);
-        boolean transitionValid = transition != null && transition.getFromId().equals(edge.fromId)
-           && transition.getToId().equals(edge.toId);
-        boolean edgeValid = endsExist && transitionValid;
+        boolean transitionDefined = workflow.findTransition(edge.transitionId) != null;
+        boolean edgeValid = shapeIds.contains(edge.fromId) && shapeIds.contains(edge.toId) && transitionDefined;
         if (!edgeValid) {
           edgeIterator.remove();
         }
@@ -709,11 +713,17 @@ public class BpmnReaderImpl implements BpmnReader {
   /**
    * Returns a list of edges read from sequenceFlow element transitions, and BPMNEdge coordinates.
    */
-  private List<Edge> readEdges(List<Transition> transitions, XmlElement planeElement) {
+  private List<Edge> readEdges(List<Node> shapes, List<Transition> transitions, XmlElement planeElement) {
 
     Map<String, Edge> edgesBySequenceFlowId = readEdgesBySequenceFlowId(planeElement);
 
-    // Add activity IDs from the previously-parsed workflow transitions.
+    // Map shape activity IDs to shape IDs, which are needed for edge from/to IDs.
+    Map<String,String> nodeIdByActivityId = new HashMap<>();
+    for (Node shape : shapes) {
+      nodeIdByActivityId.put(shape.elementId, shape.id);
+    }
+
+    // Add node IDs from the previously-parsed workflow transitions and diagram nodes.
     List<Edge> edges = new ArrayList<>();
     for (Transition transition : transitions) {
       String sequenceFlowId = transition.getId();
@@ -721,8 +731,8 @@ public class BpmnReaderImpl implements BpmnReader {
       if (edge==null) {
         BadRequestException.checkNotNull(edge, "No edge for sequenceFlow " + sequenceFlowId);
       }
-      edge.fromId(transition.getFromId())
-          .toId(transition.getToId());
+      edge.fromId(nodeIdByActivityId.get(transition.getFromId()));
+      edge.toId(nodeIdByActivityId.get(transition.getToId()));
       edges.add(edge);
     }
     return edges;
