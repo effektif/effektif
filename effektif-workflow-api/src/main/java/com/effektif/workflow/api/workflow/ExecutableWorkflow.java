@@ -103,6 +103,10 @@ public class ExecutableWorkflow extends AbstractWorkflow {
     super.readBpmn(r);
   }
 
+  /**
+   * Writes workflow-level BPMN, implemented here instead of partly in {@link AbstractWorkflow} (for superclass fields)
+   * because there can only be one <code>process/extensionElements</code> element in the output.
+   */
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);

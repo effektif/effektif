@@ -258,6 +258,10 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
+  /**
+   * Writes a {@link Scope} as BPMN, which is implemented here instead of in {@link Scope#writeBpmn(BpmnWriter)}
+   * because it requires access to {@link #bpmnMappings}.
+   */
   public void writeScope() {
     // transitions and activities are added as the first elements, that's
     // why they are written in reverse order.  the activities will appear
