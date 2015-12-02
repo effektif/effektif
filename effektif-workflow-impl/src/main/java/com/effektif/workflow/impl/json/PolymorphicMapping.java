@@ -52,7 +52,7 @@ public class PolymorphicMapping extends BeanMapping {
 
   @Override
   public TypeMapping getTypeMapping(Map<String, Object> jsonObject) {
-    String typeName = (String) jsonObject.get(typeField);
+    String typeName = (String) jsonObject.remove(typeField);
     return getTypeMapping(typeName);
   }
 
