@@ -55,7 +55,11 @@ public class BpmnMapper {
 
   public AbstractWorkflow readFromReader(Reader reader) {
     XmlElement xmlRoot = XmlReader.parseXml(reader);
-    return new BpmnReaderImpl(bpmnMappings, jsonStreamMapper).readDefinitions(xmlRoot);
+    return createBpmnReaderImpl().readDefinitions(xmlRoot);
+  }
+
+  protected BpmnReaderImpl createBpmnReaderImpl() {
+    return new BpmnReaderImpl(bpmnMappings, jsonStreamMapper);
   }
 
   public void writeToStream(AbstractWorkflow workflow, OutputStream out) {
@@ -81,7 +85,7 @@ public class BpmnMapper {
     if (xmlRoot != null && xmlRoot.elements != null) {
       try {
         T condition = conditionClass.newInstance();
-        BpmnReaderImpl reader = new BpmnReaderImpl(bpmnMappings, jsonStreamMapper);
+        BpmnReaderImpl reader = createBpmnReaderImpl();
         reader.currentXml = xmlRoot;
         condition.readBpmn(reader);
         return condition;
