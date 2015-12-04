@@ -40,7 +40,7 @@ public class ChoiceOption implements BpmnWritable, BpmnReadable {
   public void writeBpmn(BpmnWriter w) {
     w.startElementEffektif("option");
     w.writeStringAttributeEffektif("id", id);
-    w.writeStringAttributeEffektif("name", id);
+    w.writeStringAttributeEffektif("name", name);
     w.endElement();
   }
   
