@@ -159,6 +159,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   @Override
   public void endExtensionElements() {
     endElement();
+    xml.removeEmptyElement(BPMN_URI, "extensionElements");
   }
   
   public void startScope(Scope nestedScope) {

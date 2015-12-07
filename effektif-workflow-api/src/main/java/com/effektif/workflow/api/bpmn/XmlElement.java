@@ -149,7 +149,20 @@ public class XmlElement {
     }
     return null;
   }
-  
+
+  /**
+   * Removes the specified element if it has no child elements (attributes are ignored).
+   */
+  public void removeEmptyElement(String namespaceUri, String localPart) {
+    XmlElement element = getElement(namespaceUri, localPart);
+    if (element != null) {
+      List<XmlElement> childElements = element.getElements();
+      if (childElements == null || childElements.isEmpty()) {
+        removeElement(namespaceUri, localPart);
+      }
+    }
+  }
+
   /**
    * Returns the first element with the given name, or <code>null</code> if there isn’t one.
    */
