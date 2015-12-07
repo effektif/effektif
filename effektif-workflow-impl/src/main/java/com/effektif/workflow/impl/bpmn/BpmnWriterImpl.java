@@ -127,8 +127,8 @@ public class BpmnWriterImpl implements BpmnWriter {
     startElement(xml.createElement(EFFEKTIF_URI, localPart, index));
   }
 
-  public void startOrGetElement(String namespaceUri, String localPart) {
-    startElement(xml.getOrCreateChildElement(namespaceUri, localPart));
+  public void startOrGetElement(String namespaceUri, String localPart, Integer index) {
+    startElement(xml.getOrCreateChildElement(namespaceUri, localPart, index));
   }
 
   protected void startElement(XmlElement nestedXml) {
@@ -142,14 +142,18 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void endElement() {
     xml = xmlStack.pop();
   }
-  
+
   @Override
   public void startExtensionElements() {
-    // start or get is used as extensionElements might be added 
+    // Set the extensionElements insertion index to first or second child element.
+    boolean xmlHasDocumentation = xml.getElement(BPMN_URI, "documentation") != null;
+    int extensionElementsIndex = xmlHasDocumentation ? 1 : 0;
+
+    // start or get is used as extensionElements might be added
     // multiple times by different levels in the class hierarchy
-    // eg: a call activity might add stuff and it s super class activity might 
+    // eg: a call activity might add stuff and it s super class activity might
     //     also add extensionElements
-    startOrGetElement(BPMN_URI, "extensionElements");
+    startOrGetElement(BPMN_URI, "extensionElements", extensionElementsIndex);
   }
 
   @Override
@@ -367,6 +371,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   @Override
   public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
+      // Set the insertion index to zero, because the BPMN spec requires this to be the first child element.
       startElementBpmn("documentation", null, 0);
       xml.addText(documentation);
       endElement();

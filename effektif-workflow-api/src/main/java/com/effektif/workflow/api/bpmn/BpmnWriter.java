@@ -42,6 +42,16 @@ public interface BpmnWriter {
   void startElementEffektif(Class modelClass);
   void endElement();
   
+  /**
+   * Writes the given documentation string as a BPMN <code>documentation</code> element. The BPMN 2.0 specification
+   * requires this to be the first child element.
+   */
+  void writeDocumentation(String documentation);
+
+  /**
+   * Starts a BPMN extensionElements tag as a child of the current element. The BPMN 2.0 specification requires that the
+   * optional extensionElements must be the first child element, or immediately after the optional documentation element.
+   */
   void startExtensionElements();
   void endExtensionElements();
   
@@ -61,9 +71,6 @@ public interface BpmnWriter {
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> void writeBindings(String fieldName, List<Binding<T>> bindings);
   
-  /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
-  void writeDocumentation(String documentation);
-
   /** Writes a string field as an attribute on the current xml element in the BPMN namespace */
   void writeStringAttributeBpmn(String localPart, Object value);
 

@@ -165,15 +165,19 @@ public class XmlElement {
     return null;
   }
 
+  public XmlElement getOrCreateChildElement(String namespaceUri, String localPart) {
+    return getOrCreateChildElement(namespaceUri, localPart, null);
+  }
+
   /**
    * Returns either the first element with the given name, or the result of adding a new element if there wasn’t one.
    */
-  public XmlElement getOrCreateChildElement(String namespaceUri, String localPart) {
+  public XmlElement getOrCreateChildElement(String namespaceUri, String localPart, Integer index) {
     XmlElement existingElement = getElement(namespaceUri, localPart);
     if (existingElement!=null) {
       return existingElement;
     }
-    return createElement(namespaceUri, localPart);
+    return createElement(namespaceUri, localPart, index);
   }
   
   public XmlElement createElement(String namespaceUri, String localPart) {

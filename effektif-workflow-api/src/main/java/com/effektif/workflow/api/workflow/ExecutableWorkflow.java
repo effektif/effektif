@@ -110,7 +110,7 @@ public class ExecutableWorkflow extends AbstractWorkflow {
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-    w.startElementBpmn("extensionElements", 0);
+    w.startExtensionElements();
     w.writeStringValue("sourceWorkflowId", "value", sourceWorkflowId);
     w.writeStringValue("creatorId", "value", creatorId);
     w.writeStringValue("enableCases", "value", enableCases);
