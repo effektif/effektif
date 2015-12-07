@@ -47,8 +47,10 @@ public class ChoiceType extends TextType {
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-    for (ChoiceOption option : options) {
-      option.writeBpmn(w);
+    if (options != null) {
+      for (ChoiceOption option : options) {
+        option.writeBpmn(w);
+      }
     }
   }
 
