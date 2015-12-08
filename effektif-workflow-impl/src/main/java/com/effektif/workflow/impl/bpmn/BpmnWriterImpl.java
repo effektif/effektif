@@ -201,6 +201,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   protected XmlElement writeDefinitions(AbstractWorkflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
+    // Add the BPMN targetNamespace, which has nothing to do with XML schema and just identifies the modelled process.
     xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
     writeWorkflow(workflow);
     return xml;
