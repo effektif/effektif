@@ -54,10 +54,12 @@ public abstract class AbstractWorkflow extends Scope {
     if (properties != null) {
       w.startExtensionElements();
       for (Map.Entry<String, Object> property : properties.entrySet()) {
-        Class<?> type = property.getValue().getClass();
-        boolean simpleType = type.isPrimitive() || type.getName().startsWith("java.lang.");
-        if (simpleType) {
-          w.writeStringValue("property", property.getKey(), property.getValue().toString());
+        if (property.getValue() != null) {
+          Class<?> type = property.getValue().getClass();
+          boolean simpleType = type.isPrimitive() || type.getName().startsWith("java.lang.");
+          if (simpleType) {
+            w.writeStringValue("property", property.getKey(), property.getValue().toString());
+          }
         }
       }
       w.endExtensionElements();
