@@ -15,11 +15,12 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
-import com.effektif.workflow.api.workflow.diagram.Node;
 
 /**
  * @author Tom Baeyens
@@ -43,6 +44,24 @@ public abstract class AbstractWorkflow extends Scope {
   public void writeBpmn(BpmnWriter w) {
     w.writeIdAttributeBpmn("id", id);
     w.writeStringAttributeBpmn("name", name);
+    writeSimpleProperties(w);
+  }
+
+  /**
+   * Serialises properties with simple Java types as String values.
+   */
+  private void writeSimpleProperties(BpmnWriter w) {
+    if (properties != null) {
+      w.startExtensionElements();
+      for (Map.Entry<String, Object> property : properties.entrySet()) {
+        Class<?> type = property.getValue().getClass();
+        boolean simpleType = type.isPrimitive() || type.getName().startsWith("java.lang.");
+        if (simpleType) {
+          w.writeStringValue("property", property.getKey(), property.getValue().toString());
+        }
+      }
+      w.endExtensionElements();
+    }
   }
 
   public WorkflowId getId() {
