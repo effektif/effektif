@@ -77,12 +77,12 @@ public class BpmnWriterImpl implements BpmnWriter {
     if (source==null) {
       startElementBpmn(localpart, index);
     } else if (source instanceof XmlElement) {
-      XmlElement childElement = (XmlElement) source;
+      XmlElement sourceElement = (XmlElement) source;
       if (xml!=null) {
-        xml.addElement(childElement, index);
+        xml.addElement(sourceElement, index);
       }
-      childElement.setName(BPMN_URI, localpart);
-      startElement(childElement);
+      sourceElement.setName(BPMN_URI, localpart);
+      startElement(sourceElement);
     } else {
       throw new RuntimeException("Unknown BPMN source: "+source);
     }
@@ -201,8 +201,12 @@ public class BpmnWriterImpl implements BpmnWriter {
   protected XmlElement writeDefinitions(AbstractWorkflow workflow) {
     startElementBpmn("definitions", workflow.getProperty(KEY_DEFINITIONS));
     initializeNamespacePrefixes();
+
     // Add the BPMN targetNamespace, which has nothing to do with XML schema and just identifies the modelled process.
-    xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
+    if (xml.getAttribute(BPMN_URI, "targetNamespace") == null) {
+      xml.addAttribute(BPMN_URI, "targetNamespace", EFFEKTIF_URI);
+    }
+
     writeWorkflow(workflow);
     return xml;
   }
