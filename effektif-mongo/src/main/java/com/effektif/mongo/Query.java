@@ -142,7 +142,7 @@ public class Query {
       and(andClauses);
     } else if (query.containsField("$and")) {
       BasicDBList andClauses = (BasicDBList) query.get("$and");
-      andClauses.add(clauses);
+      andClauses.add(new BasicDBObject("$or", clauses));
     } else {
       query.append("$or", clauses);
     }
