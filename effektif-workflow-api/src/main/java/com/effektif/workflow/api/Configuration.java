@@ -30,9 +30,6 @@ public interface Configuration {
   
   WorkflowEngine getWorkflowEngine();
   
-//  @Deprecated
-//  TaskService getTaskService();
-  
   <T> T get(Class<T> type);
   Object get(String name);
   void set(Object bean, String name);

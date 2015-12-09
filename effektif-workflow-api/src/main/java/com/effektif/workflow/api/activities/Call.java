@@ -54,20 +54,6 @@ public class Call extends AbstractBindableActivity {
     w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
   }
 
-//  @Override
-//  public void readJson(JsonReader r) {
-//    subWorkflowId = r.readId("subWorkflowId");
-//    subWorkflowSource = r.readString("subWorkflowSource");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeId("subWorkflowId", subWorkflowId);
-//    w.writeString("subWorkflowSource", subWorkflowSource);
-//  }
-
   @Override
   public Call id(String id) {
     super.id(id);

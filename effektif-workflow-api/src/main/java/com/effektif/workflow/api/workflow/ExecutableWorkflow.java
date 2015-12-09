@@ -54,22 +54,6 @@ public class ExecutableWorkflow extends AbstractWorkflow {
   protected LocalDateTime createTime;
   protected String creatorId;
 
-//  @Override
-//  public void readJson(JsonReader r) {
-//    sourceWorkflowId = r.readString("sourceWorkflowId");
-//    createTime = r.readDate("createTime");
-//    creatorId = r.readId("creatorId");
-//    super.readJson(r);
-//  }
-//
-//  @Override
-//  public void writeJson(JsonWriter w) {
-//    super.writeJson(w);
-//    w.writeString("sourceWorkflowId", sourceWorkflowId);
-//    w.writeDate("createTime", createTime);
-//    w.writeId("creatorId", creatorId);
-//  }
-  
   @Override
   public void readBpmn(BpmnReader r) {
     r.startExtensionElements();
