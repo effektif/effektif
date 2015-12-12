@@ -64,6 +64,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public Boolean isAsync;
   public Long nextActivityInstanceId;
   public Long nextVariableInstanceId;
+  public Long nextTimerInstanceId;
   public List<Job> jobs;
   public List<UnlockListener> unlockListeners;
 
@@ -89,6 +90,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.start = Time.now();
     this.nextActivityInstanceId = 1l;
     this.nextVariableInstanceId = 1l;
+    this.nextTimerInstanceId = 1l;
     this.businessKey = triggerInstance.getBusinessKey();
     this.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
     this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
@@ -244,6 +246,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
   public void workflowInstanceEnded() {
     workflow.workflowEngine.notifyWorkflowInstanceEnded(workflowInstance);
+    
+    cancelTimersForScope();
     
     if (callerWorkflowInstanceId != null) {
       WorkflowInstanceImpl callerProcessInstance = null;
@@ -465,7 +469,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
     return Long.toString(nextVariableInstanceId++);
   }
-
+  
   public void addJob(Job job) {
     if (jobs == null) {
       jobs = new ArrayList<>();

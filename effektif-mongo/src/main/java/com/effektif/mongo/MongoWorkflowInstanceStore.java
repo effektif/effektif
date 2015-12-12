@@ -16,14 +16,24 @@
 package com.effektif.mongo;
 
 import static com.effektif.mongo.ActivityInstanceFields.*;
-import static com.effektif.mongo.ActivityInstanceFields.DURATION;
-import static com.effektif.mongo.ActivityInstanceFields.END;
-import static com.effektif.mongo.ActivityInstanceFields.END_STATE;
-import static com.effektif.mongo.ActivityInstanceFields.START;
 import static com.effektif.mongo.MongoDb._ID;
 import static com.effektif.mongo.MongoHelper.*;
+import static com.effektif.mongo.ScopeInstanceFields.*;
 import static com.effektif.mongo.WorkflowInstanceFields.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import com.effektif.mongo.WorkflowInstanceFields.Lock;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -37,6 +47,7 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -54,17 +65,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
@@ -196,7 +196,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
       else
         unsets.append(PROPERTIES, 1);
     }
-
+    
     if (!sets.isEmpty()) {
       update.append("$set", sets);
     }

@@ -93,6 +93,11 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
     return activityInstance;
   }
   
+  @Override
+  protected String getActivityInstanceId() {
+    return id;
+  }
+  
   public void execute() {
     if (workflow.workflowEngine.notifyActivityInstanceStarted(this)) {
       activity.activityType.execute(this);
@@ -144,6 +149,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
       setEnd(Time.now());
       workflow.workflowEngine.notifyActivityInstanceEnded(this);
+      cancelTimersForScope();
       setWorkState(null);
     }
   }

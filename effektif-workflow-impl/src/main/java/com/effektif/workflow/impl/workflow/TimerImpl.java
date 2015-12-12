@@ -15,10 +15,15 @@
  */
 package com.effektif.workflow.impl.workflow;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.impl.WorkflowParser;
-import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.job.TimerType;
+import com.effektif.workflow.impl.job.TimerTypeService;
+import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
 
 /**
@@ -30,20 +35,48 @@ public class TimerImpl {
   public ScopeImpl parent;
   public Configuration configuration;
   public WorkflowImpl workflow;
-  public JobType jobType;
+  public Timer timer;
+  public TimerType timerType;
 
   public void parse(Timer timer, ScopeImpl parentImpl, WorkflowParser parser) {
     this.configuration = parser.configuration;
+    this.timer = timer;
     this.id = timer.getId();
     if (parentImpl!=null) {
       this.parent = parentImpl;
       this.workflow = parentImpl.workflow;
     }
+    
+    TimerTypeService timerTypeService = parser.getConfiguration(TimerTypeService.class);
+    this.timerType = timerTypeService.instantiateTimerType(timer);
+    // some activity types need to validate incoming and outgoing transitions, 
+    // that's why they are NOT parsed here, but after the transitions.
+    if (this.timerType==null) {
+      parser.addError("Activity '%s' has no activityType configured", id);
+    }
   }
 
-  public Timer serialize() {
+  // TODO add a section in ScopeInstanceImpl.toScopeInstance that 
+  // uses this method when serializing timers in 
+  public Timer toTimer() {
     Timer timer = new Timer();
-    // TODO jobType
+    // TODO serialize this into a timer
     return timer;
+  }
+
+  public Job createJob(ScopeInstanceImpl scopeInstance) {
+    Job job = new Job();
+    job.workflowId = scopeInstance.workflow.id;
+    job.workflowInstanceId = scopeInstance.workflowInstance.id;
+    job.dueDate = calculateDueDate();
+    job.jobType = timerType.getJobType(scopeInstance, this);
+    return job;
+  }
+
+  private LocalDateTime calculateDueDate() {
+    String dueDateExpression = timer.getDueDateExpression();
+    // TODO parse the relative duedate expression and apply it relative to now
+    int seconds = 0;
+    return new LocalDateTime().plusSeconds(seconds);
   }
 }

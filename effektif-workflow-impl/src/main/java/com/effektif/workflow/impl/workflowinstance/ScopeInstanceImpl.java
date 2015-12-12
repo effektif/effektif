@@ -43,11 +43,14 @@ import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
+import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.ExpressionImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
+import com.effektif.workflow.impl.workflow.TimerImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 
 
@@ -63,7 +66,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public List<VariableInstanceImpl> variableInstances;
   /** maps variable.id's to variable instances */
   public Map<String, VariableInstanceImpl> variableInstancesMap;
-  public List<TimerInstanceImpl> timerInstances;
   public String endState;
 
   // As long as the workflow instance is not saved, the updates collection is null.
@@ -102,13 +104,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
       scopeInstance.setVariableInstances(variableInstanceApis);
     }
-    if (timerInstances!=null && !timerInstances.isEmpty()) {
-      List<TimerInstance> timerInstanceApis = new ArrayList<>();
-      for (TimerInstanceImpl timerInstanceImpl: this.timerInstances) {
-        timerInstanceApis.add(timerInstanceImpl.toTimerInstance());
-      }
-      scopeInstance.setTimerInstances(timerInstanceApis);
-    }
     scopeInstance.setProperties(this.properties);
   }
 
@@ -133,10 +128,21 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
     }
     addActivityInstance(activityInstance);
-    activityInstance.initializeVariableInstances();
+    activityInstance.initializeScopeInstance();
 //    if (log.isDebugEnabled())
 //      log.debug("Created "+activityInstance);
     return activityInstance;
+  }
+
+  public void initializeScopeInstance() {
+    initializeVariableInstances();
+    initializeTimers();
+  }
+
+  /** TODO find where this needs to be called
+   * i expect it should be called from end() */
+  public void destroyScopeInstance() {
+    cancelTimersForScope();
   }
   
   public void initializeForEachElement(VariableImpl elementVariableDefinition, Object value) {
@@ -449,8 +455,39 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     return null;
   }
+  
+  // timer instances ///
+  
+  protected void initializeTimers() {
+    if (scope.timers!=null) {
+      for (TimerImpl timer: scope.timers) {
+        Job job = timer.createJob(this);
+        job.workflowInstanceId(workflowInstance.getId());
+        job.activityInstanceId(getActivityInstanceId());
+        workflow.configuration
+          .get(JobStore.class)
+          .saveJob(job);
+      }
+    }
+  }
+
+  /** the activity instance id if this is an activity instance and 
+   * null if this is a workflow instance.
+   * This method is overridden by the ActivityInstanceImpl to set the activity instance id */
+  protected String getActivityInstanceId() {
+    return null;
+  }
+
+  public void cancelTimersForScope() {
+    if (scope.timers!=null) {
+      workflow.configuration
+        .get(JobStore.class)
+        .deleteJobByScope(workflowInstance.getId(), getActivityInstanceId());
+    }
+  }
 
   // updates ////////////////////////////////////////////////////////////
+
 
   public boolean hasUpdates() {
     // As long as the workflow instance is not saved, the updates collection is null.
@@ -487,6 +524,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   public boolean hasActivityInstances() {
     return activityInstances!=null && !activityInstances.isEmpty();
   }
+  
   public boolean isEnded() {
     return end!=null;
   }

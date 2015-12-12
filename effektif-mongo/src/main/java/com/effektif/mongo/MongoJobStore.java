@@ -19,6 +19,15 @@ import static com.effektif.mongo.JobFields.*;
 import static com.effektif.mongo.MongoDb._ID;
 import static com.effektif.mongo.MongoHelper.*;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.job.Job;
@@ -31,13 +40,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import org.bson.types.ObjectId;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 
 public class MongoJobStore implements JobStore, Brewable {
@@ -171,17 +173,18 @@ public class MongoJobStore implements JobStore, Brewable {
   }
 
   @Override
-  public void deleteJobs(JobQuery query) {
-    jobsCollection.remove("delete-jobs", createDbQuery(query));
-  }
-
-  @Override
   public void deleteAllJobs() {
     jobsCollection.remove("delete-all-jobs", new BasicDBObject(), false);
   }
 
-  public List<Job> findJobs(JobQuery jobQuery) {
+  public List<Job> findAllJobs(JobQuery jobQuery) {
     return findJobs(jobsCollection, jobQuery);
+  }
+
+
+  @Override
+  public List<Job> findAllJobs() {
+    return findJobs(this.jobsCollection, new JobQuery());
   }
 
   protected List<Job> findJobs(MongoCollection collection, JobQuery jobQuery) {
@@ -213,21 +216,20 @@ public class MongoJobStore implements JobStore, Brewable {
     BasicDBObject dbQuery = createDbQuery(new JobQuery().jobId(jobId));
     jobsCollection.remove("delete-job", dbQuery);
   }
+  
+  @Override
+  public void deleteJobByScope(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
+    BasicDBObject dbQuery = new Query()
+      .equal(WORKFLOW_INSTANCE_ID, new ObjectId(workflowInstanceId.getInternal()))
+      .equalOpt(ACTIVITY_INSTANCE_ID, activityInstanceId)
+      .get();
+    jobsCollection.remove("delete-job", dbQuery);
+  }
 
   @Override
   public void saveArchivedJob(Job job) {
     BasicDBObject dbJob = writeJob(job);
     archivedJobsCollection.save("save-archived-job", dbJob);
-  }
-
-  @Override
-  public List<Job> findArchivedJobs(JobQuery query) {
-    return findJobs(archivedJobsCollection, query);
-  }
-
-  @Override
-  public void deleteArchivedJobs(JobQuery query) {
-    archivedJobsCollection.remove("delete-archived-jobs", createDbQuery(query));
   }
 
   @Override

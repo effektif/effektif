@@ -30,6 +30,7 @@ import com.effektif.workflow.impl.bpmn.BpmnMapper;
 import com.effektif.workflow.impl.bpmn.BpmnMapperSupplier;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
+import com.effektif.workflow.impl.job.TimerTypeService;
 import com.effektif.workflow.impl.json.JavaBeanValueMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.json.configuration.JavaBeanValueMapperSupplier;
@@ -54,6 +55,7 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.ingredient(new JobServiceImpl());
     brewery.ingredient(new ActivityTypeService());
     brewery.ingredient(new DataTypeService());
+    brewery.ingredient(new TimerTypeService());
     brewery.ingredient(new JsonStreamMappingsBuilder());
     brewery.ingredient(new JavaBeanValueMappingsBuilder());
 

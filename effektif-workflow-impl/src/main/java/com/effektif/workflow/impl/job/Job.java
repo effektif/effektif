@@ -34,7 +34,6 @@ public class Job {
   
   // private static final Logger log = LoggerFactory.getLogger(Job.class);
 
-  @JsonIgnore
   public JobService jobService;
 
   public JobType jobType;

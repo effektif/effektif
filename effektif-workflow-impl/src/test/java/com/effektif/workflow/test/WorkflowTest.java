@@ -200,7 +200,7 @@ public class WorkflowTest {
       StringBuilder cleanLog = new StringBuilder();
       cleanLog.append("Workflow engine contents\n");
       
-      List<Job> jobs = jobStore.findJobs(new JobQuery());
+      List<Job> jobs = jobStore.findAllJobs();
       if (jobs != null && !jobs.isEmpty()) {
         int i = 0;
         cleanLog.append("\n=== jobs ======================================================== \n");

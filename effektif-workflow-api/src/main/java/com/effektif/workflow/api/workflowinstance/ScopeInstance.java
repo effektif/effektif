@@ -36,7 +36,6 @@ public abstract class ScopeInstance extends Extensible {
   protected Long duration;
   protected List<ActivityInstance> activityInstances;
   protected List<VariableInstance> variableInstances;
-  protected List<TimerInstance> timerInstances;
   public static final String ENDSTATE_CANCELED = "canceled";
 
   public ActivityInstance findOpenActivityInstance(String activityId) {
@@ -154,13 +153,6 @@ public abstract class ScopeInstance extends Extensible {
   }
   public void setVariableInstances(List<VariableInstance> variableInstances) {
     this.variableInstances = variableInstances;
-  }
-
-  public List<TimerInstance> getTimerInstances() {
-    return this.timerInstances;
-  }
-  public void setTimerInstances(List<TimerInstance> timerInstances) {
-    this.timerInstances = timerInstances;
   }
 
   public String getEndState() {

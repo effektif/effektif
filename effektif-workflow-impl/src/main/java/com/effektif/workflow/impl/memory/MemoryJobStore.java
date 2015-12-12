@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobQuery;
 import com.effektif.workflow.impl.job.JobStore;
@@ -61,11 +62,6 @@ public class MemoryJobStore implements JobStore {
     jobs.put(job.id, job);
   }
 
-  @Override
-  public List<Job> findJobs(JobQuery query) {
-    return findJobs(jobs.values(), query);
-  }
-
   protected List<Job> findJobs(Collection<Job> jobs, JobQuery query) {
     List<Job> result = new ArrayList<>();
     for (Job job: jobs) {
@@ -76,15 +72,6 @@ public class MemoryJobStore implements JobStore {
     return result;
   }
 
-  @Override
-  public void deleteJobs(JobQuery query) {
-    for (Job job: new ArrayList<>(jobs.values())) {
-      if (query.meetsCriteria(job)) {
-        jobs.remove(job.getId());
-      }
-    }
-  }
-  
   @Override
   public void deleteAllJobs() {
     jobs = new LinkedHashMap<>();
@@ -101,20 +88,22 @@ public class MemoryJobStore implements JobStore {
   }
 
   @Override
-  public List<Job> findArchivedJobs(JobQuery query) {
-    return findJobs(archivedJobs, query);
+  public void deleteAllArchivedJobs() {
+    archivedJobs = new ArrayList<>();
   }
 
   @Override
-  public void deleteArchivedJobs(JobQuery query) {
+  public List<Job> findAllJobs() {
+    return new ArrayList<>(jobs.values());
+  }
+
+  @Override
+  public void deleteJobByScope(WorkflowInstanceId workflowInstanceId, String activityInstanceId) {
     for (Job job: new ArrayList<>(archivedJobs)) {
-      if (query.meetsCriteria(job)) {
+      if (workflowInstanceId.equals(job.getWorkflowInstanceId())
+          && (activityInstanceId==null || activityInstanceId.equals(activityInstanceId))) {
         archivedJobs.remove(job);
       }
     }
-  }
-  @Override
-  public void deleteAllArchivedJobs() {
-    archivedJobs = new ArrayList<>();
   }
 }

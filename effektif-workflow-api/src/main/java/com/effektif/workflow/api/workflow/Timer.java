@@ -23,8 +23,8 @@ package com.effektif.workflow.api.workflow;
 public class Timer {
 
   protected String id;
-  protected String dueDate;
-  protected String repeat;
+  protected String dueDateExpression;
+  protected String repeatExpression;
 
   public String getId() {
     return this.id;
@@ -37,25 +37,25 @@ public class Timer {
     return this;
   }
 
-  public String getDueDate() {
-    return this.dueDate;
+  public String getDueDateExpression() {
+    return this.dueDateExpression;
   }
-  public void setDueDate(String dueDate) {
-    this.dueDate = dueDate;
+  public void setDueDateExpression(String dueDateExpression) {
+    this.dueDateExpression = dueDateExpression;
   }
-  public Timer dueDate(String dueDate) {
-    this.dueDate = dueDate;
+  public Timer dueDateExpression(String dueDateExpression) {
+    this.dueDateExpression = dueDateExpression;
     return this;
   }
 
-  public String getRepeat() {
-    return this.repeat;
+  public String getRepeatExpression() {
+    return this.repeatExpression;
   }
-  public void setRepeat(String repeat) {
-    this.repeat = repeat;
+  public void setRepeatExpression(String repeatExpression) {
+    this.repeatExpression = repeatExpression;
   }
-  public Timer repeat(String repeat) {
-    this.repeat = repeat;
+  public Timer repeat(String repeatExpression) {
+    this.repeatExpression = repeatExpression;
     return this;
   }
 }

@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.workflowinstance;
+package com.effektif.workflow.test.timer;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Test;
 
-import com.effektif.workflow.impl.job.Job;
-
+import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.test.WorkflowTest;
 
 
 /**
  * @author Tom Baeyens
  */
-public class ScopeInstanceUpdates {
+public class TimerTest extends WorkflowTest {
 
-  public boolean isNew;
-  public boolean isEndChanged;
-  public boolean isActivityInstancesChanged;
-  public boolean isVariableInstancesChanged;
+  @Test
+  public void testTimer() {
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .activity("r", new ReceiveTask()
+        .timer(new BoundaryEventTimer()
+          .dueDateExpression("0 minutes")));
+    
+    deploy(workflow);
 
-  public void reset(boolean isNew) {
-    this.isNew = isNew;
-    this.isEndChanged = false;
-    this.isActivityInstancesChanged = false;
-    this.isVariableInstancesChanged = false;
+    // WorkflowInstance workflowInstance = start(workflow);
   }
 }
