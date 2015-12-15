@@ -22,6 +22,7 @@ import java.util.Stack;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
@@ -30,8 +31,9 @@ import javax.xml.stream.events.XMLEvent;
 import com.effektif.workflow.api.bpmn.XmlElement;
 
 
-/** Uses a SAX streaming parser to parse XML and
- * generate {@link XmlElement our own JSONnable XML DOM structure}. */
+/**
+ * Uses a SAX streaming parser to parse XML and generate {@link XmlElement our own JSONnable XML DOM structure}.
+ */
 public class XmlReader {
 
   public Reader reader;
@@ -98,8 +100,8 @@ public class XmlReader {
           parent.addText(xmlEvent.asCharacters().getData()); 
         }
       }
-    } catch (Exception e) {
-      throw new RuntimeException("XML parsing error: "+e.getMessage(), e);
+    } catch (XMLStreamException e) {
+      throw new InvalidXml(e);
     }
     return root;
   }
