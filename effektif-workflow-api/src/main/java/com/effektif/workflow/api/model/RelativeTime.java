@@ -198,9 +198,7 @@ public class RelativeTime {
     try {
       int time = Integer.parseInt(parts[0]);
       RelativeTime t = new RelativeTime().time(time).unit(parts[1]);
-      boolean validUnit = t.isUnitYears() || t.isUnitMonths() || t.isUnitWeeks() || t.isUnitDays() || t.isUnitHours() ||
-        t.isUnitMinutes() || t.isUnitSeconds();
-      if (!validUnit) {
+      if (!t.valid()) {
         throw new IllegalArgumentException("Invalid time unit in relative time ‘" + value + "’");
       }
       return t;
@@ -233,5 +231,14 @@ public class RelativeTime {
     result = 31 * result + time.hashCode();
     result = 31 * result + unit.hashCode();
     return result;
+  }
+
+  public boolean valid() {
+    if (time == null || unit == null) {
+      return false;
+    }
+    boolean validUnit = isUnitYears() || isUnitMonths() || isUnitWeeks() || isUnitDays() || isUnitHours() ||
+      isUnitMinutes() || isUnitSeconds();
+    return validUnit;
   }
 }
