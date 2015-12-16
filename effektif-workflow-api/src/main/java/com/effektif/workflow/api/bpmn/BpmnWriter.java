@@ -75,6 +75,9 @@ public interface BpmnWriter {
   void writeStringAttributeBpmn(String localPart, Object value);
 
   /** Writes a string field as an attribute on the current xml element in the BPMN namespace */
+  void writeIdAttributeBpmnDiagram(String localPart, Object value);
+
+  /** Writes a string field as an attribute on the current xml element in the BPMN namespace */
   void writeStringAttributeBpmnDiagram(String localPart, Object value);
 
   /** Writes a string field as an attribute on the current xml element in the Effektif namespace */

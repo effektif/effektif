@@ -15,8 +15,11 @@
  */
 package com.effektif.workflow.impl.bpmn;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import javax.xml.XMLConstants;
@@ -26,12 +29,16 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
  * Constants for fixed string values used by both the {@link BpmnReaderImpl} and {@link BpmnWriterImpl}.
  */
 public class Bpmn {
+
+  private static final Logger log = LoggerFactory.getLogger(Bpmn.class);
 
   public static final String BPMN_URI = "http://www.omg.org/spec/BPMN/20100524/MODEL";
   public static final String BPMN_DI_URI = "http://www.omg.org/spec/BPMN/20100524/DI";
@@ -50,12 +57,21 @@ public class Bpmn {
     if (bpmnDocument == null) {
       throw new IllegalArgumentException("null bpmnDocument");
     }
-    String directory = Bpmn.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
-    File schemaFile = new File(new File(directory).getParent(), "classes/xsd/BPMN20.xsd");
+
+    InputStream schemaStream = Bpmn.class.getResourceAsStream("/xsd/BPMN20.xsd");
+    Source schemaSource = new StreamSource(new BufferedReader(new InputStreamReader(schemaStream)));
+
     Source xml = new StreamSource(new StringReader(bpmnDocument));
     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    schemaFactory.setResourceResolver(new ClasspathResourceResolver("xsd/"));
+    Schema schema = null;
     try {
-      Schema schema = schemaFactory.newSchema(schemaFile);
+      schema = schemaFactory.newSchema(schemaSource);
+    } catch (SAXException e) {
+      log.error("Error parsing schema:\n" + schemaSource.toString(), e);
+      throw new RuntimeException("Error parsing schema: " + e.getMessage());
+    }
+    try {
       Validator validator = schema.newValidator();
       validator.validate(xml);
     } catch (SAXException e) {

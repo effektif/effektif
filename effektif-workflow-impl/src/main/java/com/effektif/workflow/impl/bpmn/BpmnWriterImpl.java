@@ -191,6 +191,8 @@ public class BpmnWriterImpl implements BpmnWriter {
     if (bpmnDiagramPrefix==null) {
       bpmnDiagramPrefix = "bpmndi";
       xml.addNamespace(BPMN_DI_URI, bpmnDiagramPrefix);
+      xml.addNamespace(OMG_DC_URI, "omgdc");
+      xml.addNamespace(OMG_DI_URI, "omgdi");
     }
     if (effektifPrefix==null) {
       effektifPrefix = "e";
@@ -237,17 +239,17 @@ public class BpmnWriterImpl implements BpmnWriter {
     Diagram diagram = workflow.getDiagram();
     if (diagram != null) {
       startElementBpmnDiagram("BPMNDiagram");
-      writeStringAttributeBpmnDiagram("id", diagram.id);
+      writeIdAttributeBpmnDiagram("id", diagram.id);
       writeStringAttributeBpmnDiagram("name", workflow.getName());
 
       startElementBpmnDiagram("BPMNPlane");
-      writeStringAttributeBpmnDiagram("bpmnElement", workflow.getId().getInternal());
+      writeIdAttributeBpmnDiagram("bpmnElement", workflow.getId().getInternal());
 
       if (diagram.canvas.hasChildren()) {
         for (Node shape : diagram.canvas.children) {
           startElementBpmnDiagram("BPMNShape");
-          writeStringAttributeBpmnDiagram("id", shape.id);
-          writeStringAttributeBpmnDiagram("bpmnElement", shape.elementId);
+          writeIdAttributeBpmnDiagram("id", shape.id);
+          writeIdAttributeBpmnDiagram("bpmnElement", shape.elementId);
           writeBpmnDiagramBounds(shape.bounds);
           endElement();
         }
@@ -256,8 +258,8 @@ public class BpmnWriterImpl implements BpmnWriter {
       if (diagram.hasEdges()) {
         for (Edge edge : diagram.edges) {
           startElementBpmnDiagram("BPMNEdge");
-          writeStringAttributeBpmnDiagram("id", edge.id);
-          writeStringAttributeBpmnDiagram("bpmnElement", edge.transitionId);
+          writeIdAttributeBpmnDiagram("id", edge.id);
+          writeIdAttributeBpmnDiagram("bpmnElement", edge.transitionId);
           writeBpmnDiagramEdgeDockers(edge.dockers);
           endElement();
         }
@@ -377,6 +379,13 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void writeStringAttributeBpmn(String localPart, Object value) {
     if (value!=null) {
       xml.addAttribute(BPMN_URI, localPart, value);
+    }
+  }
+
+  @Override
+  public void writeIdAttributeBpmnDiagram(String localPart, Object id) {
+    if (id != null) {
+      xml.addAttribute(BPMN_DI_URI, localPart, normaliseXmlId(id.toString()));
     }
   }
 
