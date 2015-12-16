@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 
 
@@ -72,7 +73,7 @@ public class BpmnTest extends WorkflowStreamTest {
     
     log.info("\n" + xmlString + "\n");
 
-    validateBpmnXml(xmlString);
+    Bpmn.validate(xmlString);
 
     w = bpmnMapper
       .readFromString(xmlString);
@@ -81,25 +82,6 @@ public class BpmnTest extends WorkflowStreamTest {
       return (T) w.getActivities().get(0);
     } else {
       return (T) w;
-    }
-  }
-
-  /**
-   * Performs XML schema validation on the generated XML using the BPMN 2.0 schema.
-   */
-  protected void validateBpmnXml(String bpmnDocument) {
-    String directory = BpmnTest.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
-    File schemaFile = new File(directory, "bpmn/xsd/BPMN20.xsd");
-    Source xml = new StreamSource(new StringReader(bpmnDocument));
-    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    try {
-      Schema schema = schemaFactory.newSchema(schemaFile);
-      Validator validator = schema.newValidator();
-      validator.validate(xml);
-    } catch (SAXException e) {
-      throw new RuntimeException("BPMN XML validation error: " + e.getMessage());
-    } catch (IOException e) {
-      throw new RuntimeException("IOException during BPMN XML validation: " + e.getMessage());
     }
   }
 }

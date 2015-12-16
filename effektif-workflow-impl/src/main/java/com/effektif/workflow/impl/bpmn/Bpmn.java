@@ -15,6 +15,19 @@
  */
 package com.effektif.workflow.impl.bpmn;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.xml.sax.SAXException;
+
 /**
  * Constants for fixed string values used by both the {@link BpmnReaderImpl} and {@link BpmnWriterImpl}.
  */
@@ -29,4 +42,26 @@ public class Bpmn {
 
   public static final String KEY_BPMN = "bpmn";
   public static final String KEY_DEFINITIONS = "bpmnDefinitions";
+
+  /**
+   * Performs XML schema validation on the given XML using the BPMN 2.0 schema.
+   */
+  public static void validate(String bpmnDocument) {
+    if (bpmnDocument == null) {
+      throw new IllegalArgumentException("null bpmnDocument");
+    }
+    String directory = Bpmn.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(5);
+    File schemaFile = new File(new File(directory).getParent(), "classes/xsd/BPMN20.xsd");
+    Source xml = new StreamSource(new StringReader(bpmnDocument));
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    try {
+      Schema schema = schemaFactory.newSchema(schemaFile);
+      Validator validator = schema.newValidator();
+      validator.validate(xml);
+    } catch (SAXException e) {
+      throw new RuntimeException("BPMN XML validation error: " + e.getMessage());
+    } catch (IOException e) {
+      throw new RuntimeException("IOException during BPMN XML validation: " + e.getMessage());
+    }
+  }
 }
