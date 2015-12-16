@@ -80,9 +80,9 @@ public class Transition extends Element {
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-    w.writeStringAttributeBpmn("id", id);
-    w.writeStringAttributeBpmn("sourceRef", fromId);
-    w.writeStringAttributeBpmn("targetRef", toId);
+    w.writeIdAttributeBpmn("id", id);
+    w.writeIdAttributeBpmn("sourceRef", fromId);
+    w.writeIdAttributeBpmn("targetRef", toId);
 
     if (condition != null) {
       w.startExtensionElements();

@@ -83,6 +83,9 @@ public interface BpmnWriter {
   /** Writes an id field as an attribute on the current xml element in the BPMN namespace */
   void writeIdAttributeBpmn(String localPart, Id value);
 
+  /** Writes an id field as an attribute on the current xml element in the BPMN namespace */
+  void writeIdAttributeBpmn(String localPart, String value);
+
   /** Writes an id field as an attribute on the current xml element in the Effektif namespace */
   void writeIdAttributeEffektif(String localPart, Id value);
 

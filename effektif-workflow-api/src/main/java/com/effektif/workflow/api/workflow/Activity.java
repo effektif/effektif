@@ -102,7 +102,7 @@ public abstract class Activity extends Scope {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.writeStringAttributeBpmn("id", id);
+    w.writeIdAttributeBpmn("id", id);
     w.writeStringAttributeEffektif("defaultTransitionId", defaultTransitionId);
 
     super.writeBpmn(w);

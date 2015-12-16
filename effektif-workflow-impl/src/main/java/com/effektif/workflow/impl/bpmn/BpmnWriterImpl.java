@@ -395,10 +395,29 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   @Override
-  public void writeIdAttributeBpmn(String localPart, Id value) {
-    if (value!=null) {
-      xml.addAttribute(BPMN_URI, localPart, value.getInternal());
+  public void writeIdAttributeBpmn(String localPart, Id id) {
+    if (id!=null) {
+      writeIdAttributeBpmn(localPart, id.getInternal());
     }
+  }
+
+  @Override
+  public void writeIdAttributeBpmn(String localPart, String id) {
+    if (id != null && !id.isEmpty()) {
+      xml.addAttribute(BPMN_URI, localPart, normaliseXmlId(id));
+    }
+  }
+
+  /**
+   * Fixes an XML id attribute by prefixing it with an underscore if it doesn’t start with a letter character, as
+   * required by the XML Schema definition of NCName http://www.w3.org/TR/xmlschema-2/#NCName
+   */
+  public static String normaliseXmlId(String id) {
+    if (id == null) {
+      return null;
+    }
+    boolean startsWithLetter = id.matches("^[_\\p{Ll}\\p{Lu}\\p{Lo}\\p{Lt}\\p{Nl}].*");
+    return startsWithLetter ? id : "_" + id;
   }
 
   @Override
