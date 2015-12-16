@@ -226,9 +226,9 @@ public class BpmnWriterImpl implements BpmnWriter {
     // Output documentation, workflow BPMN (extension elements) and scope (activities/transitions) in that order, as
     // required by the BPMN schema. The write methods are called here in the reverse order because they use index 0 in
     // calls to startElementBpmn, in order to write each one as the first child element of the ‘process’ element.
-    writeScope();
-    workflow.writeBpmn(this);
     writeDocumentation(workflow.getDescription());
+    workflow.writeBpmn(this);
+    writeScope();
     endElement();
     writeDiagram(workflow);
   }
@@ -273,22 +273,16 @@ public class BpmnWriterImpl implements BpmnWriter {
    * because it requires access to {@link #bpmnMappings}.
    */
   public void writeScope() {
-    // transitions and activities are added as the first elements, that's
-    // why they are written in reverse order.  the activities will appear
-    // first, then the transitions and then the rest of the unknown bpmn xml.
-    writeTransitions(scope.getTransitions());
     writeActivities(scope.getActivities());
+    writeTransitions(scope.getTransitions());
   }
 
   protected void writeActivities(List<Activity> activities) {
     if (activities!=null) {
-      // Loop backwards adding each activity as the first, serialising the parsed activities in the order they were
-      // parsed, followed by any unknown elements.
-      for (int i=activities.size()-1; i>=0; i--) {
-        Activity activity = activities.get(i);
+      for (Activity activity : activities) {
         startScope(activity);
         BpmnTypeMapping bpmnTypeMapping = getBpmnTypeMapping(activity.getClass());
-        startElementBpmn(bpmnTypeMapping.getBpmnElementName(), activity.getBpmn(), 0);
+        startElementBpmn(bpmnTypeMapping.getBpmnElementName(), activity.getBpmn());
         Map<String, String> bpmnTypeAttributes = bpmnTypeMapping.getBpmnTypeAttributes();
         if (bpmnTypeAttributes!=null) {
           for (String attributeLocalPart: bpmnTypeAttributes.keySet()) {
@@ -314,13 +308,8 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   protected void writeTransitions(List<Transition> transitions) {
     if (transitions!=null) {
-      // We loop backwards and then add each transition as the first
-      // This way all the parsed activities will be serialized first
-      // before the unknown elements and the parsed elements will
-      // appear in the order as they were parsed.
-      for (int i=transitions.size()-1; i>=0; i--) {
-        Transition transition = transitions.get(i);
-        startElementBpmn("sequenceFlow", transition.getBpmn(), 0);
+      for (Transition transition : transitions) {
+        startElementBpmn("sequenceFlow", transition.getBpmn());
         transition.writeBpmn(this);
         endElement();
       }
@@ -378,7 +367,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void writeDocumentation(String documentation) {
     if (documentation != null && !documentation.isEmpty()) {
       // Set the insertion index to zero, because the BPMN spec requires this to be the first child element.
-      startElementBpmn("documentation", null, 0);
+      startElementBpmn("documentation");
       xml.addText(documentation);
       endElement();
     }
