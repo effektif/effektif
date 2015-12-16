@@ -13,7 +13,6 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,20 +28,27 @@ import com.effektif.workflow.impl.json.JsonWriter;
  *
  * @author Tom Baeyens
  */
-public class ListMapper extends AbstractTypeMapper<List> {
+public class CollectionMapper extends AbstractTypeMapper<Collection> {
 
   JsonTypeMapper elementMapper;
+  Class<? extends Collection> collectionType;
   
-  public ListMapper(JsonTypeMapper elementMapper) {
+  public CollectionMapper(JsonTypeMapper elementMapper, Class<? extends Collection> collectionType) {
     this.elementMapper = elementMapper;
+    this.collectionType = collectionType;
   }
 
   @Override
-  public List read(Object jsonValue, JsonReader jsonReader) {
+  public Collection read(Object jsonValue, JsonReader jsonReader) {
     if (!Collection.class.isAssignableFrom(jsonValue.getClass())) {
       throw new InvalidValueException(String.format("Invalid Collection value ‘%s’ (%s)", jsonValue, jsonValue.getClass().getName()));
     }
-    List list = new ArrayList();
+    Collection list = null;
+    try {
+      list = collectionType.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException("Couldn't instantiate collection: "+e.getMessage(), e);
+    }
     Collection jsonCollection = (Collection) jsonValue;
     Iterator jsonIterator = jsonCollection.iterator();
     while (jsonIterator.hasNext()) {
@@ -54,7 +60,7 @@ public class ListMapper extends AbstractTypeMapper<List> {
   }
 
   @Override
-  public void write(List objectValue, JsonWriter jsonWriter) {
+  public void write(Collection objectValue, JsonWriter jsonWriter) {
     jsonWriter.arrayStart();
     for (Object objectElement: objectValue) {
       elementMapper.write(objectElement, jsonWriter);

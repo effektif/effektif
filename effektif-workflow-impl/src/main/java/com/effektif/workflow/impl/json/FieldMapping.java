@@ -39,8 +39,12 @@ public class FieldMapping {
   /** the list of parent fieldNames. not null means inline is activated for this field. */
   Collection<String> inline;
   
+  protected FieldMapping() {
+  }
+
   public FieldMapping(Field field, JsonTypeMapper jsonTypeMapper) {
     this.field = field;
+    this.field.setAccessible(true);
     this.jsonFieldName = field.getName();
     this.fieldType = field.getGenericType(); 
     this.jsonTypeMapper = jsonTypeMapper;

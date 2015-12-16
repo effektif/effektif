@@ -14,7 +14,11 @@
 package com.effektif.workflow.impl.json.types;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
@@ -25,14 +29,18 @@ import com.effektif.workflow.impl.util.Reflection;
 /**
  * @author Tom Baeyens
  */
-public class ListMapperFactory implements JsonTypeMapperFactory {
+public class CollectionMapperFactory implements JsonTypeMapperFactory {
 
   @Override
   public JsonTypeMapper createTypeMapper(Type type, Class< ? > clazz, Mappings mappings) {
-    if (clazz!=null && List.class.isAssignableFrom(clazz)) {
+    if (clazz!=null && Collection.class.isAssignableFrom(clazz)) {
       Type elementType = Reflection.getTypeArg(type, 0);
       JsonTypeMapper elementMapper = mappings.getTypeMapper(elementType);
-      return new ListMapper(elementMapper); 
+      if (List.class.isAssignableFrom(clazz)) {
+        return new CollectionMapper(elementMapper, ArrayList.class); 
+      } else if (Set.class.isAssignableFrom(clazz)) {
+        return new CollectionMapper(elementMapper, LinkedHashSet.class); 
+      }
     }
     return null;
   }

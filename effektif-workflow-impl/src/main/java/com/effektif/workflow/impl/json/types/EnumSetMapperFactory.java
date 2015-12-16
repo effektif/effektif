@@ -22,7 +22,7 @@ import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.util.Reflection;
 
 /**
- * Based on {@link ListMapperFactory}
+ * Based on {@link CollectionMapperFactory}
  *
  * @author Peter Hilton
  */

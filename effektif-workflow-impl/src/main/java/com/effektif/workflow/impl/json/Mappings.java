@@ -57,7 +57,7 @@ public class Mappings {
   protected Map<Field,String> fieldNames = new HashMap<>();
   
   /** Initialized from the mapping builder information */
-  protected Map<Field,JsonTypeMapper<?>> fieldsMappers;
+  protected Map<Field,FieldMapping> fieldsMappings;
 
   /** Initialized from the mapping builder information */
   protected Set<Field> inlineFields = new HashSet<>();
@@ -95,7 +95,7 @@ public class Mappings {
     this.inlineFields = mappingsBuilder.inlineFields;
     this.ignoredFields = mappingsBuilder.ignoredFields;
     this.fieldNames = mappingsBuilder.fieldNames;
-    this.fieldsMappers = mappingsBuilder.fieldsMappers;
+    this.fieldsMappings = mappingsBuilder.fieldsMappings;
     this.jsonTypeMapperFactories = mappingsBuilder.typeMapperFactories;
     this.dataTypesByValueClass = mappingsBuilder.dataTypesByValueClass;
     
@@ -400,16 +400,16 @@ public class Mappings {
             && field.getAnnotation(JsonIgnore.class)==null
             && !ignoredFields.contains(field)) {
           field.setAccessible(true);
-          JsonTypeMapper jsonTypeMapper = fieldsMappers.get(field);
-          if (jsonTypeMapper==null) {
+          FieldMapping fieldMapping = fieldsMappings.get(field);
+          if (fieldMapping==null) {
             // log.debug("  Scanning "+Reflection.getSimpleName(field));
             Type fieldType = field.getGenericType();
             if (fieldType instanceof TypeVariable) {
               fieldType = typeArgs!=null ? typeArgs.get((TypeVariable)fieldType) : Object.class;
             }
-            jsonTypeMapper = getTypeMapper(fieldType);
+            JsonTypeMapper fieldTypeMapper = getTypeMapper(fieldType);
+            fieldMapping = new FieldMapping(field, fieldTypeMapper);
           }
-          FieldMapping fieldMapping = new FieldMapping(field, jsonTypeMapper);
           // Annotation-based field name override.
           JsonFieldName jsonFieldNameAnnotation = field.getAnnotation(JsonFieldName.class);
           if (jsonFieldNameAnnotation != null) {
@@ -424,7 +424,7 @@ public class Mappings {
       return;
     }
     Class<? > superclass = clazz.getSuperclass();
-    if (Object.class!=superclass) {
+    if (superclass!=null && superclass!=Object.class) {
       Type supertype = Reflection.getSuperclass(type);
       if (supertype!=null) {
         scanFields(fieldMappings, supertype);
@@ -451,8 +451,8 @@ public class Mappings {
   }
 
   
-  public Map<Field, JsonTypeMapper< ? >> getFieldsMappers() {
-    return fieldsMappers;
+  public Map<Field, FieldMapping> getFieldsMappings() {
+    return fieldsMappings;
   }
 
   
@@ -493,5 +493,9 @@ public class Mappings {
   
   public Map<Class< ? >, Map<String, Type>> getFieldTypes() {
     return fieldTypes;
+  }
+
+  public boolean isIgnored(Field field) {
+    return ignoredFields.contains(field);
   }
 }

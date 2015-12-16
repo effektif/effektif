@@ -218,7 +218,7 @@ public class Reflection {
     try {
       return clazz.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Couldn't instantiate "+clazz, e);
     }
   }
 

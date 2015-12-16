@@ -47,15 +47,11 @@ public class JsonStreamMapper {
   }
 
   public <T> T readString(String jsonString, Class<T> clazz) {
-    if (jsonString==null) {
-      return null;
-    }
-    Reader reader = new StringReader(jsonString);
-    return read(reader, clazz);
+    return readString(jsonString, (Type)clazz);
   }
 
   public <T> T readString(String jsonString, Type type) {
-    if (jsonString==null || "".equals(jsonString)) {
+    if (jsonString==null || "".equals(jsonString.trim())) {
       return null;
     }
     Reader reader = new StringReader(jsonString);

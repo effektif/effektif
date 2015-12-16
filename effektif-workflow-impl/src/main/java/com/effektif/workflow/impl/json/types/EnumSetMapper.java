@@ -24,7 +24,7 @@ import com.effektif.workflow.impl.json.JsonWriter;
 
 /**
  * Maps a {@link Set} to a JSON array for serialisation and deserialisation.
- * Based on {@link ListMapper}
+ * Based on {@link CollectionMapper}
  *
  * @author Peter Hilton
  */

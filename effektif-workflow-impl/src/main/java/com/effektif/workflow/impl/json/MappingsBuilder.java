@@ -42,9 +42,9 @@ import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
 import com.effektif.workflow.impl.json.types.BindingMapperFactory;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
 import com.effektif.workflow.impl.json.types.ClassMapper;
+import com.effektif.workflow.impl.json.types.CollectionMapperFactory;
 import com.effektif.workflow.impl.json.types.EnumMapperFactory;
 import com.effektif.workflow.impl.json.types.EnumSetMapperFactory;
-import com.effektif.workflow.impl.json.types.ListMapperFactory;
 import com.effektif.workflow.impl.json.types.MapMapperFactory;
 import com.effektif.workflow.impl.json.types.NumberMapperFactory;
 import com.effektif.workflow.impl.json.types.StringMapper;
@@ -62,7 +62,7 @@ public class MappingsBuilder {
   List<Class> subClasses = new ArrayList<>();
   Set<Field> inlineFields = new HashSet<>();
   Set<Field> ignoredFields = new HashSet<>();
-  Map<Field,JsonTypeMapper<?>> fieldsMappers = new HashMap<>();
+  Map<Field,FieldMapping> fieldsMappings = new HashMap<>();
   Map<Field,String> fieldNames = new HashMap<>();
   List<JsonTypeMapperFactory> typeMapperFactories = new ArrayList<>();
   Map<Type,DataType> dataTypesByValueClass = new HashMap<>();
@@ -84,7 +84,7 @@ public class MappingsBuilder {
     typeMapperFactory(new TypedValueMapperFactory());
     typeMapperFactory(new EnumMapperFactory());
     typeMapperFactory(new ArrayMapperFactory());
-    typeMapperFactory(new ListMapperFactory());
+    typeMapperFactory(new CollectionMapperFactory());
     typeMapperFactory(new EnumSetMapperFactory());
     typeMapperFactory(new MapMapperFactory());
     typeMapperFactory(new BindingMapperFactory());
@@ -125,8 +125,15 @@ public class MappingsBuilder {
     return this;
   }
 
+  public MappingsBuilder fieldMapping(Class clazz, String fieldName, FieldMapping fieldMapping) {
+    Field field = getField(clazz, fieldName);
+    fieldsMappings.put(field, fieldMapping);
+    return this;
+  }
+
   public MappingsBuilder fieldMapper(Class clazz, String fieldName, JsonTypeMapper fieldMapper) {
-    fieldsMappers.put(getField(clazz, fieldName), fieldMapper);
+    Field field = getField(clazz, fieldName);
+    fieldsMappings.put(field, new FieldMapping(field, fieldMapper));
     return this;
   }
 
