@@ -101,7 +101,7 @@ public class XmlReader {
         }
       }
     } catch (XMLStreamException e) {
-      throw new InvalidXml(e);
+      throw new XmlParsingError(e);
     }
     return root;
   }
