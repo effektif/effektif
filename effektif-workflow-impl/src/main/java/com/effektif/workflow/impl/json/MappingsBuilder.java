@@ -38,6 +38,7 @@ import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
+import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
 import com.effektif.workflow.impl.json.types.BindingMapperFactory;
 import com.effektif.workflow.impl.json.types.BooleanMapper;
@@ -172,6 +173,10 @@ public class MappingsBuilder {
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
+    }
+    ServiceLoader<TimerType> timerTypeLoader = ServiceLoader.load(TimerType.class);
+    for (TimerType timerType: timerTypeLoader) {
+        subClass(timerType.getTimerApiClass());
     }
     // potentially multiple datatypes may map to eg String. 
     // by re-putting these datatypes, we ensure that these basic
