@@ -19,10 +19,8 @@ public class BpmnSchemaValidationError extends RuntimeException {
   @Override
   public String getMessage() {
     Throwable rootCause = getCause();
-    log.debug("CAUSE: " + rootCause.toString());
     while (rootCause.getCause() != null) {
       rootCause = rootCause.getCause();
-      log.debug("CAUSE: " + rootCause.toString());
     }
     return rootCause.getMessage();
   }
