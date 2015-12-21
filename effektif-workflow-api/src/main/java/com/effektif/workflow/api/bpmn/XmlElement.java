@@ -253,7 +253,7 @@ public class XmlElement {
     }
     if ( this.namespaceUri.equals(namespaceUri)
          && attributes.containsKey(localPart) ) {
-      return attributes.remove(localPart);
+      return unescapeXml(attributes.remove(localPart));
     }
     String attributeName = getNamespacePrefix(namespaceUri)+localPart;
     return unescapeXml(attributes.remove(attributeName));
