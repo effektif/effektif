@@ -26,6 +26,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.NumberType;
@@ -75,6 +76,8 @@ public class MappingsBuilder {
     baseClass(Activity.class);
     baseClass(Condition.class);
     baseClass(DataType.class, "name");
+    baseClass(RelativeTime.class);
+    subClasses(RelativeTime.SUBCLASSES);
     typeMapperFactory(new ValueMapper());
     typeMapperFactory(new StringMapper());
     typeMapperFactory(new BooleanMapper());
