@@ -87,12 +87,16 @@ public class WorkflowStreamTest {
     @Override
     public void readBpmn(BpmnReader r) {
       super.readBpmn(r);
+      r.startExtensionElements();
       delay = r.readRelativeTimeEffektif("delay");
+      r.endExtensionElements();
     }
     @Override
     public void writeBpmn(BpmnWriter w) {
       super.writeBpmn(w);
+      w.startExtensionElements();
       w.writeRelativeTimeEffektif("delay", delay);
+      w.endExtensionElements();
     }
   }
   

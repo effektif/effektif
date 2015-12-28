@@ -485,14 +485,12 @@ public class BpmnReaderImpl implements BpmnReader {
   @Override
   public RelativeTime readRelativeTimeEffektif(String localPart) {
     RelativeTime relativeTime = null;
-    startExtensionElements();
     XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
     if (element != null) {
       startElement(element);
       relativeTime = RelativeTime.readBpmnPolymorphic(this);
       endElement();
     }
-    endExtensionElements();
     return relativeTime;
   }
 
