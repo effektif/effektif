@@ -32,6 +32,15 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.model.AfterRelativeTime;
+import com.effektif.workflow.api.model.NextRelativeTime;
+import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.model.TimeInDay;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.ChoiceType;
@@ -43,14 +52,17 @@ import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.MoneyType;
 import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 
 /**
@@ -62,6 +74,38 @@ public class WorkflowStreamTest {
 
   protected static JsonStreamMapper jsonStreamMapper = null;
 
+  @TypeName("relativity")
+  @BpmnElement("serviceTask")
+  @BpmnTypeAttribute(attribute="type", value="relativity")
+  public static class RelativityActivity extends Activity {
+    RelativeTime delay;
+    public RelativityActivity() {
+    }
+    public RelativityActivity(RelativeTime relativeTime) {
+      this.delay = relativeTime;
+    }
+    @Override
+    public void readBpmn(BpmnReader r) {
+      super.readBpmn(r);
+      delay = r.readRelativeTimeEffektif("delay");
+    }
+    @Override
+    public void writeBpmn(BpmnWriter w) {
+      super.writeBpmn(w);
+      w.writeRelativeTimeEffektif("delay", delay);
+    }
+  }
+  
+  public static class RelativityActivityImpl extends AbstractActivityType {
+    public RelativityActivityImpl() {
+      super(RelativityActivity.class);
+    }
+    @Override
+    public void execute(ActivityInstanceImpl activityInstance) {
+    }
+  } 
+
+  
   @BeforeClass
   public static void initialize() {
     if (jsonStreamMapper==null) {
@@ -75,12 +119,26 @@ public class WorkflowStreamTest {
     return jsonStreamMapper; 
   }
 
-  public <T> T serialize(T o) {
+  public <T extends AbstractWorkflow> T serializeWorkflow(T o) {
     String jsonString = jsonStreamMapper.write(o);
     System.out.println(jsonString);
     return (T) jsonStreamMapper.readString(jsonString, o.getClass());
   }
-  
+
+  public <T extends Activity> T serializeActivity(T a) {
+    AbstractWorkflow w = new ExecutableWorkflow()
+    .activity((Activity)a);
+    w = serializeWorkflow(w);
+    return (T) w.getActivities().get(0);
+  }
+
+  public <T extends RelativeTime> T serializeRelativeTime(T relativeTime) {
+    AbstractWorkflow w = new ExecutableWorkflow()
+      .activity(new RelativityActivity(relativeTime));
+    w = serializeWorkflow(w);
+    return (T) ((RelativityActivity) w.getActivities().get(0)).delay;
+  }
+
   protected String getWorkflowIdInternal() {
     return "wid";
   }
@@ -93,7 +151,7 @@ public class WorkflowStreamTest {
       .multiInstance(new MultiInstance()
         .valuesExpression("reviewers")
         .variable("reviewer", TextType.INSTANCE));
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals("verifyRequirements", activity.getId());
     assertEquals("continue", activity.getDefaultTransitionId());
     assertNotNull(activity.getMultiInstance());
@@ -113,7 +171,7 @@ public class WorkflowStreamTest {
         .subWorkflowSource("Run tests")
         .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
-    workflow = serialize(workflow);
+    workflow = serializeWorkflow(workflow);
 
     assertNotNull(workflow);
     Call call = (Call) workflow.getActivities().get(0);
@@ -130,7 +188,7 @@ public class WorkflowStreamTest {
     activity.setId("releaseComplete");
     activity.setName("software released");
     activity.setDescription("Ends the process when the release is complete.");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(EndEvent.class, activity.getClass());
     assertEquals("releaseComplete", activity.getId());
     assertEquals("software released", activity.getName());
@@ -143,7 +201,7 @@ public class WorkflowStreamTest {
     ExclusiveGateway activity = (ExclusiveGateway) new ExclusiveGateway()
       .id("test-ok")
       .defaultTransitionId("proceed");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(ExclusiveGateway.class, activity.getClass());
     assertEquals("test-ok", activity.getId());
     assertEquals("proceed", activity.getDefaultTransitionId());
@@ -180,7 +238,7 @@ public class WorkflowStreamTest {
       .property("boo", true);
     workflow.setEnableCases(true);
 
-    workflow = serialize(workflow);
+    workflow = serializeWorkflow(workflow);
 
     assertNotNull(workflow);
     assertEquals(workflowIdInternal, workflow.getId().getInternal());
@@ -211,7 +269,7 @@ public class WorkflowStreamTest {
         new EmbeddedSubprocess().name("phase one").activity("start", new StartEvent()).activity("end", new EndEvent())
           .transition(new Transition().fromId("start").toId("end")));
     
-    workflow = serialize(workflow);
+    workflow = serializeWorkflow(workflow);
     
     EmbeddedSubprocess embeddedSubprocess = (EmbeddedSubprocess) workflow.getActivities().get(0);
     assertEquals("phase1", embeddedSubprocess.getId());
@@ -230,7 +288,7 @@ public class WorkflowStreamTest {
   public void testHttpServiceTask() {
     HttpServiceTask activity = new HttpServiceTask();
     activity.setId("publishReleaseNotes");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(HttpServiceTask.class, activity.getClass());
     assertEquals("publishReleaseNotes", activity.getId());
   }
@@ -239,7 +297,7 @@ public class WorkflowStreamTest {
   public void testJavaServiceTask() {
     JavaServiceTask activity = new JavaServiceTask();
     activity.setId("profilePerformance");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(JavaServiceTask.class, activity.getClass());
     assertEquals("profilePerformance", activity.getId());
   }
@@ -248,7 +306,7 @@ public class WorkflowStreamTest {
   public void testNoneTask() {
     NoneTask activity = new NoneTask();
     activity.setId("verifyRequirements");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(NoneTask.class, activity.getClass());
     assertEquals("verifyRequirements", activity.getId());
   }
@@ -257,7 +315,7 @@ public class WorkflowStreamTest {
   public void testParallelGateway() {
     ParallelGateway activity = new ParallelGateway();
     activity.setId("fork");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(ParallelGateway.class, activity.getClass());
     assertEquals("fork", activity.getId());
   }
@@ -266,7 +324,7 @@ public class WorkflowStreamTest {
   public void testReceiveTask() {
     ReceiveTask activity = new ReceiveTask();
     activity.setId("buildComplete");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(ReceiveTask.class, activity.getClass());
     assertEquals("buildComplete", activity.getId());
   }
@@ -277,7 +335,7 @@ public class WorkflowStreamTest {
     activity.setId("codeComplete");
     activity.setName("code complete");
     activity.setDescription("Starts the process when the code is ready to release.");
-    activity = serialize(activity);
+    activity = serializeActivity(activity);
     assertEquals(StartEvent.class, activity.getClass());
     assertEquals("codeComplete", activity.getId());
     assertEquals("code complete", activity.getName());
@@ -293,7 +351,7 @@ public class WorkflowStreamTest {
         .inputListBinding("in3", new Binding<Object>().value("listValue1"))
         .inputListBinding("in3", new Binding<Object>().expression("listExpression2"))
         .output("out1", "var1"));
-    workflow = serialize(workflow);
+    workflow = serializeWorkflow(workflow);
     
     Activity activity = workflow.getActivities().get(0);
     assertEquals("value1", activity.getInputs().get("in1").getBinding().getValue());
@@ -317,7 +375,7 @@ public class WorkflowStreamTest {
       .variable("variable09", NumberType.INSTANCE)
       .variable("variable10", new TextType().multiLine());
 
-    workflow = serialize(workflow);
+    workflow = serializeWorkflow(workflow);
 
     assertNotNull(workflow.getVariables());
     assertEquals(10, workflow.getVariables().size());
@@ -345,6 +403,36 @@ public class WorkflowStreamTest {
 
     assertEquals(TextType.class, workflow.getVariables().get(9).getType().getClass());
     assertTrue(((TextType) workflow.getVariables().get(9).getType()).isMultiLine());
+  }
+  
+  @Test
+  public void testAfterRelativeTime() {
+    assertNull(serializeRelativeTime(AfterRelativeTime.minutes(5)).getAt());
+    assertEquals(5, (int) serializeRelativeTime(AfterRelativeTime.minutes(5)).getDuration());
+    assertEquals(AfterRelativeTime.MINUTES, serializeRelativeTime(AfterRelativeTime.minutes(5)).getDurationUnit());
+    assertEquals(AfterRelativeTime.HOURS, serializeRelativeTime(AfterRelativeTime.hours(5)).getDurationUnit());
+    assertEquals(AfterRelativeTime.DAYS, serializeRelativeTime(AfterRelativeTime.days(5)).getDurationUnit());
+    assertEquals(AfterRelativeTime.WEEKS, serializeRelativeTime(AfterRelativeTime.weeks(5)).getDurationUnit());
+    assertEquals(AfterRelativeTime.MONTHS, serializeRelativeTime(AfterRelativeTime.months(5)).getDurationUnit());
+    assertEquals(AfterRelativeTime.YEARS, serializeRelativeTime(AfterRelativeTime.years(5)).getDurationUnit());
+    
+    TimeInDay at = serializeRelativeTime(AfterRelativeTime.minutes(5)
+        .at(11,45)).getAt();
+    assertEquals(11, (int) at.getHour());
+    assertEquals(45, (int) at.getMinutes());
+  }
 
+  @Test
+  public void testNextRelativeTime() {
+    assertNull(serializeRelativeTime(NextRelativeTime.hourInDay(5)).getAt());
+    assertEquals(5, (int) serializeRelativeTime(NextRelativeTime.hourInDay(5)).getIndex());
+    assertEquals(NextRelativeTime.HOUR_IN_DAY, serializeRelativeTime(NextRelativeTime.hourInDay(5)).getIndexUnit());
+    assertEquals(NextRelativeTime.DAY_IN_WEEK, serializeRelativeTime(NextRelativeTime.dayInWeek(5)).getIndexUnit());
+    assertEquals(NextRelativeTime.DAY_IN_MONTH, serializeRelativeTime(NextRelativeTime.dayInMonth(5)).getIndexUnit());
+    
+    TimeInDay at = serializeRelativeTime(NextRelativeTime.dayInMonth(5)
+        .at(11,45)).getAt();
+    assertEquals(11, (int) at.getHour());
+    assertEquals(45, (int) at.getMinutes());
   }
 }

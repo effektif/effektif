@@ -22,6 +22,8 @@ import org.joda.time.ReadablePeriod;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -33,6 +35,21 @@ public class AfterRelativeTime extends RelativeTime {
 
   protected Integer duration;
   public String durationUnit;
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+    this.duration = new Integer(r.readStringAttributeEffektif("duration"));
+    this.durationUnit = r.readStringAttributeEffektif("durationUnit");
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("type", AFTER);
+    w.writeStringAttributeEffektif("duration", duration);
+    w.writeStringAttributeEffektif("durationUnit", durationUnit);
+  }
 
   public Integer getDuration() {
     return this.duration;

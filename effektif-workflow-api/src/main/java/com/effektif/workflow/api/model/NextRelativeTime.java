@@ -16,6 +16,8 @@ package com.effektif.workflow.api.model;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -40,6 +42,21 @@ public class NextRelativeTime extends RelativeTime {
     this.indexUnit = indexUnit;
   }
 
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+    this.index = new Integer(r.readStringAttributeEffektif("index"));
+    this.indexUnit = r.readStringAttributeEffektif("indexUnit");
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    super.writeBpmn(w);
+    w.writeStringAttributeEffektif("type", NEXT);
+    w.writeStringAttributeEffektif("index", index);
+    w.writeStringAttributeEffektif("indexUnit", indexUnit);
+  }
+  
   public static NextRelativeTime hourInDay(Integer hourInDay) {
     return new NextRelativeTime(hourInDay, HOUR_IN_DAY);
   }
@@ -94,6 +111,9 @@ public class NextRelativeTime extends RelativeTime {
 
   @Override
   public boolean valid() {
-    return false;
+    return index!=null 
+            && (HOUR_IN_DAY.equals(indexUnit)
+                || DAY_IN_WEEK.equals(indexUnit)
+                || DAY_IN_MONTH.equals(indexUnit));
   }
 }

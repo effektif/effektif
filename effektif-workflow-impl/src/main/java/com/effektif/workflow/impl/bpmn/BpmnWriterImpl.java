@@ -460,7 +460,11 @@ public class BpmnWriterImpl implements BpmnWriter {
   @Override
   public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
     if (value != null && value.valid()) {
-      writeStringValue(localPart, "after", value);
+      startExtensionElements();
+      startElementEffektif(localPart);
+      value.writeBpmn(this);
+      endExtensionElements();
+      endExtensionElements();
     }
   }
 

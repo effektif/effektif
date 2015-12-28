@@ -16,6 +16,7 @@ package com.effektif.workflow.api.bpmn;
 import java.util.List;
 
 import com.effektif.workflow.api.workflow.diagram.Bounds;
+
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.model.Id;

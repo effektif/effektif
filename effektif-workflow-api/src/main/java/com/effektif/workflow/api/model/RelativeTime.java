@@ -17,6 +17,10 @@ package com.effektif.workflow.api.model;
 
 import org.joda.time.LocalDateTime;
 
+import com.effektif.workflow.api.bpmn.BpmnReadable;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWritable;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.workflow.Binding;
 
 
@@ -25,13 +29,17 @@ import com.effektif.workflow.api.workflow.Binding;
  *
  * @author Tom Baeyens
  */
-public abstract class RelativeTime {
+public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
   
+
   public static final Class[] SUBCLASSES = new Class[]{
     AfterRelativeTime.class,
     NextRelativeTime.class
   };
-  
+
+  public static final String NEXT = "next";
+  public static final String AFTER = "after";
+
   public static final String MINUTES = "minutes";
   public static final String HOURS = "hours";
   public static final String DAYS = "days";
@@ -41,6 +49,81 @@ public abstract class RelativeTime {
 
   protected Binding<LocalDateTime> base;
   protected TimeInDay at;
+
+  public static RelativeTime readBpmnPolymorphic(BpmnReader r) {
+    String type = r.readStringAttributeEffektif("type");
+    if (type==null) {
+      String after = r.readStringAttributeEffektif("after");
+      if (after!=null) {
+        return parseBackwardsCompatibleString(after);
+      }
+      return null;
+    }
+    RelativeTime relativeTime = null; 
+    if (AFTER.equals(type)) {
+      relativeTime = new AfterRelativeTime();
+    } else if (NEXT.equals(type)) {
+      relativeTime = new NextRelativeTime();
+    } else {
+      throw new RuntimeException("TODO: Find out how to report parsing warning");
+    }
+    
+    relativeTime.readBpmn(r);
+
+    return relativeTime;
+  }
+
+  @Override
+  public void writeBpmn(BpmnWriter w) {
+    w.writeBinding("base", base);
+    if (at!=null && at.getHour()!=null) {
+      String atString = at.getHour()+":"+at.getMinutes();
+      w.writeStringAttributeEffektif("at", atString);
+    }
+  }
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    base = r.readBinding("base", LocalDateTime.class);
+    String atString = r.readStringAttributeEffektif("at");
+    if (atString!=null) {
+      int colonIndex = atString.indexOf(":");
+      if (colonIndex!=-1 && colonIndex<atString.length()-1) {
+        Integer hour = new Integer(atString.substring(0, colonIndex));
+        Integer minutes = new Integer(atString.substring(colonIndex+1));
+        this.at = new TimeInDay()
+          .hour(hour)
+          .minutes(minutes);
+      }
+    }
+  }
+
+
+
+  /**
+   * Parses a string formatted using {@link #toString()} as a relative time.
+   */
+  public static RelativeTime parseBackwardsCompatibleString(String value) {
+    if (value == null) {
+      throw new IllegalArgumentException("Cannot parse relative time from value ‘" + value + "’");
+    }
+    String[] parts = value.trim().split(" ");
+    if (parts.length != 2) {
+      throw new IllegalArgumentException("Cannot parse relative time from value ‘" + value + "’");
+    }
+    try {
+      int time = Integer.parseInt(parts[0]);
+      RelativeTime relativeTime = new AfterRelativeTime().duration(time).durationUnit(parts[1]);
+      if (!relativeTime.valid()) {
+        throw new IllegalArgumentException("Invalid time unit in relative time ‘" + value + "’");
+      }
+      return relativeTime;
+    }
+    catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Invalid time value in relative time ‘" + value + "’");
+    }
+  }
+
 
   public TimeInDay getAt() {
     return this.at;
@@ -110,30 +193,6 @@ public abstract class RelativeTime {
 
   public abstract LocalDateTime resolve(LocalDateTime base);
   public abstract boolean valid();
-
-  /**
-   * Parses a string formatted using {@link #toString()} as a relative time.
-   */
-  public static RelativeTime parse(String value) {
-    if (value == null) {
-      throw new IllegalArgumentException("Cannot parse relative time from value ‘" + value + "’");
-    }
-    String[] parts = value.trim().split(" ");
-    if (parts.length != 2) {
-      throw new IllegalArgumentException("Cannot parse relative time from value ‘" + value + "’");
-    }
-    try {
-      int time = Integer.parseInt(parts[0]);
-      RelativeTime relativeTime = new AfterRelativeTime().duration(time).durationUnit(parts[1]);
-      if (!relativeTime.valid()) {
-        throw new IllegalArgumentException("Invalid time unit in relative time ‘" + value + "’");
-      }
-      return relativeTime;
-    }
-    catch (NumberFormatException e) {
-      throw new IllegalArgumentException("Invalid time value in relative time ‘" + value + "’");
-    }
-  }
 
   public static String toString(TimeInDay at) {
     if (at==null) return "";

@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 
 import com.effektif.mongo.DefaultMongoObjectMapper;
 import com.effektif.mongo.MongoObjectMapper;
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.test.serialization.WorkflowStreamTest;
 
 
@@ -35,7 +36,7 @@ public class MongoJsonTest extends WorkflowStreamTest {
   }
 
   @Override
-  public <T> T serialize(T o) {
+  public <T extends AbstractWorkflow> T serializeWorkflow(T o) {
     Map<String,Object> jsonMap = mongoObjectMapper.write(o);
     System.out.println(jsonMap.toString());
     return mongoObjectMapper.read(jsonMap, o.getClass());
