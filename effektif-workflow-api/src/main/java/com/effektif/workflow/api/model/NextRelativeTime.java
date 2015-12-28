@@ -106,7 +106,31 @@ public class NextRelativeTime extends RelativeTime {
 
   @Override
   public LocalDateTime resolve(LocalDateTime base) {
-    return null;
+    LocalDateTime time = null;
+    if (HOUR_IN_DAY.equals(indexUnit)) {
+      time = base.withTime(index, 0, 0, 0);
+      if (!time.isAfter(base)) {
+        return time.plusDays(1);
+      }
+    } else if (DAY_IN_WEEK.equals(indexUnit)) {
+      time = base
+          .withDayOfWeek(index)
+          .withTime(0, 0, 0, 0);
+      if (!time.isAfter(base)) {
+        time = time.plusWeeks(1);
+      }
+    } else if (DAY_IN_MONTH.equals(indexUnit)) {
+      time = base
+          .withDayOfMonth(index)
+          .withTime(0, 0, 0, 0);
+      if (!time.isAfter(base)) {
+        time = time.plusMonths(1);
+      }
+    }
+    if (at!=null) {
+      time = time.withTime(at.getHour(), at.getMinutes(), 0, 0);
+    }
+    return time;
   }
 
   @Override

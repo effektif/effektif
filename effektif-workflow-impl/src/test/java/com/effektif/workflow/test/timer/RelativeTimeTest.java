@@ -13,17 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.test.timer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.model.AfterRelativeTime;
 import com.effektif.workflow.api.model.NextRelativeTime;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.model.TimeInDay;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -32,54 +29,90 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class RelativeTimeTest extends WorkflowTest {
   
-  private static final Logger log = LoggerFactory.getLogger(RelativeTimeTest.class);
-  
   @Test
-  public void testAfterRelativeTime() {
-    assertNull(wirizeAfter(AfterRelativeTime.minutes(5)).getAt());
-    assertEquals(5, (int) wirizeAfter(AfterRelativeTime.minutes(5)).getDuration());
-    assertEquals(AfterRelativeTime.MINUTES, wirizeAfter(AfterRelativeTime.minutes(5)).getDurationUnit());
-    assertEquals(AfterRelativeTime.HOURS, wirizeAfter(AfterRelativeTime.hours(5)).getDurationUnit());
-    assertEquals(AfterRelativeTime.DAYS, wirizeAfter(AfterRelativeTime.days(5)).getDurationUnit());
-    assertEquals(AfterRelativeTime.WEEKS, wirizeAfter(AfterRelativeTime.weeks(5)).getDurationUnit());
-    assertEquals(AfterRelativeTime.MONTHS, wirizeAfter(AfterRelativeTime.months(5)).getDurationUnit());
-    assertEquals(AfterRelativeTime.YEARS, wirizeAfter(AfterRelativeTime.years(5)).getDurationUnit());
-    
-    TimeInDay at = wirizeAfter(AfterRelativeTime.minutes(5)
-        .at(11,45)).getAt();
-    assertEquals(11, (int) at.getHour());
-    assertEquals(45, (int) at.getMinutes());
+  public void testIn5Minutes() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.minutes(5).resolve(base);
+    assertEquals(base.plusMinutes(5), absoluteTime);
   }
 
   @Test
-  public void testNextRelativeTime() {
-    assertNull(wirizeNext(NextRelativeTime.hourInDay(5)).getAt());
-    assertEquals(5, (int) wirizeNext(NextRelativeTime.hourInDay(5)).getIndex());
-    assertEquals(NextRelativeTime.HOUR_IN_DAY, wirizeNext(NextRelativeTime.hourInDay(5)).getIndexUnit());
-    assertEquals(NextRelativeTime.DAY_IN_WEEK, wirizeNext(NextRelativeTime.dayInWeek(5)).getIndexUnit());
-    assertEquals(NextRelativeTime.DAY_IN_MONTH, wirizeNext(NextRelativeTime.dayInMonth(5)).getIndexUnit());
-    
-    TimeInDay at = wirizeNext(NextRelativeTime.dayInMonth(5)
-        .at(11,45)).getAt();
-    assertEquals(11, (int) at.getHour());
-    assertEquals(45, (int) at.getMinutes());
+  public void testIn7Hours() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.hours(7).resolve(base);
+    assertEquals(base.plusHours(7), absoluteTime);
   }
 
-  /** serialize to json string and deserialize back to bean */ 
-  public AfterRelativeTime wirizeAfter(RelativeTime time) {
-    return (AfterRelativeTime) wirize(time);
+  @Test
+  public void testIn20Days() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.days(20).resolve(base);
+    assertEquals(endOfDay(base.plusDays(20)), absoluteTime);
   }
 
-  /** serialize to json string and deserialize back to bean */ 
-  public NextRelativeTime wirizeNext(RelativeTime time) {
-    return (NextRelativeTime) wirize(time);
+  @Test
+  public void testIn3Weeks() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.weeks(3).resolve(base);
+    assertEquals(endOfDay(base.plusWeeks(3)), absoluteTime);
   }
 
-  /** serialize to json string and deserialize back to bean */ 
-  public RelativeTime wirize(RelativeTime time) {
-    JsonStreamMapper streamMapper = configuration.get(JsonStreamMapper.class);
-    String json = streamMapper.write(time);
-    log.debug("Serialized relative time : "+json);
-    return streamMapper.readString(json, RelativeTime.class);
+  @Test
+  public void testIn9Months() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.months(9).resolve(base);
+    assertEquals(endOfDay(base.plusMonths(9)), absoluteTime);
+  }
+
+  @Test
+  public void testIn4Years() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.years(4).resolve(base);
+    assertEquals(endOfDay(base.plusYears(4)), absoluteTime);
+  }
+
+  @Test
+  public void testTomorrowAt11() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = RelativeTime.days(1).at(11,00).resolve(base);
+    assertEquals(base
+            .plusDays(1)
+            .withTime(11, 0, 0, 0), absoluteTime);
+  }
+
+  @Test
+  public void testNextThursday() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = NextRelativeTime
+      .dayInWeek(DateTimeConstants.THURSDAY)
+      .resolve(base);
+    assertEquals(base
+            .withDayOfWeek(DateTimeConstants.THURSDAY)
+            .withTime(0, 0, 0, 0), absoluteTime);
+  }
+
+  @Test
+  public void testNextThursdayAt15() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = NextRelativeTime
+      .dayInWeek(DateTimeConstants.THURSDAY)
+      .at(15,30)
+      .resolve(base);
+    assertEquals(base
+            .withDayOfWeek(DateTimeConstants.THURSDAY)
+            .withTime(15, 30, 0, 0), absoluteTime);
+  }
+
+  @Test
+  public void testNextFirstOfTheMonth() {
+    LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
+    LocalDateTime absoluteTime = NextRelativeTime
+      .dayInMonth(1)
+      .resolve(base);
+    assertEquals(new LocalDateTime(2016, 1, 1, 0, 0, 0, 0), absoluteTime);
+  }
+
+  private Object endOfDay(LocalDateTime time) {
+    return time.withTime(23, 59, 59, 999);
   }
 }
