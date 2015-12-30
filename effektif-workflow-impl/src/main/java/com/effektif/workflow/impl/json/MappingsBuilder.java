@@ -32,6 +32,7 @@ import com.effektif.workflow.api.types.NumberType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Extensible;
+import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.impl.activity.AbstractTriggerImpl;
 import com.effektif.workflow.impl.activity.ActivityType;
@@ -53,6 +54,8 @@ import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
 import com.effektif.workflow.impl.json.types.ValueMapper;
 import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
 import com.effektif.workflow.impl.json.types.VariableMapperFactory;
+import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
+import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimerImpl;
 
 /**
  * @author Tom Baeyens
@@ -72,9 +75,11 @@ public class MappingsBuilder {
     inline(Extensible.class, "properties");
     baseClass(Trigger.class);
     baseClass(JobType.class);
+    subClasses(BoundaryEventTimerImpl.class); //todo: make this dynamic
     baseClass(Activity.class);
     baseClass(Condition.class);
     baseClass(DataType.class, "name");
+    baseClass(Timer.class);
     typeMapperFactory(new ValueMapper());
     typeMapperFactory(new StringMapper());
     typeMapperFactory(new BooleanMapper());

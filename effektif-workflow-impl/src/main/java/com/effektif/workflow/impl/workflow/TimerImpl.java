@@ -15,15 +15,19 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import org.joda.time.LocalDateTime;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Timer;
+import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.job.TimerTypeService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+
+import java.time.Duration;
+import java.util.Date;
 
 
 /**
@@ -46,7 +50,11 @@ public class TimerImpl {
       this.parent = parentImpl;
       this.workflow = parentImpl.workflow;
     }
-    
+
+    if (timer.getRepeatExpression() != null && timer.getDueDateExpression() != null) {
+      parser.addError("TimeDuration and TimeDate on TimerEventDefinition are both set, but mutually exclusive, please remove one of them.");
+    }
+
     TimerTypeService timerTypeService = parser.getConfiguration(TimerTypeService.class);
     this.timerType = timerTypeService.instantiateTimerType(timer);
     // some activity types need to validate incoming and outgoing transitions, 
@@ -64,6 +72,14 @@ public class TimerImpl {
     return timer;
   }
 
+  public TimerInstance toTimerInstance() {
+    TimerInstance instance = new TimerInstance();
+
+//    instance.setDueDate(timerType.);
+
+    return instance;
+  }
+
   public Job createJob(ScopeInstanceImpl scopeInstance) {
     Job job = new Job();
     job.workflowId = scopeInstance.workflow.id;
@@ -74,9 +90,17 @@ public class TimerImpl {
   }
 
   private LocalDateTime calculateDueDate() {
-    String dueDateExpression = timer.getDueDateExpression();
-    // TODO parse the relative duedate expression and apply it relative to now
-    int seconds = 0;
-    return new LocalDateTime().plusSeconds(seconds);
+
+    String repeatExpression = timer.getRepeatExpression();
+
+    if (repeatExpression != null) {
+      Duration f = Duration.parse(timer.getRepeatExpression());
+      Date date = new Date();
+      return new LocalDateTime(date.getTime() + (f.getSeconds() * 1000), DateTimeZone.UTC);
+    }
+
+    return null;
+
   }
+
 }

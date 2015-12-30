@@ -16,6 +16,10 @@
 package com.effektif.workflow.api.workflow;
 
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.XmlElement;
+
+import java.util.List;
 
 /**
  * @author Tom Baeyens
@@ -25,6 +29,24 @@ public class Timer {
   protected String id;
   protected String dueDateExpression;
   protected String repeatExpression;
+
+  public void readBpmn(BpmnReader r) {
+    //            <bpmn:timerEventDefinition>
+    //              <bpmn:timeDuration>PT5M</bpmn:timeDuration>
+    //            </bpmn:timerEventDefinition>
+
+    // One of three options: MUTUALLY EXCLUSIVE
+    //timeDate  -- absolute time, ISO-8601 format
+    //timeCycle -- not supported for now
+    //timeDuration -- Interval/duration, ISO-8601 format for time interval representations
+
+//    r.readStringValue("timeDuration")
+
+    this.repeatExpression = r.readTextBpmn("timeDuration");
+    this.dueDateExpression = r.readTextBpmn("timeDate");
+
+  }
+
 
   public String getId() {
     return this.id;

@@ -104,6 +104,15 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
       scopeInstance.setVariableInstances(variableInstanceApis);
     }
+
+
+//    if (scopeInstance. != null) {
+//      List<TimerInstance> timerInstances = new ArrayList<>();
+//      for (TimerImpl timerImpl : scope.timers) {
+//        timerInstances.add(timerImpl.toTimerInstance());
+//      }
+//      scopeInstance.timers.add()
+//    }
     scopeInstance.setProperties(this.properties);
   }
 
@@ -464,9 +473,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         Job job = timer.createJob(this);
         job.workflowInstanceId(workflowInstance.getId());
         job.activityInstanceId(getActivityInstanceId());
-        workflow.configuration
-          .get(JobStore.class)
-          .saveJob(job);
+
+        workflowInstance.addJob(job);
+
+//        workflow.configuration
+//          .get(JobStore.class)
+//          .saveJob(job);
       }
     }
   }

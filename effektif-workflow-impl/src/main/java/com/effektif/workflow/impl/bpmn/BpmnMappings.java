@@ -28,6 +28,7 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.impl.json.Mappings;
 import com.effektif.workflow.impl.json.MappingsBuilder;
 import com.effektif.workflow.impl.json.PolymorphicMapping;
@@ -60,6 +61,10 @@ public class BpmnMappings extends Mappings {
     PolymorphicMapping conditionMapping = polymorphicMappings.get(Condition.class);
     for (Class conditionSubclass: conditionMapping.getSubClasses()) {
       registerBpmnSubclass(conditionSubclass);
+    }
+    PolymorphicMapping timerMapping = polymorphicMappings.get(Timer.class);
+    for (Class timerSubclass: timerMapping.getSubClasses()) {
+      registerBpmnSubclass(timerSubclass);
     }
   }
 
