@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.effektif.workflow.impl.configuration.Startable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class JobServiceImpl implements JobService, Brewable {
+public class JobServiceImpl implements JobService, Brewable, Startable {
   
   private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
@@ -129,6 +130,11 @@ public class JobServiceImpl implements JobService, Brewable {
         keepGoing = false;
       }
     }
+  }
+
+  @Override
+  public void start(Brewery brewery) {
+    this.startup();
   }
 
   class ExecuteWorkflowInstanceJobs implements Runnable {

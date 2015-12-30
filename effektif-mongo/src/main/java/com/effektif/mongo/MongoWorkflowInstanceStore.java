@@ -345,9 +345,39 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
   @Override
   public WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue() {
-    return null;
+
+    DBObject query = createLockQuery();
+    query.put(JobFields.DONE, new BasicDBObject("$exists", false));
+    query.put(JOBS + "." + JobFields.DUE_DATE, BasicDBObjectBuilder.start("$lte", new java.util.Date()).get());
+
+    DBObject update = createLockUpdate();
+
+    DBObject retrieveFields = new BasicDBObject()
+        .append(ARCHIVED_ACTIVITY_INSTANCES, false);
+
+    BasicDBObject dbWorkflowInstance = workflowInstancesCollection.findAndModify("lock-workflow-instance", query, update, retrieveFields, new BasicDBObject(START, 1), false, true, false);
+    if (dbWorkflowInstance==null) {
+      return null;
+    }
+
+    WorkflowInstanceImpl workflowInstance = readWorkflowInstanceImpl(dbWorkflowInstance);
+    workflowInstance.trackUpdates(false);
+    return workflowInstance;
   }
-  
+//
+//  public DBObject createJobsDueQuery() {
+//    return BasicDBObjectBuilder.start()
+//        .push("jobs.dueDate")
+//        .add("$lt", new java.util.Date())
+//        .pop()
+//        .push(LOCK)
+//        .add("$exists", false)
+//        .pop()
+//        .push(JobFields.DONE)
+//        .add("$exists", false)
+//        .get();
+//  }
+
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbWorkflowInstance = mongoMapper.write(workflowInstance.toWorkflowInstance(true));
     if (storeWorkflowIdsAsStrings) {

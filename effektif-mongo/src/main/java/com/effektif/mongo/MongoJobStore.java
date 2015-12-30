@@ -145,7 +145,7 @@ public class MongoJobStore implements JobStore, Brewable {
   }
 
   public BasicDBObject writeJob(Job job) {
-    return mongoMapper.write(job.jobType);
+    return mongoMapper.write(job);
   }
 
   public void writeExecutions(BasicDBObject dbJob, LinkedList<JobExecution> jobExecutions) {
