@@ -35,6 +35,7 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
   public static final Class[] SUBCLASSES = new Class[]{
     AfterRelativeTime.class,
     NextRelativeTime.class
+    // if you add a subclass here, make sure you also update method readBpmnPolymorphic below
   };
 
   public static final String NEXT = "next";
