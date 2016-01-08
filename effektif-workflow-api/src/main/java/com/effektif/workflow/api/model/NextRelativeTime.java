@@ -21,7 +21,9 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 
 
-/**
+/** AFAICT, this is not used.
+ * TODO decide to keep it in for future use or kick it out.
+ * 
  * @author Tom Baeyens
  */
 @TypeName("next")
@@ -83,11 +85,11 @@ public class NextRelativeTime extends RelativeTime {
 
   public String toString() {
     if (HOUR_IN_DAY.equals(indexUnit)) {
-      return "next time it's "+index+":00"+toString(at);
+      return "next time it's "+atHour+":"+atMinute;
     } else if (DAY_IN_WEEK.equals(indexUnit)) {
-      return "next "+dayInWeekToString(index)+toString(at);
+      return appendAt("next "+dayInWeekToString(index));
     } else if (DAY_IN_MONTH.equals(indexUnit)) {
-      return "next time it's the "+index+"th day of the month"+toString(at);
+      return appendAt("next time it's the "+index+"th day of the month");
     }
     return "next unspecified relative time";
   }
@@ -127,8 +129,8 @@ public class NextRelativeTime extends RelativeTime {
         time = time.plusMonths(1);
       }
     }
-    if (at!=null) {
-      time = time.withTime(at.getHour(), at.getMinutes(), 0, 0);
+    if (atHour!=null) {
+      time = time.withTime(atHour, atMinute!=null ? atMinute : 0, 0, 0);
     }
     return time;
   }

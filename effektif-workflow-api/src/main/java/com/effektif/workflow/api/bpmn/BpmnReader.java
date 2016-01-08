@@ -14,7 +14,6 @@
 package com.effektif.workflow.api.bpmn;
 
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
@@ -127,8 +126,17 @@ public interface BpmnReader {
   /** Reads an id as an attribute on the current xml element in the Effektif namespace */
   <T extends Id> T readIdAttributeEffektif(String localPart, Class<T> idType);
 
+  /** Reads an integer as an attribute on the current xml element in the Effektif namespace */
+  Integer readIntegerAttributeEffektif(String localPart);
+  
+  /** Reads a date as an attribute on the current xml element in the Effektif namespace */
+  LocalDateTime readDateAttributeEffektif(String attributeName);
+
   /** Reads a {@link RelativeTime} from an element in the Effektif namespace. */
   RelativeTime readRelativeTimeEffektif(String localPart);
+  
+  /** read polymorphic element */
+  <T extends BpmnReadable> T readPolymorphicEffektif(XmlElement xmlElement, Class<T> type);
 
   /** Reads a date from the ‘value’ attribute in the named element in the Effektif namespace. */
   LocalDateTime readDateValue(String localPart);

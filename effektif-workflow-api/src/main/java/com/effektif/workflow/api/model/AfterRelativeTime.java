@@ -104,8 +104,8 @@ public class AfterRelativeTime extends RelativeTime {
 
     LocalDateTime time = base.plus(period);
     
-    if (at!=null) {
-      time = time.withTime(at.getHour(), at.getMinutes(), 0, 0);
+    if (atHour!=null) {
+      time = time.withTime(atHour, atMinute!=null ? atMinute : 0, 0, 0);
     } else if (isDayResolutionOrBigger()) {
       time = time.withTime(23, 59, 59, 999);
     }

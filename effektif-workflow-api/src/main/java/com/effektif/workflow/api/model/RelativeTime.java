@@ -49,7 +49,8 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
   public static final String YEARS = "years";
 
   protected Binding<LocalDateTime> base;
-  protected TimeInDay at;
+  protected Integer atHour;
+  protected Integer atMinute;
 
   public static RelativeTime readBpmnPolymorphic(BpmnReader r) {
     String type = r.readStringAttributeEffektif("type");
@@ -77,29 +78,16 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.writeBinding("base", base);
-    if (at!=null && at.getHour()!=null) {
-      String atString = at.getHour()+":"+at.getMinutes();
-      w.writeStringAttributeEffektif("at", atString);
-    }
+    w.writeIntegerAttributeEffektif("atHour", atHour);
+    w.writeIntegerAttributeEffektif("atMinute", atMinute);
   }
 
   @Override
   public void readBpmn(BpmnReader r) {
     base = r.readBinding("base", LocalDateTime.class);
-    String atString = r.readStringAttributeEffektif("at");
-    if (atString!=null) {
-      int colonIndex = atString.indexOf(":");
-      if (colonIndex!=-1 && colonIndex<atString.length()-1) {
-        Integer hour = new Integer(atString.substring(0, colonIndex));
-        Integer minutes = new Integer(atString.substring(colonIndex+1));
-        this.at = new TimeInDay()
-          .hour(hour)
-          .minutes(minutes);
-      }
-    }
+    atHour = r.readIntegerAttributeEffektif("atHour");
+    atMinute = r.readIntegerAttributeEffektif("atMinute");
   }
-
-
 
   /**
    * Parses a string formatted using {@link #toString()} as a relative time.
@@ -126,16 +114,23 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
   }
 
 
-  public TimeInDay getAt() {
-    return this.at;
+  public Integer getAtHour() {
+    return atHour;
   }
-  public void setAt(TimeInDay at) {
-    this.at = at;
+  public void setAtHour(Integer atHour) {
+    this.atHour = atHour;
   }
-  public RelativeTime at(Integer hour, Integer minutes) {
-    this.at = new TimeInDay()
-      .hour(hour)
-      .minutes(minutes);
+
+  public Integer getAtMinute() {
+    return atMinute;
+  }
+  public void setAtMinute(Integer atMinute) {
+    this.atMinute = atMinute;
+  }
+
+  public RelativeTime at(Integer atHour, Integer atMinute) {
+    this.atHour = atHour;
+    this.atMinute = atMinute;
     return this;
   }
   
@@ -195,8 +190,8 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
   public abstract LocalDateTime resolve(LocalDateTime base);
   public abstract boolean valid();
 
-  public static String toString(TimeInDay at) {
-    if (at==null) return "";
-    return " "+at.toString();
+  public String appendAt(String message) {
+    if (atHour==null) return message;
+    return " at "+atHour+":"+atMinute;
   }
 }

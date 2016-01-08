@@ -40,7 +40,6 @@ import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.AfterRelativeTime;
 import com.effektif.workflow.api.model.NextRelativeTime;
 import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.model.TimeInDay;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.ChoiceType;
@@ -411,7 +410,7 @@ public class WorkflowStreamTest {
   
   @Test
   public void testAfterRelativeTime() {
-    assertNull(serializeRelativeTime(AfterRelativeTime.minutes(5)).getAt());
+    assertNull(serializeRelativeTime(AfterRelativeTime.minutes(5)).getAtHour());
     assertEquals(5, (int) serializeRelativeTime(AfterRelativeTime.minutes(5)).getDuration());
     assertEquals(AfterRelativeTime.MINUTES, serializeRelativeTime(AfterRelativeTime.minutes(5)).getDurationUnit());
     assertEquals(AfterRelativeTime.HOURS, serializeRelativeTime(AfterRelativeTime.hours(5)).getDurationUnit());
@@ -420,23 +419,24 @@ public class WorkflowStreamTest {
     assertEquals(AfterRelativeTime.MONTHS, serializeRelativeTime(AfterRelativeTime.months(5)).getDurationUnit());
     assertEquals(AfterRelativeTime.YEARS, serializeRelativeTime(AfterRelativeTime.years(5)).getDurationUnit());
     
-    TimeInDay at = serializeRelativeTime(AfterRelativeTime.minutes(5)
-        .at(11,45)).getAt();
-    assertEquals(11, (int) at.getHour());
-    assertEquals(45, (int) at.getMinutes());
+    RelativeTime relativeTime = serializeRelativeTime(AfterRelativeTime
+        .minutes(5)
+        .at(11,45));
+    assertEquals(11, (int) relativeTime.getAtHour());
+    assertEquals(45, (int) relativeTime.getAtMinute());
   }
 
   @Test
   public void testNextRelativeTime() {
-    assertNull(serializeRelativeTime(NextRelativeTime.hourInDay(5)).getAt());
+    assertNull(serializeRelativeTime(NextRelativeTime.hourInDay(5)).getAtHour());
     assertEquals(5, (int) serializeRelativeTime(NextRelativeTime.hourInDay(5)).getIndex());
     assertEquals(NextRelativeTime.HOUR_IN_DAY, serializeRelativeTime(NextRelativeTime.hourInDay(5)).getIndexUnit());
     assertEquals(NextRelativeTime.DAY_IN_WEEK, serializeRelativeTime(NextRelativeTime.dayInWeek(5)).getIndexUnit());
     assertEquals(NextRelativeTime.DAY_IN_MONTH, serializeRelativeTime(NextRelativeTime.dayInMonth(5)).getIndexUnit());
     
-    TimeInDay at = serializeRelativeTime(NextRelativeTime.dayInMonth(5)
-        .at(11,45)).getAt();
-    assertEquals(11, (int) at.getHour());
-    assertEquals(45, (int) at.getMinutes());
+    RelativeTime relativeTime = serializeRelativeTime(NextRelativeTime.dayInMonth(5)
+        .at(11,45));
+    assertEquals(11, (int) relativeTime.getAtHour());
+    assertEquals(45, (int) relativeTime.getAtMinute());
   }
 }
