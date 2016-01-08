@@ -105,7 +105,12 @@ public class AfterRelativeTime extends RelativeTime {
     LocalDateTime time = base.plus(period);
     
     if (atHour!=null) {
-      time = time.withTime(atHour, atMinute!=null ? atMinute : 0, 0, 0);
+      LocalDateTime atTime = time.withTime(atHour, atMinute!=null ? atMinute : 0, 0, 0);
+      if (atTime.isBefore(time)) {
+        time = atTime.plusDays(1);
+      } else {
+        time = atTime;
+      }
     } else if (isDayResolutionOrBigger()) {
       time = time.withTime(23, 59, 59, 999);
     }
