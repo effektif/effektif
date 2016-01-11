@@ -254,6 +254,9 @@ public class WorkflowParser {
       bindingImpl.expression.parse(expression, this);
       popContext();
     }
+    if (binding.getMetaData() != null) {
+      bindingImpl.metaData = binding.getMetaData();
+    }
     return bindingImpl;
   }
   

@@ -17,6 +17,8 @@ package com.effektif.workflow.api.workflow;
 
 import com.effektif.workflow.api.types.DataType;
 
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A binding stores a value for an activity input parameter, such as a process
@@ -37,6 +39,7 @@ public class Binding<T> {
   protected T value;
   protected DataType type;
   protected String expression;
+  protected Map<String, Object> metaData;
 
   /**
    * Returns the fixed value. When serializing and deserializing, the type for this
@@ -101,7 +104,48 @@ public class Binding<T> {
     this.type = type;
     return this;
   }
-  
+
+  /**
+   * Returns a map with additional meta information for this binding.
+   */
+  public Map<String, Object> getMetaData() {
+    return this.metaData;
+  }
+
+  /**
+   * Allows to set a complete map of meta information for this binding.
+   * @param metaData - arbitrary meta information
+   */
+  public void setMetaData(Map<String, Object> metaData) {
+    this.metaData = metaData;
+  }
+
+  /**
+   * Allows to set a single meta information. If the key already exists, the new value will be used.
+   *
+   * @param key - meta information key
+   * @param value - meta information value
+   */
+  public Binding<T> metaData(String key, Object value) {
+    if (this.metaData == null) {
+      this.metaData = new HashMap<>();
+    }
+    this.metaData.put(key, value);
+    return this;
+  }
+
+  /**
+   * Returns a single meta information value if any exists for the given key.
+   *
+   * @param key - meta information key
+   */
+  public Object getMetaDataValue(String key) {
+    if (this.metaData != null && key != null) {
+      return this.metaData.get(key);
+    }
+    return null;
+  }
+
   @Override
   public String toString() {
     return "Binding[value=" + value + ",dataType=" + type + ",expression=" + expression + "]";

@@ -17,7 +17,7 @@ package com.effektif.workflow.impl.workflow;
 
 import com.effektif.workflow.impl.data.DataTypeImpl;
 
-
+import java.util.Map;
 
 /**
  * @author Tom Baeyens
@@ -27,7 +27,9 @@ public class BindingImpl<T> {
   public T value;
   public DataTypeImpl type;
   public ExpressionImpl expression;
-  
+  public Map<String, Object> metaData;
+
+  @Override
   public String toString() {
     if (value!=null) {
       return value.toString();
