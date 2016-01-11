@@ -84,7 +84,7 @@ public class RelativeTimeTest extends WorkflowTest {
   public void testNextThursday() {
     LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
     LocalDateTime absoluteTime = NextRelativeTime
-      .dayInWeek(DateTimeConstants.THURSDAY)
+      .dayOfWeek(DateTimeConstants.THURSDAY)
       .resolve(base);
     assertEquals(base
             .withDayOfWeek(DateTimeConstants.THURSDAY)
@@ -95,7 +95,7 @@ public class RelativeTimeTest extends WorkflowTest {
   public void testNextThursdayAt15() {
     LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
     LocalDateTime absoluteTime = NextRelativeTime
-      .dayInWeek(DateTimeConstants.THURSDAY)
+      .dayOfWeek(DateTimeConstants.THURSDAY)
       .at(15,30)
       .resolve(base);
     assertEquals(base
@@ -107,7 +107,7 @@ public class RelativeTimeTest extends WorkflowTest {
   public void testNextFirstOfTheMonth() {
     LocalDateTime base = new LocalDateTime(2015, 12, 28, 9, 0, 0, 0);
     LocalDateTime absoluteTime = NextRelativeTime
-      .dayInMonth(1)
+      .dayOfMonth(1)
       .resolve(base);
     assertEquals(new LocalDateTime(2016, 1, 1, 0, 0, 0, 0), absoluteTime);
   }

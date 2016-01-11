@@ -29,9 +29,9 @@ import com.effektif.workflow.api.json.TypeName;
 @TypeName("next")
 public class NextRelativeTime extends RelativeTime {
 
-  public static final String HOUR_IN_DAY = "hourInDay";
-  public static final String DAY_IN_WEEK = "dayInWeek";
-  public static final String DAY_IN_MONTH = "dayInMonth";
+  public static final String HOUR_OF_DAY = "hourOfDay";
+  public static final String DAY_OF_WEEK = "dayOfWeek";
+  public static final String DAY_OF_MONTH = "dayOfMonth";
   
   protected Integer index;
   protected String indexUnit;
@@ -59,14 +59,14 @@ public class NextRelativeTime extends RelativeTime {
     w.writeStringAttributeEffektif("indexUnit", indexUnit);
   }
   
-  public static NextRelativeTime hourInDay(Integer hourInDay) {
-    return new NextRelativeTime(hourInDay, HOUR_IN_DAY);
+  public static NextRelativeTime hourOfDay(Integer hourOfDay) {
+    return new NextRelativeTime(hourOfDay, HOUR_OF_DAY);
   }
-  public static NextRelativeTime dayInWeek(Integer dayInWeek) {
-    return new NextRelativeTime(dayInWeek, DAY_IN_WEEK);
+  public static NextRelativeTime dayOfWeek(Integer dayOfWeek) {
+    return new NextRelativeTime(dayOfWeek, DAY_OF_WEEK);
   }
-  public static NextRelativeTime dayInMonth(Integer dayInMonth) {
-    return new NextRelativeTime(dayInMonth, DAY_IN_MONTH);
+  public static NextRelativeTime dayOfMonth(Integer dayOfMonth) {
+    return new NextRelativeTime(dayOfMonth, DAY_OF_MONTH);
   }
 
   public Integer getIndex() {
@@ -84,44 +84,44 @@ public class NextRelativeTime extends RelativeTime {
   }
 
   public String toString() {
-    if (HOUR_IN_DAY.equals(indexUnit)) {
+    if (HOUR_OF_DAY.equals(indexUnit)) {
       return "next time it's "+atHour+":"+atMinute;
-    } else if (DAY_IN_WEEK.equals(indexUnit)) {
-      return appendAt("next "+dayInWeekToString(index));
-    } else if (DAY_IN_MONTH.equals(indexUnit)) {
+    } else if (DAY_OF_WEEK.equals(indexUnit)) {
+      return appendAt("next "+ dayOfWeekToString(index));
+    } else if (DAY_OF_MONTH.equals(indexUnit)) {
       return appendAt("next time it's the "+index+"th day of the month");
     }
     return "next unspecified relative time";
   }
 
-  public static String dayInWeekToString(Integer dayInWeek) {
-    if (dayInWeek==null) return "unspecified day";
-    else if (dayInWeek==DateTimeConstants.MONDAY) return "Monday"; // 1
-    else if (dayInWeek==DateTimeConstants.TUESDAY) return "Tuesday"; // 2
-    else if (dayInWeek==DateTimeConstants.WEDNESDAY) return "Wednesday"; // 3
-    else if (dayInWeek==DateTimeConstants.THURSDAY) return "Thursday"; // 4
-    else if (dayInWeek==DateTimeConstants.FRIDAY) return "Friday"; // 5
-    else if (dayInWeek==DateTimeConstants.SATURDAY) return "Saturday"; // 6
-    else if (dayInWeek==DateTimeConstants.SUNDAY) return "Sunday"; // 7
-    return "invalid day in week "+dayInWeek;
+  public static String dayOfWeekToString(Integer dayOfWeek) {
+    if (dayOfWeek==null) return "unspecified day";
+    else if (dayOfWeek==DateTimeConstants.MONDAY) return "Monday"; // 1
+    else if (dayOfWeek==DateTimeConstants.TUESDAY) return "Tuesday"; // 2
+    else if (dayOfWeek==DateTimeConstants.WEDNESDAY) return "Wednesday"; // 3
+    else if (dayOfWeek==DateTimeConstants.THURSDAY) return "Thursday"; // 4
+    else if (dayOfWeek==DateTimeConstants.FRIDAY) return "Friday"; // 5
+    else if (dayOfWeek==DateTimeConstants.SATURDAY) return "Saturday"; // 6
+    else if (dayOfWeek==DateTimeConstants.SUNDAY) return "Sunday"; // 7
+    return "invalid day of the week "+dayOfWeek;
   }
 
   @Override
   public LocalDateTime resolve(LocalDateTime base) {
     LocalDateTime time = null;
-    if (HOUR_IN_DAY.equals(indexUnit)) {
+    if (HOUR_OF_DAY.equals(indexUnit)) {
       time = base.withTime(index, 0, 0, 0);
       if (!time.isAfter(base)) {
         return time.plusDays(1);
       }
-    } else if (DAY_IN_WEEK.equals(indexUnit)) {
+    } else if (DAY_OF_WEEK.equals(indexUnit)) {
       time = base
           .withDayOfWeek(index)
           .withTime(0, 0, 0, 0);
       if (!time.isAfter(base)) {
         time = time.plusWeeks(1);
       }
-    } else if (DAY_IN_MONTH.equals(indexUnit)) {
+    } else if (DAY_OF_MONTH.equals(indexUnit)) {
       time = base
           .withDayOfMonth(index)
           .withTime(0, 0, 0, 0);
@@ -138,8 +138,8 @@ public class NextRelativeTime extends RelativeTime {
   @Override
   public boolean valid() {
     return index!=null 
-            && (HOUR_IN_DAY.equals(indexUnit)
-                || DAY_IN_WEEK.equals(indexUnit)
-                || DAY_IN_MONTH.equals(indexUnit));
+            && (HOUR_OF_DAY.equals(indexUnit)
+                || DAY_OF_WEEK.equals(indexUnit)
+                || DAY_OF_MONTH.equals(indexUnit));
   }
 }

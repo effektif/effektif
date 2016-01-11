@@ -428,13 +428,13 @@ public class WorkflowStreamTest {
 
   @Test
   public void testNextRelativeTime() {
-    assertNull(serializeRelativeTime(NextRelativeTime.hourInDay(5)).getAtHour());
-    assertEquals(5, (int) serializeRelativeTime(NextRelativeTime.hourInDay(5)).getIndex());
-    assertEquals(NextRelativeTime.HOUR_IN_DAY, serializeRelativeTime(NextRelativeTime.hourInDay(5)).getIndexUnit());
-    assertEquals(NextRelativeTime.DAY_IN_WEEK, serializeRelativeTime(NextRelativeTime.dayInWeek(5)).getIndexUnit());
-    assertEquals(NextRelativeTime.DAY_IN_MONTH, serializeRelativeTime(NextRelativeTime.dayInMonth(5)).getIndexUnit());
+    assertNull(serializeRelativeTime(NextRelativeTime.hourOfDay(5)).getAtHour());
+    assertEquals(5, (int) serializeRelativeTime(NextRelativeTime.hourOfDay(5)).getIndex());
+    assertEquals(NextRelativeTime.HOUR_OF_DAY, serializeRelativeTime(NextRelativeTime.hourOfDay(5)).getIndexUnit());
+    assertEquals(NextRelativeTime.DAY_OF_WEEK, serializeRelativeTime(NextRelativeTime.dayOfWeek(5)).getIndexUnit());
+    assertEquals(NextRelativeTime.DAY_OF_MONTH, serializeRelativeTime(NextRelativeTime.dayOfMonth(5)).getIndexUnit());
     
-    RelativeTime relativeTime = serializeRelativeTime(NextRelativeTime.dayInMonth(5)
+    RelativeTime relativeTime = serializeRelativeTime(NextRelativeTime.dayOfMonth(5)
         .at(11,45));
     assertEquals(11, (int) relativeTime.getAtHour());
     assertEquals(45, (int) relativeTime.getAtMinute());
