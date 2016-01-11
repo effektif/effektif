@@ -27,7 +27,7 @@ public class BindingImpl<T> {
   public T value;
   public DataTypeImpl type;
   public ExpressionImpl expression;
-  public Map<String, Object> metaData;
+  public Map<String, Object> metadata;
 
   @Override
   public String toString() {

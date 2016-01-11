@@ -39,7 +39,7 @@ public class Binding<T> {
   protected T value;
   protected DataType type;
   protected String expression;
-  protected Map<String, Object> metaData;
+  protected Map<String, Object> metadata;
 
   /**
    * Returns the fixed value. When serializing and deserializing, the type for this
@@ -108,16 +108,16 @@ public class Binding<T> {
   /**
    * Returns a map with additional meta information for this binding.
    */
-  public Map<String, Object> getMetaData() {
-    return this.metaData;
+  public Map<String, Object> getMetadata() {
+    return this.metadata;
   }
 
   /**
    * Allows to set a complete map of meta information for this binding.
-   * @param metaData - arbitrary meta information
+   * @param metadata - arbitrary meta information
    */
-  public void setMetaData(Map<String, Object> metaData) {
-    this.metaData = metaData;
+  public void setMetadata(Map<String, Object> metadata) {
+    this.metadata = metadata;
   }
 
   /**
@@ -126,11 +126,11 @@ public class Binding<T> {
    * @param key - meta information key
    * @param value - meta information value
    */
-  public Binding<T> metaData(String key, Object value) {
-    if (this.metaData == null) {
-      this.metaData = new HashMap<>();
+  public Binding<T> metadata(String key, Object value) {
+    if (this.metadata == null) {
+      this.metadata = new HashMap<>();
     }
-    this.metaData.put(key, value);
+    this.metadata.put(key, value);
     return this;
   }
 
@@ -139,9 +139,9 @@ public class Binding<T> {
    *
    * @param key - meta information key
    */
-  public Object getMetaDataValue(String key) {
-    if (this.metaData != null && key != null) {
-      return this.metaData.get(key);
+  public Object getMetadataValue(String key) {
+    if (this.metadata != null && key != null) {
+      return this.metadata.get(key);
     }
     return null;
   }
