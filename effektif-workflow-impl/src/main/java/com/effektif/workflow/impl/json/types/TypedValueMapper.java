@@ -21,6 +21,8 @@ import com.effektif.workflow.impl.json.TypeMapping;
 
 
 /**
+ * Used by JSON serialisation to mapped a {@link TypedValue} to and from its JSON representation.
+ *
  * @author Tom Baeyens
  */
 public class TypedValueMapper extends BeanMapper<TypedValue> {
