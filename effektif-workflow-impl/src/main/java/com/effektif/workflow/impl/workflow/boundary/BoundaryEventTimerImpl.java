@@ -56,15 +56,19 @@ public class BoundaryEventTimerImpl implements TimerType, JobType {
     ActivityInstanceImpl activityInstance =
         jobController.getWorkflowInstance().findActivityInstance(jobController.getJob().getActivityInstanceId());
 
-    for (TimerImpl timer : activityInstance.activity.getTimers()) {
-      if (timer.timer instanceof BoundaryEventTimer) {
-        BoundaryEventTimer boundaryEventTimer = (BoundaryEventTimer) timer.timer;
-        for (String transitionId : boundaryEventTimer.boundaryEvent.getToTransitionIds()) {
-          activityInstance.takeTransition(
-              jobController.getWorkflowInstance().getWorkflow().findTransitionByIdLocal(transitionId));
+    if (activityInstance != null) {
+      for (TimerImpl timer : activityInstance.activity.getTimers()) {
+        if (timer.timer instanceof BoundaryEventTimer) {
+          BoundaryEventTimer boundaryEventTimer = (BoundaryEventTimer) timer.timer;
+          for (String transitionId : boundaryEventTimer.boundaryEvent.getToTransitionIds()) {
+            activityInstance.takeTransition(
+                jobController.getWorkflowInstance().getWorkflow().findTransitionByIdLocal(transitionId));
+          }
         }
       }
+      jobController.getWorkflowInstance().executeWork();
+    } else {
+      System.out.println("activityInstance is null, job is not executed. Looked for activityInstance: " + jobController.getJob().getActivityInstanceId());
     }
-    jobController.getWorkflowInstance().executeWork();
   }
 }
