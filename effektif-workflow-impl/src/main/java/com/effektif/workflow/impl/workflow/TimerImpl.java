@@ -26,7 +26,10 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
-import java.time.Duration;
+//import org.joda.time.Duration;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import java.util.Date;
 
 
@@ -81,20 +84,24 @@ public class TimerImpl {
   }
 
   public Job createJob(ScopeInstanceImpl scopeInstance) {
-    Job job = new Job();
-    job.workflowId = scopeInstance.workflow.id;
-    job.workflowInstanceId = scopeInstance.workflowInstance.id;
-    job.dueDate = calculateDueDate();
-    job.jobType = timerType.getJobType(scopeInstance, this);
-    return job;
+    try {
+      Job job = new Job();
+      job.workflowId = scopeInstance.workflow.id;
+      job.workflowInstanceId = scopeInstance.workflowInstance.id;
+      job.dueDate = calculateDueDate();
+      job.jobType = timerType.getJobType(scopeInstance, this);
+      return job;
+    } catch (DatatypeConfigurationException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
-  private LocalDateTime calculateDueDate() {
+  private LocalDateTime calculateDueDate() throws DatatypeConfigurationException {
 
     String repeatExpression = timer.getRepeatExpression();
 
     if (repeatExpression != null) {
-      Duration f = Duration.parse(timer.getRepeatExpression());
+      Duration f = DatatypeFactory.newInstance().newDuration(timer.getRepeatExpression());// Duration.parse(timer.getRepeatExpression());
       Date date = new Date();
       return new LocalDateTime(date.getTime() + (f.getSeconds() * 1000), DateTimeZone.UTC);
     }
@@ -102,5 +109,4 @@ public class TimerImpl {
     return null;
 
   }
-
 }
