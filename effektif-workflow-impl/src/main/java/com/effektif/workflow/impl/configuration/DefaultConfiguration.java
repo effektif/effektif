@@ -41,7 +41,7 @@ import com.effektif.workflow.impl.json.configuration.JsonStreamMappingsBuilder;
 
 /** Configurations to build a workflow engine. */
 public abstract class DefaultConfiguration implements Configuration {
-  
+
   protected Brewery brewery;
   
   public DefaultConfiguration() {

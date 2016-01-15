@@ -5,8 +5,6 @@ package com.effektif.email.test;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +13,6 @@ import com.effektif.email.OutgoingEmail;
 import com.effektif.email.TestOutgoingEmailService;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.memory.TestConfiguration;
 import com.effektif.workflow.test.WorkflowTest;
 
@@ -25,17 +22,19 @@ import com.effektif.workflow.test.WorkflowTest;
  */
 public class EmailTaskTest extends WorkflowTest {
 
+  public static TestConfiguration cachedEmailConfiguration = null;
+  
   protected TestOutgoingEmailService emailService = null;
 
   @Before
   public void initializeWorkflowEngine() {
-    if (cachedConfiguration==null) {
-      TestConfiguration testConfiguration = new TestConfiguration();
-      testConfiguration.ingredient(new TestOutgoingEmailService());
-      cachedConfiguration = testConfiguration;
-      cachedConfiguration.get(JsonStreamMapper.class).pretty();
+    if (cachedEmailConfiguration==null) {
+      cachedEmailConfiguration = createConfiguration();
+      TestOutgoingEmailService emailService = new TestOutgoingEmailService();
+      cachedEmailConfiguration.ingredient(emailService);
     }
-    super.initializeWorkflowEngine();
+    configuration = cachedEmailConfiguration;
+    workflowEngine = configuration.getWorkflowEngine();
     emailService = configuration.get(TestOutgoingEmailService.class);
     emailService.reset();
   }

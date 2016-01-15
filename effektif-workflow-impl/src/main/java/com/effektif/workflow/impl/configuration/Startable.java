@@ -16,19 +16,16 @@ package com.effektif.workflow.impl.configuration;
 
 /** Callback that is invoked when the {@link Brewery} is started.
  * 
- * {@link Brewery.start() Starting} of the brewery must be done after 
- * all configuration is performed and before the first object is requested.
- *    
- * Implementation note: Because configuration subclasses can 
- * add and change the ingredients and configurations, it's not 
- * easy to know when the configuration is complete.  Therefore
- * we added checks on each method of the brewery to ensure it 
- * is initialized.  So the initialize method will be triggered
- * when the first object (any object) is requested from the brewery.
+ * When the brewery is started, the collections suppliers, ingredients 
+ * and brews will be scanned for Startables in that order.  
+ * And each collection elements are scanned in order of addition.
  * 
+ * {@link Brewery.start() Starting} of the brewery is done automatically 
+ * when the first object is requested from the brewery.  But it's also 
+ * possible to invoke start manually.   
+ *    
  * This is different from Brewable because Brewable.brew is 
- * called when the object is actually requested from the 
- * brewery (lazy initialization).
+ * called when the object is actually being added as a brew (lazy initialization).
  * 
  * @author Tom Baeyens
  */
