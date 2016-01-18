@@ -45,9 +45,11 @@ public class AndImpl implements ConditionImpl<And> {
 
   @Override
   public boolean eval(ScopeInstanceImpl scopeInstance) {
-    for (ConditionImpl condition: conditions) {
-      if (!condition.eval(scopeInstance)) {
-        return false;
+    if (conditions != null) {
+      for (ConditionImpl condition : conditions) {
+        if (!condition.eval(scopeInstance)) {
+          return false;
+        }
       }
     }
     return true;
