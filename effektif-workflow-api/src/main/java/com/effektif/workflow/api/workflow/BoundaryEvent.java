@@ -41,15 +41,9 @@ public class BoundaryEvent implements BpmnReadable, BpmnWritable {
   protected String fromId;
   List<String> toTransitionIds = new ArrayList<>();
 
-
-  /** The {@link Activity#id} for the activity this event goes to. */
-
-//  public Timer timer;
-
   @Override
   public void readBpmn(BpmnReader r) {
 
-//    XmlElement textElement = currentXml!=null ? currentXml.removeElement(namespaceUri, localPart) : null;
     boundaryId = r.readStringAttributeBpmn("id");
     fromId = r.readStringAttributeBpmn("attachedToRef");
 
@@ -60,9 +54,6 @@ public class BoundaryEvent implements BpmnReadable, BpmnWritable {
     }
 
     r.readElementsBpmn("boundaryEvent");
-//    timer = new Timer();
-//    timer.readBpmn(r);
-//    timer.setToTransitionIds(toTransitionIds);
   }
 
   @Override

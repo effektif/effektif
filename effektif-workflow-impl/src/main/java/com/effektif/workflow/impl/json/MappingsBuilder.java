@@ -54,7 +54,6 @@ import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
 import com.effektif.workflow.impl.json.types.ValueMapper;
 import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
 import com.effektif.workflow.impl.json.types.VariableMapperFactory;
-import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimerImpl;
 
 /**

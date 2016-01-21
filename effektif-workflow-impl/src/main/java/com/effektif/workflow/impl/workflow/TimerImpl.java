@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.workflow;
 
+import org.joda.time.LocalDateTime;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -22,7 +24,6 @@ import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.job.TimerTypeService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import org.joda.time.LocalDateTime;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -45,7 +46,7 @@ public class TimerImpl {
     this.configuration = parser.configuration;
     this.timer = timer;
     this.id = timer.getId();
-    if (parentImpl != null) {
+    if (parentImpl!=null) {
       this.parent = parentImpl;
       this.workflow = parentImpl.workflow;
     }
@@ -58,7 +59,7 @@ public class TimerImpl {
     this.timerType = timerTypeService.instantiateTimerType(timer);
     // some activity types need to validate incoming and outgoing transitions, 
     // that's why they are NOT parsed here, but after the transitions.
-    if (this.timerType == null) {
+    if (this.timerType==null) {
       parser.addError("Activity '%s' has no activityType configured", id);
     }
   }
@@ -72,7 +73,6 @@ public class TimerImpl {
   }
 
   public Job createJob(ScopeInstanceImpl scopeInstance) {
-
     Job job = new Job();
     job.workflowId = scopeInstance.workflow.id;
     job.workflowInstanceId = scopeInstance.workflowInstance.id;
@@ -100,5 +100,4 @@ public class TimerImpl {
     return null;
 
   }
-
 }

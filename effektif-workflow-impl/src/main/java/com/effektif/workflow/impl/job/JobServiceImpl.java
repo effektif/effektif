@@ -17,11 +17,14 @@ package com.effektif.workflow.impl.job;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.effektif.workflow.impl.SynchronousExecutorService;
 import com.effektif.workflow.impl.configuration.Startable;
-import com.effektif.workflow.impl.configuration.Stoppable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,8 +160,7 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
     }
     @Override
     public void run() {
-      log.debug("Found " + workflowInstance.jobs.size() + " jobs for workflowInstance " + workflowInstance.getId().getInternal());
-
+      log.debug("Executing jobs for workflow instance "+workflowInstance.id);
       Job[] jobsArray = new Job[workflowInstance.jobs.size()];
 
       for (int i = 0; i < workflowInstance.jobs.size(); i++) {
@@ -181,7 +183,6 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
           }
         }
       }
-
       workflowInstanceStore.flushAndUnlock(workflowInstance);
     }
   }

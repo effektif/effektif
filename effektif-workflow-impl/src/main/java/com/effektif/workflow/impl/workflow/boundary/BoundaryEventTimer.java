@@ -33,17 +33,10 @@ import java.util.Set;
 
 @TypeName("boundaryEventTimer")
 @BpmnElement("timerEventDefinition")
-//@BpmnTypeAttribute(attribute="type", value="adapter")
 public class BoundaryEventTimer extends Timer {
 
   public BoundaryEvent boundaryEvent;
   public Activity activity;
-
-//  /** The {@link Activity#id} for the activity this event is defined on. */
-//  public String fromId;
-//
-//  /** The {@link Activity#id} for the activity this event goes to. */
-//  public List<String> toTransitionIds = new ArrayList<>();
 
   @Override
   public void readBpmn(BpmnReader r) {
@@ -53,32 +46,5 @@ public class BoundaryEventTimer extends Timer {
     boundaryEvent.readBpmn(r);
 
   }
-
-
-
-//  public Set<String> getTransitions() {
-//    return new HashSet<>(toTransitionIds);
-//  }
-//
-//  public List<String> getToTransitionIds() {
-//    return this.toTransitionIds;
-//  }
-//
-//  public void setToTransitionIds(List<String> toTransitionIds) {
-//    this.toTransitionIds = toTransitionIds;
-//  }
-//
-//  public BoundaryEventTimer toActivityId(String toActivityId) {
-//    this.toTransitionIds.add(toActivityId);
-//    return this;
-//  }
-//
-//  public String getFromId() {
-//    return fromId;
-//  }
-//
-//  public void setFromId(String fromId) {
-//    this.fromId = fromId;
-//  }
 }
 

@@ -54,7 +54,7 @@ public class AsynchronousExecutorService implements ExecutorService, Brewable {
 
   @Override
   public void execute(Runnable command) {
-//    if (log.isDebugEnabled()) log.debug("Command executes asynchronous: "+command);
+    if (log.isDebugEnabled()) log.debug("Command executes asynchronous: "+command);
     executor.execute(command);
   }
 

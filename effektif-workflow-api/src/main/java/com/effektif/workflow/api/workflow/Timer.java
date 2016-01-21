@@ -40,11 +40,8 @@ public class Timer {
     //timeCycle -- not supported for now
     //timeDuration -- Interval/duration, ISO-8601 format for time interval representations
 
-//    r.readStringValue("timeDuration")
-
     this.repeatExpression = r.readTextBpmn("timeDuration");
     this.dueDateExpression = r.readTextBpmn("timeDate");
-
   }
 
 

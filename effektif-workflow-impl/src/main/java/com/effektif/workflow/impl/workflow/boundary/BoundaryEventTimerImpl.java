@@ -19,9 +19,10 @@ import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.workflow.TimerImpl;
-import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -29,6 +30,8 @@ import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
  */
 @TypeName("boundaryEventTimer")
 public class BoundaryEventTimerImpl implements TimerType, JobType {
+  ;
+  private static final Logger log = LoggerFactory.getLogger(BoundaryEventTimerImpl.class);
 
   @Override
   public Class< ? extends Timer> getTimerApiClass() {
@@ -68,7 +71,7 @@ public class BoundaryEventTimerImpl implements TimerType, JobType {
       }
       jobController.getWorkflowInstance().executeWork();
     } else {
-      System.out.println("activityInstance is null, job is not executed. Looked for activityInstance: " + jobController.getJob().getActivityInstanceId());
+      if (log.isDebugEnabled()) log.debug("activityInstance is null, job is not executed. Looked for activityInstance: " + jobController.getJob().getActivityInstanceId());
     }
   }
 }

@@ -47,7 +47,7 @@ public class TimerTest extends WorkflowTest {
 //    // WorkflowInstance workflowInstance = start(workflow);
 //  }
   
-  @Test
+  //@Test
   public void testReadBpmn () {
 
     String fileName = "workflows/Task_boundary.bpmn.xml";
@@ -60,8 +60,7 @@ public class TimerTest extends WorkflowTest {
       deploy(workflow);
 
       WorkflowInstance workflowInstance = start(workflow);
-
-      System.out.println("");
+      //// TODO: finish
 
     } catch (Exception e) {
       e.printStackTrace();

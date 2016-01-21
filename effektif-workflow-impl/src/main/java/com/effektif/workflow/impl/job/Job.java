@@ -17,8 +17,6 @@ package com.effektif.workflow.impl.job;
 
 import java.util.LinkedList;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.json.JsonIgnore;
@@ -58,7 +56,7 @@ public class Job {
   public String activityInstanceId;
 
   public boolean isDue() {
-    return dueDate == null || dueDate.compareTo(Time.now()) <= 0;
+    return dueDate ==null || dueDate.compareTo(Time.now())<=0;
   }
 
   public boolean isDone() {
