@@ -349,7 +349,6 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     DBObject query = createLockQuery();
     query.put(JobFields.DONE, new BasicDBObject("$exists", false));
     query.put(JOBS + "." + JobFields.DUE_DATE, new BasicDBObject("$lte", Time.now().toDate()));
-    query.put(LOCK, new BasicDBObject("$eq", null));
 
     DBObject update = createLockUpdate();
 

@@ -104,15 +104,6 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
       }
       scopeInstance.setVariableInstances(variableInstanceApis);
     }
-
-
-//    if (scopeInstance. != null) {
-//      List<TimerInstance> timerInstances = new ArrayList<>();
-//      for (TimerImpl timerImpl : scope.timers) {
-//        timerInstances.add(timerImpl.toTimerInstance());
-//      }
-//      scopeInstance.timers.add()
-//    }
     scopeInstance.setProperties(this.properties);
   }
 

@@ -241,7 +241,6 @@ public class BpmnReaderImpl implements BpmnReader {
 
               scope.timer(timer);
             }
-            //            if (xmlElement.getLocalBPMNName())
           }
 
           iterator.remove();
@@ -684,8 +683,7 @@ public class BpmnReaderImpl implements BpmnReader {
    * Reads the workflow name, description and diagram from BPMN.
    */
   private void readDiagram(AbstractWorkflow workflow, XmlElement definitionsXml) {
-    //todo: remove
-    if (1==1) return;
+
     if (definitionsXml == null) {
       return;
     }

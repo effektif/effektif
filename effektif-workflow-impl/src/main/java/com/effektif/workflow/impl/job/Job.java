@@ -58,15 +58,7 @@ public class Job {
   public String activityInstanceId;
 
   public boolean isDue() {
-//    return dueDate ==null || dueDate.compareTo(Time.now())<=0;
-
-    System.out.println("Comparing (dueDate): " + dueDate.toString() + " with (now): " + Time.now() + ", LocalDateTime.now() is: " + LocalDateTime.now(DateTimeZone.UTC) + ", DateTime.now() is: " + DateTime.now(DateTimeZone.UTC));
-    System.out.println("Result: " + (dueDate == null || (dueDate.compareTo(new LocalDateTime(DateTimeZone.UTC)) <= 0)));
-
     return dueDate == null || dueDate.compareTo(Time.now()) <= 0;
-
-//    return dueDate == null || (dueDate.compareTo(new LocalDateTime(DateTimeZone.UTC)) <= 0);
-//    return dueDate ==null || dueDate.compareTo(LocalDateTime.now())<=0;
   }
 
   public boolean isDone() {

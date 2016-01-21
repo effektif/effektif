@@ -15,31 +15,25 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import org.joda.time.LocalDateTime;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.job.TimerTypeService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
-//import org.joda.time.Duration;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.util.Date;
 
-
 /**
  * @author Tom Baeyens
  */
 public class TimerImpl {
-  
+
   public String id;
   public ScopeImpl parent;
   public Configuration configuration;
@@ -51,7 +45,7 @@ public class TimerImpl {
     this.configuration = parser.configuration;
     this.timer = timer;
     this.id = timer.getId();
-    if (parentImpl!=null) {
+    if (parentImpl != null) {
       this.parent = parentImpl;
       this.workflow = parentImpl.workflow;
     }
@@ -64,7 +58,7 @@ public class TimerImpl {
     this.timerType = timerTypeService.instantiateTimerType(timer);
     // some activity types need to validate incoming and outgoing transitions, 
     // that's why they are NOT parsed here, but after the transitions.
-    if (this.timerType==null) {
+    if (this.timerType == null) {
       parser.addError("Activity '%s' has no activityType configured", id);
     }
   }
@@ -77,35 +71,30 @@ public class TimerImpl {
     return timer;
   }
 
-  public TimerInstance toTimerInstance() {
-    TimerInstance instance = new TimerInstance();
-
-//    instance.setDueDate(timerType.);
-
-    return instance;
-  }
-
   public Job createJob(ScopeInstanceImpl scopeInstance) {
-    try {
-      Job job = new Job();
-      job.workflowId = scopeInstance.workflow.id;
-      job.workflowInstanceId = scopeInstance.workflowInstance.id;
-      job.dueDate = calculateDueDate();
-      job.jobType = timerType.getJobType(scopeInstance, this);
-      return job;
-    } catch (DatatypeConfigurationException ex) {
-      throw new RuntimeException(ex);
-    }
+
+    Job job = new Job();
+    job.workflowId = scopeInstance.workflow.id;
+    job.workflowInstanceId = scopeInstance.workflowInstance.id;
+    job.dueDate = calculateDueDate();
+    job.jobType = timerType.getJobType(scopeInstance, this);
+    return job;
   }
 
-  private LocalDateTime calculateDueDate() throws DatatypeConfigurationException {
+  public LocalDateTime calculateDueDate() {
 
     String repeatExpression = timer.getRepeatExpression();
 
-    if (repeatExpression != null) {
-      Duration f = DatatypeFactory.newInstance().newDuration(timer.getRepeatExpression());// Duration.parse(timer.getRepeatExpression());
-      Date date = new Date();
-      return new LocalDateTime(date.getTime() + (f.getSeconds() * 1000), DateTimeZone.UTC);
+    try {
+      if (repeatExpression != null) {
+        Duration f = DatatypeFactory.newInstance().newDuration(repeatExpression);
+        Date date = new Date();
+        f.addTo(date);
+
+        return new LocalDateTime(date.getTime());
+      }
+    } catch (DatatypeConfigurationException ex) {
+      throw new RuntimeException(ex);
     }
 
     return null;

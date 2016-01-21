@@ -63,7 +63,6 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
     this.configuration = brewery.get(Configuration.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.executor = brewery.get(ExecutorService.class);
-//    this.executor = new SynchronousExecutorService(); // TODO: JB: Remove
     this.jobStore = brewery.get(JobStore.class);
   }
 
@@ -90,12 +89,12 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
         }
       }, 100, checkInterval);
 
-//      keepDoing(new Runnable() {
-//        @Override
-//        public void run() {
-//          checkJobs();
-//        }
-//      }, 500, checkInterval);
+      keepDoing(new Runnable() {
+        @Override
+        public void run() {
+          checkJobs();
+        }
+      }, 500, checkInterval);
 
       isRunning = true;
     }
@@ -162,8 +161,6 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
 
       Job[] jobsArray = new Job[workflowInstance.jobs.size()];
 
-//      jobsArray = workflowInstance.jobs.toArray(new Job[workflowInstance.jobs.size()]);
-
       for (int i = 0; i < workflowInstance.jobs.size(); i++) {
         jobsArray[i] = workflowInstance.jobs.get(i);
       }
@@ -184,22 +181,6 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
           }
         }
       }
-
-//      while (jobsIterator.hasNext()) {
-//        Job job = jobsIterator.next();
-////      for (Job job: new ArrayList<>(workflowInstance.jobs)) {
-//        if (job.isDue()) {
-//          log.debug("Job is due.");
-//          executeJob(new JobExecution(job, configuration, workflowInstance));
-//          if (job.isDone()||job.isDead()) {
-//            workflowInstance.removeJob(job);
-//            jobStore.saveArchivedJob(job);
-//          }
-//          if (jobsIterator.hasNext()) {
-//            workflowInstanceStore.flush(workflowInstance);
-//          }
-//        }
-//      }
 
       workflowInstanceStore.flushAndUnlock(workflowInstance);
     }
