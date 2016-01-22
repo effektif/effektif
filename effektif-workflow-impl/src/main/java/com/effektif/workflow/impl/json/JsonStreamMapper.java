@@ -22,7 +22,9 @@ import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -64,11 +66,19 @@ public class JsonStreamMapper {
 
   public <T> T read(Reader reader, Type type) {
     try {
-      Object beanJsonObject = objectMapper.readValue(reader, Object.class);
+      Object beanJsonObject = parseJson(reader);
       if (beanJsonObject==null) {
         return null;
       }
       return readJsonObject(beanJsonObject, type);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Object parseJson(Reader reader) {
+    try {
+      return objectMapper.readValue(reader, Object.class);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
