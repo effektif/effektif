@@ -240,4 +240,26 @@ public class Brewery {
       }
     }
   }
+
+  public void remove(Class<?> type) {
+    remove(type.getName());
+  }
+  
+  public void remove(String name) {
+    String realName = name;
+    if (aliases.containsKey(name)) {
+      realName = aliases.get(name);
+    }
+    if (realName!=null) {
+      ingredients.remove(realName);
+      brews.remove(realName);
+      ArrayList<String> keys = new ArrayList<String>(aliases.keySet());
+      for (String key: keys) {
+        String value = aliases.get(key);
+        if (realName.equals(value)) {
+          aliases.remove(key);
+        }
+      }
+    }
+  }
 }
