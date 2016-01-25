@@ -25,12 +25,16 @@ import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.job.TimerTypeService;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+import java.util.Date;
 
 /**
  * @author Tom Baeyens
  */
 public class TimerImpl {
-  
+
   public String id;
   public ScopeImpl parent;
   public Configuration configuration;
@@ -46,7 +50,11 @@ public class TimerImpl {
       this.parent = parentImpl;
       this.workflow = parentImpl.workflow;
     }
-    
+
+    if (timer.getRepeatExpression() != null && timer.getDueDateExpression() != null) {
+      parser.addError("TimeDuration and TimeDate on TimerEventDefinition are both set, but mutually exclusive, please remove one of them.");
+    }
+
     TimerTypeService timerTypeService = parser.getConfiguration(TimerTypeService.class);
     this.timerType = timerTypeService.instantiateTimerType(timer);
     // some activity types need to validate incoming and outgoing transitions, 
@@ -73,10 +81,23 @@ public class TimerImpl {
     return job;
   }
 
-  private LocalDateTime calculateDueDate() {
-    String dueDateExpression = timer.getDueDateExpression();
-    // TODO parse the relative duedate expression and apply it relative to now
-    int seconds = 0;
-    return new LocalDateTime().plusSeconds(seconds);
+  public LocalDateTime calculateDueDate() {
+
+    String repeatExpression = timer.getRepeatExpression();
+
+    try {
+      if (repeatExpression != null) {
+        Duration f = DatatypeFactory.newInstance().newDuration(repeatExpression);
+        Date date = new Date();
+        f.addTo(date);
+
+        return new LocalDateTime(date.getTime());
+      }
+    } catch (DatatypeConfigurationException ex) {
+      throw new RuntimeException(ex);
+    }
+
+    return null;
+
   }
 }

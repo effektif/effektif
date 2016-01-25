@@ -464,9 +464,12 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         Job job = timer.createJob(this);
         job.workflowInstanceId(workflowInstance.getId());
         job.activityInstanceId(getActivityInstanceId());
-        workflow.configuration
-          .get(JobStore.class)
-          .saveJob(job);
+
+        workflowInstance.addJob(job);
+
+//        workflow.configuration
+//          .get(JobStore.class)
+//          .saveJob(job);
       }
     }
   }

@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 
+import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +41,6 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.diagram.Bounds;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
 import com.effektif.workflow.api.workflow.diagram.Edge;
@@ -83,21 +78,21 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
 public class BpmnReaderImpl implements BpmnReader {
 
   private static final Logger log = LoggerFactory.getLogger(BpmnReaderImpl.class);
-  
+
   /** global mappings */
   protected BpmnMappings bpmnMappings;
 
-  /** stack of scopes */ 
+  /** stack of scopes */
   protected Stack<Scope> scopeStack = new Stack<Scope>();
-  /** current scope */ 
+  /** current scope */
   protected Scope scope;
-  
-  /** stack of xml elements */ 
+
+  /** stack of xml elements */
   protected Stack<XmlElement> xmlStack = new Stack<XmlElement>();
-  /** current xml element */ 
-  protected XmlElement currentXml; 
-  protected Class<?> currentClass; 
-  
+  /** current xml element */
+  protected XmlElement currentXml;
+  protected Class<?> currentClass;
+
   /** maps uri's to prefixes.
    * Ideally this should be done in a stack so that each element can add new namespaces.
    * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
@@ -110,7 +105,7 @@ public class BpmnReaderImpl implements BpmnReader {
     this.bpmnMappings = bpmnMappings;
     this.jsonStreamMapper = jsonStreamMapper;
   }
-  
+
   protected AbstractWorkflow readDefinitions(XmlElement definitionsXml) {
     AbstractWorkflow workflow = null;
 
@@ -155,12 +150,38 @@ public class BpmnReaderImpl implements BpmnReader {
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
+
+    attachTimers(workflow);
+
     readLanes(workflow);
     removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
     return workflow;
   }
 
+  protected void attachTimers(AbstractWorkflow workflow) {
+
+    List<Timer> timers = workflow.getTimers();
+
+    if (timers != null && timers.size() > 0) {
+
+      Iterator<Timer> timerIterator = timers.iterator();
+      while (timerIterator.hasNext()) {
+        Timer timer = timerIterator.next();
+
+        // todo: make generic
+        if (timer instanceof BoundaryEventTimer) {
+          BoundaryEvent boundaryEvent = ((BoundaryEventTimer) timer).boundaryEvent;
+
+          if (boundaryEvent != null) {
+            Activity act = workflow.findActivity(boundaryEvent.getFromId());
+            if (act != null) act.timer(timer);
+            timerIterator.remove();
+          }
+        }
+      }
+    }
+  }
 
   protected void readLanes(AbstractWorkflow workflow) {
     // Not supported.
@@ -179,8 +200,38 @@ public class BpmnReaderImpl implements BpmnReader {
           scope.transition(transition);
           // Remove the sequenceFlow as it has been parsed in the model.
           iterator.remove();
-        }
-        else {
+        } else if (scopeElement.is(BPMN_URI, "boundaryEvent")) {
+
+//          <bpmn:boundaryEvent id="BoundaryEvent_1ymyt09" attachedToRef="Task_02wgtff">
+//            <bpmn:outgoing>SequenceFlow_0se37xg</bpmn:outgoing>
+//            <bpmn:timerEventDefinition>
+//              <bpmn:timeDuration>PT5M</bpmn:timeDuration>
+//            </bpmn:timerEventDefinition>
+//          </bpmn:boundaryEvent>
+//          <bpmn:sequenceFlow id="SequenceFlow_0se37xg" sourceRef="BoundaryEvent_1ymyt09" targetRef="Task_13koiv2" />
+
+          startElement(scopeElement);
+          BoundaryEvent boundaryEvent = new BoundaryEvent();
+          boundaryEvent.readBpmn(this);
+
+          for (XmlElement xmlElement : currentXml.getElements()) {
+            BpmnTypeMapping typeMapping = bpmnMappings.getBpmnTypeMapping(xmlElement, this);
+
+            if (typeMapping != null) {
+              BoundaryEventTimer timer = new BoundaryEventTimer();
+
+              startElement(xmlElement);
+              timer.readBpmn(this);
+              timer.boundaryEvent = boundaryEvent;
+              endElement();
+
+              scope.timer(timer);
+            }
+          }
+
+          iterator.remove();
+          endElement();
+        } else {
           BpmnTypeMapping bpmnTypeMapping = getBpmnTypeMapping();
           if (bpmnTypeMapping != null) {
             Activity activity = (Activity) bpmnTypeMapping.instantiate();
@@ -209,7 +260,7 @@ public class BpmnReaderImpl implements BpmnReader {
     unparsedBpmn.name = null;
     scope.setBpmn(unparsedBpmn);
   }
-  
+
   @Override
   public List<XmlElement> readElementsBpmn(String localPart) {
     if (currentXml==null) {
@@ -217,7 +268,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return currentXml.removeElements(BPMN_URI, localPart);
   }
-  
+
   @Override
   public List<XmlElement> readElementsEffektif(Class modelClass) {
     BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
@@ -241,7 +292,7 @@ public class BpmnReaderImpl implements BpmnReader {
     List<XmlElement> xmlElements = currentXml.removeElements(EFFEKTIF_URI, localPart);
     return !xmlElements.isEmpty() ? xmlElements.get(0) : null;
   }
-  
+
 
   @Override
   public void startElement(XmlElement xmlElement) {
@@ -250,23 +301,23 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     currentXml = xmlElement;
   }
-  
+
   @Override
   public void endElement() {
     currentXml = xmlStack.empty() ? null : xmlStack.pop();
   }
-  
+
   public void startScope(Scope scope) {
     if (this.scope!=null) {
       scopeStack.push(this.scope);
     }
     this.scope = scope;
   }
-  
+
   public void endScope() {
     this.scope = scopeStack.pop();
   }
-  
+
   @Override
   public void startExtensionElements() {
     XmlElement extensionsXmlElement = currentXml.getElement(BPMN_URI, "extensionElements");
@@ -277,7 +328,7 @@ public class BpmnReaderImpl implements BpmnReader {
   public void endExtensionElements() {
     endElement();
   }
-  
+
   @Override
   public Boolean readBooleanAttributeEffektif(String localPart) {
     if (currentXml==null) {
@@ -390,7 +441,7 @@ public class BpmnReaderImpl implements BpmnReader {
     JsonTypeMapper typeMapper = bpmnMappings.getTypeMapper(type);
     return (T) typeMapper.read(value, jsonReader);
   }
-  
+
   /**
    * Returns an ID type instance, constructed from the given JSON string ID.
    */
@@ -553,7 +604,7 @@ public class BpmnReaderImpl implements BpmnReader {
   public List<Condition> readConditions() {
     List<Condition> conditions = new ArrayList<>();
 
-    SortedSet<Class<?>> bpmnClasses = bpmnMappings.getBpmnClasses(); 
+    SortedSet<Class<?>> bpmnClasses = bpmnMappings.getBpmnClasses();
 
     for (Class bpmnClass : bpmnClasses) {
       if (Condition.class.isAssignableFrom(bpmnClass)) {
@@ -582,6 +633,21 @@ public class BpmnReaderImpl implements BpmnReader {
     Set<String> activityIds = new HashSet<>();
     for (Activity activity : workflow.getActivities()) {
       activityIds.add(activity.getId());
+
+      // Transitions from Boundary event timers should be included as well
+      // todo: make generic
+      List<Timer> activityTimers = activity.getTimers();
+
+      if (activityTimers != null) {
+        for (Timer timer : activityTimers) {
+          if (timer instanceof BoundaryEventTimer) {
+            BoundaryEvent boundaryEvent = ((BoundaryEventTimer) timer).boundaryEvent;
+
+            activityIds.add(boundaryEvent.getBoundaryId());
+            activityIds.addAll(boundaryEvent.getToTransitionIds());
+          }
+        }
+      }
     }
 
     ListIterator<Transition> transitionIterator = workflow.getTransitions().listIterator();

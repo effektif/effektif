@@ -23,6 +23,8 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.effektif.workflow.impl.configuration.Startable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class JobServiceImpl implements JobService, Brewable {
+public class JobServiceImpl implements JobService, Brewable, Startable {
   
   private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
   
@@ -57,12 +59,18 @@ public class JobServiceImpl implements JobService, Brewable {
   public Timer checkOtherJobsTimer = null;
   public JobServiceListener listener = null;
 
+  private static JobServiceImpl jobServiceImpl = null;
+
   @Override
   public void brew(Brewery brewery) {
     this.configuration = brewery.get(Configuration.class);
     this.workflowInstanceStore = brewery.get(WorkflowInstanceStore.class);
     this.executor = brewery.get(ExecutorService.class);
     this.jobStore = brewery.get(JobStore.class);
+  }
+
+  public JobServiceImpl () {
+    jobServiceImpl = this;
   }
 
   public void setListener(JobServiceListener listener) {
@@ -131,6 +139,19 @@ public class JobServiceImpl implements JobService, Brewable {
     }
   }
 
+  @Override
+  public void start(Brewery brewery) {
+    log.info("Starting workflowInstance timers.");
+    this.startup();
+  }
+
+  public static void stop() {
+    log.info("Stop called, stopping timers...");
+    if (jobServiceImpl != null) {
+      jobServiceImpl.shutdown();
+    }
+  }
+
   class ExecuteWorkflowInstanceJobs implements Runnable {
     JobServiceImpl jobService;
     WorkflowInstanceImpl workflowInstance;
@@ -140,15 +161,24 @@ public class JobServiceImpl implements JobService, Brewable {
     @Override
     public void run() {
       log.debug("Executing jobs for workflow instance "+workflowInstance.id);
-      Iterator<Job> jobsIterator = workflowInstance.jobs.iterator();
-      for (Job job: new ArrayList<>(workflowInstance.jobs)) {
-        if (job.isDue()) {
+      Job[] jobsArray = new Job[workflowInstance.jobs.size()];
+
+      for (int i = 0; i < workflowInstance.jobs.size(); i++) {
+        jobsArray[i] = workflowInstance.jobs.get(i);
+      }
+
+      for (int i = 0; i < jobsArray.length; i++) {
+        Job job = jobsArray[i];
+        if(job.isDue()) {
+          log.debug("Jos is due, workflowInstanceId is: " + job.getWorkflowInstanceId() + ", jobId: " + job.getId());
           executeJob(new JobExecution(job, configuration, workflowInstance));
-          if (job.isDone()||job.isDead()) {
+
+          if(job.isDone() | job.isDead()) {
             workflowInstance.removeJob(job);
             jobStore.saveArchivedJob(job);
           }
-          if (jobsIterator.hasNext()) {
+
+          if(i < jobsArray.length - 1) {
             workflowInstanceStore.flush(workflowInstance);
           }
         }

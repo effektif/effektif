@@ -149,7 +149,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
       setEnd(Time.now());
       workflow.workflowEngine.notifyActivityInstanceEnded(this);
-      cancelTimersForScope();
+      cancelTimersForScope(); // TODO: This is not neccesary for boundary events. Is it neccesary at all?
       setWorkState(null);
     }
   }

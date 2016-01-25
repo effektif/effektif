@@ -11,16 +11,40 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.timer;
+package com.effektif.workflow.impl.workflow.boundary;
 
+import com.effektif.workflow.api.bpmn.BpmnElement;
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.BoundaryEvent;
 import com.effektif.workflow.api.workflow.Timer;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
  * @author Tom Baeyens
  */
+
 @TypeName("boundaryEventTimer")
+@BpmnElement("timerEventDefinition")
 public class BoundaryEventTimer extends Timer {
 
+  public BoundaryEvent boundaryEvent;
+  public Activity activity;
+
+  @Override
+  public void readBpmn(BpmnReader r) {
+    super.readBpmn(r);
+
+    BoundaryEvent boundaryEvent = new BoundaryEvent();
+    boundaryEvent.readBpmn(r);
+
+  }
 }
+

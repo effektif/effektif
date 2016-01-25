@@ -11,21 +11,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-package com.effektif.workflow.test.timer;
+package com.effektif.workflow.impl.workflow.boundary;
 
+import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.job.JobController;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.job.TimerType;
 import com.effektif.workflow.impl.workflow.TimerImpl;
+import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * @author Tom Baeyens
  */
+@TypeName("boundaryEventTimer")
 public class BoundaryEventTimerImpl implements TimerType, JobType {
+  ;
+  private static final Logger log = LoggerFactory.getLogger(BoundaryEventTimerImpl.class);
 
   @Override
   public Class< ? extends Timer> getTimerApiClass() {
@@ -36,7 +42,6 @@ public class BoundaryEventTimerImpl implements TimerType, JobType {
   public JobType getJobType(ScopeInstanceImpl scopeInstance, TimerImpl timerImpl) {
     return this;
   }
-
 
   @Override
   public int getMaxRetries() {
@@ -50,5 +55,23 @@ public class BoundaryEventTimerImpl implements TimerType, JobType {
 
   @Override
   public void execute(JobController jobController) {
+
+    ActivityInstanceImpl activityInstance =
+        jobController.getWorkflowInstance().findActivityInstance(jobController.getJob().getActivityInstanceId());
+
+    if (activityInstance != null) {
+      for (TimerImpl timer : activityInstance.activity.getTimers()) {
+        if (timer.timer instanceof BoundaryEventTimer) {
+          BoundaryEventTimer boundaryEventTimer = (BoundaryEventTimer) timer.timer;
+          for (String transitionId : boundaryEventTimer.boundaryEvent.getToTransitionIds()) {
+            activityInstance.takeTransition(
+                jobController.getWorkflowInstance().getWorkflow().findTransitionByIdLocal(transitionId));
+          }
+        }
+      }
+      jobController.getWorkflowInstance().executeWork();
+    } else {
+      if (log.isDebugEnabled()) log.debug("activityInstance is null, job is not executed. Looked for activityInstance: " + jobController.getJob().getActivityInstanceId());
+    }
   }
 }
