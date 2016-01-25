@@ -34,12 +34,14 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
 
   public static final Class[] SUBCLASSES = new Class[]{
     AfterRelativeTime.class,
+    BeforeRelativeTime.class,
     NextRelativeTime.class
     // if you add a subclass here, make sure you also update method readBpmnPolymorphic below
   };
 
   public static final String NEXT = "next";
   public static final String AFTER = "after";
+  public static final String BEFORE = "before";
 
   public static final String MINUTES = "minutes";
   public static final String HOURS = "hours";
@@ -64,6 +66,8 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
     RelativeTime relativeTime = null; 
     if (AFTER.equals(type)) {
       relativeTime = new AfterRelativeTime();
+    } else if (BEFORE.equals(type)) {
+      relativeTime = new BeforeRelativeTime();
     } else if (NEXT.equals(type)) {
       relativeTime = new NextRelativeTime();
     } else {

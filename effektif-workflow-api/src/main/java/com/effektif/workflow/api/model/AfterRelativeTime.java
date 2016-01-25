@@ -25,6 +25,7 @@ import org.joda.time.Years;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.workflow.Binding;
 
 
 /**
@@ -46,9 +47,17 @@ public class AfterRelativeTime extends RelativeTime {
   @Override
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
-    w.writeStringAttributeEffektif("type", AFTER);
+    w.writeStringAttributeEffektif("type", getType());
     w.writeStringAttributeEffektif("duration", duration);
     w.writeStringAttributeEffektif("durationUnit", durationUnit);
+  }
+
+  public String getType() {
+    return AFTER;
+  }
+  
+  public Integer getDurationAsInt() {
+    return duration;
   }
 
   public Integer getDuration() {
@@ -87,17 +96,17 @@ public class AfterRelativeTime extends RelativeTime {
 
     ReadablePeriod period = null;
     if (DAYS.equals(durationUnit)) {
-      period = Days.days(duration);
+      period = Days.days(getDurationAsInt());
     } else if (WEEKS.equals(durationUnit)) {
-      period = Weeks.weeks(duration);
+      period = Weeks.weeks(getDurationAsInt());
     } else if (HOURS.equals(durationUnit)) {
-      period = Hours.hours(duration);
+      period = Hours.hours(getDurationAsInt());
     } else if (MONTHS.equals(durationUnit)) {
-      period = Months.months(duration);
+      period = Months.months(getDurationAsInt());
     } else if (YEARS.equals(durationUnit)) {
-      period = Years.years(duration);
+      period = Years.years(getDurationAsInt());
     } else if (MINUTES.equals(durationUnit)) {
-      period = Minutes.minutes(duration);
+      period = Minutes.minutes(getDurationAsInt());
     } else {
       return null;
     }
@@ -130,4 +139,11 @@ public class AfterRelativeTime extends RelativeTime {
            || MONTHS.equals(durationUnit)
            || YEARS.equals(durationUnit);
   }
+
+  @Override
+  public AfterRelativeTime base(Binding<LocalDateTime> base) {
+    return (AfterRelativeTime) super.base(base);
+  }
+  
+  
 }
