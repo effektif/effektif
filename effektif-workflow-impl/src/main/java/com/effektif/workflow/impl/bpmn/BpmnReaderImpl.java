@@ -557,6 +557,35 @@ public class BpmnReaderImpl implements BpmnReader {
     return null;
   }
 
+  /**
+   * Reads nested property elements: currently only String and Boolean properties are supported.
+   */
+  @Override
+  public Map<String,Object> readSimpleProperties() {
+    Map<String,Object> properties = new HashMap<>();
+    for (XmlElement element : readElementsEffektif("property")) {
+      startElement(element);
+      String key = readStringAttributeEffektif("key");
+      String value = readStringAttributeEffektif("value");
+      String type = readStringAttributeEffektif("type");
+
+      if (key != null && value != null && type != null) {
+        if (String.class.getName().equals(type)) {
+          properties.put(key, value.toString());
+        }
+        else if (Boolean.class.getName().equals(type)) {
+          properties.put(key, Boolean.valueOf(value));
+        }
+        else {
+          log.warn(String.format("Unsupported property type ‘%s’ for property %s=%s", type, key, value));
+        }
+      }
+
+      endElement();
+    }
+    return properties;
+  }
+
   @Override
   public String readStringValue(String localPart) {
     XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;

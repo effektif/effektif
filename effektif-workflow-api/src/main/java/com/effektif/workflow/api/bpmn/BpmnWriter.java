@@ -14,6 +14,7 @@
 package com.effektif.workflow.api.bpmn;
 
 import java.util.List;
+import java.util.Map;
 
 import com.effektif.workflow.api.workflow.diagram.Bounds;
 import org.joda.time.LocalDateTime;
@@ -103,6 +104,9 @@ public interface BpmnWriter {
 
   /** Writes a {@link RelativeTime} as an element in the Effektif namespace. */
   void writeRelativeTimeEffektif(String localPart, RelativeTime value);
+
+  /** Serialises properties with simple Java types as String values. */
+  void writeSimpleProperties(Map<String,Object> properties);
 
   /** Writes an element in the Effektif namespace with the value as a text attribute. */
   void writeStringValue(String localPart, String attributeName, Object value);
