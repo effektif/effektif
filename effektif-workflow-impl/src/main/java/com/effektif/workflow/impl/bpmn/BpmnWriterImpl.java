@@ -78,6 +78,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementBpmn(localpart, index);
     } else if (source instanceof XmlElement) {
       XmlElement sourceElement = (XmlElement) source;
+      sourceElement.setElementParents();
       if (xml!=null) {
         xml.addElement(sourceElement, index);
       }
