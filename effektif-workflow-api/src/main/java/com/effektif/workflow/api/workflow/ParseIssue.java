@@ -32,6 +32,12 @@ public class ParseIssue {
 
   public ParseIssue() {
   }
+
+  public ParseIssue(IssueType type, String message, Object[] messageArgs) {
+    this.type = type;
+    this.message = message;
+    this.messageArgs = messageArgs;
+  }
   
   public ParseIssue(IssueType type, String path, Long line, Long column, String message, Object[] messageArgs) {
     this.type = type;
@@ -62,13 +68,28 @@ public class ParseIssue {
   public IssueType getType() {
     return type;
   }
-  
+
+  public ParseIssue setType(IssueType type) {
+    this.type = type;
+    return this;
+  }
+
   public String getMessage() {
     return message;
   }
 
+  public ParseIssue setMessage(String message) {
+    this.message = message;
+    return this;
+  }
+
   public Object[] getMessageArgs() {
     return messageArgs;
+  }
+
+  public ParseIssue setMessageArgs(Object[] messageArgs) {
+    this.messageArgs = messageArgs;
+    return this;
   }
 
   public String getPath() {
