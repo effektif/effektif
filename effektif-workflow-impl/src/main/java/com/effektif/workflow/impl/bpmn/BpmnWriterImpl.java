@@ -78,6 +78,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementBpmn(localpart, index);
     } else if (source instanceof XmlElement) {
       XmlElement sourceElement = (XmlElement) source;
+      sourceElement.setElementParents();
       if (xml!=null) {
         xml.addElement(sourceElement, index);
       }
@@ -372,6 +373,28 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementBpmn("documentation");
       xml.addText(documentation);
       endElement();
+    }
+  }
+
+  /**
+   * Serialises properties with simple Java types as String values.
+   */
+  @Override
+  public void writeSimpleProperties(Map<String,Object> properties) {
+    if (properties != null) {
+      for (Map.Entry<String, Object> property : properties.entrySet()) {
+        if (property.getValue() != null) {
+          Class<?> type = property.getValue().getClass();
+          boolean simpleType = type.isPrimitive() || type.getName().startsWith("java.lang.");
+          if (simpleType) {
+            startElementEffektif("property");
+            writeStringAttributeEffektif("key", property.getKey());
+            writeStringAttributeEffektif("value", property.getValue().toString());
+            writeStringAttributeEffektif("type", property.getValue().getClass().getName());
+            endElement();
+          }
+        }
+      }
     }
   }
 

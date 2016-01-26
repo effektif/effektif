@@ -53,15 +53,7 @@ public abstract class AbstractWorkflow extends Scope {
   private void writeSimpleProperties(BpmnWriter w) {
     if (properties != null) {
       w.startExtensionElements();
-      for (Map.Entry<String, Object> property : properties.entrySet()) {
-        if (property.getValue() != null) {
-          Class<?> type = property.getValue().getClass();
-          boolean simpleType = type.isPrimitive() || type.getName().startsWith("java.lang.");
-          if (simpleType) {
-            w.writeStringValue("property", property.getKey(), property.getValue().toString());
-          }
-        }
-      }
+      w.writeSimpleProperties(properties);
       w.endExtensionElements();
     }
   }

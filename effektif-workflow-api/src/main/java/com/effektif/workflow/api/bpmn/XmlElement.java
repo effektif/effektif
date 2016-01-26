@@ -340,4 +340,20 @@ public class XmlElement {
     return value.replaceAll("&#034;", "\"").replaceAll("&#039;", "'").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
       .replaceAll("&amp;", "&");
   }
+
+  /**
+   * Recursively fixes parent relationships, which are unset after deserialisation, such as when unparsed BPMN is read
+   * from the database. If these parent relationships are not set, then the recursive namespace lookup fails.
+   */
+  public void setElementParents() {
+    if (elements == null) {
+      return;
+    }
+    for (XmlElement child : elements) {
+      if (child.parent == null) {
+        child.parent = this;
+      }
+      child.setElementParents();
+    }
+  }
 }

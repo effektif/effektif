@@ -40,7 +40,17 @@ public abstract class Extensible {
   private static Map<Class,Set<String>> invalidPropertyKeysByClass = new ConcurrentHashMap<>();
 
   protected Map<String,Object> properties;
-  
+
+  public void addProperties(Map<String,Object> additionalProperties) {
+    if (additionalProperties == null) {
+      return;
+    }
+    if (properties == null) {
+      properties = new HashMap<>();
+    }
+    properties.putAll(additionalProperties);
+  }
+
   /** @see Extensible */
   public Map<String,Object> getProperties() {
     return this.properties;
