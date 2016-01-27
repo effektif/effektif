@@ -15,9 +15,13 @@
  */
 package com.effektif.workflow.api.types;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
@@ -29,6 +33,8 @@ import com.effektif.workflow.api.json.TypeName;
  */
 @TypeName("date")
 public class DateType extends DataType {
+
+  private static DateTimeFormatter FORMAT = ISODateTimeFormat.dateTimeNoMillis();
 
   private enum Kind {
     datetime, date, time;
@@ -90,5 +96,21 @@ public class DateType extends DataType {
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.writeStringAttributeEffektif("kind", kind);
+  }
+
+  @Override
+  public Object readBpmnValue(BpmnReader r) {
+    String value = r.readStringAttributeEffektif("value");
+    return value == null ? null : LocalDateTime.parse(value);
+  }
+
+  /**
+   * Writes a {@link LocalDateTime} value using an ISO date format without milliseconds.
+   */
+  @Override
+  public void writeBpmnValue(BpmnWriter w, Object value) {
+    if (value != null && value instanceof LocalDateTime) {
+      w.writeStringAttributeEffektif("value", FORMAT.print((LocalDateTime) value));
+    }
   }
 }

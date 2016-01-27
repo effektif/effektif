@@ -16,6 +16,8 @@
 package com.effektif.workflow.api.types;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
@@ -67,6 +69,28 @@ public class ListType extends DataType {
       w.writeTypeAttribute(elementType);
       elementType.writeBpmn(w);
       w.endElement();
+    }
+  }
+
+  @Override
+  public Object readBpmnValue(BpmnReader r) {
+    List defaultValues = new ArrayList();
+    for (XmlElement nestedElement: r.readElementsEffektif("value")) {
+      r.startElement(nestedElement);
+      defaultValues.add(elementType.readBpmnValue(r));
+      r.endElement();
+    }
+    return defaultValues;
+  }
+
+  @Override
+  public void writeBpmnValue(BpmnWriter w, Object list) {
+    if (list != null && Collection.class.isAssignableFrom(list.getClass())) {
+      for (Object value : (Collection) list) {
+        w.startElementEffektif("value");
+        elementType.writeBpmnValue(w, value);
+        w.endElement();
+      }
     }
   }
 

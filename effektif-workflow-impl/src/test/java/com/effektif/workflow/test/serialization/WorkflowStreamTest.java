@@ -15,6 +15,8 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.*;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +34,7 @@ import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.model.Money;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.ChoiceType;
@@ -48,6 +51,7 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
@@ -305,17 +309,22 @@ public class WorkflowStreamTest {
 
   @Test
   public void testVariables() {
-    ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .variable("variable01", BooleanType.INSTANCE)
-      .variable("variable02", new ChoiceType().option("Red pill").option("Blue pill"))
-      .variable("variable03", new DateType().date())
-      .variable("variable04", EmailAddressType.INSTANCE)
-      .variable("variable05", new JavaBeanType(Integer.class))
-      .variable("variable06", LinkType.INSTANCE)
-      .variable("variable07", new ListType(NumberType.INSTANCE))
-      .variable("variable08", MoneyType.INSTANCE)
-      .variable("variable09", NumberType.INSTANCE)
-      .variable("variable10", new TextType().multiLine());
+
+    LocalDateTime now = LocalDateTime.now().withMillisOfSecond(0);
+
+    ExecutableWorkflow workflow = new ExecutableWorkflow();
+    workflow.variable(new Variable().id("variable01").type(BooleanType.INSTANCE).defaultValue(Boolean.TRUE));
+    ChoiceType choiceType = new ChoiceType().option("Red pill").option("Blue pill");
+    workflow.variable(new Variable().id("variable02").type(choiceType).defaultValue("Blue pill"));
+    workflow.variable(new Variable().id("variable03").type(new DateType().date()).defaultValue(now));
+    workflow.variable(new Variable().id("variable04").type(EmailAddressType.INSTANCE).defaultValue("alice@example.org"));
+    workflow.variable(new Variable().id("variable05").type(new JavaBeanType(Integer.class)));
+    workflow.variable(new Variable().id("variable06").type(LinkType.INSTANCE).defaultValue("http://example.org/"));
+    workflow.variable(new Variable().id("variable07").type(new ListType(NumberType.INSTANCE)).defaultValue(Lists.of(40, 41, 42)));
+    Money defaultMoneyValue = new Money().currency("EUR").amount(41.99);
+    workflow.variable(new Variable().id("variable08").type(MoneyType.INSTANCE).defaultValue(defaultMoneyValue));
+    workflow.variable(new Variable().id("variable09").type(NumberType.INSTANCE).defaultValue(42.5));
+    workflow.variable(new Variable().id("variable10").type(new TextType().multiLine()).defaultValue("hello"));
 
     workflow = serialize(workflow);
 
@@ -323,14 +332,18 @@ public class WorkflowStreamTest {
     assertEquals(10, workflow.getVariables().size());
 
     assertEquals(BooleanType.class, workflow.getVariables().get(0).getType().getClass());
+    assertEquals(Boolean.TRUE, workflow.getVariables().get(0).getDefaultValue());
 
     assertEquals(ChoiceType.class, workflow.getVariables().get(1).getType().getClass());
     assertEquals("Red pill", ((ChoiceType) workflow.getVariables().get(1).getType()).getOptions().get(0).getId());
+    assertEquals("Blue pill", workflow.getVariables().get(1).getDefaultValue());
 
     assertEquals(DateType.class, workflow.getVariables().get(2).getType().getClass());
     assertEquals("date", ((DateType) workflow.getVariables().get(2).getType()).getKind());
+    assertEquals(now, workflow.getVariables().get(2).getDefaultValue());
 
     assertEquals(EmailAddressType.class, workflow.getVariables().get(3).getType().getClass());
+    assertEquals("alice@example.org", workflow.getVariables().get(3).getDefaultValue());
 
     assertEquals(JavaBeanType.class, workflow.getVariables().get(4).getType().getClass());
     assertEquals(Integer.class, ((JavaBeanType) workflow.getVariables().get(4).getType()).getJavaClass());
@@ -338,13 +351,19 @@ public class WorkflowStreamTest {
     assertEquals(LinkType.class, workflow.getVariables().get(5).getType().getClass());
 
     assertEquals(ListType.class, workflow.getVariables().get(6).getType().getClass());
+    assertEquals(Lists.of(40, 41, 42), workflow.getVariables().get(6).getDefaultValue());
+
     assertEquals(NumberType.class, ((ListType) workflow.getVariables().get(6).getType()).getElementType().getClass());
 
     assertEquals(MoneyType.class, workflow.getVariables().get(7).getType().getClass());
+    assertEquals(defaultMoneyValue, workflow.getVariables().get(7).getDefaultValue());
+
     assertEquals(NumberType.class, workflow.getVariables().get(8).getType().getClass());
+    assertEquals(Double.class, workflow.getVariables().get(8).getDefaultValue().getClass());
+    assertEquals(42.5, workflow.getVariables().get(8).getDefaultValue());
 
     assertEquals(TextType.class, workflow.getVariables().get(9).getType().getClass());
     assertTrue(((TextType) workflow.getVariables().get(9).getType()).isMultiLine());
-
+    assertEquals("hello", workflow.getVariables().get(9).getDefaultValue());
   }
 }
