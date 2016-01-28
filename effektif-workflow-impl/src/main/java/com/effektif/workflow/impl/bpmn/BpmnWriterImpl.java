@@ -352,6 +352,11 @@ public class BpmnWriterImpl implements BpmnWriter {
       if (binding.getExpression()!=null) {
         writeStringAttributeEffektif("expression", binding.getExpression());
       }
+      if (binding.getMetadata() != null && !binding.getMetadata().isEmpty()) {
+        startElementEffektif("metadata");
+        writeSimpleProperties(binding.getMetadata());
+        endElement();
+      }
       endElement();
     }
   }

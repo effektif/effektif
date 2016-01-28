@@ -401,9 +401,19 @@ public class BpmnReaderImpl implements BpmnReader {
       Binding binding = new Binding();
       String value = element.getAttribute(EFFEKTIF_URI, "value");
       String typeName = element.getAttribute(EFFEKTIF_URI, "type");
+      startElement(element);
+      XmlElement metadataElem = readElementEffektif("metadata");
+      Map<String, Object> metadata = null;
+      if (metadataElem != null) {
+        startElement(metadataElem);
+        metadata = readSimpleProperties();
+        endElement();
+      }
+      endElement();
       DataType type = convertType(typeName);
       binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
       binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
+      binding.setMetadata(metadata);
       bindings.add(binding);
     }
     return bindings;
@@ -570,14 +580,24 @@ public class BpmnReaderImpl implements BpmnReader {
       String type = readStringAttributeEffektif("type");
 
       if (key != null && value != null && type != null) {
-        if (String.class.getName().equals(type)) {
-          properties.put(key, value.toString());
-        }
-        else if (Boolean.class.getName().equals(type)) {
-          properties.put(key, Boolean.valueOf(value));
-        }
-        else {
-          log.warn(String.format("Unsupported property type ‘%s’ for property %s=%s", type, key, value));
+        try {
+          if (String.class.getName().equals(type)) {
+            properties.put(key, value.toString());
+          }
+          else if (Boolean.class.getName().equals(type)) {
+            properties.put(key, Boolean.valueOf(value));
+          }
+          else if (Integer.class.getName().equals(type)) {
+            properties.put(key, Integer.valueOf(value));
+          }
+          else if (Double.class.getName().equals(type)) {
+            properties.put(key, Double.valueOf(value));
+          }
+          else {
+            log.warn(String.format("Unsupported property type ‘%s’ for property %s=%s", type, key, value));
+          }
+        } catch (NumberFormatException e) {
+          log.warn(String.format("Unsupported value format for type ‘%s’ for property %s=%s", type, key, value));
         }
       }
 
