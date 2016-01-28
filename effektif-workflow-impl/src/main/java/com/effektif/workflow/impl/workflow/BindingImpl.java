@@ -16,6 +16,7 @@
 package com.effektif.workflow.impl.workflow;
 
 import com.effektif.workflow.impl.data.DataTypeImpl;
+import com.effektif.workflow.impl.template.TextTemplate;
 
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class BindingImpl<T> {
   public DataTypeImpl type;
   public ExpressionImpl expression;
   public Map<String, Object> metadata;
+  public TextTemplate template;
 
   @Override
   public String toString() {
@@ -36,6 +38,9 @@ public class BindingImpl<T> {
     }
     if (expression!=null) {
       return expression.toString();
+    }
+    if (template!=null) {
+      return template.toString();
     }
     return "(emptybinding)";
   }

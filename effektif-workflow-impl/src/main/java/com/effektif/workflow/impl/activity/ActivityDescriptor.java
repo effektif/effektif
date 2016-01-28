@@ -186,5 +186,25 @@ public class ActivityDescriptor extends Extensible {
     return this;
   }
   
+  public InputDescriptor getInputDescriptor(String inputParameterKey) {
+    if (inputParameterKey!=null && inputDescriptors!=null) {
+      for (InputDescriptor inputDescriptor: inputDescriptors) {
+        if (inputParameterKey.equals(inputDescriptor.getKey())) {
+          return inputDescriptor;
+        }
+      }
+    }
+    return null;
+  }
   
+  public OutputDescriptor getOutputDescriptor(String outputParameterKey) {
+    if (outputParameterKey!=null && outputDescriptors!=null) {
+      for (OutputDescriptor outputDescriptor: outputDescriptors) {
+        if (outputParameterKey.equals(outputDescriptor.getKey())) {
+          return outputDescriptor;
+        }
+      }
+    }
+    return null;
+  }
 }

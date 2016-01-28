@@ -37,7 +37,6 @@ import com.effektif.workflow.api.model.VariableValues;
 import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.ScopeInstance;
-import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
@@ -212,6 +211,9 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     }
     if (binding.expression!=null) {
       return (T) getValue(binding.expression);
+    }
+    if (binding.template!=null) {
+      return (T) binding.template.resolve(this);
     }
     return null;
   }

@@ -115,6 +115,10 @@ public class JavaServiceTask extends ServiceTask {
     addArgBinding(new Binding().expression(expression));
     return this;
   }
+  public JavaServiceTask argTemplate(String template) {
+    addArgBinding(new Binding().template(template));
+    return this;
+  }
 
   public JavaServiceTask id(String id) {
     super.id(id);
