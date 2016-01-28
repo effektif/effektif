@@ -16,6 +16,7 @@ package com.effektif.workflow.test.serialization;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.rmi.registry.LocateRegistry;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -316,7 +317,7 @@ public class WorkflowStreamTest {
     workflow.variable(new Variable().id("variable01").type(BooleanType.INSTANCE).defaultValue(Boolean.TRUE));
     ChoiceType choiceType = new ChoiceType().option("Red pill").option("Blue pill");
     workflow.variable(new Variable().id("variable02").type(choiceType).defaultValue("Blue pill"));
-    workflow.variable(new Variable().id("variable03").type(new DateType().date()).defaultValue(now));
+    workflow.variable(new Variable().id("variable03").type(new DateType()).defaultValue(now));
     workflow.variable(new Variable().id("variable04").type(EmailAddressType.INSTANCE).defaultValue("alice@example.org"));
     workflow.variable(new Variable().id("variable05").type(new JavaBeanType(Integer.class)));
     workflow.variable(new Variable().id("variable06").type(LinkType.INSTANCE).defaultValue("http://example.org/"));
@@ -325,11 +326,13 @@ public class WorkflowStreamTest {
     workflow.variable(new Variable().id("variable08").type(MoneyType.INSTANCE).defaultValue(defaultMoneyValue));
     workflow.variable(new Variable().id("variable09").type(NumberType.INSTANCE).defaultValue(42.5));
     workflow.variable(new Variable().id("variable10").type(new TextType().multiLine()).defaultValue("hello"));
+    workflow.variable(new Variable().id("variable11").type(new DateType().date()).defaultValue(now));
+    workflow.variable(new Variable().id("variable12").type(new DateType().time()).defaultValue(now));
 
     workflow = serialize(workflow);
 
     assertNotNull(workflow.getVariables());
-    assertEquals(10, workflow.getVariables().size());
+    assertEquals(12, workflow.getVariables().size());
 
     assertEquals(BooleanType.class, workflow.getVariables().get(0).getType().getClass());
     assertEquals(Boolean.TRUE, workflow.getVariables().get(0).getDefaultValue());
@@ -339,7 +342,7 @@ public class WorkflowStreamTest {
     assertEquals("Blue pill", workflow.getVariables().get(1).getDefaultValue());
 
     assertEquals(DateType.class, workflow.getVariables().get(2).getType().getClass());
-    assertEquals("date", ((DateType) workflow.getVariables().get(2).getType()).getKind());
+    assertEquals("datetime", ((DateType) workflow.getVariables().get(2).getType()).getKind());
     assertEquals(now, workflow.getVariables().get(2).getDefaultValue());
 
     assertEquals(EmailAddressType.class, workflow.getVariables().get(3).getType().getClass());
@@ -365,5 +368,15 @@ public class WorkflowStreamTest {
     assertEquals(TextType.class, workflow.getVariables().get(9).getType().getClass());
     assertTrue(((TextType) workflow.getVariables().get(9).getType()).isMultiLine());
     assertEquals("hello", workflow.getVariables().get(9).getDefaultValue());
+
+    assertEquals(DateType.class, workflow.getVariables().get(10).getType().getClass());
+    assertEquals("date", ((DateType) workflow.getVariables().get(10).getType()).getKind());
+    LocalDateTime defaultValue11 = (LocalDateTime) workflow.getVariables().get(10).getDefaultValue();
+    assertEquals(now.withTime(0, 0, 0, 0), defaultValue11.withTime(0, 0, 0, 0));
+
+    assertEquals(DateType.class, workflow.getVariables().get(11).getType().getClass());
+    assertEquals("time", ((DateType) workflow.getVariables().get(11).getType()).getKind());
+    LocalDateTime defaultValue12 = (LocalDateTime) workflow.getVariables().get(11).getDefaultValue();
+    assertEquals(now.withDate(1, 1, 1), defaultValue12.withDate(1, 1, 1));
   }
 }

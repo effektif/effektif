@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -37,7 +38,15 @@ public class DateType extends DataType {
   private static DateTimeFormatter FORMAT = ISODateTimeFormat.dateTimeNoMillis();
 
   private enum Kind {
-    datetime, date, time;
+    datetime(ISODateTimeFormat.dateTimeNoMillis()),
+    date(ISODateTimeFormat.date()),
+    time(ISODateTimeFormat.timeNoMillis());
+
+    public DateTimeFormatter format;
+
+    Kind(DateTimeFormatter format) {
+      this.format = format;
+    }
   }
 
   public static final DateType DATETIME = new DateType();
@@ -101,7 +110,8 @@ public class DateType extends DataType {
   @Override
   public Object readBpmnValue(BpmnReader r) {
     String value = r.readStringAttributeEffektif("value");
-    return value == null ? null : LocalDateTime.parse(value);
+    return value == null ? null :
+      isTime() ? LocalTime.parse(value).toDateTimeToday().toLocalDateTime() : LocalDateTime.parse(value);
   }
 
   /**
@@ -110,7 +120,7 @@ public class DateType extends DataType {
   @Override
   public void writeBpmnValue(BpmnWriter w, Object value) {
     if (value != null && value instanceof LocalDateTime) {
-      w.writeStringAttributeEffektif("value", FORMAT.print((LocalDateTime) value));
+      w.writeStringAttributeEffektif("value", kind.format.print((LocalDateTime) value));
     }
   }
 }
