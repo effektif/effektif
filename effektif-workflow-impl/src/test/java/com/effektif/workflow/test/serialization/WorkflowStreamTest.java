@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -311,7 +313,7 @@ public class WorkflowStreamTest {
   @Test
   public void testVariables() {
 
-    LocalDateTime now = LocalDateTime.now().withMillisOfSecond(0);
+    LocalDateTime now = DateTime.now().withZone(DateTimeZone.UTC).withMillisOfSecond(0).toLocalDateTime();
 
     ExecutableWorkflow workflow = new ExecutableWorkflow();
     workflow.variable(new Variable().id("variable01").type(BooleanType.INSTANCE).defaultValue(Boolean.TRUE));

@@ -15,37 +15,46 @@
  */
 package com.effektif.workflow.api.types;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
-import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 
 /**
+ * A date type with variants date, time and datetime, representing a date in UTC timezone but without time zone information.
+ *
+ * Note that the UI and database always process dates in the UTC time zone, so this type’s value type is
+ * {@link LocalDateTime}, the values are not the user’s local time but
+ *
  * @author Peter Hilton
  */
 @TypeName("date")
 public class DateType extends DataType {
 
-  private static DateTimeFormatter FORMAT = ISODateTimeFormat.dateTimeNoMillis();
+  /**
+   * Parser for all three date variants.
+   */
+  public static DateTimeFormatter PARSER = ISODateTimeFormat.dateTimeParser();
 
+  /**
+   * Each date variant has its own formatter, that isn’t used for parsing.
+   */
   private enum Kind {
     datetime(ISODateTimeFormat.dateTimeNoMillis()),
     date(ISODateTimeFormat.date()),
-    time(ISODateTimeFormat.timeNoMillis());
+    time(ISODateTimeFormat.tTimeNoMillis());
 
-    public DateTimeFormatter format;
+    public DateTimeFormatter formatter;
 
-    Kind(DateTimeFormatter format) {
-      this.format = format;
+    Kind(DateTimeFormatter formatter) {
+      this.formatter = formatter;
     }
   }
 
@@ -110,8 +119,7 @@ public class DateType extends DataType {
   @Override
   public Object readBpmnValue(BpmnReader r) {
     String value = r.readStringAttributeEffektif("value");
-    return value == null ? null :
-      isTime() ? LocalTime.parse(value).toDateTimeToday().toLocalDateTime() : LocalDateTime.parse(value);
+    return value == null ? null : PARSER.parseLocalDateTime(value);
   }
 
   /**
@@ -120,7 +128,8 @@ public class DateType extends DataType {
   @Override
   public void writeBpmnValue(BpmnWriter w, Object value) {
     if (value != null && value instanceof LocalDateTime) {
-      w.writeStringAttributeEffektif("value", kind.format.print((LocalDateTime) value));
+      DateTime dateTime = ((LocalDateTime) value).toDateTime(DateTimeZone.UTC);
+      w.writeStringAttributeEffektif("value", kind.formatter.print(dateTime));
     }
   }
 }
