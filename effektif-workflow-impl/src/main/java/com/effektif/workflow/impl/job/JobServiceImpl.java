@@ -192,7 +192,12 @@ public class JobServiceImpl implements JobService, Brewable, Startable {
     while (isRunning && keepGoing) {
       Job job = jobStore.lockNextJob();
       if (job != null) {
-        executor.execute(new ExecuteJob(job));
+        if (job.jobType!=null) {
+          executor.execute(new ExecuteJob(job));
+        } else {
+          shutdown();
+          keepGoing = false;
+        }
       } else {
         keepGoing = false;
       }
