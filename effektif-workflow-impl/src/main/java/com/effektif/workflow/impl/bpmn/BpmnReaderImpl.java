@@ -402,10 +402,10 @@ public class BpmnReaderImpl implements BpmnReader {
       String value = element.getAttribute(EFFEKTIF_URI, "value");
       String typeName = element.getAttribute(EFFEKTIF_URI, "type");
       startElement(element);
-      XmlElement metadataElem = readElementEffektif("metadata");
+      XmlElement metadataElement = readElementEffektif("metadata");
       Map<String, Object> metadata = null;
-      if (metadataElem != null) {
-        startElement(metadataElem);
+      if (metadataElement != null) {
+        startElement(metadataElement);
         metadata = readSimpleProperties();
         endElement();
       }
@@ -568,7 +568,7 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   /**
-   * Reads nested property elements: currently only String and Boolean properties are supported.
+   * Reads nested property elements: currently only String, Boolean, Integer and Double properties are supported.
    */
   @Override
   public Map<String,Object> readSimpleProperties() {
