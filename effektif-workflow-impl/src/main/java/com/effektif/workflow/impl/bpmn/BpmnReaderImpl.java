@@ -521,6 +521,28 @@ public class BpmnReaderImpl implements BpmnReader {
     return convertType(typeName);
   }
 
+  /**
+   * Simplifies the BPMN XML by empty collections of attributes, child elements and extension elements.
+   */
+  public void cleanEmptyElements(XmlElement element) {
+    // Remove empty attributes list.
+    if (element.attributes != null && element.attributes.isEmpty()) {
+      element.attributes = null;
+    }
+    if (element.elements != null) {
+      // Recursively clean child elements.
+      for (XmlElement childElement : element.elements) {
+        cleanEmptyElements(childElement);
+      }
+      element.removeEmptyElement(BPMN_URI, "extensionElements");
+
+      // Remove empty child elements list.
+      if (element.elements.isEmpty()) {
+        element.elements = null;
+      }
+    }
+  }
+
   private DataType convertType(String typeName) {
     if (typeName == null) {
       typeName = "text";
@@ -635,6 +657,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public XmlElement getUnparsedXml() {
+    cleanEmptyElements(currentXml);
     return currentXml;
   }
 

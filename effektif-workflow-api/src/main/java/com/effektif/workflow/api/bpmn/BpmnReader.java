@@ -145,7 +145,6 @@ public interface BpmnReader {
   /** Reads a string as content text in the current xml element in the Effektif namespace. */
   String readTextEffektif(String localPart);
 
-  /** TODO */
   XmlElement getUnparsedXml();
 
   /** Reads the first condition from the available condition elements. */
