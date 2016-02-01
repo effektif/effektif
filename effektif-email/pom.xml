@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.effektif</groupId>
     <artifactId>effektif-parent</artifactId>
-    <version>3.0.0-beta5-SNAPSHOT</version>
+    <version>3.0.0-beta5</version>
   </parent>
   <artifactId>effektif-email</artifactId>
   <packaging>jar</packaging>
@@ -19,7 +19,7 @@
     <dependency> 
       <groupId>com.effektif</groupId>
       <artifactId>effektif-workflow-impl</artifactId>
-      <version>3.0.0-beta5-SNAPSHOT</version>
+      <version>3.0.0-beta5</version>
     </dependency>
     
     <!-- TEST DEPENDENCIES -->
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>com.effektif</groupId>
       <artifactId>effektif-workflow-impl</artifactId>
-      <version>3.0.0-beta5-SNAPSHOT</version>
+      <version>3.0.0-beta5</version>
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
