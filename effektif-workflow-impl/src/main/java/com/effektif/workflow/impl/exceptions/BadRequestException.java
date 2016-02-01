@@ -38,13 +38,17 @@ public class BadRequestException extends HttpMappedException {
     return HttpStatusCode.BAD_REQUEST;
   }
 
-  public static void checkTrue(boolean condition, String message) {
+  public static void checkTrue(boolean condition, String message, Object... messageArgs) {
     if (!condition) {
-      throw new BadRequestException(message);
+      throw new BadRequestException(String.format(message, messageArgs));
     }
   }
 
   public static void checkNotNull(Object object, String message) {
     checkTrue(object!=null, message);
+  }
+
+  public static void checkNotNull(Object object, String message, Object... messageArgs) {
+    checkTrue(object!=null, message, messageArgs);
   }
 }
