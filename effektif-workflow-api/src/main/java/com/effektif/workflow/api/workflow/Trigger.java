@@ -29,6 +29,7 @@ import com.effektif.workflow.api.bpmn.XmlElement;
  */
 public abstract class Trigger implements BpmnReadable, BpmnWritable {
 
+  /** Maps the fixed keys the trigger uses to the process variable IDs. */
   protected Map<String,String> outputs;
   
   @Override
