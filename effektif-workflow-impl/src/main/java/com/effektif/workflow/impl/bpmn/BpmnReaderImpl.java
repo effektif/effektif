@@ -194,7 +194,9 @@ public class BpmnReaderImpl implements BpmnReader {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
 
-        if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
+        if (scopeElement.is(BPMN_URI, "extensionElements")) {
+          scope.setProperties(readSimpleProperties());
+        } else if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
           scope.transition(transition);
