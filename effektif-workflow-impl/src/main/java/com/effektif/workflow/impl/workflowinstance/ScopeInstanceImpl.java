@@ -141,7 +141,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
   /** TODO find where this needs to be called
    * i expect it should be called from end() */
   public void destroyScopeInstance() {
-    cancelTimersForScope();
+    removeTimerInstanceJobs();
   }
   
   public void initializeForEachElement(VariableImpl elementVariableDefinition, Object value) {
@@ -483,11 +483,18 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     return null;
   }
 
-  public void cancelTimersForScope() {
-    if (scope.timers!=null) {
-      workflow.configuration
-        .get(JobStore.class)
-        .deleteJobByScope(workflowInstance.getId(), getActivityInstanceId());
+  /** removes the jobs from the workflow instance associated to this particular scope instance */
+  public void removeTimerInstanceJobs() {
+    if (workflowInstance != null 
+        && workflowInstance.jobs != null) {
+      for (Job job: workflowInstance.jobs) {
+        boolean isActivityInstanceJob = getActivityInstanceId()==null && job.getActivityInstanceId()==null;
+        boolean isWorkflowInstanceJob = getActivityInstanceId()!=null && getActivityInstanceId().equals(job.getActivityInstanceId());
+        if (isActivityInstanceJob || isWorkflowInstanceJob) {
+          log.debug("Removing job: " + job);
+          workflowInstance.removeJob(job);
+        }
+      }
     }
   }
 

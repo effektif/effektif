@@ -259,7 +259,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public void workflowInstanceEnded() {
     workflow.workflowEngine.notifyWorkflowInstanceEnded(workflowInstance);
     
-    cancelTimersForScope();
+    destroyScopeInstance();
     
     if (callerWorkflowInstanceId != null) {
       WorkflowInstanceImpl callerProcessInstance = null;
@@ -499,7 +499,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       getUpdates().isJobsChanged = true;
     }
   }
-
+  
   public WorkflowInstanceId getId() {
     return this.id;
   }
