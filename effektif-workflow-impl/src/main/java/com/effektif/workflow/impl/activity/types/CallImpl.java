@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.activity.types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
@@ -50,6 +51,18 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     super(Call.class);
   }
 
+  public CallImpl(Class<Call> activityApiClass) {
+    super(activityApiClass);
+  }
+
+  /**
+   * Returns an optional set of variable IDs to be used as inputs, or null if all available variables are to be used.
+   * Used to override the default behaviour to limit the scope exposed to the sub-workflow.
+   */
+  public Set<String> inputVariableIds(ExecutableWorkflow subWorkflow) {
+    return null;
+  }
+
   @Override
   public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
     super.parse(activityImpl, call, parser);
@@ -71,30 +84,38 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
         subWorkflow = workflows.get(0);
       }
     }
-    
-    if (subWorkflow!=null) {
+
+    parseInputsOutputs(call, parser, subWorkflow);
+  }
+
+
+  private void parseInputsOutputs(Call call, WorkflowParser parser, ExecutableWorkflow subWorkflow) {
+    if (subWorkflow != null) {
       List<Variable> subWorkflowVariables = subWorkflow.getVariables();
-      if (subWorkflowVariables!=null) {
-        Map<String, Binding> inputBindingsApi = call.getInputBindings();
-        for (Variable subWorkflowVariable: subWorkflowVariables) {
-          String subWorkflowVariableId = subWorkflowVariable.getId();
-          Binding inputBindingApi = inputBindingsApi.get(subWorkflowVariableId);
-          parser.pushContext("inputBindings["+subWorkflowVariableId+"]", inputBindingApi, null, null);
-          BindingImpl<?> bindingImpl = parser.parseBinding(inputBindingApi, subWorkflowVariableId, false, subWorkflowVariable.getType());
-          if (bindingImpl!=null) {
-            if (inputBindings==null) {
-              inputBindings = new HashMap<>();
+      Set<String> includedVariableIds = inputVariableIds(subWorkflow);
+      Map<String, Binding> callInputs = call.getInputBindings();
+      if (subWorkflowVariables != null && callInputs != null) {
+        for (Variable variable : subWorkflowVariables) {
+          String variableId = variable.getId();
+          boolean includeVariable = includedVariableIds == null || includedVariableIds.contains(variableId);
+          if (includeVariable) {
+            Binding callInput = callInputs.get(variableId);
+            parser.pushContext("inputBindings[" + variableId + "]", callInput, null, null);
+            BindingImpl<?> bindingImpl = parser.parseBinding(callInput, variableId, false, variable.getType());
+            if (bindingImpl != null) {
+              if (inputBindings == null) {
+                inputBindings = new HashMap<>();
+              }
+              inputBindings.put(variableId, bindingImpl);
             }
-            inputBindings.put(subWorkflowVariableId, bindingImpl);
+            parser.popContext();
           }
-          parser.popContext();
         }
       }
-      
+
       // IDEA improve error message by validating the keys to be proper subworkflow variable ids
       this.outputBindings = activity.getOutputBindings();
-    } else if ( (inputBindings!=null && !inputBindings.isEmpty())
-                || (inputBindings!=null && !inputBindings.isEmpty()) ) {
+    } else if (inputBindings!=null && !inputBindings.isEmpty()) {
       parser.addWarning("input and output bindings could not be parsed because sub workflow was not found");
     }
   }
