@@ -164,7 +164,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     return workflowInstance;
   }
 
-  /** second part of starting a new workflow instance: executing the start actvities */
+  /** Second part of starting a new workflow instance: executing the start activities. */
   public WorkflowInstance startExecute(WorkflowInstanceImpl workflowInstance) {
     WorkflowImpl workflow = workflowInstance.workflow;
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);

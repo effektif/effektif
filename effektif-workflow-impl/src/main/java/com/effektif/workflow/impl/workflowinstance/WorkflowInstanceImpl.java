@@ -257,36 +257,32 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     destroyScopeInstance();
     
     if (callerWorkflowInstanceId != null) {
-      WorkflowInstanceImpl callerProcessInstance = null;
+      WorkflowInstanceImpl callerWorkflowInstance = null;
       if (lockedWorkflowInstances != null) {
         // the lockedWorkflowInstances is a local cache of the locked workflow
-        // instances
-        // which is passed down to the sub workflow instance in the call
-        // activity.
-        // in case the subprocess is fully synchronous and it
+        // instances which is passed down to the sub workflow instance in the
+        // call activity. In case the subprocess is fully synchronous and it
         // finishes and wants to continue the parent, that parent is already
         // locked in the db. the call activity will first check this cache to
-        // see
-        // if the workflow instance is already locked and use this one instead
-        // of
-        // going to the db.
-        callerProcessInstance = lockedWorkflowInstances.get(workflowInstance.callerWorkflowInstanceId);
+        // see if the workflow instance is already locked and use this one
+        // instead of going to the db.
+        callerWorkflowInstance = lockedWorkflowInstances.get(workflowInstance.callerWorkflowInstanceId);
       }
-      if (callerProcessInstance == null) {
+      if (callerWorkflowInstance == null) {
         WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-        callerProcessInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callerWorkflowInstanceId);
-        if (callerProcessInstance == null) {
+        callerWorkflowInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callerWorkflowInstanceId);
+        if (callerWorkflowInstance == null) {
           log.error("Couldn't continue calling activity instance after workflow instance completion");
         }
       }
-      ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
+      ActivityInstanceImpl callerActivityInstance = callerWorkflowInstance.findActivityInstance(callerActivityInstanceId);
       if (log.isDebugEnabled())
         log.debug("Notifying caller " + callerActivityInstance);
       ActivityImpl activityDefinition = callerActivityInstance.getActivity();
       CallImpl callActivity = (CallImpl) activityDefinition.activityType;
       callActivity.calledWorkflowInstanceEnded(callerActivityInstance, workflowInstance);
       callerActivityInstance.onwards();
-      callerProcessInstance.executeWork();
+      callerWorkflowInstance.executeWork();
     }
   }
 
