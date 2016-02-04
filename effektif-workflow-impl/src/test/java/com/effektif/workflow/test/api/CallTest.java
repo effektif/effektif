@@ -104,7 +104,7 @@ public class CallTest extends WorkflowTest {
   }
 
   @Test
-  public void testTwoCallActivitiesInparallel() {
+  public void testTwoCallActivitiesInParallel() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("auto", new NoneTask());
     
