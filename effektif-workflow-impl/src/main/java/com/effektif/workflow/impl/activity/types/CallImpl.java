@@ -171,12 +171,12 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     workflowEngine.startExecute(calledWorkflowInstance);
   }
 
-  public void calledWorkflowInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
+  public void calledWorkflowInstanceEnded(ActivityInstanceImpl callerActivity, WorkflowInstanceImpl calledProcessInstance) {
     if (outputBindings!=null) {
       for (String subWorkflowVariableId: outputBindings.keySet()) {
         String variableId = outputBindings.get(subWorkflowVariableId);
         TypedValueImpl typedValue = calledProcessInstance.getTypedValue(subWorkflowVariableId);
-        activityInstance.setVariableValue(variableId, typedValue);
+        callerActivity.setVariableValue(variableId, typedValue);
       }
     }
   }
