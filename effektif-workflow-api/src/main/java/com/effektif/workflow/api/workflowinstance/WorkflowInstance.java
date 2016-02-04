@@ -32,8 +32,13 @@ public class WorkflowInstance extends ScopeInstance {
   protected WorkflowId workflowId;
   protected String businessKey;
   protected String creatorId;
+
+  /** When a {@link com.effektif.workflow.api.activities.Call} is used, the workflow instance that called this one. */
   protected WorkflowInstanceId callerWorkflowInstanceId;
+
+  /** When a {@link com.effektif.workflow.api.activities.Call} is used, the call activity in the calling workflow. */
   protected String callerActivityInstanceId;
+
   protected String caseId;
   public List<TimerInstance> jobs;
 
