@@ -59,7 +59,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
    * Returns an optional set of variable IDs to be used as inputs, or null if all available variables are to be used.
    * Used to override the default behaviour to limit the scope exposed to the sub-workflow.
    */
-  public Set<String> inputVariableIds(ExecutableWorkflow subWorkflow) {
+  protected Set<String> inputVariableIds(ExecutableWorkflow subWorkflow) {
     return null;
   }
 
@@ -152,18 +152,25 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
         }
       }
       
-      WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-      WorkflowInstanceImpl calledWorkflowInstance = workflowEngine.startInitialize(triggerInstance);
-      calledWorkflowInstance.addLockedWorkflowInstance(activityInstance.workflowInstance);
-      activityInstance.setCalledWorkflowInstanceId(calledWorkflowInstance.getId());
-      workflowEngine.startExecute(calledWorkflowInstance);
-      
+      startWorkflowInstance(activityInstance, triggerInstance);
     } else {
       log.debug("Skipping call activity because no sub workflow was defined");
       activityInstance.onwards();
     }
   }
-  
+
+  /**
+   * Starts the subworkflow instance.
+   */
+  protected void startWorkflowInstance(ActivityInstanceImpl activityInstance, TriggerInstance triggerInstance) {
+    Configuration configuration = activityInstance.getConfiguration();
+    WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
+    WorkflowInstanceImpl calledWorkflowInstance = workflowEngine.startInitialize(triggerInstance);
+    calledWorkflowInstance.addLockedWorkflowInstance(activityInstance.workflowInstance);
+    activityInstance.setCalledWorkflowInstanceId(calledWorkflowInstance.getId());
+    workflowEngine.startExecute(calledWorkflowInstance);
+  }
+
   public void calledWorkflowInstanceEnded(ActivityInstanceImpl activityInstance, WorkflowInstanceImpl calledProcessInstance) {
     if (outputBindings!=null) {
       for (String subWorkflowVariableId: outputBindings.keySet()) {
