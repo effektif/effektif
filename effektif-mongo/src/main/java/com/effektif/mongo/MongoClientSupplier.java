@@ -18,17 +18,24 @@ package com.effektif.mongo;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Supplier;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
+import java.util.List;
 
 public class MongoClientSupplier implements Supplier {
 
   @Override
   public Object supply(Brewery brewery) {
     MongoConfiguration mongoConfiguration = brewery.get(MongoConfiguration.class);
-    return new MongoClient(
-            mongoConfiguration.getServerAddresses(), 
-            mongoConfiguration.getCredentials(), 
-            mongoConfiguration.getOptionBuilder().build());
+    List<ServerAddress> serverAddresses = mongoConfiguration.getServerAddresses();
+    List<MongoCredential> credentials = mongoConfiguration.getCredentials();
+    MongoClientOptions options = mongoConfiguration.getOptionBuilder().build();
+    if (credentials != null) {
+      return new MongoClient(serverAddresses, credentials, options);
+    }
+    return new MongoClient(serverAddresses, options);
   }
 
   @Override
