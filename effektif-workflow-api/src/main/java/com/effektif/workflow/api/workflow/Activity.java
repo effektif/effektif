@@ -85,7 +85,7 @@ public abstract class Activity extends Scope {
       r.endElement();
     }
 
-    // Read ouput parameters.
+    // Read output parameters.
     for (XmlElement element : r.readElementsEffektif("output")) {
       if (outputs == null) {
         outputs = new HashMap<>();
