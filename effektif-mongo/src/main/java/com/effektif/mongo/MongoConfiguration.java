@@ -17,11 +17,7 @@ package com.effektif.mongo;
 
 import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.util.Lists;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import com.mongodb.gridfs.GridFS;
 
 import java.net.UnknownHostException;
@@ -93,7 +89,7 @@ public class MongoConfiguration extends DefaultConfiguration {
         return new ServerAddress(host, port);
       }
       return new ServerAddress(host);
-    } catch (UnknownHostException e) {
+    } catch (IllegalArgumentException | MongoException e) {
       throw new RuntimeException(e);
     }
   }

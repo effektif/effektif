@@ -13,10 +13,9 @@
  * limitations under the License. */
 package com.effektif.mongo.test;
 
-import org.junit.Test;
-
 import com.effektif.mongo.MongoConfiguration;
 import com.effektif.workflow.api.Configuration;
+import org.junit.Test;
 
 
 /**

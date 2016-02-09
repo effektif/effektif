@@ -15,18 +15,12 @@
  */
 package com.effektif.mongo;
 
+import com.mongodb.*;
+import org.slf4j.Logger;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBDecoderFactory;
-import com.mongodb.DBObject;
-import com.mongodb.ReadPreference;
-import com.mongodb.ServerAddress;
 
 
 public class LoggingCursor extends DBCursor {
@@ -41,7 +35,7 @@ public class LoggingCursor extends DBCursor {
     this.mongoCollection = mongoCollection;
     this.cursor = cursor;
   }
-  
+
   @Override
   public DBObject next() {
     DBObject next = cursor.next();
@@ -50,6 +44,16 @@ public class LoggingCursor extends DBCursor {
     }
     return next;
   }
+
+  @Override
+  public DBObject tryNext() {
+    DBObject next = cursor.tryNext();
+    if (log.isDebugEnabled()) {
+      log.debug("<-"+cursor.getCollection().getName()+"-- "+mongoCollection.toString(next));
+    }
+    return next;
+  }
+
 
   @Override
   public DBCursor sort(DBObject orderBy) {
@@ -140,6 +144,16 @@ public class LoggingCursor extends DBCursor {
   }
 
   @Override
+  public int getBatchSize() {
+    return cursor.getBatchSize();
+  }
+
+  @Override
+  public int getLimit() {
+    return cursor.getLimit();
+  }
+
+  @Override
   public DBCursor skip(int n) {
     return cursor.skip(n);
   }
@@ -179,18 +193,6 @@ public class LoggingCursor extends DBCursor {
   @Override
   public int getOptions() {
     return cursor.getOptions();
-  }
-
-  @SuppressWarnings("deprecation")
-  @Override
-  public int numGetMores() {
-    return cursor.numGetMores();
-  }
-
-  @SuppressWarnings("deprecation")
-  @Override
-  public List<Integer> getSizes() {
-    return cursor.getSizes();
   }
 
   @Override
