@@ -156,6 +156,7 @@ public class BpmnReaderImpl implements BpmnReader {
     readLanes(workflow);
     removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
+    cleanEmptyElements(workflow.getBpmn());
     return workflow;
   }
 
@@ -199,6 +200,7 @@ public class BpmnReaderImpl implements BpmnReader {
         } else if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
+          cleanEmptyElements(transition.getBpmn());
           scope.transition(transition);
           // Remove the sequenceFlow as it has been parsed in the model.
           iterator.remove();
@@ -241,6 +243,7 @@ public class BpmnReaderImpl implements BpmnReader {
             activity.readBpmn(this);
             scope.activity(activity);
             setUnparsedBpmn(activity, currentXml);
+            cleanEmptyElements(activity.getBpmn());
             // Remove the activity XML element as it has been parsed in the model.
             iterator.remove();
           }
@@ -512,6 +515,10 @@ public class BpmnReaderImpl implements BpmnReader {
    * Simplifies the BPMN XML by empty collections of attributes, child elements and extension elements.
    */
   public void cleanEmptyElements(XmlElement element) {
+    if (element == null) {
+      return;
+    }
+
     // Remove empty attributes list.
     if (element.attributes != null && element.attributes.isEmpty()) {
       element.attributes = null;

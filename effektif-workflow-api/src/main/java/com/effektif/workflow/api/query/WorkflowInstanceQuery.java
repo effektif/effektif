@@ -20,6 +20,7 @@ import com.effektif.workflow.api.model.WorkflowInstanceId;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
 
 /**
  * @author Tom Baeyens
@@ -33,6 +34,7 @@ public class WorkflowInstanceQuery {
   protected Integer skip;
   protected Integer limit;
   protected List<OrderBy> orderBy;
+  protected LocalDateTime lockedBefore;
   
   public WorkflowInstanceQuery workflowInstanceId(WorkflowInstanceId workflowInstanceId) {
     setWorkflowInstanceId(workflowInstanceId);
@@ -104,5 +106,16 @@ public class WorkflowInstanceQuery {
     orderBy.add(new OrderBy()
       .field(field)
       .direction(direction));
+  }
+
+  public LocalDateTime getLockedBefore() {
+    return lockedBefore;
+  }
+  public void setLockedBefore(LocalDateTime dateTime) {
+    this.lockedBefore = dateTime;
+  }
+  public WorkflowInstanceQuery lockedBefore(LocalDateTime dateTime) {
+    this.lockedBefore = dateTime;
+    return this;
   }
 }
