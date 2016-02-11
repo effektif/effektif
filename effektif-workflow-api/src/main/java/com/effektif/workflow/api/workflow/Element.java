@@ -37,7 +37,19 @@ public abstract class Element extends Extensible implements BpmnReadable, BpmnWr
   protected String name;
   protected String description;
   protected XmlElement bpmn;
-  
+
+  /**
+   * Cleans up parsed BPMN to remove empty elements, and the BPMN element itself if empty, used after BPMN import.
+   */
+  public void cleanUnparsedBpmn() {
+    if (bpmn != null) {
+      bpmn.cleanEmptyElements();
+      if (bpmn.isEmpty()) {
+        bpmn = null;
+      }
+    }
+  }
+
   @Override
   public void readBpmn(BpmnReader r) {
     name = r.readStringAttributeBpmn("name");

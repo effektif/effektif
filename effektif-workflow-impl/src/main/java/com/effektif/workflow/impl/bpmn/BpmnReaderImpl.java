@@ -156,7 +156,7 @@ public class BpmnReaderImpl implements BpmnReader {
     readLanes(workflow);
     removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
-    cleanEmptyElements(workflow.getBpmn());
+    workflow.cleanUnparsedBpmn();
     return workflow;
   }
 
@@ -200,7 +200,6 @@ public class BpmnReaderImpl implements BpmnReader {
         } else if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
-          cleanEmptyElements(transition.getBpmn());
           scope.transition(transition);
           // Remove the sequenceFlow as it has been parsed in the model.
           iterator.remove();
@@ -243,7 +242,7 @@ public class BpmnReaderImpl implements BpmnReader {
             activity.readBpmn(this);
             scope.activity(activity);
             setUnparsedBpmn(activity, currentXml);
-            cleanEmptyElements(activity.getBpmn());
+            activity.cleanUnparsedBpmn();
             // Remove the activity XML element as it has been parsed in the model.
             iterator.remove();
           }
@@ -251,6 +250,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
         endElement();
       }
+      currentXml.removeEmptyElement(BPMN_URI, "extensionElements");
     }
   }
 
@@ -332,6 +332,7 @@ public class BpmnReaderImpl implements BpmnReader {
   @Override
   public void endExtensionElements() {
     endElement();
+    currentXml.removeEmptyElement(BPMN_URI, "extensionElements");
   }
 
   @Override
@@ -511,32 +512,6 @@ public class BpmnReaderImpl implements BpmnReader {
     return convertType(typeName);
   }
 
-  /**
-   * Simplifies the BPMN XML by empty collections of attributes, child elements and extension elements.
-   */
-  public void cleanEmptyElements(XmlElement element) {
-    if (element == null) {
-      return;
-    }
-
-    // Remove empty attributes list.
-    if (element.attributes != null && element.attributes.isEmpty()) {
-      element.attributes = null;
-    }
-    if (element.elements != null) {
-      // Recursively clean child elements.
-      for (XmlElement childElement : element.elements) {
-        cleanEmptyElements(childElement);
-      }
-      element.removeEmptyElement(BPMN_URI, "extensionElements");
-
-      // Remove empty child elements list.
-      if (element.elements.isEmpty()) {
-        element.elements = null;
-      }
-    }
-  }
-
   private DataType convertType(String typeName) {
     if (typeName == null) {
       typeName = "text";
@@ -651,7 +626,6 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public XmlElement getUnparsedXml() {
-    cleanEmptyElements(currentXml);
     return currentXml;
   }
 

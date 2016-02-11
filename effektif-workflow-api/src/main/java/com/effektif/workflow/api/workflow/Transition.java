@@ -75,6 +75,8 @@ public class Transition extends Element {
     }
 
     r.endExtensionElements();
+    bpmn.clearName();
+    cleanUnparsedBpmn();
   }
   
   @Override

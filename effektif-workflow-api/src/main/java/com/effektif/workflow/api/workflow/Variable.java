@@ -117,6 +117,9 @@ public class Variable extends Element {
 
     Map<String, Object> variableProperties = r.readSimpleProperties();
     addProperties(variableProperties);
+
+    bpmn.clearName();
+    cleanUnparsedBpmn();
   }
 
   @Override

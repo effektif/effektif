@@ -53,6 +53,34 @@ public class XmlElement {
 
   // name ///////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Clears the BPMN element name, used to clean up unparsed BPMN after BPMN import when the name is redundant.
+   */
+  public void clearName() {
+    this.name = null;
+  }
+
+  /**
+   * Simplifies the BPMN XML by empty collections of attributes, child elements and extension elements.
+   */
+  public void cleanEmptyElements() {
+    // Remove empty attributes list.
+    if (attributes != null && attributes.isEmpty()) {
+      attributes = null;
+    }
+    if (elements != null) {
+      // Recursively clean child elements.
+      for (XmlElement childElement : elements) {
+        childElement.cleanEmptyElements();
+      }
+
+      // Remove empty child elements list.
+      if (elements.isEmpty()) {
+        elements = null;
+      }
+    }
+  }
+
   public void setName(String namespaceUri, String localPart) {
     this.name = getNamespacePrefix(namespaceUri)+localPart;
     this.namespaceUri = namespaceUri;
@@ -307,7 +335,20 @@ public class XmlElement {
   }
   
   // other ///////////////////////////////////////////////////////////////////////////
-  
+
+  public boolean isEmpty() {
+    if (attributes != null && !attributes.isEmpty()) {
+      return false;
+    }
+    if (elements != null && !elements.isEmpty()) {
+      return false;
+    }
+    if (text != null && !text.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
+
   public boolean hasContent() {
     if (elements!=null && !elements.isEmpty()) {
       return false;
