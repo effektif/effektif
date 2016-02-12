@@ -102,10 +102,10 @@ public class MongoConfiguration extends DefaultConfiguration {
     if (credentials==null) {
       credentials = new ArrayList<>();
     }
-    credentials.add(MongoCredential.createMongoCRCredential(username, database, password.toCharArray()));
+    credentials.add(MongoCredential.createCredential(username, database, password.toCharArray()));
     return this;
   }
-  
+
   public MongoConfiguration workflowInstancesCollectionName(String processInstancesCollectionName) {
     this.workflowInstancesCollectionName = processInstancesCollectionName;
     return this;
