@@ -17,7 +17,6 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.effektif.workflow.impl.json.JsonObjectWriter;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonTypeMapperFactory;
@@ -41,7 +40,12 @@ public class UriMapper extends AbstractTypeMapper<URI> implements JsonTypeMapper
 
   @Override
   public void write(URI objectValue, JsonWriter jsonWriter) {
-    jsonWriter.writeString(objectValue.toString());
+    if (objectValue == null) {
+      jsonWriter.writeNull();
+    }
+    else {
+      jsonWriter.writeString(objectValue.toString());
+    }
   }
 
   @Override
