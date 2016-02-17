@@ -167,6 +167,10 @@ public class MongoCollection {
     return count;
   }
   
+  public Iterator<BasicDBObject> aggregate(String description, DBObject... pipeline) {
+    return aggregate(description, Arrays.asList(pipeline));
+  }
+  
   public Iterator<BasicDBObject> aggregate(String description, List<DBObject> pipeline) {
     if (log.isDebugEnabled()) {
       log.debug("--"+dbCollection.getName()+"-> "+description+" q="+toString(pipeline));
