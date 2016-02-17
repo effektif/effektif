@@ -175,27 +175,23 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   protected void initializeNamespacePrefixes() {
-    if (xml.namespaces!=null) {
-      for (String prefix : xml.namespaces.keySet()) {
-        String uri = xml.namespaces.get(prefix);
-        if (BPMN_URI.equals(uri)) {
-          bpmnPrefix = prefix;
-        } else if (EFFEKTIF_URI.equals(uri)) {
-          effektifPrefix = prefix;
-        }
-      }
+    if (xml.namespaces != null) {
+      bpmnPrefix = xml.namespaces.getPrefix(BPMN_URI);
+      effektifPrefix = xml.namespaces.getPrefix(EFFEKTIF_URI);
     }
-    if (bpmnPrefix==null) {
+
+    // Add any missing namespaces with their default prefixes.
+    if (bpmnPrefix == null) {
       bpmnPrefix = "";
       xml.addNamespace(BPMN_URI, bpmnPrefix);
     }
-    if (bpmnDiagramPrefix==null) {
+    if (bpmnDiagramPrefix == null) {
       bpmnDiagramPrefix = "bpmndi";
       xml.addNamespace(BPMN_DI_URI, bpmnDiagramPrefix);
       xml.addNamespace(OMG_DC_URI, "omgdc");
       xml.addNamespace(OMG_DI_URI, "omgdi");
     }
-    if (effektifPrefix==null) {
+    if (effektifPrefix == null) {
       effektifPrefix = "e";
       xml.addNamespace(EFFEKTIF_URI, effektifPrefix);
     }

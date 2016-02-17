@@ -15,12 +15,18 @@
  */
 package com.effektif.workflow.api.bpmn;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.json.JsonIgnore;
 
@@ -32,14 +38,16 @@ import com.effektif.workflow.api.json.JsonIgnore;
  */
 public class XmlElement {
 
+  private static final Logger log = LoggerFactory.getLogger(XmlElement.class);
+
   /** prefix:localPart.  eg "e:subject" */
   public String name;
 
-  /** maps attribute names (prefix:localPart eg "e:type" or "type") to attribute values */
+  /** Maps attribute names (prefix:localPart eg "e:type" or "type") to attribute values. */
   public Map<String, String> attributes;
   
-  /** maps namespace uris to prefixes, null value represents the default namespace */
-  public Map<String,String> namespaces;
+  /** Maps namespace URIs to prefixes; a null value represents the default namespace. */
+  public XmlNamespaces namespaces;
   
   public List<XmlElement> elements;
   public String text;
@@ -82,7 +90,7 @@ public class XmlElement {
   }
 
   public void setName(String namespaceUri, String localPart) {
-    this.name = getNamespacePrefix(namespaceUri)+localPart;
+    this.name = getNamespacePrefix(namespaceUri) + localPart;
     this.namespaceUri = namespaceUri;
   }
 
@@ -104,22 +112,26 @@ public class XmlElement {
   // namespaces ///////////////////////////////////////////////////////////////////////////
   
   /** maps namespace uris to prefixes */
-  public Map<String, String> getNamespaces() {
+  public XmlNamespaces getNamespaces() {
     return namespaces;
   }
 
   public void addNamespace(String namespaceUri, String prefix) {
-    if (namespaces==null) {
-      namespaces = new LinkedHashMap<>();
+    if (namespaces == null) {
+      namespaces = new XmlNamespaces();
     }
     if ("".equals(prefix)) {
       prefix = null;
     }
-    namespaces.put(namespaceUri, prefix);
+    try {
+      namespaces.add(prefix, namespaceUri);
+    } catch (URISyntaxException e) {
+      log.error(String.format("Cannot add XML namespace for invalid URI %s: %s", namespaceUri, e.getMessage()));
+    }
   }
   
   public boolean hasNamespace(String namespaceUri) {
-    if (this.namespaces!=null && this.namespaces.containsKey(namespaceUri)) {
+    if (this.namespaces!=null && this.namespaces.hasNamespace(namespaceUri)) {
       return true;
     }
     if (parent!=null) {
@@ -129,13 +141,9 @@ public class XmlElement {
   }
 
   protected String getNamespacePrefix(String namespaceUri) {
-    if (this.namespaces!=null && this.namespaces.containsKey(namespaceUri)) {
-      String prefix = this.namespaces.get(namespaceUri);
-      if (prefix==null) {
-        return "";
-      } else {
-        return prefix+":";
-      }
+    if (this.namespaces != null && this.namespaces.hasNamespace(namespaceUri)) {
+      String prefix = this.namespaces.getPrefix(namespaceUri);
+      return prefix == null || prefix.isEmpty() ? "" : prefix + ":";
     }
     if (parent!=null) {
       return parent.getNamespacePrefix(namespaceUri);

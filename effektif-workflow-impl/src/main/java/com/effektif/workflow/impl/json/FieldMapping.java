@@ -54,7 +54,7 @@ public class FieldMapping {
     try {
       Object fieldValue = field.get(bean);
       if (fieldValue!=null) {
-        // log.debug("writing "+Reflection.getSimpleName(field)+" with "+jsonTypeMapper+" : "+fieldValue);
+         log.debug("writing "+Reflection.getSimpleName(field)+" with "+jsonTypeMapper+" : "+fieldValue);
         if (inline!=null) {
           jsonWriter.setInline();
         } else {

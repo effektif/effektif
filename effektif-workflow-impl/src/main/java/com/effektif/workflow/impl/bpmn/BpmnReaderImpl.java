@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 
+import com.effektif.workflow.api.bpmn.XmlNamespaces;
 import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import org.joda.time.LocalDateTime;
@@ -93,12 +94,6 @@ public class BpmnReaderImpl implements BpmnReader {
   protected XmlElement currentXml;
   protected Class<?> currentClass;
 
-  /** maps uri's to prefixes.
-   * Ideally this should be done in a stack so that each element can add new namespaces.
-   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
-   * The current implementation assumes that all namespaces are defined in the root element */
-  protected Map<String,String> prefixes = new HashMap<>();
-
   protected JsonStreamMapper jsonStreamMapper;
 
   public BpmnReaderImpl(BpmnMappings bpmnMappings, JsonStreamMapper jsonStreamMapper) {
@@ -106,11 +101,14 @@ public class BpmnReaderImpl implements BpmnReader {
     this.jsonStreamMapper = jsonStreamMapper;
   }
 
+  /**
+   * The BPMN <code>definitions</code> element includes the document’s XML namespace declarations.
+   * Ideally, namespaces should be read in a stack, so that each element can add new namespaces.
+   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
+   * The current implementation assumes that all namespaces are defined in the root element.
+   */
   protected AbstractWorkflow readDefinitions(XmlElement definitionsXml) {
     AbstractWorkflow workflow = null;
-
-    // see #prefixes for more details about the limitations of namespaces
-    initializeNamespacePrefixes(definitionsXml);
 
     if (definitionsXml.elements != null) {
       Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
@@ -129,20 +127,9 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     readDiagram(workflow, definitionsXml);
-    // Clear the namespaces, because the dots in the URL keys break serialisation.
-    definitionsXml.namespaces = null;
     workflow.property(KEY_DEFINITIONS, definitionsXml);
 
     return workflow;
-  }
-
-  protected void initializeNamespacePrefixes(XmlElement xmlElement) {
-    Map<String, String> namespaces = xmlElement.namespaces;
-    if (namespaces != null) {
-      for (String prefix : namespaces.keySet()) {
-        prefixes.put(namespaces.get(prefix), prefix);
-      }
-    }
   }
 
   protected AbstractWorkflow readWorkflow(XmlElement processXml) {
