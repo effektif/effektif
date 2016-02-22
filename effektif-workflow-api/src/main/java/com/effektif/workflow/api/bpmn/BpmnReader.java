@@ -14,6 +14,7 @@
 package com.effektif.workflow.api.bpmn;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
