@@ -141,6 +141,9 @@ public interface BpmnReader {
   /** Reads a date from the ‘value’ attribute in the named element in the Effektif namespace. */
   LocalDateTime readDateValue(String localPart);
 
+  /** Reads nested property elements. */
+  Map<String,Object> readSimpleProperties();
+
   /** Reads a string from the ‘value’ attribute in the named element in the Effektif namespace. */
   String readStringValue(String localPart);
 
@@ -150,7 +153,6 @@ public interface BpmnReader {
   /** Reads a string as content text in the current xml element in the Effektif namespace. */
   String readTextEffektif(String localPart);
 
-  /** TODO */
   XmlElement getUnparsedXml();
 
   /** Reads the first condition from the available condition elements. */

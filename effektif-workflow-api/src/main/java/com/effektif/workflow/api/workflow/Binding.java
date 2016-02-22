@@ -39,6 +39,8 @@ public class Binding<T> {
   protected T value;
   protected DataType type;
   protected String expression;
+  protected String template;
+
   protected Map<String, Object> metadata;
 
   /**
@@ -85,6 +87,17 @@ public class Binding<T> {
    * @see https://github.com/effektif/effektif/wiki/Expressions */
   public Binding<T> expression(String expression) {
     this.expression = expression;
+    return this;
+  }
+
+  public String getTemplate() {
+    return this.template;
+  }
+  public void setTemplate(String template) {
+    this.template = template;
+  }
+  public Binding template(String template) {
+    this.template = template;
     return this;
   }
 

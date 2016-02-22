@@ -21,10 +21,10 @@ import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-
-/** 
- * represents a json object type that internally is parsed to a java bean. 
+/**
+ * Represents a JSON object type that internally is parsed to a Java bean.
  * 
  * @author Tom Baeyens
  */
@@ -70,5 +70,15 @@ public class JavaBeanType extends DataType {
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.writeStringAttributeEffektif("class", javaClass.getName());
+  }
+
+  @Override
+  public Object readBpmnValue(BpmnReader r) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void writeBpmnValue(BpmnWriter w, Object value) {
+    throw new NotImplementedException();
   }
 }

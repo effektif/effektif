@@ -259,6 +259,10 @@ public class WorkflowParser {
     if (binding.getMetadata() != null) {
       bindingImpl.metadata = binding.getMetadata();
     }
+    String template = binding.getTemplate();
+    if (template!=null) {
+      bindingImpl.template = parseTextTemplate(template);
+    }
     return bindingImpl;
   }
   

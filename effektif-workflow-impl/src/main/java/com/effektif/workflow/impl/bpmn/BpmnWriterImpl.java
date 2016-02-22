@@ -78,6 +78,7 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementBpmn(localpart, index);
     } else if (source instanceof XmlElement) {
       XmlElement sourceElement = (XmlElement) source;
+      sourceElement.setElementParents();
       if (xml!=null) {
         xml.addElement(sourceElement, index);
       }
@@ -174,27 +175,23 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   protected void initializeNamespacePrefixes() {
-    if (xml.namespaces!=null) {
-      for (String prefix : xml.namespaces.keySet()) {
-        String uri = xml.namespaces.get(prefix);
-        if (BPMN_URI.equals(uri)) {
-          bpmnPrefix = prefix;
-        } else if (EFFEKTIF_URI.equals(uri)) {
-          effektifPrefix = prefix;
-        }
-      }
+    if (xml.namespaces != null) {
+      bpmnPrefix = xml.namespaces.getPrefix(BPMN_URI);
+      effektifPrefix = xml.namespaces.getPrefix(EFFEKTIF_URI);
     }
-    if (bpmnPrefix==null) {
+
+    // Add any missing namespaces with their default prefixes.
+    if (bpmnPrefix == null) {
       bpmnPrefix = "";
       xml.addNamespace(BPMN_URI, bpmnPrefix);
     }
-    if (bpmnDiagramPrefix==null) {
+    if (bpmnDiagramPrefix == null) {
       bpmnDiagramPrefix = "bpmndi";
       xml.addNamespace(BPMN_DI_URI, bpmnDiagramPrefix);
       xml.addNamespace(OMG_DC_URI, "omgdc");
       xml.addNamespace(OMG_DI_URI, "omgdi");
     }
-    if (effektifPrefix==null) {
+    if (effektifPrefix == null) {
       effektifPrefix = "e";
       xml.addNamespace(EFFEKTIF_URI, effektifPrefix);
     }
@@ -351,6 +348,11 @@ public class BpmnWriterImpl implements BpmnWriter {
       if (binding.getExpression()!=null) {
         writeStringAttributeEffektif("expression", binding.getExpression());
       }
+      if (binding.getMetadata() != null && !binding.getMetadata().isEmpty()) {
+        startElementEffektif("metadata");
+        writeSimpleProperties(binding.getMetadata());
+        endElement();
+      }
       endElement();
     }
   }
@@ -372,6 +374,28 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElementBpmn("documentation");
       xml.addText(documentation);
       endElement();
+    }
+  }
+
+  /**
+   * Serialises properties with simple Java types as String values.
+   */
+  @Override
+  public void writeSimpleProperties(Map<String,Object> properties) {
+    if (properties != null) {
+      for (Map.Entry<String, Object> property : properties.entrySet()) {
+        if (property.getValue() != null) {
+          Class<?> type = property.getValue().getClass();
+          boolean simpleType = type.isPrimitive() || type.getName().startsWith("java.lang.");
+          if (simpleType) {
+            startElementEffektif("property");
+            writeStringAttributeEffektif("key", property.getKey());
+            writeStringAttributeEffektif("value", property.getValue().toString());
+            writeStringAttributeEffektif("type", property.getValue().getClass().getName());
+            endElement();
+          }
+        }
+      }
     }
   }
 

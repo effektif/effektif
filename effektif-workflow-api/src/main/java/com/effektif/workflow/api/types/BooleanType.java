@@ -17,6 +17,8 @@ package com.effektif.workflow.api.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 
 
@@ -31,5 +33,18 @@ public class BooleanType extends DataType {
   @Override
   public Type getValueType() {
     return Boolean.class;
+  }
+
+  @Override
+  public Object readBpmnValue(BpmnReader r) {
+    String value = r.readStringAttributeEffektif("value");
+    return value == null ? null : Boolean.valueOf(value);
+  }
+
+  @Override
+  public void writeBpmnValue(BpmnWriter w, Object value) {
+    if (value != null) {
+      w.writeStringAttributeEffektif("value", value.toString());
+    }
   }
 }

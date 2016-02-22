@@ -19,9 +19,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.effektif.workflow.impl.job.Job;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -150,7 +153,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
       }
       setEnd(Time.now());
       workflow.workflowEngine.notifyActivityInstanceEnded(this);
-      cancelTimersForScope();
+      destroyScopeInstance();
       setWorkState(null);
     }
   }

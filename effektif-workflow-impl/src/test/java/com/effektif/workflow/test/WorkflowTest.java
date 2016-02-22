@@ -80,15 +80,23 @@ public class WorkflowTest {
 
     if (workflowEngine==null) {
       if (cachedConfiguration==null) {
-        cachedConfiguration = new TestConfiguration();
-        cachedConfiguration.get(JsonStreamMapper.class).pretty();
-        cachedConfiguration.start();
+        cachedConfiguration = createConfiguration();
       }
       configuration = cachedConfiguration;
       workflowEngine = configuration.getWorkflowEngine();
     }
-    
+  }
+
+  @Before
+  public void initializeMessages() {
     messages = new ArrayList<>();
+  }
+
+  public TestConfiguration createConfiguration() {
+    TestConfiguration testConfiguration = new TestConfiguration();
+    testConfiguration.get(JsonStreamMapper.class).pretty();
+    testConfiguration.start();
+    return testConfiguration;
   }
   
   @After

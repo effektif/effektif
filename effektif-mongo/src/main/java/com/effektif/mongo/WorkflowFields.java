@@ -8,6 +8,7 @@ public interface WorkflowFields {
   String SOURCE_WORKFLOW_ID = "sourceWorkflowId";
   String CREATE_TIME = "createTime";
   String TRIGGER = "trigger";
+  String VARIABLES = "variables";
 
   interface Versions {
     String WORKFLOW_NAME = "workflowName";

@@ -19,6 +19,7 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.MappingsBuilder;
 import com.effektif.workflow.impl.json.types.DateDateMapper;
 import com.effektif.workflow.impl.json.types.LocalDateTimeDateMapper;
+import com.effektif.workflow.impl.json.types.UriMapper;
 import com.effektif.workflow.impl.workflowinstance.BaseInstanceImpl;
 
 
@@ -34,6 +35,7 @@ public class MongoObjectMappingsBuilder extends MappingsBuilder {
     typeMapperFactory(new LocalDateTimeDateMapper());
     typeMapperFactory(new WorkflowIdMongoMapper());
     typeMapperFactory(new WorkflowInstanceIdMongoMapper());
+    typeMapperFactory(new UriMapper());
     jsonFieldName(AbstractWorkflow.class, "id", "_id");
     jsonFieldName(WorkflowInstance.class, "id", "_id");
     ignore(BaseInstanceImpl.class, "transientProperties");

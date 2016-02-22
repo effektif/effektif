@@ -18,7 +18,6 @@ package com.effektif.mongo;
 import static com.effektif.mongo.ActivityInstanceFields.*;
 import static com.effektif.mongo.MongoDb._ID;
 import static com.effektif.mongo.MongoHelper.*;
-import static com.effektif.mongo.ScopeInstanceFields.*;
 import static com.effektif.mongo.WorkflowInstanceFields.*;
 
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.Job;
-import com.effektif.workflow.impl.job.JobService;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -107,7 +105,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   @Override
   public void flush(WorkflowInstanceImpl workflowInstance) {
     if (log.isDebugEnabled()) log.debug("Flushing workflow instance...");
-    
+
     WorkflowInstanceUpdates updates = workflowInstance.getUpdates();
     
     DBObject query = BasicDBObjectBuilder.start()
@@ -261,6 +259,10 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
               .append(WORK_STATE, new BasicDBObject("$exists", true))));
     }
 
+    if (query.getLockedBefore() != null) {
+      dbQuery.append(LOCK + "." + Lock.TIME, new BasicDBObject("$lt", query.getLockedBefore().toDate()));
+    }
+
     return dbQuery;
   }
   
@@ -345,9 +347,26 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
 
   @Override
   public WorkflowInstanceImpl lockWorkflowInstanceWithJobsDue() {
-    return null;
+
+    DBObject query = createLockQuery();
+    query.put(JobFields.DONE, new BasicDBObject("$exists", false));
+    query.put(JOBS + "." + JobFields.DUE_DATE, new BasicDBObject("$lte", Time.now().toDate()));
+
+    DBObject update = createLockUpdate();
+
+    DBObject retrieveFields = new BasicDBObject()
+        .append(ARCHIVED_ACTIVITY_INSTANCES, false);
+
+    BasicDBObject dbWorkflowInstance = workflowInstancesCollection.findAndModify("lock-workflow-instance", query, update, retrieveFields, new BasicDBObject(START, 1), false, true, false);
+    if (dbWorkflowInstance==null) {
+      return null;
+    }
+
+    WorkflowInstanceImpl workflowInstance = readWorkflowInstanceImpl(dbWorkflowInstance);
+    workflowInstance.trackUpdates(false);
+    return workflowInstance;
   }
-  
+
   public BasicDBObject writeWorkflowInstance(WorkflowInstanceImpl workflowInstance) {
     BasicDBObject dbWorkflowInstance = mongoMapper.write(workflowInstance.toWorkflowInstance(true));
     if (storeWorkflowIdsAsStrings) {

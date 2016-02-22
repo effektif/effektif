@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URI;
 import java.nio.charset.Charset;
 
 import com.effektif.workflow.api.bpmn.XmlElement;
@@ -68,7 +69,7 @@ public class XmlWriter {
   }
   
   protected void write(XmlElement xmlElement, int indentation) {
-    // TODO refactor this to the jax writer if there is a need for it
+    // TODO refactor this to the JAX writer if necessary.
     try {
       writeIndentation(writer, indentation);
       writer.write('<');
@@ -83,17 +84,17 @@ public class XmlWriter {
         }
       }
       if (xmlElement.namespaces!=null) {
-        for (String uri: xmlElement.namespaces.keySet()) {
-          String prefix = xmlElement.namespaces.get(uri);
+        for (URI uri: xmlElement.namespaces.getNames()) {
           writer.write(' ');
-          if (prefix==null) {
+          if (xmlElement.namespaces.isDefault(uri)) {
             writer.write("xmlns");
           } else {
             writer.write("xmlns:");
+            String prefix = xmlElement.namespaces.getPrefix(uri);
             writer.write(prefix);
           }
           writer.write("=\"");
-          writer.write(uri);
+          writer.write(uri.toString());
           writer.write("\"");
         }
       }

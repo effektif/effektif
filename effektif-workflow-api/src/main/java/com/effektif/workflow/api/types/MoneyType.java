@@ -17,6 +17,8 @@ package com.effektif.workflow.api.types;
 
 import java.lang.reflect.Type;
 
+import com.effektif.workflow.api.bpmn.BpmnReader;
+import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.Money;
 
@@ -33,5 +35,21 @@ public class MoneyType extends DataType {
   public Type getValueType() {
     return Money.class;
   }
-  
+
+  @Override
+  public Object readBpmnValue(BpmnReader r) {
+    String currency = r.readStringAttributeEffektif("currency");
+    Double amount = Double.valueOf(r.readStringAttributeEffektif("amount"));
+    return new Money().currency(currency).amount(amount);
+  }
+
+  @Override
+  public void writeBpmnValue(BpmnWriter w, Object value) {
+    if (value != null && value instanceof Money) {
+      Money moneyValue = (Money) value;
+      w.writeStringAttributeEffektif("currency", moneyValue.getCurrency());
+      w.writeStringAttributeEffektif("amount", moneyValue.getAmount());
+    }
+  }
+
 }

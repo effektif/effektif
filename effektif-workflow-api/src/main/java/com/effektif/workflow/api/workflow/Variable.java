@@ -15,8 +15,11 @@
  */
 package com.effektif.workflow.api.workflow;
 
+import java.util.Map;
+
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.types.DataType;
 
 
@@ -105,6 +108,18 @@ public class Variable extends Element {
     super.readBpmn(r);
     id = r.readStringAttributeEffektif("id");
     type = r.readTypeElementEffektif();
+
+    for (XmlElement nestedElement: r.readElementsEffektif("default")) {
+      r.startElement(nestedElement);
+      defaultValue = type.readBpmnValue(r);
+      r.endElement();
+    }
+
+    Map<String, Object> variableProperties = r.readSimpleProperties();
+    addProperties(variableProperties);
+
+    bpmn.clearName();
+    cleanUnparsedBpmn();
   }
 
   @Override
@@ -113,6 +128,14 @@ public class Variable extends Element {
     w.writeStringAttributeEffektif("id", id);
     super.writeBpmn(w);
     w.writeTypeElement(type);
+
+    if (defaultValue != null) {
+      w.startElementEffektif("default");
+      type.writeBpmnValue(w, defaultValue);
+      w.endElement();
+    }
+
+    w.writeSimpleProperties(properties);
     w.endElement();
   }
 }

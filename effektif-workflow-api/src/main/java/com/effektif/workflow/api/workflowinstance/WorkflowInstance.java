@@ -19,6 +19,8 @@ import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 
+import java.util.List;
+
 
 /**
  * @author Tom Baeyens
@@ -33,6 +35,7 @@ public class WorkflowInstance extends ScopeInstance {
   protected WorkflowInstanceId callerWorkflowInstanceId;
   protected String callerActivityInstanceId;
   protected String caseId;
+  public List<TimerInstance> jobs;
 
   public WorkflowInstanceId getId() {
     return this.id;
@@ -89,5 +92,13 @@ public class WorkflowInstance extends ScopeInstance {
   public WorkflowInstance businessKey(String businessKey) {
     this.businessKey = businessKey;
     return this;
+  }
+
+  public List<TimerInstance> getJobs() {
+    return jobs;
+  }
+
+  public void setJobs(List<TimerInstance> jobs) {
+    this.jobs = jobs;
   }
 }

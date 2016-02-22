@@ -53,9 +53,17 @@ public class BpmnMapper {
     return readFromReader(new StringReader(bpmnString));
   }
 
+  public AbstractWorkflow readFromString(String bpmnString, BpmnReaderImpl bpmnReader) {
+    return readFromReader(new StringReader(bpmnString), bpmnReader);
+  }
+
   public AbstractWorkflow readFromReader(Reader reader) {
+    return readFromReader(reader, createBpmnReaderImpl());
+  }
+
+  public AbstractWorkflow readFromReader(Reader reader, BpmnReaderImpl bpmnReader) {
     XmlElement xmlRoot = XmlReader.parseXml(reader);
-    return createBpmnReaderImpl().readDefinitions(xmlRoot);
+    return bpmnReader.readDefinitions(xmlRoot);
   }
 
   protected BpmnReaderImpl createBpmnReaderImpl() {

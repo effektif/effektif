@@ -29,6 +29,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 
+import com.effektif.workflow.api.bpmn.XmlNamespaces;
+import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +43,6 @@ import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Trigger;
 import com.effektif.workflow.api.workflow.diagram.Bounds;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
 import com.effektif.workflow.api.workflow.diagram.Edge;
@@ -84,26 +80,20 @@ import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
 public class BpmnReaderImpl implements BpmnReader {
 
   private static final Logger log = LoggerFactory.getLogger(BpmnReaderImpl.class);
-  
+
   /** global mappings */
   protected BpmnMappings bpmnMappings;
 
-  /** stack of scopes */ 
+  /** stack of scopes */
   protected Stack<Scope> scopeStack = new Stack<Scope>();
-  /** current scope */ 
+  /** current scope */
   protected Scope scope;
-  
-  /** stack of xml elements */ 
+
+  /** stack of xml elements */
   protected Stack<XmlElement> xmlStack = new Stack<XmlElement>();
-  /** current xml element */ 
-  protected XmlElement currentXml; 
-  protected Class<?> currentClass; 
-  
-  /** maps uri's to prefixes.
-   * Ideally this should be done in a stack so that each element can add new namespaces.
-   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
-   * The current implementation assumes that all namespaces are defined in the root element */
-  protected Map<String,String> prefixes = new HashMap<>();
+  /** current xml element */
+  protected XmlElement currentXml;
+  protected Class<?> currentClass;
 
   protected JsonStreamMapper jsonStreamMapper;
 
@@ -111,12 +101,15 @@ public class BpmnReaderImpl implements BpmnReader {
     this.bpmnMappings = bpmnMappings;
     this.jsonStreamMapper = jsonStreamMapper;
   }
-  
+
+  /**
+   * The BPMN <code>definitions</code> element includes the document’s XML namespace declarations.
+   * Ideally, namespaces should be read in a stack, so that each element can add new namespaces.
+   * The addPrefixes() should then be refactored to pushPrefixes and popPrefixes.
+   * The current implementation assumes that all namespaces are defined in the root element.
+   */
   protected AbstractWorkflow readDefinitions(XmlElement definitionsXml) {
     AbstractWorkflow workflow = null;
-
-    // see #prefixes for more details about the limitations of namespaces
-    initializeNamespacePrefixes(definitionsXml);
 
     if (definitionsXml.elements != null) {
       Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
@@ -135,20 +128,9 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     readDiagram(workflow, definitionsXml);
-    // Clear the namespaces, because the dots in the URL keys break serialisation.
-    definitionsXml.namespaces = null;
     workflow.property(KEY_DEFINITIONS, definitionsXml);
 
     return workflow;
-  }
-
-  protected void initializeNamespacePrefixes(XmlElement xmlElement) {
-    Map<String, String> namespaces = xmlElement.namespaces;
-    if (namespaces != null) {
-      for (String prefix : namespaces.keySet()) {
-        prefixes.put(namespaces.get(prefix), prefix);
-      }
-    }
   }
 
   protected AbstractWorkflow readWorkflow(XmlElement processXml) {
@@ -156,12 +138,39 @@ public class BpmnReaderImpl implements BpmnReader {
     this.currentXml = processXml;
     this.scope = workflow;
     workflow.readBpmn(this);
+
+    attachTimers(workflow);
+
     readLanes(workflow);
     removeDanglingTransitions(workflow);
     setUnparsedBpmn(workflow, processXml);
+    workflow.cleanUnparsedBpmn();
     return workflow;
   }
 
+  protected void attachTimers(AbstractWorkflow workflow) {
+
+    List<Timer> timers = workflow.getTimers();
+
+    if (timers != null && timers.size() > 0) {
+
+      Iterator<Timer> timerIterator = timers.iterator();
+      while (timerIterator.hasNext()) {
+        Timer timer = timerIterator.next();
+
+        // todo: make generic
+        if (timer instanceof BoundaryEventTimer) {
+          BoundaryEvent boundaryEvent = ((BoundaryEventTimer) timer).boundaryEvent;
+
+          if (boundaryEvent != null) {
+            Activity act = workflow.findActivity(boundaryEvent.getFromId());
+            if (act != null) act.timer(timer);
+            timerIterator.remove();
+          }
+        }
+      }
+    }
+  }
 
   protected void readLanes(AbstractWorkflow workflow) {
     // Not supported.
@@ -174,14 +183,46 @@ public class BpmnReaderImpl implements BpmnReader {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
 
-        if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
+        if (scopeElement.is(BPMN_URI, "extensionElements")) {
+          scope.setProperties(readSimpleProperties());
+        } else if (scopeElement.is(BPMN_URI, "sequenceFlow")) {
           Transition transition = new Transition();
           transition.readBpmn(this);
           scope.transition(transition);
           // Remove the sequenceFlow as it has been parsed in the model.
           iterator.remove();
-        }
-        else {
+        } else if (scopeElement.is(BPMN_URI, "boundaryEvent")) {
+
+//          <bpmn:boundaryEvent id="BoundaryEvent_1ymyt09" attachedToRef="Task_02wgtff">
+//            <bpmn:outgoing>SequenceFlow_0se37xg</bpmn:outgoing>
+//            <bpmn:timerEventDefinition>
+//              <bpmn:timeDuration>PT5M</bpmn:timeDuration>
+//            </bpmn:timerEventDefinition>
+//          </bpmn:boundaryEvent>
+//          <bpmn:sequenceFlow id="SequenceFlow_0se37xg" sourceRef="BoundaryEvent_1ymyt09" targetRef="Task_13koiv2" />
+
+          startElement(scopeElement);
+          BoundaryEvent boundaryEvent = new BoundaryEvent();
+          boundaryEvent.readBpmn(this);
+
+          for (XmlElement xmlElement : currentXml.getElements()) {
+            BpmnTypeMapping typeMapping = bpmnMappings.getBpmnTypeMapping(xmlElement, this);
+
+            if (typeMapping != null) {
+              BoundaryEventTimer timer = new BoundaryEventTimer();
+
+              startElement(xmlElement);
+              timer.readBpmn(this);
+              timer.boundaryEvent = boundaryEvent;
+              endElement();
+
+              scope.timer(timer);
+            }
+          }
+
+          iterator.remove();
+          endElement();
+        } else {
           BpmnTypeMapping bpmnTypeMapping = getBpmnTypeMapping();
           if (bpmnTypeMapping != null) {
             Activity activity = (Activity) bpmnTypeMapping.instantiate();
@@ -189,6 +230,7 @@ public class BpmnReaderImpl implements BpmnReader {
             activity.readBpmn(this);
             scope.activity(activity);
             setUnparsedBpmn(activity, currentXml);
+            activity.cleanUnparsedBpmn();
             // Remove the activity XML element as it has been parsed in the model.
             iterator.remove();
           }
@@ -196,6 +238,7 @@ public class BpmnReaderImpl implements BpmnReader {
 
         endElement();
       }
+      currentXml.removeEmptyElement(BPMN_URI, "extensionElements");
     }
   }
 
@@ -210,7 +253,7 @@ public class BpmnReaderImpl implements BpmnReader {
     unparsedBpmn.name = null;
     scope.setBpmn(unparsedBpmn);
   }
-  
+
   @Override
   public List<XmlElement> readElementsBpmn(String localPart) {
     if (currentXml==null) {
@@ -218,7 +261,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return currentXml.removeElements(BPMN_URI, localPart);
   }
-  
+
   @Override
   public List<XmlElement> readElementsEffektif(Class modelClass) {
     BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
@@ -242,7 +285,7 @@ public class BpmnReaderImpl implements BpmnReader {
     List<XmlElement> xmlElements = currentXml.removeElements(EFFEKTIF_URI, localPart);
     return !xmlElements.isEmpty() ? xmlElements.get(0) : null;
   }
-  
+
 
   @Override
   public void startElement(XmlElement xmlElement) {
@@ -251,23 +294,23 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     currentXml = xmlElement;
   }
-  
+
   @Override
   public void endElement() {
     currentXml = xmlStack.empty() ? null : xmlStack.pop();
   }
-  
+
   public void startScope(Scope scope) {
     if (this.scope!=null) {
       scopeStack.push(this.scope);
     }
     this.scope = scope;
   }
-  
+
   public void endScope() {
     this.scope = scopeStack.pop();
   }
-  
+
   @Override
   public void startExtensionElements() {
     XmlElement extensionsXmlElement = currentXml.getElement(BPMN_URI, "extensionElements");
@@ -277,8 +320,9 @@ public class BpmnReaderImpl implements BpmnReader {
   @Override
   public void endExtensionElements() {
     endElement();
+    currentXml.removeEmptyElement(BPMN_URI, "extensionElements");
   }
-  
+
   @Override
   public Boolean readBooleanAttributeEffektif(String localPart) {
     if (currentXml==null) {
@@ -368,9 +412,19 @@ public class BpmnReaderImpl implements BpmnReader {
       Binding binding = new Binding();
       String value = element.getAttribute(EFFEKTIF_URI, "value");
       String typeName = element.getAttribute(EFFEKTIF_URI, "type");
+      startElement(element);
+      XmlElement metadataElement = readElementEffektif("metadata");
+      Map<String, Object> metadata = null;
+      if (metadataElement != null) {
+        startElement(metadataElement);
+        metadata = readSimpleProperties();
+        endElement();
+      }
+      endElement();
       DataType type = convertType(typeName);
       binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
       binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
+      binding.setMetadata(metadata);
       bindings.add(binding);
     }
     return bindings;
@@ -408,7 +462,7 @@ public class BpmnReaderImpl implements BpmnReader {
     JsonTypeMapper typeMapper = bpmnMappings.getTypeMapper(type);
     return (T) typeMapper.read(value, jsonReader);
   }
-  
+
   /**
    * Returns an ID type instance, constructed from the given JSON string ID.
    */
@@ -426,21 +480,6 @@ public class BpmnReaderImpl implements BpmnReader {
       throw new RuntimeException(e);
     }
   }
-
-
-
-//  @Override
-//  public AccessIdentity readAccessIdentity() {
-//    try {
-//      Class<AccessIdentity> identityClass = mappings.getConcreteClass(this, AccessIdentity.class);
-//      AccessIdentity identity = identityClass.newInstance();
-//      identity.readBpmn(this);
-//      return identity;
-//    } catch (Exception e) {
-//      throw new RuntimeException(e);
-//    }
-//  }
-
 
   /** Returns the contents of the BPMN <code>documentation</code> element. */
   @Override
@@ -545,6 +584,45 @@ public class BpmnReaderImpl implements BpmnReader {
     return null;
   }
 
+  /**
+   * Reads nested property elements: currently only String, Boolean, Integer and Double properties are supported.
+   */
+  @Override
+  public Map<String,Object> readSimpleProperties() {
+    Map<String,Object> properties = new HashMap<>();
+    for (XmlElement element : readElementsEffektif("property")) {
+      startElement(element);
+      String key = readStringAttributeEffektif("key");
+      String value = readStringAttributeEffektif("value");
+      String type = readStringAttributeEffektif("type");
+
+      if (key != null && value != null && type != null) {
+        try {
+          if (String.class.getName().equals(type)) {
+            properties.put(key, value.toString());
+          }
+          else if (Boolean.class.getName().equals(type)) {
+            properties.put(key, Boolean.valueOf(value));
+          }
+          else if (Integer.class.getName().equals(type)) {
+            properties.put(key, Integer.valueOf(value));
+          }
+          else if (Double.class.getName().equals(type)) {
+            properties.put(key, Double.valueOf(value));
+          }
+          else {
+            log.warn(String.format("Unsupported property type ‘%s’ for property %s=%s", type, key, value));
+          }
+        } catch (NumberFormatException e) {
+          log.warn(String.format("Unsupported value format for type ‘%s’ for property %s=%s", type, key, value));
+        }
+      }
+
+      endElement();
+    }
+    return properties;
+  }
+
   @Override
   public String readStringValue(String localPart) {
     XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
@@ -592,7 +670,7 @@ public class BpmnReaderImpl implements BpmnReader {
   public List<Condition> readConditions() {
     List<Condition> conditions = new ArrayList<>();
 
-    SortedSet<Class<?>> bpmnClasses = bpmnMappings.getBpmnClasses(); 
+    SortedSet<Class<?>> bpmnClasses = bpmnMappings.getBpmnClasses();
 
     for (Class bpmnClass : bpmnClasses) {
       if (Condition.class.isAssignableFrom(bpmnClass)) {
@@ -621,6 +699,21 @@ public class BpmnReaderImpl implements BpmnReader {
     Set<String> activityIds = new HashSet<>();
     for (Activity activity : workflow.getActivities()) {
       activityIds.add(activity.getId());
+
+      // Transitions from Boundary event timers should be included as well
+      // todo: make generic
+      List<Timer> activityTimers = activity.getTimers();
+
+      if (activityTimers != null) {
+        for (Timer timer : activityTimers) {
+          if (timer instanceof BoundaryEventTimer) {
+            BoundaryEvent boundaryEvent = ((BoundaryEventTimer) timer).boundaryEvent;
+
+            activityIds.add(boundaryEvent.getBoundaryId());
+            activityIds.addAll(boundaryEvent.getToTransitionIds());
+          }
+        }
+      }
     }
 
     ListIterator<Transition> transitionIterator = workflow.getTransitions().listIterator();
@@ -799,245 +892,4 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return edges;
   }
-
-  //  @Override
-//  public AccessIdentity readAccessIdentity() {
-//    return null;
-//  }
-
-  //  @Override
-//  public <T extends Id> T readId(Class<T> idType) {
-//    return AbstractReader.createId(readBpmnAttribute("id"), idType);
-//  }
-//
-//  @Override
-//  public <T extends Id> T readId(String fieldName, Class<T> idType) {
-//    return null;
-//  }
-//
-//  @Override
-//  public <T extends JsonReadable> List<T> readList(String fieldName, Class<T> type) {
-//    return null;
-//  }
-//
-//  @Override
-//  public <T extends JsonReadable> T readObject(String fieldName, Class<T> type) {
-//    return null;
-//  }
-//
-//  @Override
-//  public <T> Map<String, T> readMap(String fieldName, Class<T> valueType) {
-//    return null;
-//  }
-//
-//  @Override
-//  public String readString(String fieldName) {
-//    if (bpmnFieldMappings!=null && bpmnFieldMappings.hasMapping(fieldName)) {
-//      return bpmnFieldMappings.readAttribute(this, fieldName);
-//    } else if ("id".equals(fieldName)) {
-//      return readBpmnAttribute(fieldName);
-//    } else if ("description".equals(fieldName)) {
-//      return readDocumentation();
-//    }
-//    return readStringValue(fieldName); 
-//  }
-//  
-//  public BpmnReaderImpl(Configuration configuration) {
-//    activityTypeService = configuration.get(ActivityTypeService.class);
-//    dataTypeService = configuration.get(DataTypeService.class);
-//  }
-//
-//  public Workflow toWorkflow(String bpmnString) {
-//    return toWorkflow(new StringReader(bpmnString));
-//  }
-//
-//  public Workflow toWorkflow(java.io.Reader reader) {
-//    this.xmlRoot = XmlReader.parseXml(reader);
-//    return readDefinitions(xmlRoot);
-//  }
-//
-//  public String readBpmnAttribute(String name) {
-//    return xml.removeAttribute(getQName(BPMN_URI, name));
-//  }
-//
-//  public String readEffektifAttribute(String name) {
-//    return xml.removeAttribute(getQName(EFFEKTIF_URI, name));
-//  }
-//
-//  public String getBpmnAttribute(String name) {
-//    return xml.getAttribute(getQName(BPMN_URI, name));
-//  }
-//
-//  public String getEffektifAttribute(String name) {
-//    return xml.getAttribute(getQName(EFFEKTIF_URI, name));
-//  }
-//
-//
-//
-//  /**
-//   * Returns true iff the given XML element’s <code>effektif:type</code> attribute value is the given Effektif type.
-//   */
-//  public boolean hasServiceTaskType(XmlElement xml, ServiceTaskType type) {
-//    if (type == null) {
-//      throw new IllegalArgumentException("type must not be null");
-//    }
-//    String typeAttributeValue = xml.attributes.get(getQName(Bpmn.EFFEKTIF_URI, "type"));
-//    return type.hasValue(typeAttributeValue);
-//  }
-//
-//  protected String getQName(String namespaceUri, String localName) {
-//    String prefix = prefixes.get(namespaceUri);
-//    return "".equals(prefix) ? localName : prefix+":"+localName;
-//  }
-//
-//  protected void setUnparsedBpmn(Scope scope, XmlElement unparsedBpmn) {
-//    unparsedBpmn.name = null;
-//    scope.setBpmn(unparsedBpmn);
-//  }
-//
-//  public boolean isLocalPart(XmlElement xmlElement, String localPart) {
-//    return xmlElement!=null 
-//            && xmlElement.name!=null 
-//            && xmlElement.name.endsWith(localPart);
-//  }
-//
-//  /**
-//   * Returns a form from the given XML element’s extension (child) elements.
-//   */
-//  public Form readForm(XmlElement xml) {
-//    Form form = new Form();
-//    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
-//    if (extensionElements != null) {
-//      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
-//      while (extensions.hasNext()) {
-//        XmlElement extension = extensions.next();
-//
-//        if (extension.is(getQName(EFFEKTIF_URI, "form"))) {
-//          for (XmlElement formElement : extension.elements) {
-//            if (formElement.is(getQName(EFFEKTIF_URI, "description"))) {
-//              form.setDescription(formElement.text);
-//            }
-//            if (formElement.is(getQName(EFFEKTIF_URI, "field")) && formElement.attributes != null) {
-//              FormField field = new FormField();
-//              field.setId(formElement.attributes.get("id"));
-//              field.setName(formElement.attributes.get("name"));
-//              if ("true".equals(formElement.attributes.get("readonly"))) {
-//                field.readOnly();
-//              }
-//              if ("true".equals(formElement.attributes.get("required"))) {
-//                field.required();
-//              }
-//
-//              // TODO Work out how to replace with DataType look-up
-//              if ("text".equals(formElement.attributes.get("type"))) {
-//                field.setType(TextType.INSTANCE);
-//              }
-//
-//              form.field(field);
-//            }
-//          }
-//          // Remove the whole <code>effektif:form</code> element.
-//          extensions.remove();
-//        }
-//      }
-//    }
-//    return form;
-//  }
-//
-//  /**
-//   * Returns a string value read from the extension element with the given name.
-//   * The value is either read from the element’s <code>value</code> attribute, or its text content.
-//   */
-//  public String readStringValue(String fieldName) {
-//    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
-//    if (extensionElements != null) {
-//      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
-//      while (extensions.hasNext()) {
-//        XmlElement extension = extensions.next();
-//        if (extension.is(getQName(EFFEKTIF_URI, fieldName))) {
-//          String value;
-//          if (extension.attributes != null && extension.attributes.containsKey("value")) {
-//            value = extension.attributes.get("value");
-//          }
-//          else {
-//            value = extension.text;
-//          }
-//          extensions.remove();
-//          return value;
-//        }
-//      }
-//    }
-//    return null;
-//  }
-//
-//  
-//  public Map<String, String> readStringMappings(XmlElement xml, String elementName, String keyAttribute, String valueAttribute) {
-//    Map<String, String> mappings = new HashMap<>();
-//    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
-//
-//    if (extensionElements != null) {
-//      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
-//      while (extensions.hasNext()) {
-//        XmlElement extension = extensions.next();
-//
-//        if (extension.is(getQName(EFFEKTIF_URI, elementName))) {
-//          Map<String, String> attributes = extension.attributes;
-//          if (attributes != null && attributes.containsKey(keyAttribute) && attributes.containsKey(keyAttribute)) {
-//            mappings.put(attributes.get(keyAttribute), attributes.get(valueAttribute));
-//          }
-//          extensions.remove();
-//        }
-//      }
-//    }
-//    return mappings;
-//  }
-//
-//  @Override
-//  public <T> Binding<T> readBinding(String fieldName, Class<T> type) {
-//    List<Binding<T>> bindings = readBindings(fieldName, type);
-//    return bindings!=null ? bindings.get(0) : null;
-//  }
-//
-//  @Override
-//  public <T> List<Binding<T>> readBindings(String fieldName, Class<T> type) {
-//    List<Binding<T>> bindings = null;
-//    XmlElement extensionElements = xml.findChildElement(getQName(BPMN_URI, "extensionElements"));
-//    if (extensionElements != null) {
-//      Iterator<XmlElement> extensions = extensionElements.elements.iterator();
-//      while (extensions.hasNext()) {
-//        XmlElement extension = extensions.next();
-//        if (extension.is(getQName(EFFEKTIF_URI, fieldName))) {
-//          extensions.remove();
-//          Binding<T> binding = new Binding<>();
-//          String value = extension.getAttribute("value");
-//          if (value!=null) {
-//            T typedValue = (T) parseValue(value, type);
-//            binding.setValue(typedValue);
-//          }
-//          String expression = extension.getAttribute("expression");
-//          binding.setExpression(expression);
-//          if (bindings==null) {
-//            bindings = new ArrayList<>();
-//          }
-//          bindings.add(binding);
-//        }
-//      }
-//    }
-//    return bindings;
-//  }
-//  
-//  public Object parseValue(String value, Class<?> type) {
-//    if (String.class==type) {
-//      return value;
-//    }
-//    if ((Id.class.isAssignableFrom(type))) {
-//      try {
-//        Constructor<?> c = type.getConstructor(new Class<?>[]{String.class});
-//        return c.newInstance(new Object[]{value});
-//      } catch (Exception e) {
-//        throw new RuntimeException(e);
-//      }
-//    }
-//    throw new RuntimeException("Don't know how to parse value "+value+" as a "+type.getName());
-//  }
 }

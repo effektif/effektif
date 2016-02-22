@@ -16,8 +16,10 @@
 package com.effektif.workflow.impl.configuration;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +33,7 @@ public class Brewery {
   
    // private static final Logger log = LoggerFactory.getLogger(Brewery.class);
   
-  /** initializables will be notified when all the ingredients, brews and 
-   * suppliers are registered
-   * @see #initialize */
-  List<String> startables = new ArrayList<>();
-  List<String> stopables = new ArrayList<>();
+  List<Stoppable> stoppables = new ArrayList<>();
   boolean isStarted = false;
 
   /** maps aliases to object names. 
@@ -44,24 +42,23 @@ public class Brewery {
   Map<String,String> aliases = new HashMap<>();
   
   /** maps object names to a supplier, which can create the object on demand. */  
-  Map<String,Supplier> suppliers = new HashMap<>();
+  Map<String,Supplier> suppliers = new LinkedHashMap<>();
   
   /** maps names to a ingredients are objects that potentially need to be brewed before they become a brew */
-  Map<String,Object> ingredients = new HashMap<>();
+  Map<String,Object> ingredients = new LinkedHashMap<>();
   
   /** maps object names to brews, which are the final cached objects that are delivered */
-  Map<String,Object> brews = new HashMap<>();
+  Map<String,Object> brews = new LinkedHashMap<>();
   
   /** creates a deep copy of all the collection fields, convenient 
    * for testing. */
   public Brewery createCopy() {
     Brewery copy = new Brewery();
-    copy.startables = new ArrayList<>(startables);
-    copy.stopables = new ArrayList<>(stopables);
+    copy.stoppables = new ArrayList<>(stoppables);
     copy.aliases = new HashMap<>(aliases);
-    copy.suppliers = new HashMap<>(suppliers);
-    copy.ingredients = new HashMap<>(ingredients);
-    copy.brews = new HashMap<>(brews);
+    copy.suppliers = new LinkedHashMap<>(suppliers);
+    copy.ingredients = new LinkedHashMap<>(ingredients);
+    copy.brews = new LinkedHashMap<>(brews);
     return copy;
   }
   
@@ -114,8 +111,28 @@ public class Brewery {
   public void start() {
     if (!isStarted) {
       isStarted = true;
-      for (String startableName: startables) {
-        Startable startable = (Startable) get(startableName);
+      brewStartableIngredients(ingredients.values());
+      start(suppliers.values());
+      start(ingredients.values());
+      start(brews.values());
+    }
+  }
+
+  private void brewStartableIngredients(Collection<Object> ingredients) {
+    for (Object ingredient: ingredients) {
+      if (ingredient instanceof Startable) {
+        Startable startable = (Startable) ingredient;
+        if (!brews.containsValue(startable)) {
+          brew(startable);
+        }
+      }
+    }
+  }
+
+  protected void start(Collection<?> objects) {
+    for (Object o: objects) {
+      if (o instanceof Startable) {
+        Startable startable = (Startable) o;
         startable.start(this);
       }
     }
@@ -124,10 +141,11 @@ public class Brewery {
   public void stop() {
     if (isStarted) {
       isStarted = false;
-      for (String stoppableName: stopables) {
-        Stoppable stoppable = (Stoppable) get(stoppableName);
+      Collections.reverse(stoppables);
+      for (Stoppable stoppable: stoppables) {
         stoppable.stop(this);
       }
+      stoppables = new ArrayList<>();
     }
   }
 
@@ -173,19 +191,17 @@ public class Brewery {
       // log.debug("brewing("+name+")");
       ((Brewable)o).brew(this);
     }
+    if (o instanceof Stoppable) {
+      stoppables.add((Stoppable)o);
+    }
   }
 
   public void ingredient(Object ingredient) {
     String name = ingredient.getClass().getName();
     alias(name, ingredient.getClass());
     ingredient(ingredient, name);
-    if (ingredient instanceof Startable) {
-      if (!startables.contains(ingredient)) {
-        startables.add(name);
-      }
-    }
     if (ingredient instanceof Stoppable) {
-      stopables.add(name);
+      stoppables.add((Stoppable)ingredient);
     }
   }
 
@@ -202,8 +218,8 @@ public class Brewery {
 
   public void supplier(Supplier supplier, String name) {
     suppliers.put(name, supplier);
-    if (supplier instanceof Startable) {
-      startables.add(name);
+    if (supplier instanceof Stoppable) {
+      stoppables.add((Stoppable)supplier);
     }
   }
 
@@ -225,13 +241,23 @@ public class Brewery {
     }
   }
 
-  public void removeStartablesByType(Class<?> type) {
-    if (startables!=null) {
-      Iterator<String> iterator = startables.iterator();
-      while (iterator.hasNext()) {
-        String startableName = iterator.next();
-        if (startableName.equals(type.getName())) {
-          iterator.remove();
+  public void remove(Class<?> type) {
+    remove(type.getName());
+  }
+  
+  public void remove(String name) {
+    String realName = name;
+    if (aliases.containsKey(name)) {
+      realName = aliases.get(name);
+    }
+    if (realName!=null) {
+      ingredients.remove(realName);
+      brews.remove(realName);
+      ArrayList<String> keys = new ArrayList<String>(aliases.keySet());
+      for (String key: keys) {
+        String value = aliases.get(key);
+        if (realName.equals(value)) {
+          aliases.remove(key);
         }
       }
     }

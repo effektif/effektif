@@ -22,6 +22,7 @@ import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWritable;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.workflow.Variable;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Indicates the type of workflow instance variable data.
@@ -48,7 +49,23 @@ public class DataType implements BpmnReadable, BpmnWritable {
   @Override
   public void writeBpmn(BpmnWriter w) {
   }
-  
+
+  /**
+   * Default String value implementation for reading typed values for BPMN, used to export a variable’s default value.
+   */
+  public Object readBpmnValue(BpmnReader r) {
+    return r.readStringAttributeEffektif("value");
+  }
+
+  /**
+   * Default String value implementation for writing typed values for BPMN, used to export a variable’s default value.
+   */
+  public void writeBpmnValue(BpmnWriter w, Object value) {
+    if (value != null) {
+      w.writeStringAttributeEffektif("value", value.toString());
+    }
+  }
+
   public Type getValueType() {
     return Object.class;
   }

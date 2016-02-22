@@ -13,55 +13,30 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.joda.time.LocalDateTime;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.effektif.workflow.api.activities.Call;
-import com.effektif.workflow.api.activities.EmbeddedSubprocess;
-import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.HttpServiceTask;
-import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.activities.StartEvent;
+import com.effektif.workflow.api.activities.*;
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
-import com.effektif.workflow.api.model.AfterRelativeTime;
-import com.effektif.workflow.api.model.NextRelativeTime;
-import com.effektif.workflow.api.model.RelativeTime;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.BooleanType;
-import com.effektif.workflow.api.types.ChoiceType;
-import com.effektif.workflow.api.types.DateType;
-import com.effektif.workflow.api.types.EmailAddressType;
-import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.api.types.LinkType;
-import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.MoneyType;
-import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.api.workflow.MultiInstance;
-import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.model.*;
+import com.effektif.workflow.api.types.*;
+import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 
 /**
@@ -366,32 +341,43 @@ public class WorkflowStreamTest {
 
   @Test
   public void testVariables() {
-    ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .variable("variable01", BooleanType.INSTANCE)
-      .variable("variable02", new ChoiceType().option("Red pill").option("Blue pill"))
-      .variable("variable03", new DateType().date())
-      .variable("variable04", EmailAddressType.INSTANCE)
-      .variable("variable05", new JavaBeanType(Integer.class))
-      .variable("variable06", LinkType.INSTANCE)
-      .variable("variable07", new ListType(NumberType.INSTANCE))
-      .variable("variable08", MoneyType.INSTANCE)
-      .variable("variable09", NumberType.INSTANCE)
-      .variable("variable10", new TextType().multiLine());
+
+    LocalDateTime now = DateTime.now().withZone(DateTimeZone.UTC).withMillisOfSecond(0).toLocalDateTime();
+
+    ExecutableWorkflow workflow = new ExecutableWorkflow();
+    workflow.variable(new Variable().id("variable01").type(BooleanType.INSTANCE).defaultValue(Boolean.TRUE));
+    ChoiceType choiceType = new ChoiceType().option("Red pill").option("Blue pill");
+    workflow.variable(new Variable().id("variable02").type(choiceType).defaultValue("Blue pill"));
+    workflow.variable(new Variable().id("variable03").type(new DateType()).defaultValue(now));
+    workflow.variable(new Variable().id("variable04").type(EmailAddressType.INSTANCE).defaultValue("alice@example.org"));
+    workflow.variable(new Variable().id("variable05").type(new JavaBeanType(Integer.class)));
+    workflow.variable(new Variable().id("variable06").type(LinkType.INSTANCE).defaultValue("http://example.org/"));
+    workflow.variable(new Variable().id("variable07").type(new ListType(NumberType.INSTANCE)).defaultValue(Lists.of(40, 41, 42)));
+    Money defaultMoneyValue = new Money().currency("EUR").amount(41.99);
+    workflow.variable(new Variable().id("variable08").type(MoneyType.INSTANCE).defaultValue(defaultMoneyValue));
+    workflow.variable(new Variable().id("variable09").type(NumberType.INSTANCE).defaultValue(42.5));
+    workflow.variable(new Variable().id("variable10").type(new TextType().multiLine()).defaultValue("hello"));
+    workflow.variable(new Variable().id("variable11").type(new DateType().date()).defaultValue(now));
+    workflow.variable(new Variable().id("variable12").type(new DateType().time()).defaultValue(now));
 
     workflow = serializeWorkflow(workflow);
 
     assertNotNull(workflow.getVariables());
-    assertEquals(10, workflow.getVariables().size());
+    assertEquals(12, workflow.getVariables().size());
 
     assertEquals(BooleanType.class, workflow.getVariables().get(0).getType().getClass());
+    assertEquals(Boolean.TRUE, workflow.getVariables().get(0).getDefaultValue());
 
     assertEquals(ChoiceType.class, workflow.getVariables().get(1).getType().getClass());
     assertEquals("Red pill", ((ChoiceType) workflow.getVariables().get(1).getType()).getOptions().get(0).getId());
+    assertEquals("Blue pill", workflow.getVariables().get(1).getDefaultValue());
 
     assertEquals(DateType.class, workflow.getVariables().get(2).getType().getClass());
-    assertEquals("date", ((DateType) workflow.getVariables().get(2).getType()).getKind());
+    assertEquals("datetime", ((DateType) workflow.getVariables().get(2).getType()).getKind());
+    assertEquals(now, workflow.getVariables().get(2).getDefaultValue());
 
     assertEquals(EmailAddressType.class, workflow.getVariables().get(3).getType().getClass());
+    assertEquals("alice@example.org", workflow.getVariables().get(3).getDefaultValue());
 
     assertEquals(JavaBeanType.class, workflow.getVariables().get(4).getType().getClass());
     assertEquals(Integer.class, ((JavaBeanType) workflow.getVariables().get(4).getType()).getJavaClass());
@@ -399,13 +385,30 @@ public class WorkflowStreamTest {
     assertEquals(LinkType.class, workflow.getVariables().get(5).getType().getClass());
 
     assertEquals(ListType.class, workflow.getVariables().get(6).getType().getClass());
+    assertEquals(Lists.of(40, 41, 42), workflow.getVariables().get(6).getDefaultValue());
+
     assertEquals(NumberType.class, ((ListType) workflow.getVariables().get(6).getType()).getElementType().getClass());
 
     assertEquals(MoneyType.class, workflow.getVariables().get(7).getType().getClass());
+    assertEquals(defaultMoneyValue, workflow.getVariables().get(7).getDefaultValue());
+
     assertEquals(NumberType.class, workflow.getVariables().get(8).getType().getClass());
+    assertEquals(Double.class, workflow.getVariables().get(8).getDefaultValue().getClass());
+    assertEquals(42.5, workflow.getVariables().get(8).getDefaultValue());
 
     assertEquals(TextType.class, workflow.getVariables().get(9).getType().getClass());
     assertTrue(((TextType) workflow.getVariables().get(9).getType()).isMultiLine());
+    assertEquals("hello", workflow.getVariables().get(9).getDefaultValue());
+
+    assertEquals(DateType.class, workflow.getVariables().get(10).getType().getClass());
+    assertEquals("date", ((DateType) workflow.getVariables().get(10).getType()).getKind());
+    LocalDateTime defaultValue11 = (LocalDateTime) workflow.getVariables().get(10).getDefaultValue();
+    assertEquals(now.withTime(0, 0, 0, 0), defaultValue11.withTime(0, 0, 0, 0));
+
+    assertEquals(DateType.class, workflow.getVariables().get(11).getType().getClass());
+    assertEquals("time", ((DateType) workflow.getVariables().get(11).getType()).getKind());
+    LocalDateTime defaultValue12 = (LocalDateTime) workflow.getVariables().get(11).getDefaultValue();
+    assertEquals(now.withDate(1, 1, 1), defaultValue12.withDate(1, 1, 1));
   }
   
   @Test

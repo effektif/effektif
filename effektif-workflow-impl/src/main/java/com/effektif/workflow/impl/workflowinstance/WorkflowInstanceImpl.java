@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +111,17 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     workflowInstance.setWorkflowId(workflow.id);
     workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
     workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);
+
+    if (jobs != null) {
+      List<TimerInstance> timerInstances = new ArrayList<>();
+      for (Job job : jobs) {
+        TimerInstance timerInstance = new TimerInstance();
+        timerInstance.setDueDate(job.getDueDate());
+        timerInstances.add(timerInstance);
+      }
+      workflowInstance.setJobs(timerInstances);
+    }
+
     toScopeInstance(workflowInstance, includeWorkState);
     return workflowInstance;
   }
@@ -247,7 +259,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public void workflowInstanceEnded() {
     workflow.workflowEngine.notifyWorkflowInstanceEnded(workflowInstance);
     
-    cancelTimersForScope();
+    destroyScopeInstance();
     
     if (callerWorkflowInstanceId != null) {
       WorkflowInstanceImpl callerProcessInstance = null;
@@ -487,7 +499,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       getUpdates().isJobsChanged = true;
     }
   }
-
+  
   public WorkflowInstanceId getId() {
     return this.id;
   }
