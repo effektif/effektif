@@ -349,7 +349,7 @@ public class WorkflowParser {
   }
   
   public RelativeTimeImpl parseRelativeTime(RelativeTime relativeTime) {
-    if (relativeTime==null) {
+    if (relativeTime==null || !relativeTime.valid()) {
       return null;
     }
     return new RelativeTimeImpl(relativeTime, this);
