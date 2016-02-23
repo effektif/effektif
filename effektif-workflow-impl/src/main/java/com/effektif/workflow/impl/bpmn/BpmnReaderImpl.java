@@ -127,6 +127,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     readDiagram(workflow, definitionsXml);
+    definitionsXml.cleanEmptyElements();
     workflow.property(KEY_DEFINITIONS, definitionsXml);
 
     return workflow;
