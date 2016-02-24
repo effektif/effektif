@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.Job;
+import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -438,7 +440,27 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.workAsync = readWork(dbWorkflowInstance, WORK_ASYNC, workflowInstance);
     workflowInstance.properties = readObjectMap(dbWorkflowInstance, PROPERTIES);
     workflowInstance.setProperty(ORGANIZATION_ID, readObject(dbWorkflowInstance, ORGANIZATION_ID));
+
+    copyProperties(dbWorkflowInstance, workflowInstance);
+
     return workflowInstance;
+  }
+
+  /**
+   * Reads database fields (that do not have Java fields) and copies them to workflow instance properties.
+   * This makes it possible to write non-standard fields to the database and read them from properties.
+   */
+  private void copyProperties(BasicDBObject dbWorkflowInstance, WorkflowInstanceImpl workflowInstance) {
+    if (dbWorkflowInstance == null || workflowInstance == null) {
+      return;
+    }
+    Map<String,?> mappedBeanFields = mongoMapper.write(workflowInstance.toWorkflowInstance());
+    for (String fieldName : dbWorkflowInstance.keySet()) {
+      boolean property = !mappedBeanFields.keySet().contains(fieldName);
+      if (property) {
+        workflowInstance.setProperty(fieldName, dbWorkflowInstance.get(fieldName));
+      }
+    }
   }
 
   protected void readScopeImpl(ScopeInstanceImpl scopeInstance, BasicDBObject dbScopeInstance, Map<ActivityInstanceImpl, String> allActivityIds) {
