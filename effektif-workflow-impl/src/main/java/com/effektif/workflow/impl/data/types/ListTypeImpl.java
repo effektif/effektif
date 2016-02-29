@@ -15,9 +15,6 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.ListType;
@@ -26,6 +23,11 @@ import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.template.Hints;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -48,6 +50,24 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     super(listType);
   }
   
+  @Override
+  public String validateInternalValue(Object internalValue) {
+    if (!(internalValue instanceof Collection)) {
+      return "Value is not a list";
+    }
+    Iterator iterator = ((Collection)internalValue).iterator();
+    int index = 0;
+    while (iterator.hasNext()) {
+      Object element = iterator.next();
+      String elementErrorMessage = elementType.validateInternalValue(element);
+      if (elementErrorMessage!=null) {
+        return "Element "+index+" in list is invalid: "+element;
+      }
+      index++;
+    }
+    return null;
+  }
+
   @Override
   public void setConfiguration(Configuration configuration) {
     super.setConfiguration(configuration);
