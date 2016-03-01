@@ -15,7 +15,7 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.*;
 
-import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -82,7 +82,7 @@ public abstract class AbstractMapperTest {
 
 //  @Test
   public void testCall() {
-    Call activity = new Call()
+    SubProcess activity = new SubProcess()
       .id("runTests")
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId(workflowId()));

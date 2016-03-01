@@ -22,7 +22,7 @@ import java.util.Set;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -41,17 +41,17 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 /**
  * @author Tom Baeyens
  */
-public class CallImpl extends AbstractBindableActivityImpl<Call> {
+public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
 
   // IDEA Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   protected WorkflowId subWorkflowId;
   protected String subWorkflowSource;
 
-  public CallImpl() {
-    super(Call.class);
+  public SubProcessImpl() {
+    super(SubProcess.class);
   }
 
-  public CallImpl(Class<Call> activityApiClass) {
+  public SubProcessImpl(Class<SubProcess> activityApiClass) {
     super(activityApiClass);
   }
 
@@ -64,11 +64,11 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
   }
 
   @Override
-  public void parse(ActivityImpl activityImpl, Call call, WorkflowParser parser) {
-    super.parse(activityImpl, call, parser);
+  public void parse(ActivityImpl activityImpl, SubProcess subProcess, WorkflowParser parser) {
+    super.parse(activityImpl, subProcess, parser);
 
-    this.subWorkflowId = call.getSubWorkflowId();
-    this.subWorkflowSource = call.getSubWorkflowSourceId();
+    this.subWorkflowId = subProcess.getSubWorkflowId();
+    this.subWorkflowSource = subProcess.getSubWorkflowSourceId();
     
     WorkflowQuery workflowQuery = null;
     if (subWorkflowId!=null) {
@@ -85,15 +85,15 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
       }
     }
 
-    parseInputsOutputs(call, parser, subWorkflow);
+    parseInputsOutputs(subProcess, parser, subWorkflow);
   }
 
 
-  private void parseInputsOutputs(Call call, WorkflowParser parser, ExecutableWorkflow subWorkflow) {
+  private void parseInputsOutputs(SubProcess subProcess, WorkflowParser parser, ExecutableWorkflow subWorkflow) {
     if (subWorkflow != null) {
       List<Variable> subWorkflowVariables = subWorkflow.getVariables();
       Set<String> includedVariableIds = inputVariableIds(subWorkflow);
-      Map<String, Binding> callInputs = call.getInputBindings();
+      Map<String, Binding> callInputs = subProcess.getInputBindings();
       if (subWorkflowVariables != null && callInputs != null) {
         for (Variable variable : subWorkflowVariables) {
           String variableId = variable.getId();

@@ -24,7 +24,7 @@ import org.joda.time.LocalDateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.api.activities.EndEvent;
 import com.effektif.workflow.api.activities.ExclusiveGateway;
@@ -109,7 +109,7 @@ public class WorkflowStreamTest {
   public void testCall() {
     LocalDateTime now = new LocalDateTime();
     ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .activity(new Call()
+      .activity(new SubProcess()
         .id("runTests")
         .inputValue("d", now)
         .inputValue("s", "string")
@@ -120,12 +120,12 @@ public class WorkflowStreamTest {
     workflow = serialize(workflow);
 
     assertNotNull(workflow);
-    Call call = (Call) workflow.getActivities().get(0);
-    assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
-    assertEquals("Run tests", call.getSubWorkflowSourceId());
-    assertEquals(now, call.getInputBindings().get("d").getValue());
-    assertEquals("string", call.getInputBindings().get("s").getValue());
-    assertEquals("version", call.getInputBindings().get("v").getExpression());
+    SubProcess subProcess = (SubProcess) workflow.getActivities().get(0);
+    assertEquals(new WorkflowId(getWorkflowIdInternal()), subProcess.getSubWorkflowId());
+    assertEquals("Run tests", subProcess.getSubWorkflowSourceId());
+    assertEquals(now, subProcess.getInputBindings().get("d").getValue());
+    assertEquals("string", subProcess.getInputBindings().get("s").getValue());
+    assertEquals("version", subProcess.getInputBindings().get("v").getExpression());
   }
 
   @Test

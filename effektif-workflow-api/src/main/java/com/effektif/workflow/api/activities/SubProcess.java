@@ -36,7 +36,7 @@ import com.effektif.workflow.api.workflow.Variable;
  */ 
 @TypeName("call")
 @BpmnElement("callActivity")
-public class Call extends AbstractBindableActivity {
+public class SubProcess extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
   protected Binding<String> subWorkflowSourceId;
@@ -56,17 +56,17 @@ public class Call extends AbstractBindableActivity {
   }
 
   @Override
-  public Call id(String id) {
+  public SubProcess id(String id) {
     super.id(id);
     return this;
   }
 
-  public Call subWorkflowId(WorkflowId subWorkflowId) {
+  public SubProcess subWorkflowId(WorkflowId subWorkflowId) {
     this.subWorkflowId = subWorkflowId;
     return this;
   }
 
-  public Call subWorkflowSource(String id) {
+  public SubProcess subWorkflowSource(String id) {
     subWorkflowSource(id);
     return this;
   }
@@ -89,19 +89,19 @@ public class Call extends AbstractBindableActivity {
 
 
   @Override
-  public Call inputExpression(String key, String expression) {
+  public SubProcess inputExpression(String key, String expression) {
     super.inputExpression(key, expression);
     return this;
   }
 
   @Override
-  public Call inputValue(String subWorkflowKey, Object value) {
+  public SubProcess inputValue(String subWorkflowKey, Object value) {
     super.inputValue(subWorkflowKey, value);
     return this;
   }
 
   @Override
-  public Call output(String subWorkflowKey, String variableId) {
+  public SubProcess output(String subWorkflowKey, String variableId) {
     super.output(subWorkflowKey, variableId);
     return this;
   }
@@ -110,74 +110,74 @@ public class Call extends AbstractBindableActivity {
    * @see <a href="https://github.com/effektif/effektif/wiki/Multi-instance-tasks">Multi-instance tasks</a>
    */
   @Override
-  public Call multiInstance(MultiInstance multiInstance) {
+  public SubProcess multiInstance(MultiInstance multiInstance) {
     super.multiInstance(multiInstance);
     return this;
   }
 
   @Override
-  public Call transitionTo(String toActivityId) {
+  public SubProcess transitionTo(String toActivityId) {
     super.transitionTo(toActivityId);
     return this;
   }
 
   @Override
-  public Call transitionTo(Transition transition) {
+  public SubProcess transitionTo(Transition transition) {
     super.transitionTo(transition);
     return this;
   }
 
   @Override
-  public Call activity(Activity activity) {
+  public SubProcess activity(Activity activity) {
     super.activity(activity);
     return this;
   }
 
   @Override
-  public Call transition(Transition transition) {
+  public SubProcess transition(Transition transition) {
     super.transition(transition);
     return this;
   }
 
   @Override
-  public Call variable(Variable variable) {
+  public SubProcess variable(Variable variable) {
     super.variable(variable);
     return this;
   }
 
   @Override
-  public Call timer(Timer timer) {
+  public SubProcess timer(Timer timer) {
     super.timer(timer);
     return this;
   }
 
   @Override
-  public Call property(String key, Object value) {
+  public SubProcess property(String key, Object value) {
     super.property(key, value);
     return this;
   }
   @Override
-  public Call transitionToNext() {
+  public SubProcess transitionToNext() {
     super.transitionToNext();
     return this;
   }
   @Override
-  public Call activity(String id, Activity activity) {
+  public SubProcess activity(String id, Activity activity) {
     super.activity(id, activity);
     return this;
   }
   @Override
-  public Call transition(String id, Transition transition) {
+  public SubProcess transition(String id, Transition transition) {
     super.transition(id, transition);
     return this;
   }
   @Override
-  public Call variable(String id, DataType type) {
+  public SubProcess variable(String id, DataType type) {
     super.variable(id, type);
     return this;
   }
   @Override
-  public Call name(String name) {
+  public SubProcess name(String name) {
     super.name(name);
     return this;
   }

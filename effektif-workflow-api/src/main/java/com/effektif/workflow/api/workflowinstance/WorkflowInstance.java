@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -33,10 +34,10 @@ public class WorkflowInstance extends ScopeInstance {
   protected String businessKey;
   protected String creatorId;
 
-  /** When a {@link com.effektif.workflow.api.activities.Call} is used, the workflow instance that called this one. */
+  /** When a {@link SubProcess} is used, the workflow instance that called this one. */
   protected WorkflowInstanceId callerWorkflowInstanceId;
 
-  /** When a {@link com.effektif.workflow.api.activities.Call} is used, the call activity in the calling workflow. */
+  /** When a {@link SubProcess} is used, the call activity in the calling workflow. */
   protected String callerActivityInstanceId;
 
   protected String caseId;

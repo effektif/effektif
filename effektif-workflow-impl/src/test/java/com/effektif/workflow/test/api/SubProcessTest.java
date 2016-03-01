@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.Call;
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ReceiveTask;
 import com.effektif.workflow.api.model.Message;
@@ -37,7 +37,7 @@ import com.effektif.workflow.test.WorkflowTest;
 /**
  * @author Tom Baeyens
  */
-public class CallTest extends WorkflowTest {
+public class SubProcessTest extends WorkflowTest {
   
   @Test
   public void testCallActivity() {
@@ -47,7 +47,7 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call", new Call()
+      .activity("call", new SubProcess()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -85,10 +85,10 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call1", new Call()
+      .activity("call1", new SubProcess()
         .subWorkflowId(subWorkflow.getId())
         .transitionToNext())
-      .activity("call2", new Call()
+      .activity("call2", new SubProcess()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -111,9 +111,9 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call1", new Call()
+      .activity("call1", new SubProcess()
         .subWorkflowId(subWorkflow.getId()))
-      .activity("call2", new Call()
+      .activity("call2", new SubProcess()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -137,7 +137,7 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call", new Call()
+      .activity("call", new SubProcess()
         .inputValue("performer", "walter")
         .subWorkflowId(subWorkflow.getId()));
     
@@ -158,7 +158,7 @@ public class CallTest extends WorkflowTest {
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .variable("guineapig", TextType.INSTANCE)
-      .activity("call", new Call()
+      .activity("call", new SubProcess()
         .inputExpression("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
     
