@@ -59,9 +59,11 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
     int index = 0;
     while (iterator.hasNext()) {
       Object element = iterator.next();
-      String elementErrorMessage = elementType.validateInternalValue(element);
-      if (elementErrorMessage!=null) {
-        return "Element "+index+" in list is invalid: "+element;
+      if (element!=null) {
+        String elementErrorMessage = elementType.validateInternalValue(element);
+        if (elementErrorMessage!=null) {
+          return "Element "+index+" in list is invalid: "+element;
+        }
       }
       index++;
     }
