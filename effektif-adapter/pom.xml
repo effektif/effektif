@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.effektif</groupId>
     <artifactId>effektif-parent</artifactId>
-    <version>3.0.0-beta7-SNAPSHOT</version>
+    <version>3.0.0-beta9-SNAPSHOT</version>
   </parent>
   <artifactId>effektif-adapter</artifactId>
   <packaging>jar</packaging>
@@ -19,13 +19,13 @@
     <dependency> 
       <groupId>com.effektif</groupId>
       <artifactId>effektif-adapter-activity</artifactId>
-      <version>3.0.0-beta7-SNAPSHOT</version>
+      <version>3.0.0-beta9-SNAPSHOT</version>
     </dependency>
     
     <dependency> 
       <groupId>com.effektif</groupId>
       <artifactId>effektif-server</artifactId>
-      <version>3.0.0-beta7-SNAPSHOT</version>
+      <version>3.0.0-beta9-SNAPSHOT</version>
     </dependency>
     
     <dependency>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>com.effektif</groupId>
       <artifactId>effektif-workflow-impl</artifactId>
-      <version>3.0.0-beta7-SNAPSHOT</version>
+      <version>3.0.0-beta9-SNAPSHOT</version>
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
