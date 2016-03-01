@@ -44,7 +44,7 @@ public class Call extends AbstractBindableActivity {
   @Override
   public void readBpmn(BpmnReader r) {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
-    subWorkflowSource(r.readStringAttributeEffektif("subWorkflowSource"));
+    subWorkflowSource(r.readStringAttributeEffektif("subWorkflowSourceId"));
     super.readBpmn(r);
   }
 
@@ -52,7 +52,7 @@ public class Call extends AbstractBindableActivity {
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
-    w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSourceId);
+    w.writeStringAttributeEffektif("subWorkflowSourceId", subWorkflowSourceId);
   }
 
   @Override
