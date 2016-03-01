@@ -61,7 +61,7 @@ public class DocumentationExamplesTest extends TestCase {
       .id("runTests")
       .subWorkflowSource("Run tests")
       .subWorkflowId(new WorkflowId("releaseTests1"));
-    activity.setSubWorkflowSource("releaseTests");
+    activity.setSubWorkflowSourceId("releaseTests");
     print(activity);
   }
 

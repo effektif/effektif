@@ -68,7 +68,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     super.parse(activityImpl, call, parser);
 
     this.subWorkflowId = call.getSubWorkflowId();
-    this.subWorkflowSource = call.getSubWorkflowSource();
+    this.subWorkflowSource = call.getSubWorkflowSourceId();
     
     WorkflowQuery workflowQuery = null;
     if (subWorkflowId!=null) {

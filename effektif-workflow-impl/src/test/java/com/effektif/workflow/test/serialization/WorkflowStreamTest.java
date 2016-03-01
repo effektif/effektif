@@ -15,9 +15,6 @@ package com.effektif.workflow.test.serialization;
 
 import static org.junit.Assert.*;
 
-import java.math.BigDecimal;
-import java.rmi.registry.LocateRegistry;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,7 +122,7 @@ public class WorkflowStreamTest {
     assertNotNull(workflow);
     Call call = (Call) workflow.getActivities().get(0);
     assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
-    assertEquals("Run tests", call.getSubWorkflowSource());
+    assertEquals("Run tests", call.getSubWorkflowSourceId());
     assertEquals(now, call.getInputBindings().get("d").getValue());
     assertEquals("string", call.getInputBindings().get("s").getValue());
     assertEquals("version", call.getInputBindings().get("v").getExpression());
