@@ -15,12 +15,11 @@
  */
 package com.effektif.mongo;
 
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.DefaultConfiguration;
 import com.effektif.workflow.impl.util.Lists;
 import com.mongodb.*;
 import com.mongodb.gridfs.GridFS;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 

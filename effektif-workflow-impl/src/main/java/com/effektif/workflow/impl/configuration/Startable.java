@@ -14,20 +14,20 @@
 package com.effektif.workflow.impl.configuration;
 
 
-/** Callback that is invoked when the {@link Brewery} is started.
- * 
- * When the brewery is started, the collections suppliers, ingredients 
- * and brews will be scanned for Startables in that order.  
- * And each collection elements are scanned in order of addition.
- * 
- * {@link Brewery.start() Starting} of the brewery is done automatically 
- * when the first object is requested from the brewery.  But it's also 
- * possible to invoke start manually.   
- *    
- * This is different from Brewable because Brewable.brew is 
- * called when the object is actually being added as a brew (lazy initialization).
- * 
- * @author Tom Baeyens
+/** Callback that is invoked when the {@link Brewery} is started
+ * and allows server components to perform startup initializations
+ * when the server is started.
+ *
+ * <p>When the brewery is started, the collections suppliers, ingredients
+ * and beers will be scanned for Startables in that order.
+ * And each collection elements are scanned in order of addition.</p>
+ *
+ * <p>{@link Brewery#start() Starting} of the brewery is done automatically
+ * when the first component is requested from the brewery.  But it's also
+ * possible to invoke start manually.</p>
+ *
+ * <p>This is different {@link Brewable#brew(Brewery)} because that method is
+ * called when the component is actually brewed into a beer (lazy initialization).</p>
  */
 public interface Startable {
 

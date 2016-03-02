@@ -15,7 +15,7 @@
  */
 package com.effektif.workflow.impl.memory;
 
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
+import com.effektif.workflow.impl.DefaultConfiguration;
 
 
 /**

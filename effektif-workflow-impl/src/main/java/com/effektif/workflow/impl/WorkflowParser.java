@@ -42,7 +42,6 @@ import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.DefaultConfiguration;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
