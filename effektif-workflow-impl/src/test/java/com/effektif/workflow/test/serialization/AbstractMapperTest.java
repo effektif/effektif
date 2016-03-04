@@ -84,14 +84,14 @@ public abstract class AbstractMapperTest {
   public void testCall() {
     Call activity = new Call()
       .id("runTests")
-      .subWorkflowSource("Run tests")
+      .subWorkflowSourceId("Run tests")
       .subWorkflowId(new WorkflowId(workflowId()));
-    activity.setSubWorkflowSource("releaseTests");
+    activity.setSubWorkflowSourceId("releaseTests");
 
     activity = serialize(activity);
 
     assertEquals(new WorkflowId(workflowId()), activity.getSubWorkflowId());
-    assertEquals("releaseTests", activity.getSubWorkflowSource());
+    assertEquals("releaseTests", activity.getSubWorkflowSourceId());
   }
 
   protected abstract <T> T serialize(T o);

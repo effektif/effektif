@@ -22,6 +22,7 @@ import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.Activity;
+import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.MultiInstance;
 import com.effektif.workflow.api.workflow.Timer;
 import com.effektif.workflow.api.workflow.Transition;
@@ -38,12 +39,12 @@ import com.effektif.workflow.api.workflow.Variable;
 public class Call extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
-  protected String subWorkflowSource;
+  protected Binding<String> subWorkflowSourceId;
 
   @Override
   public void readBpmn(BpmnReader r) {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
-    subWorkflowSource = r.readStringAttributeEffektif("subWorkflowSource");
+    subWorkflowSourceId(r.readStringAttributeEffektif("subWorkflowSourceId"));
     super.readBpmn(r);
   }
 
@@ -51,7 +52,7 @@ public class Call extends AbstractBindableActivity {
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
-    w.writeStringAttributeEffektif("subWorkflowSource", subWorkflowSource);
+    w.writeStringAttributeEffektif("subWorkflowSourceId", subWorkflowSourceId);
   }
 
   @Override
@@ -65,8 +66,8 @@ public class Call extends AbstractBindableActivity {
     return this;
   }
 
-  public Call subWorkflowSource(String subWorkflowSource) {
-    this.subWorkflowSource = subWorkflowSource;
+  public Call subWorkflowSourceId(String id) {
+    setSubWorkflowSourceId(id);
     return this;
   }
   
@@ -74,16 +75,16 @@ public class Call extends AbstractBindableActivity {
     return subWorkflowId;
   }
   
-  public String getSubWorkflowSource() {
-    return subWorkflowSource;
+  public String getSubWorkflowSourceId() {
+    return subWorkflowSourceId == null ? null : subWorkflowSourceId.getValue();
   }
 
   public void setSubWorkflowId(WorkflowId subWorkflowId) {
     this.subWorkflowId = subWorkflowId;
   }
   
-  public void setSubWorkflowSource(String subWorkflowSource) {
-    this.subWorkflowSource = subWorkflowSource;
+  public void setSubWorkflowSourceId(String id) {
+    this.subWorkflowSourceId = new Binding<String>().value(id);
   }
 
 

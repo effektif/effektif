@@ -68,7 +68,7 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
     super.parse(activityImpl, call, parser);
 
     this.subWorkflowId = call.getSubWorkflowId();
-    this.subWorkflowSource = call.getSubWorkflowSource();
+    this.subWorkflowSource = call.getSubWorkflowSourceId();
     
     WorkflowQuery workflowQuery = null;
     if (subWorkflowId!=null) {
@@ -113,10 +113,10 @@ public class CallImpl extends AbstractBindableActivityImpl<Call> {
         }
       }
 
-      // IDEA improve error message by validating the keys to be proper subworkflow variable ids
+      // IDEA improve error message by validating the keys to be proper sub-workflow variable IDs
       this.outputBindings = activity.getOutputBindings();
     } else if (inputBindings!=null && !inputBindings.isEmpty()) {
-      parser.addWarning("input and output bindings could not be parsed because sub workflow was not found");
+      parser.addWarning("input and output bindings could not be parsed because the sub-workflow was not found");
     }
   }
 
