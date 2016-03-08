@@ -47,7 +47,9 @@ public class SubProcess extends AbstractBindableActivity {
   public void writeBpmn(BpmnWriter w) {
     super.writeBpmn(w);
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
-    w.writeStringAttributeEffektif("subWorkflowSourceId", subWorkflowSourceId);
+    if (subWorkflowSourceId != null) {
+      w.writeStringAttributeEffektif("subWorkflowSourceId", subWorkflowSourceId.getValue());
+    }
   }
 
   @Override

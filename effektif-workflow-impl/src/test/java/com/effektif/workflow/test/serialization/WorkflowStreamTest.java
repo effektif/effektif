@@ -82,7 +82,7 @@ public class WorkflowStreamTest {
   }
 
   @Test
-  public void testCall() {
+  public void testSubProcess() {
     LocalDateTime now = new LocalDateTime();
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .activity(new SubProcess()
@@ -182,28 +182,6 @@ public class WorkflowStreamTest {
     //    assertEquals(p.get("boo"), workflow.getProperty("boo"));
 
     assertTrue(workflow.isEnableCases());
-  }
-
-  @Test
-  public void testEmbeddedSubprocess() {
-    ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .activity("phase1",
-        new EmbeddedSubprocess().name("phase one").activity("start", new StartEvent()).activity("end", new EndEvent())
-          .transition(new Transition().fromId("start").toId("end")));
-    
-    workflow = serialize(workflow);
-    
-    EmbeddedSubprocess embeddedSubprocess = (EmbeddedSubprocess) workflow.getActivities().get(0);
-    assertEquals("phase1", embeddedSubprocess.getId());
-    assertEquals("phase one", embeddedSubprocess.getName());
-    
-    StartEvent startEvent = (StartEvent) embeddedSubprocess.getActivities().get(0);
-    assertEquals("start", startEvent.getId());
-    EndEvent endEvent = (EndEvent) embeddedSubprocess.getActivities().get(1);
-    assertEquals("end", endEvent.getId());
-    Transition transition = embeddedSubprocess.getTransitions().get(0);
-    assertEquals("start", transition.getFromId());
-    assertEquals("end", transition.getToId());
   }
 
   @Test
