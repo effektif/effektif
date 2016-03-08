@@ -45,7 +45,7 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
 
   // IDEA Boolean waitTillSubWorkflowEnds; add a configuration property to specify if this is fire-and-forget or wait-till-subworkflow-ends
   protected WorkflowId subWorkflowId;
-  protected String subWorkflowSource;
+  protected String subWorkflowSourceId;
 
   public SubProcessImpl() {
     super(SubProcess.class);
@@ -68,13 +68,13 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     super.parse(activityImpl, subProcess, parser);
 
     this.subWorkflowId = subProcess.getSubWorkflowId();
-    this.subWorkflowSource = subProcess.getSubWorkflowSourceId();
+    this.subWorkflowSourceId = subProcess.getSubWorkflowSourceId();
     
     WorkflowQuery workflowQuery = null;
     if (subWorkflowId!=null) {
       workflowQuery = new WorkflowQuery().workflowId(subWorkflowId);
-    } else if (subWorkflowSource!=null) {
-      workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSource);
+    } else if (subWorkflowSourceId !=null) {
+      workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSourceId);
     }
     ExecutableWorkflow subWorkflow = null;
     if (workflowQuery!=null) {
@@ -82,6 +82,15 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
       List<ExecutableWorkflow> workflows = workflowEngine.findWorkflows(workflowQuery);
       if (workflows!=null && !workflows.isEmpty()) {
         subWorkflow = workflows.get(0);
+      }
+    }
+
+    if (subWorkflow != null) {
+      if (subWorkflowId == null) {
+        subWorkflowId = subWorkflow.getId();
+      }
+      if (subWorkflowSourceId == null) {
+        subWorkflowSourceId = subWorkflow.getSourceWorkflowId();
       }
     }
 
@@ -127,11 +136,11 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     WorkflowId actualSubWorkflowId = null;
     if (this.subWorkflowId!=null) {
       actualSubWorkflowId = this.subWorkflowId;
-    } else if (subWorkflowSource!=null) {
+    } else if (subWorkflowSourceId !=null) {
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
-      actualSubWorkflowId = workflowStore.findLatestWorkflowIdBySource(subWorkflowSource);
+      actualSubWorkflowId = workflowStore.findLatestWorkflowIdBySource(subWorkflowSourceId);
       if (actualSubWorkflowId==null) {
-        throw new RuntimeException("Couldn't find sub workflow by source: "+subWorkflowSource);
+        throw new RuntimeException("Couldn't find sub workflow by source: "+ subWorkflowSourceId);
       }
     } else {
       log.debug("No sub workflow binding was configured");
@@ -139,6 +148,7 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     
     if (actualSubWorkflowId!=null) {
       TriggerInstance triggerInstance = new TriggerInstance()
+        .sourceWorkflowId(subWorkflowSourceId)
         .workflowId(actualSubWorkflowId);
       
       triggerInstance.setCallerWorkflowInstanceId(activityInstance.workflowInstance.id);
