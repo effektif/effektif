@@ -15,11 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.SubProcess;
@@ -37,6 +32,11 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Baeyens
@@ -113,10 +113,10 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
         }
       }
 
-      // IDEA improve error message by validating the keys to be proper subworkflow variable ids
+      // IDEA improve error message by validating the keys to be proper sub-workflow variable IDs
       this.outputBindings = activity.getOutputBindings();
     } else if (inputBindings!=null && !inputBindings.isEmpty()) {
-      parser.addWarning("input and output bindings could not be parsed because sub workflow was not found");
+      parser.addWarning("input and output bindings could not be parsed because the sub-workflow was not found");
     }
   }
 

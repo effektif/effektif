@@ -84,7 +84,7 @@ public abstract class AbstractMapperTest {
   public void testCall() {
     SubProcess activity = new SubProcess()
       .id("runTests")
-      .subWorkflowSource("Run tests")
+      .subWorkflowSourceId("Run tests")
       .subWorkflowId(new WorkflowId(workflowId()));
     activity.setSubWorkflowSourceId("releaseTests");
 

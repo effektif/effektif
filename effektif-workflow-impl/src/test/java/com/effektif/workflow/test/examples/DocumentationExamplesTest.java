@@ -59,7 +59,7 @@ public class DocumentationExamplesTest extends TestCase {
   public void testCall() {
     SubProcess activity = new SubProcess()
       .id("runTests")
-      .subWorkflowSource("Run tests")
+      .subWorkflowSourceId("Run tests")
       .subWorkflowId(new WorkflowId("releaseTests1"));
     activity.setSubWorkflowSourceId("releaseTests");
     print(activity);

@@ -21,12 +21,7 @@ import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.MultiInstance;
-import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
+import com.effektif.workflow.api.workflow.*;
 
 /** 
  * Invokes another workflow and ends when the other workflow instance completes.
@@ -34,8 +29,8 @@ import com.effektif.workflow.api.workflow.Variable;
  * @see <a href="https://github.com/effektif/effektif/wiki/Call-Activity">Call Activity</a>
  * @author Tom Baeyens
  */ 
-@TypeName("call")
-@BpmnElement("callActivity")
+@TypeName("subProcess")
+@BpmnElement("subProcess")
 public class SubProcess extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 
@@ -44,7 +39,7 @@ public class SubProcess extends AbstractBindableActivity {
   @Override
   public void readBpmn(BpmnReader r) {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
-    subWorkflowSource(r.readStringAttributeEffektif("subWorkflowSourceId"));
+    subWorkflowSourceId(r.readStringAttributeEffektif("subWorkflowSourceId"));
     super.readBpmn(r);
   }
 
@@ -66,8 +61,8 @@ public class SubProcess extends AbstractBindableActivity {
     return this;
   }
 
-  public SubProcess subWorkflowSource(String id) {
-    subWorkflowSource(id);
+  public SubProcess subWorkflowSourceId(String id) {
+    setSubWorkflowSourceId(id);
     return this;
   }
   

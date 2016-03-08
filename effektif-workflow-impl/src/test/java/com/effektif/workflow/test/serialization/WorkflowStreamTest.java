@@ -13,48 +13,24 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.effektif.workflow.api.activities.*;
+import com.effektif.workflow.api.model.Money;
+import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.types.*;
+import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
+import com.effektif.workflow.impl.json.JsonStreamMapper;
+import com.effektif.workflow.impl.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.effektif.workflow.api.activities.SubProcess;
-import com.effektif.workflow.api.activities.EmbeddedSubprocess;
-import com.effektif.workflow.api.activities.EndEvent;
-import com.effektif.workflow.api.activities.ExclusiveGateway;
-import com.effektif.workflow.api.activities.HttpServiceTask;
-import com.effektif.workflow.api.activities.JavaServiceTask;
-import com.effektif.workflow.api.activities.NoneTask;
-import com.effektif.workflow.api.activities.ParallelGateway;
-import com.effektif.workflow.api.activities.ReceiveTask;
-import com.effektif.workflow.api.activities.StartEvent;
-import com.effektif.workflow.api.model.Money;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.types.BooleanType;
-import com.effektif.workflow.api.types.ChoiceType;
-import com.effektif.workflow.api.types.DateType;
-import com.effektif.workflow.api.types.EmailAddressType;
-import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.api.types.LinkType;
-import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.MoneyType;
-import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.api.workflow.MultiInstance;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
-import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
-import com.effektif.workflow.impl.json.JsonStreamMapper;
-import com.effektif.workflow.impl.util.Lists;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 
 /**
@@ -114,7 +90,7 @@ public class WorkflowStreamTest {
         .inputValue("d", now)
         .inputValue("s", "string")
         .inputExpression("v", "version")
-        .subWorkflowSource("Run tests")
+        .subWorkflowSourceId("Run tests")
         .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
     workflow = serialize(workflow);
