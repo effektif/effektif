@@ -71,7 +71,11 @@ public interface BpmnWriter {
   /** Writes a list of bindings like
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> void writeBindings(String fieldName, List<Binding<T>> bindings);
-  
+
+  /** Writes a list of bindings like
+   * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
+  void writeRawBindings(String fieldName, List<Binding> bindings);
+
   /** Writes a string field as an attribute on the current xml element in the BPMN namespace */
   void writeStringAttributeBpmn(String localPart, Object value);
 

@@ -100,6 +100,10 @@ public interface BpmnReader {
    * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
   <T> List<Binding<T>> readBindings(String elementName);
 
+  /** Returns a list of bindings like
+   * e.g. <e:assignee value="42"/> or <e:assignee expression="v1.fullName"/>. */
+  List<Binding> readRawBindings(String elementName);
+
   /** Returns a the {@link Trigger} instance specified by the Effektif <code>type</code> parameter. */
   Trigger readTriggerEffektif();
 

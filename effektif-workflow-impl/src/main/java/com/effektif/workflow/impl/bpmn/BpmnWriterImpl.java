@@ -366,6 +366,15 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
   }
 
+  @Override
+  public void writeRawBindings(String fieldName, List<Binding> bindings) {
+    if (bindings != null) {
+      for (Binding binding : bindings) {
+        writeBinding(fieldName, binding);
+      }
+    }
+  }
+
   /** Writes the given documentation string as a BPMN <code>documentation</code> element. */
   @Override
   public void writeDocumentation(String documentation) {

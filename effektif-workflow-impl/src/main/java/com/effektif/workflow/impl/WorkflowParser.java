@@ -205,6 +205,18 @@ public class WorkflowParser {
     return bindingImpls;
   }
 
+  public List<BindingImpl<?>> parseRawBindings(List<Binding> bindings, String bindingName) {
+    if (bindings==null) {
+      return null;
+    }
+    List<BindingImpl<?>> bindingImpls = new ArrayList<>();
+    for (Binding<?> binding: bindings) {
+      BindingImpl<?> bindingImpl = parseBinding(binding, bindingName, false);
+      bindingImpls.add(bindingImpl);
+    }
+    return bindingImpls;
+  }
+
   public <T> BindingImpl<T> parseBinding(Binding<T> binding, String bindingName) {
     return parseBinding(binding, bindingName, false, null);
   }

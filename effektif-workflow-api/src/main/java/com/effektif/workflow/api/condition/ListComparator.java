@@ -18,77 +18,93 @@ package com.effektif.workflow.api.condition;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.workflow.Binding;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A {@link Condition} based on a binary operator.
  *
  * @author Tom Baeyens
  */
-public abstract class Comparator extends Condition {
-  
+public abstract class ListComparator extends Condition {
+
   protected Binding<?> left;
-  protected Binding<?> right;
+  protected List<Binding> rights;
 
   @Override
   public boolean isEmpty() {
-    return left == null && right == null;
+    return left == null && rights == null;
   }
 
   public Binding<?> getLeft() {
     return this.left;
   }
+
   public void setLeft(Binding<?> left) {
     this.left = left;
   }
-  public Comparator left(Binding<?> left) {
+
+  public ListComparator left(Binding<?> left) {
     this.left = left;
     return this;
   }
-  public Comparator leftExpression(String leftExpression) {
+
+  public ListComparator leftExpression(String leftExpression) {
     this.left = new Binding().expression(leftExpression);
     return this;
   }
 
-  public Binding<?> getRight() {
-    return this.right;
+  public List<Binding> getRights() {
+    return this.rights;
   }
-  public void setRight(Binding<?> right) {
-    this.right = right;
+
+  public void setRights(List<Binding> rights) {
+    this.rights = rights;
   }
-  public Comparator right(Binding<?> right) {
-    this.right = right;
+
+  public ListComparator right(List<Binding> right) {
+    this.rights = right;
     return this;
   }
-  public Comparator rightValue(Object rightValue) {
-    this.right = new Binding().value(rightValue);
+
+  public ListComparator rightValue(List<Object> rightValues) {
+    this.rights = new ArrayList<>();
+    rights.addAll(rightValues.stream().map(rightValue -> new Binding().value(rightValue)).collect(Collectors.toList()));
     return this;
   }
-  public Comparator rightExpression(String rightExpression) {
-    this.right = new Binding().expression(rightExpression);
+
+  public ListComparator rightExpression(List<String> rightExpressions) {
+    this.rights = new ArrayList<>();
+    rights.addAll(rightExpressions.stream().map(rightExpression -> new Binding().value(rightExpression)).collect(Collectors.toList()));
     return this;
   }
-  
+
   @Override
   public String toString() {
-    return "( "+toString(left)+" "+getName()+" "+toString(right)+" )";
+    return "( " + toString(left) + " " + getName() + " " + toString(rights) + " )";
   }
-  
+
   protected abstract String getName();
+
   @Override
   public void readBpmn(BpmnReader r) {
     for (XmlElement containsElement : r.readElementsEffektif(getClass())) {
       r.startElement(containsElement);
       left = r.readBinding("left", String.class);
-      right = r.readBinding("right", String.class);
+      rights = r.readRawBindings("rights");
       r.endElement();
     }
   }
+
   @Override
   public void writeBpmn(BpmnWriter w) {
     w.startElementEffektif(getClass());
     w.writeBinding("left", getLeft());
-    w.writeBinding("right", getRight());
+    w.writeRawBindings("rights", getRights());
     w.endElement();
   }
 }

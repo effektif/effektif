@@ -413,6 +413,35 @@ public class BpmnReaderImpl implements BpmnReader {
     return bindings;
   }
 
+  /** Returns a list of bindings from the extension elements with the given name. */
+  @Override
+  public List<Binding> readRawBindings(String localPart) {
+    if (currentXml==null) {
+      return null;
+    }
+    List<Binding> bindings = new ArrayList<>();
+    for (XmlElement element: currentXml.removeElements(EFFEKTIF_URI, localPart)) {
+      Binding binding = new Binding();
+      String value = element.getAttribute(EFFEKTIF_URI, "value");
+      String typeName = element.getAttribute(EFFEKTIF_URI, "type");
+      startElement(element);
+      XmlElement metadataElement = readElementEffektif("metadata");
+      Map<String, Object> metadata = null;
+      if (metadataElement != null) {
+        startElement(metadataElement);
+        metadata = readSimpleProperties();
+        endElement();
+      }
+      endElement();
+      DataType type = convertType(typeName);
+      binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
+      binding.setExpression(element.getAttribute(EFFEKTIF_URI, "expression"));
+      binding.setMetadata(metadata);
+      bindings.add(binding);
+    }
+    return bindings;
+  }
+
   @SuppressWarnings("unchecked")
   protected <T> T parseText(String value, Class<T> type) {
     if (value==null) {

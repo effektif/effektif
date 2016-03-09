@@ -16,13 +16,11 @@
 package com.effektif.workflow.impl.conditions;
 
 import com.effektif.workflow.api.condition.Comparator;
-import com.effektif.workflow.api.model.TypedValue;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.util.StringUtil;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-
 
 /**
  * @author Tom Baeyens
