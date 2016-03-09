@@ -223,8 +223,7 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
 
     // Output documentation, workflow BPMN (extension elements) and scope (activities/transitions) in that order, as
-    // required by the BPMN schema. The write methods are called here in the reverse order because they use index 0 in
-    // calls to startElementBpmn, in order to write each one as the first child element of the ‘process’ element.
+    // required by the BPMN schema.
     writeDocumentation(workflow.getDescription());
     workflow.writeBpmn(this);
     writeScope();

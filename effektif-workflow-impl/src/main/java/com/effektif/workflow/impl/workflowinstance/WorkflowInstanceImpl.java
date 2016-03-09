@@ -15,26 +15,12 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import com.effektif.workflow.api.workflowinstance.TimerInstance;
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
+import com.effektif.workflow.api.workflowinstance.TimerInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
@@ -46,6 +32,13 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
 
 /**
  * @author Tom Baeyens
@@ -180,9 +173,11 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
             log.debug("Starting multi instance container " + activityInstance);
           }
           for (Object element : values) {
-            ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
-            elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE);
-            elementActivityInstance.initializeForEachElement(multiInstance.elementVariable, element);
+            if (element!=null) {
+              ActivityInstanceImpl elementActivityInstance = activityInstance.createActivityInstance(activity);
+              elementActivityInstance.setWorkState(STATE_STARTING_MULTI_INSTANCE);
+              elementActivityInstance.initializeForEachElement(multiInstance.elementVariable, element);
+            }
           }
         } else {
           if (log.isDebugEnabled()) {

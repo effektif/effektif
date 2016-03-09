@@ -39,8 +39,14 @@ public class MoneyType extends DataType {
   @Override
   public Object readBpmnValue(BpmnReader r) {
     String currency = r.readStringAttributeEffektif("currency");
-    Double amount = Double.valueOf(r.readStringAttributeEffektif("amount"));
-    return new Money().currency(currency).amount(amount);
+    String amountString = r.readStringAttributeEffektif("amount");
+    try {
+      Double amount = amountString == null ? null : Double.valueOf(amountString);
+      return new Money().currency(currency).amount(amount);
+    }
+    catch (NumberFormatException e) {
+      return null;
+    }
   }
 
   @Override
