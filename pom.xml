@@ -7,7 +7,7 @@
   <groupId>com.effektif</groupId>
   <artifactId>effektif-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.0.0-beta9-SNAPSHOT</version>
+  <version>3.0.0-beta9</version>
 
   <name>Effektif parent</name>
   <description>Provides the common pom information and groups all the modules</description>
