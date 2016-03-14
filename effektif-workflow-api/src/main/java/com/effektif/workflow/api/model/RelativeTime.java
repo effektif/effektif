@@ -149,12 +149,6 @@ public abstract class RelativeTime implements BpmnReadable, BpmnWritable {
     return this;
   }
   
-  public static AfterRelativeTime seconds(int seconds) {
-    return new AfterRelativeTime() 
-      .duration(seconds)
-      .durationUnit("seconds");
-  }
-
   public static AfterRelativeTime minutes(int minutes) {
     return new AfterRelativeTime() 
       .duration(minutes)
