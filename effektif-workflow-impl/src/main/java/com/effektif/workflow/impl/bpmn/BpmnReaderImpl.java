@@ -128,6 +128,7 @@ public class BpmnReaderImpl implements BpmnReader {
     }
 
     readDiagram(workflow, definitionsXml);
+    definitionsXml.cleanEmptyElements();
     workflow.property(KEY_DEFINITIONS, definitionsXml);
 
     return workflow;
@@ -739,7 +740,9 @@ public class BpmnReaderImpl implements BpmnReader {
         return;
       }
       workflow.setName(currentXml.removeAttribute(BPMN_DI_URI, "name"));
-      workflow.setDescription(currentXml.removeAttribute(BPMN_DI_URI, "documentation"));
+      if (workflow.getDescription() == null) {
+        workflow.setDescription(currentXml.removeAttribute(BPMN_DI_URI, "documentation"));
+      }
 
       Diagram diagram = new Diagram();
       for (XmlElement planeElement: diagramElement.removeElements(BPMN_DI_URI, "BPMNPlane")) {

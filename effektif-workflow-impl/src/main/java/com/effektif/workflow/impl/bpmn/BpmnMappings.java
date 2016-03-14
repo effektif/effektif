@@ -95,6 +95,16 @@ public class BpmnMappings extends Mappings {
     }
   }
 
+  /**
+   * Returns a BPMN type mapping for the given BPMN XML element name.
+   */
+  public BpmnTypeMapping getBpmnTypeMapping(String bpmnElementName) {
+    return bpmnTypeMappingsByElement.get(bpmnElementName).stream().findFirst().orElse(null);
+  }
+
+  /**
+   * Returns a BPMN type mapping for the given BPMN XML element.
+   */
   public BpmnTypeMapping getBpmnTypeMapping(XmlElement activityXml, BpmnReaderImpl bpmnReaderImpl) {
     List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(activityXml.getLocalBPMNName());
     if (typeMappings!=null) {

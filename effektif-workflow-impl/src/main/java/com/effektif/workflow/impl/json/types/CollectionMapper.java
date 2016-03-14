@@ -13,14 +13,14 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.types;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.effektif.workflow.impl.data.InvalidValueException;
 import com.effektif.workflow.impl.json.JsonReader;
 import com.effektif.workflow.impl.json.JsonTypeMapper;
 import com.effektif.workflow.impl.json.JsonWriter;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -53,7 +53,7 @@ public class CollectionMapper extends AbstractTypeMapper<Collection> {
     Iterator jsonIterator = jsonCollection.iterator();
     while (jsonIterator.hasNext()) {
       Object jsonElement = jsonIterator.next();
-      Object objectElementValue = elementMapper.read(jsonElement, jsonReader);
+      Object objectElementValue = jsonElement!=null ? elementMapper.read(jsonElement, jsonReader) : null;
       list.add(objectElementValue);
     }
     return list;
