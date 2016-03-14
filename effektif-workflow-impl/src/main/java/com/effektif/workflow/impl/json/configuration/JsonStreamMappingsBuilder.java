@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.configuration;
 
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.impl.json.MappingsBuilder;
 import com.effektif.workflow.impl.json.types.DateStreamMapper;
 import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;

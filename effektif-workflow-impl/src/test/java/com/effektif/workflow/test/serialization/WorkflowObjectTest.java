@@ -17,6 +17,7 @@ import java.io.StringReader;
 
 import org.junit.BeforeClass;
 
+import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 
 
@@ -33,7 +34,7 @@ public class WorkflowObjectTest extends WorkflowStreamTest {
   }
 
   @Override
-  public <T> T serialize(T o) {
+  public <T extends AbstractWorkflow> T serializeWorkflow(T o) {
     String jsonString = jsonObjectMapper.write(o);
     System.out.println(jsonString);
     StringReader jsonReader = new StringReader(jsonString);

@@ -36,6 +36,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.effektif.workflow.api.bpmn.BpmnReadable;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
@@ -328,7 +329,11 @@ public class BpmnReaderImpl implements BpmnReader {
     if (currentXml==null) {
       return null;
     }
-    return Boolean.valueOf(currentXml.removeAttribute(BPMN_URI, localPart));
+    String booleanStringValue = currentXml.removeAttribute(BPMN_URI, localPart);
+    if (booleanStringValue==null) {
+      return null;
+    }
+    return Boolean.valueOf(booleanStringValue);
   }
 
   @Override
@@ -362,7 +367,20 @@ public class BpmnReaderImpl implements BpmnReader {
     }
     return toId(readStringAttributeEffektif(localPart), idType);
   }
-
+  
+  @Override
+  public Integer readIntegerAttributeEffektif(String localPart) {
+    if (currentXml==null) {
+      return null;
+    }
+    String valueString = readStringAttributeEffektif(localPart);
+    try {
+      return new Integer(valueString);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+  
   @Override
   public <T> Binding<T> readBinding(Class modelClass, Class<T> type) {
     BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
@@ -491,6 +509,21 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   @Override
+  public <T extends BpmnReadable> T readPolymorphicEffektif(XmlElement xmlElement, Class<T> type) {
+    try {
+      startElement(xmlElement);
+      PolymorphicMapping polymorphicMapping = bpmnMappings.getPolymorphicMapping(type);
+      TypeMapping subclassMapping = polymorphicMapping.getTypeMapping(this);
+      T object = (T) subclassMapping.instantiate();
+      object.readBpmn(this);
+      endElement();
+      return object;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
   public DataType readTypeAttributeEffektif() {
     return readTypeAttributeEffektif("type");
   }
@@ -498,6 +531,12 @@ public class BpmnReaderImpl implements BpmnReader {
   private DataType readTypeAttributeEffektif(String attributeName) {
     String typeName = readStringAttributeEffektif(attributeName);
     return convertType(typeName);
+  }
+
+  @Override
+  public LocalDateTime readDateAttributeEffektif(String attributeName) {
+    String dateStringName = readStringAttributeEffektif(attributeName);
+    return dateStringName!=null ? LocalDateTimeStreamMapper.PARSER.parseLocalDateTime(dateStringName) : null;
   }
 
   private DataType convertType(String typeName) {
@@ -524,14 +563,14 @@ public class BpmnReaderImpl implements BpmnReader {
 
   @Override
   public RelativeTime readRelativeTimeEffektif(String localPart) {
+    RelativeTime relativeTime = null;
     XmlElement element = currentXml != null ? currentXml.removeElement(EFFEKTIF_URI, localPart) : null;
     if (element != null) {
-      String value = element.getAttribute(EFFEKTIF_URI, "after");
-      if (value != null) {
-        return RelativeTime.parse(value);
-      }
+      startElement(element);
+      relativeTime = RelativeTime.readBpmnPolymorphic(this);
+      endElement();
     }
-    return null;
+    return relativeTime;
   }
 
   @Override
