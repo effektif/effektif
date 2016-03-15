@@ -30,7 +30,7 @@ import com.effektif.workflow.api.workflow.*;
  * @author Tom Baeyens
  */ 
 @TypeName("subProcess")
-@BpmnElement("subProcess")
+@BpmnElement("callActivity")
 public class SubProcess extends AbstractBindableActivity {
 
   protected WorkflowId subWorkflowId; 

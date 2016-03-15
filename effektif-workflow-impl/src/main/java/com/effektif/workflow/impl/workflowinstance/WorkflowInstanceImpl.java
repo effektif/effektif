@@ -275,14 +275,15 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
           log.error("Couldn't continue calling activity instance after workflow instance completion");
         }
       }
-      ActivityInstanceImpl callerActivityInstance = callerWorkflowInstance.findActivityInstance(callerActivityInstanceId);
+      final ActivityInstanceImpl callerActivityInstance = callerWorkflowInstance.findActivityInstance(callerActivityInstanceId);
       if (log.isDebugEnabled())
         log.debug("Notifying caller " + callerActivityInstance);
       ActivityImpl activityDefinition = callerActivityInstance.getActivity();
-      SubProcessImpl callActivity = (SubProcessImpl) activityDefinition.activityType;
+      final SubProcessImpl callActivity = (SubProcessImpl) activityDefinition.activityType;
+
       callActivity.calledWorkflowInstanceEnded(callerActivityInstance, workflowInstance);
       callerActivityInstance.onwards();
-      callerWorkflowInstance.executeWork();
+      callerActivityInstance.workflowInstance.executeWork();
     }
   }
 

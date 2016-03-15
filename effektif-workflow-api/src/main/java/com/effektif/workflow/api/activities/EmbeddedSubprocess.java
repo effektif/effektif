@@ -35,6 +35,7 @@ import com.effektif.workflow.api.workflow.Variable;
  * @author Tom Baeyens
  */
 @TypeName("subProcessEmbedded")
+@BpmnElement("subProcess")
 public class EmbeddedSubprocess extends Activity {
 
   @Override
