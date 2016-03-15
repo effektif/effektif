@@ -223,8 +223,7 @@ public class BpmnWriterImpl implements BpmnWriter {
     }
 
     // Output documentation, workflow BPMN (extension elements) and scope (activities/transitions) in that order, as
-    // required by the BPMN schema. The write methods are called here in the reverse order because they use index 0 in
-    // calls to startElementBpmn, in order to write each one as the first child element of the ‘process’ element.
+    // required by the BPMN schema.
     writeDocumentation(workflow.getDescription());
     workflow.writeBpmn(this);
     writeScope();
@@ -482,9 +481,25 @@ public class BpmnWriterImpl implements BpmnWriter {
   }
 
   @Override
+  public void writeIntegerAttributeEffektif(String localPart, Integer value) {
+    if (value != null) {
+      xml.addAttribute(EFFEKTIF_URI, localPart, value.toString());
+    }
+  }
+
+  @Override
+  public void writeBooleanAttributeEffektif(String localPart, Boolean value) {
+    if (value != null) {
+      xml.addAttribute(EFFEKTIF_URI, localPart, value.toString());
+    }
+  }
+
+  @Override
   public void writeRelativeTimeEffektif(String localPart, RelativeTime value) {
     if (value != null && value.valid()) {
-      writeStringValue(localPart, "after", value);
+      startElementEffektif(localPart);
+      value.writeBpmn(this);
+      endElement();
     }
   }
 

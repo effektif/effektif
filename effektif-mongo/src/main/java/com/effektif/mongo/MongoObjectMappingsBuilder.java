@@ -13,6 +13,7 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.json.MappingsBuilder;
@@ -39,5 +40,4 @@ public class MongoObjectMappingsBuilder extends MappingsBuilder {
     jsonFieldName(WorkflowInstance.class, "id", "_id");
     ignore(BaseInstanceImpl.class, "transientProperties");
   }
-  
 }

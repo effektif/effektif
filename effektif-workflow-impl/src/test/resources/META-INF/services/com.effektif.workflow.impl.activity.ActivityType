@@ -1,1 +1,2 @@
 com.effektif.workflow.test.impl.UnlockListenerTest$ListeningActivityImpl
+com.effektif.workflow.test.serialization.WorkflowStreamTest$RelativityActivityImpl

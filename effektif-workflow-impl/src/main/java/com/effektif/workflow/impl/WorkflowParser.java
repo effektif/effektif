@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
@@ -43,6 +44,7 @@ import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.job.RelativeTimeImpl;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -343,6 +345,13 @@ public class WorkflowParser {
       return null;
     }
     return new TextTemplate(templateText, hints, this);
+  }
+  
+  public RelativeTimeImpl parseRelativeTime(RelativeTime relativeTime) {
+    if (relativeTime==null || !relativeTime.valid()) {
+      return null;
+    }
+    return new RelativeTimeImpl(relativeTime, this);
   }
   
   public ScopeImpl getCurrentScope() {

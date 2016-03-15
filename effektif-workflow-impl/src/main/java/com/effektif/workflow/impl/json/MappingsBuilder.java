@@ -13,19 +13,8 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
-
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.NumberType;
@@ -40,21 +29,14 @@ import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.job.JobType;
 import com.effektif.workflow.impl.job.TimerType;
-import com.effektif.workflow.impl.json.types.ArrayMapperFactory;
-import com.effektif.workflow.impl.json.types.BindingMapperFactory;
-import com.effektif.workflow.impl.json.types.BooleanMapper;
-import com.effektif.workflow.impl.json.types.ClassMapper;
-import com.effektif.workflow.impl.json.types.CollectionMapperFactory;
-import com.effektif.workflow.impl.json.types.EnumMapperFactory;
-import com.effektif.workflow.impl.json.types.EnumSetMapperFactory;
-import com.effektif.workflow.impl.json.types.MapMapperFactory;
-import com.effektif.workflow.impl.json.types.NumberMapperFactory;
-import com.effektif.workflow.impl.json.types.StringMapper;
-import com.effektif.workflow.impl.json.types.TypedValueMapperFactory;
-import com.effektif.workflow.impl.json.types.ValueMapper;
-import com.effektif.workflow.impl.json.types.VariableInstanceMapperFactory;
-import com.effektif.workflow.impl.json.types.VariableMapperFactory;
+import com.effektif.workflow.impl.json.types.*;
 import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimerImpl;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * @author Tom Baeyens
@@ -78,6 +60,8 @@ public class MappingsBuilder {
     baseClass(Activity.class);
     baseClass(Condition.class);
     baseClass(DataType.class, "name");
+    baseClass(RelativeTime.class);
+    subClasses(RelativeTime.SUBCLASSES);
     baseClass(Timer.class);
     typeMapperFactory(new ValueMapper());
     typeMapperFactory(new StringMapper());

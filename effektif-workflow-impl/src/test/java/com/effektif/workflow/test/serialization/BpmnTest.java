@@ -13,25 +13,11 @@
  * limitations under the License. */
 package com.effektif.workflow.test.serialization;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.bpmn.Bpmn;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 
@@ -57,31 +43,17 @@ public class BpmnTest extends WorkflowStreamTest {
     initialize();
     return bpmnMapper;
   }
-  
-  @Override
-  public <T> T serialize(T o) {
-    AbstractWorkflow w = null;
-    if (o instanceof Activity) {
-      w = new ExecutableWorkflow()
-      .activity((Activity)o);
-    } else {
-      w = (ExecutableWorkflow) o;
-    }
 
+  @Override
+  public <T extends AbstractWorkflow> T serializeWorkflow(T workflow) {
     String xmlString = bpmnMapper
-      .writeToString(w);
+      .writeToString(workflow);
     
     log.info("\n" + xmlString + "\n");
 
     Bpmn.validate(xmlString);
 
-    w = bpmnMapper
+    return (T) bpmnMapper
       .readFromString(xmlString);
-    
-    if (o instanceof Activity) {
-      return (T) w.getActivities().get(0);
-    } else {
-      return (T) w;
-    }
   }
 }
