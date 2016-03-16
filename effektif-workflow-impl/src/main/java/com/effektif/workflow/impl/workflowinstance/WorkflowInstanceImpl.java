@@ -75,7 +75,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, WorkflowInstanceId workflowInstanceId, TriggerInstance triggerInstance,
-          LockImpl lock) {
+          LockImpl lock, Map<String, Object> transientProperties) {
     this.id = workflowInstanceId;
     this.configuration = configuration;
     this.workflow = workflow;
@@ -90,6 +90,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
     this.startActivityIds = triggerInstance.getStartActivityIds();
     this.lock = lock;
+    this.transientProperties = transientProperties;
     this.initializeVariableInstances();
   }
 
@@ -282,8 +283,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       final SubProcessImpl callActivity = (SubProcessImpl) activityDefinition.activityType;
 
       callActivity.calledWorkflowInstanceEnded(callerActivityInstance, workflowInstance);
-      callerActivityInstance.onwards();
-      callerActivityInstance.workflowInstance.executeWork();
     }
   }
 

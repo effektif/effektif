@@ -15,24 +15,9 @@
  */
 package com.effektif.workflow.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.effektif.workflow.impl.job.Job;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.api.model.Deployment;
-import com.effektif.workflow.api.model.Message;
-import com.effektif.workflow.api.model.TriggerInstance;
-import com.effektif.workflow.api.model.TypedValue;
-import com.effektif.workflow.api.model.VariableValues;
-import com.effektif.workflow.api.model.WorkflowId;
-import com.effektif.workflow.api.model.WorkflowInstanceId;
+import com.effektif.workflow.api.model.*;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
@@ -40,6 +25,7 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.configuration.Brewable;
 import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
+import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
@@ -49,6 +35,13 @@ import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tom Baeyens
@@ -149,7 +142,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
             workflow,
             workflowInstanceId,
             triggerInstance,
-            lock);
+            lock,
+            triggerInstance.getTransientData());
 
     if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
 
@@ -286,6 +280,12 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   public WorkflowInstance send(Message message, WorkflowInstanceImpl workflowInstance) {
+    Map<String, Object> transientData = message.getTransientData();
+    if (transientData !=null) {
+      for (String key: transientData.keySet()) {
+        workflowInstance.setTransientProperty(key, transientData.get(key));
+      }
+    }
     String activityInstanceId = message.getActivityInstanceId();
     ActivityInstanceImpl activityInstance = workflowInstance.findActivityInstance(activityInstanceId);
     if (activityInstance==null) {
@@ -299,7 +299,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     workflowInstance.executeWork();
     return workflowInstance.toWorkflowInstance();
   }
-  
+
   @Override
   public WorkflowInstance cancel(WorkflowInstanceId workflowInstanceId) {
     WorkflowInstanceImpl workflowInstance = lockWorkflowInstanceWithRetry(workflowInstanceId);

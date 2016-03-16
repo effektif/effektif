@@ -181,12 +181,18 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     workflowEngine.startExecute(calledWorkflowInstance);
   }
 
-  public void calledWorkflowInstanceEnded(ActivityInstanceImpl callerActivity, WorkflowInstanceImpl calledProcessInstance) {
+  public void calledWorkflowInstanceEnded(ActivityInstanceImpl callerActivityInstance, WorkflowInstanceImpl calledProcessInstance) {
+    mapOutputVariables(callerActivityInstance, calledProcessInstance);
+    callerActivityInstance.onwards();
+    callerActivityInstance.workflowInstance.executeWork();
+  }
+
+  protected void mapOutputVariables(ActivityInstanceImpl callerActivityInstance, WorkflowInstanceImpl calledProcessInstance) {
     if (outputBindings!=null) {
       for (String subWorkflowVariableId: outputBindings.keySet()) {
         String variableId = outputBindings.get(subWorkflowVariableId);
         TypedValueImpl typedValue = calledProcessInstance.getTypedValue(subWorkflowVariableId);
-        callerActivity.setVariableValue(variableId, typedValue);
+        callerActivityInstance.setVariableValue(variableId, typedValue);
       }
     }
   }

@@ -96,4 +96,13 @@ public class Message extends DataContainer {
     super.typedValue(key, value);
     return this;
   }
+
+  @Override
+  public Message transientDataOpt(String key, Object value) {
+    return (Message) super.transientDataOpt(key, value);
+  }
+  @Override
+  public Message transientData(String key, Object value) {
+    return (Message) super.transientData(key, value);
+  }
 }
