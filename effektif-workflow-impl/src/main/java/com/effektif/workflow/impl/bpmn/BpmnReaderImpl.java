@@ -777,8 +777,10 @@ public class BpmnReaderImpl implements BpmnReader {
 
     // Collect valid activity IDs.
     Set<String> activityIds = new HashSet<>();
-    for (Activity activity : workflow.getActivities()) {
-      activityIds.add(activity.getId());
+    if (workflow.getActivities() != null) {
+      for (Activity activity : workflow.getActivities()) {
+        activityIds.add(activity.getId());
+      }
     }
 
     // Remove orphaned shapes/nodes.
