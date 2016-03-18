@@ -16,17 +16,13 @@
 package com.effektif.workflow.impl.configuration;
 
 
-/** Enables dependency lookup.
- * 
- *  Rather then performing injection through reflection, the brewery 
- *  calls the {@link #brew(Brewery)} method before a Brewable object 
- *  is delivered by the brewery.  This way, an object can initialize 
- *  itself with other objects from the brewery.
- */
+/** Callback invoked by the Brewery when this brewable component
+ * is being initialized and should retrieve it's dependencies from
+ * the given Brewery. */
 public interface Brewable {
 
-  /** Called before the object is delivered by the brewery and allows
-   * the Brewable to initialize (inject) itself with dependencies 
-   * from the brewery. */
+  /** Callback invoked by the Brewery when this brewable component
+   * is being initialized and should retrieve it's dependencies from
+   * the given Brewery. */
   void brew(Brewery brewery);
 }

@@ -16,19 +16,26 @@
 package com.effektif.workflow.impl.configuration;
 
 
-/** factory constructing new objects that are requested from the brewery.
+/** Callback invoked by the {@link Brewery} when the brewery requires
+ * a component to be be created.  This is like a factory method.
  * 
- * This can be used if the created object is a singleton, but based on 
- * other configurable objects in the brewery. In this case ensure that 
- * {@link #isSingleton()} returns true.
+ * <p>This can be used if the created component is a singleton, but based on
+ * other configurable components in the brewery. In this case ensure that
+ * {@link #isSingleton()} returns true.</p>
  * 
- * Or it can also be used when a new object needs to be created each 
- * time it is requested from the brewery.  In this case, ensure that 
- * {@link #isSingleton()} returns false.
+ * <p>Or it can also be used when a new component needs to be created each
+ * time it is requested from the brewery.  In this case, ensure that
+ * {@link #isSingleton()} returns false.</p>
  */
 public interface Supplier {
-  
+
+  /** Callback invoked by the {@link Brewery} when the brewery requires
+   * a component to be be created.  This is like a factory method. */
   Object supply(Brewery brewery);
-  
+
+  /** Callback for the {@link Brewery} to know if the created components
+   * need to be cached or not.  Singletons are cached in the brewery,
+   * which means that only one component is created and the same one is
+   * used for all situations where it is requested from the brewery.*/
   boolean isSingleton();
 }

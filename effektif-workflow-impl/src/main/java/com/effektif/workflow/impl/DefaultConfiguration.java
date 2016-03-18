@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.effektif.workflow.impl.configuration;
-
-import java.util.ServiceLoader;
+package com.effektif.workflow.impl;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
-import com.effektif.workflow.impl.AsynchronousExecutorService;
-import com.effektif.workflow.impl.ConditionServiceImpl;
-import com.effektif.workflow.impl.SimpleWorkflowCache;
-import com.effektif.workflow.impl.SynchronousExecutorService;
-import com.effektif.workflow.impl.WorkflowEngineConfiguration;
-import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 import com.effektif.workflow.impl.bpmn.BpmnMapperSupplier;
+import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.JobServiceImpl;
 import com.effektif.workflow.impl.job.TimerTypeService;
@@ -62,11 +55,6 @@ public abstract class DefaultConfiguration implements Configuration {
     brewery.supplier(new JsonStreamMapperSupplier(), JsonStreamMapper.class);
     brewery.supplier(new JavaBeanValueMapperSupplier(), JavaBeanValueMapper.class);
     brewery.supplier(new BpmnMapperSupplier(), BpmnMapper.class);
-
-    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class);
-    for (Plugin plugin: loader) {
-      plugin.plugin(brewery);
-    }
   }
 
   public WorkflowEngine getWorkflowEngine() {

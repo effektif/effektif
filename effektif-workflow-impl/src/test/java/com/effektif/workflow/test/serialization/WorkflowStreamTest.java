@@ -22,6 +22,9 @@ import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.*;
 import com.effektif.workflow.api.types.*;
 import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.api.workflow.diagram.Bounds;
+import com.effektif.workflow.api.workflow.diagram.Diagram;
+import com.effektif.workflow.api.workflow.diagram.Node;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.json.DefaultJsonStreamMapper;
 import com.effektif.workflow.impl.json.JsonStreamMapper;
@@ -441,5 +444,13 @@ public class WorkflowStreamTest {
         .at(11,45));
     assertEquals(11, (int) relativeTime.getAtHour());
     assertEquals(45, (int) relativeTime.getAtMinute());
+  }
+
+  @Test
+  public void testEmptyDiagram() throws Exception {
+    ExecutableWorkflow workflow = new ExecutableWorkflow().id(new WorkflowId(getWorkflowIdInternal()));
+    workflow.setDiagram(new Diagram().canvas(new Node().addNode(new Node().bounds(new Bounds(0, 0, 10, 10)))));
+    workflow = serializeWorkflow(workflow);
+    // No execptions due to empty workflow and diagram.
   }
 }

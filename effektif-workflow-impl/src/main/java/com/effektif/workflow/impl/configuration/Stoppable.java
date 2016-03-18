@@ -14,13 +14,14 @@
 package com.effektif.workflow.impl.configuration;
 
 
-/** Stoppables are invoked when the {@link Brewery} is stopped.
+/** Callback invoked by the {@link Brewery} when it is {@link Brewery#stop()} stopped}.
  * 
- * Stoppables are stopped in the reverse order as they are added or created.
- * 
- * @author Tom Baeyens
+ * <p>Stoppables are stopped in the reverse order as they are added or created.</p>
  */
 public interface Stoppable {
 
+  /** Callback invoked by the {@link Brewery} when it is {@link Brewery#stop()} stopped}.
+   *
+   * <p>Stoppables are stopped in the reverse order as they are added or created.</p> */
   void stop(Brewery brewery);
 }
