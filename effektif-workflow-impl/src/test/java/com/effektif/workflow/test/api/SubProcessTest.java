@@ -15,15 +15,9 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.junit.Test;
-
-import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
@@ -32,6 +26,12 @@ import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 
 /**
@@ -170,6 +170,42 @@ public class SubProcessTest extends WorkflowTest {
     );
 
     assertEquals("walter", getMessage(0));
+  }
+
+
+  @Test
+  public void testNestedSubprocesses() {
+    ExecutableWorkflow innerWorkflow = new ExecutableWorkflow()
+        .activity("inner", msgValue("inner"));
+    deploy(innerWorkflow);
+
+    ExecutableWorkflow intermediateWorkflow = new ExecutableWorkflow()
+        .activity("intermediate before inner", msgValue("intermediate before inner").transitionToNext())
+        .activity("call-inner", new SubProcess()
+            .subWorkflowId(innerWorkflow.getId())
+            .transitionToNext())
+        .activity("intermediate after inner", msgValue("intermediate after inner"));
+    deploy(intermediateWorkflow);
+
+    ExecutableWorkflow outerWorkflow = new ExecutableWorkflow()
+        .activity("outer before intermediate", msgValue("outer before intermediate").transitionToNext())
+        .activity("call-intermediate", new SubProcess()
+            .subWorkflowId(intermediateWorkflow.getId())
+            .transitionToNext())
+        .activity("outer after intermediate", msgValue("outer after intermediate"));
+    deploy(outerWorkflow);
+
+    workflowEngine.start(new TriggerInstance()
+        .workflowId(outerWorkflow.getId())
+    );
+
+    List<String> expectedMessages = new ArrayList<>();
+    expectedMessages.add("outer before intermediate");
+    expectedMessages.add("intermediate before inner");
+    expectedMessages.add("inner");
+    expectedMessages.add("intermediate after inner");
+    expectedMessages.add("outer after intermediate");
+    assertEquals(expectedMessages, getMessages());
   }
 
 }

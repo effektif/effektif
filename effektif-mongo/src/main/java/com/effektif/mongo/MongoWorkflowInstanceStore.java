@@ -21,6 +21,7 @@ import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.workflow.Extensible;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -410,8 +411,8 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.workflowInstance = workflowInstance;
     workflowInstance.scope = workflow;
     workflowInstance.configuration = configuration;
-    workflowInstance.callerWorkflowInstanceId = readWorkflowInstanceId(dbWorkflowInstance, CALLER_WORKFLOW_INSTANCE_ID);
-    workflowInstance.callerActivityInstanceId = readString(dbWorkflowInstance, CALLER_ACTIVITY_INSTANCE_ID);
+    workflowInstance.callingWorkflowInstanceId = readWorkflowInstanceId(dbWorkflowInstance, CALLING_WORKFLOW_INSTANCE_ID);
+    workflowInstance.callingActivityInstanceId = readString(dbWorkflowInstance, CALLING_ACTIVITY_INSTANCE_ID);
     workflowInstance.nextActivityInstanceId = readLong(dbWorkflowInstance, NEXT_ACTIVITY_INSTANCE_ID);
     workflowInstance.nextVariableInstanceId = readLong(dbWorkflowInstance, NEXT_VARIABLE_INSTANCE_ID);
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(LOCK));
@@ -439,9 +440,10 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     if (dbWorkflowInstance == null || workflowInstance == null) {
       return;
     }
-    Map<String,?> mappedBeanFields = mongoMapper.write(workflowInstance.toWorkflowInstance());
+    Set<String> invalidPropertyKeys = Extensible.getInvalidPropertyKeys(WorkflowInstance.class);
+    // Map<String,?> mappedBeanFields = mongoMapper.write(workflowInstance.toWorkflowInstance());
     for (String fieldName : dbWorkflowInstance.keySet()) {
-      boolean property = !mappedBeanFields.keySet().contains(fieldName);
+      boolean property = !invalidPropertyKeys.contains(fieldName);
       if (property) {
         workflowInstance.setProperty(fieldName, dbWorkflowInstance.get(fieldName));
       }

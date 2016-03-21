@@ -36,8 +36,8 @@ public class TriggerInstance extends DataContainer {
   protected String sourceWorkflowId;
   protected List<String> startActivityIds;
   protected String businessKey;
-  protected WorkflowInstanceId callerWorkflowInstanceId;
-  protected String callerActivityInstanceId;
+  protected WorkflowInstanceId callingWorkflowInstanceId;
+  protected String callingActivityInstanceId;
 
   public WorkflowId getWorkflowId() {
     return this.workflowId;
@@ -122,26 +122,26 @@ public class TriggerInstance extends DataContainer {
 
   /** used by the call activity to establish the link between the calling activity instance 
    * and the called workflow instance */
-  public WorkflowInstanceId getCallerWorkflowInstanceId() {
-    return callerWorkflowInstanceId;
+  public WorkflowInstanceId getCallingWorkflowInstanceId() {
+    return callingWorkflowInstanceId;
   }
   
   /** used by the call activity to establish the link between the calling activity instance 
    * and the called workflow instance */
-  public void setCallerWorkflowInstanceId(WorkflowInstanceId callerWorkflowInstanceId) {
-    this.callerWorkflowInstanceId = callerWorkflowInstanceId;
+  public void setCallingWorkflowInstanceId(WorkflowInstanceId callingWorkflowInstanceId) {
+    this.callingWorkflowInstanceId = callingWorkflowInstanceId;
   }
   
   /** used by the call activity to establish the link between the calling activity instance 
    * and the called workflow instance */
-  public String getCallerActivityInstanceId() {
-    return callerActivityInstanceId;
+  public String getCallingActivityInstanceId() {
+    return callingActivityInstanceId;
   }
 
   /** used by the call activity to establish the link between the calling activity instance 
    * and the called workflow instance */
-  public void setCallerActivityInstanceId(String callerActivityInstanceId) {
-    this.callerActivityInstanceId = callerActivityInstanceId;
+  public void setCallingActivityInstanceId(String callingActivityInstanceId) {
+    this.callingActivityInstanceId = callingActivityInstanceId;
   }
   
   @Override

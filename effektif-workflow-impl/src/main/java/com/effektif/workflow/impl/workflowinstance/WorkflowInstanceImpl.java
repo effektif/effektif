@@ -52,8 +52,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
-  public WorkflowInstanceId callerWorkflowInstanceId;
-  public String callerActivityInstanceId;
+  public WorkflowInstanceId callingWorkflowInstanceId;
+  public String callingActivityInstanceId;
   public List<String> startActivityIds;
   public Boolean isAsync;
   public Long nextActivityInstanceId;
@@ -86,8 +86,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.nextVariableInstanceId = 1l;
     this.nextTimerInstanceId = 1l;
     this.businessKey = triggerInstance.getBusinessKey();
-    this.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
-    this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
+    this.callingWorkflowInstanceId = triggerInstance.getCallingWorkflowInstanceId();
+    this.callingActivityInstanceId = triggerInstance.getCallingActivityInstanceId();
     this.startActivityIds = triggerInstance.getStartActivityIds();
     this.lock = lock;
     this.transientProperties = transientProperties;
@@ -103,8 +103,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     workflowInstance.setId(id);
     workflowInstance.setBusinessKey(businessKey);
     workflowInstance.setWorkflowId(workflow.id);
-    workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
-    workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);
+    workflowInstance.setCallingWorkflowInstanceId(callingWorkflowInstanceId);
+    workflowInstance.setCallingActivityInstanceId(callingActivityInstanceId);
 
     if (jobs != null) {
       List<TimerInstance> timerInstances = new ArrayList<>();
@@ -257,8 +257,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     
     destroyScopeInstance();
     
-    if (callerWorkflowInstanceId != null) {
-      WorkflowInstanceImpl callerWorkflowInstance = null;
+    if (callingWorkflowInstanceId != null) {
+      WorkflowInstanceImpl callingWorkflowInstance = null;
       if (lockedWorkflowInstances != null) {
         // the lockedWorkflowInstances is a local cache of the locked workflow
         // instances which is passed down to the sub workflow instance in the
@@ -267,22 +267,22 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         // locked in the db. the call activity will first check this cache to
         // see if the workflow instance is already locked and use this one
         // instead of going to the db.
-        callerWorkflowInstance = lockedWorkflowInstances.get(workflowInstance.callerWorkflowInstanceId);
+        callingWorkflowInstance = lockedWorkflowInstances.get(workflowInstance.callingWorkflowInstanceId);
       }
-      if (callerWorkflowInstance == null) {
+      if (callingWorkflowInstance == null) {
         WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-        callerWorkflowInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callerWorkflowInstanceId);
-        if (callerWorkflowInstance == null) {
+        callingWorkflowInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callingWorkflowInstanceId);
+        if (callingWorkflowInstance == null) {
           log.error("Couldn't continue calling activity instance after workflow instance completion");
         }
       }
-      final ActivityInstanceImpl callerActivityInstance = callerWorkflowInstance.findActivityInstance(callerActivityInstanceId);
+      final ActivityInstanceImpl callingActivityInstance = callingWorkflowInstance.findActivityInstance(callingActivityInstanceId);
       if (log.isDebugEnabled())
-        log.debug("Notifying caller " + callerActivityInstance);
-      ActivityImpl activityDefinition = callerActivityInstance.getActivity();
+        log.debug("Notifying calling activity instance " + callingActivityInstance);
+      ActivityImpl activityDefinition = callingActivityInstance.getActivity();
       final SubProcessImpl callActivity = (SubProcessImpl) activityDefinition.activityType;
 
-      callActivity.calledWorkflowInstanceEnded(callerActivityInstance, workflowInstance);
+      callActivity.calledWorkflowInstanceEnded(callingActivityInstance, this);
     }
   }
 
@@ -356,7 +356,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public String toString() {
-    return "(" + (workflow.sourceWorkflowId != null ? workflow.sourceWorkflowId + "|" : "")
+    return "(" + ((workflow.name != null ? workflow.name + "|" : workflow.sourceWorkflowId != null ? workflow.sourceWorkflowId + "|" : ""))
             + (id != null ? id.toString() : Integer.toString(System.identityHashCode(this))) + ")";
   }
 

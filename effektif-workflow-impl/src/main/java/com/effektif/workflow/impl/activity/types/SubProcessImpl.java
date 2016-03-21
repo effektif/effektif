@@ -18,6 +18,7 @@ package com.effektif.workflow.impl.activity.types;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.SubProcess;
+import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.query.WorkflowQuery;
@@ -151,8 +152,8 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
         .sourceWorkflowId(subWorkflowSourceId)
         .workflowId(actualSubWorkflowId);
       
-      triggerInstance.setCallerWorkflowInstanceId(activityInstance.workflowInstance.id);
-      triggerInstance.setCallerActivityInstanceId(activityInstance.id);
+      triggerInstance.setCallingWorkflowInstanceId(activityInstance.workflowInstance.id);
+      triggerInstance.setCallingActivityInstanceId(activityInstance.id);
       
       if (inputBindings!=null) {
         for (String subWorkflowKey: inputBindings.keySet()) {
@@ -181,10 +182,30 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     workflowEngine.startExecute(calledWorkflowInstance);
   }
 
-  public void calledWorkflowInstanceEnded(ActivityInstanceImpl callerActivityInstance, WorkflowInstanceImpl calledProcessInstance) {
-    mapOutputVariables(callerActivityInstance, calledProcessInstance);
-    callerActivityInstance.onwards();
-    callerActivityInstance.workflowInstance.executeWork();
+  public void calledWorkflowInstanceEnded(final ActivityInstanceImpl callingActivityInstance, WorkflowInstanceImpl calledWorkflowInstance) {
+    mapOutputVariables(callingActivityInstance, calledWorkflowInstance);
+
+    calledWorkflowInstance.workflow.getWorkflowEngine()
+            .send(new Message()
+                    .workflowInstanceId(callingActivityInstance.workflowInstance.getId())
+                    .activityInstanceId(callingActivityInstance.getId()),
+                callingActivityInstance.workflowInstance);
+
+
+    //    // after the called workflow instance is completely done and flushed and unlocked,
+//    calledWorkflowInstance.addUnlockListener(new UnlockListener() {
+//      @Override
+//      public void unlocked(WorkflowInstanceImpl workflowInstanceImpl) {
+//        // Continue the calling activity instance
+//        workflowInstanceImpl.workflow.workflowEngine
+//            .send(new Message()
+//                .workflowInstanceId(callingActivityInstance.workflowInstance.getId())
+//                .activityInstanceId(callingActivityInstance.getId()),
+//            callingActivityInstance.workflowInstance);
+//        //        callingActivityInstance.onwards();
+//        //        callingWorkflowInstance.executeWork();
+//      }
+//    });
   }
 
   protected void mapOutputVariables(ActivityInstanceImpl callerActivityInstance, WorkflowInstanceImpl calledProcessInstance) {
