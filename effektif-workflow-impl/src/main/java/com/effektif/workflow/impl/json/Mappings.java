@@ -84,8 +84,10 @@ public class Mappings {
    * Dynamically initialized */ 
   protected Map<Type, TypeMapping> typeMappings = new HashMap<>();
 
-  /** Json type mappers are the SPI to plug in support for particular types,
-   * Dynamically initialized. */ 
+  /**
+   * JSON type mappers are the SPI to plug in support for particular types.
+   * Dynamically initialized.
+   */
   protected Map<Type, JsonTypeMapper> typeMappers = new HashMap<>();
   
   /** dynamically initialized */

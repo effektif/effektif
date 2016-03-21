@@ -13,10 +13,10 @@
  * limitations under the License. */
 package com.effektif.workflow.api.model;
 
+import com.effektif.workflow.api.types.DataType;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.effektif.workflow.api.types.DataType;
 
 
 /**
@@ -25,6 +25,9 @@ import com.effektif.workflow.api.types.DataType;
 public class DataContainer {
 
   protected Map<String,TypedValue> data;
+
+  // transientData is not serialized (and DataContainer is not persisted)
+  protected Map<String,Object> transientData;
 
   public Object getData(String key) {
     TypedValue value = data!=null ? data.get(key) : null;
@@ -84,5 +87,30 @@ public class DataContainer {
   public Map<String, TypedValue> getData() {
     return data;
   }
-  
+
+  public Map<String,Object> getTransientData() {
+    return this.transientData;
+  }
+  public void setTransientData(Map<String,Object> transientData) {
+    this.transientData = transientData;
+  }
+  public Object getTransientData(String key) {
+    return transientData !=null ? transientData.get(key) : null;
+  }
+  public DataContainer transientData(String key,Object value) {
+    if (transientData ==null) {
+      transientData = new HashMap<>();
+    }
+    this.transientData.put(key, value);
+    return this;
+  }
+  public DataContainer transientDataOpt(String key,Object value) {
+    if (value!=null) {
+      transientData(key, value);
+    }
+    return this;
+  }
+  public Object removeTransientData(String key) {
+    return transientData !=null ? transientData.remove(key) : null;
+  }
 }

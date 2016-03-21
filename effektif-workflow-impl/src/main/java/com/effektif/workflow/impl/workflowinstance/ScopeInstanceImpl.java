@@ -15,20 +15,6 @@
  */
 package com.effektif.workflow.impl.workflowinstance;
 
-import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.model.DataContainer;
@@ -43,14 +29,16 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
 import com.effektif.workflow.impl.data.types.ListTypeImpl;
 import com.effektif.workflow.impl.job.Job;
-import com.effektif.workflow.impl.job.JobStore;
 import com.effektif.workflow.impl.util.Time;
-import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.ExpressionImpl;
-import com.effektif.workflow.impl.workflow.ScopeImpl;
-import com.effektif.workflow.impl.workflow.TimerImpl;
-import com.effektif.workflow.impl.workflow.VariableImpl;
+import com.effektif.workflow.impl.workflow.*;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING;
+import static com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl.STATE_STARTING_MULTI_CONTAINER;
 
 
 public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
@@ -590,7 +578,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
 
   public void cancel() {
     if (this.end==null) {
-      this.end = Time.now();
+      this.setEnd(Time.now());
       this.endState = ScopeInstance.ENDSTATE_CANCELED;
       if (activityInstances!=null) {
         for (ActivityInstanceImpl activityInstance: activityInstances) {

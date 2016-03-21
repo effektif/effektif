@@ -149,7 +149,7 @@ public abstract class Extensible {
     }
   }
   
-  private static Set<String> getInvalidPropertyKeys(Class<?> clazz) {
+  public static Set<String> getInvalidPropertyKeys(Class<?> clazz) {
     Set<String> invalidPropertyKeys = invalidPropertyKeysByClass.get(clazz);
     if (invalidPropertyKeys!=null) {
       return invalidPropertyKeys;

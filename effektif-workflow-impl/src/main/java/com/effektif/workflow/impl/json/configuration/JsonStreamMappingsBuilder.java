@@ -13,13 +13,9 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json.configuration;
 
-import com.effektif.workflow.api.model.RelativeTime;
+import com.effektif.workflow.api.model.DataContainer;
 import com.effektif.workflow.impl.json.MappingsBuilder;
-import com.effektif.workflow.impl.json.types.DateStreamMapper;
-import com.effektif.workflow.impl.json.types.LocalDateTimeStreamMapper;
-import com.effektif.workflow.impl.json.types.UriMapper;
-import com.effektif.workflow.impl.json.types.WorkflowIdStreamMapper;
-import com.effektif.workflow.impl.json.types.WorkflowInstanceIdStreamMapper;
+import com.effektif.workflow.impl.json.types.*;
 import com.effektif.workflow.impl.workflowinstance.BaseInstanceImpl;
 
 
@@ -36,5 +32,6 @@ public class JsonStreamMappingsBuilder extends MappingsBuilder {
     typeMapperFactory(new WorkflowIdStreamMapper());
     typeMapperFactory(new WorkflowInstanceIdStreamMapper());
     ignore(BaseInstanceImpl.class, "transientProperties");
+    ignore(DataContainer.class, "transientData");
   }
 }

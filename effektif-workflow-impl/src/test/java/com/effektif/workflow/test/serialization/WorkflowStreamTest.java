@@ -141,26 +141,26 @@ public class WorkflowStreamTest {
   }
 
   @Test
-  public void testCall() {
+  public void testSubProcess() {
     LocalDateTime now = new LocalDateTime();
     ExecutableWorkflow workflow = new ExecutableWorkflow()
-      .activity(new Call()
+      .activity(new SubProcess()
         .id("runTests")
         .inputValue("d", now)
         .inputValue("s", "string")
         .inputExpression("v", "version")
-        .subWorkflowSource("Run tests")
+        .subWorkflowSourceId("Run tests")
         .subWorkflowId(new WorkflowId(getWorkflowIdInternal())));
 
     workflow = serializeWorkflow(workflow);
 
     assertNotNull(workflow);
-    Call call = (Call) workflow.getActivities().get(0);
-    assertEquals(new WorkflowId(getWorkflowIdInternal()), call.getSubWorkflowId());
-    assertEquals("Run tests", call.getSubWorkflowSource());
-    assertEquals(now, call.getInputBindings().get("d").getValue());
-    assertEquals("string", call.getInputBindings().get("s").getValue());
-    assertEquals("version", call.getInputBindings().get("v").getExpression());
+    SubProcess subProcess = (SubProcess) workflow.getActivities().get(0);
+    assertEquals(new WorkflowId(getWorkflowIdInternal()), subProcess.getSubWorkflowId());
+    assertEquals("Run tests", subProcess.getSubWorkflowSourceId());
+    assertEquals(now, subProcess.getInputBindings().get("d").getValue());
+    assertEquals("string", subProcess.getInputBindings().get("s").getValue());
+    assertEquals("version", subProcess.getInputBindings().get("v").getExpression());
   }
 
   @Test

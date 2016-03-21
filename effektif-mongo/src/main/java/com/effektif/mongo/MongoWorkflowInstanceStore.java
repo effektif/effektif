@@ -15,29 +15,13 @@
  */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.ActivityInstanceFields.*;
-import static com.effektif.mongo.MongoDb._ID;
-import static com.effektif.mongo.MongoHelper.*;
-import static com.effektif.mongo.WorkflowInstanceFields.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-
-import com.effektif.mongo.WorkflowInstanceFields.Lock;
+import com.effektif.mongo.WorkflowInstanceFields.*;
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.workflow.Extensible;
 import com.effektif.workflow.api.workflowinstance.VariableInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
@@ -52,17 +36,21 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
-import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.LockImpl;
-import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.VariableInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
-import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceUpdates;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.effektif.workflow.impl.workflowinstance.*;
+import com.mongodb.*;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+
+import java.util.*;
+
+import static com.effektif.mongo.ActivityInstanceFields.*;
+import static com.effektif.mongo.ActivityInstanceFields.DURATION;
+import static com.effektif.mongo.ActivityInstanceFields.END;
+import static com.effektif.mongo.ActivityInstanceFields.END_STATE;
+import static com.effektif.mongo.ActivityInstanceFields.START;
+import static com.effektif.mongo.MongoDb._ID;
+import static com.effektif.mongo.MongoHelper.*;
+import static com.effektif.mongo.WorkflowInstanceFields.*;
 
 
 public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewable {
@@ -423,8 +411,8 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.workflowInstance = workflowInstance;
     workflowInstance.scope = workflow;
     workflowInstance.configuration = configuration;
-    workflowInstance.callerWorkflowInstanceId = readWorkflowInstanceId(dbWorkflowInstance, CALLER_WORKFLOW_INSTANCE_ID);
-    workflowInstance.callerActivityInstanceId = readString(dbWorkflowInstance, CALLER_ACTIVITY_INSTANCE_ID);
+    workflowInstance.callingWorkflowInstanceId = readWorkflowInstanceId(dbWorkflowInstance, CALLING_WORKFLOW_INSTANCE_ID);
+    workflowInstance.callingActivityInstanceId = readString(dbWorkflowInstance, CALLING_ACTIVITY_INSTANCE_ID);
     workflowInstance.nextActivityInstanceId = readLong(dbWorkflowInstance, NEXT_ACTIVITY_INSTANCE_ID);
     workflowInstance.nextVariableInstanceId = readLong(dbWorkflowInstance, NEXT_VARIABLE_INSTANCE_ID);
     workflowInstance.lock = readLock((BasicDBObject) dbWorkflowInstance.get(LOCK));
@@ -438,7 +426,28 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     workflowInstance.workAsync = readWork(dbWorkflowInstance, WORK_ASYNC, workflowInstance);
     workflowInstance.properties = readObjectMap(dbWorkflowInstance, PROPERTIES);
     workflowInstance.setProperty(ORGANIZATION_ID, readObject(dbWorkflowInstance, ORGANIZATION_ID));
+
+    copyProperties(dbWorkflowInstance, workflowInstance);
+
     return workflowInstance;
+  }
+
+  /**
+   * Reads database fields (that do not have Java fields) and copies them to workflow instance properties.
+   * This makes it possible to write non-standard fields to the database and read them from properties.
+   */
+  private void copyProperties(BasicDBObject dbWorkflowInstance, WorkflowInstanceImpl workflowInstance) {
+    if (dbWorkflowInstance == null || workflowInstance == null) {
+      return;
+    }
+    Set<String> invalidPropertyKeys = Extensible.getInvalidPropertyKeys(WorkflowInstance.class);
+    // Map<String,?> mappedBeanFields = mongoMapper.write(workflowInstance.toWorkflowInstance());
+    for (String fieldName : dbWorkflowInstance.keySet()) {
+      boolean property = !invalidPropertyKeys.contains(fieldName);
+      if (property) {
+        workflowInstance.setProperty(fieldName, dbWorkflowInstance.get(fieldName));
+      }
+    }
   }
 
   protected void readScopeImpl(ScopeInstanceImpl scopeInstance, BasicDBObject dbScopeInstance, Map<ActivityInstanceImpl, String> allActivityIds) {

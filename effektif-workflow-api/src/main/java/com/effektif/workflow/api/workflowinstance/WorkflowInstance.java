@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.api.workflowinstance;
 
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.json.JsonPropertyOrder;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
@@ -32,8 +33,13 @@ public class WorkflowInstance extends ScopeInstance {
   protected WorkflowId workflowId;
   protected String businessKey;
   protected String creatorId;
-  protected WorkflowInstanceId callerWorkflowInstanceId;
-  protected String callerActivityInstanceId;
+
+  /** When a {@link SubProcess} is used, the workflow instance that called this one. */
+  protected WorkflowInstanceId callingWorkflowInstanceId;
+
+  /** When a {@link SubProcess} is used, the call activity in the calling workflow. */
+  protected String callingActivityInstanceId;
+
   protected String caseId;
   public List<TimerInstance> jobs;
 
@@ -44,18 +50,18 @@ public class WorkflowInstance extends ScopeInstance {
     this.id = id;
   }
 
-  public WorkflowInstanceId getCallerWorkflowInstanceId() {
-    return this.callerWorkflowInstanceId;
+  public WorkflowInstanceId getCallingWorkflowInstanceId() {
+    return this.callingWorkflowInstanceId;
   }
-  public void setCallerWorkflowInstanceId(WorkflowInstanceId callerWorkflowInstanceId) {
-    this.callerWorkflowInstanceId = callerWorkflowInstanceId;
+  public void setCallingWorkflowInstanceId(WorkflowInstanceId callingWorkflowInstanceId) {
+    this.callingWorkflowInstanceId = callingWorkflowInstanceId;
   }
   
-  public String getCallerActivityInstanceId() {
-    return this.callerActivityInstanceId;
+  public String getCallingActivityInstanceId() {
+    return this.callingActivityInstanceId;
   }
-  public void setCallerActivityInstanceId(String callerActivityInstanceId) {
-    this.callerActivityInstanceId = callerActivityInstanceId;
+  public void setCallingActivityInstanceId(String callingActivityInstanceId) {
+    this.callingActivityInstanceId = callingActivityInstanceId;
   }
 
   public WorkflowId getWorkflowId() {

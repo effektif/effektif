@@ -15,11 +15,6 @@
  */
 package com.effektif.workflow.test.impl;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.template.TextTemplate;
 import com.effektif.workflow.impl.template.TextTemplate.ExpressionTemplateElement;
@@ -27,6 +22,11 @@ import com.effektif.workflow.impl.template.TextTemplate.StringTemplateElement;
 import com.effektif.workflow.impl.template.TextTemplate.TemplateElement;
 import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**

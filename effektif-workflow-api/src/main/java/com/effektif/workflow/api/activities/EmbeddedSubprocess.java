@@ -34,7 +34,7 @@ import com.effektif.workflow.api.workflow.Variable;
  *      Subprocess</a>
  * @author Tom Baeyens
  */
-@TypeName("subProcess")
+@TypeName("subProcessEmbedded")
 @BpmnElement("subProcess")
 public class EmbeddedSubprocess extends Activity {
 

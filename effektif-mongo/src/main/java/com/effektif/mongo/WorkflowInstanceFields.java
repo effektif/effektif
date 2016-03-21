@@ -25,8 +25,8 @@ public interface WorkflowInstanceFields extends ScopeInstanceFields {
   String UPDATES = "updates";
   String WORK = "work";
   String WORK_ASYNC = "workAsync";
-  String CALLER_WORKFLOW_INSTANCE_ID = "callerWorkflowInstanceId";
-  String CALLER_ACTIVITY_INSTANCE_ID = "callerActivityInstanceId";
+  String CALLING_WORKFLOW_INSTANCE_ID = "callingWorkflowInstanceId";
+  String CALLING_ACTIVITY_INSTANCE_ID = "callingActivityInstanceId";
   String NEXT_ACTIVITY_INSTANCE_ID = "nextActivityInstanceId";
   String NEXT_VARIABLE_INSTANCE_ID = "nextVariableInstanceId";
   String JOBS = "jobs";

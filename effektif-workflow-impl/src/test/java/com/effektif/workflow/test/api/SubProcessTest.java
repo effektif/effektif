@@ -15,15 +15,9 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.junit.Test;
-
-import com.effektif.workflow.api.activities.Call;
 import com.effektif.workflow.api.activities.NoneTask;
 import com.effektif.workflow.api.activities.ReceiveTask;
+import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
@@ -32,12 +26,18 @@ import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 
 /**
  * @author Tom Baeyens
  */
-public class CallTest extends WorkflowTest {
+public class SubProcessTest extends WorkflowTest {
   
   @Test
   public void testCallActivity() {
@@ -47,7 +47,7 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call", new Call()
+      .activity("call", new SubProcess()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -85,10 +85,10 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call1", new Call()
+      .activity("call1", new SubProcess()
         .subWorkflowId(subWorkflow.getId())
         .transitionToNext())
-      .activity("call2", new Call()
+      .activity("call2", new SubProcess()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -104,16 +104,16 @@ public class CallTest extends WorkflowTest {
   }
 
   @Test
-  public void testTwoCallActivitiesInparallel() {
+  public void testTwoCallActivitiesInParallel() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("auto", new NoneTask());
     
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call1", new Call()
+      .activity("call1", new SubProcess()
         .subWorkflowId(subWorkflow.getId()))
-      .activity("call2", new Call()
+      .activity("call2", new SubProcess()
         .subWorkflowId(subWorkflow.getId()));
 
     deploy(superWorkflow);
@@ -137,7 +137,7 @@ public class CallTest extends WorkflowTest {
     deploy(subWorkflow);
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
-      .activity("call", new Call()
+      .activity("call", new SubProcess()
         .inputValue("performer", "walter")
         .subWorkflowId(subWorkflow.getId()));
     
@@ -158,7 +158,7 @@ public class CallTest extends WorkflowTest {
     
     ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
       .variable("guineapig", TextType.INSTANCE)
-      .activity("call", new Call()
+      .activity("call", new SubProcess()
         .inputExpression("performer", "guineapig")
         .subWorkflowId(subWorkflow.getId()));
     
@@ -170,6 +170,42 @@ public class CallTest extends WorkflowTest {
     );
 
     assertEquals("walter", getMessage(0));
+  }
+
+
+  @Test
+  public void testNestedSubprocesses() {
+    ExecutableWorkflow innerWorkflow = new ExecutableWorkflow()
+        .activity("inner", msgValue("inner"));
+    deploy(innerWorkflow);
+
+    ExecutableWorkflow intermediateWorkflow = new ExecutableWorkflow()
+        .activity("intermediate before inner", msgValue("intermediate before inner").transitionToNext())
+        .activity("call-inner", new SubProcess()
+            .subWorkflowId(innerWorkflow.getId())
+            .transitionToNext())
+        .activity("intermediate after inner", msgValue("intermediate after inner"));
+    deploy(intermediateWorkflow);
+
+    ExecutableWorkflow outerWorkflow = new ExecutableWorkflow()
+        .activity("outer before intermediate", msgValue("outer before intermediate").transitionToNext())
+        .activity("call-intermediate", new SubProcess()
+            .subWorkflowId(intermediateWorkflow.getId())
+            .transitionToNext())
+        .activity("outer after intermediate", msgValue("outer after intermediate"));
+    deploy(outerWorkflow);
+
+    workflowEngine.start(new TriggerInstance()
+        .workflowId(outerWorkflow.getId())
+    );
+
+    List<String> expectedMessages = new ArrayList<>();
+    expectedMessages.add("outer before intermediate");
+    expectedMessages.add("intermediate before inner");
+    expectedMessages.add("inner");
+    expectedMessages.add("intermediate after inner");
+    expectedMessages.add("outer after intermediate");
+    assertEquals(expectedMessages, getMessages());
   }
 
 }

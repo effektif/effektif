@@ -25,7 +25,7 @@ import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowInstanceStore;
 import com.effektif.workflow.impl.activity.ActivityType;
-import com.effektif.workflow.impl.activity.types.CallImpl;
+import com.effektif.workflow.impl.activity.types.SubProcessImpl;
 import com.effektif.workflow.impl.job.Job;
 import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
@@ -52,8 +52,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public LockImpl lock;
   public Queue<ActivityInstanceImpl> work;
   public Queue<ActivityInstanceImpl> workAsync;
-  public WorkflowInstanceId callerWorkflowInstanceId;
-  public String callerActivityInstanceId;
+  public WorkflowInstanceId callingWorkflowInstanceId;
+  public String callingActivityInstanceId;
   public List<String> startActivityIds;
   public Boolean isAsync;
   public Long nextActivityInstanceId;
@@ -75,7 +75,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, WorkflowInstanceId workflowInstanceId, TriggerInstance triggerInstance,
-          LockImpl lock) {
+          LockImpl lock, Map<String, Object> transientProperties) {
     this.id = workflowInstanceId;
     this.configuration = configuration;
     this.workflow = workflow;
@@ -86,10 +86,11 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     this.nextVariableInstanceId = 1l;
     this.nextTimerInstanceId = 1l;
     this.businessKey = triggerInstance.getBusinessKey();
-    this.callerWorkflowInstanceId = triggerInstance.getCallerWorkflowInstanceId();
-    this.callerActivityInstanceId = triggerInstance.getCallerActivityInstanceId();
+    this.callingWorkflowInstanceId = triggerInstance.getCallingWorkflowInstanceId();
+    this.callingActivityInstanceId = triggerInstance.getCallingActivityInstanceId();
     this.startActivityIds = triggerInstance.getStartActivityIds();
     this.lock = lock;
+    this.transientProperties = transientProperties;
     this.initializeVariableInstances();
   }
 
@@ -102,8 +103,8 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     workflowInstance.setId(id);
     workflowInstance.setBusinessKey(businessKey);
     workflowInstance.setWorkflowId(workflow.id);
-    workflowInstance.setCallerWorkflowInstanceId(callerWorkflowInstanceId);
-    workflowInstance.setCallerActivityInstanceId(callerActivityInstanceId);
+    workflowInstance.setCallingWorkflowInstanceId(callingWorkflowInstanceId);
+    workflowInstance.setCallingActivityInstanceId(callingActivityInstanceId);
 
     if (jobs != null) {
       List<TimerInstance> timerInstances = new ArrayList<>();
@@ -256,37 +257,32 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     
     destroyScopeInstance();
     
-    if (callerWorkflowInstanceId != null) {
-      WorkflowInstanceImpl callerProcessInstance = null;
+    if (callingWorkflowInstanceId != null) {
+      WorkflowInstanceImpl callingWorkflowInstance = null;
       if (lockedWorkflowInstances != null) {
         // the lockedWorkflowInstances is a local cache of the locked workflow
-        // instances
-        // which is passed down to the sub workflow instance in the call
-        // activity.
-        // in case the subprocess is fully synchronous and it
+        // instances which is passed down to the sub workflow instance in the
+        // call activity. In case the subprocess is fully synchronous and it
         // finishes and wants to continue the parent, that parent is already
         // locked in the db. the call activity will first check this cache to
-        // see
-        // if the workflow instance is already locked and use this one instead
-        // of
-        // going to the db.
-        callerProcessInstance = lockedWorkflowInstances.get(workflowInstance.callerWorkflowInstanceId);
+        // see if the workflow instance is already locked and use this one
+        // instead of going to the db.
+        callingWorkflowInstance = lockedWorkflowInstances.get(workflowInstance.callingWorkflowInstanceId);
       }
-      if (callerProcessInstance == null) {
+      if (callingWorkflowInstance == null) {
         WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-        callerProcessInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callerWorkflowInstanceId);
-        if (callerProcessInstance == null) {
+        callingWorkflowInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callingWorkflowInstanceId);
+        if (callingWorkflowInstance == null) {
           log.error("Couldn't continue calling activity instance after workflow instance completion");
         }
       }
-      ActivityInstanceImpl callerActivityInstance = callerProcessInstance.findActivityInstance(callerActivityInstanceId);
+      final ActivityInstanceImpl callingActivityInstance = callingWorkflowInstance.findActivityInstance(callingActivityInstanceId);
       if (log.isDebugEnabled())
-        log.debug("Notifying caller " + callerActivityInstance);
-      ActivityImpl activityDefinition = callerActivityInstance.getActivity();
-      CallImpl callActivity = (CallImpl) activityDefinition.activityType;
-      callActivity.calledWorkflowInstanceEnded(callerActivityInstance, workflowInstance);
-      callerActivityInstance.onwards();
-      callerProcessInstance.executeWork();
+        log.debug("Notifying calling activity instance " + callingActivityInstance);
+      ActivityImpl activityDefinition = callingActivityInstance.getActivity();
+      final SubProcessImpl callActivity = (SubProcessImpl) activityDefinition.activityType;
+
+      callActivity.calledWorkflowInstanceEnded(callingActivityInstance, this);
     }
   }
 
@@ -360,7 +356,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   }
 
   public String toString() {
-    return "(" + (workflow.sourceWorkflowId != null ? workflow.sourceWorkflowId + "|" : "")
+    return "(" + ((workflow.name != null ? workflow.name + "|" : workflow.sourceWorkflowId != null ? workflow.sourceWorkflowId + "|" : ""))
             + (id != null ? id.toString() : Integer.toString(System.identityHashCode(this))) + ")";
   }
 
