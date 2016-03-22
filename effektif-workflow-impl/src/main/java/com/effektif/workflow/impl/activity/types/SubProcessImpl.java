@@ -87,8 +87,8 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
       }
 
       List<Variable> subWorkflowVariables = subWorkflow.getVariables();
-      if (subWorkflowVariables!=null) {
-        Map<String, Binding> inputBindingsApi = subProcess.getInputBindings();
+      Map<String, Binding> inputBindingsApi = subProcess.getInputBindings();
+      if (subWorkflowVariables != null && inputBindingsApi != null) {
         for (Variable subWorkflowVariable : subWorkflowVariables) {
           String subWorkflowVariableId = subWorkflowVariable.getId();
           Binding inputBindingApi = inputBindingsApi.get(subWorkflowVariableId);
