@@ -116,7 +116,7 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
         String elementText = elementType.convertInternalToText(element, hints);
         text.append(elementText);
       }
-      return text.toString();
+      return text != null ? text.toString() : "";
     }
     return value.toString();
   }
