@@ -24,6 +24,7 @@ import java.util.TreeSet;
 
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
+import com.effektif.workflow.api.bpmn.BpmnTypeChildElement;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.condition.Condition;
@@ -81,6 +82,11 @@ public class BpmnMappings extends Mappings {
           BpmnTypeAttribute bpmnTypeAttribute = (BpmnTypeAttribute) annotation;
           bpmnTypeMapping.addBpmnTypeAttribute(bpmnTypeAttribute.attribute(), bpmnTypeAttribute.value());
         }
+        if (annotation instanceof BpmnTypeChildElement) {
+          BpmnTypeChildElement bpmnTypeChildElement = (BpmnTypeChildElement) annotation;
+          bpmnTypeMapping.setBpmnTypeChildElement(bpmnTypeChildElement.value());
+          bpmnTypeMapping.setBpmnTypeChildElementRequired(bpmnTypeChildElement.required());
+        }
       }
       bpmnTypeMappingsByClass.put(subClass, bpmnTypeMapping);
 
@@ -103,40 +109,19 @@ public class BpmnMappings extends Mappings {
   }
 
   /**
-   * Returns a BPMN type mapping for the given BPMN XML element.
+   * Returns a BPMN type mapping for the given BPMN XML element, checking that elements match by {@link BpmnElement}
+   * and, if present, {@link BpmnTypeAttribute} or {@link BpmnTypeChildElement}.
    */
-  public BpmnTypeMapping getBpmnTypeMapping(XmlElement activityXml, BpmnReaderImpl bpmnReaderImpl) {
-    List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(activityXml.getLocalBPMNName());
-    if (typeMappings!=null) {
-      if (typeMappings.size()==1) {
-        return typeMappings.get(0);
-      } else if (!typeMappings.isEmpty()) {
-        for (BpmnTypeMapping typeMapping: typeMappings) {
-          if (isBpmnTypeAttributeMatch(activityXml, typeMapping, bpmnReaderImpl)) {
-            return typeMapping;
-          }
-        }
-      }
-    }
-    return null;
-  }
+  public BpmnTypeMapping getBpmnTypeMapping(XmlElement bpmnActivity, BpmnReaderImpl reader) {
+    List<BpmnTypeMapping> elementMappings = bpmnTypeMappingsByElement.get(bpmnActivity.getLocalBPMNName());
 
-  private boolean isBpmnTypeAttributeMatch(XmlElement xmlElement, BpmnTypeMapping typeMapping, BpmnReaderImpl bpmnReaderImpl) {
-    Map<String, String> bpmnTypeAttributes = typeMapping.getBpmnTypeAttributes();
-    if (bpmnTypeAttributes==null) {
-      return true;
-    }
-    for (String localPart: bpmnTypeAttributes.keySet()) {
-      String typeValue = bpmnTypeAttributes.get(localPart);
-      // get the attribute value in the xml element
-      String xmlValue = xmlElement.getAttribute(Bpmn.EFFEKTIF_URI, localPart);
-      if (typeValue.equals(xmlValue)) {
-        // only if there is a match we read (==remove) the the attribute from the xml element
-        xmlElement.removeAttribute(Bpmn.EFFEKTIF_URI, localPart);
-        return true;
-      }
-    }
-    return false;
+    // Return the first strict match (by attribute or child element), or the first element match otherwise.
+    return elementMappings == null ? null : elementMappings.stream()
+      .filter(mapping -> mapping.matches(bpmnActivity, reader))
+      .findFirst()
+      .orElse(elementMappings.stream()
+        .filter(mapping -> mapping.matchesNonStrict(bpmnActivity, reader))
+        .findFirst().orElse(null));
   }
 
   public void writeTypeAttribute(BpmnWriter bpmnWriter, Object o, String attributeName) {
@@ -146,7 +131,6 @@ public class BpmnMappings extends Mappings {
     }
   }
 
-  
   public BpmnTypeMapping getBpmnTypeMapping(Class<?> subClass) {
     if (!bpmnTypeMappingsByClass.containsKey(subClass)) {
       throw new IllegalArgumentException("No BPMN type mapping defined for " + subClass.getName());
