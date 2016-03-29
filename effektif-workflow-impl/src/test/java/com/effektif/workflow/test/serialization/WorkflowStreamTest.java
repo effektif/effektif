@@ -158,9 +158,9 @@ public class WorkflowStreamTest {
     SubProcess subProcess = (SubProcess) workflow.getActivities().get(0);
     assertEquals(new WorkflowId(getWorkflowIdInternal()), subProcess.getSubWorkflowId());
     assertEquals("Run tests", subProcess.getSubWorkflowSourceId());
-    assertEquals(now, subProcess.getInputBindings().get("d").getValue());
-    assertEquals("string", subProcess.getInputBindings().get("s").getValue());
-    assertEquals("version", subProcess.getInputBindings().get("v").getExpression());
+    assertEquals(now, subProcess.getSubWorkflowInputs().get("d").getValue());
+    assertEquals("string", subProcess.getSubWorkflowInputs().get("s").getValue());
+    assertEquals("version", subProcess.getSubWorkflowInputs().get("v").getExpression());
   }
 
   @Test
