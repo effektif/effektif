@@ -13,8 +13,6 @@
  * limitations under the License. */
 package com.effektif.mongo;
 
-import static com.effektif.mongo.MongoDb._ID;
-
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -23,6 +21,8 @@ import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.List;
+
+import static com.effektif.mongo.MongoDb._ID;
 
 
 public class Query {
@@ -65,6 +65,11 @@ public class Query {
 
   public Query nin(String fieldName, Collection<?> values) {
     query.put(fieldName, new BasicDBObject("$nin", values));
+    return this;
+  }
+
+  public Query all(String fieldName, Collection<?> values) {
+    query.put(fieldName, new BasicDBObject("$all", values));
     return this;
   }
 
