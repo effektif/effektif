@@ -134,10 +134,10 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
       triggerInstance.setCallingActivityInstanceId(activityInstance.id);
       
       if (inputBindings!=null) {
-        for (String subWorkflowKey: inputBindings.keySet()) {
-          BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowKey);
+        for (String subWorkflowVariableId: inputBindings.keySet()) {
+          BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowVariableId);
           Object value = activityInstance.getValue(subWorkflowBinding);
-          triggerInstance.data(subWorkflowKey, value);
+          triggerInstance.data(subWorkflowVariableId, value);
         }
       }
       
