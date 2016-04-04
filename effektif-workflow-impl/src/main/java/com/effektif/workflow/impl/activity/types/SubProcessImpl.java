@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import static javax.swing.text.html.HTML.Tag.HEAD;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.SubProcess;
@@ -113,37 +115,33 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     Configuration configuration = activityInstance.getConfiguration();
 
     WorkflowId actualSubWorkflowId = null;
-    if (this.subWorkflowId!=null) {
+    if (this.subWorkflowId != null) {
       actualSubWorkflowId = this.subWorkflowId;
-    } else if (subWorkflowSourceId !=null) {
+    }
+    else if (subWorkflowSourceId != null) {
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
       actualSubWorkflowId = workflowStore.findLatestWorkflowIdBySource(subWorkflowSourceId);
-      if (actualSubWorkflowId==null) {
-        throw new RuntimeException("Couldn't find sub workflow by source: "+ subWorkflowSourceId);
-      }
-    } else {
-      log.debug("No sub workflow binding was configured");
     }
-    
-    if (actualSubWorkflowId!=null) {
+
+    if (actualSubWorkflowId != null) {
       TriggerInstance triggerInstance = new TriggerInstance()
         .sourceWorkflowId(subWorkflowSourceId)
         .workflowId(actualSubWorkflowId);
-      
+
       triggerInstance.setCallingWorkflowInstanceId(activityInstance.workflowInstance.id);
       triggerInstance.setCallingActivityInstanceId(activityInstance.id);
-      
-      if (inputBindings!=null) {
+
+      if (inputBindings != null) {
         for (String subWorkflowVariableId: inputBindings.keySet()) {
           BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowVariableId);
           Object value = activityInstance.getValue(subWorkflowBinding);
           triggerInstance.data(subWorkflowVariableId, value);
         }
       }
-      
+
       startWorkflowInstance(activityInstance, triggerInstance);
     } else {
-      log.debug("Skipping call activity because no sub workflow was defined");
+      reportError(activityInstance, "Cannot execute sub-process action because no sub-process was configured.");
       activityInstance.onwards();
     }
   }
@@ -194,5 +192,9 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
         callerActivityInstance.setVariableValue(variableId, typedValue);
       }
     }
+  }
+
+  protected void reportError(ActivityInstanceImpl activityInstance, String message) {
+    log.warn(message);
   }
 }
