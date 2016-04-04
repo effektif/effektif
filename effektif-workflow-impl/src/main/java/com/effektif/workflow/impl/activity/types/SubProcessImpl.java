@@ -23,6 +23,7 @@ import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
@@ -69,7 +70,8 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     if (subWorkflowId!=null) {
       workflowQuery = new WorkflowQuery().workflowId(subWorkflowId);
     } else if (subWorkflowSourceId !=null) {
-      workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSourceId);
+      workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSourceId)
+        .orderByCreateTime(OrderDirection.desc).limit(1);
     }
     ExecutableWorkflow subWorkflow = null;
     if (workflowQuery!=null) {
