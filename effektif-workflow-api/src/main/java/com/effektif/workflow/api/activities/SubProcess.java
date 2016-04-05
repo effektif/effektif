@@ -18,10 +18,15 @@ package com.effektif.workflow.api.activities;
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
+import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.json.TypeName;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.workflow.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** 
  * Invokes another workflow and ends when the other workflow instance completes.
@@ -36,11 +41,34 @@ public class SubProcess extends AbstractBindableActivity {
   protected WorkflowId subWorkflowId; 
   protected Binding<String> subWorkflowSourceId;
 
+  /**
+   * Maps sub-workflow variable IDs to parent workflow bindings, e.g. variable expressions.
+   */
+  protected Map<String,Binding> subWorkflowInputs;
+
   @Override
   public void readBpmn(BpmnReader r) {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
     subWorkflowSourceId(r.readStringAttributeEffektif("subWorkflowSourceId"));
     super.readBpmn(r);
+
+    r.startExtensionElements();
+
+    // Read sub-workflow inputs.
+    for (XmlElement inputElement : r.readElementsEffektif("subWorkflowInput")) {
+      if (subWorkflowInputs == null) {
+        subWorkflowInputs = new HashMap<>();
+      }
+      r.startElement(inputElement);
+      String variableId = r.readStringAttributeEffektif("variableId");
+      List<Binding<Object>> singleBinding = r.readBindings("binding");
+      if (singleBinding != null && !singleBinding.isEmpty()) {
+        subWorkflowInputs.put(variableId, singleBinding.get(0));
+      }
+      r.endElement();
+    }
+
+    r.endExtensionElements();
   }
 
   @Override
@@ -49,6 +77,18 @@ public class SubProcess extends AbstractBindableActivity {
     w.writeIdAttributeEffektif("subWorkflowId", subWorkflowId);
     if (subWorkflowSourceId != null) {
       w.writeStringAttributeEffektif("subWorkflowSourceId", subWorkflowSourceId.getValue());
+    }
+    if (subWorkflowInputs != null) {
+      w.startExtensionElements();
+      for (Map.Entry<String, Binding> input : subWorkflowInputs.entrySet()) {
+        if (input.getKey() != null && input.getValue() != null) {
+          w.startElementEffektif("subWorkflowInput");
+          w.writeStringAttributeEffektif("variableId", input.getKey());
+          w.writeBinding("binding", input.getValue());
+          w.endElement();
+        }
+      }
+      w.endExtensionElements();
     }
   }
 
@@ -84,16 +124,29 @@ public class SubProcess extends AbstractBindableActivity {
     this.subWorkflowSourceId = new Binding<String>().value(id);
   }
 
+  public Map<String, Binding> getSubWorkflowInputs() {
+    return subWorkflowInputs;
+  }
+
+  public void setSubWorkflowInputs(Map<String, Binding> subWorkflowInputs) {
+    this.subWorkflowInputs = subWorkflowInputs;
+  }
 
   @Override
-  public SubProcess inputExpression(String key, String expression) {
-    super.inputExpression(key, expression);
+  public SubProcess inputExpression(String subWorkflowVariableId, String expression) {
+    if (subWorkflowInputs == null) {
+      subWorkflowInputs = new HashMap<>();
+    }
+    subWorkflowInputs.put(subWorkflowVariableId, new Binding().expression(expression));
     return this;
   }
 
   @Override
-  public SubProcess inputValue(String subWorkflowKey, Object value) {
-    super.inputValue(subWorkflowKey, value);
+  public SubProcess inputValue(String subWorkflowVariableId, Object value) {
+    if (subWorkflowInputs == null) {
+      subWorkflowInputs = new HashMap<>();
+    }
+    subWorkflowInputs.put(subWorkflowVariableId, new Binding().value(value));
     return this;
   }
 

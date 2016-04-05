@@ -15,12 +15,15 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
+import static javax.swing.text.html.HTML.Tag.HEAD;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.SubProcess;
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.model.WorkflowId;
+import com.effektif.workflow.api.query.OrderDirection;
 import com.effektif.workflow.api.query.WorkflowQuery;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
@@ -56,14 +59,6 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     super(activityApiClass);
   }
 
-  /**
-   * Returns an optional set of variable IDs to be used as inputs, or null if all available variables are to be used.
-   * Used to override the default behaviour to limit the scope exposed to the sub-workflow.
-   */
-  protected Set<String> inputVariableIds(ExecutableWorkflow subWorkflow) {
-    return null;
-  }
-
   @Override
   public void parse(ActivityImpl activityImpl, SubProcess subProcess, WorkflowParser parser) {
     super.parse(activityImpl, subProcess, parser);
@@ -75,7 +70,8 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
     if (subWorkflowId!=null) {
       workflowQuery = new WorkflowQuery().workflowId(subWorkflowId);
     } else if (subWorkflowSourceId !=null) {
-      workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSourceId);
+      workflowQuery = new WorkflowQuery().workflowSource(subWorkflowSourceId)
+        .orderByCreateTime(OrderDirection.desc).limit(1);
     }
     ExecutableWorkflow subWorkflow = null;
     if (workflowQuery!=null) {
@@ -93,79 +89,61 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
       if (subWorkflowSourceId == null) {
         subWorkflowSourceId = subWorkflow.getSourceWorkflowId();
       }
-    }
 
-    parseInputsOutputs(subProcess, parser, subWorkflow);
-  }
-
-
-  private void parseInputsOutputs(SubProcess subProcess, WorkflowParser parser, ExecutableWorkflow subWorkflow) {
-    if (subWorkflow != null) {
       List<Variable> subWorkflowVariables = subWorkflow.getVariables();
-      Set<String> includedVariableIds = inputVariableIds(subWorkflow);
-      Map<String, Binding> callInputs = subProcess.getInputBindings();
-      if (subWorkflowVariables != null && callInputs != null) {
-        for (Variable variable : subWorkflowVariables) {
-          String variableId = variable.getId();
-          boolean includeVariable = includedVariableIds == null || includedVariableIds.contains(variableId);
-          if (includeVariable) {
-            Binding callInput = callInputs.get(variableId);
-            parser.pushContext("inputBindings[" + variableId + "]", callInput, null, null);
-            BindingImpl<?> bindingImpl = parser.parseBinding(callInput, variableId, false, variable.getType());
-            if (bindingImpl != null) {
-              if (inputBindings == null) {
-                inputBindings = new HashMap<>();
-              }
-              inputBindings.put(variableId, bindingImpl);
+      Map<String, Binding> inputBindingsApi = subProcess.getSubWorkflowInputs();
+      if (subWorkflowVariables != null && inputBindingsApi != null) {
+        for (Variable subWorkflowVariable : subWorkflowVariables) {
+          String subWorkflowVariableId = subWorkflowVariable.getId();
+          Binding inputBindingApi = inputBindingsApi.get(subWorkflowVariableId);
+          parser.pushContext("inputBindings[" + subWorkflowVariableId + "]", inputBindingApi, null, null);
+          BindingImpl<?> bindingImpl = parser
+            .parseBinding(inputBindingApi, subWorkflowVariableId, false, subWorkflowVariable.getType());
+          if (bindingImpl != null) {
+            if (inputBindings == null) {
+              inputBindings = new HashMap<>();
             }
-            parser.popContext();
+            inputBindings.put(subWorkflowVariableId, bindingImpl);
           }
+          parser.popContext();
         }
       }
-
-      // IDEA improve error message by validating the keys to be proper sub-workflow variable IDs
-      this.outputBindings = activity.getOutputBindings();
-    } else if (inputBindings!=null && !inputBindings.isEmpty()) {
-      parser.addWarning("input and output bindings could not be parsed because the sub-workflow was not found");
     }
   }
+
 
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     Configuration configuration = activityInstance.getConfiguration();
 
     WorkflowId actualSubWorkflowId = null;
-    if (this.subWorkflowId!=null) {
+    if (this.subWorkflowId != null) {
       actualSubWorkflowId = this.subWorkflowId;
-    } else if (subWorkflowSourceId !=null) {
+    }
+    else if (subWorkflowSourceId != null) {
       WorkflowStore workflowStore = configuration.get(WorkflowStore.class);
       actualSubWorkflowId = workflowStore.findLatestWorkflowIdBySource(subWorkflowSourceId);
-      if (actualSubWorkflowId==null) {
-        throw new RuntimeException("Couldn't find sub workflow by source: "+ subWorkflowSourceId);
-      }
-    } else {
-      log.debug("No sub workflow binding was configured");
     }
-    
-    if (actualSubWorkflowId!=null) {
+
+    if (actualSubWorkflowId != null) {
       TriggerInstance triggerInstance = new TriggerInstance()
         .sourceWorkflowId(subWorkflowSourceId)
         .workflowId(actualSubWorkflowId);
-      
+
       triggerInstance.setCallingWorkflowInstanceId(activityInstance.workflowInstance.id);
       triggerInstance.setCallingActivityInstanceId(activityInstance.id);
-      
-      if (inputBindings!=null) {
-        for (String subWorkflowKey: inputBindings.keySet()) {
-          BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowKey);
+
+      if (inputBindings != null) {
+        for (String subWorkflowVariableId: inputBindings.keySet()) {
+          BindingImpl<?> subWorkflowBinding = inputBindings.get(subWorkflowVariableId);
           Object value = activityInstance.getValue(subWorkflowBinding);
-          triggerInstance.data(subWorkflowKey, value);
+          triggerInstance.data(subWorkflowVariableId, value);
         }
       }
-      
+
       startWorkflowInstance(activityInstance, triggerInstance);
     } else {
-      log.debug("Skipping call activity because no sub workflow was defined");
+      reportError(activityInstance, "Cannot execute sub-process action because no sub-process was configured.");
       activityInstance.onwards();
     }
   }
@@ -216,5 +194,9 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
         callerActivityInstance.setVariableValue(variableId, typedValue);
       }
     }
+  }
+
+  protected void reportError(ActivityInstanceImpl activityInstance, String message) {
+    log.warn(message);
   }
 }
