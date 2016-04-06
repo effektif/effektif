@@ -28,6 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 
 /**
  * @author Tom Baeyens
@@ -69,6 +70,18 @@ public class TextTemplateTest extends WorkflowTest {
     assertTemplateExpression("{{v1}}", tt, i++);
     assertTemplateExpression("{{v2}}", tt, i++);
     assertResolveTemplate("xy", tt); 
+  }
+
+  @Test
+  public void testUnsetVariableFieldRendersEmptyString() {
+    TextTemplate template = parse("{{user.firstName}}");
+
+    WorkflowInstanceImpl workflowInstance = new WorkflowInstanceImpl();
+    workflowInstance.configuration = configuration;
+    workflowInstance.workflowInstance = workflowInstance;
+    workflowInstance.nextVariableInstanceId = 1l;
+    workflowInstance.setVariableValue("user", new HashMap<>());
+    assertEquals("", template.resolve(workflowInstance));
   }
 
   public void assertResolveTemplate(String expected, TextTemplate tt) {
