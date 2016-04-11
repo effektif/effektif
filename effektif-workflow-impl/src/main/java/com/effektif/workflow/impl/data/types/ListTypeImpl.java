@@ -93,7 +93,9 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
       fieldValues = new ArrayList<>(); 
       for (Object elementValue: values) {
         TypedValueImpl elementFieldValue = elementType.dereference(elementValue, field);
-        fieldValues.add(elementFieldValue.value);
+        if (elementFieldValue != null) {
+          fieldValues.add(elementFieldValue.value);
+        }
       }
     }
     return new TypedValueImpl(this, fieldValues);
