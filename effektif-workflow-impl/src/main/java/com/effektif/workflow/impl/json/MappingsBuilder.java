@@ -104,6 +104,10 @@ public class MappingsBuilder {
     return this;
   }
 
+  public void removeSubClass(Class subClass) {
+    subClasses.remove(subClass);
+  }
+
   public MappingsBuilder inline(Class clazz, String fieldName) {
     inlineFields.add(getField(clazz, fieldName));
     return this;
