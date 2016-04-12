@@ -214,10 +214,40 @@ public class Brewery {
   public void start() {
     if (!isStarted) {
       isStarted = true;
-      brewStartableIngredients(ingredients.values());
-      start(suppliers.values());
-      start(ingredients.values());
-      start(beers.values());
+
+      List<String> namesToStart = new ArrayList<>();
+      for (String name: ingredients.keySet()) {
+        Object component = ingredients.get(name);
+        addNameIfStartable(namesToStart, name, component.getClass());
+      }
+      for (String name: beers.keySet()) {
+        Object component = beers.get(name);
+        addNameIfStartable(namesToStart, name, component.getClass());
+      }
+// TODO add Supplier.getType and add this check for startables
+//      for (String name: suppliers.keySet()) {
+//        Supplier supplier = suppliers.get(name);
+//        Class<?> type = supplier.getType();
+//        addNameIfStartable(namesToStart, name, type);
+//      }
+
+      // first perform initialization on all startables
+      List<Startable> startables = new ArrayList<>();
+      for (String name: namesToStart) {
+        startables.add((Startable) get(name));
+      }
+
+      // then invoke the start after all startables are initialized
+      for (Startable startable: startables) {
+        startable.start(this);
+      }
+    }
+  }
+
+  private void addNameIfStartable(List<String> namesToStart, String name, Class<?> type) {
+    if (Startable.class.isAssignableFrom(type)
+        && !namesToStart.contains(name)) {
+      namesToStart.add(name);
     }
   }
 
@@ -372,17 +402,6 @@ public class Brewery {
   protected synchronized void ensureStarted() {
     if (!isStarted) {
       start();
-    }
-  }
-
-  protected void brewStartableIngredients(Collection<Object> ingredients) {
-    for (Object ingredient: ingredients) {
-      if (ingredient instanceof Startable) {
-        Startable startable = (Startable) ingredient;
-        if (!beers.containsValue(startable)) {
-          beer(startable);
-        }
-      }
     }
   }
 
