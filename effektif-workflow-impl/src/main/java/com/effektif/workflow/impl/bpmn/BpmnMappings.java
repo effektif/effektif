@@ -93,8 +93,8 @@ public class BpmnMappings extends Mappings {
       List<BpmnTypeMapping> typeMappings = bpmnTypeMappingsByElement.get(elementName);
       if (typeMappings==null) {
         typeMappings = new ArrayList<>();
-        bpmnTypeMappingsByElement.put(elementName, typeMappings);
       }
+      bpmnTypeMappingsByElement.put(elementName, typeMappings);
       typeMappings.add(bpmnTypeMapping);
     } else {
       // throw new RuntimeException("No bpmn element specified on "+subclass);
