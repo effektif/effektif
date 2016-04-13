@@ -46,6 +46,12 @@ public class SubProcess extends AbstractBindableActivity {
    */
   protected Map<String,Binding> subWorkflowInputs;
 
+  /**
+   * Maps sub-workflow variable IDs to parent variable IDs, to update parent workflow variables after the sub-workflow
+   * completes.
+   */
+  protected Map<String,String> subWorkflowOutputs;
+
   @Override
   public void readBpmn(BpmnReader r) {
     subWorkflowId = r.readIdAttributeEffektif("subWorkflowId", WorkflowId.class);
@@ -128,8 +134,8 @@ public class SubProcess extends AbstractBindableActivity {
     return subWorkflowInputs;
   }
 
-  public void setSubWorkflowInputs(Map<String, Binding> subWorkflowInputs) {
-    this.subWorkflowInputs = subWorkflowInputs;
+  public Map<String, String> getSubWorkflowOutputs() {
+    return subWorkflowOutputs;
   }
 
   @Override
@@ -151,8 +157,11 @@ public class SubProcess extends AbstractBindableActivity {
   }
 
   @Override
-  public SubProcess output(String subWorkflowKey, String variableId) {
-    super.output(subWorkflowKey, variableId);
+  public SubProcess output(String subWorkflowVariableId, String variableId) {
+    if (subWorkflowOutputs == null) {
+      subWorkflowOutputs = new HashMap<>();
+    }
+    subWorkflowOutputs.put(subWorkflowVariableId, variableId);
     return this;
   }
 

@@ -23,6 +23,7 @@ import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.query.WorkflowInstanceQuery;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.api.workflowinstance.ActivityInstance;
 import com.effektif.workflow.api.workflowinstance.WorkflowInstance;
 import com.effektif.workflow.test.WorkflowTest;
@@ -208,4 +209,22 @@ public class SubProcessTest extends WorkflowTest {
     assertEquals(expectedMessages, getMessages());
   }
 
+  @Test
+  public void testOutputBinding() throws Exception {
+
+    Variable performer = new Variable().id("performer").type(TextType.INSTANCE).defaultValue("walter");
+    ExecutableWorkflow subWorkflow = new ExecutableWorkflow().variable(performer);
+    deploy(subWorkflow);
+
+    ExecutableWorkflow superWorkflow = new ExecutableWorkflow()
+      .variable("artist", TextType.INSTANCE)
+      .activity("call", new SubProcess()
+        .output("performer", "artist")
+        .subWorkflowId(subWorkflow.getId()))
+      .activity("message", msgExpression("artist"));
+
+    deploy(superWorkflow);
+    start(superWorkflow);
+    assertEquals("walter", getMessage(0));
+  }
 }

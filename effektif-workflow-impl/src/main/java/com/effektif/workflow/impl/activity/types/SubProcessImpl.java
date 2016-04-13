@@ -90,6 +90,7 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
         subWorkflowSourceId = subWorkflow.getSourceWorkflowId();
       }
 
+      // Input bindings
       List<Variable> subWorkflowVariables = subWorkflow.getVariables();
       Map<String, Binding> inputBindingsApi = subProcess.getSubWorkflowInputs();
       if (subWorkflowVariables != null && inputBindingsApi != null) {
@@ -107,6 +108,11 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
           }
           parser.popContext();
         }
+      }
+
+      // Output bindings.
+      if (subProcess.getSubWorkflowOutputs() != null) {
+        outputBindings = new HashMap<>(subProcess.getSubWorkflowOutputs());
       }
     }
   }
@@ -191,7 +197,9 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
       for (String subWorkflowVariableId: outputBindings.keySet()) {
         String variableId = outputBindings.get(subWorkflowVariableId);
         TypedValueImpl typedValue = calledProcessInstance.getTypedValue(subWorkflowVariableId);
-        callerActivityInstance.setVariableValue(variableId, typedValue);
+        if (typedValue != null && typedValue.value != null) {
+          callerActivityInstance.setVariableValue(variableId, typedValue.value);
+        }
       }
     }
   }
