@@ -15,6 +15,8 @@
  */
 package com.effektif.workflow.impl.data.types;
 
+import static java.awt.SystemColor.text;
+
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.ListType;
@@ -107,18 +109,18 @@ public class ListTypeImpl extends AbstractDataType<ListType> {
       return "";
     }
     if (value instanceof List) {
-      StringBuilder text = null;
       List<Object> list = (List<Object>) value;
-      for (Object element: list) {
-        if (text==null) {
-          text = new StringBuilder();
-        } else {
-          text.append(", ");
-        }
-        String elementText = elementType.convertInternalToText(element, hints);
-        text.append(elementText);
+      if (list.isEmpty()) {
+        return "";
       }
-      return text != null ? text.toString() : "";
+      else {
+        StringBuilder text = new StringBuilder();
+        // Add blank lines before and after the list to separate it from mark-up around the list variable expression.
+        text.append("\n");
+        list.forEach(element -> text.append("\n* ").append(elementType.convertInternalToText(element, hints)));
+        text.append("\n\n");
+        return text.toString();
+      }
     }
     return value.toString();
   }

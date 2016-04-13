@@ -21,8 +21,10 @@ import org.junit.Test;
 
 import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.model.TriggerInstance;
+import com.effektif.workflow.api.types.ListType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
+import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.test.WorkflowTest;
 
 
@@ -38,7 +40,7 @@ public class BindingTemplateTest extends WorkflowTest {
   }
   
   @Test
-  public void testBindingTextTemplate() {
+  public void testTextTemplateRenders() {
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .variable("world", TextType.INSTANCE)
       .activity("invoke hello", new JavaServiceTask()
@@ -53,6 +55,24 @@ public class BindingTemplateTest extends WorkflowTest {
       .data("world", "testrunner"));
     
     assertEquals("hello testrunner", templateValue);
+  }
+
+  @Test
+  public void testTextTemplateRendersList() {
+    ExecutableWorkflow workflow = new ExecutableWorkflow()
+      .variable("colours", new ListType(TextType.INSTANCE))
+      .activity("render", new JavaServiceTask()
+        .javaClass(BindingTemplateTest.class)
+        .methodName("setTemplateValue")
+        .argTemplate("Colours: {{colours}}"));
+
+    deploy(workflow);
+
+    start(new TriggerInstance()
+      .workflowId(workflow.getId())
+      .data("colours", Lists.of("red", "orange", "yellow")));
+
+    assertEquals("Colours: \n\n* red\n* orange\n* yellow\n\n", templateValue);
   }
 
 }
