@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 public class SubProcessTest extends WorkflowTest {
   
   @Test
-  public void testCallActivity() {
+  public void testExecution() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("subtask", new ReceiveTask());
     
@@ -78,7 +78,7 @@ public class SubProcessTest extends WorkflowTest {
   }
 
   @Test
-  public void testTwoCallActivitiesInSequence() {
+  public void testSequentialSubProcesses() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("auto", new NoneTask());
     
@@ -104,7 +104,7 @@ public class SubProcessTest extends WorkflowTest {
   }
 
   @Test
-  public void testTwoCallActivitiesInParallel() {
+  public void testParallelSubProcesses() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .activity("auto", new NoneTask());
     
@@ -129,7 +129,7 @@ public class SubProcessTest extends WorkflowTest {
   }
 
   @Test
-  public void testCallActivityInputValue() {
+  public void testInputValue() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .variable("performer", TextType.INSTANCE)
       .activity("message", msgExpression("performer"));
@@ -149,7 +149,7 @@ public class SubProcessTest extends WorkflowTest {
   }
 
   @Test
-  public void testCallActivityInputBindingVariable() {
+  public void testInputBindingVariable() {
     ExecutableWorkflow subWorkflow = new ExecutableWorkflow()
       .variable("performer", TextType.INSTANCE)
       .activity("subtask", msgExpression("performer"));
@@ -174,7 +174,7 @@ public class SubProcessTest extends WorkflowTest {
 
 
   @Test
-  public void testNestedSubprocesses() {
+  public void testNestedSubProcesses() {
     ExecutableWorkflow innerWorkflow = new ExecutableWorkflow()
         .activity("inner", msgValue("inner"));
     deploy(innerWorkflow);
