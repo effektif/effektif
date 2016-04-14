@@ -15,15 +15,17 @@
  */
 package com.effektif.workflow.impl.data.types;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.data.AbstractDataType;
 import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.TypedValueImpl;
+import com.effektif.workflow.impl.template.Hint;
+import com.effektif.workflow.impl.template.Hints;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -61,8 +63,12 @@ public class ObjectTypeImpl<T extends DataType> extends AbstractDataType<T> {
       DataTypeImpl fieldType = field.type;
       Object fieldValue = field.getFieldValue(value);
       return new TypedValueImpl(fieldType, fieldValue);
-    }
-    if (value instanceof Map) {
+
+    } else if ("toText".equals(fieldName)) {
+      String textValue = convertInternalToText(value, new Hints().add(Hint.TO_TEXT));
+      return new TypedValueImpl(new TextTypeImpl(), textValue);
+
+    } else if (value instanceof Map) {
       Map mapValue = (Map) value;
       Object fieldValue = mapValue.get(fieldName);
       DataTypeService dataTypeService = configuration.get(DataTypeService.class);
