@@ -17,11 +17,8 @@ import com.effektif.workflow.api.bpmn.BpmnTypeAttribute;
 import com.effektif.workflow.api.bpmn.BpmnTypeChildElement;
 import com.effektif.workflow.api.bpmn.XmlElement;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Defines a mapping between a BPMN element and an Effektif API type, such as a service task.

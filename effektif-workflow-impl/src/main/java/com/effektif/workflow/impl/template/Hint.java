@@ -28,5 +28,6 @@ public enum Hint {
   SHORT,
   HTML, 
   TASK_NAME, 
-  CASE_NAME_TEMPLATE
-}
+  CASE_NAME_TEMPLATE,
+  TO_TEXT
+  }
