@@ -28,6 +28,9 @@ public class Node {
   public List<Node> children = null;
   public String elementId;
 
+  /** Optional attribute that is only used for Pools and Lanes. */
+  public Boolean horizontal;
+
   public Node bounds(Bounds bounds) {
     this.bounds = bounds;
     return this;
@@ -46,12 +49,17 @@ public class Node {
     this.elementId = elementId;
     return this;
   }
+
+  public Node horizontal(boolean horizontal) {
+    this.horizontal = horizontal;
+    return this;
+  }
   
   public Node id(String id) {
     this.id = id;
     return this;
   }
-  
+
   public Node addNode(Node node) {
     if (node != null) {
       if (children == null) {

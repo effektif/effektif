@@ -829,6 +829,12 @@ public class BpmnReaderImpl implements BpmnReader {
         .id(id)
         .elementId(elementId);
 
+      // Read the optional BPMN attribute that indicates lane orientation.
+      String horizontal = currentXml.removeAttribute(BPMN_DI_URI, "isHorizontal");
+      if (horizontal != null) {
+        node.horizontal(horizontal.equals("true"));
+      }
+
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);
 
