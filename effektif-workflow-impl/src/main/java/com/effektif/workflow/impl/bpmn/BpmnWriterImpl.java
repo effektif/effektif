@@ -242,6 +242,7 @@ public class BpmnWriterImpl implements BpmnWriter {
   private void fixDiagramDuplicateIds(AbstractWorkflow workflow) {
     Diagram diagram = workflow.getDiagram();
     if (diagram != null) {
+      // Replace shape IDs that duplicate activity IDs.
       Set<String> activityIds = workflow.getActivities() == null ? Collections.emptySet() :
         workflow.getActivities().stream().map(activity -> activity.getId()).collect(Collectors.toSet());
 
@@ -254,11 +255,18 @@ public class BpmnWriterImpl implements BpmnWriter {
       if (diagram.edges != null) {
         diagram.edges.stream()
           .filter(edge -> activityIds.contains(edge.fromId))
-          .forEach(edge -> edge.fromId("shape-" + edge.id));
+          .forEach(edge -> edge.fromId("shape-" + edge.fromId));
 
         diagram.edges.stream()
           .filter(edge -> activityIds.contains(edge.toId))
-          .forEach(edge -> edge.toId("shape-" + edge.id));
+          .forEach(edge -> edge.toId("shape-" + edge.toId));
+
+        // Replace edge IDs that duplicate transition IDs.
+        Set<String> transitionIds = workflow.getTransitions() == null ? Collections.emptySet() :
+          workflow.getTransitions().stream().map(transition -> transition.getId()).collect(Collectors.toSet());
+        diagram.edges.stream()
+          .filter(edge -> transitionIds.contains(edge.id))
+          .forEach(edge -> edge.id("edge-" + edge.id));
       }
     }
   }
