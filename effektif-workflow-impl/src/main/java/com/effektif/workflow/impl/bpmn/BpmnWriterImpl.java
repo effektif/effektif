@@ -15,9 +15,12 @@ package com.effektif.workflow.impl.bpmn;
 
 import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import com.effektif.workflow.api.workflow.diagram.Bounds;
 import com.effektif.workflow.api.workflow.diagram.Diagram;
@@ -228,7 +231,44 @@ public class BpmnWriterImpl implements BpmnWriter {
     workflow.writeBpmn(this);
     writeScope();
     endElement();
+    fixDiagramDuplicateIds(workflow);
     writeDiagram(workflow);
+  }
+
+  /**
+   * Temporary #2932 fix - ensures that the export doesn’t generate XML that contains duplicate IDs (not well-formed).
+   * The fix is to preprend duplicate shape IDs
+   */
+  private void fixDiagramDuplicateIds(AbstractWorkflow workflow) {
+    Diagram diagram = workflow.getDiagram();
+    if (diagram != null) {
+      // Replace shape IDs that duplicate activity IDs.
+      Set<String> activityIds = workflow.getActivities() == null ? Collections.emptySet() :
+        workflow.getActivities().stream().map(activity -> activity.getId()).collect(Collectors.toSet());
+
+      if (diagram.canvas.hasChildren()) {
+        diagram.canvas.children.stream()
+          .filter(shape -> activityIds.contains(shape.id))
+          .forEach(shape -> shape.id("shape-" + shape.id));
+      }
+
+      if (diagram.edges != null) {
+        diagram.edges.stream()
+          .filter(edge -> activityIds.contains(edge.fromId))
+          .forEach(edge -> edge.fromId("shape-" + edge.fromId));
+
+        diagram.edges.stream()
+          .filter(edge -> activityIds.contains(edge.toId))
+          .forEach(edge -> edge.toId("shape-" + edge.toId));
+
+        // Replace edge IDs that duplicate transition IDs.
+        Set<String> transitionIds = workflow.getTransitions() == null ? Collections.emptySet() :
+          workflow.getTransitions().stream().map(transition -> transition.getId()).collect(Collectors.toSet());
+        diagram.edges.stream()
+          .filter(edge -> transitionIds.contains(edge.id))
+          .forEach(edge -> edge.id("edge-" + edge.id));
+      }
+    }
   }
 
   private void writeDiagram(AbstractWorkflow workflow) {

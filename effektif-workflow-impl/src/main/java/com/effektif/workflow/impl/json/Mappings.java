@@ -13,28 +13,7 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.json;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.effektif.workflow.api.json.GenericType;
-import com.effektif.workflow.api.json.JsonFieldName;
-import com.effektif.workflow.api.json.JsonIgnore;
-import com.effektif.workflow.api.json.JsonPropertyOrder;
-import com.effektif.workflow.api.json.TypeName;
+import com.effektif.workflow.api.json.*;
 import com.effektif.workflow.api.types.DataType;
 import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.ListType;
@@ -42,6 +21,11 @@ import com.effektif.workflow.impl.data.types.MapType;
 import com.effektif.workflow.impl.json.types.BeanMapper;
 import com.effektif.workflow.impl.json.types.PolymorphicBeanMapper;
 import com.effektif.workflow.impl.util.Reflection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Registry for static information used to map API model classes to and from JSON. The purpose of this class is to
@@ -123,7 +107,7 @@ public class Mappings {
     this.fieldTypes = other.fieldTypes;
   }
 
-  protected void registerSubClass(Class< ? > subClass) {
+  public void registerSubClass(Class< ? > subClass) {
     TypeName typeName = subClass.getAnnotation(TypeName.class);
     if (typeName!=null) {
       registerSubClass(subClass, typeName.value(), subClass);
