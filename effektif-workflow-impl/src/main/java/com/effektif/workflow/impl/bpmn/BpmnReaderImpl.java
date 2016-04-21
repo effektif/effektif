@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import com.effektif.workflow.api.bpmn.XmlNamespaces;
 import com.effektif.workflow.api.workflow.*;
@@ -775,13 +776,13 @@ public class BpmnReaderImpl implements BpmnReader {
       return;
     }
 
-    // Collect valid activity IDs.
-    Set<String> activityIds = new HashSet<>();
-    if (workflow.getActivities() != null) {
-      for (Activity activity : workflow.getActivities()) {
-        activityIds.add(activity.getId());
-      }
-    }
+    // Collect valid activity IDs and variable IDs, which lane IDs are mapped to.
+
+    Set<String> activityIds = workflow.getActivities() == null ? new HashSet<>() :
+      workflow.getActivities().stream().map(activity -> activity.getId()).collect(Collectors.toSet());
+
+    Set<String> variableIds = workflow.getVariables() == null ? new HashSet<>() :
+      workflow.getVariables().stream().map(variable -> variable.getId()).collect(Collectors.toSet());
 
     // Remove orphaned shapes/nodes.
     Set<String> shapeIds = new HashSet<>();
@@ -789,7 +790,8 @@ public class BpmnReaderImpl implements BpmnReader {
       Iterator<Node> shapeIterator = diagram.canvas.children.iterator();
       while (shapeIterator.hasNext()) {
         Node shape = shapeIterator.next();
-        if (!activityIds.contains(shape.elementId)) {
+        // Keep shapes for lanes by checking against variable IDs, since lanes are the only shapes mapped to variables.
+        if (!activityIds.contains(shape.elementId) && !variableIds.contains(shape.elementId)) {
           shapeIterator.remove();
         }
       }
@@ -826,6 +828,12 @@ public class BpmnReaderImpl implements BpmnReader {
       Node node = new Node()
         .id(id)
         .elementId(elementId);
+
+      // Read the optional BPMN attribute that indicates lane orientation.
+      String horizontal = currentXml.removeAttribute(BPMN_DI_URI, "isHorizontal");
+      if (horizontal != null) {
+        node.horizontal(horizontal.equals("true"));
+      }
 
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);
