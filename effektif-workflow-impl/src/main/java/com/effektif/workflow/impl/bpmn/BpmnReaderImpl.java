@@ -761,7 +761,7 @@ public class BpmnReaderImpl implements BpmnReader {
       }
 
       workflow.setDiagram(diagram);
-      removeOrphanedDiagramElements(workflow);
+      removeOrphanedDiagramElements(workflow, definitionsXml);
 
       endElement();
     }
@@ -770,11 +770,15 @@ public class BpmnReaderImpl implements BpmnReader {
   /**
    * Removes diagram shapes that don’t correspond to an imported workflow activity, such as those not supported.
    */
-  private void removeOrphanedDiagramElements(AbstractWorkflow workflow) {
+  private void removeOrphanedDiagramElements(AbstractWorkflow workflow, XmlElement definitionsXml) {
     Diagram diagram = workflow.getDiagram();
     if (diagram == null || !diagram.hasChildren()) {
       return;
     }
+
+    // Collect valid participant (pool) IDs.
+    Set<String> participantIds = findParticipantIds(definitionsXml);
+    participantIds.forEach(id -> log.debug("POOL = " + id));
 
     // Collect valid activity IDs and variable IDs, which lane IDs are mapped to.
 
@@ -791,7 +795,9 @@ public class BpmnReaderImpl implements BpmnReader {
       while (shapeIterator.hasNext()) {
         Node shape = shapeIterator.next();
         // Keep shapes for lanes by checking against variable IDs, since lanes are the only shapes mapped to variables.
-        if (!activityIds.contains(shape.elementId) && !variableIds.contains(shape.elementId)) {
+        boolean poolShape = participantIds.contains(shape.elementId);
+        boolean laneShape = activityIds.contains(shape.elementId) || variableIds.contains(shape.elementId);
+        if (!poolShape && !laneShape) {
           shapeIterator.remove();
         }
       }
@@ -814,6 +820,17 @@ public class BpmnReaderImpl implements BpmnReader {
         }
       }
     }
+  }
+
+  private Set<String> findParticipantIds(XmlElement definitions) {
+    Set<String> ids = definitions == null ? new HashSet<>() :
+      definitions.elements.stream()
+        .filter(element -> element.name.equals("collaboration"))
+        .flatMap(collaboration -> collaboration.elements.stream())
+        .filter(element -> element.name.equals("participant"))
+        .map(participant -> participant.getAttribute(BPMN_URI, "id"))
+        .collect(Collectors.toSet());
+    return ids;
   }
 
   private List<Node> readShapes(XmlElement planeElement) {
