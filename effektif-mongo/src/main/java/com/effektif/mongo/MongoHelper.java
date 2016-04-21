@@ -15,20 +15,15 @@
  */
 package com.effektif.mongo;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bson.types.ObjectId;
-import org.joda.time.LocalDateTime;
-
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.model.WorkflowInstanceId;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
+import org.joda.time.LocalDateTime;
+
+import java.util.*;
 
 
 public abstract class MongoHelper {
@@ -184,5 +179,17 @@ public abstract class MongoHelper {
     }
     return map;
   }
-  
+
+  public static ObjectId toObjectId(Object id) {
+    if ( id == null ) {
+      return null;
+    }
+    if ( id instanceof ObjectId ) {
+      return (ObjectId) id;
+    }
+    if ( id instanceof String ) {
+      return new ObjectId( (String)id );
+    }
+    return null;
+  }
 }
