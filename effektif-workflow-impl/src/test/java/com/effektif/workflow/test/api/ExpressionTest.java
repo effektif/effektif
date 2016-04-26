@@ -15,20 +15,20 @@
  */
 package com.effektif.workflow.test.api;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.api.model.TriggerInstance;
 import com.effektif.workflow.api.types.DataType;
+import com.effektif.workflow.api.types.JavaBeanType;
 import com.effektif.workflow.api.types.TextType;
 import com.effektif.workflow.api.workflow.ExecutableWorkflow;
 import com.effektif.workflow.impl.data.types.ObjectType;
 import com.effektif.workflow.test.WorkflowTest;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -60,6 +60,19 @@ public class ExpressionTest extends WorkflowTest {
     assertExpression("v", ObjectType.INSTANCE, johnDoe, "v", johnDoe);
     assertExpression("v", ObjectType.INSTANCE, johnDoe, "v.name", "John Doe");
     assertExpression("v", ObjectType.INSTANCE, johnDoe, "v.address.street", "1st Avenue");
+  }
+
+  public static class NumberBean {
+    Integer number;
+  }
+
+  @Test
+  public void testJavaBeanTypeExpression() {
+    NumberBean numberBean = new NumberBean();
+    numberBean.number = 3;
+
+    JavaBeanType javaBeanType = new JavaBeanType().javaClass(NumberBean.class);
+    assertExpression("n", javaBeanType, numberBean, "n.number", 3);
   }
 
   protected void assertExpression(String variableId, DataType variableType, Object variableValue, String expression, Object expectedExpressionValue) {
