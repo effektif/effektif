@@ -15,34 +15,18 @@
  */
 package com.effektif.workflow.impl.data;
 
+import com.effektif.workflow.api.Configuration;
+import com.effektif.workflow.api.types.*;
+import com.effektif.workflow.impl.configuration.Brewery;
+import com.effektif.workflow.impl.configuration.Startable;
+import com.effektif.workflow.impl.data.types.*;
+import com.effektif.workflow.impl.util.Reflection;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.types.JavaBeanType;
-import com.effektif.workflow.api.types.ListType;
-import com.effektif.workflow.api.types.NumberType;
-import com.effektif.workflow.api.types.TextType;
-import com.effektif.workflow.impl.configuration.Brewery;
-import com.effektif.workflow.impl.configuration.Startable;
-import com.effektif.workflow.impl.data.types.AnyTypeImpl;
-import com.effektif.workflow.impl.data.types.BooleanTypeImpl;
-import com.effektif.workflow.impl.data.types.DateTypeImpl;
-import com.effektif.workflow.impl.data.types.JavaBeanTypeImpl;
-import com.effektif.workflow.impl.data.types.ListTypeImpl;
-import com.effektif.workflow.impl.data.types.NumberTypeImpl;
-import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
-import com.effektif.workflow.impl.data.types.TextTypeImpl;
-import com.effektif.workflow.impl.util.Reflection;
 
 
 /**
@@ -84,6 +68,8 @@ public class DataTypeService implements Startable {
     NumberTypeImpl numberTypeImpl = new NumberTypeImpl();
     numberTypeImpl.setConfiguration(configuration);
     registerDataType(numberTypeImpl);
+    registerValueClasses(numberTypeImpl, int.class, short.class, byte.class, long.class, float.class, double.class,
+                                         Integer.class, Short.class, Byte.class, Long.class, Float.class, Double.class);
     TextTypeImpl textTypeImpl = new TextTypeImpl();
     textTypeImpl.setConfiguration(configuration);
     registerDataType(textTypeImpl);
@@ -121,6 +107,14 @@ public class DataTypeService implements Startable {
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  protected void registerValueClasses(DataTypeImpl dataTypeImpl, Type... valueTypes) {
+    if (valueTypes!=null) {
+      for (Type valueType: valueTypes) {
+        dataTypesByValueClass.put(valueType, dataTypeImpl);
+      }
     }
   }
   
