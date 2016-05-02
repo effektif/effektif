@@ -287,7 +287,10 @@ public class BpmnWriterImpl implements BpmnWriter {
           writeIdAttributeBpmnDiagram("id", shape.id);
           writeIdAttributeBpmnDiagram("bpmnElement", shape.elementId);
           if (shape.horizontal != null) {
-            writeStringAttributeBpmn("isHorizontal", shape.horizontal ? "true" : "false");
+            writeStringAttributeBpmnDiagram("isHorizontal", shape.horizontal ? "true" : "false");
+          }
+          if (shape.expanded != null) {
+            writeStringAttributeBpmnDiagram("isExpanded", shape.expanded ? "true" : "false");
           }
           writeBpmnDiagramBounds(shape.bounds);
           endElement();

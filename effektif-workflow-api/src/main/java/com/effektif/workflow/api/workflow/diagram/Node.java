@@ -30,6 +30,8 @@ public class Node {
 
   /** Optional attribute that is only used for Pools and Lanes. */
   public Boolean horizontal;
+  /** Optional attribute that is only used for collapsed sub-processes. */
+  public Boolean expanded;
 
   public Node bounds(Bounds bounds) {
     this.bounds = bounds;
@@ -52,6 +54,11 @@ public class Node {
 
   public Node horizontal(boolean horizontal) {
     this.horizontal = horizontal;
+    return this;
+  }
+
+  public Node expanded(Boolean expanded) {
+    this.expanded = expanded;
     return this;
   }
   

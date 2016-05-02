@@ -851,6 +851,10 @@ public class BpmnReaderImpl implements BpmnReader {
       if (horizontal != null) {
         node.horizontal(horizontal.equals("true"));
       }
+      String expanded = currentXml.removeAttribute(BPMN_DI_URI, "isExpanded");
+      if (expanded != null) {
+        node.expanded(expanded.equals("true"));
+      }
 
       for (XmlElement boundsElement: shapeElement.removeElements(OMG_DC_URI, "Bounds")) {
         startElement(boundsElement);
