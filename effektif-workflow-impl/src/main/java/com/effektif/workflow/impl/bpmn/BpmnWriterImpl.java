@@ -13,50 +13,42 @@
  * limitations under the License. */
 package com.effektif.workflow.impl.bpmn;
 
-import static com.effektif.workflow.impl.bpmn.Bpmn.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.stream.Collectors;
-
-import com.effektif.workflow.api.workflow.diagram.Bounds;
-import com.effektif.workflow.api.workflow.diagram.Diagram;
-import com.effektif.workflow.api.workflow.diagram.Edge;
-import com.effektif.workflow.api.workflow.diagram.Node;
-import com.effektif.workflow.api.workflow.diagram.Point;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-
 import com.effektif.workflow.api.bpmn.BpmnElement;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.bpmn.XmlElement;
 import com.effektif.workflow.api.model.Id;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.api.workflow.Scope;
-import com.effektif.workflow.api.workflow.Transition;
+import com.effektif.workflow.api.workflow.*;
+import com.effektif.workflow.api.workflow.diagram.*;
 import com.effektif.workflow.impl.json.Mappings;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.effektif.workflow.impl.bpmn.Bpmn.*;
 
 
 /**
  * @author Tom Baeyens
  */
 public class BpmnWriterImpl implements BpmnWriter {
-  
+
+  private static final double EXPORT_MARGIN = 50d;
+
   public static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.dateTime();
 
   protected BpmnMappings bpmnMappings;
   protected String bpmnPrefix;
   protected String bpmnDiagramPrefix;
   protected String effektifPrefix;
+  /** how much the diagram needs to be transposed in the x direction to end up in the top left corner */
+  protected double xOffset;
+  /** how much the diagram needs to be transposed in the y direction to end up in the top left corner */
+  protected double yOffset;
 
   /** stack of the current scopes */
   protected Stack<Scope> scopeStack = new Stack();
@@ -235,10 +227,10 @@ public class BpmnWriterImpl implements BpmnWriter {
     writeDiagram(workflow);
   }
 
-  /**
-   * Temporary #2932 fix - ensures that the export doesn’t generate XML that contains duplicate IDs (not well-formed).
-   * The fix is to preprend duplicate shape IDs
-   */
+    /**
+     * Temporary #2932 fix - ensures that the export doesn’t generate XML that contains duplicate IDs (not well-formed).
+     * The fix is to preprend duplicate shape IDs
+     */
   private void fixDiagramDuplicateIds(AbstractWorkflow workflow) {
     Diagram diagram = workflow.getDiagram();
     if (diagram != null) {
@@ -274,6 +266,9 @@ public class BpmnWriterImpl implements BpmnWriter {
   private void writeDiagram(AbstractWorkflow workflow) {
     Diagram diagram = workflow.getDiagram();
     if (diagram != null) {
+      calculateOffsets(diagram);
+
+
       startElementBpmnDiagram("BPMNDiagram");
       writeIdAttributeBpmnDiagram("id", diagram.id);
       writeStringAttributeBpmnDiagram("name", workflow.getName());
@@ -311,6 +306,56 @@ public class BpmnWriterImpl implements BpmnWriter {
       endElement();
     }
   }
+
+  protected void calculateOffsets(Diagram diagram) {
+    xOffset = Integer.MAX_VALUE;
+    yOffset = Integer.MAX_VALUE;
+    if (diagram!=null && diagram.canvas!=null && diagram.canvas.children!=null) {
+      for (Node child: diagram.canvas.children) {
+        scanOffset(child);
+      }
+    }
+    if (diagram!=null && diagram.edges!=null) {
+      for (Edge edge: diagram.edges) {
+        scanOffset(edge);
+      }
+    }
+    if (xOffset==Integer.MAX_VALUE) {
+      xOffset = 0;
+    } else {
+      xOffset -= EXPORT_MARGIN;
+    }
+    if (yOffset==Integer.MAX_VALUE) {
+      yOffset = 0;
+    } else {
+      yOffset -= EXPORT_MARGIN;
+    }
+  }
+
+  protected void scanOffset(Node node) {
+    if (node!=null
+        && node.bounds!=null
+        && node.bounds.upperLeft!=null) {
+      Point upperLeft = node.bounds.upperLeft;
+      xOffset = Math.min(xOffset, upperLeft.x);
+      yOffset = Math.min(yOffset, upperLeft.y);
+    }
+    if (node.children!=null) {
+      for (Node child: node.children) {
+        scanOffset(child);
+      }
+    }
+  }
+
+  protected void scanOffset(Edge edge) {
+    if (edge.dockers!=null) {
+      for (Point docker: edge.dockers) {
+        xOffset = Math.min(xOffset, docker.x);
+        yOffset = Math.min(yOffset, docker.y);
+      }
+    }
+  }
+
 
   /**
    * Writes a {@link Scope} as BPMN, which is implemented here instead of in {@link Scope#writeBpmn(BpmnWriter)}
@@ -599,8 +644,8 @@ public class BpmnWriterImpl implements BpmnWriter {
       startElement(xml.createElement(OMG_DC_URI, "Bounds"));
       xml.addAttribute(OMG_DC_URI, "height", bounds.getHeight());
       xml.addAttribute(OMG_DC_URI, "width", bounds.getWidth());
-      xml.addAttribute(OMG_DC_URI, "x", bounds.upperLeft.x);
-      xml.addAttribute(OMG_DC_URI, "y", bounds.upperLeft.y);
+      xml.addAttribute(OMG_DC_URI, "x", bounds.upperLeft.x-xOffset);
+      xml.addAttribute(OMG_DC_URI, "y", bounds.upperLeft.y-yOffset);
       endElement();
     }
   }
@@ -609,8 +654,8 @@ public class BpmnWriterImpl implements BpmnWriter {
     if (dockers != null) {
       for (Point waypoint : dockers) {
         startElement(xml.createElement(OMG_DI_URI, "waypoint"));
-        xml.addAttribute(OMG_DI_URI, "x", waypoint.x);
-        xml.addAttribute(OMG_DI_URI, "y", waypoint.y);
+        xml.addAttribute(OMG_DI_URI, "x", waypoint.x-xOffset);
+        xml.addAttribute(OMG_DI_URI, "y", waypoint.y-yOffset);
         endElement();
       }
     }
