@@ -239,6 +239,7 @@ public class XmlElement {
 
   public XmlElement createElement(String namespaceUri, String localPart, Integer index) {
     XmlElement element = new XmlElement();
+    element.parent = this;
     element.namespaceUri = namespaceUri;
     addElement(element, index);
     element.setName(namespaceUri, localPart);
