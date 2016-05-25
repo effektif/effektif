@@ -110,9 +110,7 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
     activityInstance.start = Time.now();
     if (updates!=null) {
       activityInstance.updates = new ActivityInstanceUpdates(true);
-      if (parent!=null) {
-        parent.propagateActivityInstanceChange();
-      }
+      propagateActivityInstanceChange();
     }
     addActivityInstance(activityInstance);
     activityInstance.initializeScopeInstance();
