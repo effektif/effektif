@@ -131,7 +131,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return workflowInstances;
   }
 
-  public void executeWork() {
+  public WorkflowInstance executeWork() {
     boolean isFirst = true;
     while (hasWork()) {
       ActivityInstanceImpl activityInstance = getNextWork();
@@ -199,6 +199,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         }
       }
     }
+    WorkflowInstance workflowInstanceSnapshot = workflowInstance.toWorkflowInstance();
     if (hasAsyncWork()) {
       if (log.isDebugEnabled())
         log.debug("Going asynchronous " + this);
@@ -226,6 +227,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       workflowInstanceStore.flushAndUnlock(this);
       workflow.workflowEngine.notifyUnlocked(this);
     }
+    return workflowInstanceSnapshot;
   }
 
   public void cancel() {
