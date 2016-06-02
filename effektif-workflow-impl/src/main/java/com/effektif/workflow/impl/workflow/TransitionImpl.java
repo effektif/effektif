@@ -107,4 +107,23 @@ public class TransitionImpl {
     String toId = to!=null ? to.id : null;
     return "("+(fromId!=null?fromId:" ")+")--"+(id!=null?id+"--":"")+">("+(toId!=null?toId:" ")+")";
   }
+
+  /**
+   * Shallow equals based on ID, instead of deep field comparison.
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    TransitionImpl that = (TransitionImpl) o;
+    return id != null ? id.equals(that.id) : that.id == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return id != null ? id.hashCode() : 0;
+  }
 }
