@@ -176,9 +176,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
     notifyInsert(workflowInstance);
     workflowInstanceStore.insertWorkflowInstance(workflowInstance);
-    workflowInstance.executeWork();
-
-    return workflowInstance.toWorkflowInstance();
+    return workflowInstance.executeWork();
   }
 
   public WorkflowId getLatestWorkflowId(TriggerInstance triggerInstance) {
@@ -259,9 +257,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       }
 
       workflowInstanceImpl.execute(activityImpl);
-      workflowInstanceImpl.executeWork();
-
-      return workflowInstanceImpl.toWorkflowInstance();
+      return workflowInstanceImpl.executeWork();
     } finally {
       workflowInstanceStore.unlockWorkflowInstance(workflowInstanceImpl);
     }
@@ -296,8 +292,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
       log.debug("Signalling "+activityInstance);
     ActivityImpl activity = activityInstance.getActivity();
     activity.activityType.message(activityInstance, message);
-    workflowInstance.executeWork();
-    return workflowInstance.toWorkflowInstance();
+    return workflowInstance.executeWork();
   }
 
   @Override
