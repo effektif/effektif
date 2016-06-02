@@ -29,6 +29,7 @@ public class ParameterDescriptor extends Extensible {
   protected String name;
   protected String description;
   protected String autoBindKey;
+  protected Boolean hidden;
 
   public boolean isList() {
     return type!=null && ListType.class.isAssignableFrom(type.getClass());
@@ -86,6 +87,18 @@ public class ParameterDescriptor extends Extensible {
   }
   public ParameterDescriptor autoBindKey(String autoBindKey) {
     this.autoBindKey = autoBindKey;
+    return this;
+  }
+
+
+  public boolean isHidden() {
+    return Boolean.TRUE.equals(hidden);
+  }
+  public void setHidden(Boolean hidden) {
+    this.hidden = hidden;
+  }
+  public ParameterDescriptor hidden(Boolean hidden) {
+    this.hidden = hidden;
     return this;
   }
 }

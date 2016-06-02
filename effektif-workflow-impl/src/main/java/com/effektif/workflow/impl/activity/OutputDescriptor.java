@@ -53,4 +53,10 @@ public class OutputDescriptor extends ParameterDescriptor {
     super.autoBindKey(autoBindKey);
     return this;
   }
+
+  @Override
+  public OutputDescriptor hidden(Boolean hidden) {
+    super.hidden(hidden);
+    return this;
+  }
 }
