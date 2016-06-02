@@ -145,7 +145,16 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
             lock,
             triggerInstance.getTransientData());
 
-    if (log.isDebugEnabled()) log.debug("Created "+workflowInstance);
+    // propagate the sandbox indicator value further
+    workflowInstance.setSandboxActive(triggerInstance.isSandboxActive());
+
+    if (log.isDebugEnabled()) {
+      if (workflowInstance.isSandboxActive()) {
+        log.debug("Created " + workflowInstance + " (in sandbox mode)");
+      } else {
+        log.debug("Created " + workflowInstance);
+      }
+    }
 
     if (workflow.trigger!=null) {
       workflow.trigger.applyTriggerData(workflowInstance, triggerInstance);
@@ -404,6 +413,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     this.workflowExecutionListeners = workflowExecutionListeners;
   }
 
+  // TODO @mavo is here anything to do for the sandbox?
   public void notifyWorkflowInstanceStarted(WorkflowInstanceImpl workflowInstance) {
     if (workflowExecutionListeners!=null) {
       for (WorkflowExecutionListener workflowExecutionListener: workflowExecutionListeners) {

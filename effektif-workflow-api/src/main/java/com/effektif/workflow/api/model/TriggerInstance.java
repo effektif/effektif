@@ -39,6 +39,8 @@ public class TriggerInstance extends DataContainer {
   protected WorkflowInstanceId callingWorkflowInstanceId;
   protected String callingActivityInstanceId;
 
+  protected boolean sandboxActive = false;
+
   public WorkflowId getWorkflowId() {
     return this.workflowId;
   }
@@ -143,7 +145,16 @@ public class TriggerInstance extends DataContainer {
   public void setCallingActivityInstanceId(String callingActivityInstanceId) {
     this.callingActivityInstanceId = callingActivityInstanceId;
   }
-  
+
+  public boolean isSandboxActive() {
+    return sandboxActive;
+  }
+
+  public TriggerInstance setSandboxActive(boolean sandboxActive) {
+    this.sandboxActive = sandboxActive;
+    return this;
+  }
+
   @Override
   public TriggerInstance data(String key, Object value) {
     super.data(key, value);
