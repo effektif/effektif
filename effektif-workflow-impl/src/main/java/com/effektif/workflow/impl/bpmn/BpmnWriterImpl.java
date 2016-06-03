@@ -397,11 +397,11 @@ public class BpmnWriterImpl implements BpmnWriter {
 
   protected void writeTransitions(List<Transition> transitions) {
     if (transitions!=null) {
-      for (Transition transition : transitions) {
+      transitions.stream().filter(transition -> transition.valid()).forEach(transition -> {
         startElementBpmn("sequenceFlow", transition.getBpmn());
         transition.writeBpmn(this);
         endElement();
-      }
+      });
     }
   }
 

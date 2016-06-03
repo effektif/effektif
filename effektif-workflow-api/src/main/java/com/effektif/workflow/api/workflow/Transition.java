@@ -181,4 +181,8 @@ public class Transition extends Element {
   public String toString() {
     return "("+(fromId!=null?fromId:" ")+")--"+(id!=null?id+"--":"")+">("+(toId!=null?toId:" ")+")";
   }
+
+  public boolean valid() {
+    return fromId != null && toId != null;
+  }
 }
