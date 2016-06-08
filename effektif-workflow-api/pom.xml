@@ -19,7 +19,7 @@
   <parent>
     <groupId>com.effektif</groupId>
     <artifactId>effektif-parent</artifactId>
-    <version>3.0.0-beta14-SNAPSHOT</version>
+    <version>3.0.0-beta15-SNAPSHOT</version>
   </parent>
   <artifactId>effektif-workflow-api</artifactId>
   <packaging>jar</packaging>

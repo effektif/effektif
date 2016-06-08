@@ -103,6 +103,12 @@ public class ExclusiveGatewayImpl extends AbstractActivityType<ExclusiveGateway>
   protected TransitionImpl findFirstTransitionThatMeetsCondition(ActivityInstanceImpl activityInstance, List<TransitionImpl> outgoingTransitions) {
     if (outgoingTransitions != null) {
       for (TransitionImpl outgoingTransition: outgoingTransitions) {
+        // Skip the default transition, which is only used if no others match.
+        boolean defaultTransition = outgoingTransition.equals(activityInstance.activity.defaultTransition);
+        if (defaultTransition) {
+          continue;
+        }
+
         // condition must be true and the transition must have a target
         if (meetsCondition(outgoingTransition, activityInstance)) {
           log.debug("Excl gw takes transition "+outgoingTransition);

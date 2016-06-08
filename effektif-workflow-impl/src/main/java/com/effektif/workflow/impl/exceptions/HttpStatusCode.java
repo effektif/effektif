@@ -19,12 +19,15 @@ package com.effektif.workflow.impl.exceptions;
  * Constants for status codes used by {@link HttpMappedException} subclasses.
  */
 public interface HttpStatusCode {
+  int OK = 200;
+  int CREATED = 201;
   int NO_CONTENT = 204;
   int BAD_REQUEST = 400;
   int UNAUTHORIZED = 401;
   int PAYMENT_REQUIRED = 402;
   int FORBIDDEN = 403;
   int NOT_FOUND = 404;
+  int METHOD_NOT_ALLOWED = 405;
   int CONFLICT = 409;
   int PRECONDITION_FAILED = 412;
   int REQUEST_ENTITY_TOO_LARGE = 413;

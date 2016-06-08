@@ -133,7 +133,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return workflowInstances;
   }
 
-  public void executeWork() {
+  public WorkflowInstance executeWork() {
     boolean isFirst = true;
     while (hasWork()) {
       ActivityInstanceImpl activityInstance = getNextWork();
@@ -201,6 +201,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
         }
       }
     }
+    WorkflowInstance workflowInstanceSnapshot = workflowInstance.toWorkflowInstance();
     if (hasAsyncWork()) {
       if (log.isDebugEnabled())
         log.debug("Going asynchronous " + this);
@@ -228,6 +229,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
       workflowInstanceStore.flushAndUnlock(this);
       workflow.workflowEngine.notifyUnlocked(this);
     }
+    return workflowInstanceSnapshot;
   }
 
   public void cancel() {
@@ -260,24 +262,7 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     destroyScopeInstance();
     
     if (callingWorkflowInstanceId != null) {
-      WorkflowInstanceImpl callingWorkflowInstance = null;
-      if (lockedWorkflowInstances != null) {
-        // the lockedWorkflowInstances is a local cache of the locked workflow
-        // instances which is passed down to the sub workflow instance in the
-        // call activity. In case the subprocess is fully synchronous and it
-        // finishes and wants to continue the parent, that parent is already
-        // locked in the db. the call activity will first check this cache to
-        // see if the workflow instance is already locked and use this one
-        // instead of going to the db.
-        callingWorkflowInstance = lockedWorkflowInstances.get(workflowInstance.callingWorkflowInstanceId);
-      }
-      if (callingWorkflowInstance == null) {
-        WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
-        callingWorkflowInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callingWorkflowInstanceId);
-        if (callingWorkflowInstance == null) {
-          log.error("Couldn't continue calling activity instance after workflow instance completion");
-        }
-      }
+      WorkflowInstanceImpl callingWorkflowInstance = getLockedWorkflowInstance(callingWorkflowInstanceId);
       final ActivityInstanceImpl callingActivityInstance = callingWorkflowInstance.findActivityInstance(callingActivityInstanceId);
       if (log.isDebugEnabled())
         log.debug("Notifying calling activity instance " + callingActivityInstance);
@@ -286,6 +271,28 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
 
       callActivity.calledWorkflowInstanceEnded(callingActivityInstance, this);
     }
+  }
+
+  public WorkflowInstanceImpl getLockedWorkflowInstance(WorkflowInstanceId workflowInstanceId) {
+    WorkflowInstanceImpl callingWorkflowInstance = null;
+    if (lockedWorkflowInstances != null) {
+      // the lockedWorkflowInstances is a local cache of the locked workflow
+      // instances which is passed down to the sub workflow instance in the
+      // call activity. In case the subprocess is fully synchronous and it
+      // finishes and wants to continue the parent, that parent is already
+      // locked in the db. the call activity will first check this cache to
+      // see if the workflow instance is already locked and use this one
+      // instead of going to the db.
+      callingWorkflowInstance = lockedWorkflowInstances.get(workflowInstanceId);
+    }
+    if (callingWorkflowInstance == null) {
+      WorkflowEngineImpl workflowEngine = configuration.get(WorkflowEngineImpl.class);
+      callingWorkflowInstance = workflowEngine.lockWorkflowInstanceWithRetry(workflowInstance.callingWorkflowInstanceId);
+      if (callingWorkflowInstance == null) {
+        log.error("Couldn't continue calling activity instance after workflow instance completion");
+      }
+    }
+    return callingWorkflowInstance;
   }
 
   public void addWork(ActivityInstanceImpl activityInstance) {

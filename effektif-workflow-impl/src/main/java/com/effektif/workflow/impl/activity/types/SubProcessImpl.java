@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import static javax.swing.text.html.HTML.Tag.HEAD;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.WorkflowEngine;
 import com.effektif.workflow.api.activities.SubProcess;
@@ -40,7 +38,6 @@ import com.effektif.workflow.impl.workflowinstance.WorkflowInstanceImpl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Tom Baeyens
@@ -168,22 +165,6 @@ public class SubProcessImpl extends AbstractBindableActivityImpl<SubProcess> {
                     .workflowInstanceId(callingActivityInstance.workflowInstance.getId())
                     .activityInstanceId(callingActivityInstance.getId()),
                 callingActivityInstance.workflowInstance);
-
-
-    //    // after the called workflow instance is completely done and flushed and unlocked,
-//    calledWorkflowInstance.addUnlockListener(new UnlockListener() {
-//      @Override
-//      public void unlocked(WorkflowInstanceImpl workflowInstanceImpl) {
-//        // Continue the calling activity instance
-//        workflowInstanceImpl.workflow.workflowEngine
-//            .send(new Message()
-//                .workflowInstanceId(callingActivityInstance.workflowInstance.getId())
-//                .activityInstanceId(callingActivityInstance.getId()),
-//            callingActivityInstance.workflowInstance);
-//        //        callingActivityInstance.onwards();
-//        //        callingWorkflowInstance.executeWork();
-//      }
-//    });
   }
 
   protected void mapOutputVariables(ActivityInstanceImpl callerActivityInstance, WorkflowInstanceImpl calledProcessInstance) {
