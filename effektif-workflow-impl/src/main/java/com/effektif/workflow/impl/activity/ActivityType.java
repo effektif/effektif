@@ -43,7 +43,7 @@ public interface ActivityType<T extends Activity> {
    * Note that configuration values in the activityApi object could be the target java beans classes, 
    * or the detyped json representation (maps, lists, Strings, etc) if it's coming from json parsing. 
    * 
-   * @param activityApi will only contain the activity-specific fields.  The other fields 
+   * @param activity will only contain the activity-specific fields.  The other fields
    *   may be cleaned if the object gets stored and retrieved from the db storage. */
   void parse(ActivityImpl activityImpl, T activity, WorkflowParser parser);
 
@@ -64,4 +64,12 @@ public interface ActivityType<T extends Activity> {
   
   Map<String,InputParameterImpl> getInputs();
   Map<String,String> getOutputs();
+
+  default boolean isSandboxable() {
+    return false;
+  }
+
+  default Class<? extends AbstractActivityType<?>> getSandboxImpl() {
+    return null;
+  }
 }

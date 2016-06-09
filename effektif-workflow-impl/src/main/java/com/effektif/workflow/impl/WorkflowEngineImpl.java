@@ -193,7 +193,9 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     if (workflowId==null) {
       if (triggerInstance.getSourceWorkflowId()!=null) {
         workflowId = workflowStore.findLatestWorkflowIdBySource(triggerInstance.getSourceWorkflowId());
-        if (workflowId==null) throw new RuntimeException("No workflow found for source '"+triggerInstance.getSourceWorkflowId()+"'");
+        if (workflowId==null) {
+          throw new RuntimeException("No workflow found for source '"+triggerInstance.getSourceWorkflowId()+"'");
+        }
       } else {
         throw new RuntimeException("No workflow specified");
       }

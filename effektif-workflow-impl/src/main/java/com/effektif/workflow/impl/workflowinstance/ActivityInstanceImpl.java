@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.job.Job;
 
 import org.joda.time.LocalDateTime;
@@ -103,6 +104,12 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   }
   
   public void execute() {
+    ActivityType activityType = activity.activityType;
+    if (activityType.isSandboxable()) {
+      activityType.getActivity()
+    }
+    // TODO @mavo build interceptor here to execute the SB-Mode instances
+
     if (workflow.workflowEngine.notifyActivityInstanceStarted(this)) {
       activity.activityType.execute(this);
     }
