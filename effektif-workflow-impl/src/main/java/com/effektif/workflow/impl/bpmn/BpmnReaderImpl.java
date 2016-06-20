@@ -227,14 +227,18 @@ public class BpmnReaderImpl implements BpmnReader {
         } else {
           BpmnTypeMapping bpmnTypeMapping = getBpmnTypeMapping();
           if (bpmnTypeMapping != null) {
-            Activity activity = (Activity) bpmnTypeMapping.instantiate();
-            // read the fields
-            activity.readBpmn(this);
-            scope.activity(activity);
-            setUnparsedBpmn(activity, currentXml);
-            activity.cleanUnparsedBpmn();
-            // Remove the activity XML element as it has been parsed in the model.
-            iterator.remove();
+            // Check whether the BPMN type mapping is to an Activity or Timer, etc.
+            Object bpmnElement = bpmnTypeMapping.instantiate();
+            if (bpmnElement instanceof Activity) {
+              Activity activity = (Activity) bpmnElement;
+              // read the fields
+              activity.readBpmn(this);
+              scope.activity(activity);
+              setUnparsedBpmn(activity, currentXml);
+              activity.cleanUnparsedBpmn();
+              // Remove the activity XML element as it has been parsed in the model.
+              iterator.remove();
+            }
           }
         }
 
