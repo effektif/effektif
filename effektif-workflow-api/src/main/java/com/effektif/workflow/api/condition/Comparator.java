@@ -84,9 +84,11 @@ public abstract class Comparator extends Condition {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif(getClass());
-    w.writeBinding("left", getLeft());
-    w.writeBinding("right", getRight());
-    w.endElement();
+    if (!isEmpty()) {
+      w.startElementEffektif(getClass());
+      w.writeBinding("left", getLeft());
+      w.writeBinding("right", getRight());
+      w.endElement();
+    }
   }
 }

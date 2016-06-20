@@ -48,13 +48,13 @@ public class Or extends Condition {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif(getClass());
-    if (conditions != null) {
+    if (!isEmpty()) {
+      w.startElementEffektif(getClass());
       for (Condition condition : conditions) {
         condition.writeBpmn(w);
       }
+      w.endElement();
     }
-    w.endElement();
   }
 
   public List<Condition> getConditions() {

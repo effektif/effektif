@@ -53,18 +53,20 @@ public class Unspecified extends Condition {
 
   @Override
   public void writeBpmn(BpmnWriter writer) {
-    writer.startElementEffektif(getClass());
-    writer.writeBinding("left", getLeft());
-    writer.writeBinding("right", getRight());
-    if (condition != null) {
-      condition.writeBpmn(writer);
-    }
-    if (conditions != null) {
-      for (Condition cond : conditions) {
-        cond.writeBpmn(writer);
+    if (!isEmpty()) {
+      writer.startElementEffektif(getClass());
+      writer.writeBinding("left", getLeft());
+      writer.writeBinding("right", getRight());
+      if (condition != null) {
+        condition.writeBpmn(writer);
       }
+      if (conditions != null) {
+        for (Condition cond : conditions) {
+          cond.writeBpmn(writer);
+        }
+      }
+      writer.endElement();
     }
-    writer.endElement();
   }
 
   public Condition getCondition() {

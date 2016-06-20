@@ -46,11 +46,13 @@ public class Not extends Condition {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif(getClass());
-    if (condition != null) {
-      condition.writeBpmn(w);
+    if (!isEmpty()) {
+      w.startElementEffektif(getClass());
+      if (condition != null) {
+        condition.writeBpmn(w);
+      }
+      w.endElement();
     }
-    w.endElement();
   }
 
   public Condition getCondition() {
