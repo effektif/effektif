@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.effektif.workflow.api.condition.Unspecified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,7 +328,7 @@ public class WorkflowParser {
   }
 
   public ConditionImpl parseCondition(Condition condition) {
-    if (condition==null) {
+    if (condition==null || condition instanceof Unspecified) {
       return null;
     }
     try {
