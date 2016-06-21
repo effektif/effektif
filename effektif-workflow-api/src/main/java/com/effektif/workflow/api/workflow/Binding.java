@@ -40,6 +40,7 @@ public class Binding<T> {
   protected DataType type;
   protected String expression;
   protected String template;
+  protected String transformation;
 
   protected Map<String, Object> metadata;
 
@@ -157,6 +158,15 @@ public class Binding<T> {
       return this.metadata.get(key);
     }
     return null;
+  }
+
+  public String getTransformation() {
+    return transformation;
+  }
+
+  public Binding setTransformation(String transformation) {
+    this.transformation = transformation;
+    return this;
   }
 
   @Override

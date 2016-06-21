@@ -106,7 +106,7 @@ public class ActivityInstanceImpl extends ScopeInstanceImpl {
   public void execute() {
     ActivityType activityType = activity.activityType;
     if (activityType.isSandboxable()) {
-      activityType.getActivity()
+      activityType.getActivity();
     }
     // TODO @mavo build interceptor here to execute the SB-Mode instances
 
