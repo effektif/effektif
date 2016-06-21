@@ -60,10 +60,12 @@ public class AndImpl implements ConditionImpl<And> {
     if (and.getConditions()!=null) {
       for (Condition condition: and.getConditions()) {
         ConditionImpl conditionImpl = parser.parseCondition(condition);
-        if (this.conditions==null) {
-          this.conditions = new ArrayList<>();
+        if (conditionImpl != null) {
+          if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
+          }
+          this.conditions.add(conditionImpl);
         }
-        this.conditions.add(conditionImpl);
       }
     }
   }

@@ -31,6 +31,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.effektif.workflow.api.bpmn.XmlNamespaces;
+import com.effektif.workflow.api.condition.SingleBindingCondition;
 import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import org.joda.time.LocalDateTime;
@@ -390,6 +391,10 @@ public class BpmnReaderImpl implements BpmnReader {
   public <T> Binding<T> readBinding(Class modelClass, Class<T> type) {
     BpmnTypeMapping bpmnTypeMapping = bpmnMappings.getBpmnTypeMapping(modelClass);
     String localPart = bpmnTypeMapping.getBpmnElementName();
+    if (currentXml != null && currentXml.getName().equals(localPart)) {
+      // in some cases the respective element which contains the binding information was already started
+      return readBindingFromCurrentElement();
+    }
     return readBinding(localPart, type);
   }
 
@@ -434,6 +439,27 @@ public class BpmnReaderImpl implements BpmnReader {
       bindings.add(binding);
     }
     return bindings;
+  }
+
+  private <T> Binding<T> readBindingFromCurrentElement() {
+    if (currentXml != null) {
+      Binding binding = new Binding();
+      String value = currentXml.getAttribute(EFFEKTIF_URI, "value");
+      String typeName = currentXml.getAttribute(EFFEKTIF_URI, "type");
+      XmlElement metadataElement = readElementEffektif("metadata");
+      Map<String, Object> metadata = null;
+      if (metadataElement != null) {
+        startElement(metadataElement);
+        metadata = readSimpleProperties();
+        endElement();
+      }
+      DataType type = convertType(typeName);
+      binding.setValue(parseText(value, (Class<Object>) type.getValueType()));
+      binding.setExpression(currentXml.getAttribute(EFFEKTIF_URI, "expression"));
+      binding.setMetadata(metadata);
+      return binding;
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked")
@@ -680,15 +706,20 @@ public class BpmnReaderImpl implements BpmnReader {
 
     for (Class bpmnClass : bpmnClasses) {
       if (Condition.class.isAssignableFrom(bpmnClass)) {
-        try {
-          Condition condition = (Condition) bpmnClass.newInstance();
-          condition.readBpmn(this);
-          if (!condition.isEmpty()) {
-            conditions.add(condition);
+        for (XmlElement xmlElement : readElementsEffektif(bpmnClass)) {
+          startElement(xmlElement);
+          try {
+            Condition condition = (Condition) bpmnClass.newInstance();
+            condition.readBpmn(this);
+            if (!condition.isEmpty()) {
+              conditions.add(condition);
+            }
+          } catch (Exception e) {
+            throw new RuntimeException("Could not read condition type " + bpmnClass.getName());
           }
-        } catch (Exception e) {
-          throw new RuntimeException("Could not read condition type " + bpmnClass.getName());
+          endElement();
         }
+
       }
     }
     return conditions;

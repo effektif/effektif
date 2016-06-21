@@ -78,18 +78,17 @@ public abstract class Comparator extends Condition {
   protected abstract String getName();
   @Override
   public void readBpmn(BpmnReader r) {
-    for (XmlElement containsElement : r.readElementsEffektif(getClass())) {
-      r.startElement(containsElement);
-      left = r.readBinding("left", String.class);
-      right = r.readBinding("right", String.class);
-      r.endElement();
-    }
+    left = r.readBinding("left", String.class);
+    right = r.readBinding("right", String.class);
   }
+
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif(getClass());
-    w.writeBinding("left", getLeft());
-    w.writeBinding("right", getRight());
-    w.endElement();
+    if (!isEmpty()) {
+      w.startElementEffektif(getClass());
+      w.writeBinding("left", getLeft());
+      w.writeBinding("right", getRight());
+      w.endElement();
+    }
   }
 }

@@ -40,18 +40,19 @@ public class Not extends Condition {
 
   @Override
   public void readBpmn(BpmnReader r) {
-    for (XmlElement andElement : r.readElementsEffektif(getClass())) {
-      r.startElement(andElement);
-      condition = r.readCondition();
-      r.endElement();
-    }
+    condition = r.readCondition();
+    r.endElement();
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif(getClass());
-    condition.writeBpmn(w);
-    w.endElement();
+    if (!isEmpty()) {
+      w.startElementEffektif(getClass());
+      if (condition != null) {
+        condition.writeBpmn(w);
+      }
+      w.endElement();
+    }
   }
 
   public Condition getCondition() {

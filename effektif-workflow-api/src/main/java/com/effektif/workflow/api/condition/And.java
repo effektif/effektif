@@ -58,20 +58,18 @@ public class And extends Condition {
 
   @Override
   public void readBpmn(BpmnReader r) {
-    for (XmlElement andElement : r.readElementsEffektif(getClass())) {
-      r.startElement(andElement);
-      conditions = r.readConditions();
-      r.endElement();
-    }
+    conditions = r.readConditions();
   }
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.startElementEffektif(getClass());
-    for (Condition condition: conditions) {
-      condition.writeBpmn(w);
+    if (!isEmpty()) {
+      w.startElementEffektif(getClass());
+      for (Condition condition : conditions) {
+        condition.writeBpmn(w);
+      }
+      w.endElement();
     }
-    w.endElement();
   }
 
   @Override
