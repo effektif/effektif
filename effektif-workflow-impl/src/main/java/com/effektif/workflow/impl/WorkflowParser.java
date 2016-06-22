@@ -15,31 +15,13 @@
  */
 package com.effektif.workflow.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.condition.Condition;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.model.WorkflowId;
 import com.effektif.workflow.api.types.DataType;
-import com.effektif.workflow.api.workflow.AbstractWorkflow;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Binding;
-import com.effektif.workflow.api.workflow.Element;
-import com.effektif.workflow.api.workflow.ExecutableWorkflow;
-import com.effektif.workflow.api.workflow.MultiInstance;
+import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.api.workflow.ParseIssue.IssueType;
-import com.effektif.workflow.api.workflow.ParseIssues;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
 import com.effektif.workflow.impl.conditions.ConditionService;
 import com.effektif.workflow.impl.configuration.Brewery;
@@ -47,13 +29,12 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.job.RelativeTimeImpl;
 import com.effektif.workflow.impl.template.Hint;
 import com.effektif.workflow.impl.template.TextTemplate;
-import com.effektif.workflow.impl.workflow.ActivityImpl;
-import com.effektif.workflow.impl.workflow.BindingImpl;
-import com.effektif.workflow.impl.workflow.ExpressionImpl;
-import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
-import com.effektif.workflow.impl.workflow.ScopeImpl;
-import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.*;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 
 /** Validates and wires process definition after it's been built by either the builder api or json deserialization. */
@@ -65,7 +46,7 @@ public class WorkflowParser {
   public static final Logger log = LoggerFactory.getLogger(WorkflowParser.class);
   
   public Configuration configuration;
-  public WorkflowImpl workflow;
+  public AbstractWorkflowImpl workflow;
   public LinkedList<String> path;
   public ParseIssues issues;
   public Stack<ParseContext> contextStack;
@@ -83,7 +64,7 @@ public class WorkflowParser {
       if (element instanceof Element) {
         indexText = getIdText(element);
       }
-      if (indexText==null && index!=null) {
+      if (indexText == null && index != null) {
         indexText = Integer.toString(index);
       }
     }
@@ -144,20 +125,27 @@ public class WorkflowParser {
   }
 
   /**
+   * Convenience for parse(AbstractWorkflow workflowApi, WorkflowImpl workflow)
+   */
+  public AbstractWorkflowImpl parse(AbstractWorkflow workflowApi) {
+    return parse(workflowApi, new WorkflowImpl());
+  }
+
+  /**
    * Parses the content of <code>workflowApi</code> into <code>workflowImpl</code> and
    * adds any parse issues to <code>workflowApi</code>.
    * Use one parser for each parse.
    */
-  public WorkflowImpl parse(AbstractWorkflow workflowApi) {
-    workflow = new WorkflowImpl();
-    workflow.id = workflowApi.getId();
-    pushContext("workflow", workflowApi, workflow, null);
+  public AbstractWorkflowImpl parse(AbstractWorkflow workflowApi, AbstractWorkflowImpl workflow) {
+    this.workflow = workflow;
+    this.workflow.id = workflowApi.getId();
+    pushContext("workflow", workflowApi, this.workflow, null);
     workflow.parse(workflowApi, this);
     popContext();
     if (this.workflowParseListener!=null) {
-      this.workflowParseListener.workflowParsed(workflowApi, workflow, this);
+      this.workflowParseListener.workflowParsed(workflowApi, this.workflow, this);
     }
-    return workflow;
+    return this.workflow;
   }
 
   public void pushContext(String property, Object element, Object elementImpl, Integer index) {
@@ -172,7 +160,7 @@ public class WorkflowParser {
     StringBuilder pathText = new StringBuilder();
     String dot = null;
     for (ParseContext validationContext: contextStack) {
-      if (dot==null) {
+      if (dot == null) {
         dot = ".";
       } else {
         pathText.append(dot);
@@ -185,7 +173,7 @@ public class WorkflowParser {
   public String getExistingActivityIdsText(ScopeImpl scope) {
     List<Object> activityIds = new ArrayList<>();
     if (scope.activities!=null) {
-      for (ActivityImpl activity: scope.activities.values()) {
+      for (ActivityImpl activity : scope.activities.values()) {
         if (activity.id!=null) {
           activityIds.add(activity.id);
         }
@@ -293,7 +281,7 @@ public class WorkflowParser {
     return issues.hasErrors();
   }
 
-  public WorkflowImpl getWorkflow() {
+  public AbstractWorkflowImpl getWorkflow() {
     return workflow;
   }
 

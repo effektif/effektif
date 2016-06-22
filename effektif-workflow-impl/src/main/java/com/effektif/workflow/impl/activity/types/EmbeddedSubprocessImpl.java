@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.List;
-
 import com.effektif.workflow.api.activities.EmbeddedSubprocess;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import java.util.List;
 
 
 /**
@@ -44,7 +44,7 @@ public class EmbeddedSubprocessImpl extends AbstractActivityType<EmbeddedSubproc
   @Override
   public void execute(ActivityInstanceImpl activityInstance) {
     if (startActivities!=null && !startActivities.isEmpty()) {
-      for (ActivityImpl startActivity: startActivities) {
+      for (ActivityImpl startActivity : startActivities) {
         activityInstance.execute(startActivity);
       }
     } else {

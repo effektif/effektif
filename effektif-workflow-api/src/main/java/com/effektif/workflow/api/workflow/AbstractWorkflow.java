@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.api.workflow;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.bpmn.BpmnReader;
 import com.effektif.workflow.api.bpmn.BpmnWriter;
 import com.effektif.workflow.api.model.WorkflowId;

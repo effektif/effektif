@@ -15,15 +15,15 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.effektif.workflow.api.activities.ParallelGateway;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

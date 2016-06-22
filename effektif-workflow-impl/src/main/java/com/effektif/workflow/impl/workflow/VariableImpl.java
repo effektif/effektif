@@ -22,7 +22,6 @@ import com.effektif.workflow.impl.data.DataTypeImpl;
 import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.data.types.AnyTypeImpl;
 
-
 /**
  * @author Tom Baeyens
  */

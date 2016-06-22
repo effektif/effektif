@@ -15,10 +15,6 @@
  */
 package com.effektif.workflow.impl.activity.types;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-
 import com.effektif.workflow.api.activities.JavaServiceTask;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.AbstractActivityType;
@@ -26,6 +22,10 @@ import com.effektif.workflow.impl.util.Reflection;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
 
 
 /** TODO

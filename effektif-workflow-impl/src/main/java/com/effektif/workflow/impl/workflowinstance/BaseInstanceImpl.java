@@ -20,7 +20,7 @@ import java.util.Map;
 
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
-
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 
 /**
  * @author Tom Baeyens
@@ -29,7 +29,7 @@ public class BaseInstanceImpl {
 
   public ScopeInstanceImpl parent;
   public WorkflowInstanceImpl workflowInstance;
-  public WorkflowImpl workflow;
+  public AbstractWorkflowImpl workflow;
   public Configuration configuration;
   public Map<String,Object> properties;
   public Map<String,Object> transientProperties;
@@ -56,7 +56,7 @@ public class BaseInstanceImpl {
     return workflowInstance;
   }
   
-  public WorkflowImpl getWorkflow() {
+  public AbstractWorkflowImpl getWorkflow() {
     return workflow;
   }
 

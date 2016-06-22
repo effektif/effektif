@@ -31,7 +31,7 @@ import com.effektif.workflow.impl.util.Lists;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +76,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public WorkflowInstanceImpl() {
   }
 
-  public WorkflowInstanceImpl(Configuration configuration, WorkflowImpl workflow, WorkflowInstanceId workflowInstanceId, TriggerInstance triggerInstance,
-          LockImpl lock, Map<String, Object> transientProperties) {
+  public WorkflowInstanceImpl(Configuration configuration, AbstractWorkflowImpl workflow,
+                              WorkflowInstanceId workflowInstanceId, TriggerInstance triggerInstance,
+                              LockImpl lock, Map<String, Object> transientProperties) {
     this.id = workflowInstanceId;
     this.configuration = configuration;
     this.workflow = workflow;

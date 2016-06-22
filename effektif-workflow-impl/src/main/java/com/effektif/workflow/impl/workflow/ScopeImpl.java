@@ -15,41 +15,63 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.effektif.workflow.api.Configuration;
-import com.effektif.workflow.api.workflow.Activity;
-import com.effektif.workflow.api.workflow.Extensible;
-import com.effektif.workflow.api.workflow.Scope;
+import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.api.workflow.Timer;
-import com.effektif.workflow.api.workflow.Transition;
-import com.effektif.workflow.api.workflow.Variable;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 
+import java.util.*;
 
 public abstract class ScopeImpl extends Extensible {
 
   public ScopeImpl parent;
   public Configuration configuration;
-  public WorkflowImpl workflow;
+  public AbstractWorkflowImpl workflow;
   public Map<String, ActivityImpl> activities;
   public Map<String, VariableImpl> variables;
   public List<TimerImpl> timers;
   public List<TransitionImpl> transitions;
 
-  public void parse(Scope scope, ScopeImpl parentImpl, WorkflowParser parser) {
-    this.properties = scope.getProperties()!=null ? new HashMap<>(scope.getProperties()) : null;
+  public void parse(Scope scope, ScopeImpl parentImpl, WorkflowParser parser, boolean isSandbox) {
+    this.properties = scope.getProperties() != null ? new HashMap<>(scope.getProperties()) : null;
     this.configuration = parser.configuration;
-    if (parentImpl!=null) {
+    if (parentImpl != null) {
       this.parent = parentImpl;
       this.workflow = parentImpl.workflow;
     }
-    
+
+    List<Activity> activities = scope.getActivities();
+
+    parseVariables(scope, parser);
+    parseTimers(scope, parser);
+    Map<String, ActivityImpl> activitiesByDefaultTransitionId = parseActivities(scope, parser, activities, isSandbox);
+    parseTransitions(scope, parser, activitiesByDefaultTransitionId);
+
+    if (this.activities != null) {
+      // some activity types need to validate incoming and outgoing transitions,
+      // that's why they are validated after the transitions.
+      int i = 0;
+      for (ActivityImpl activityImpl : this.activities.values()) {
+        Activity activity = activities.get(i);
+        if (activityImpl.activityType != null) {
+          parser.pushContext("activities", activity, activityImpl, i);
+          activityImpl.activityType.parse(activityImpl, activity, parser);
+          parser.popContext();
+        }
+        i++;
+      }
+    }
+
+    if (!activitiesByDefaultTransitionId.isEmpty()) {
+      for (String nonExistingDefaultTransitionId : activitiesByDefaultTransitionId.keySet()) {
+        ActivityImpl activity = activitiesByDefaultTransitionId.get(nonExistingDefaultTransitionId);
+        parser.addWarning("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
+      }
+    }
+  }
+
+  protected void parseVariables(Scope scope, WorkflowParser parser) {
     List<Variable> variables = scope.getVariables();
     if (variables!=null && !variables.isEmpty()) {
       int i = 0;
@@ -65,7 +87,9 @@ public abstract class ScopeImpl extends Extensible {
       // ensures there are not empty collections in the persistent storage
       scope.setVariables(null);
     }
-    
+  }
+
+  protected void parseTimers(Scope scope, WorkflowParser parser) {
     List<Timer> timers = scope.getTimers();
     if (timers!=null && !timers.isEmpty()) {
       int i = 0;
@@ -81,9 +105,11 @@ public abstract class ScopeImpl extends Extensible {
       // ensures there are not empty collections in the persistent storage
       scope.setTimers(null);
     }
+  }
 
+  protected Map<String, ActivityImpl> parseActivities(Scope scope, WorkflowParser parser, List<Activity> activities,
+                                                      boolean isSandbox) {
     Map<String, ActivityImpl> activitiesByDefaultTransitionId = new HashMap<>();
-    List<Activity> activities = scope.getActivities();
     if (activities!=null && !activities.isEmpty()) {
       int i = 0;
       for (Activity activity: activities) {
@@ -92,7 +118,7 @@ public abstract class ScopeImpl extends Extensible {
         if (activity.getDefaultTransitionId()!=null) {
           activitiesByDefaultTransitionId.put(activity.getDefaultTransitionId(), activityImpl);
         }
-        activityImpl.parse(activity, scope, this, parser);
+        activityImpl.parse(activity, scope, this, parser, isSandbox);
         addActivity(activityImpl);
         parser.popContext();
         i++;
@@ -101,7 +127,11 @@ public abstract class ScopeImpl extends Extensible {
       // ensures there are not empty collections in the persistent storage
       scope.setActivities(null);
     }
+    return activitiesByDefaultTransitionId;
+  }
 
+  protected void parseTransitions(Scope scope, WorkflowParser parser,
+                                  Map<String, ActivityImpl> activitiesByDefaultTransitionId) {
     List<Transition> transitions = scope.getTransitions();
     if (transitions!=null && !transitions.isEmpty()) {
       int i = 0;
@@ -117,30 +147,8 @@ public abstract class ScopeImpl extends Extensible {
       // ensures there are not empty collections in the persistent storage
       scope.setTransitions(null);
     }
-
-    if (this.activities!=null) {
-      // some activity types need to validate incoming and outgoing transitions, 
-      // that's why they are validated after the transitions.
-      int i = 0;
-      for (ActivityImpl activityImpl : this.activities.values()) {
-        Activity activity = activities.get(i);
-        if (activityImpl.activityType != null) {
-          parser.pushContext("activities", activity, activityImpl, i);
-          activityImpl.activityType.parse(activityImpl, activity, parser);
-          parser.popContext();
-        }
-        i++;
-      }
-    }
-    
-    if (!activitiesByDefaultTransitionId.isEmpty()) {
-      for (String nonExistingDefaultTransitionId: activitiesByDefaultTransitionId.keySet()) {
-        ActivityImpl activity = activitiesByDefaultTransitionId.get(nonExistingDefaultTransitionId);
-        parser.addWarning("Activity '%s' has non existing default transition id '%s'", activity.id, nonExistingDefaultTransitionId);
-      }
-    }
   }
-  
+
   public void addTimer(TimerImpl timer) {
     if (timers==null) {
       timers = new ArrayList<>();
@@ -164,7 +172,7 @@ public abstract class ScopeImpl extends Extensible {
     transitions.add(transition);
     transition.parent = this;
   }
-  
+
   public void addActivity(ActivityImpl activity) {
     if (activities==null) {
       activities = new LinkedHashMap<>();
@@ -188,7 +196,6 @@ public abstract class ScopeImpl extends Extensible {
     return activities.get(activityId);
   }
 
-
   public boolean isWorkflow() {
     return parent!=null;
   }
@@ -204,7 +211,7 @@ public abstract class ScopeImpl extends Extensible {
   public boolean hasTransitionsLocal() {
     return transitions!=null && !transitions.isEmpty();
   }
-  
+
   public boolean hasVariableRecursive(String variableId) {
     if (hasVariableLocal(variableId)) {
       return true;
@@ -226,7 +233,7 @@ public abstract class ScopeImpl extends Extensible {
   public VariableImpl findVariableByIdLocal(String variableId) {
     return variables!=null ? variables.get(variableId) : null;
   }
-  
+
   public VariableImpl findVariableByIdRecursive(String variableId) {
     if (variables!=null && variables.containsKey(variableId)) {
       return variables.get(variableId);
@@ -260,35 +267,30 @@ public abstract class ScopeImpl extends Extensible {
     return parent;
   }
 
-  
   public Configuration getConfiguration() {
     return configuration;
   }
 
-  
-  public WorkflowImpl getWorkflow() {
+  public AbstractWorkflowImpl getWorkflow() {
     return workflow;
   }
 
-  
   public Map<String, ActivityImpl> getActivities() {
     return activities;
   }
 
-  
   public Map<String, VariableImpl> getVariables() {
     return variables;
   }
 
-  
   public List<TimerImpl> getTimers() {
     return timers;
   }
 
-  
   public List<TransitionImpl> getTransitions() {
     return transitions;
   }
 
   public abstract String getIdText();
+
 }

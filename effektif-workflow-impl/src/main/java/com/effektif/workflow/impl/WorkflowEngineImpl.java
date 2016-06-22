@@ -30,7 +30,7 @@ import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.TransitionImpl;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.LockImpl;
 import com.effektif.workflow.impl.workflowinstance.ScopeInstanceImpl;
@@ -90,7 +90,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
     parser.parse(workflow);
 
     if (!parser.hasErrors()) {
-      WorkflowImpl workflowImpl = parser.getWorkflow();
+      AbstractWorkflowImpl workflowImpl = parser.getWorkflow();
       WorkflowId workflowId;
       if (workflow.getId()==null) {
         workflowId = workflowStore.generateWorkflowId();
@@ -126,7 +126,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   /** first part of starting a new workflow instance: creating the workflow instance and applying the trigger data */
   public WorkflowInstanceImpl startInitialize(TriggerInstance triggerInstance) {
     WorkflowId workflowId = getLatestWorkflowId(triggerInstance);
-    WorkflowImpl workflow = getWorkflowImpl(workflowId);
+    AbstractWorkflowImpl workflow = getWorkflowImpl(workflowId);
 
     LockImpl lock = new LockImpl();
     lock.setTime(Time.now());
@@ -169,7 +169,7 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
 
   /** Second part of starting a new workflow instance: executing the start activities. */
   public WorkflowInstance startExecute(WorkflowInstanceImpl workflowInstance) {
-    WorkflowImpl workflow = workflowInstance.workflow;
+    AbstractWorkflowImpl workflow = workflowInstance.workflow;
     if (log.isDebugEnabled()) log.debug("Starting "+workflowInstance);
 
     if (workflow.startActivities!=null) {
@@ -326,8 +326,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
   }
 
   /** retrieves the executable form of the workflow using the workflow cache */
-  public WorkflowImpl getWorkflowImpl(WorkflowId workflowId) {
-    WorkflowImpl workflowImpl = workflowCache.get(workflowId);
+  public AbstractWorkflowImpl getWorkflowImpl(WorkflowId workflowId) {
+    AbstractWorkflowImpl workflowImpl = workflowCache.get(workflowId);
     if (workflowImpl==null) {
       ExecutableWorkflow workflow = workflowStore.loadWorkflowById(workflowId);
       if (workflow != null) {

@@ -15,8 +15,6 @@
  */
 package com.effektif.workflow.impl.activity;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.model.Message;
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.impl.WorkflowParser;
@@ -24,6 +22,8 @@ import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
+
+import java.util.Map;
 
 /**
  * An activity is part of a workflow model that corresponds to a workflow task when executing the workflow.

@@ -35,7 +35,7 @@ import com.effektif.workflow.impl.util.Time;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.ScopeImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.*;
 import com.mongodb.*;
 import org.bson.types.ObjectId;
@@ -402,7 +402,7 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
     // configuration field storeWorkflowIdsAsStrings) because the test 
     // suite cleanup might encounter workflow instances created by the other engine
     WorkflowId workflowId = new WorkflowId(workflowIdObject.toString());
-    WorkflowImpl workflow = workflowEngine.getWorkflowImpl(workflowId);
+    AbstractWorkflowImpl workflow = workflowEngine.getWorkflowImpl(workflowId);
     if (workflow==null) {
       throw new RuntimeException("No workflow for instance "+workflowInstance.id);
     }
@@ -488,7 +488,8 @@ public class MongoWorkflowInstanceStore implements WorkflowInstanceStore, Brewab
   }
 
 
-  protected void resolveActivityReferences(ScopeInstanceImpl scopeInstance, ScopeImpl scope, Map<ActivityInstanceImpl, String> allActivityIds) {
+  protected void resolveActivityReferences(ScopeInstanceImpl scopeInstance, ScopeImpl scope,
+                                           Map<ActivityInstanceImpl, String> allActivityIds) {
     if (scopeInstance.activityInstances!=null) {
       for (ActivityInstanceImpl activityInstance : scopeInstance.activityInstances) {
         String activityId = allActivityIds.get(activityInstance);

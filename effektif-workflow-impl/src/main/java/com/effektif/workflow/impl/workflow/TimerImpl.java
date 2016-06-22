@@ -15,6 +15,7 @@
  */
 package com.effektif.workflow.impl.workflow;
 
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 import org.joda.time.LocalDateTime;
 
 import com.effektif.workflow.api.Configuration;
@@ -38,7 +39,7 @@ public class TimerImpl {
   public String id;
   public ScopeImpl parent;
   public Configuration configuration;
-  public WorkflowImpl workflow;
+  public AbstractWorkflowImpl workflow;
   public Timer timer;
   public TimerType timerType;
 

@@ -556,8 +556,8 @@ public abstract class ScopeInstanceImpl extends BaseInstanceImpl {
         }
       }
       if (joiningActivityInstances!=null && !joiningActivityInstances.isEmpty()) {
-        Set<ActivityImpl> onwardedActivities = new HashSet<>();  
-        for (ActivityInstanceImpl joiningActivityInstance: joiningActivityInstances) {
+        Set<ActivityImpl> onwardedActivities = new HashSet<>();
+        for (ActivityInstanceImpl joiningActivityInstance : joiningActivityInstances) {
           if (!onwardedActivities.contains(joiningActivityInstance.activity)) {
             onwardedActivities.add(joiningActivityInstance.activity);
             joiningActivityInstance.setWorkState(null);

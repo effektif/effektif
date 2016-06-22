@@ -15,12 +15,12 @@ package com.effektif.workflow.impl;
 
 import com.effektif.workflow.api.workflow.AbstractWorkflow;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
-
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 
 /**
  * @author Tom Baeyens
  */
 public interface WorkflowParseListener {
 
-  void workflowParsed(AbstractWorkflow workflow, WorkflowImpl workflowImpl, WorkflowParser workflowParser);
+  void workflowParsed(AbstractWorkflow workflow, AbstractWorkflowImpl workflowImpl, WorkflowParser workflowParser);
 }

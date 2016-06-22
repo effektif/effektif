@@ -29,7 +29,8 @@ import com.effektif.workflow.impl.configuration.Brewery;
 import com.effektif.workflow.impl.configuration.Startable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
-
+import com.effektif.workflow.impl.workflow.sandbox.SandboxApiType;
+import com.effektif.workflow.impl.workflow.sandbox.Sandboxable;
 
 /**
  * @author Tom Baeyens
@@ -95,12 +96,29 @@ public class ActivityTypeService implements Startable {
     triggerClasses.put(triggerApiClass, trigger.getClass());
   }
 
-  public ActivityType instantiateActivityType(Activity activityApi) {
+  /**
+   * Instantiates the activity classes. If its a sandboxed execution, the equivalents to the original classes are
+   * loaded and instantiated.
+   *
+   * @param activityApi the api class for instantiation
+   * @return
+   */
+  public ActivityType instantiateActivityType(Activity activityApi, boolean isSandboxMode) {
     Exceptions.checkNotNullParameter(activityApi, "activityApi");
-    Class<? extends ActivityType> activityTypeClass = activityTypeClasses.get(activityApi.getClass());
-    if (activityTypeClass==null) {
+
+    Class<? extends ActivityType> activityTypeClass;
+
+    SandboxApiType annotation = activityApi.getClass().getAnnotation(SandboxApiType.class);
+    if (isSandboxMode && annotation != null) {
+      activityTypeClass = activityTypeClasses.get(annotation.sandboxApiType());
+    } else {
+      activityTypeClass = activityTypeClasses.get(activityApi.getClass());
+    }
+
+    if (activityTypeClass == null) {
       throw new RuntimeException("No ActivityType defined for "+activityApi.getClass().getName());
     }
+
     try {
       return activityTypeClass.newInstance();
     } catch (Exception e) {

@@ -15,21 +15,20 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.effektif.workflow.api.workflow.Activity;
 import com.effektif.workflow.api.workflow.Scope;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.activity.ActivityType;
 import com.effektif.workflow.impl.activity.ActivityTypeService;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tom Baeyens
  */
 public class ActivityImpl extends ScopeImpl {
-  
+
   public String id;
   public Activity activity;
   public ActivityType activityType;
@@ -40,14 +39,15 @@ public class ActivityImpl extends ScopeImpl {
    * This field is not persisted nor jsonned. It is derived from the parent's {@link ScopeImpl#transitions} */
   public List<TransitionImpl> outgoingTransitions;
   public TransitionImpl defaultTransition;
-  
+
   /// Activity Definition Builder methods ////////////////////////////////////////////////
 
-  public void parse(Activity activity, Scope parentScope, ScopeImpl parentScopeImpl, WorkflowParser parser) {
-    super.parse(activity, parentScopeImpl, parser);
+  public void parse(Activity activity, Scope parentScope, ScopeImpl parentScopeImpl, WorkflowParser parser,
+                    boolean isSandboxMode) {
+    super.parse(activity, parentScopeImpl, parser, false);
     this.id = activity.getId();
     this.activity = activity;
-    if (id==null) {
+    if (id == null) {
       parser.addError("Activity has no id");
     } else if ("".equals(id)) {
       parser.addError("Activity has a empty string as id", id);
@@ -60,8 +60,8 @@ public class ActivityImpl extends ScopeImpl {
     }
 
     ActivityTypeService activityTypeService = parser.getConfiguration(ActivityTypeService.class);
-    this.activityType = activityTypeService.instantiateActivityType(activity);
-    // some activity types need to validate incoming and outgoing transitions, 
+    this.activityType = activityTypeService.instantiateActivityType(activity, isSandboxMode);
+    // some activity types need to validate incoming and outgoing transitions,
     // that's why they are NOT parsed here, but after the transitions.
     if (this.activityType==null) {
       parser.addError("Activity '%s' has no activityType configured", id);
@@ -69,7 +69,7 @@ public class ActivityImpl extends ScopeImpl {
   }
 
   public boolean isMultiInstance() {
-    return activityType.getMultiInstance() != null; 
+    return activityType.getMultiInstance() != null;
   }
 
   public String getIdText() {
@@ -88,7 +88,7 @@ public class ActivityImpl extends ScopeImpl {
   public boolean hasOutgoingTransitions() {
     return outgoingTransitions!=null && !outgoingTransitions.isEmpty();
   }
-  
+
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public List<TransitionImpl> getOutgoingTransitions() {
     return (List) outgoingTransitions;
@@ -116,11 +116,11 @@ public class ActivityImpl extends ScopeImpl {
   public void setIncomingTransitions(List<TransitionImpl> incomingTransitionDefinitions) {
     this.incomingTransitions = incomingTransitionDefinitions;
   }
-  
+
   public ActivityType getActivityType() {
     return activityType;
   }
-  
+
   public void setActivityType(ActivityType activityType) {
     this.activityType = activityType;
   }
@@ -128,7 +128,7 @@ public class ActivityImpl extends ScopeImpl {
   public TransitionImpl getDefaultTransition() {
     return defaultTransition;
   }
-  
+
   public void setDefaultTransition(TransitionImpl defaultTransition) {
     this.defaultTransition = defaultTransition;
   }
@@ -142,4 +142,5 @@ public class ActivityImpl extends ScopeImpl {
   public String getId() {
     return id;
   }
+
 }

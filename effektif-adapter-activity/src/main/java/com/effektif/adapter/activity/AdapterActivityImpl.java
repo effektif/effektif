@@ -30,7 +30,7 @@ import com.effektif.workflow.impl.data.DataTypeService;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.BindingImpl;
 import com.effektif.workflow.impl.workflow.VariableImpl;
-import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 import com.effektif.workflow.impl.workflowinstance.ActivityInstanceImpl;
 
 import java.util.HashMap;
@@ -72,8 +72,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     }
     
     Map<String, Binding> inputBindingsApi = adapterActivity.getInputBindings();
-    if (inputBindingsApi!=null && !inputBindingsApi.isEmpty()) {
-      for (Map.Entry<String, Binding> entry: inputBindingsApi.entrySet()) {
+    if (inputBindingsApi != null && !inputBindingsApi.isEmpty()) {
+      for (Map.Entry<String, Binding> entry : inputBindingsApi.entrySet()) {
         String key = entry.getKey();
         Binding inputBinding = entry.getValue();
         InputDescriptor inputDescriptor = inputDescriptors!=null ? inputDescriptors.get(key) : null;
@@ -86,8 +86,8 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
         String bindingName = inputDescriptor.getKey();
         boolean required = inputDescriptor.isRequired();
         BindingImpl<?> bindingImpl = parser.parseBinding(inputBinding, bindingName, required, type);
-        if (bindingImpl!=null) {
-          if (inputBindings==null) {
+        if (bindingImpl != null) {
+          if (inputBindings == null) {
             inputBindings = new HashMap<>();
           }
           inputBindings.put(key, bindingImpl);
@@ -99,7 +99,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     this.outputBindings = activity.getOutputBindings();
   }
 
-  protected InputDescriptor substituteMissingDescriptor(WorkflowImpl workflow, Binding inputBinding) {
+  protected InputDescriptor substituteMissingDescriptor(AbstractWorkflowImpl workflow, Binding inputBinding) {
     InputDescriptor inputDescriptor = null;
     VariableImpl variable = workflow.getVariables().get(inputBinding.getExpression());
 
@@ -126,7 +126,7 @@ public class AdapterActivityImpl extends AbstractBindableActivityImpl<AdapterAct
     if (inputBindings!=null) {
       for (String adapterKey: inputBindings.keySet()) {
         
-        Object value = null;
+        Object value;
         if (isList(adapterKey)) {
           List<BindingImpl<Object>> inputBindings = inputListBindings!=null ? inputListBindings.get(adapterKey) : null;
           value = inputBindings!=null ? activityInstance.getValues(inputBindings) : null;

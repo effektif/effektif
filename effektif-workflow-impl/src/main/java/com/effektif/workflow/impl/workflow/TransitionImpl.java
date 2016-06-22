@@ -15,13 +15,13 @@
  */
 package com.effektif.workflow.impl.workflow;
 
-import java.util.Map;
-
 import com.effektif.workflow.api.Configuration;
 import com.effektif.workflow.api.workflow.Transition;
 import com.effektif.workflow.impl.WorkflowParser;
 import com.effektif.workflow.impl.conditions.ConditionImpl;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 
+import java.util.Map;
 
 /**
  * @author Tom Baeyens
@@ -31,13 +31,14 @@ public class TransitionImpl {
   public String id;
   public ScopeImpl parent;
   public Configuration configuration;
-  public WorkflowImpl workflow;
+  public AbstractWorkflowImpl workflow;
 
   public ActivityImpl from;
   public ActivityImpl to;
   public ConditionImpl condition;
 
-  public void parse(Transition transition, ScopeImpl parentImpl, Map<String, ActivityImpl> activitiesByDefaultTransitionId, WorkflowParser parser) {
+  public void parse(Transition transition, ScopeImpl parentImpl,
+                    Map<String, ActivityImpl> activitiesByDefaultTransitionId, WorkflowParser parser) {
     this.id = transition.getId();
     if (id!=null) {
       if (parser.transitionIds.contains(id)) {
