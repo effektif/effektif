@@ -61,10 +61,12 @@ public class OrImpl implements ConditionImpl<Or> {
     if (or.getConditions()!=null) {
       for (Condition condition: or.getConditions()) {
         ConditionImpl conditionImpl = parser.parseCondition(condition);
-        if (this.conditions==null) {
-          this.conditions = new ArrayList<>();
+        if (conditionImpl != null) {
+          if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
+          }
+          this.conditions.add(conditionImpl);
         }
-        this.conditions.add(conditionImpl);
       }
     }
   }

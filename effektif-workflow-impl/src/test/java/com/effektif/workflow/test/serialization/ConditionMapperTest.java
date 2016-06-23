@@ -14,33 +14,13 @@ package com.effektif.workflow.test.serialization;/* Copyright (c) 2015, Effektif
 
 import static org.junit.Assert.*;
 
+import com.effektif.workflow.api.condition.*;
+import com.effektif.workflow.impl.util.Lists;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.effektif.workflow.api.condition.And;
-import com.effektif.workflow.api.condition.Comparator;
-import com.effektif.workflow.api.condition.Condition;
-import com.effektif.workflow.api.condition.Contains;
-import com.effektif.workflow.api.condition.ContainsIgnoreCase;
-import com.effektif.workflow.api.condition.Equals;
-import com.effektif.workflow.api.condition.EqualsIgnoreCase;
-import com.effektif.workflow.api.condition.GreaterThan;
-import com.effektif.workflow.api.condition.GreaterThanOrEqual;
-import com.effektif.workflow.api.condition.HasNoValue;
-import com.effektif.workflow.api.condition.HasValue;
-import com.effektif.workflow.api.condition.IsFalse;
-import com.effektif.workflow.api.condition.IsTrue;
-import com.effektif.workflow.api.condition.LessThan;
-import com.effektif.workflow.api.condition.LessThanOrEqual;
-import com.effektif.workflow.api.condition.Not;
-import com.effektif.workflow.api.condition.NotContains;
-import com.effektif.workflow.api.condition.NotContainsIgnoreCase;
-import com.effektif.workflow.api.condition.NotEquals;
-import com.effektif.workflow.api.condition.NotEqualsIgnoreCase;
-import com.effektif.workflow.api.condition.Or;
-import com.effektif.workflow.api.condition.SingleBindingCondition;
 import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.impl.bpmn.BpmnMapper;
 
@@ -143,16 +123,18 @@ public class ConditionMapperTest {
   public void testAnd() {
     Condition issues = new LessThan().left(new Binding().expression("issues")).right(new Binding().value("10"));
     Condition tests = new IsTrue().left(new Binding<String>().expression("testsPassed"));
-    And condition = new And().condition(issues).condition(tests);
+    Condition tests2 = new IsTrue().left(new Binding<String>().expression("testsPassed2"));
+    And condition = new And().condition(issues).condition(tests).condition(tests2);
     condition = serialize(condition, And.class);
 
-    assertEquals(2, condition.getConditions().size());
+    assertEquals(3, condition.getConditions().size());
 
     // Note: the IsTrue condition is first, because conditions are deserialised in alphabetical order of class name.
     assertEquals(IsTrue.class, condition.getConditions().get(0).getClass());
     assertEquals("testsPassed", ((IsTrue) condition.getConditions().get(0)).getLeft().getExpression());
+    assertEquals("testsPassed2", ((IsTrue) condition.getConditions().get(1)).getLeft().getExpression());
 
-    assertEquals(LessThan.class, condition.getConditions().get(1).getClass());
+    assertEquals(LessThan.class, condition.getConditions().get(2).getClass());
   }
 
   @Test
@@ -180,6 +162,36 @@ public class ConditionMapperTest {
     LessThan deserialisedIssues = (LessThan) condition.getCondition();
     assertEquals("issues", deserialisedIssues.getLeft().getExpression());
     assertEquals("10", deserialisedIssues.getRight().getValue());
+  }
+
+  @Test
+  public void testUnspecified() {
+    Unspecified unspecified = new Unspecified()
+      .left(new Binding<>().expression("left"))
+      .right(new Binding<>().expression("right"))
+      // single condition
+      .condition(new Equals().leftExpression("one").rightExpression("two"));
+    // multiple conditions
+    unspecified.setConditions(Lists.of(
+      new Equals().leftExpression("three").rightExpression("four"),
+      new Equals().leftExpression("five").rightExpression("six")));
+
+    unspecified = serialize(unspecified, Unspecified.class);
+
+    assertNotNull(unspecified.getLeft());
+    assertEquals("left", unspecified.getLeft().getExpression());
+    assertNotNull(unspecified.getRight());
+    assertEquals("right", unspecified.getRight().getExpression());
+    // single and multiple conditions end up all in multiple conditions if the list is bigger than 1
+    assertNull(unspecified.getCondition());
+    assertNotNull(unspecified.getConditions());
+    assertEquals(3, unspecified.getConditions().size());
+    assertEquals("one", ((Equals) unspecified.getConditions().get(0)).getLeft().getExpression());
+    assertEquals("two", ((Equals) unspecified.getConditions().get(0)).getRight().getExpression());
+    assertEquals("three", ((Equals) unspecified.getConditions().get(1)).getLeft().getExpression());
+    assertEquals("four", ((Equals) unspecified.getConditions().get(1)).getRight().getExpression());
+    assertEquals("five", ((Equals) unspecified.getConditions().get(2)).getLeft().getExpression());
+    assertEquals("six", ((Equals) unspecified.getConditions().get(2)).getRight().getExpression());
   }
 
   /**

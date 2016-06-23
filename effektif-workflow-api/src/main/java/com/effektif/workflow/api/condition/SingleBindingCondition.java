@@ -41,7 +41,9 @@ public abstract class SingleBindingCondition extends Condition {
 
   @Override
   public void writeBpmn(BpmnWriter w) {
-    w.writeBinding(getClass(), getLeft());
+    if (!isEmpty()) {
+      w.writeBinding(getClass(), getLeft());
+    }
   }
 
   public Binding<?> getLeft() {

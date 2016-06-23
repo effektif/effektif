@@ -14,6 +14,7 @@
 package com.effektif.workflow.impl.json;
 
 import com.effektif.workflow.api.condition.Condition;
+import com.effektif.workflow.api.condition.Unspecified;
 import com.effektif.workflow.api.model.RelativeTime;
 import com.effektif.workflow.api.types.BooleanType;
 import com.effektif.workflow.api.types.DataType;
@@ -59,6 +60,9 @@ public class MappingsBuilder {
     subClasses(BoundaryEventTimerImpl.class); //todo: make this dynamic
     baseClass(Activity.class);
     baseClass(Condition.class);
+    // needs to be added explicitly as it has no impl:
+    subClass(Unspecified.class);
+    inline(Unspecified.class, "properties");
     baseClass(DataType.class, "name");
     baseClass(RelativeTime.class);
     subClasses(RelativeTime.SUBCLASSES);

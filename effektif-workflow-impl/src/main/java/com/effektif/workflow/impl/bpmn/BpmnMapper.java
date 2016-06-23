@@ -92,11 +92,9 @@ public class BpmnMapper {
     XmlElement xmlRoot = XmlReader.parseXml(new StringReader(xml));
     if (xmlRoot != null && xmlRoot.elements != null) {
       try {
-        T condition = conditionClass.newInstance();
         BpmnReaderImpl reader = createBpmnReaderImpl();
         reader.currentXml = xmlRoot;
-        condition.readBpmn(reader);
-        return condition;
+        return (T) reader.readCondition();
       } catch (Exception e) {
         throw new RuntimeException("Could not read condition: " + e.getMessage(), e);
       }
