@@ -8,5 +8,5 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SandboxApiType {
-  Class<? extends Sandboxable> sandboxApiType();
+  Class<? extends Sandboxable> value();
 }

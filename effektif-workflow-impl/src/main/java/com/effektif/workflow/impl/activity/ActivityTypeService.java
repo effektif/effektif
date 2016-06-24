@@ -30,7 +30,6 @@ import com.effektif.workflow.impl.configuration.Startable;
 import com.effektif.workflow.impl.data.types.ObjectTypeImpl;
 import com.effektif.workflow.impl.util.Exceptions;
 import com.effektif.workflow.impl.workflow.sandbox.SandboxApiType;
-import com.effektif.workflow.impl.workflow.sandbox.Sandboxable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +112,7 @@ public class ActivityTypeService implements Startable {
     SandboxApiType annotation = activityApi.getClass().getAnnotation(SandboxApiType.class);
     if (isSandboxMode && annotation != null) {
       log.debug("Instantiating activity '" + activityApi.getName()  + "' (in sandbox mode)");
-      activityTypeClass = activityTypeClasses.get(annotation.sandboxApiType());
+      activityTypeClass = activityTypeClasses.get(annotation.value());
     } else {
       log.debug("Instantiating activity '" + activityApi.getName()  + "'");
       activityTypeClass = activityTypeClasses.get(activityApi.getClass());

@@ -11,6 +11,7 @@ import com.effektif.workflow.impl.conditions.AndImpl;
 import com.effektif.workflow.impl.conditions.EqualsImpl;
 import com.effektif.workflow.impl.conditions.OrImpl;
 import com.effektif.workflow.impl.workflow.WorkflowImpl;
+import com.effektif.workflow.impl.workflow.sandbox.AbstractWorkflowImpl;
 import com.effektif.workflow.test.WorkflowTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public class UnspecifiedConditionTest extends WorkflowTest {
     ExecutableWorkflow workflow = new ExecutableWorkflow()
       .transition("t1", new Transition().condition(new Unspecified()));
 
-    WorkflowImpl workflowImpl = workflowParser.parse(workflow);
+    AbstractWorkflowImpl workflowImpl = workflowParser.parse(workflow);
     assertEquals(1, workflowImpl.getTransitions().size());
     assertNull(workflowImpl.getTransitions().get(0).condition);
   }
