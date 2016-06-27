@@ -31,7 +31,7 @@ public class BpmnTypeMapping {
   Map<String,String> bpmnTypeAttributes;
   String bpmnTypeChildElement;
   boolean bpmnTypeChildElementRequired;
-  Class<?> type;
+  public Class<?> type;
 
   public String getBpmnElementName() {
     return bpmnElementName;
