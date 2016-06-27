@@ -65,10 +65,6 @@ public interface ActivityType<T extends Activity> {
   Map<String,InputParameterImpl> getInputs();
   Map<String,String> getOutputs();
 
-  default boolean isSandboxable() {
-    return false;
-  }
-
   default Class<? extends AbstractActivityType<?>> getSandboxImpl() {
     return null;
   }

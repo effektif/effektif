@@ -145,15 +145,8 @@ public class WorkflowEngineImpl implements WorkflowEngine, Brewable {
             lock,
             triggerInstance.getTransientData());
 
-    // propagate the sandbox indicator value further
-    workflowInstance.setSandboxActive(triggerInstance.isSandboxActive());
-
     if (log.isDebugEnabled()) {
-      if (workflowInstance.isSandboxActive()) {
-        log.debug("Created " + workflowInstance + " (in sandbox mode)");
-      } else {
-        log.debug("Created " + workflowInstance);
-      }
+      log.debug("Created " + workflowInstance);
     }
 
     if (workflow.trigger!=null) {

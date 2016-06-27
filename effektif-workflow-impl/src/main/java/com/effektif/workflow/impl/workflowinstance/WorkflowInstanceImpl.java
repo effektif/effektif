@@ -62,8 +62,6 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
   public List<Job> jobs;
   public List<UnlockListener> unlockListeners;
 
-  public boolean sandboxActive = false;
-
   /**
    * local cache of the locked workflow instance for the purpose of the call
    * activity. in case the subprocess is fully synchronous and it finishes and
@@ -530,12 +528,4 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     }
   }
 
-  public boolean isSandboxActive() {
-    return sandboxActive;
-  }
-
-  public WorkflowInstanceImpl setSandboxActive(boolean sandboxActive) {
-    this.sandboxActive = sandboxActive;
-    return this;
-  }
 }
