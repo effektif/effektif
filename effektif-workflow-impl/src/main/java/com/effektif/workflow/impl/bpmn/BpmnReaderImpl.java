@@ -640,6 +640,9 @@ public class BpmnReaderImpl implements BpmnReader {
           else if (Double.class.getName().equals(type)) {
             properties.put(key, Double.valueOf(value));
           }
+          else if (Long.class.getName().equals(type)) {
+            properties.put(key, Long.valueOf(value));
+          }
           else {
             log.warn(String.format("Unsupported property type ‘%s’ for property %s=%s", type, key, value));
           }
