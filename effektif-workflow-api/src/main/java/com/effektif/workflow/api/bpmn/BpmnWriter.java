@@ -34,10 +34,8 @@ import java.util.Map;
 public interface BpmnWriter {
 
   void startElementBpmn(String localPart);
-  void startElementBpmn(String localPart, Integer index);
   void startElementBpmnDiagram(String localPart);
   void startElementEffektif(String localPart);
-  void startElementEffektif(String localPart, Integer index);
   void startElementEffektif(Class modelClass);
   void endElement();
   

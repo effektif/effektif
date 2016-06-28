@@ -101,8 +101,8 @@ public class XmlWriter {
       
       if (!xmlElement.hasContent()) {
         writer.write('>');
-        if (xmlElement.elements!=null) {
-          for (XmlElement element: xmlElement.elements) {
+        if (xmlElement.children !=null) {
+          for (XmlElement element: xmlElement.children) {
             writer.write("\n");
             write(element, indentation+1);
           }

@@ -17,12 +17,14 @@ package com.effektif.workflow.api.bpmn;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -31,12 +33,11 @@ import org.slf4j.LoggerFactory;
 import com.effektif.workflow.api.json.JsonIgnore;
 
 /** 
- * XML DOM structure that is jsonnable with Jackson
- * so that it can be serialized to/from JSON for REST service and database persistence.
+ * XML DOM structure that Jackson can serialise to/from JSON for REST service and database persistence.
  *
  * @author Tom Baeyens
  */
-public class XmlElement {
+public class XmlElement implements Comparable<XmlElement> {
 
   private static final Logger log = LoggerFactory.getLogger(XmlElement.class);
 
@@ -49,7 +50,7 @@ public class XmlElement {
   /** Maps namespace URIs to prefixes; a null value represents the default namespace. */
   public XmlNamespaces namespaces;
   
-  public List<XmlElement> elements;
+  public List<XmlElement> children;
   public String text;
   
   /** not persisted in the db */
@@ -76,15 +77,15 @@ public class XmlElement {
     if (attributes != null && attributes.isEmpty()) {
       attributes = null;
     }
-    if (elements != null) {
+    if (children != null) {
       // Recursively clean child elements.
-      for (XmlElement childElement : elements) {
+      for (XmlElement childElement : children) {
         childElement.cleanEmptyElements();
       }
 
       // Remove empty child elements list.
-      if (elements.isEmpty()) {
-        elements = null;
+      if (children.isEmpty()) {
+        children = null;
       }
     }
   }
@@ -153,14 +154,14 @@ public class XmlElement {
 
   // elements ///////////////////////////////////////////////////////////////////////////
 
-  public List<XmlElement> getElements() {
-    return elements;
+  public List<XmlElement> getChildren() {
+    return children;
   }
   
   public List<XmlElement> removeElements(String namespaceUri, String localPart) {
     List<XmlElement> result = new ArrayList<>();
-    if (this.elements != null) {
-      Iterator<XmlElement> iterator = this.elements.iterator();
+    if (this.children != null) {
+      Iterator<XmlElement> iterator = this.children.iterator();
       while (iterator.hasNext()) {
         XmlElement xmlElement = iterator.next();
         if (xmlElement.is(namespaceUri, localPart)) {
@@ -173,8 +174,8 @@ public class XmlElement {
   }
   
   public XmlElement removeElement(String namespaceUri, String localPart) {
-    if (elements!=null) {
-      Iterator<XmlElement> iterator = elements.iterator();
+    if (children !=null) {
+      Iterator<XmlElement> iterator = children.iterator();
       while (iterator.hasNext()) {
         XmlElement xmlElement = iterator.next();
         if (xmlElement.is(namespaceUri, localPart)) {
@@ -192,7 +193,7 @@ public class XmlElement {
   public void removeEmptyElement(String namespaceUri, String localPart) {
     XmlElement element = getElement(namespaceUri, localPart);
     if (element != null) {
-      List<XmlElement> childElements = element.getElements();
+      List<XmlElement> childElements = element.getChildren();
       if (childElements == null || childElements.isEmpty()) {
         removeElement(namespaceUri, localPart);
       }
@@ -203,10 +204,10 @@ public class XmlElement {
    * Returns the first element with the given name, or <code>null</code> if there isn’t one.
    */
   public XmlElement getElement(String namespaceUri, String localPart) {
-    if (elements==null) {
+    if (children ==null) {
       return null;
     }
-    for (XmlElement childElement : elements) {
+    for (XmlElement childElement : children) {
       if (childElement.is(namespaceUri, localPart)) {
         return childElement;
       }
@@ -226,48 +227,27 @@ public class XmlElement {
     if (existingElement!=null) {
       return existingElement;
     }
-    return createElement(namespaceUri, localPart, index);
+    return createChildElement(namespaceUri, localPart);
   }
   
-  public XmlElement createElement(String namespaceUri, String localPart) {
-    return createElement(namespaceUri, localPart, null);
-  }
-
-  public XmlElement createElementFirst(String namespaceUri, String localPart) {
-    return createElement(namespaceUri, localPart, 0);
-  }
-
-  public XmlElement createElement(String namespaceUri, String localPart, Integer index) {
+  public XmlElement createChildElement(String namespaceUri, String localPart) {
     XmlElement element = new XmlElement();
     element.parent = this;
     element.namespaceUri = namespaceUri;
-    addElement(element, index);
     element.setName(namespaceUri, localPart);
+    addChild(element);
     return element;
   }
 
-  public void addElement(XmlElement xmlElement) {
-    addElement(xmlElement, null);
-  }
-
-  public void addElementFirst(XmlElement xmlElement) {
-    addElement(xmlElement, 0);
-  }
-
-  public void addElement(XmlElement xmlElement, Integer index) {
-    if (xmlElement!=null) {
-      if (elements==null) {
-        this.elements = new ArrayList<>();
+  public void addChild(XmlElement xmlElement) {
+    if (xmlElement !=null) {
+      if (children ==null) {
+        this.children = new ArrayList<>();
       }
-      if (index!=null) {
-        this.elements.add(index, xmlElement);
-      } else {
-        this.elements.add(xmlElement);
-      }
+      this.children.add(xmlElement);
       xmlElement.parent = this;
     }
   }
-
 
   // attributes ///////////////////////////////////////////////////////////////////////////
 
@@ -349,7 +329,7 @@ public class XmlElement {
     if (attributes != null && !attributes.isEmpty()) {
       return false;
     }
-    if (elements != null && !elements.isEmpty()) {
+    if (children != null && !children.isEmpty()) {
       return false;
     }
     if (text != null && !text.isEmpty()) {
@@ -359,7 +339,7 @@ public class XmlElement {
   }
 
   public boolean hasContent() {
-    if (elements!=null && !elements.isEmpty()) {
+    if (children !=null && !children.isEmpty()) {
       return false;
     }
     if (text!=null && !"".equals(text)) {
@@ -396,14 +376,32 @@ public class XmlElement {
    * from the database. If these parent relationships are not set, then the recursive namespace lookup fails.
    */
   public void setElementParents() {
-    if (elements == null) {
+    if (children == null) {
       return;
     }
-    for (XmlElement child : elements) {
+    for (XmlElement child : children) {
       if (child.parent == null) {
         child.parent = this;
       }
       child.setElementParents();
+    }
+  }
+
+
+
+  @Override
+  public int compareTo(XmlElement other) {
+    if (name == null || other == null || other.name == null) {
+      return 0;
+    }
+    try {
+      int elementOrdering = ElementOrder.valueOf(name.toUpperCase()).ordinal();
+      int otherElementOrdering = ElementOrder.valueOf(other.name.toUpperCase()).ordinal();
+      return elementOrdering - otherElementOrdering;
+    }
+    catch (IllegalArgumentException e) {
+      // No element ordering defined for one of the elements.
+      return 0;
     }
   }
 }

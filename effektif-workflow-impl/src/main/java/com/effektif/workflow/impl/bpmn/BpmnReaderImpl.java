@@ -30,8 +30,6 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import com.effektif.workflow.api.bpmn.XmlNamespaces;
-import com.effektif.workflow.api.condition.SingleBindingCondition;
 import com.effektif.workflow.api.workflow.*;
 import com.effektif.workflow.impl.workflow.boundary.BoundaryEventTimer;
 import org.joda.time.LocalDateTime;
@@ -113,8 +111,8 @@ public class BpmnReaderImpl implements BpmnReader {
   protected AbstractWorkflow readDefinitions(XmlElement definitionsXml) {
     AbstractWorkflow workflow = null;
 
-    if (definitionsXml.elements != null) {
-      Iterator<XmlElement> iterator = definitionsXml.elements.iterator();
+    if (definitionsXml.children != null) {
+      Iterator<XmlElement> iterator = definitionsXml.children.iterator();
       while (iterator.hasNext()) {
         XmlElement definitionElement = iterator.next();
         boolean processAlreadyParsed = workflow != null;
@@ -180,8 +178,8 @@ public class BpmnReaderImpl implements BpmnReader {
   }
 
   public void readScope() {
-    if (currentXml.elements!=null) {
-      Iterator<XmlElement> iterator = currentXml.elements.iterator();
+    if (currentXml.children !=null) {
+      Iterator<XmlElement> iterator = currentXml.children.iterator();
       while (iterator.hasNext()) {
         XmlElement scopeElement = iterator.next();
         startElement(scopeElement);
@@ -208,7 +206,7 @@ public class BpmnReaderImpl implements BpmnReader {
           BoundaryEvent boundaryEvent = new BoundaryEvent();
           boundaryEvent.readBpmn(this);
 
-          for (XmlElement xmlElement : currentXml.getElements()) {
+          for (XmlElement xmlElement : currentXml.getChildren()) {
             BpmnTypeMapping typeMapping = bpmnMappings.getBpmnTypeMapping(xmlElement, this);
 
             if (typeMapping != null) {
@@ -859,9 +857,9 @@ public class BpmnReaderImpl implements BpmnReader {
 
   private Set<String> findParticipantIds(XmlElement definitions) {
     Set<String> ids = definitions == null ? new HashSet<>() :
-      definitions.elements.stream()
+      definitions.children.stream()
         .filter(element -> element.name.equals("collaboration"))
-        .flatMap(collaboration -> collaboration.elements.stream())
+        .flatMap(collaboration -> collaboration.children.stream())
         .filter(element -> element.name.equals("participant"))
         .map(participant -> participant.getAttribute(BPMN_URI, "id"))
         .collect(Collectors.toSet());
