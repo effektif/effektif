@@ -21,6 +21,7 @@ import com.effektif.workflow.api.workflow.Binding;
 import com.effektif.workflow.api.workflow.InputParameter;
 import com.effektif.workflow.impl.WorkflowEngineImpl;
 import com.effektif.workflow.impl.WorkflowParser;
+import com.effektif.workflow.impl.exceptions.BadRequestException;
 import com.effektif.workflow.impl.workflow.ActivityImpl;
 import com.effektif.workflow.impl.workflow.InputParameterImpl;
 import com.effektif.workflow.impl.workflow.MultiInstanceImpl;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public abstract class AbstractActivityType<T extends Activity> implements ActivityType<T> {
   
@@ -96,6 +96,16 @@ public abstract class AbstractActivityType<T extends Activity> implements Activi
   @Override
   public T getActivity() {
     return activity;
+  }
+
+  /** tries to cast the activity to the given type before returning */
+  public <Z extends Activity> Z getActivityTyped(Class<Z> type) {
+    try {
+      return (Z) activity;
+    } catch (Exception e) {
+      throw new BadRequestException("Could not cast '" + activity.getClass().getSimpleName()
+                                            + "' to '" + type.getSimpleName() + "'");
+    }
   }
 
   public abstract void execute(ActivityInstanceImpl activityInstance);
