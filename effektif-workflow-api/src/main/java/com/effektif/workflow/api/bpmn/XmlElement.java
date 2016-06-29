@@ -15,22 +15,18 @@
  */
 package com.effektif.workflow.api.bpmn;
 
+import com.effektif.workflow.api.json.JsonIgnore;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.effektif.workflow.api.json.JsonIgnore;
 
 /** 
  * XML DOM structure that Jackson can serialise to/from JSON for REST service and database persistence.
@@ -387,8 +383,10 @@ public class XmlElement implements Comparable<XmlElement> {
     }
   }
 
-
-
+  /**
+   * Define a ‘natural ordering’ of BPMN XML elements, according to the orderings in the BPMN XML schema, by using the
+   * declarative ordering in {@link ElementOrder}.
+   */
   @Override
   public int compareTo(XmlElement other) {
     if (name == null || other == null || other.name == null) {
