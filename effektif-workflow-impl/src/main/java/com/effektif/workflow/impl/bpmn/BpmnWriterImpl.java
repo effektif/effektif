@@ -148,6 +148,11 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void endExtensionElements() {
     endElement();
     xml.removeEmptyElement(BPMN_URI, "extensionElements");
+
+    // Re-sort child elements after adding extensionElements
+    if (xml.children != null) {
+      Collections.sort(xml.children);
+    }
   }
   
   public void startScope(Scope nestedScope) {
