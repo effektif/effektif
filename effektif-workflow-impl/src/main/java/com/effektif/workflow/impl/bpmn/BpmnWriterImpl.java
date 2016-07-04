@@ -215,9 +215,6 @@ public class BpmnWriterImpl implements BpmnWriter {
     workflow.writeBpmn(this);
     writeScope();
 
-    // Sort the process children by the BPMN order defined in ElementOrder.
-    Collections.sort(xml.children);
-
     endElement();
     fixDiagramDuplicateIds(workflow);
     writeDiagram(workflow);
@@ -360,6 +357,11 @@ public class BpmnWriterImpl implements BpmnWriter {
   public void writeScope() {
     writeActivities(scope.getActivities());
     writeTransitions(scope.getTransitions());
+
+    // Sort the process children by the BPMN order defined in ElementOrder.
+    if (xml.children != null) {
+      Collections.sort(xml.children);
+    }
   }
 
   protected void writeActivities(List<Activity> activities) {
