@@ -254,6 +254,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     lockedWorkflowInstances.put(lockedWorkflowInstance.getId(), lockedWorkflowInstance);
   }
 
+  /**
+   * Notifies event listeners tha the workflow instance has finished execution.
+   */
   public void workflowInstanceEnded() {
     workflow.workflowEngine.notifyWorkflowInstanceEnded(workflowInstance);
     
@@ -349,6 +352,9 @@ public class WorkflowInstanceImpl extends ScopeInstanceImpl {
     return work != null && !work.isEmpty();
   }
 
+  /**
+   * Instructs the engine to propagate execution forwards after ending the current activity instance.
+   */
   public void endAndPropagateToParent() {
     if (this.end == null) {
       if (hasOpenActivityInstances()) {
