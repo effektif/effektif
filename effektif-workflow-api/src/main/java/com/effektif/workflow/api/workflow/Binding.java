@@ -40,6 +40,7 @@ public class Binding<T> {
   protected DataType type;
   protected String expression;
   protected String template;
+  protected String transformation;
 
   protected Map<String, Object> metadata;
 
@@ -70,14 +71,14 @@ public class Binding<T> {
     this.value = value;
     return this;
   }
-  
-  /** specifies how a dynamic value is to be fetched from the variables. 
+
+  /** specifies how a dynamic value is to be fetched from the variables.
    * @see https://github.com/effektif/effektif/wiki/Expressions */
   public String getExpression() {
     return this.expression;
   }
 
-  /** specifies how a dynamic value is to be fetched from the variables. 
+  /** specifies how a dynamic value is to be fetched from the variables.
    * @see https://github.com/effektif/effektif/wiki/Expressions */
   public void setExpression(String expression) {
     this.expression = expression;
@@ -104,15 +105,15 @@ public class Binding<T> {
   public boolean isEmpty() {
     return value == null && expression == null;
   }
-  
+
   public DataType getType() {
     return type;
   }
-  
+
   public void setType(DataType type) {
     this.type = type;
   }
-  
+
   public Binding<T> type(DataType type) {
     this.type = type;
     return this;
@@ -157,6 +158,15 @@ public class Binding<T> {
       return this.metadata.get(key);
     }
     return null;
+  }
+
+  public String getTransformation() {
+    return transformation;
+  }
+
+  public Binding setTransformation(String transformation) {
+    this.transformation = transformation;
+    return this;
   }
 
   @Override
