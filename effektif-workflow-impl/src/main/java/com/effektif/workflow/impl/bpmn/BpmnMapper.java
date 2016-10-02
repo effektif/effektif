@@ -90,7 +90,7 @@ public class BpmnMapper {
    */
   public <T extends Condition> T readCondition(String xml, Class<T> conditionClass) {
     XmlElement xmlRoot = XmlReader.parseXml(new StringReader(xml));
-    if (xmlRoot != null && xmlRoot.elements != null) {
+    if (xmlRoot != null && xmlRoot.children != null) {
       try {
         BpmnReaderImpl reader = createBpmnReaderImpl();
         reader.currentXml = xmlRoot;

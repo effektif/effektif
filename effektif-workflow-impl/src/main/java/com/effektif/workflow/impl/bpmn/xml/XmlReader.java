@@ -70,7 +70,7 @@ public class XmlReader {
             root = xmlElement;
           } else {
             // establish parent-child relation
-            parent.addElement(xmlElement);
+            parent.addChild(xmlElement);
             xmlElement.parent = parent;
           }
 

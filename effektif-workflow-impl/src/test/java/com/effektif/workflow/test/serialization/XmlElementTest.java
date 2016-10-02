@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.PriorityQueue;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +32,9 @@ public class XmlElementTest {
 
   @Test
   public void testCleanEmptyElements() {
-    root.elements = new ArrayList<>();
+    root.children = new ArrayList<>();
     root.cleanEmptyElements();
-    assertNull(root.elements);
+    assertNull(root.children);
   }
 
   @Test
@@ -40,12 +42,12 @@ public class XmlElementTest {
     XmlElement childElement = new XmlElement();
     childElement.setName(Bpmn.BPMN_URI, "startEvent");
     childElement.attributes = new HashMap<>();
-    childElement.elements = new ArrayList<>();
+    childElement.children = new ArrayList<>();
 
-    root.addElement(childElement);
+    root.addChild(childElement);
     root.cleanEmptyElements();
 
     assertNull(childElement.attributes);
-    assertNull(childElement.elements);
+    assertNull(childElement.children);
   }
 }
